@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::Execution;
  *************************** MimeTypes::Private::INIT ***************************
  ********************************************************************************
  */
-DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
+DataExchangeFormat::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
     : kOctetStream_CT                       (String_Constant (L"application/octet-stream"))
 
     , kImage_CT                             (String_Constant (L"image"))
@@ -49,7 +49,7 @@ DataExchangeFormat::Private_::InternetMediaType_INIT::InternetMediaType_INIT ()
 {
 }
 
-DataExchangeFormat::Private_::InternetMediaType_INIT::~InternetMediaType_INIT ()
+DataExchangeFormat::Private_::InternetMediaType_ModuleData_::~InternetMediaType_ModuleData_ ()
 {
 }
 

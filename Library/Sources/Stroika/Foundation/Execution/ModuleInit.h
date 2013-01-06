@@ -18,7 +18,6 @@ namespace   Stroika {
             using   namespace   Configuration;
 
 
-
             /**
              *      @todo   Must fix qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
              *              MAYBE use new feature - wherw e have some kind of templated module reference that doesn't include
@@ -51,33 +50,33 @@ namespace   Stroika {
 
 
 
-            /*
+
+
+            /**
+             *  \brief  ModuleInitializer<> is a utility class to support controlled order of initialization across modules
+             *
              *  OVERVIEW:
              *
              *      This class does little but DOCUMENT a useful design pattern to avoid the nasty cross-module deadly
              *      embrace caused by unreliable static object construction order.
-             */
-
-            /*
+             *
              *  USAGE EXAPMPLE:
              *      namespace   ExampleModule {
              *          namespace   Private {
-             *              struct  ActualModuleInit {
-             *                  ActualModuleInit ();
-             *                  ~ActualModuleInit ();
+             *              struct  MyModuleData_ {
+             *                  MyModuleData_ () {}
+             *                  ~MyModuleData_ () {}
+             *                  CriticalSection fCritSection;
              *              };
-             *              extern  CriticalSection*    sCritSection_;      // example obj to init
-             *              CriticalSection&    GetCritSection_ ();
              *          }
              *      };
              *      namespace   {
-             *          Execution::ModuleInitializer<ExampleModule::Private::ActualModuleInit>  _MI_;   // this object constructed for the CTOR/DTOR per-module side-effects
+             *          Execution::ModuleInitializer<ExampleModule::Private::MyModuleData_>  _MI_;   // this object constructed for the CTOR/DTOR per-module side-effects
+             *          inline CriticalSection&    GetCritSection_ () { return Execution::ModuleInitializer<Private::MyModuleData_>::Actual ().fCritSection; }
              *      }
-             */
-
-            /*
-             *  In the ActualModuleInit::CTOR you initialize your module (in this case, sCritSection_). And in the
-             *  ActualModuleInit::DTOR - you uninitialize (e.g. delete sCritSection_);
+             *
+             *  In the MyModuleData_::CTOR you initialize your module (in this case, fCritSection). And in the
+             *  ActualModuleInit::DTOR - you uninitialize (e.g. delete fCritSection);
              *
              *  The reason this trick works reliably - is that the anonymouns namespace declaration of _MI_ - above -
              *  bumps/decrements reference counts in EVERY CONTAINING MODULE. The first module initialized - calls the
@@ -91,55 +90,40 @@ namespace   Stroika {
              *  One slightly subtle point about this - if Module A depends on Module B in its implemenation, but not its HEADERS,
              *  it STILL may need to #include the headers for Module B (in cases where Module B uses this mechanism) to assure
              *  the right order of initializaiton.
+             *
+             *
+             *
+             * The type MODULE_DATA - is the code which actually performs the real, module-specific
+             * initialization.
+             *
+             * Initialiation of MODULE_DATA is done in the constructor, and cleanup in the DTOR.
+             * This class makes sure that - if you construct a ModuleInitializer<> object in every module which might
+             * use this module, then the is constructed at the earliest time, and destroyed at the latest.
+             *
+             *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure sActualModuleInitializer_Storage_ properly aligned).
+             *
              */
-
-
-            // The type ACTUAL_MODULE_INITIALIZER - is the code which actually performs the real, module-specific
-            // initialization.
-            //
-            // Initialiation of ACTUAL_MODULE_INITIALIZER is done in the constructor, and cleanup in the DTOR.
-            // This class makes sure that - if you construct a ModuleInitializer<> object in every module which might
-            // use this module, then the is constructed at the earliest time, and destroyed at the latest.
-            template    <typename ACTUAL_MODULE_INITIALIZER>
+            template    <typename MODULE_DATA>
             class   ModuleInitializer {
             public:
                 ModuleInitializer ();
                 ~ModuleInitializer ();
 
             public:
-                static  ACTUAL_MODULE_INITIALIZER&  Actual ();
+                static  MODULE_DATA&  Actual ();
 
             private:
-                static  Byte                sActualModuleInitializer_Storage[sizeof (ACTUAL_MODULE_INITIALIZER)];   // avoid actual memory allocation call - since only one of these
-                static  unsigned    short   sInitCnt;
+                static  Byte                sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
+                static  unsigned    short   sInitCnt_;
             };
 
 
-#if 0
-			//
-			// NOT USED CURRENTLY - and not sure well thorugh through useful...
-			//
-			//
-            // Only useful with ModuleInitializer - to implement singleton design pattern, but assuring constructed
-            // once per application, at just the 'right' time - for access to this object.
-            template    <typename T>
-            class   SingletonObjActualInitializer {
-            public:
-                SingletonObjActualInitializer ();
-                ~SingletonObjActualInitializer ();
-            public:
-                nonvirtual const T& THE () const;
-                nonvirtual T&   THE ();
-            private:
-                T   fThe;
-            };
-#endif
-
-
-            // Help to construct an object - and NEVER call its DTOR. Assure its
+            /**
+             *  Help to construct an object - and NEVER call its DTOR. Assure its
             // constructed before use. Can be helpful for objects that don't need to be destroyed, but need to
             // assure they are constructed before use.
             // Only thought out using this at file scope to wrap construciton of an object.
+            */
             template    <typename   T>
             struct  StaticSingletonObjectConstructionHelper {
                 bool    fConstructed;
@@ -157,8 +141,7 @@ namespace   Stroika {
             };
 
 
-
-            /*
+            /**
              * See http://bugzilla/show_bug.cgi?id=439
              *
              * Allow use of regular constant declaration use when we have
@@ -189,6 +172,7 @@ namespace   Stroika {
                     return &(ValueGetter) ();
                 }
             };
+
 
         }
     }

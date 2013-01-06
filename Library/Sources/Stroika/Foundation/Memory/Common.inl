@@ -14,7 +14,6 @@
 #include    "../Execution/ModuleInit.h"
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
@@ -33,9 +32,9 @@ namespace   Stroika {
 
             // Module initialization
             namespace   Private {
-                struct  INIT {
-                    INIT ();
-                    ~INIT ();
+                struct  ModuleData_ {
+                    ModuleData_ ();
+                    ~ModuleData_ ();
                 };
             }
 
@@ -58,6 +57,6 @@ namespace   Stroika {
 
 
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::INIT>   _StroikaFoundationMemoryPrivateINIT_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::ModuleData_>   _Stroika_Foundation_Memory_Common_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Memory_Basic_inl_*/

@@ -50,7 +50,7 @@ namespace   Stroika {
 #endif
 
             namespace   Private {
-                struct  MODULE_INIT;
+                struct  TraceModuleData_;
             };
 
             class   Emitter {
@@ -109,7 +109,7 @@ namespace   Stroika {
                 nonvirtual  void    DoEmit_ (const wchar_t* p, const wchar_t* e);
 
             private:
-                friend  struct  Private::MODULE_INIT;
+                friend  struct  Private::TraceModuleData_;
             };
 
 

@@ -89,15 +89,15 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 /*
  ********************************************************************************
- ******************* FileSystem::Private::UsingModuleHelper *********************
+ **************** FileSystem::Private::FileUtilsModuleData_ *********************
  ********************************************************************************
  */
-FileSystem::Private::UsingModuleHelper::UsingModuleHelper ()
+FileSystem::Private::FileUtilsModuleData_::FileUtilsModuleData_ ()
     : fAppTempFileManager ()
 {
 }
 
-FileSystem::Private::UsingModuleHelper::~UsingModuleHelper ()
+FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
 {
 }
 

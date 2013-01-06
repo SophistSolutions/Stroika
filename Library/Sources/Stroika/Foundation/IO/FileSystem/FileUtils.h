@@ -132,7 +132,7 @@ namespace   Stroika {
 
 
                 namespace   Private {
-                    class   UsingModuleHelper;
+                    class   FileUtilsModuleData_;
                 }
                 class   AppTempFileManager {
                 private:
@@ -152,7 +152,7 @@ namespace   Stroika {
                     TString fTmpDir;
 
                 private:
-                    friend  class   Private::UsingModuleHelper;
+                    friend  class   Private::FileUtilsModuleData_;
                 };
 
 

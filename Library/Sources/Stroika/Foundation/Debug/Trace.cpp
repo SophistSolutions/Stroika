@@ -114,7 +114,7 @@ namespace   {
 }
 
 
-Private::MODULE_INIT::MODULE_INIT ()
+Private::TraceModuleData_::TraceModuleData_ ()
 {
     Assert (sEmitTraceCritSec == nullptr);
     sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
@@ -129,7 +129,7 @@ Private::MODULE_INIT::MODULE_INIT ()
 #endif
 }
 
-Private::MODULE_INIT::~MODULE_INIT ()
+Private::TraceModuleData_::~TraceModuleData_ ()
 {
     delete sEmitTraceCritSec;
     sEmitTraceCritSec = nullptr;

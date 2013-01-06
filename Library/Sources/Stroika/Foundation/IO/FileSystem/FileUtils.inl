@@ -15,10 +15,10 @@ namespace   Stroika {
         namespace   IO {
             namespace   FileSystem {
                 namespace   Private {
-                    class   UsingModuleHelper {
+                    class   FileUtilsModuleData_ {
                     public:
-                        UsingModuleHelper ();
-                        ~UsingModuleHelper ();
+                        FileUtilsModuleData_ ();
+                        ~FileUtilsModuleData_ ();
 
                     private:
                         AppTempFileManager  fAppTempFileManager;
@@ -32,7 +32,7 @@ namespace   Stroika {
     }
 }
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::FileSystem::Private::UsingModuleHelper>  _FileUtils_MOULULE_INIT_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::FileSystem::Private::FileUtilsModuleData_>  _Stroika_Foundation_IO_FileSystem_FileUtils_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 
@@ -41,7 +41,12 @@ namespace   Stroika {
         namespace   IO {
             namespace   FileSystem {
 
-                //  class   IO::ThroughTmpFileWriter
+
+                /*
+                 ********************************************************************************
+                 ********************* FileSystem::ThroughTmpFileWriter *************************
+                 ********************************************************************************
+                 */
                 inline  ThroughTmpFileWriter::operator TString () const
                 {
                     Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
@@ -49,7 +54,11 @@ namespace   Stroika {
                 }
 
 
-                //  class   FileReader
+                /*
+                 ********************************************************************************
+                 ******************************* FileSystem::FileReader *************************
+                 ********************************************************************************
+                 */
                 inline  const Byte* FileReader::GetFileStart () const
                 {
                     return fFileDataStart;
@@ -65,7 +74,11 @@ namespace   Stroika {
 
 
 
-                //  class   MemoryMappedFileReader
+                /*
+                 ********************************************************************************
+                 ******************* FileSystem::MemoryMappedFileReader *************************
+                 ********************************************************************************
+                 */
                 inline  const Byte* MemoryMappedFileReader::GetFileStart () const
                 {
                     return fFileDataStart;
@@ -80,11 +93,14 @@ namespace   Stroika {
                 }
 
 
-
-                //  class   AppTempFileManager
+                /*
+                 ********************************************************************************
+                 *********************** FileSystem::AppTempFileManager *************************
+                 ********************************************************************************
+                 */
                 inline  AppTempFileManager& AppTempFileManager::Get ()
                 {
-                    return _FileUtils_MOULULE_INIT_.Actual ().fAppTempFileManager;
+                    return Execution::ModuleInitializer<Private::FileUtilsModuleData_>::Actual ().fAppTempFileManager;
                 }
                 inline  TString AppTempFileManager::GetMasterTempDir () const
                 {
@@ -92,17 +108,27 @@ namespace   Stroika {
                 }
 
 
-                //  class   ScopedTmpDir {
+                /*
+                 ********************************************************************************
+                 ***************************** FileSystem::ScopedTmpDir *************************
+                 ********************************************************************************
+                 */
                 inline  ScopedTmpDir::operator TString () const
                 {
                     return fTmpDir;
                 }
 
-                //  class   ScopedTmpFile {
+
+                /*
+                 ********************************************************************************
+                 **************************** FileSystem::ScopedTmpFile *************************
+                 ********************************************************************************
+                 */
                 inline  ScopedTmpFile::operator TString () const
                 {
                     return fTmpFile;
                 }
+
 
             }
         }

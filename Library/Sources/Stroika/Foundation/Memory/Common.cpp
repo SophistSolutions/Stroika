@@ -111,7 +111,7 @@ namespace   {
  *************************** Memory::Private::INIT ******************************
  ********************************************************************************
  */
-Memory::Private::INIT::INIT ()
+Memory::Private::ModuleData_::ModuleData_ ()
 {
 #if     qOverrideOpNewDeleteForAccounting
     sInitialized  = true;
@@ -119,7 +119,7 @@ Memory::Private::INIT::INIT ()
 #endif
 }
 
-Memory::Private::INIT::~INIT ()
+Memory::Private::ModuleData_::~ModuleData_ ()
 {
 #if     qOverrideOpNewDeleteForAccounting
     sInitialized = false;

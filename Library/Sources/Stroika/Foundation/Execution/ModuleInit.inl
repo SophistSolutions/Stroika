@@ -41,31 +41,31 @@ namespace   Stroika {
 
 
 
-            template    <typename   ACTUAL_MODULE_INITIALIZER>
-            inline  ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::ModuleInitializer ()
+            template    <typename   MODULE_DATA>
+            inline  ModuleInitializer<MODULE_DATA>::ModuleInitializer ()
             {
-                if (sInitCnt++ == 0) {
-                    // no need to store pointer, cuz its the same as &sActualModuleInitializer_Storage
-                    (void)new (&sActualModuleInitializer_Storage) ACTUAL_MODULE_INITIALIZER ();
+                if (sInitCnt_++ == 0) {
+                    // no need to store pointer, cuz its the same as &sActualModuleInitializer_Storage_
+                    (void)new (&sActualModuleInitializer_Storage_) MODULE_DATA ();
                 }
             }
-            template    <typename   ACTUAL_MODULE_INITIALIZER>
-            inline  ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::~ModuleInitializer ()
+            template    <typename   MODULE_DATA>
+            inline  ModuleInitializer<MODULE_DATA>::~ModuleInitializer ()
             {
-                if (--sInitCnt == 0) {
-                    reinterpret_cast<ACTUAL_MODULE_INITIALIZER*> (&sActualModuleInitializer_Storage)->~ACTUAL_MODULE_INITIALIZER ();
+                if (--sInitCnt_ == 0) {
+                    reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_)->~MODULE_DATA ();
                 }
             }
-            template    <typename   ACTUAL_MODULE_INITIALIZER>
-            inline  ACTUAL_MODULE_INITIALIZER&  ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::Actual ()
+            template    <typename   MODULE_DATA>
+            inline  MODULE_DATA&  ModuleInitializer<MODULE_DATA>::Actual ()
             {
-                Assert (sInitCnt > 0);  // we've been initialized, and not yet destroyed...
-                return *reinterpret_cast<ACTUAL_MODULE_INITIALIZER*> (&sActualModuleInitializer_Storage);
+                Assert (sInitCnt_ > 0);  // we've been initialized, and not yet destroyed...
+                return *reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_);
             }
-            template    <typename ACTUAL_MODULE_INITIALIZER>
-            Byte    ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::sActualModuleInitializer_Storage[sizeof (ACTUAL_MODULE_INITIALIZER)]; // avoid actual memory allocation call - since only one of these
-            template    <typename ACTUAL_MODULE_INITIALIZER>
-            unsigned    short   ModuleInitializer<ACTUAL_MODULE_INITIALIZER>::sInitCnt;
+            template    <typename MODULE_DATA>
+            Byte    ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
+            template    <typename MODULE_DATA>
+            unsigned    short   ModuleInitializer<MODULE_DATA>::sInitCnt_;
 
 
         }
