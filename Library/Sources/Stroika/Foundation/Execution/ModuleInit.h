@@ -11,6 +11,15 @@
 
 
 
+/**
+ * TODO
+ *
+ *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may cause trouble?
+ *              Maybe just document in comments requirements (like fStart != nullptr).
+ *
+ */
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -50,6 +59,31 @@ namespace   Stroika {
 
 
 
+
+            /**
+             *  Use a canonical naming convention for DependableModule instances, and then you can reference them in other modules
+             *  to force module interdependencies.
+             */
+            class   DependableModule {
+            public:
+                class   Dependency {
+                public:
+                    Dependency (void (*start) (), void (*end) ());
+                    ~Dependency ();
+
+                private:
+                    void (*fEnd) ();
+                };
+
+            public:
+                DependableModule (void (*start) (), void (*end) ());
+
+            public:
+                Dependency  GetDependency ();
+            private:
+                void (*fStart) ();
+                void (*fEnd) ();
+            };
 
 
             /**
@@ -110,12 +144,21 @@ namespace   Stroika {
                 ~ModuleInitializer ();
 
             public:
+                static  void    Start ();
+                static  void    End ();
+
+            public:
                 static  MODULE_DATA&  Actual ();
+
+            public:
+                static  DependableModule    GetDependableModule ();
 
             private:
                 static  Byte                sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
                 static  unsigned    short   sInitCnt_;
             };
+
+
 
 
             /**

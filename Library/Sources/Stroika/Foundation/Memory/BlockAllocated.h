@@ -160,6 +160,12 @@ namespace   Stroika {
 #endif
 
 
+            /*
+             *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
+             */
+            extern  Execution::DependableModule _BlockAllocated_;
+
+
         }
     }
 }

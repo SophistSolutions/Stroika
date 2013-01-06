@@ -45,6 +45,8 @@ ActualModuleInit::~ActualModuleInit ()
 
 
 
+Execution::DependableModule Memory::_BlockAllocated_    =   Execution::ModuleInitializer<Private::ActualModuleInit>::GetDependableModule ();
+
 
 
 

@@ -14,35 +14,46 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-#if 0
-            template    <typename T>
-            inline  SingletonObjActualInitializer<T>::SingletonObjActualInitializer ()
-                : fThe ()
+
+            /*
+             ********************************************************************************
+             *********************** DependableModule::Dependency ***************************
+             ********************************************************************************
+             */
+            inline  DependableModule::Dependency::Dependency (void (*start) (), void (*end) ())
+                : fEnd (end)
+            {
+                (*start) ();
+            }
+            inline  DependableModule::Dependency::~Dependency ()
+            {
+                (*fEnd) ();
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************************** DependableModule ***************************
+             ********************************************************************************
+             */
+            inline  DependableModule::DependableModule (void (*start) (), void (*end) ())
+                : fStart (start)
+                , fEnd (end)
             {
             }
-            template    <typename T>
-            inline  SingletonObjActualInitializer<T>::~SingletonObjActualInitializer ()
+            inline  DependableModule::Dependency    DependableModule::GetDependency ()
             {
+                return Dependency (fStart, fEnd);
             }
-            template    <typename T>
-            inline  const T&    SingletonObjActualInitializer<T>::THE () const
-            {
-                return fThe;
-            }
-            template    <typename T>
-            inline  T&  SingletonObjActualInitializer<T>::THE ()
-            {
-                return fThe;
-            }
-#endif
 
 
-
-
-
-
+            /*
+             ********************************************************************************
+             ************************ ModuleInitializer<MODULE_DATA> ************************
+             ********************************************************************************
+             */
             template    <typename   MODULE_DATA>
-            inline  ModuleInitializer<MODULE_DATA>::ModuleInitializer ()
+            inline  void    ModuleInitializer<MODULE_DATA>::Start ()
             {
                 if (sInitCnt_++ == 0) {
                     // no need to store pointer, cuz its the same as &sActualModuleInitializer_Storage_
@@ -50,17 +61,32 @@ namespace   Stroika {
                 }
             }
             template    <typename   MODULE_DATA>
-            inline  ModuleInitializer<MODULE_DATA>::~ModuleInitializer ()
+            void    ModuleInitializer<MODULE_DATA>::End ()
             {
                 if (--sInitCnt_ == 0) {
                     reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_)->~MODULE_DATA ();
                 }
             }
             template    <typename   MODULE_DATA>
+            inline  ModuleInitializer<MODULE_DATA>::ModuleInitializer ()
+            {
+                Start ();
+            }
+            template    <typename   MODULE_DATA>
+            inline  ModuleInitializer<MODULE_DATA>::~ModuleInitializer ()
+            {
+                End ();
+            }
+            template    <typename   MODULE_DATA>
             inline  MODULE_DATA&  ModuleInitializer<MODULE_DATA>::Actual ()
             {
                 Assert (sInitCnt_ > 0);  // we've been initialized, and not yet destroyed...
                 return *reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_);
+            }
+            template    <typename   MODULE_DATA>
+            inline  DependableModule    ModuleInitializer<MODULE_DATA>::GetDependableModule ()
+            {
+                return DependableModule (Start, End);
             }
             template    <typename MODULE_DATA>
             Byte    ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these
