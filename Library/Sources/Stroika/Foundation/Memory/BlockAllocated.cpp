@@ -26,29 +26,39 @@ using   Execution::CriticalSection;
 CriticalSection*    Private::sCritSection_  =   nullptr;
 
 
+
+/*
+ ********************************************************************************
+ *********************** BlockAllocation_ModuleInit_ ****************************
+ ********************************************************************************
+ */
 BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
-#if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     Require (sCritSection_ == nullptr);
     sCritSection_ = DEBUG_NEW CriticalSection ();
-#endif
 }
 
 BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
 {
-#if     !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
     RequireNotNull (sCritSection_);
-#endif
     delete sCritSection_;
     sCritSection_ = nullptr;
 }
 
 
 
+
+/*
+ ********************************************************************************
+ ************** Memory::MakeModuleDependency_BlockAllocated *********************
+ ********************************************************************************
+ */
 Execution::DependableModule::Dependency Memory::MakeModuleDependency_BlockAllocated ()
 {
     return Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependableModule ().GetDependency ();
 }
+
+
 
 
 

@@ -7,7 +7,6 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
-//#include    "../Debug/Assertions.h"
 
 
 
@@ -17,6 +16,7 @@
  *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may cause trouble?
  *              Maybe just document in comments requirements (like fStart != nullptr).
  *
+ *      @todo   Document new Module Dependency code, and verify there is as little wasted overhead as possible...
  */
 
 
@@ -27,8 +27,15 @@ namespace   Stroika {
             using   namespace   Configuration;
 
 
+
+
+
             /**
-             *      @todo   Must fix qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
+             *  Use a canonical naming convention for DependableModule instances, and then you can reference them in other modules
+             *  to force module interdependencies.
+			 *
+
+			 *
              *              MAYBE use new feature - wherw e have some kind of templated module reference that doesn't include
              *              #include of hte target mdoule.
              *
@@ -49,21 +56,7 @@ namespace   Stroika {
              *                      namespace { ModuleDepenecy _xxx_ (_base_) };
              *
              *                  This allows DEPENDING to depend on a name in BASE, but witout #including it, and let the linker to hte dependnecy resolinvg owrk.
-             *
-             */
-#ifndef qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
-// Really right now just triggered whenever anyone uses tracefile ability - since that triggers call from trace to date to string...
-//#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    1
-#define qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE    0
-#endif // !qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
 
-
-
-
-
-            /**
-             *  Use a canonical naming convention for DependableModule instances, and then you can reference them in other modules
-             *  to force module interdependencies.
              */
             class   DependableModule {
             public:
