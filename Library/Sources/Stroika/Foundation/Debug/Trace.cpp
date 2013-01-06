@@ -109,7 +109,7 @@ namespace   {
         }
         return result;
     }
-    const string    sThreadPrintDashAdornment_			=   mkPrintDashAdornment_ ();
+    const string    sThreadPrintDashAdornment_          =   mkPrintDashAdornment_ ();
     bool            sDidOneTimePrimaryThreadMessage_    =   false;
 }
 

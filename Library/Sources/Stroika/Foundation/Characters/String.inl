@@ -439,20 +439,20 @@ namespace   Stroika {
 
 namespace   Stroika {
     namespace   Foundation {
-		namespace Memory {
+        namespace Memory {
             extern  Execution::DependableModule _BlockAllocated_;
-		}
+            Execution::DependableModule::Dependency _BlockAllocated2_ ();
+        }
         namespace   Characters {
             namespace   Private {
                 struct  String_ModuleInit_ {
-					String_ModuleInit_ ()
-						: fBlockAllocationDependency (Memory::_BlockAllocated_.GetDependency ())
-					{
-					}
-					Execution::DependableModule::Dependency	fBlockAllocationDependency;
+                    String_ModuleInit_ ()
+                        : fBlockAllocationDependency (Memory::_BlockAllocated2_ ()) {
+                    }
+                    Execution::DependableModule::Dependency fBlockAllocationDependency;
                 };
             }
-	    }
+        }
     }
 }
 namespace   {

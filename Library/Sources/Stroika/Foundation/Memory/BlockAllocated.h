@@ -164,6 +164,7 @@ namespace   Stroika {
              *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
              */
             extern  Execution::DependableModule _BlockAllocated_;
+            Execution::DependableModule::Dependency _BlockAllocated2_ ();
 
 
         }
