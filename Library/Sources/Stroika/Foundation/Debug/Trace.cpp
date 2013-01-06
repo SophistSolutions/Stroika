@@ -84,7 +84,7 @@ namespace   {
 
 /*
  ********************************************************************************
- ********************************** Private::MODULE_INIT ************************
+ ********************************** TraceModuleData_ ****************************
  ********************************************************************************
  */
 namespace   {
@@ -109,12 +109,12 @@ namespace   {
         }
         return result;
     }
-    const string    sThreadPrintDashAdornment_  =   mkPrintDashAdornment_ ();
+    const string    sThreadPrintDashAdornment_			=   mkPrintDashAdornment_ ();
     bool            sDidOneTimePrimaryThreadMessage_    =   false;
 }
 
 
-Private::TraceModuleData_::TraceModuleData_ ()
+TraceModuleData_::TraceModuleData_ ()
 {
     Assert (sEmitTraceCritSec == nullptr);
     sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
@@ -129,7 +129,7 @@ Private::TraceModuleData_::TraceModuleData_ ()
 #endif
 }
 
-Private::TraceModuleData_::~TraceModuleData_ ()
+TraceModuleData_::~TraceModuleData_ ()
 {
     delete sEmitTraceCritSec;
     sEmitTraceCritSec = nullptr;

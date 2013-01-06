@@ -42,14 +42,12 @@ namespace   Stroika {
 
 
 
-            namespace   Private {
-                struct  TraceModuleData_ {
-                    TraceModuleData_ ();
-                    ~TraceModuleData_ ();
+            struct  TraceModuleData_ {
+                TraceModuleData_ ();
+                ~TraceModuleData_ ();
 
-                    Emitter fEmitter;
-                };
-            }
+                Emitter fEmitter;
+            };
 
 
         }
@@ -57,11 +55,11 @@ namespace   Stroika {
 }
 
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::Private::TraceModuleData_> _Stroika_Foundation_Debug_Trace_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::TraceModuleData_> _Stroika_Foundation_Debug_Trace_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get ()
 {
-    return Execution::ModuleInitializer<Private::TraceModuleData_>::Actual ().fEmitter;
+    return Execution::ModuleInitializer<TraceModuleData_>::Actual ().fEmitter;
 }
 #endif  /*_Stroika_Foundation_Debug_Trace_inl_*/

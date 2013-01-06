@@ -23,7 +23,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
 
-
             using   Characters::TString;
             using   Characters::TChar;
 
@@ -49,9 +48,7 @@ namespace   Stroika {
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
 #endif
 
-            namespace   Private {
-                struct  TraceModuleData_;
-            };
+            struct  TraceModuleData_;
 
             class   Emitter {
             private:
@@ -109,7 +106,7 @@ namespace   Stroika {
                 nonvirtual  void    DoEmit_ (const wchar_t* p, const wchar_t* e);
 
             private:
-                friend  struct  Private::TraceModuleData_;
+                friend  struct  TraceModuleData_;
             };
 
 
@@ -153,7 +150,6 @@ namespace   Stroika {
 #define DbgTrace    _NoOp_
 #endif
 #endif
-
 
 
         }
