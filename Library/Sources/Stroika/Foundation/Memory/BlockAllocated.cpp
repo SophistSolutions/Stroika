@@ -45,8 +45,7 @@ BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
 
 
 
-Execution::DependableModule Memory::_BlockAllocated_    =   Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependableModule ();
-Execution::DependableModule::Dependency Memory::_BlockAllocated2_ ()
+Execution::DependableModule::Dependency Memory::MakeModuleDependency_BlockAllocated ()
 {
     return Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependableModule ().GetDependency ();
 }

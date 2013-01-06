@@ -1352,3 +1352,29 @@ String  Stroika::Foundation::Characters::operator+ (const String& lhs, const Str
 
 
 
+
+
+
+/*
+ ********************************************************************************
+ *********** Characters::MakeModuleDependency_String ****************************
+ ********************************************************************************
+ */
+Execution::DependableModule::Dependency Characters::MakeModuleDependency_String ()
+{
+    return Execution::ModuleInitializer<String_ModuleInit_>::GetDependableModule ().GetDependency ();
+}
+
+
+
+
+
+/*
+ ********************************************************************************
+ ******************** Characters::String_ModuleInit_ ****************************
+ ********************************************************************************
+ */
+String_ModuleInit_::String_ModuleInit_ ()
+    : fBlockAllocationDependency (Memory::MakeModuleDependency_BlockAllocated ())
+{
+}

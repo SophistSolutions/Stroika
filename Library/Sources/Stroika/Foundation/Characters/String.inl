@@ -433,30 +433,24 @@ namespace   Stroika {
             }
 
 
+            /*
+            ********************************************************************************
+            ********************************* String_ModuleInit_ ***************************
+            ********************************************************************************
+            */
+            struct  String_ModuleInit_ {
+                String_ModuleInit_ ();
+                Execution::DependableModule::Dependency fBlockAllocationDependency;
+            };
+
+
         }
     }
 }
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace Memory {
-            extern  Execution::DependableModule _BlockAllocated_;
-            Execution::DependableModule::Dependency _BlockAllocated2_ ();
-        }
-        namespace   Characters {
-            namespace   Private {
-                struct  String_ModuleInit_ {
-                    String_ModuleInit_ ()
-                        : fBlockAllocationDependency (Memory::_BlockAllocated2_ ()) {
-                    }
-                    Execution::DependableModule::Dependency fBlockAllocationDependency;
-                };
-            }
-        }
-    }
-}
+
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Characters::Private::String_ModuleInit_>   _Stroika_Foundation_Characters_String_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Characters::String_ModuleInit_>   _Stroika_Foundation_Characters_String_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 #endif // _Stroika_Foundation_Characters_String_inl_

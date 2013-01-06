@@ -12,14 +12,23 @@ namespace   Stroika {
         namespace   Debug {
 
 
-            //  class   Trace::Emitter
+            /*
+             ********************************************************************************
+             ******************************* Trace::Emitter *********************************
+             ********************************************************************************
+             */
             template    <typename   CHARTYPE>
             inline  void    Emitter::EmitUnadornedText (const CHARTYPE* p)
             {
                 DoEmit_ (p);
             }
 
-            //  class   TraceContextBumper
+
+            /*
+             ********************************************************************************
+             ******************************* TraceContextBumper *****************************
+             ********************************************************************************
+             */
             inline  TraceContextBumper::TraceContextBumper ()
 #if     qDefaultTracingOn
                 : fDoEndMarker (false)
@@ -46,10 +55,7 @@ namespace   Stroika {
                 ~TraceModuleData_ ();
 
                 Emitter                                 fEmitter;
-
-                // Really SB STRING DEPENDENCY!!!
-                Execution::DependableModule::Dependency fBlockAllocationDependency;
-
+                Execution::DependableModule::Dependency fStringDependency;
             };
 
 
@@ -57,9 +63,11 @@ namespace   Stroika {
     }
 }
 
+
 namespace   {
     Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Debug::TraceModuleData_> _Stroika_Foundation_Debug_Trace_ModuleData_; // this object constructed for the CTOR/DTOR per-module side-effects
 }
+
 
 inline  Stroika::Foundation::Debug::Emitter&    Stroika::Foundation::Debug::Emitter::Get ()
 {

@@ -39,6 +39,7 @@
 
 #include    <string>
 
+#include    "../Execution/ModuleInit.h"
 #include    "../Memory/SharedByValue.h"
 #include    "TString.h"
 
@@ -1019,6 +1020,10 @@ namespace   Stroika {
 
 
 
+            /**
+             *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
+             */
+            Execution::DependableModule::Dependency MakeModuleDependency_String ();
 
         }
     }
