@@ -13,10 +13,11 @@
 /**
  * TODO
  *
- *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may cause trouble?
- *              Maybe just document in comments requirements (like fStart != nullptr).
+ *      @todo   Consider if we should add assertion usage here. Trouble is - interdependenceis may
+ *              cause trouble? Maybe just document in comments requirements (like fStart != nullptr).
  *
- *      @todo   Document new Module Dependency code, and verify there is as little wasted overhead as possible...
+ *      @todo   Better Document new Module Dependency code, and verify there is as little wasted overhead
+ *              as possible...
  */
 
 
@@ -27,55 +28,46 @@ namespace   Stroika {
             using   namespace   Configuration;
 
 
-
-
-
             /**
-             *  Use a canonical naming convention for DependableModule instances, and then you can reference them in other modules
-             *  to force module interdependencies.
-			 *
-
-			 *
-             *              MAYBE use new feature - wherw e have some kind of templated module reference that doesn't include
-             *              #include of hte target mdoule.
              *
-             *              The problem here is that this USES #include of a HEADER IN A MODULES HEADER as a proxy for
-             *              depependency on the module. The problem is - some modules depend on others in their CPP - NOT their
-             *              Header.
+             *  For the most part, using ModuleInitializer<> automatically takes care of all your module interdependencies
+             *  automatically, just by #including the right files. This is true because the #include dependency graph
+             *  matches the module dependency graph. But if you have module interdependencies which are not captured by
+             *  #include interdependencies, explicit ModuleDependency relationships between modules can be created
+             *  to force extra dependencies.
              *
-             *              Workaround is we need a way to NAME another module (nothing C++ to name modules) - and create a depednecy
-             *              which bumps the module init CTOR/counter, but without #inluing tha tmodule> But THAT in your header!.
+             *  To use, in a module which has dependencies on it (and a ModuleInitializer<>) - add a function
+             *          Execution::ModuleDependency MakeModuleDependency_PUTMODULENAMEHERE ();
              *
-             *              We can use a STYLZED name convetion and extern to reference other module depednency.
-             *              Something like
-             *                  IN BASE (one people deond on) module
-             *                      MmoduleDependable   _base_;         // burried in appropriate naemspaces
+             *      'PUTMODULENAMEHERE' only needs to be unique in the given namespace, as these functions can be placed
+             *  in namespaces (@see Characters::MakeModuleDependency_String () for example).
              *
-             *                  In DEPNEDING mODULE:
-             *                      extern MmoduleDependable    _base_;
-             *                      namespace { ModuleDepenecy _xxx_ (_base_) };
+             *  Then, in modules that depend on PUTMODULERNAMEHERE (but dont #include that module from their header), just
+             *  add
+             *                      Execution::ModuleDependency fPUTMODULERNAMEHEREDependency;
+             *  to the 'module data' object in its ModuleInitializer<>. For example:
+             *          struct  TraceModuleData_ {
+             *              TraceModuleData_ ();
+             *              ~TraceModuleData_ ();
              *
-             *                  This allows DEPENDING to depend on a name in BASE, but witout #including it, and let the linker to hte dependnecy resolinvg owrk.
-
+             *              Emitter                     fEmitter;
+             *              Execution::ModuleDependency fStringDependency;
+             *          };
+             *  and then initialize it with:
+             *      ...
+             *      TraceModuleData_::TraceModuleData_ ()
+             *          : fStringDependency (Characters::MakeModuleDependency_String ())
+             *          ....
+             *
+             *  The net effect is in the TraceModuleData_ - it will have an object which calls the 'start' and 'stop' methods of
+             *  ModuleInitializer<String_ModuleInit_>... accordingly - to force the proper order of initialization.
              */
-            class   DependableModule {
+            class   ModuleDependency {
             public:
-                class   Dependency {
-                public:
-                    Dependency (void (*start) (), void (*end) ());
-                    ~Dependency ();
+                ModuleDependency (void (*start) (), void (*end) ());
+                ~ModuleDependency ();
 
-                private:
-                    void (*fEnd) ();
-                };
-
-            public:
-                DependableModule (void (*start) (), void (*end) ());
-
-            public:
-                Dependency  GetDependency ();
             private:
-                void (*fStart) ();
                 void (*fEnd) ();
             };
 
@@ -128,7 +120,8 @@ namespace   Stroika {
              * This class makes sure that - if you construct a ModuleInitializer<> object in every module which might
              * use this module, then the is constructed at the earliest time, and destroyed at the latest.
              *
-             *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure sActualModuleInitializer_Storage_ properly aligned).
+             *      @todo   add alignas (or whatever the new C++11 support for alignment is) - to assure
+             *              sActualModuleInitializer_Storage_ properly aligned).
              *
              */
             template    <typename MODULE_DATA>
@@ -145,7 +138,7 @@ namespace   Stroika {
                 static  MODULE_DATA&  Actual ();
 
             public:
-                static  DependableModule    GetDependableModule ();
+                static  ModuleDependency   GetDependency ();
 
             private:
                 static  Byte                sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)];   // avoid actual memory allocation call - since only one of these
@@ -154,13 +147,12 @@ namespace   Stroika {
 
 
 
-
             /**
              *  Help to construct an object - and NEVER call its DTOR. Assure its
-            // constructed before use. Can be helpful for objects that don't need to be destroyed, but need to
-            // assure they are constructed before use.
-            // Only thought out using this at file scope to wrap construciton of an object.
-            */
+             *  constructed before use. Can be helpful for objects that don't need to be destroyed, but need to
+             *  assure they are constructed before use.
+             *  Only thought out using this at file scope to wrap construciton of an object.
+             */
             template    <typename   T>
             struct  StaticSingletonObjectConstructionHelper {
                 bool    fConstructed;

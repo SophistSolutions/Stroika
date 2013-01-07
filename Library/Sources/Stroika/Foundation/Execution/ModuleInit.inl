@@ -19,33 +19,17 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************** DependableModule::Dependency ***************************
+             ******************************** ModuleDependency ******************************
              ********************************************************************************
              */
-            inline  DependableModule::Dependency::Dependency (void (*start) (), void (*end) ())
+            inline  ModuleDependency::ModuleDependency (void (*start) (), void (*end) ())
                 : fEnd (end)
             {
                 (*start) ();
             }
-            inline  DependableModule::Dependency::~Dependency ()
+            inline  ModuleDependency::~ModuleDependency ()
             {
                 (*fEnd) ();
-            }
-
-
-            /*
-             ********************************************************************************
-             *********************************** DependableModule ***************************
-             ********************************************************************************
-             */
-            inline  DependableModule::DependableModule (void (*start) (), void (*end) ())
-                : fStart (start)
-                , fEnd (end)
-            {
-            }
-            inline  DependableModule::Dependency    DependableModule::GetDependency ()
-            {
-                return Dependency (fStart, fEnd);
             }
 
 
@@ -86,9 +70,9 @@ namespace   Stroika {
                 return *reinterpret_cast<MODULE_DATA*> (&sActualModuleInitializer_Storage_);
             }
             template    <typename   MODULE_DATA>
-            inline  DependableModule    ModuleInitializer<MODULE_DATA>::GetDependableModule ()
+            ModuleDependency   ModuleInitializer<MODULE_DATA>::GetDependency ()
             {
-                return DependableModule (Start, End);
+                return ModuleDependency (Start, End);
             }
             template    <typename MODULE_DATA>
             Byte    ModuleInitializer<MODULE_DATA>::sActualModuleInitializer_Storage_[sizeof (MODULE_DATA)]; // avoid actual memory allocation call - since only one of these

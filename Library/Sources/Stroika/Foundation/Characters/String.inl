@@ -440,7 +440,7 @@ namespace   Stroika {
             */
             struct  String_ModuleInit_ {
                 String_ModuleInit_ ();
-                Execution::DependableModule::Dependency fBlockAllocationDependency;
+                Execution::ModuleDependency fBlockAllocationDependency;
             };
 
 

@@ -163,7 +163,7 @@ namespace   Stroika {
             /**
              *  This can be referenced in your ModuleInit<> to force correct inter-module construction order.
              */
-            Execution::DependableModule::Dependency MakeModuleDependency_BlockAllocated ();
+            Execution::ModuleDependency MakeModuleDependency_BlockAllocated ();
 
 
         }

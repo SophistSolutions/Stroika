@@ -54,8 +54,8 @@ namespace   Stroika {
                 TraceModuleData_ ();
                 ~TraceModuleData_ ();
 
-                Emitter                                 fEmitter;
-                Execution::DependableModule::Dependency fStringDependency;
+                Emitter                     fEmitter;
+                Execution::ModuleDependency fStringDependency;
             };
 
 

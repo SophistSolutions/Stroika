@@ -1360,9 +1360,9 @@ String  Stroika::Foundation::Characters::operator+ (const String& lhs, const Str
  *********** Characters::MakeModuleDependency_String ****************************
  ********************************************************************************
  */
-Execution::DependableModule::Dependency Characters::MakeModuleDependency_String ()
+Execution::ModuleDependency Characters::MakeModuleDependency_String ()
 {
-    return Execution::ModuleInitializer<String_ModuleInit_>::GetDependableModule ().GetDependency ();
+    return Execution::ModuleInitializer<String_ModuleInit_>::GetDependency ();
 }
 
 
