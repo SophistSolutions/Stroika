@@ -33,9 +33,43 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+            inline  Optional<T>::Optional (const T && from)
+                : fValue_ (new T (from))
+            {
+            }
+            template    <typename T>
             inline  Optional<T>::Optional (const Optional<T>& from)
                 : fValue_ (from.fValue_)
             {
+            }
+            template    <typename T>
+            inline  Optional<T>::Optional (const Optional<T> && from)
+                : fValue_ (from.fValue_)
+            {
+            }
+            template    <typename T>
+            inline  Optional<T>&   Optional<T>::operator= (const T& from)
+            {
+                fValue_ = shared_ptr<T> (new T (from));
+                return *this;
+            }
+            template    <typename T>
+            inline  Optional<T>&   Optional<T>::operator= (const T && from)
+            {
+                fValue_ = shared_ptr<T> (new T (from));
+                return *this;
+            }
+            template    <typename T>
+            inline  Optional<T>&   Optional<T>::operator= (const Optional<T>& from)
+            {
+                fValue_ = from.fValue_;
+                return *this;
+            }
+            template    <typename T>
+            inline  Optional<T>&   Optional<T>::operator= (const Optional<T> && from)
+            {
+                fValue_ = from.fValue_;
+                return *this;
             }
             template    <typename T>
             inline  void    Optional<T>::clear ()

@@ -4,6 +4,10 @@ TODO (Foundation::Containers)
 	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
 			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 
+	(o)		Sent email to Sterl/Kdj to review - but I think I can completely lose patching code
+			and stuff to maintain list of current iterators!
+			--LGP 2013-01-19
+
 	(o)		Probably ready todo Sequence<> next.
 
 	(o)		See comment "Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
