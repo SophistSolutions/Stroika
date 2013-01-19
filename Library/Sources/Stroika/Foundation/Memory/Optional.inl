@@ -34,7 +34,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const T && from)
-                : fValue_ (new T (from))
+                : fValue_ (new T (std::move (from)))
             {
             }
             template    <typename T>
@@ -44,7 +44,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const Optional<T> && from)
-                : fValue_ (from.fValue_)
+                : fValue_ (std::move (from.fValue_))
             {
             }
             template    <typename T>
@@ -56,7 +56,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const T && from)
             {
-                fValue_ = shared_ptr<T> (new T (from));
+                fValue_ = shared_ptr<T> (new T (std::move (from)));
                 return *this;
             }
             template    <typename T>
@@ -68,7 +68,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const Optional<T> && from)
             {
-                fValue_ = from.fValue_;
+                fValue_ = std::move (from.fValue_);
                 return *this;
             }
             template    <typename T>

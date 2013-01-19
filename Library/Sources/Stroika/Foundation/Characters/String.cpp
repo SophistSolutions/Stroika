@@ -254,7 +254,7 @@ namespace   {
 
                 // cannot insert pointer FROM THIS REP! Doing so would be buggy! MAYBE I need to handle this with special case logic - before I do the resize?
                 //      -- LGP 2011-12-04
-                Assert (not (_fStart <= reinterpret_cast<const wchar_t*> (srcStart) && reinterpret_cast<const wchar_t*> (srcStart) <= _fEnd));
+                Assert (not (_fStart <= reinterpret_cast<const wchar_t*> (srcStart) and reinterpret_cast<const wchar_t*> (srcStart) <= _fEnd));
 
                 size_t      origLen     =   GetLength ();
                 size_t      amountToAdd =   (srcEnd - srcStart);
@@ -580,7 +580,7 @@ String::String (const _SharedRepByValuePtr::shared_ptr_type& rep)
 }
 
 String::String (const _SharedRepByValuePtr::shared_ptr_type && rep)
-    : _fRep (rep, _Rep_Cloner ())
+    : _fRep (std::move (rep), _Rep_Cloner ())
 {
     RequireNotNull (rep.get ());
 }
