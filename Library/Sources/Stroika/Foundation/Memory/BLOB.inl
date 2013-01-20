@@ -21,16 +21,6 @@ namespace   Stroika {
         namespace   Memory {
 
 
-            struct  BLOB::_IRep {
-                _IRep ();
-                virtual ~_IRep ();
-                virtual pair<const Byte*, const Byte*>   GetBounds () const =    0;
-
-                NO_COPY_CONSTRUCTOR(_IRep);
-                NO_ASSIGNMENT_OPERATOR(_IRep);
-            };
-
-
             /*
              ********************************************************************************
              *********************************** BLOB::_IRep ********************************
@@ -82,6 +72,14 @@ namespace   Stroika {
             }
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
                 : fRep_ (DEBUG_NEW BasicRep_ (start, end))
+            {
+            }
+            inline  BLOB::BLOB (const shared_ptr<_IRep>& rep)
+                : fRep_ (rep)
+            {
+            }
+            inline  BLOB::BLOB (shared_ptr<_IRep>&& rep)
+                : fRep_ (std::move (rep))
             {
             }
             template    <>

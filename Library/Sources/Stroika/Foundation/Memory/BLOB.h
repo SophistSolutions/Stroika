@@ -34,7 +34,6 @@
  *      @todo   Fix qWierdPrivateBLOBBug
  *
  *
- *
  */
 
 
@@ -81,6 +80,7 @@ namespace   Stroika {
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
                 explicit BLOB (const shared_ptr<_IRep>& rep);
+                explicit BLOB (shared_ptr<_IRep>&& rep);
 
             public:
                 /**
@@ -161,9 +161,22 @@ namespace   Stroika {
             template    <>
             vector<Byte> BLOB::As () const;
 
+
+			/**
+			 * This abstract interface defines the behavior of a BLOB.
+			 */
+			struct  BLOB::_IRep {
+                _IRep ();
+                virtual ~_IRep ();
+                virtual pair<const Byte*, const Byte*>   GetBounds () const =    0;
+
+                NO_COPY_CONSTRUCTOR(_IRep);
+                NO_ASSIGNMENT_OPERATOR(_IRep);
+            };
+
+
             template    <>
             Streams::BinaryInputStream BLOB::As () const;
-
 
 
         }
