@@ -19,30 +19,35 @@
 
 
 
-/*
+/**
  * TODO:
  *
- *      o   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
- *          and possibly use that to replace windows formatting APIs? The problem with this is that the Windows
- *          ones seem to currntly produce BETTER answers (more closely follow changes to the control panel regional settings).
- *          MAYBE its a bug with the VisStudio locale stuff or maybe I'm not using it properly. Not super high priority to
- *          unravalel - but would be nice to lose (most of) the Windoze-specific code.
+ *      @todo   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
+ *              and possibly use that to replace windows formatting APIs? The problem with this is
+ *              that the Windows ones seem to currntly produce BETTER answers (more closely follow
+ *              changes to the control panel regional settings). MAYBE its a bug with the VisStudio
+ *              locale stuff or maybe I'm not using it properly. Not super high priority to
+ *              unravalel - but would be nice to lose (most of) the Windoze-specific code.
  *
- *      o   Some places I've found on the net claim one date for start of gregorgian calendar and otehrs claim otehr date(s). Really all I care about
- *          is for what range of dates is my currnet date logic valid, and thats what I'll use. But this needs some digging.
+ *      @todo   Some places I've found on the net claim one date for start of gregorgian calendar
+ *              and others claim other date(s). Really all I care about
+ *              is for what range of dates is my currnet date logic valid, and thats what I'll use.
+ *              But this needs some digging.
  *
- *      o   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
+ *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
- *      o   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we should support BOTH here?
- *          Maybe where they differ doesn't matter for this class?
- *          o   Replace (research first) use of name XML here with iso8601.
- *              + maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
- *                  XML really is its own - nearly identical to iso8601, but see deviations...
- *                  Maybe have iso8601, and XML support (and for our primitive purposes maybe the com eto the same thing?)
+ *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we
+ *              should support BOTH here?
+ *              Maybe where they differ doesn't matter for this class?
+ *              o   Replace (research first) use of name XML here with iso8601.
+ *                  + maybe not quite. See http://www.w3.org/TR/xmlschema-2/#isoformats
+ *                      XML really is its own - nearly identical to iso8601, but see deviations...
+ *                      Maybe have iso8601, and XML support (and for our primitive purposes maybe the
+ *                      com eto the same thing?)
  *
- *      o   It would be highly desirable to allow this date code to represent lareger/smaller dates (without the julian calendar restriction).
- *          That maybe a longer term issue.
- *
+ *      @todo   It would be highly desirable to allow this date code to represent lareger/smaller dates
+ *              (without the julian calendar restriction).
+ *              That maybe a longer term issue.
  */
 
 
@@ -54,6 +59,8 @@ namespace   Stroika {
             using   Characters::String;
 
 
+            /**
+             */
 enum class  DayOfWeek : uint8_t {
                 eMonday = 1,
                 eTuesday = 2,
@@ -69,7 +76,8 @@ enum class  DayOfWeek : uint8_t {
             };
 
 
-
+            /**
+             */
 enum class  MonthOfYear : uint8_t {
                 eEmptyMonthOfYear   = 0,        // only zero if date empty
                 eJanuary = 1,
@@ -88,12 +96,12 @@ enum class  MonthOfYear : uint8_t {
                 eLastMonthOfYear = eDecember,
 
                 // Can do for (i = eSTART; i != eEND; i = Inc (i));
-                eSTART = eFirstMonthOfYear,
-                eEND = eLastMonthOfYear + 1,
+                Define_Start_End_Count (eFirstMonthOfYear, eLastMonthOfYear)
             };
 
 
-
+            /**
+             */
 enum  class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
                 e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
@@ -104,32 +112,32 @@ enum  class     DayOfMonth : uint8_t {
                 eLastDayOfMonth = 31,
 
                 // Can do for (i = eSTART; i != eEND; i = Inc (i));
-                eSTART = eFirstDayOfMonth,
-                eEND = eLastDayOfMonth + 1,
+                Define_Start_End_Count (eFirstDayOfMonth, eLastDayOfMonth)
             };
 
 
-
+            /**
+             */
 enum class  DayOfYear : uint16_t {
                 eFirstDayOfYear = 1,
                 eLastDayOfYear = 366,
+                Define_Start_End_Count (eFirstDayOfYear, eLastDayOfYear)
             };
 
 
+            /**
+             */
 enum class Year : short {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
 
                 // Can do for (i = eSTART; i != eEND; i = Inc (i));
-                eSTART = eFirstYear,
-                eEND = eLastfYear + 1,
+                Define_Start_End_Count (eFirstYear, eLastfYear)
             };
 
 
-
-
-            /*
+            /**
              * Description:
              * Based on Stroika code from 1992 (Date.hh/Date.cpp). From that - we have the comment:
              *
@@ -151,9 +159,10 @@ enum class Year : short {
              *          NB: Date implies NO NOTION of timezone.
              *
              *      'empty' concept:
-             *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds or days (JulienRep),
-             *          treat empty as Date::kMin. For format routine, return empty string. And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin.
-             *          This is a bit like the floating point concept of negative infinity.
+             *          Treat it as DISTINCT from any other Date. However, when converting it to a number of seconds
+             *          or days (JulienRep), treat empty as Date::kMin. For format routine, return empty string.
+             *          And for COMPARIONS (=,<,<=, etc) treat it as LESS THAN Date::kMin. This is a bit like the floating
+             *          point concept of negative infinity.
              */
             class   Date {
             public:
@@ -165,11 +174,15 @@ enum class Year : short {
                 class   FormatException;
 
             public:
+                /**
+                 */
                 Date ();
                 explicit Date (JulianRepType julianRep);
                 explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
+                /**
+                 */
             enum class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
@@ -216,16 +229,24 @@ enum class Year : short {
 #endif
 
             public:
-                nonvirtual  Date    AddDays (int dayCount);
+                /**
+                 * Returns a new Date object based on this Date, with 'dayCount' days added.
+                 *
+                 *  In the special case where Date is 'empty' - the starting reference (for adding dayCount)
+                 *  is DateTime::GetToday ();
+                 */
+                nonvirtual  Date    AddDays (int dayCount) const;
 
             public:
-                /*
+                /**
                  * Note - in the specail case of 'empty' - this returns Date::kMin.GetJulianRep ()
                  */
                 nonvirtual  JulianRepType   GetJulianRep () const;
 
             public:
-                // returns number of days since this point - relative to NOW. Never less than zero
+                /**
+                 * returns number of days since this point - relative to NOW. Never less than zero
+                 */
                 nonvirtual  JulianRepType   DaysSince () const;
 
             public:
@@ -242,7 +263,6 @@ enum class Year : short {
             public:
                 FormatException ();
             };
-
 
 
             bool operator< (const Date& lhs, const Date& rhs);

@@ -55,6 +55,8 @@
  *              (and we did some kind of cache/ptr think like with GC'd langauges). BUt then I can always use
  *              SharedByValue<> template. Maybe a boondoggle?
  *
+ *              This is an ESPECIALLY good idea since we've now done this for the 'Date' class.
+ *
  *      @todo   Future direction � consider representing as big struct
  *          o   Like with STRUCT DATETIME or struct tm
  *              o   Int year

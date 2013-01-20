@@ -425,14 +425,12 @@ String Date::LongFormat (LCID lcid) const
 }
 #endif
 
-Date    Date::AddDays (int dayCount)
+Date    Date::AddDays (int dayCount) const
 {
-    if (empty ()) {
-        // then assume was supposed to be relative to today
-        *this = DateTime::GetToday ();
-    }
-    fJulianDateRep_ += dayCount;
-    return *this;
+    // then assume was supposed to be relative to today
+    Date    result  =   empty () ? DateTime::GetToday () : *this;
+    result.fJulianDateRep_ += dayCount;
+    return result;
 }
 
 Date::JulianRepType Date::DaysSince () const
