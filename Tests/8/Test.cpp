@@ -114,10 +114,10 @@ namespace   {
             Date    d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
-            d.AddDays (4);
+            d = d.AddDays (4);
             VERIFY_ROUNDTRIP_XML_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-08");
-            d.AddDays (-4);
+            d = d.AddDays (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
         }
