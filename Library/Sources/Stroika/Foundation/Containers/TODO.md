@@ -7,6 +7,9 @@ TODO (Foundation::Containers)
 	(o)		Sent email to Sterl/Kdj to review - but I think I can completely lose patching code
 			and stuff to maintain list of current iterators!
 			--LGP 2013-01-19
+			Review comments from Sterl/KDJ - but gist is we really DO need the patching code. Just
+			document the details of hte conversaiton and WHY/WHERE we need patching,a dn that it
+			only appliest o letter, and not envelope!
 
 	(o)		Probably ready todo Sequence<> next.
 
