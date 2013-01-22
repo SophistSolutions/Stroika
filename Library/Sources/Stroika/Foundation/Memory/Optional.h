@@ -15,15 +15,15 @@
  *
  *
  *      @todo   Very serious bug with existing code! Copy semantics are WRONG (copying an Optional - and tehn changing
- *				the value of the original should NOT change the value of the new copy!!!)
+ *              the value of the original should NOT change the value of the new copy!!!)
  *
- *				Instead - allocate object  by REGULAR pointer, and implement copy code properly! Get rid of shared_ptr
- *				stuff. And at same time - as performance optimization, add new feature to BlockAllocated<T>
- *				where you have BLOCKALLOCATED(T) CTOR, and store such value, and operator T return value, so it can
- *				be used directly.
+ *              Instead - allocate object  by REGULAR pointer, and implement copy code properly! Get rid of shared_ptr
+ *              stuff. And at same time - as performance optimization, add new feature to BlockAllocated<T>
+ *              where you have BLOCKALLOCATED(T) CTOR, and store such value, and operator T return value, so it can
+ *              be used directly.
  *
- *				THEN - HERE - replace shared_ptr<T> with BlockAllocated<T> - which will mean that for use in OPTIONAL
- *				any T will have optimized memory allocation - even if the base class T does NOT!!!!
+ *              THEN - HERE - replace shared_ptr<T> with BlockAllocated<T> - which will mean that for use in OPTIONAL
+ *              any T will have optimized memory allocation - even if the base class T does NOT!!!!
  *
  *
  */
