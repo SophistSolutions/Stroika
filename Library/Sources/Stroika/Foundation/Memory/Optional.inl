@@ -105,31 +105,38 @@ namespace   Stroika {
             {
                 Require (not empty ())
                 AssertNotNull (fValue_);
-                return fValue_;
+                EnsureNotNull (fValue_->get ());
+                return fValue_->get ();
             }
             template    <typename T>
             inline  T* Optional<T>::operator-> ()
             {
                 Require (not empty ());
                 AssertNotNull (fValue_);
+                EnsureNotNull (fValue_->get ());
                 return fValue_->get ();
             }
             template    <typename T>
             inline  const T& Optional<T>::operator* () const
             {
                 Require (not empty ())
+                AssertNotNull (fValue_);
+                EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
             }
             template    <typename T>
             inline  T& Optional<T>::operator* ()
             {
                 Require (not empty ())
+                AssertNotNull (fValue_);
+                EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
             }
             template    <typename T>
             inline  Optional<T>::operator T () const
             {
                 Require (not empty ())
+                AssertNotNull (fValue_);
                 return *fValue_;
             }
             template    <typename T>
