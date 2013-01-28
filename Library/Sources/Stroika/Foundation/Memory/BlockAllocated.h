@@ -16,6 +16,9 @@
 /**
  *  \file
  *
+ *  @todo   Document how you can use USE_BLOCK_ALLOCATION style usage, or explicit BlockAllocated<T>
+ *          usage (as in Memory::Optional).
+ *
  *  @todo   Fix all the fValue_ code - clean it up, put it in INL file, and think through more carefully
  *          CTORs etc - to make it act more like a "T" type.
  *

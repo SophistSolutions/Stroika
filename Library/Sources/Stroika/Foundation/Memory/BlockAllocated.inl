@@ -53,22 +53,22 @@ namespace   Stroika {
             namespace   Private {
                 // This must be included here to keep genclass happy, since the .cc file will not be included
                 // in the genclassed .cc file....
-                inline  void**  GetMem_Util_ (const size_t sz)
+                inline  void**  GetMem_Util_ (constexpr size_t sz)
                 {
-                    Assert (sz >= sizeof (void*));  //  cuz we overwrite first sizeof(void*) for link
+                    constexpr size_t    useSZ = max (sz, sizeof (void*));   //  cuz we overwrite first sizeof(void*) for link
 
                     /*
-                        * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
-                        * a chunk which memory allocator can do a good job on.
-                        */
-                    const   size_t  kTargetMallocSize   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
-                    const   size_t  kChunks = max (static_cast<size_t> (kTargetMallocSize / sz), static_cast<size_t> (10));
+                     * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
+                     * a chunk which memory allocator can do a good job on.
+                     */
+                    constexpr   size_t  kTargetMallocSize   =   16360;                  // 16384 = 16K - leave a few bytes sluff...
+                    const       size_t  kChunks = max (static_cast<size_t> (kTargetMallocSize / useSZ), static_cast<size_t> (10));
 
                     /*
-                        * Please note that the following line is NOT a memory leak. Please look at the
-                        * Led FAQ question#29 - "Does Led have any memory leaks?
-                        * How does qAllowBlockAllocation affect memory leaks?"
-                        */
+                     * Please note that the following line is NOT a memory leak. Please look at the
+                     * Led FAQ question#29 - "Does Led have any memory leaks?
+                     * How does qAllowBlockAllocation affect memory leaks?"
+                     */
                     void**  newLinks    =   (void**)DEBUG_NEW char [kChunks * sz];
                     void**  curLink     =   newLinks;
                     for (size_t i = 1; i < kChunks; i++) {
@@ -126,63 +126,65 @@ namespace   Stroika {
                     *   NB: For Apples compiler (by far our worst at optimizing), this does successfully
                     *       get translated into just one variable reference (C 3.2.3, CFront 3.2, ETO #8, Thursday, November 5, 1992 1:51:42 PM)
                     */
-                if (sizeof (T) <= 4)            {   return (sSizeof_4_NextLink);        }
-                else if (sizeof (T) <= 8)       {   return (sSizeof_8_NextLink);        }
-                else if (sizeof (T) <= 12)      {   return (sSizeof_12_NextLink);       }
-                else if (sizeof (T) <= 16)      {   return (sSizeof_16_NextLink);       }
-                else if (sizeof (T) <= 20)      {   return (sSizeof_20_NextLink);       }
-                else if (sizeof (T) <= 24)      {   return (sSizeof_24_NextLink);       }
-                else if (sizeof (T) <= 28)      {   return (sSizeof_28_NextLink);       }
-                else if (sizeof (T) <= 32)      {   return (sSizeof_32_NextLink);       }
-                else if (sizeof (T) <= 36)      {   return (sSizeof_36_NextLink);       }
-                else if (sizeof (T) <= 40)      {   return (sSizeof_40_NextLink);       }
-                else if (sizeof (T) <= 44)      {   return (sSizeof_44_NextLink);       }
-                else if (sizeof (T) <= 48)      {   return (sSizeof_48_NextLink);       }
-                else if (sizeof (T) <= 52)      {   return (sSizeof_52_NextLink);       }
-                else if (sizeof (T) <= 56)      {   return (sSizeof_56_NextLink);       }
-                else if (sizeof (T) <= 60)      {   return (sSizeof_60_NextLink);       }
-                else if (sizeof (T) <= 64)      {   return (sSizeof_64_NextLink);       }
-                else if (sizeof (T) <= 68)      {   return (sSizeof_68_NextLink);       }
-                else if (sizeof (T) <= 72)      {   return (sSizeof_72_NextLink);       }
-                else if (sizeof (T) <= 76)      {   return (sSizeof_76_NextLink);       }
-                else if (sizeof (T) <= 80)      {   return (sSizeof_80_NextLink);       }
-                else                            {   return (sNextLink);                 }
+                if (sizeof (void*) <= 4 and sizeof (T) <= 4)        {   return (sSizeof_4_NextLink);        }
+                else if (sizeof (void*) <= 8 and sizeof (T) <= 8)   {   return (sSizeof_8_NextLink);        }
+                else if (sizeof (T) <= 12)                          {   return (sSizeof_12_NextLink);       }
+                else if (sizeof (T) <= 16)                          {   return (sSizeof_16_NextLink);       }
+                else if (sizeof (T) <= 20)                          {   return (sSizeof_20_NextLink);       }
+                else if (sizeof (T) <= 24)                          {   return (sSizeof_24_NextLink);       }
+                else if (sizeof (T) <= 28)                          {   return (sSizeof_28_NextLink);       }
+                else if (sizeof (T) <= 32)                          {   return (sSizeof_32_NextLink);       }
+                else if (sizeof (T) <= 36)                          {   return (sSizeof_36_NextLink);       }
+                else if (sizeof (T) <= 40)                          {   return (sSizeof_40_NextLink);       }
+                else if (sizeof (T) <= 44)                          {   return (sSizeof_44_NextLink);       }
+                else if (sizeof (T) <= 48)                          {   return (sSizeof_48_NextLink);       }
+                else if (sizeof (T) <= 52)                          {   return (sSizeof_52_NextLink);       }
+                else if (sizeof (T) <= 56)                          {   return (sSizeof_56_NextLink);       }
+                else if (sizeof (T) <= 60)                          {   return (sSizeof_60_NextLink);       }
+                else if (sizeof (T) <= 64)                          {   return (sSizeof_64_NextLink);       }
+                else if (sizeof (T) <= 68)                          {   return (sSizeof_68_NextLink);       }
+                else if (sizeof (T) <= 72)                          {   return (sSizeof_72_NextLink);       }
+                else if (sizeof (T) <= 76)                          {   return (sSizeof_76_NextLink);       }
+                else if (sizeof (T) <= 80)                          {   return (sSizeof_80_NextLink);       }
+                else                                                {   return (sNextLink);                 }
             }
+            /*
+             * NB: always return a pointer sized >= sizeof (void*) - even if n < sizeof (void*)
+             */
             template    <typename   T>  inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
             {
                 using   namespace   Private;
 
                 /*
-                    * It is hoped that since all these comparisons can be evaluated at compile
-                    * time, they will be. Then this code reduces to just an assignement to a single
-                    * global variable. That should inline nicely.
-                    */
-                if (sizeof (T) <= 4)            {   sSizeof_4_NextLink = nextLink;      }
-                else if (sizeof (T) <= 8)       {   sSizeof_8_NextLink = nextLink;      }
-                else if (sizeof (T) <= 12)      {   sSizeof_12_NextLink = nextLink;     }
-                else if (sizeof (T) <= 16)      {   sSizeof_16_NextLink = nextLink;     }
-                else if (sizeof (T) <= 20)      {   sSizeof_20_NextLink = nextLink;     }
-                else if (sizeof (T) <= 24)      {   sSizeof_24_NextLink = nextLink;     }
-                else if (sizeof (T) <= 28)      {   sSizeof_28_NextLink = nextLink;     }
-                else if (sizeof (T) <= 32)      {   sSizeof_32_NextLink = nextLink;     }
-                else if (sizeof (T) <= 36)      {   sSizeof_36_NextLink = nextLink;     }
-                else if (sizeof (T) <= 40)      {   sSizeof_40_NextLink = nextLink;     }
-                else if (sizeof (T) <= 44)      {   sSizeof_44_NextLink = nextLink;     }
-                else if (sizeof (T) <= 48)      {   sSizeof_48_NextLink = nextLink;     }
-                else if (sizeof (T) <= 52)      {   sSizeof_52_NextLink = nextLink;     }
-                else if (sizeof (T) <= 56)      {   sSizeof_56_NextLink = nextLink;     }
-                else if (sizeof (T) <= 60)      {   sSizeof_60_NextLink = nextLink;     }
-                else if (sizeof (T) <= 64)      {   sSizeof_64_NextLink = nextLink;     }
-                else if (sizeof (T) <= 68)      {   sSizeof_68_NextLink = nextLink;     }
-                else if (sizeof (T) <= 72)      {   sSizeof_72_NextLink = nextLink;     }
-                else if (sizeof (T) <= 76)      {   sSizeof_76_NextLink = nextLink;     }
-                else if (sizeof (T) <= 80)      {   sSizeof_80_NextLink = nextLink;     }
-                else                            {   sNextLink = nextLink;               }
+                 * It is hoped that since all these comparisons can be evaluated at compile
+                 * time, they will be. Then this code reduces to just an assignement to a single
+                 * global variable. That should inline nicely.
+                 */
+                if (sizeof (void*) <= 4 and sizeof (T) <= 4)        {   sSizeof_4_NextLink = nextLink;      }
+                else if (sizeof (void*) <= 8 and sizeof (T) <= 8)   {   sSizeof_8_NextLink = nextLink;      }
+                else if (sizeof (T) <= 12)                          {   sSizeof_12_NextLink = nextLink;     }
+                else if (sizeof (T) <= 16)                          {   sSizeof_16_NextLink = nextLink;     }
+                else if (sizeof (T) <= 20)                          {   sSizeof_20_NextLink = nextLink;     }
+                else if (sizeof (T) <= 24)                          {   sSizeof_24_NextLink = nextLink;     }
+                else if (sizeof (T) <= 28)                          {   sSizeof_28_NextLink = nextLink;     }
+                else if (sizeof (T) <= 32)                          {   sSizeof_32_NextLink = nextLink;     }
+                else if (sizeof (T) <= 36)                          {   sSizeof_36_NextLink = nextLink;     }
+                else if (sizeof (T) <= 40)                          {   sSizeof_40_NextLink = nextLink;     }
+                else if (sizeof (T) <= 44)                          {   sSizeof_44_NextLink = nextLink;     }
+                else if (sizeof (T) <= 48)                          {   sSizeof_48_NextLink = nextLink;     }
+                else if (sizeof (T) <= 52)                          {   sSizeof_52_NextLink = nextLink;     }
+                else if (sizeof (T) <= 56)                          {   sSizeof_56_NextLink = nextLink;     }
+                else if (sizeof (T) <= 60)                          {   sSizeof_60_NextLink = nextLink;     }
+                else if (sizeof (T) <= 64)                          {   sSizeof_64_NextLink = nextLink;     }
+                else if (sizeof (T) <= 68)                          {   sSizeof_68_NextLink = nextLink;     }
+                else if (sizeof (T) <= 72)                          {   sSizeof_72_NextLink = nextLink;     }
+                else if (sizeof (T) <= 76)                          {   sSizeof_76_NextLink = nextLink;     }
+                else if (sizeof (T) <= 80)                          {   sSizeof_80_NextLink = nextLink;     }
+                else                                                {   sNextLink = nextLink;               }
             }
 #endif
             template    <typename   T>  inline  void*   BlockAllocated<T>::operator new (size_t n)
             {
-                Assert (sizeof (T) >= sizeof (void*));  //  cuz we overwrite first sizeof(void*) for link
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
