@@ -174,7 +174,7 @@ namespace   Stroika {
                 if (rhs.fValue_ == nullptr) {
                     return false;
                 }
-                return *fValue_ == *rhs.fValue_;
+                return static_cast<T> (*fValue_) == static_cast<T> (*rhs.fValue_);
             }
             template    <typename T>
             inline  bool    Optional<T>::operator!= (const Optional<T>& rhs) const

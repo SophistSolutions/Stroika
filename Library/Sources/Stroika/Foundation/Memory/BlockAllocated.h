@@ -84,6 +84,11 @@ namespace   Stroika {
                 static  void    operator delete (void* p);
 
             public:
+                /**
+                 * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
+                 *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
+                 *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
+                 */
                 BlockAllocated () : fValue_ () {}
                 BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
                 BlockAllocated (const T& t) : fValue_ (t) {}
