@@ -48,7 +48,7 @@ namespace   Stroika {
             namespace   Private {
                 // This must be included here to keep genclass happy, since the .cc file will not be included
                 // in the genclassed .cc file....
-                inline  void**  GetMem_Util_ (constexpr size_t sz)
+                inline  void**  GetMem_Util_ (size_t sz)
                 {
                     constexpr size_t    useSZ = max (sz, sizeof (void*));   //  cuz we overwrite first sizeof(void*) for link
 
