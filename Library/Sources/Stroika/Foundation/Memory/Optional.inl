@@ -80,6 +80,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (Optional<T> && from)
             {
+                delete fValue_;
                 fValue_ = from.fValue_;
                 from.fValue_ = nullptr;
                 return *this;

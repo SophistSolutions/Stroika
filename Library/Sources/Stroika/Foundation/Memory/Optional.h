@@ -14,7 +14,10 @@
 
 /**
  * TODO:
+ *  @todo       Implement Optional<T>::compare() - returning int - and redo operator< etc based on that
+ *              one common subroutine (hopefully simpler).
  *
+ *  @todo       Cleanup doxygen comments (especailly require stuff)
  */
 
 namespace   Stroika {
@@ -36,9 +39,9 @@ namespace   Stroika {
              *  runs the risk of producing surprising expceitons (based on experience),
              *  we treat dereferencing an empty Optional<T> as an Assertion Erorr.
              *
-             *  Thread-Safety: Different instances of Optional<T> can be freely used  in different threads,
-             *  but a given instance can only be safely used (read + write, or write+write) from a single thread
-             *  at a time.
+             *  Thread-Safety:  Different instances of Optional<T> can be freely used  in different threads,
+             *                  but a given instance can only be safely used (read + write, or write+write)
+             *                  from a single thread at a time.
              */
             template    <typename T>
             class   Optional {
@@ -107,10 +110,9 @@ namespace   Stroika {
 
             private:
                 /*
-                 *  Note: the implementation here is safe via copying - because we never WRITE to the
-                 *  value stored in the shared_ptr<T> and never return a copy to someone who could,
-                 *  so the value can never change. One changes an Optional<T> by creating a whole new
-                 *  value object and assigning it.
+                 *  Carefully manage the storage ourselves - not doing shared copy. No shared copy (copyonwrite) because these
+                 *  are rarely copied, and this is cheaper (since can use block-allocation - even if type T not
+                 *  block allocated) - and no extra count infrastructure, or threadafe locking.
                  */
                 BlockAllocated<T>*  fValue_;
             };
