@@ -64,8 +64,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (T && from)
             {
-                fValue_ = from.fValue_;
-                from.fValue_ = nullptr;
+                fValue_ = new BlockAllocated<T> (std::move (from));
                 return *this;
             }
             template    <typename T>
