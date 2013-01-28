@@ -16,8 +16,8 @@
 /**
  *  \file
  *
- *	@todo	Fix all the fValue_ code - clean it up, put it in INL file, and think through more carefully
- *			CTORs etc - to make it act more like a "T" type.
+ *  @todo   Fix all the fValue_ code - clean it up, put it in INL file, and think through more carefully
+ *          CTORs etc - to make it act more like a "T" type.
  *
  *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
  *          should force block allocation, or ONLY block-allocate if size is appropriate to one of our
