@@ -50,7 +50,7 @@ namespace   Stroika {
                 // in the genclassed .cc file....
                 inline  void**  GetMem_Util_ (size_t sz)
                 {
-                    constexpr size_t    useSZ = max (sz, sizeof (void*));   //  cuz we overwrite first sizeof(void*) for link
+                    const size_t    useSZ = max (sz, sizeof (void*));   //  cuz we overwrite first sizeof(void*) for link
 
                     /*
                      * Picked particular kTargetMallocSize since with malloc overhead likely to turn out to be
