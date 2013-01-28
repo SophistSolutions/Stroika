@@ -38,11 +38,6 @@ namespace   Stroika {
 
                 inline  CriticalSection&    GetCritSection_ ()
                 {
-#if     qDESIGN_FLAW_WITH_MODULE_INIT_DEPENDENCIES_FROM_CPP_FILE
-                    if (sCritSection_ == nullptr) {
-                        sCritSection_ = new CriticalSection ();
-                    }
-#endif
                     AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
                     return *sCritSection_;
                 }
@@ -69,10 +64,10 @@ namespace   Stroika {
                      * Led FAQ question#29 - "Does Led have any memory leaks?
                      * How does qAllowBlockAllocation affect memory leaks?"
                      */
-                    void**  newLinks    =   (void**)DEBUG_NEW char [kChunks * sz];
+                    void**  newLinks    =   (void**)DEBUG_NEW char [kChunks * useSZ];
                     void**  curLink     =   newLinks;
                     for (size_t i = 1; i < kChunks; i++) {
-                        *curLink = &(((char*)newLinks)[i * sz]);
+                        *curLink = &(((char*)newLinks)[i * useSZ]);
                         curLink = (void**)*curLink;
                     }
                     *curLink = nullptr;     // nullptr-terminate the link list
@@ -82,14 +77,14 @@ namespace   Stroika {
 
 
                 /*
-                    *       In order to reduce fragmentation, we allocate all chunks of common sizes out of
-                    *   the same pool. Assuming the compiler is able to inline the references to these
-                    *   below, there is really no cost in adding more. I picked the ones I thought most
-                    *   likely to come up, but adding more should be just fine - strictly a win.
-                    *
-                    *       Don't bother implementing Block_Alloced_sizeof_N_GetMems() cuz flunging will
-                    *   genericly give us the same code-sharing effect.
-                    */
+                 *       In order to reduce fragmentation, we allocate all chunks of common sizes out of
+                 *   the same pool. Assuming the compiler is able to inline the references to these
+                 *   below, there is really no cost in adding more. I picked the ones I thought most
+                 *   likely to come up, but adding more should be just fine - strictly a win.
+                 *
+                 *       Don't bother implementing Block_Alloced_sizeof_N_GetMems() cuz flunging will
+                 *   genericly give us the same code-sharing effect.
+                 */
                 extern  void*   sSizeof_4_NextLink;
                 extern  void*   sSizeof_8_NextLink;
                 extern  void*   sSizeof_12_NextLink;
@@ -114,18 +109,19 @@ namespace   Stroika {
 #endif
 
 #if     qAllowBlockAllocation
-            template    <typename   T>  inline  void*   BlockAllocated<T>::GetNextLink_ ()
+            template    <typename   T>
+            inline  void*   BlockAllocated<T>::GetNextLink_ ()
             {
                 using   namespace   Private;
 
                 /*
-                    * It is hoped that since all these comparisons can be evaluated at compile
-                    * time, they will be. Then this code reduces to just a return of a single
-                    * global variable. That should inline nicely.
-                    *
-                    *   NB: For Apples compiler (by far our worst at optimizing), this does successfully
-                    *       get translated into just one variable reference (C 3.2.3, CFront 3.2, ETO #8, Thursday, November 5, 1992 1:51:42 PM)
-                    */
+                 * It is hoped that since all these comparisons can be evaluated at compile
+                 * time, they will be. Then this code reduces to just a return of a single
+                 * global variable. That should inline nicely.
+                 *
+                 *   NB: For Apples compiler (by far our worst at optimizing), this does successfully
+                 *       get translated into just one variable reference (C 3.2.3, CFront 3.2, ETO #8, Thursday, November 5, 1992 1:51:42 PM)
+                 */
                 if (sizeof (void*) <= 4 and sizeof (T) <= 4)        {   return (sSizeof_4_NextLink);        }
                 else if (sizeof (void*) <= 8 and sizeof (T) <= 8)   {   return (sSizeof_8_NextLink);        }
                 else if (sizeof (T) <= 12)                          {   return (sSizeof_12_NextLink);       }
@@ -151,7 +147,8 @@ namespace   Stroika {
             /*
              * NB: always return a pointer sized >= sizeof (void*) - even if n < sizeof (void*)
              */
-            template    <typename   T>  inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
+            template    <typename   T>
+            inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
             {
                 using   namespace   Private;
 
@@ -183,7 +180,8 @@ namespace   Stroika {
                 else                                                {   sNextLink = nextLink;               }
             }
 #endif
-            template    <typename   T>  inline  void*   BlockAllocated<T>::operator new (size_t n)
+            template    <typename   T>
+            inline  void*   BlockAllocated<T>::operator new (size_t n)
             {
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
@@ -205,7 +203,8 @@ namespace   Stroika {
                 return ::operator new (n);
 #endif
             }
-            template    <typename   T>  inline  void    BlockAllocated<T>::operator delete (void* p)
+            template    <typename   T>
+            inline  void    BlockAllocated<T>::operator delete (void* p)
             {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
@@ -231,26 +230,26 @@ namespace   Stroika {
                 }
 #endif
 
-                if (sizeof (T) <= 4)        {   sSizeof_4_NextLink = GetMem_Util_ (4);      }
-                else if (sizeof (T) <= 8)   {   sSizeof_8_NextLink = GetMem_Util_ (8);      }
-                else if (sizeof (T) <= 12)  {   sSizeof_12_NextLink = GetMem_Util_ (12);    }
-                else if (sizeof (T) <= 16)  {   sSizeof_16_NextLink = GetMem_Util_ (16);    }
-                else if (sizeof (T) <= 20)  {   sSizeof_20_NextLink = GetMem_Util_ (20);    }
-                else if (sizeof (T) <= 24)  {   sSizeof_24_NextLink = GetMem_Util_ (24);    }
-                else if (sizeof (T) <= 28)  {   sSizeof_28_NextLink = GetMem_Util_ (28);    }
-                else if (sizeof (T) <= 32)  {   sSizeof_32_NextLink = GetMem_Util_ (32);    }
-                else if (sizeof (T) <= 36)  {   sSizeof_36_NextLink = GetMem_Util_ (36);    }
-                else if (sizeof (T) <= 40)  {   sSizeof_40_NextLink = GetMem_Util_ (40);    }
-                else if (sizeof (T) <= 44)  {   sSizeof_44_NextLink = GetMem_Util_ (44);    }
-                else if (sizeof (T) <= 48)  {   sSizeof_48_NextLink = GetMem_Util_ (48);    }
-                else if (sizeof (T) <= 52)  {   sSizeof_52_NextLink = GetMem_Util_ (52);    }
-                else if (sizeof (T) <= 56)  {   sSizeof_56_NextLink = GetMem_Util_ (56);    }
-                else if (sizeof (T) <= 60)  {   sSizeof_60_NextLink = GetMem_Util_ (60);    }
-                else if (sizeof (T) <= 64)  {   sSizeof_64_NextLink = GetMem_Util_ (64);    }
-                else if (sizeof (T) <= 68)  {   sSizeof_68_NextLink = GetMem_Util_ (68);    }
-                else if (sizeof (T) <= 72)  {   sSizeof_72_NextLink = GetMem_Util_ (72);    }
-                else if (sizeof (T) <= 76)  {   sSizeof_76_NextLink = GetMem_Util_ (76);    }
-                else if (sizeof (T) <= 80)  {   sSizeof_80_NextLink = GetMem_Util_ (80);    }
+                if (sizeof (void*) <= 4 and sizeof (T) <= 4)        {   sSizeof_4_NextLink = GetMem_Util_ (4);      }
+                else if (sizeof (void*) <= 8 and sizeof (T) <= 8)   {   sSizeof_8_NextLink = GetMem_Util_ (8);      }
+                else if (sizeof (T) <= 12)                          {   sSizeof_12_NextLink = GetMem_Util_ (12);    }
+                else if (sizeof (T) <= 16)                          {   sSizeof_16_NextLink = GetMem_Util_ (16);    }
+                else if (sizeof (T) <= 20)                          {   sSizeof_20_NextLink = GetMem_Util_ (20);    }
+                else if (sizeof (T) <= 24)                          {   sSizeof_24_NextLink = GetMem_Util_ (24);    }
+                else if (sizeof (T) <= 28)                          {   sSizeof_28_NextLink = GetMem_Util_ (28);    }
+                else if (sizeof (T) <= 32)                          {   sSizeof_32_NextLink = GetMem_Util_ (32);    }
+                else if (sizeof (T) <= 36)                          {   sSizeof_36_NextLink = GetMem_Util_ (36);    }
+                else if (sizeof (T) <= 40)                          {   sSizeof_40_NextLink = GetMem_Util_ (40);    }
+                else if (sizeof (T) <= 44)                          {   sSizeof_44_NextLink = GetMem_Util_ (44);    }
+                else if (sizeof (T) <= 48)                          {   sSizeof_48_NextLink = GetMem_Util_ (48);    }
+                else if (sizeof (T) <= 52)                          {   sSizeof_52_NextLink = GetMem_Util_ (52);    }
+                else if (sizeof (T) <= 56)                          {   sSizeof_56_NextLink = GetMem_Util_ (56);    }
+                else if (sizeof (T) <= 60)                          {   sSizeof_60_NextLink = GetMem_Util_ (60);    }
+                else if (sizeof (T) <= 64)                          {   sSizeof_64_NextLink = GetMem_Util_ (64);    }
+                else if (sizeof (T) <= 68)                          {   sSizeof_68_NextLink = GetMem_Util_ (68);    }
+                else if (sizeof (T) <= 72)                          {   sSizeof_72_NextLink = GetMem_Util_ (72);    }
+                else if (sizeof (T) <= 76)                          {   sSizeof_76_NextLink = GetMem_Util_ (76);    }
+                else if (sizeof (T) <= 80)                          {   sSizeof_80_NextLink = GetMem_Util_ (80);    }
                 else {
                     /*
                      * NON-Shared (across types of same size) freepool. This should rarely, if ever happen, but we fully support
@@ -260,7 +259,8 @@ namespace   Stroika {
                 }
             }
 
-            template    <typename   T>  void*   BlockAllocated<T>::sNextLink = nullptr;
+            template    <typename   T>
+            void*   BlockAllocated<T>::sNextLink = nullptr;
 #endif
 
         }
