@@ -93,7 +93,7 @@ namespace   Stroika {
             template    <typename T>
             inline  const T*    Optional<T>::get () const
             {
-                return fValue_;
+                return fValue_ == nullptr ? nullptr : fValue_->get ();
             }
             template    <typename T>
             inline  bool    Optional<T>::empty () const
