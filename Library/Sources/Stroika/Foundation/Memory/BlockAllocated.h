@@ -16,6 +16,9 @@
 /**
  *  \file
  *
+ *	@todo	Fix all the fValue_ code - clean it up, put it in INL file, and think through more carefully
+ *			CTORs etc - to make it act more like a "T" type.
+ *
  *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
  *          should force block allocation, or ONLY block-allocate if size is appropriate to one of our
  *          preformed pools.
@@ -76,6 +79,29 @@ namespace   Stroika {
             public:
                 static  void*   operator new (size_t n);
                 static  void    operator delete (void* p);
+
+            public:
+                BlockAllocated () : fValue_ () {}
+                BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
+                BlockAllocated (const T& t) : fValue_ (t) {}
+                BlockAllocated (T && t) : fValue_ (std::move (t)) {}
+                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t) {
+                    fValue_ = t.fValue_;
+                    return *this;
+                }
+                nonvirtual const BlockAllocated<T>& operator= (const T& t) {
+                    fValue_ = t;
+                    return *this;
+                }
+                nonvirtual  operator T () const {
+                    return fValue_;
+                }
+                nonvirtual  T* get () {
+                    return &fValue_;
+                }
+
+            private:
+                T   fValue_;
 
 #if     qAllowBlockAllocation
             private:

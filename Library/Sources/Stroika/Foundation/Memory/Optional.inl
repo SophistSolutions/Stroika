@@ -29,86 +29,101 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const T& from)
-                : fValue_ (new T (from))
+                : fValue_ (new BlockAllocated<T> (from))
             {
             }
             template    <typename T>
-            inline  Optional<T>::Optional (const T && from)
-                : fValue_ (new T (std::move (from)))
+            inline  Optional<T>::Optional (T && from)
+                : fValue_ (new BlockAllocated<T> (std::move (from)))
             {
             }
             template    <typename T>
             inline  Optional<T>::Optional (const Optional<T>& from)
-                : fValue_ (from.fValue_)
+                : fValue_ (from.fValue_ == nullptr ? nullptr : new BlockAllocated<T> (*from.fValue_))
             {
             }
             template    <typename T>
-            inline  Optional<T>::Optional (const Optional<T> && from)
-                : fValue_ (std::move (from.fValue_))
+            inline  Optional<T>::Optional (Optional<T> && from)
+                : fValue_ (from.fValue_)
             {
+                from.fValue_ = nullptr;
+            }
+            template    <typename T>
+            inline  Optional<T>::~Optional ()
+            {
+                delete fValue_;
             }
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const T& from)
             {
-                fValue_ = shared_ptr<T> (new T (from));
+                delete fValue_;
+                fValue_ = nullptr;
+                fValue_ = new BlockAllocated<T> (from);
                 return *this;
             }
             template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (const T && from)
+            inline  Optional<T>&   Optional<T>::operator= (T && from)
             {
-                fValue_ = shared_ptr<T> (new T (std::move (from)));
+                fValue_ = from.fValue_;
+                from.fValue_ = nullptr;
                 return *this;
             }
             template    <typename T>
             inline  Optional<T>&   Optional<T>::operator= (const Optional<T>& from)
             {
-                fValue_ = from.fValue_;
+                delete fValue_;
+                fValue_ = nullptr;
+                if (from.fValue_ != nullptr) {
+                    fValue_ = new BlockAllocated<T> (*from.fValue_);
+                }
                 return *this;
             }
             template    <typename T>
-            inline  Optional<T>&   Optional<T>::operator= (const Optional<T> && from)
+            inline  Optional<T>&   Optional<T>::operator= (Optional<T> && from)
             {
-                fValue_ = std::move (from.fValue_);
+                fValue_ = from.fValue_;
+                from.fValue_ = nullptr;
                 return *this;
             }
             template    <typename T>
             inline  void    Optional<T>::clear ()
             {
-                fValue_.reset ();
+                delete fValue_;
+                fValue_ = nullptr;
             }
             template    <typename T>
             inline  const T*    Optional<T>::get () const
             {
-                return fValue_.get ();
+                return fValue_;
             }
             template    <typename T>
             inline  bool    Optional<T>::empty () const
             {
-                return fValue_.get () == nullptr;
+                return fValue_ == nullptr;
             }
             template    <typename T>
             inline  const T* Optional<T>::operator-> () const
             {
                 Require (not empty ())
-                return fValue_.get ();
+                return fValue_;
             }
             template    <typename T>
             inline  T* Optional<T>::operator-> ()
             {
                 Require (not empty ())
-                return fValue_.get ();
+                return fValue_;
             }
             template    <typename T>
             inline  const T& Optional<T>::operator* () const
             {
                 Require (not empty ())
-                return *fValue_.get ();
+                return *fValue_;
             }
             template    <typename T>
             inline  T& Optional<T>::operator* ()
             {
                 Require (not empty ())
-                return *fValue_.get ();
+                return *fValue_->get ();
             }
             template    <typename T>
             inline  Optional<T>::operator T () const
@@ -119,13 +134,13 @@ namespace   Stroika {
             template    <typename T>
             bool    Optional<T>::operator< (const Optional<T>& rhs) const
             {
-                if (fValue_.get () == nullptr) {
-                    return (rhs.fValue_.get () == nullptr) ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                if (fValue_ == nullptr) {
+                    return (rhs.fValue_ == nullptr) ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
-                if (rhs.fValue_.get () == nullptr) {
+                if (rhs.fValue_ == nullptr) {
                     return false;
                 }
-                return *fValue_ < rhs.fValue_;
+                return *fValue_ < *rhs.fValue_;
             }
             template    <typename T>
             bool    Optional<T>::operator<= (const Optional<T>& rhs) const
@@ -145,10 +160,10 @@ namespace   Stroika {
             template    <typename T>
             bool    Optional<T>::operator== (const Optional<T>& rhs) const
             {
-                if (fValue_.get () == nullptr) {
-                    return rhs.fValue_.get () == nullptr;
+                if (fValue_ == nullptr) {
+                    return rhs.fValue_ == nullptr;
                 }
-                if (rhs.fValue_.get () == nullptr) {
+                if (rhs.fValue_ == nullptr) {
                     return false;
                 }
                 return *fValue_ == *rhs.fValue_;

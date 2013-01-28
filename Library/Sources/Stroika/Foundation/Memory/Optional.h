@@ -9,22 +9,11 @@
 #include    <memory>
 
 #include    "../Configuration/Common.h"
+#include    "BlockAllocated.h"
+
 
 /**
  * TODO:
- *
- *
- *      @todo   Very serious bug with existing code! Copy semantics are WRONG (copying an Optional - and tehn changing
- *              the value of the original should NOT change the value of the new copy!!!)
- *
- *              Instead - allocate object  by REGULAR pointer, and implement copy code properly! Get rid of shared_ptr
- *              stuff. And at same time - as performance optimization, add new feature to BlockAllocated<T>
- *              where you have BLOCKALLOCATED(T) CTOR, and store such value, and operator T return value, so it can
- *              be used directly.
- *
- *              THEN - HERE - replace shared_ptr<T> with BlockAllocated<T> - which will mean that for use in OPTIONAL
- *              any T will have optimized memory allocation - even if the base class T does NOT!!!!
- *
  *
  */
 
@@ -46,21 +35,27 @@ namespace   Stroika {
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
              *  runs the risk of producing surprising expceitons (based on experience),
              *  we treat dereferencing an empty Optional<T> as an Assertion Erorr.
+             *
+             *  Thread-Safety: Different instances of Optional<T> can be freely used  in different threads,
+             *  but a given instance can only be safely used (read + write, or write+write) from a single thread
+             *  at a time.
              */
             template    <typename T>
             class   Optional {
             public:
                 Optional ();
                 Optional (const T& from);
-                Optional (const T && from);
+                Optional (T && from);
                 Optional (const Optional<T>& from);
-                Optional (const Optional<T> && from);
+                Optional (Optional<T> && from);
+            public:
+                ~Optional ();
 
             public:
                 nonvirtual  Optional<T>& operator= (const T& from);
-                nonvirtual  Optional<T>& operator= (const T && from);
+                nonvirtual  Optional<T>& operator= (T && from);
                 nonvirtual  Optional<T>& operator= (const Optional<T>& from);
-                nonvirtual  Optional<T>& operator= (const Optional<T> && from);
+                nonvirtual  Optional<T>& operator= (Optional<T> && from);
 
             public:
                 /**
@@ -117,7 +112,7 @@ namespace   Stroika {
                  *  so the value can never change. One changes an Optional<T> by creating a whole new
                  *  value object and assigning it.
                  */
-                shared_ptr<T>    fValue_;
+                BlockAllocated<T>*  fValue_;
             };
         }
     }

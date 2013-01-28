@@ -210,7 +210,9 @@ namespace   {
 #if     qUseBlockAllocatedForSmallBufStrings
         // #define until we have constexpr working
 #define kBlockAllocMinSizeInwchars  16
-        typedef wchar_t BufferedStringRepBlock_[kBlockAllocMinSizeInwchars];
+        struct BufferedStringRepBlock_ {
+            wchar_t data[kBlockAllocMinSizeInwchars];
+        };
 #endif
         struct  BufferedStringRep_ : HELPER_::_ReadWriteRep {
         private:
