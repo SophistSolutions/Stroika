@@ -125,17 +125,17 @@ namespace   Stroika {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
                 return tmp.second - tmp.first;
             }
-            inline  bool    operator== (const BLOB& lhs, const BLOB& rhs)
+            inline  bool    BLOB::operator== (const BLOB& rhs) const
             {
-                return lhs.compare (rhs) == 0;
+                return compare (rhs) == 0;
             }
-            inline  bool    operator> (const BLOB& lhs, const BLOB& rhs)
+            inline  bool    BLOB::operator> (const BLOB& rhs) const
             {
-                return lhs.compare (rhs) > 0;
+                return compare (rhs) > 0;
             }
-            inline  bool    operator< (const BLOB& lhs, const BLOB& rhs)
+            inline  bool    BLOB::operator< (const BLOB& rhs) const
             {
-                return lhs.compare (rhs) < 0;
+                return compare (rhs) < 0;
             }
 
 

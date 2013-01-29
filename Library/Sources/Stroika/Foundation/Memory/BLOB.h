@@ -131,6 +131,17 @@ namespace   Stroika {
                  */
                 nonvirtual  int      compare (const BLOB& rhs) const;
 
+            public:
+                /**
+                 */
+                bool    operator< (const BLOB& rhs) const;
+                /**
+                 */
+                bool    operator> (const BLOB& rhs) const;
+                /**
+                 */
+                bool    operator== (const BLOB& rhs) const;
+
             protected:
                 /**
                  */
@@ -146,15 +157,7 @@ namespace   Stroika {
             private:
                 shared_ptr<_IRep>   fRep_;
             };
-            /**
-             */
-            bool    operator< (const BLOB& lhs, const BLOB& rhs);
-            /**
-             */
-            bool    operator> (const BLOB& lhs, const BLOB& rhs);
-            /**
-             */
-            bool    operator== (const BLOB& lhs, const BLOB& rhs);
+
 
             template    <>
             void    BLOB::As (vector<Byte>* into) const;
