@@ -44,7 +44,9 @@ namespace   Stroika {
              *      We considered using the SharedByValue<T> template which would be more efficient when we copy
              *      Optional objects of type T, where T is expensive to copy. But for T where T is cheap to copy,
              *      just using BlockAllocated<T> is probably cheaper to copy. Which is more common? Who knows, so this
-             *      probably doesn't matter much.
+             *      probably doesn't matter much. Also - consider perhaps if there is a way to use a TRAITS argument?
+             *      If we chose to use SharedByValue<T>, then non-const methods like 'operator* ()' would just
+             *      'BreakReferences'.
              *
              *  \note   \em Design-Note
              *      operator T();
@@ -91,27 +93,47 @@ namespace   Stroika {
                 /*
                  * Unclear if we want a non-const version too?
                  * Returns nullptr if value is missing
+                 *
+                 *  \note   \em Warning
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  const T*    get () const;
 
             public:
                 /**
                  *  \pre (not empty ())
+                 *
+                 *  \note   \em Warning
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  const T* operator-> () const;
 
                 /**
                  *  \pre (not empty ())
+                 *
+                 *  \note   \em Warning
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T* operator-> ();
 
                 /**
                  *  \pre (not empty ())
+                 *
+                 *  \note   \em Warning
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  const T& operator* () const;
 
                 /**
                  *  \pre (not empty ())
+                 *
+                 *  \note   \em Warning
+                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                 *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T& operator* ();
 
