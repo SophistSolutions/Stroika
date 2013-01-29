@@ -141,46 +141,55 @@ namespace   Stroika {
                 return *fValue_;
             }
             template    <typename T>
-            bool    Optional<T>::operator< (const Optional<T>& rhs) const
+            int Optional<T>::Compare (const Optional<T>& rhs) const
             {
                 if (fValue_ == nullptr) {
-                    return (rhs.fValue_ == nullptr) ? false : true; // arbitrary choice - but assume if lhs is empty thats less than any T value
+                    return (rhs.fValue_ == nullptr) ? 0 : 1; // arbitrary choice - but assume if lhs is empty thats less than any T value
                 }
                 if (rhs.fValue_ == nullptr) {
-                    return false;
+                    AssertNotNull (fValue_);
+                    return -1;
                 }
-                return *fValue_ < *rhs.fValue_;
+                AssertNotNull (fValue_);
+                AssertNotNull (rhs.fValue_);
+                if (static_cast<T> (*fValue_) < static_cast<T> (*rhs.fValue_)) {
+                    return -1;
+                }
+                else if (static_cast<T> (*fValue_) > static_cast<T> (*rhs.fValue_)) {
+                    return 1;
+                }
+                Assert (static_cast<T> (*fValue_) == static_cast<T> (*rhs.fValue_));
+                return 0;
             }
             template    <typename T>
-            bool    Optional<T>::operator<= (const Optional<T>& rhs) const
+            inline  bool    Optional<T>::operator< (const Optional<T>& rhs) const
             {
-                return *this < rhs or * this == rhs;
+                return Compare (rhs) < 0;
+            }
+            template    <typename T>
+            inline  bool    Optional<T>::operator<= (const Optional<T>& rhs) const
+            {
+                return Compare (rhs) <= 0;
             }
             template    <typename T>
             inline  bool    Optional<T>::operator> (const Optional<T>& rhs) const
             {
-                return rhs < *this;
+                return Compare (rhs) > 0;
             }
             template    <typename T>
-            bool    Optional<T>::operator>= (const Optional<T>& rhs) const
+            inline  bool    Optional<T>::operator>= (const Optional<T>& rhs) const
             {
-                return *this > rhs or * this == rhs;
+                return Compare (rhs) >= 0;
             }
             template    <typename T>
-            bool    Optional<T>::operator== (const Optional<T>& rhs) const
+            inline  bool    Optional<T>::operator== (const Optional<T>& rhs) const
             {
-                if (fValue_ == nullptr) {
-                    return rhs.fValue_ == nullptr;
-                }
-                if (rhs.fValue_ == nullptr) {
-                    return false;
-                }
-                return static_cast<T> (*fValue_) == static_cast<T> (*rhs.fValue_);
+                return Compare (rhs) == 0;
             }
             template    <typename T>
             inline  bool    Optional<T>::operator!= (const Optional<T>& rhs) const
             {
-                return not (*this == rhs);
+                return Compare (rhs) != 0;
             }
 
 

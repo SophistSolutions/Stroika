@@ -14,8 +14,6 @@
 
 /**
  * TODO:
- *  @todo       Implement Optional<T>::compare() - returning int - and redo operator< etc based on that
- *              one common subroutine (hopefully simpler).
  */
 
 namespace   Stroika {
@@ -41,6 +39,12 @@ namespace   Stroika {
              *      Different instances of Optional<T> can be freely used  in different threads,
              *      but a given instance can only be safely used (read + write, or write + write)
              *      from a single thread at a time.
+             *
+             *  \note   \em Design-Note
+             *      We considered using the SharedByValue<T> template which would be more efficient when we copy
+             *      Optional objects of type T, where T is expensive to copy. But for T where T is cheap to copy,
+             *      just using BlockAllocated<T> is probably cheaper to copy. Which is more common? Who knows, so this
+             *      probably doesn't matter much.
              */
             template    <typename T>
             class   Optional {
@@ -74,8 +78,10 @@ namespace   Stroika {
                 nonvirtual  bool    empty () const; // means no value (it is optional!)
 
             public:
-                // Unclear if we want a non-const version too?
-                // Returns nullptr if value is missing
+                /*
+                 * Unclear if we want a non-const version too?
+                 * Returns nullptr if value is missing
+                 */
                 nonvirtual  const T*    get () const;
 
             public:
@@ -93,30 +99,32 @@ namespace   Stroika {
 
             public:
                 /**
-                 *
                  *  \pre (not empty ())
                  */
                 nonvirtual  const T* operator-> () const;
 
                 /**
-                 *
                  *  \pre (not empty ())
                  */
                 nonvirtual  T* operator-> ();
 
                 /**
-                 *
                  *  \pre (not empty ())
                  */
                 nonvirtual  const T& operator* () const;
 
                 /**
-                 *
                  *  \pre (not empty ())
                  */
                 nonvirtual  T& operator* ();
 
-                // Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
+            public:
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
+                 */
+                nonvirtual  int Compare (const Optional<T>& rhs) const;
+
             public:
                 nonvirtual  bool    operator< (const Optional<T>& rhs) const;
                 nonvirtual  bool    operator<= (const Optional<T>& rhs) const;
