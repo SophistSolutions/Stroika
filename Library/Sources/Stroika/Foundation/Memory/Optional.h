@@ -16,8 +16,6 @@
  * TODO:
  *  @todo       Implement Optional<T>::compare() - returning int - and redo operator< etc based on that
  *              one common subroutine (hopefully simpler).
- *
- *  @todo       Cleanup doxygen comments (especailly require stuff)
  */
 
 namespace   Stroika {
@@ -36,12 +34,13 @@ namespace   Stroika {
              *      (o)     Assertion error
              *
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
-             *  runs the risk of producing surprising expceitons (based on experience),
-             *  we treat dereferencing an empty Optional<T> as an Assertion Erorr.
+             *  runs the risk of producing surprising exceptions, we treat dereferencing an empty
+             *  Optional<T> as an Assertion Erorr.
              *
-             *  Thread-Safety:  Different instances of Optional<T> can be freely used  in different threads,
-             *                  but a given instance can only be safely used (read + write, or write+write)
-             *                  from a single thread at a time.
+             *  \note   \em Thread-Safety
+             *      Different instances of Optional<T> can be freely used  in different threads,
+             *      but a given instance can only be safely used (read + write, or write + write)
+             *      from a single thread at a time.
              */
             template    <typename T>
             class   Optional {
@@ -66,6 +65,7 @@ namespace   Stroika {
                  *  the empty () will return true.
                  */
                 nonvirtual  void    clear ();
+
             public:
                 /**
                  * Returns true iff the Optional<T> has no valid value. Attempts to access the value of
@@ -79,7 +79,9 @@ namespace   Stroika {
                 nonvirtual  const T*    get () const;
 
             public:
-                /** Require (not empty ())
+                /**
+                 *
+                 *  \pre (not empty ())
                  *
                  * Not clear its a good idea to define this. It causes problems with the mixture of CTOR(T)
                  * and operator T - creating ambiguity. However, it appears this ambiguity can always be
@@ -90,13 +92,28 @@ namespace   Stroika {
                 nonvirtual  operator T () const;
 
             public:
-                // Require (not empty ())
+                /**
+                 *
+                 *  \pre (not empty ())
+                 */
                 nonvirtual  const T* operator-> () const;
-                // Require (not empty ())
+
+                /**
+                 *
+                 *  \pre (not empty ())
+                 */
                 nonvirtual  T* operator-> ();
-                // Require (not empty ())
+
+                /**
+                 *
+                 *  \pre (not empty ())
+                 */
                 nonvirtual  const T& operator* () const;
-                // Require (not empty ())
+
+                /**
+                 *
+                 *  \pre (not empty ())
+                 */
                 nonvirtual  T& operator* ();
 
                 // Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
@@ -116,6 +133,8 @@ namespace   Stroika {
                  */
                 BlockAllocated<T>*  fValue_;
             };
+
+
         }
     }
 }

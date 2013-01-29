@@ -4,7 +4,7 @@
 #ifndef _Stroika_Foundation_Characters_String_h_
 #define _Stroika_Foundation_Characters_String_h_    1
 
-/*
+/**
  *
  * Description:
  *
@@ -47,93 +47,93 @@
 
 
 
-/*
+/**
  * TODO:
  *
  *
- *      o   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistnet with other APIs.
+ *      @todo   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistnet with other APIs.
  *
- *      o   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like "ToLowerCase"
- *          are AMBIGUOUS.
+ *      @todo   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like "ToLowerCase"
+ *              are AMBIGUOUS.
  *
- *      o   CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
- *          MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
- *          not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
- *          Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
- *          not totally clear what name is best (split or tokenize()).
+ *      @todo   CLEANUP Tokenize API, AND VERY IMPROTANMTLY - either DOCUMENT or indirect to Tokenize() API.
+ *              MANY people will expect a String.Split() function to exist. This is what the existing TOKENIZE() API does but thats
+ *              not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
+ *              Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
+ *              not totally clear what name is best (split or tokenize()).
  *
- *      o   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
- *          separate logically and have trivial wrappers here.
+ *      @todo   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
+ *              separate logically and have trivial wrappers here.
  *
  *          UNCLEAR.
  *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
  *
  *
- *      o   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
+ *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
  *
  *
- *      o   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
+ *      @todo   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
  *
- *      o   Think out RINDEX/INDEXOF compare with REGEXP versions.
+ *      @todo   Think out RINDEX/INDEXOF compare with REGEXP versions.
  *
- *      o   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
- *          StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
+ *      @todo   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
+ *              StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
  *
- *      o   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
- *          documentation, and make clearer, and document the tricky bits loosely
- *          alluded to in the appropriate place if the API is truely DOABLE.
+ *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
+ *              documentation, and make clearer, and document the tricky bits loosely
+ *              alluded to in the appropriate place if the API is truely DOABLE.
  *
- *      o   At this stage - for our one trivial test - performance is now about 5% faster than
- *          visual studio.net 2010, but
- *          about a factor of 2 SLOWER than GCC (as of 2011-12-04).
+ *      @todo   At this stage - for our one trivial test - performance is now about 5% faster than
+ *              visual studio.net 2010, but
+ *              about a factor of 2 SLOWER than GCC (as of 2011-12-04).
  *
- *          I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
+ *              I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
  *
- *      o   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
- *          or use separate buffer. Good reasons for both ways. Not sure whats best.
+ *      @todo   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
+ *              or use separate buffer. Good reasons for both ways. Not sure whats best.
  *
- *          o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
- *              which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
+ *              o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
+ *                  which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
  *
- *          o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
- *
- *
- *      o   Fix const   Memory::SharedByValue<String::String::Rep>  String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
- *          to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
- *          just in CPP file
+ *              o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
  *
  *
- *      o   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
- *          it is all correct for each (especially SetStorage () sutff looks quesitonable)
+ *      @todo   Fix const   Memory::SharedByValue<String::String::Rep>  String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
+ *              to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
+ *              just in CPP file
  *
  *
- *      o   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
+ *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
+ *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
  *
- *      o   Try and get rid of the Peek () API
+ *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
  *
- *      o   WRITEUP THREAD SAFETY:
- *           Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
- *           but externally, envelope cannot be read/write or write/write at the same time). – document examples.
- *
- *      o   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
+ *      @todo   Try and get rid of the Peek () API
  *
  *
- *      o   Migrate most of the StringUtils stuff here like:
- *          > Contains- with CI optin
+ *      @todo   WRITEUP THREAD SAFETY:
+ *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
+ *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
+ *
+ *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
+ *
+ *
+ *      @todo   Migrate most of the StringUtils stuff here like:
+ *              > Contains- with CI optin
  *overload so can be string arg OR lambda!
- *          > StartsWtih- with CI optin
- *          > EndsWith- with CI optin
- *          > Compare () - returns < less > more =0 for equal- with CI optin
- *          > Equals() - with CI optin
+ *              > StartsWtih- with CI optin
+ *              > EndsWith- with CI optin
+ *              > Compare () - returns < less > more =0 for equal- with CI optin
+ *              > Equals() - with CI optin
  *
  *
- *      o   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
+ *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
  *
  *
- *      o   Compare
+ *      @todo   Compare
  *          template    <typename TCHAR>
  *              basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
  *                  {
@@ -147,27 +147,27 @@
  *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
  *
  *
- *      o   when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class
- *          (will work beatifulyl with new stdc++ foreach() stuff).
+ *      @todo   when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class
+ *              (will work beatifulyl with new stdc++ foreach() stuff).
  *
- *          (OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
- *
- *
- *      o   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
+ *              (OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
  *
  *
- *      o   Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally.
- *          Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
- *          (what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT –
- *          but pretty sure we want some sort of String_stdwstring().
+ *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
  *
  *
- *      o   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
- *          Maybe use per-thread global LOCALE settings. Discuss with KDJ.
- *          KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
+ *      @todo   Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally.
+ *              Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
+ *              (what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT –
+ *              but pretty sure we want some sort of String_stdwstring().
  *
- *      o   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
- *          and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
+ *
+ *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
+ *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
+ *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
+ *
+ *      @todo   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
+ *              and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
  */
 
 
@@ -183,7 +183,7 @@ namespace   Stroika {
 
             class   RegularExpression;
 
-            /*
+            /**
              * The Stroika String class is an alternatve for the std::wstring class, which should be largely
              * interoperable with code using wstring (there is wstring constructor and As<wstring>()
              * methods).

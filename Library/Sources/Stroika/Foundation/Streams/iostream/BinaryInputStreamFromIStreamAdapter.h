@@ -31,9 +31,10 @@ namespace   Stroika {
             namespace   iostream {
 
                 /**
-                 *  @THREADSAFETY:   BinaryInputStreamFromIStreamAdapter is not necessarily thread safe.
-                 *  Its roughly as safe as the underlying istream implementation, except
-                 *  that we call read, followed by gcount () - which could be a race.
+                 *  \note   \em Thread-Safety
+                 *      BinaryInputStreamFromIStreamAdapter is not necessarily thread safe.
+                 *      Its roughly as safe as the underlying istream implementation, except
+                 *      that we call read, followed by gcount () - which could be a race.
                  */
                 class   BinaryInputStreamFromIStreamAdapter : public BinaryInputStream {
                 private:
