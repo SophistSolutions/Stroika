@@ -45,6 +45,16 @@ namespace   Stroika {
              *      Optional objects of type T, where T is expensive to copy. But for T where T is cheap to copy,
              *      just using BlockAllocated<T> is probably cheaper to copy. Which is more common? Who knows, so this
              *      probably doesn't matter much.
+             *
+             *  \note   \em Design-Note
+             *      operator T();
+             *
+             *      We considered having an operator T () method. This has advantages, in that it makes more seemless
+             *      replacing use of a T with an Optional<T>. But it has the disadvantage that, when coupled with
+             *      the Optional<T> (T) CTOR, you can get overloading problems.
+             *
+             *      Plus, one must carefully check each use of variable o of type T, being converted to type
+             *      Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              */
             template    <typename T>
             class   Optional {
@@ -83,19 +93,6 @@ namespace   Stroika {
                  * Returns nullptr if value is missing
                  */
                 nonvirtual  const T*    get () const;
-
-            public:
-                /**
-                 *
-                 *  \pre (not empty ())
-                 *
-                 * Not clear its a good idea to define this. It causes problems with the mixture of CTOR(T)
-                 * and operator T - creating ambiguity. However, it appears this ambiguity can always be
-                 * replaced by inserting a '*' in front of the 'Optional' element to disambiguate, so
-                 * I think it maybe OK
-                 *      -- LGP 2012-05-20
-                 */
-                nonvirtual  operator T () const;
 
             public:
                 /**

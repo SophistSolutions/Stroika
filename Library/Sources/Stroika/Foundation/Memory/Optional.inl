@@ -134,13 +134,6 @@ namespace   Stroika {
                 return *fValue_->get ();
             }
             template    <typename T>
-            inline  Optional<T>::operator T () const
-            {
-                Require (not empty ())
-                AssertNotNull (fValue_);
-                return *fValue_;
-            }
-            template    <typename T>
             int Optional<T>::Compare (const Optional<T>& rhs) const
             {
                 if (fValue_ == nullptr) {

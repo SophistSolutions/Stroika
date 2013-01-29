@@ -22,6 +22,10 @@
  *  @todo   Fix all the fValue_ code - clean it up, put it in INL file, and think through more carefully
  *          CTORs etc - to make it act more like a "T" type.
  *
+ *          Closely related - document WHY we didn't just have BlockAllocated<T> inherit from T (issue is
+ *          when T = int, for example. There maybe some template magic I can use to fix that, and then
+ *          thats probably a better solution!
+ *
  *  @todo   We should either add a VARIANT or template parameter to BlockAllocated<> saying whether we
  *          should force block allocation, or ONLY block-allocate if size is appropriate to one of our
  *          preformed pools.
