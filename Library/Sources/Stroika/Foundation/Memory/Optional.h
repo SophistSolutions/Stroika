@@ -22,6 +22,17 @@ namespace   Stroika {
 
 
             /**
+             *  Default traits object for type T (for use in Optional<T>). This can generally be ignored.
+             *  It requires operator== and operator< are defined for type T (if they are not, you must provide your own traits
+             *  to use Optional<T>).
+             */
+            template    <typename T>
+            struct   Optional_DefaultTraits {
+                static  int Compare (T lhs, T rhs);
+            };
+
+
+            /**
              *  Optional<T> can be used to store an object which may or may not be present. This can be
              *  used in place of sentinal values (for example if no obvious sentinal value presents itself),
              *  and instead of explicitly using pointers and checking for null all over.
@@ -58,108 +69,108 @@ namespace   Stroika {
              *      Plus, one must carefully check each use of variable o of type T, being converted to type
              *      Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              */
-            template    <typename T>
-            class   Optional {
+            template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
+                    class   Optional {
             public:
-                Optional ();
-                Optional (const T& from);
-                Optional (T && from);
-                Optional (const Optional<T>& from);
-                Optional (Optional<T> && from);
+                        Optional ();
+                        Optional (const T& from);
+                        Optional (T && from);
+                        Optional (const Optional<T, TRAITS>& from);
+                        Optional (Optional<T, TRAITS> && from);
             public:
-                ~Optional ();
-
-            public:
-                nonvirtual  Optional<T>& operator= (const T& from);
-                nonvirtual  Optional<T>& operator= (T && from);
-                nonvirtual  Optional<T>& operator= (const Optional<T>& from);
-                nonvirtual  Optional<T>& operator= (Optional<T> && from);
+                        ~Optional ();
 
             public:
-                /**
-                 *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
-                 *  the empty () will return true.
-                 */
-                nonvirtual  void    clear ();
+                        nonvirtual  Optional<T, TRAITS>& operator= (const T& from);
+                        nonvirtual  Optional<T, TRAITS>& operator= (T && from);
+                        nonvirtual  Optional<T, TRAITS>& operator= (const Optional<T, TRAITS>& from);
+                        nonvirtual  Optional<T, TRAITS>& operator= (Optional<T, TRAITS> && from);
 
             public:
-                /**
-                 * Returns true iff the Optional<T> has no valid value. Attempts to access the value of
-                 * an Optional<T> (eg. through operator T ()) will result in an error.
-                 */
-                nonvirtual  bool    empty () const; // means no value (it is optional!)
+                        /**
+                         *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
+                         *  the empty () will return true.
+                         */
+                        nonvirtual  void    clear ();
 
             public:
-                /*
-                 * Unclear if we want a non-const version too?
-                 * Returns nullptr if value is missing
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  const T*    get () const;
+                        /**
+                         * Returns true iff the Optional<T> has no valid value. Attempts to access the value of
+                         * an Optional<T> (eg. through operator T ()) will result in an error.
+                         */
+                        nonvirtual  bool    empty () const; // means no value (it is optional!)
 
             public:
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  const T* operator-> () const;
-
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  T* operator-> ();
-
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  const T& operator* () const;
-
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  T& operator* ();
+                        /*
+                         * Unclear if we want a non-const version too?
+                         * Returns nullptr if value is missing
+                         *
+                         *  \note   \em Warning
+                         *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                         *      is only guaranteed until the next method call on this Optional<T> instance.
+                         */
+                        nonvirtual  const T*    get () const;
 
             public:
-                /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
-                 */
-                nonvirtual  int Compare (const Optional<T>& rhs) const;
+                        /**
+                         *  \pre (not empty ())
+                         *
+                         *  \note   \em Warning
+                         *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                         *      is only guaranteed until the next method call on this Optional<T> instance.
+                         */
+                        nonvirtual  const T* operator-> () const;
+
+                        /**
+                         *  \pre (not empty ())
+                         *
+                         *  \note   \em Warning
+                         *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                         *      is only guaranteed until the next method call on this Optional<T> instance.
+                         */
+                        nonvirtual  T* operator-> ();
+
+                        /**
+                         *  \pre (not empty ())
+                         *
+                         *  \note   \em Warning
+                         *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                         *      is only guaranteed until the next method call on this Optional<T> instance.
+                         */
+                        nonvirtual  const T& operator* () const;
+
+                        /**
+                         *  \pre (not empty ())
+                         *
+                         *  \note   \em Warning
+                         *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
+                         *      is only guaranteed until the next method call on this Optional<T> instance.
+                         */
+                        nonvirtual  T& operator* ();
 
             public:
-                nonvirtual  bool    operator< (const Optional<T>& rhs) const;
-                nonvirtual  bool    operator<= (const Optional<T>& rhs) const;
-                nonvirtual  bool    operator> (const Optional<T>& rhs) const;
-                nonvirtual  bool    operator>= (const Optional<T>& rhs) const;
-                nonvirtual  bool    operator== (const Optional<T>& rhs) const;
-                nonvirtual  bool    operator!= (const Optional<T>& rhs) const;
+                        /**
+                         *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                         *  Somewhat arbitrarily, treat NOT-PROVIDED (empty) as < any value of T
+                         */
+                        nonvirtual  int Compare (const Optional<T>& rhs) const;
+
+            public:
+                        nonvirtual  bool    operator< (const Optional<T, TRAITS>& rhs) const;
+                        nonvirtual  bool    operator<= (const Optional<T, TRAITS>& rhs) const;
+                        nonvirtual  bool    operator> (const Optional<T, TRAITS>& rhs) const;
+                        nonvirtual  bool    operator>= (const Optional<T, TRAITS>& rhs) const;
+                        nonvirtual  bool    operator== (const Optional<T, TRAITS>& rhs) const;
+                        nonvirtual  bool    operator!= (const Optional<T, TRAITS>& rhs) const;
 
             private:
-                /*
-                 *  Carefully manage the storage ourselves - not doing shared copy. No shared copy (copyonwrite) because these
-                 *  are rarely copied, and this is cheaper (since can use block-allocation - even if type T not
-                 *  block allocated) - and no extra count infrastructure, or threadafe locking.
-                 */
-                BlockAllocated<T>*  fValue_;
-            };
+                        /*
+                         *  Carefully manage the storage ourselves - not doing shared copy. No shared copy (copyonwrite) because these
+                         *  are rarely copied, and this is cheaper (since can use block-allocation - even if type T not
+                         *  block allocated) - and no extra count infrastructure, or threadafe locking.
+                         */
+                        BlockAllocated<T>*  fValue_;
+                    };
 
 
         }
