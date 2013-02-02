@@ -25,7 +25,7 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
-                /*
+                /**
                  *  A SocketStream wraps a a socket as a BinaryTiedStreams - two separate by related streams.
                  *
                  *  The only real conneciton is that they share a common socket, and if IT is closed,
