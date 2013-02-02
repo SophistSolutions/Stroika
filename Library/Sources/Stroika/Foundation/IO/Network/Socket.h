@@ -32,18 +32,20 @@ namespace   Stroika {
 #endif
 
 
-                /*
+                /**
                  * TODO:
                  *
-                 *      o   Maybe add IsClosed () method (or equiv is empty/isnull) - and if rep null OR rep non-null but underling rep is closed
-                 *          reutrn true. Then define a bunch of requiresments here (liek wti BIND) in terms of that (must be CLOSED).
-                 *          DONT BOTHER having DETEACHT method but docuemnt with clsoe can just say Socket s; s = Socket() to make s itself
-                 *          be CLSOED without closing udnerling socket (if someone else has refernce to it).
+                 *      @todo   Maybe add IsClosed () method (or equiv is empty/isnull) - and if rep null OR rep non-null but underling rep is closed
+                 *              return true. Then define a bunch of requiresments here (liek wti BIND) in terms of that (must be CLOSED).
+                 *              DONT BOTHER having DETEACHT method but docuemnt with clsoe can just say Socket s; s = Socket() to make s itself
+                 *              be CLSOED without closing udnerling socket (if someone else has refernce to it).
                  *
-                 *      o   Docuemnt (or define new expcetion) thrown when operaiton done on CLOSED socket.
+                 *      @todo   Docuemnt (or define new expcetion) thrown when operaiton done on CLOSED socket.
                  */
 
 
+                /**
+                 */
                 class   Socket {
                 protected:
                     class   _Rep;
@@ -68,7 +70,7 @@ namespace   Stroika {
 
                 public:
                     struct  BindProperties {
-                        static  const   String  kANYHOST;
+                        static  const   String          kANYHOST;
                         static  const   int             kANYPORT                =   0;
                         static  const   int             kDefaultListenBacklog   =   100;
                         String          fHostName;
@@ -88,7 +90,7 @@ namespace   Stroika {
                     nonvirtual  void    Write (const Byte* start, const Byte* end);
 
                 public:
-                    /*
+                    /**
                      * Note that Socket is an envelope class, and there could be multiple references to
                      * the same underlying socket. But this closes ALL of them. It also removes the reference
                      * to the underlying rep (meaning that some Socket envelopes COULD have a rep with an underlying
@@ -105,6 +107,8 @@ namespace   Stroika {
                 };
 
 
+                /**
+                 */
                 class   Socket::_Rep {
                 public:
                     virtual ~_Rep ();
