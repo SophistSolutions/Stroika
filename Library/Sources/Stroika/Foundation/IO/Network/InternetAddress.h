@@ -7,10 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qPlatform_POSIX
-// not sure this is needed here - maybe more basic file for address
-//#include    <sys/socket.h>
-#include    <in6addr.h>
-#include    <inaddr.h>
+#include    <arpa/inet.h>
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <inaddr.h>

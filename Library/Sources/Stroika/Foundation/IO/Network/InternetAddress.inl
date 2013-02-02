@@ -25,7 +25,7 @@ namespace   Stroika {
                 inline  InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_ ()
-                    , fV6 ()
+                    , fV6_ ()
                 {
                     fV4_.s_addr = i;
                 }
