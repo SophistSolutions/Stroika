@@ -66,33 +66,46 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
     }
 }
 
-template    <>
-String  InternetAddress::As<String> () const
-{
-    switch (fAddressFamily_) {
-        case AddressFamily::UNKNOWN:
-            return String ();
-        case AddressFamily::V4:
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   IO {
+            namespace   Network {
+                template    <>
+                String  InternetAddress::As<String> () const
+                {
+                    switch (fAddressFamily_) {
+                        case AddressFamily::UNKNOWN: {
+                                return String ();
+                            }
+                            break;
+                        case AddressFamily::V4: {
 #if  qSupportPTONAndPTON
-            char    buf[INET_ADDRSTRLEN + 1];
-            char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
-            return result == nullptr ? String () : String::FromUTF8 (result);
+                                char    buf[INET_ADDRSTRLEN + 1];
+                                char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
+                                return result == nullptr ? String () : String::FromUTF8 (result);
 #else
-            AssertNotImplemented ();
-            return String ();
+                                AssertNotImplemented ();
+                                return String ();
 #endif
-        case AddressFamily::V6:
+                            }
+                            break;
+                        case AddressFamily::V6: {
 #if  qSupportPTONAndPTON
-            char    buf[INET6_ADDRSTRLEN + 1];
-            char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
-            return result == nullptr ? String () : String::FromUTF8 (result);
+                                char    buf[INET6_ADDRSTRLEN + 1];
+                                char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
+                                return result == nullptr ? String () : String::FromUTF8 (result);
 #else
-            AssertNotImplemented ();
-            return String ();
+                                AssertNotImplemented ();
+                                return String ();
 #endif
-        default:
-            RequireNotReached ();
-            return String ();
+                            default: {
+                                    RequireNotReached ();
+                                    return String ();
+                                }
+                            }
+                    }
+                }
+            }
+        }
     }
 }
-
