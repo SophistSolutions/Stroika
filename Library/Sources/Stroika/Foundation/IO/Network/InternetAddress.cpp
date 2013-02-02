@@ -81,7 +81,7 @@ namespace   Stroika {
                         case AddressFamily::V4: {
 #if  qSupportPTONAndPTON
                                 char    buf[INET_ADDRSTRLEN + 1];
-                                char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
+                                const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
 #else
                                 AssertNotImplemented ();
@@ -92,7 +92,7 @@ namespace   Stroika {
                         case AddressFamily::V6: {
 #if  qSupportPTONAndPTON
                                 char    buf[INET6_ADDRSTRLEN + 1];
-                                char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
+                                const char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
 #else
                                 AssertNotImplemented ();
