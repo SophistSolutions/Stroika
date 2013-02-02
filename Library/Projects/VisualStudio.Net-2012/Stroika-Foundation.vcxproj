@@ -361,6 +361,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.cpp" />
@@ -571,6 +572,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.h" />
@@ -718,6 +720,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />

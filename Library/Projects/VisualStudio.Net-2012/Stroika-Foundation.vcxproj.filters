@@ -456,6 +456,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -987,6 +990,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1414,6 +1420,9 @@
       <Filter>Sources\Streams</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>

@@ -21,6 +21,12 @@ namespace   Stroika {
                  *********************** IO::Network::InternetAddress ***************************
                  ********************************************************************************
                  */
+                inline  InternetAddress::InternetAddress ()
+                    : fAddressFamily_ (AddressFamily::UNKNOWN)
+                    , fV4_ ()
+                    , fV6_ ()
+                {
+                }
 #if     qPlatform_POSIX
                 inline  InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
@@ -54,6 +60,13 @@ namespace   Stroika {
                 {
                     return fAddressFamily_;
                 }
+#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                template    <typename T>
+                T   InternetAddress::As () const
+                {
+                    static_assert (false, "Only specifically specialized variants are supported");
+                }
+#endif
 #if     qPlatform_POSIX
                 template    <>
                 in_addr_t   InternetAddress::As<in_addr_t> () const

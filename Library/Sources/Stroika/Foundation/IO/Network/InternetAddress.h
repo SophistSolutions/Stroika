@@ -57,6 +57,7 @@ namespace   Stroika {
                     };
 
                 public:
+                    InternetAddress ();
                     /**
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
                      *  If the address is unparsable according to the rules specified, an exception will be thrown.
