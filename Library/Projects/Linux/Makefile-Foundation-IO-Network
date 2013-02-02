@@ -16,6 +16,7 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)InternetAddress.o\
 	$(ObjDir)Socket.o\
 	$(ObjDir)SocketStream.o\
 	$(ObjDir)URL.o\
