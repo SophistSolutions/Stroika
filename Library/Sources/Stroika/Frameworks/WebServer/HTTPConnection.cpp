@@ -49,8 +49,8 @@ HTTPConnection::~HTTPConnection ()
 
 void    HTTPConnection::ReadHeaders ()
 {
-	// @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
-	// Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
+    // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
+    // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
 
 
     {
