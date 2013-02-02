@@ -98,11 +98,13 @@ namespace   Stroika {
                                 AssertNotImplemented ();
                                 return String ();
 #endif
-                            default: {
-                                    RequireNotReached ();
-                                    return String ();
-                                }
                             }
+                            break;
+                        default: {
+                                RequireNotReached ();
+                                return String ();
+                            }
+                            break;
                     }
                 }
             }
