@@ -47,6 +47,9 @@ namespace   Stroika {
                  */
                 class InternetAddress {
                 public:
+                    /**
+                     *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
+                     */
                     enum class  AddressFamily {
                         UNKNOWN = AF_UNSPEC,
                         V4 = AF_INET,
@@ -54,20 +57,42 @@ namespace   Stroika {
                     };
 
                 public:
+                    /**
+                     *  Construct an InternetAddress object from a string (with optionally specified address family).
+                     *  If the address is unparsable according to the rules specified, an exception will be thrown.
+                     */
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
 #if     qPlatform_POSIX
+                    /**
+                     *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
+                     */
                     InternetAddress (const in_addr_t& i);
 #endif
+                    /**
+                     *  Construct an InternetAddress from in_addr - V4 address.
+                     */
                     InternetAddress (const in_addr& i);
+                    /**
+                     *  Construct an InternetAddress from in6_addr - V6 address.
+                     */
                     InternetAddress (const in6_addr& i);
 
                 public:
+                    /**
+                     *  Check if unspecified.
+                     */
                     nonvirtual  bool    empty () const;
 
                 public:
+                    /**
+                     *  Make it empty().
+                     */
                     nonvirtual  void    clear ();
 
                 public:
+                    /**
+                     *  This can be V4, V6, or UNKNOWN, and iff UNKNOWN, then empty () will return true.
+                     */
                     nonvirtual  AddressFamily   GetAddressFamily () const;
 
                 public:
@@ -79,7 +104,7 @@ namespace   Stroika {
                      *      As<in6_addr> ();        // GetAddressFamily () == V6 only
                      */
                     template    <typename T>
-                    T   As () const;
+                    nonvirtual  T   As () const;
 
                 private:
                     AddressFamily   fAddressFamily_;

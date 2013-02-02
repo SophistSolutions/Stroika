@@ -15,7 +15,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 
-#define     qSupportPTONAndPTON (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
+#define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
 
 
@@ -43,7 +43,7 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
         }
         switch (af) {
             case AddressFamily::V4: {
-#if     qSupportPTONAndPTON
+#if     qSupportPTONAndPTON_
                     Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.AsUTF8 ().c_str (), &fV4_));
 #elif   qPlatform_Windows
                     fV4_.s_addr = ::inet_addr (s.AsUTF8 ().c_str ());
@@ -54,7 +54,7 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
                 }
                 break;
             case AddressFamily::V6: {
-#if     qSupportPTONAndPTON
+#if     qSupportPTONAndPTON_
                     Execution::ThrowErrNoIfNegative (inet_pton (AF_INET6, s.AsUTF8 ().c_str (), &fV6_));
 #else
                     AssertNotImplemented ();
@@ -79,7 +79,7 @@ namespace   Stroika {
                             }
                             break;
                         case AddressFamily::V4: {
-#if  qSupportPTONAndPTON
+#if  qSupportPTONAndPTON_
                                 char    buf[INET_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
@@ -90,7 +90,7 @@ namespace   Stroika {
                             }
                             break;
                         case AddressFamily::V6: {
-#if  qSupportPTONAndPTON
+#if  qSupportPTONAndPTON_
                                 char    buf[INET6_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
