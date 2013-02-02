@@ -41,12 +41,14 @@ namespace   Stroika {
             using   std::shared_ptr;
 
 
-            /*
-             * This class is a useful helper for managing a set of connections. You can start it and stop it (it maintains internal threads).
-             * And you can hand it HTTPConnections, along with a set of handlers, and it will monitor the connections, and when any is ready
-             * with more input, it will assign the appropriate handler to handle the request, and produce the response.
+            /**
+             *  This class is a useful helper for managing a set of connections. You can start it and stop it
+             *  (it maintains internal threads). And you can hand it HTTPConnections, along with a set of handlers,
+             *  and it will monitor the connections, and when any is ready with more input, it will assign the
+             *  appropriate handler to handle the request, and produce the response.
              *
-             * This doesn;t CURRENTLY support keepalives or thread pooling - but those functions will be builtin here (eventiually) or a subclass.
+             *  This doesn't CURRENTLY support keepalives.
+             *  This doesn't CURRENTLY (really) support a threadpool (it has one but just puts one thread inside).
              */
             class   ConnectionManager {
             private:
@@ -71,9 +73,10 @@ namespace   Stroika {
                 nonvirtual  void    AbortConnection (const shared_ptr<HTTPConnection>& conn);
 
             public:
-                /*
-                 * We need some sort of status flag on connections - saying of they are OPEN or not - or done. But this will return just those
-                 * which are not 'done'. Of course - due to asyncrhony, by the time one looks at the list, some may already be done.
+                /**
+                 *  We need some sort of status flag on connections - saying of they are OPEN or not - or done.
+                 *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
+                 *  by the time one looks at the list, some may already be done.
                  */
                 nonvirtual  vector<shared_ptr<HTTPConnection>> GetConnections () const;
 
@@ -91,6 +94,8 @@ namespace   Stroika {
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?
                 //
                 // But for now - KISS
+                //
+                // Note - for now - we dont even handle servicing connections in the threadpool!!! - just one thread
                 Execution::ThreadPool                           fThreads_;
             };
 
