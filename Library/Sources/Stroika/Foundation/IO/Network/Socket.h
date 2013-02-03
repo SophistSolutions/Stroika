@@ -21,14 +21,10 @@ namespace   Stroika {
                 using   Characters::String;
 
 
-
-
                 /**
                  * TODO:
                  *
-                 *      @todo   Document sockets like pointer
-                 *              Document of not detached then when last refvount goes away socket closed.
-                 *              Add close method. Since as smart pr just detach envelope not enuf.
+                 *      @todo   Add close method. Since as smart pr just detach envelope not enuf.
                  *              Effectively closures other smart pointers to same logical socket.
                  *              Means apid cannot assert about closed but instead treat as exception
                  *
@@ -38,33 +34,47 @@ namespace   Stroika {
                  *              be CLSOED without closing udnerling socket (if someone else has refernce to it).
                  *
                  *      @todo   Docuemnt (or define new expcetion) thrown when operaiton done on CLOSED socket.
+                 *
+                 *      @todo   Document THREADSAFETY.
                  */
 
 
                 /**
+                 *  Note that Socket acts a bit like a smart_ptr<> - to an underlying operating system object. They can be assigned
+                 *  to one another, and those assigned copies all refer to the same underlying object.
+                 *
+                 *  Closing one, closes them all (though overwriting one just has the effect of detatching from the underlying socket.
+                 *
+                 *  When the last reference to an underlying socket represenation is lost, the native socket is automatically closed
+                 *  (unless manually Detached first).
+                 *
                  */
                 class   Socket {
                 public:
-                    // Platform Socket descriptor - file descriptor on unix (something like this on windoze)
+                    /**
+                     *  Platform Socket descriptor - file descriptor on unix (something like this on windoze)
+                     */
 #if     qPlatform_Windows
                     typedef SOCKET  PlatformNativeHandle;
 #else
-                    typedef int PlatformNativeHandle;
+                    typedef int     PlatformNativeHandle;
 #endif
                 protected:
                     class   _Rep;
 
                 public:
+                    /**
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
                     // TODO:
                     //          We will need an abstract Socket object, and maybe have  it refernce counted so close can happen when last refernce goes
                     //  away!
-                    //
+                    */
                     Socket ();
+                    Socket (Socket && s);
                     Socket (const Socket& s);
 
                 public:
-                    /*
+                    /**
                      *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
                      *  when the last reference to the socket disappears (or when someone calls close).
                      *
@@ -73,20 +83,23 @@ namespace   Stroika {
                     static  Socket  Attach (PlatformNativeHandle sd);
 
                 public:
-                    /*
+                    /**
                      *  Marks this Socket (and and sockets copied from it, before or after). This can be used
                      *  to prevent the underlying native socket from being closed.
                      */
                     nonvirtual  PlatformNativeHandle    Detach ();
 
                 public:
+                    // NYI. and API must be ammended to include most bind properites, like the flags...
                     static  void    Bind (const SocketAddress& sockAddr);
 
                 protected:
-                    Socket (const shared_ptr<_Rep>& rep);
+                    explicit Socket (shared_ptr<_Rep> && rep);
+                    explicit Socket (const shared_ptr<_Rep>& rep);
 
                 public:
                     ~Socket ();
+                    nonvirtual  const Socket& operator= (Socket && s);
                     nonvirtual  const Socket& operator= (const Socket& s);
 
                 public:
@@ -140,6 +153,7 @@ namespace   Stroika {
                     virtual Socket  Accept () = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                 };
+
 
             }
         }
