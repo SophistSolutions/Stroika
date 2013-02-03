@@ -147,14 +147,22 @@ bool    InternetAddress::IsLocalhostAddress () const
             break;
         case AddressFamily::V6: {
                 return
-                    (fV6_.s6_words[0] == 0) and
-                    (fV6_.s6_words[1] == 0) and
-                    (fV6_.s6_words[2] == 0) and
-                    (fV6_.s6_words[3] == 0) and
-                    (fV6_.s6_words[4] == 0) and
-                    (fV6_.s6_words[5] == 0) and
-                    (fV6_.s6_words[6] == 0) and
-                    (fV6_.s6_words[7] == 0x0100)
+                    fV6_.s6_addr[0] == 0 and
+                    fV6_.s6_addr[1] == 0 and
+                    fV6_.s6_addr[2] == 0 and
+                    fV6_.s6_addr[3] == 0 and
+                    fV6_.s6_addr[4] == 0 and
+                    fV6_.s6_addr[5] == 0 and
+                    fV6_.s6_addr[6] == 0 and
+                    fV6_.s6_addr[7] == 0 and
+                    fV6_.s6_addr[8] == 0 and
+                    fV6_.s6_addr[9] == 0 and
+                    fV6_.s6_addr[10] == 0 and
+                    fV6_.s6_addr[11] == 0 and
+                    fV6_.s6_addr[12] == 0 and
+                    fV6_.s6_addr[13] == 0 and
+                    fV6_.s6_addr[14] == 1 and
+                    fV6_.s6_addr[15] == 0
                     ;
             }
             break;
