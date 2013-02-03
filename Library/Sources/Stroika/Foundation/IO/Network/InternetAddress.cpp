@@ -187,7 +187,7 @@ bool    InternetAddress::IsMulticastAddress () const
             }
             break;
         case AddressFamily::V6: {
-                return (fV6_.s6_bytes[0] == 0xff);
+                return (fV6_.s6_addr[0] == 0xff);
             }
             break;
     }
