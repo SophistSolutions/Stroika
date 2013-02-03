@@ -42,7 +42,29 @@ namespace   Stroika {
                 inline  SocketAddress::SocketAddress (const InternetAddress& iaddr, uint16_t portNumber)
                     : fSocketAddress_ ()
                 {
-                    AssertNotImplemented ();
+                    ::memset (&fSocketAddress_, 0, sizeof (fSocketAddress_));
+                    switch (iaddr.GetAddressFamily ()) {
+                        case    AF_INET: {
+                                Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
+                                sockaddr_in& as = reinterpret_cast<sockaddr_in&> (fSocketAddress_);
+                                as.sin_family = AF_INET;
+                                as.sin_port = htons (portNumber);
+                                as.sin_addr = iaddr.As<in_addr> ();
+                            }
+                            break;
+                        case    AF_INET6: {
+                                Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
+                                sockaddr_in6& as = reinterpret_cast<sockaddr_in6&> (fSocketAddress_);
+                                as.sin6_family = AF_INET6;
+                                as.sin6_port = htons (portNumber);
+                                as.sin6_addr = iaddr.As<in6_addr> ();
+                            }
+                            break;
+                        default: {
+                                // just leave blank - no assert?
+                            }
+                            break;
+                    }
                 }
                 inline  bool    SocketAddress::empty () const
                 {
@@ -90,12 +112,12 @@ namespace   Stroika {
                         case AF_INET: {
                                 Assert (sizeof (sockaddr_in) == sizeof (sockaddr));
                                 const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
-                                return as.sin_port;
+                                return ntohs (as.sin_port);
                             }
                         case AF_INET6: {
                                 Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
                                 const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
-                                return as.sin6_port;
+                                return ntohs (as.sin6_port);
                             }
                         default: {
                                 AssertNotReached ();
