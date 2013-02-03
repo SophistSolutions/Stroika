@@ -30,11 +30,16 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 
 
 namespace {
-    // @todo - check if this localhost is right? May have byte order backwards - net or host byteorder???
-    constexpr   in_addr     kV4Localhost_   =   { 127, 0, 0, 1 };
+    inline  constexpr   in_addr kV4Localhost_ ()
+    {
+        // @todo - check if this localhost is right? May have byte order backwards - net or host byteorder???
+        in_addr p;
+        p.s_addr = INADDR_LOOPBACK;
+        return p;
+    }
     constexpr   in6_addr    kV6Localhost_   =   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
 }
-const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_);
+const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_ ());
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
 
 
