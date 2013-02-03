@@ -36,6 +36,10 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 
 namespace   {
+    /*
+     *  Internally we use this -1 value to mean invalid socket, but keep that a private implementation
+     *  detail, since I'm not sure it will be good for all socket implementations?
+     */
 #if     qPlatform_Windows
     constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   INVALID_SOCKET;
 #elif   qPlatform_POSIX
@@ -111,16 +115,19 @@ namespace   {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, const SocketAddress& sockAddr) override {
+            virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override {
                 // Must do erorr checking and throw exceptions!!!
+                sockaddr    sa;
+                socklen_t   salen   =   sizeof(sa);
+                int         result  =   0;
 #if     qPlatform_Windows
-                AssertNotImplemented ();
-                //int       n   =   ::_write (fSD_, start, end - start);
+                Execution::ThrowErrNoIfNegative (result = ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen));
 #elif   qPlatform_POSIX
-                int     n   =   Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+                Execution::ThrowErrNoIfNegative (result = Execution::Handle_ErrNoResultInteruption ([this, &start, &end, &from, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); }));
 #else
                 AssertNotImplemented ();
 #endif
+                return static_cast<size_t> (result);
             }
             virtual void    Listen (unsigned int backlog) override {
                 Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
@@ -194,15 +201,6 @@ Socket::_Rep::~_Rep ()
  ********************************** Network::Socket *****************************
  ********************************************************************************
  */
-#if 0
-const   String  Socket::BindProperties::kANYHOST;
-#endif
-
-Socket::Socket ()
-    : fRep_ ()
-{
-}
-
 Socket::Socket (SocketKind socketKind)
     : fRep_ ()
 {
@@ -213,20 +211,6 @@ Socket::Socket (SocketKind socketKind)
     Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #endif
     fRep_ = std::move (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sfd)));
-}
-
-Socket::Socket (const shared_ptr<_Rep>& rep)
-    : fRep_ (rep)
-{
-}
-
-Socket::Socket (const Socket& s)
-    : fRep_ (s.fRep_)
-{
-}
-
-Socket::~Socket ()
-{
 }
 
 Socket  Socket::Attach (PlatformNativeHandle sd)
@@ -244,17 +228,19 @@ Socket::PlatformNativeHandle    Socket::Detach ()
     return h;
 }
 
-const Socket& Socket::operator= (const Socket& s)
-{
-    if (fRep_ != s.fRep_) {
-        fRep_ = s.fRep_;
-    }
-    return *this;
-}
-
 void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
     PlatformNativeHandle    sfd =    fRep_->GetNativeSocket ();
+
+    {
+        // Indicates that the rules used in validating addresses supplied in a bind(2) call should allow
+        // reuse of local addresses. For AF_INET sockets this means that a socket may bind, except when
+        // there is an active listening socket bound to the address. When the listening socket is bound
+        // to INADDR_ANY with a specific port then it is not possible to bind to this port for any local address.
+        int    on = bindFlags.fReUseAddr ? 1 : 0;
+        Execution::Handle_ErrNoResultInteruption ([&sfd, &on] () -> int { return ::setsockopt(sfd, SOL_SOCKET,  SO_REUSEADDR, (char*)&on, sizeof(on)); });
+    }
+
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
     Execution::Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));});
 }
@@ -348,9 +334,9 @@ void    Socket::SendTo (const Byte* start, const Byte* end, const SocketAddress&
     fRep_->SendTo (start, end, sockAddr);
 }
 
-size_t    Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, const SocketAddress& sockAddr)
+size_t    Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress)
 {
-    return fRep_->ReceiveFrom (intoStart, intoEnd, sockAddr);
+    return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress);
 }
 
 void    Socket::Close ()
@@ -360,4 +346,12 @@ void    Socket::Close ()
         fRep_->Close ();
         fRep_.reset ();
     }
+}
+
+bool    Socket::IsOpen () const
+{
+    if (fRep_.get () != nullptr) {
+        return fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_;
+    }
+    return false;
 }
