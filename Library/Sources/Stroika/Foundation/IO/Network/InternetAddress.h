@@ -33,6 +33,8 @@
  *
  *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 - and endianness. Only about 1/2 right...
  *
+ *      @todo   It would be nice if we could find a reasonable way to make kAddrAny etc constexpr
+ *
  */
 
 
@@ -144,12 +146,12 @@ namespace   Stroika {
 
 
                 namespace V4 {
-                    extern  constexpr   InternetAddress kAddrAny;
-                    extern  constexpr   InternetAddress kLocalhost;
+                    extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kLocalhost;
                 }
                 namespace V6 {
-                    extern  constexpr   InternetAddress kAddrAny;
-                    extern  constexpr   InternetAddress kLocalhost;
+                    extern  const   InternetAddress kAddrAny;
+                    extern  const   InternetAddress kLocalhost;
                 }
 
 

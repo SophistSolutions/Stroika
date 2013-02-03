@@ -24,18 +24,18 @@ namespace {
 }
 
 
-constexpr   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
-constexpr   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
+const   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
+const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 
 
 
 namespace {
-    /// WRONG
-    constexpr   in_addr     kV4Localhost_   =   { 0 };
+    // @todo - check if this localhost is right? May have byte order backwards - net or host byteorder???
+    constexpr   in_addr     kV4Localhost_   =   { 127, 0, 0, 1 };
     constexpr   in6_addr    kV6Localhost_   =   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
 }
-constexpr   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_);
-constexpr   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
+const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_);
+const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
 
 
 
@@ -138,7 +138,7 @@ bool    InternetAddress::IsLocalhostAddress () const
         case AddressFamily::V4: {
                 // 127.0.0.x
                 // Not sure - might have byte order backwards?
-                return fV4_.S_un.S_un_b.s_b1 == 127 && fV4_.S_un.S_un_b.s_b2 == 0 and fV4_.S_un.S_un_b.s_b3 == 0;
+                return fV4_.s_net == 127 && fV4_.s_host == 0 and fV4_.s_lh == 0;
             }
             break;
         case AddressFamily::V6: {
