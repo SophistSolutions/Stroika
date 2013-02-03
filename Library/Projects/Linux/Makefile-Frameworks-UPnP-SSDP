@@ -5,12 +5,29 @@ include	../../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../../
 SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/
 
+.PHONY:			Client Server
+
 vpath %cpp $(SrcDir)
 
-Objs	=	\
-	$(ObjDir)BinaryInputStreamFromIStreamAdapter.o\
-	$(ObjDir)FStreamSupport.o\
-	$(ObjDir)TextInputStreamFromIStreamAdapter.o\
-	$(ObjDir)Utilities.o\
+SubDirs	=	\
+	Client	\
+	Server	\
 
-all:	$(Objs)   $(SubDirs)
+Objs	=	\
+
+all:	$(Objs)
+
+Client_OBJS := $(shell cd Client; make -s list-objs)
+Client_OBJS := $(addprefix "./Client/", $(Client_OBJS))
+
+Server_OBJS := $(shell cd Server; make -s list-objs)
+Server_OBJS := $(addprefix "./Server/", $(Server_OBJS))
+
+list-objs::
+	@echo $(Client_OBJS) $(Server_OBJS)
+
+Client:
+	(cd Client; make)
+
+Server:
+	(cd Server; make)

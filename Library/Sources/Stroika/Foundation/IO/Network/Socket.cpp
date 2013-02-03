@@ -206,7 +206,7 @@ Socket::Socket (SocketKind socketKind)
 {
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+    Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
 #else
     Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #endif
