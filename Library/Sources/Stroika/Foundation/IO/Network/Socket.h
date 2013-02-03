@@ -28,6 +28,10 @@ namespace   Stroika {
                  *              and acutally handle all the nullptr cases...
                  *
                  *      @todo   Document THREADSAFETY.
+                 *
+                 *      @todo   See about socket 'connected' state, and the 'connect' operation.
+                 *              And see about send/recv() API - and docuemnt about only working when
+                 *              connected.
                  */
 
 
@@ -59,7 +63,7 @@ namespace   Stroika {
                 public:
                     /**
                      * 'second arg' to ::socket() call
-                    */
+                     */
                 enum class SocketKind : int {
                         STREAM  =   SOCK_STREAM,
                         DGRAM   =   SOCK_DGRAM,
@@ -69,11 +73,13 @@ namespace   Stroika {
 
                 public:
                     /**
-                    // Note - socket is CLOSED (filesystem close for now) in DTOR
-                    // TODO:
-                    //          We will need an abstract Socket object, and maybe have  it refernce counted so close can happen when last refernce goes
-                    //  away!
-                    */
+                     *  Note - socket is CLOSED (filesystem close for now) in DTOR
+                     *
+                     *  TODO:
+                     *          We will need an abstract Socket object, and maybe have  it refernce
+                     *          counted so close can happen when last refernce goes
+                     *          away!
+                     */
                     Socket ();
                     Socket (SocketKind socketKind);
                     Socket (Socket && s);
@@ -90,10 +96,13 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  This function associates a Platform native socket handle with a Stroika wrapper object.
+                     *
                      *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
                      *  when the last reference to the socket disappears (or when someone calls close).
                      *
-                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle.
+                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle before destroying
+                     *  the associated Socket object.
                      */
                     static  Socket  Attach (PlatformNativeHandle sd);
 
@@ -112,17 +121,17 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * API must be ammended to include most bind properites, like the flags...
+                     *  Associate this socket object with the given address.
+                     *
+                     *  @todo   SB an overload taking just a port, and defaults to INADDRANY with that port.
+                     *          Port is only thing really needed, but InternetAddress part provided as arg
+                     *          too in case you want to bind to a particular interface.
+                     *
+                     *  @todo   CLARIFY if a socket can be bound to more than one address (and what about unbind)?
+                     *
+                     *  @see POSIX bind()
                      */
                     nonvirtual void   Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
-
-
-                public:
-                    /**
-                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
-                     *
-                     */
-                    nonvirtual  Socket  Accept ();
 
 
                 public:
@@ -132,6 +141,17 @@ namespace   Stroika {
                      *   throws on error, and otherwise means should call accept
                      */
                     nonvirtual  void    Listen (unsigned int backlog);
+
+                public:
+                    /**
+                     *  After Listen() on a connected socket returns (not throws) - you can call Accept() on tha same
+                     *  socket to allocate a NEW socket with the new connection stream.
+                     *
+                     *  @todo   Need timeout on this API? Or global (for instance) timeout?
+                     *
+                     */
+                    nonvirtual  Socket  Accept ();
+
 
                 public:
                     /**
@@ -164,16 +184,17 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * Note that Socket is an envelope class, and there could be multiple references to
-                     * the same underlying socket. But this closes ALL of them. It also removes the reference
-                     * to the underlying rep (meaning that some Socket envelopes COULD have a rep with an underlying
-                     * closed socket).
+                     *  Note that Socket is an envelope class, and there could be multiple references to
+                     *  the same underlying platform socket. But this closes ALL of them. It also removes the reference
+                     *  to the underlying rep (meaning that some Socket envelopes COULD have a rep with an
+                     *  underlying closed socket).
                      */
                     nonvirtual  void    Close ();
 
                 public:
                     /**
-                     *  A socket can be open or closed.
+                     *  A socket can be open or closed. Open is roughly analagous to non-null. A socket once closed
+                     *  can never be 'Opened' - but you can assign a new Open socket to the Socket object.
                      *
                      *  @see Close
                      */
@@ -196,13 +217,13 @@ namespace   Stroika {
                 class   Socket::_Rep {
                 public:
                     virtual ~_Rep ();
-                    virtual void    Close () = 0;
-                    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) = 0;
-                    virtual void    Write (const Byte* start, const Byte* end) = 0;
-                    virtual void    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
-                    virtual size_t  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
-                    virtual void    Listen (unsigned int backlog) = 0;
-                    virtual Socket  Accept () = 0;
+                    virtual void                    Close () = 0;
+                    virtual size_t                  Read (Byte* intoStart, Byte* intoEnd) = 0;
+                    virtual void                    Write (const Byte* start, const Byte* end) = 0;
+                    virtual void                    SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) = 0;
+                    virtual size_t                  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
+                    virtual void                    Listen (unsigned int backlog) = 0;
+                    virtual Socket                  Accept () = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                 };
 
