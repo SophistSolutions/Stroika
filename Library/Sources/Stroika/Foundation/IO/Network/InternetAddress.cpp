@@ -30,7 +30,7 @@ const   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
 
 
 namespace {
-    inline  constexpr   in_addr kV4Localhost_ ()
+    inline  const   in_addr kV4Localhost_ ()
     {
         // @todo - check if this localhost is right? May have byte order backwards - net or host byteorder???
         in_addr p;
@@ -142,8 +142,7 @@ bool    InternetAddress::IsLocalhostAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // 127.0.0.x
-                // Not sure - might have byte order backwards?
-                return fV4_.s_net == 127 && fV4_.s_host == 0 and fV4_.s_lh == 0;
+                return (fV4_.s_addr & 0xff000000) == 0x7f000000;
             }
             break;
         case AddressFamily::V6: {
@@ -176,7 +175,7 @@ bool    InternetAddress::IsMulticastAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // Not sure - might have byte order backwards??? or totally wrong - a bit of a guess?
-                return (fV4_.S_un.S_un_b.s_b1 & 0xF0) == 0xE0;
+                return (fV4_.s_addr & 0xf0000000) == 0xE0000000;
             }
             break;
         case AddressFamily::V6: {
