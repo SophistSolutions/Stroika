@@ -6,12 +6,9 @@
 
 #include    "../../StroikaPreComp.h"
 
-#if     qPlatform_Windows
-#include    <WinSock2.h>
-#endif
-
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "SocketAddress.h"
 
 
 
@@ -24,16 +21,16 @@ namespace   Stroika {
                 using   Characters::String;
 
 
-                // Platform Socket descriptor - file descriptor on unix (something like this on windoze)
-#if     qPlatform_Windows
-                typedef SOCKET  NativeSocket;
-#else
-                typedef int NativeSocket;
-#endif
 
 
                 /**
                  * TODO:
+                 *
+                 *      @todo   Document sockets like pointer
+                 *              Document of not detached then when last refvount goes away socket closed.
+                 *              Add close method. Since as smart pr just detach envelope not enuf.
+                 *              Effectively closures other smart pointers to same logical socket.
+                 *              Means apid cannot assert about closed but instead treat as exception
                  *
                  *      @todo   Maybe add IsClosed () method (or equiv is empty/isnull) - and if rep null OR rep non-null but underling rep is closed
                  *              return true. Then define a bunch of requiresments here (liek wti BIND) in terms of that (must be CLOSED).
@@ -47,8 +44,16 @@ namespace   Stroika {
                 /**
                  */
                 class   Socket {
+                public:
+                    // Platform Socket descriptor - file descriptor on unix (something like this on windoze)
+#if     qPlatform_Windows
+                    typedef SOCKET  PlatformNativeHandle;
+#else
+                    typedef int PlatformNativeHandle;
+#endif
                 protected:
                     class   _Rep;
+
                 public:
                     // Note - socket is CLOSED (filesystem close for now) in DTOR
                     // TODO:
@@ -58,15 +63,31 @@ namespace   Stroika {
                     Socket ();
                     Socket (const Socket& s);
 
-                    // TODO: By default - when refcount goes to zero - this socket auto-closed. MAYBE offer overload where that is not so?
-                    explicit Socket (NativeSocket sd);
+                public:
+                    /*
+                     *  Once a PlatformNativeHandle is attached to Socket object, it will be automatically closed
+                     *  when the last reference to the socket disappears (or when someone calls close).
+                     *
+                     *  To prevent that behavior, you can Detatch the PlatformNativeHandle.
+                     */
+                    static  Socket  Attach (PlatformNativeHandle sd);
+
+                public:
+                    /*
+                     *  Marks this Socket (and and sockets copied from it, before or after). This can be used
+                     *  to prevent the underlying native socket from being closed.
+                     */
+                    nonvirtual  PlatformNativeHandle    Detach ();
+
+                public:
+                    static  void    Bind (const SocketAddress& sockAddr);
 
                 protected:
                     Socket (const shared_ptr<_Rep>& rep);
 
                 public:
                     ~Socket ();
-                    const Socket& operator= (const Socket& s);
+                    nonvirtual  const Socket& operator= (const Socket& s);
 
                 public:
                     struct  BindProperties {
@@ -100,7 +121,7 @@ namespace   Stroika {
 
                 public:
                     // DOCUMENT WHAT THIS DOES WITH NO REP??? Or for SSL sockets - maybe lose this??
-                    nonvirtual  NativeSocket    GetNativeSocket () const;
+                    nonvirtual  PlatformNativeHandle    GetNativeSocket () const;
 
                 private:
                     shared_ptr<_Rep> fRep_;
@@ -117,7 +138,7 @@ namespace   Stroika {
                     virtual void    Write (const Byte* start, const Byte* end) = 0;
                     virtual void    Listen (unsigned int backlog) = 0;
                     virtual Socket  Accept () = 0;
-                    virtual NativeSocket    GetNativeSocket () const = 0;
+                    virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                 };
 
             }

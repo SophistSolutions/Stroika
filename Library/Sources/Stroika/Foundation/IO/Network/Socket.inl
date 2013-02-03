@@ -15,13 +15,19 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
-                inline  NativeSocket    Socket::GetNativeSocket () const
+
+                /*
+                 ********************************************************************************
+                 ********************* Foundation::IO::Network::Socket **************************
+                 ********************************************************************************
+                 */
+                inline  Socket::PlatformNativeHandle    Socket::GetNativeSocket () const
                 {
                     return fRep_->GetNativeSocket ();
                 }
 
-            }
 
+            }
         }
     }
 }

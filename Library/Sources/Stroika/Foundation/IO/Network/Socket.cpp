@@ -35,9 +35,9 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 namespace   {
 #if     qPlatform_Windows
-    const   NativeSocket    kINVALID_NATIVE_HANDLE  =   INVALID_SOCKET;
+    const   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE  =   INVALID_SOCKET;
 #elif   qPlatform_POSIX
-    const   NativeSocket    kINVALID_NATIVE_HANDLE  =   -1; // right value??
+    const   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE  =   -1; // right value??
 #endif
 }
 
@@ -51,11 +51,11 @@ namespace   {
     struct  REALSOCKET_ : public Socket {
         class   Rep_ : public Socket::_Rep {
         public:
-            NativeSocket    fSD_;
+            Socket::PlatformNativeHandle    fSD_;
         public:
             DECLARE_USE_BLOCK_ALLOCATION(Rep_);
         public:
-            Rep_ (NativeSocket sd)
+            Rep_ (Socket::PlatformNativeHandle sd)
                 : fSD_ (sd) {
             }
             ~Rep_ () {
@@ -118,7 +118,7 @@ namespace   {
 
 AGAIN:
                 socklen_t   sz  =   sizeof (peer);
-                NativeSocket    r = ::accept (fSD_, &peer, &sz);
+                Socket::PlatformNativeHandle    r = ::accept (fSD_, &peer, &sz);
                 // must update Socket object so CTOR also takes (optional) sockaddr (for the peer - mostly to answer  other quesiutona later)
                 if (r < 0) {
                     // HACK - so we get interuptabilitiy.... MUST IMPROVE!!!
@@ -133,9 +133,9 @@ AGAIN:
 #elif   qPlatform_POSIX
                 Execution::ThrowErrNoIfNegative (r);
 #endif
-                return Socket (r);
+                return Socket::Attach (r);
             }
-            virtual NativeSocket    GetNativeSocket () const override {
+            virtual Socket::PlatformNativeHandle    GetNativeSocket () const override {
                 return fSD_;
             }
         };
@@ -188,13 +188,19 @@ Socket::Socket (const Socket& s)
 {
 }
 
-Socket::Socket (NativeSocket sd)
-    : fRep_ (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)))
+Socket::~Socket ()
 {
 }
 
-Socket::~Socket ()
+Socket  Socket::Attach (PlatformNativeHandle sd)
 {
+    return Socket (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd)));
+}
+
+Socket::PlatformNativeHandle    Socket::Detach ()
+{
+    AssertNotImplemented ();
+    return 0;
 }
 
 const Socket& Socket::operator= (const Socket& s)
@@ -232,7 +238,7 @@ void    Socket::Bind (const BindProperties& bindProperties)
     useAddr.sin_addr.s_addr = htonl(INADDR_ANY);
     useAddr.sin_port = htons((short)bindProperties.fPort);
 
-    NativeSocket sd;
+    Socket::PlatformNativeHandle sd;
 #if     qPlatform_POSIX
     sd = Execution::Handle_ErrNoResultInteruption ([]() -> int { return socket (AF_INET, SOCK_STREAM, 0); });
 #else
