@@ -102,7 +102,7 @@ namespace   Stroika {
                             }
                             break;
                         case AddressFamily::V4: {
-#if  qSupportPTONAndPTON_
+#if		qSupportPTONAndPTON_
                                 char    buf[INET_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
@@ -113,7 +113,7 @@ namespace   Stroika {
                             }
                             break;
                         case AddressFamily::V6: {
-#if  qSupportPTONAndPTON_
+#if		qSupportPTONAndPTON_
                                 char    buf[INET6_ADDRSTRLEN + 1];
                                 const char*   result  =   ::inet_ntop (AF_INET6, &fV6_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
@@ -183,7 +183,7 @@ bool    InternetAddress::IsMulticastAddress () const
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 // Not sure - might have byte order backwards??? or totally wrong - a bit of a guess?
-                return (fV4_.s_addr & 0xf0000000) == 0xE0000000;
+                return (fV4_.s_addr & 0xf0000000) == 0xe0000000;
             }
             break;
         case AddressFamily::V6: {
