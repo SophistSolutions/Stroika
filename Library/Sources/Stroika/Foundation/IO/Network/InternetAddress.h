@@ -69,6 +69,7 @@ namespace   Stroika {
                      *  Construct an InternetAddress object from a string (with optionally specified address family).
                      *  If the address is unparsable according to the rules specified, an exception will be thrown.
                      */
+                    InternetAddress (const string& s, AddressFamily af = AddressFamily::UNKNOWN);
                     InternetAddress (const String& s, AddressFamily af = AddressFamily::UNKNOWN);
 #if     qPlatform_POSIX
                     /**

@@ -211,7 +211,7 @@ const Socket& Socket::operator= (const Socket& s)
     return *this;
 }
 
-void    Socket::Bind (const BindProperties& bindProperties)
+void    Socket::OLD_Bind (const BindProperties& bindProperties)
 {
     // Should this throw if already has something bound - already non-null!???
     if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {

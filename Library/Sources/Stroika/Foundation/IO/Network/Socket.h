@@ -90,8 +90,15 @@ namespace   Stroika {
                     nonvirtual  PlatformNativeHandle    Detach ();
 
                 public:
+                    struct  BindFlags {
+                        BindFlags ();
+
+                        bool    fReUseAddr: 1;          // SO_REUSEADDR
+                    };
+
+                public:
                     // NYI. and API must be ammended to include most bind properites, like the flags...
-                    static  void    Bind (const SocketAddress& sockAddr);
+                    static  Socket    Bind (const SocketAddress& sockAddr, BindFlags bindFlags = BindFlags ());
 
                 protected:
                     explicit Socket (shared_ptr<_Rep> && rep);
@@ -113,7 +120,7 @@ namespace   Stroika {
                         unsigned int    fExtraBindFlags;        // eg. SO_REUSEADDR
                     };
                     // throws if socket already bound or valid - only legal on empty socket
-                    nonvirtual  void    Bind (const BindProperties& bindProperties);
+                    nonvirtual  void    OLD_Bind (const BindProperties& bindProperties);
                     nonvirtual  Socket  Accept ();
 
                     // throws on error, and otherwise means should call accept

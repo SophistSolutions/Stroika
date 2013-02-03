@@ -25,6 +25,15 @@ namespace   Stroika {
                 {
                     return fRep_->GetNativeSocket ();
                 }
+                inline  Socket::Socket (Socket && s)
+                    : fRep_ (std::move (s.fRep_))
+                {
+                }
+                inline  const Socket& Socket::operator= (Socket && s)
+                {
+                    fRep_ = std::move (s.fRep_);
+                    return *this;
+                }
 
 
             }

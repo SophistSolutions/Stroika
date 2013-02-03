@@ -51,25 +51,25 @@ const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
  ********************* IO::Network::InternetAddress *****************************
  ********************************************************************************
  */
-InternetAddress::InternetAddress (const String& s, AddressFamily af)
+InternetAddress::InternetAddress (const string& s, AddressFamily af)
     : fAddressFamily_ (AddressFamily::UNKNOWN)
 {
     if (not s.empty ()) {
         if (af == AddressFamily::UNKNOWN) {
             // guess format - based on '.' versus ':' in name
-            if (s.Contains ('.')) {
+            if (s.find ('.') != string::npos) {
                 af = AddressFamily::V4;
             }
-            else if (s.Contains (':')) {
+            else if (s.find (':') != string::npos) {
                 af = AddressFamily::V6;
             }
         }
         switch (af) {
             case AddressFamily::V4: {
 #if     qSupportPTONAndPTON_
-                    Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.AsUTF8 ().c_str (), &fV4_));
+                    Execution::ThrowErrNoIfNegative (inet_pton (AF_INET, s.c_str (), &fV4_));
 #elif   qPlatform_Windows
-                    fV4_.s_addr = ::inet_addr (s.AsUTF8 ().c_str ());
+                    fV4_.s_addr = ::inet_addr (s.c_str ());
 #else
                     AssertNotImplemented ();
 #endif
@@ -78,7 +78,7 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
                 break;
             case AddressFamily::V6: {
 #if     qSupportPTONAndPTON_
-                    Execution::ThrowErrNoIfNegative (inet_pton (AF_INET6, s.AsUTF8 ().c_str (), &fV6_));
+                    Execution::ThrowErrNoIfNegative (inet_pton (AF_INET6, s.c_str (), &fV6_));
 #else
                     AssertNotImplemented ();
 #endif
@@ -87,6 +87,12 @@ InternetAddress::InternetAddress (const String& s, AddressFamily af)
                 break;
         }
     }
+}
+
+InternetAddress::InternetAddress (const String& s, AddressFamily af)
+    : fAddressFamily_ (AddressFamily::UNKNOWN)
+{
+    *this = InternetAddress (s.AsUTF8 (), af);
 }
 
 namespace   Stroika {
