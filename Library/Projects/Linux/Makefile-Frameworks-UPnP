@@ -15,7 +15,7 @@ SubDirs	=	\
 Objs	=	\
 	$(ObjDir)Device.o\
 
-all:	$(Objs)
+all:	$(Objs) $(SubDirs)
 
 SSDP_OBJS := $(shell cd SSDP; make -s list-objs)
 SSDP_OBJS := $(addprefix "./SSDP/", $(SSDP_OBJS))

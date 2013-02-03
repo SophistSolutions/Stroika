@@ -719,9 +719,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_libcurl.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client_WinHTTP.inl" />

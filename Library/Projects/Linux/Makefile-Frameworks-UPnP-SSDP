@@ -15,7 +15,7 @@ SubDirs	=	\
 
 Objs	=	\
 
-all:	$(Objs)
+all:	$(Objs) $(SubDirs)
 
 Client_OBJS := $(shell cd Client; make -s list-objs)
 Client_OBJS := $(addprefix "./Client/", $(Client_OBJS))

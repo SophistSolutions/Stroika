@@ -1425,5 +1425,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\TODO.md">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
   </ItemGroup>
 </Project>
