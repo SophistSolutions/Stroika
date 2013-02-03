@@ -16,7 +16,7 @@
  *              But in background, wehnw estart  - we want to use shared_ptr<> rep, and thread in private area todo search
  *              and document callback can be called back on any thread
  *
- *		@todo	Must do muticast group add here!!! to listen to multicast messages
+ *      @todo   Must do muticast group add here!!! to listen to multicast messages
  */
 
 namespace   Stroika {
