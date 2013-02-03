@@ -28,6 +28,11 @@
  *
  *      @todo   Future versions may support converting from IPV4 address to IPV6 by assigning an
  *              IPV4 and saying As<in6_addr> ()? Or maybe have ToIPV6() method?
+ *
+ *      @todo   IsPrivateIP() NYI
+ *
+ *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 - and endianness. Only about 1/2 right...
+ *
  */
 
 
@@ -107,11 +112,45 @@ namespace   Stroika {
                     template    <typename T>
                     nonvirtual  T   As () const;
 
+                public:
+                    /**
+                     *  \req not empty ()
+                     *  Return true iff the given address is a localhost IP address (typically 127.0.0.1, but can be anything
+                     *  in that class C range, or ::1, for IPv6 or that range).
+                     */
+                    nonvirtual  bool    IsLocalhostAddress () const;
+
+                public:
+                    /**
+                     *  \req not empty ()
+                     *  Return true iff the given address is a private IP address (non-routable).
+                     */
+                    nonvirtual  bool    IsPrivateAddress () const;
+
+                public:
+                    /**
+                     *  \req not empty ()
+                     *  Return true iff the given address is a mutlicast IP address.
+                     */
+                    nonvirtual  bool    IsMulticastAddress () const;
+
                 private:
                     AddressFamily   fAddressFamily_;
-                    in_addr         fV4_;
-                    in6_addr        fV6_;
+                    union {
+                        in_addr         fV4_;
+                        in6_addr        fV6_;
+                    };
                 };
+
+
+                namespace V4 {
+                    extern  constexpr   InternetAddress kAddrAny;
+                    extern  constexpr   InternetAddress kLocalhost;
+                }
+                namespace V6 {
+                    extern  constexpr   InternetAddress kAddrAny;
+                    extern  constexpr   InternetAddress kLocalhost;
+                }
 
 
             }

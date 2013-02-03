@@ -18,6 +18,26 @@ using   namespace   Stroika::Foundation::IO::Network;
 #define     qSupportPTONAndPTON_ (qPlatform_POSIX || (qPlatformWindows && (NTDDI_VERSION >= NTDDI_VISTA)))
 
 
+namespace {
+    constexpr   in_addr     kV4AddrAny_ =   { 0 };
+    constexpr   in6_addr    kV6AddrAny_ =   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+}
+
+
+constexpr   InternetAddress V4::kAddrAny    =   InternetAddress (kV4AddrAny_);
+constexpr   InternetAddress V6::kAddrAny    =   InternetAddress (kV6AddrAny_);
+
+
+
+namespace {
+    /// WRONG
+    constexpr   in_addr     kV4Localhost_   =   { 0 };
+    constexpr   in6_addr    kV6Localhost_   =   { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+}
+constexpr   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_);
+constexpr   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
+
+
 
 
 
@@ -28,8 +48,6 @@ using   namespace   Stroika::Foundation::IO::Network;
  */
 InternetAddress::InternetAddress (const String& s, AddressFamily af)
     : fAddressFamily_ (AddressFamily::UNKNOWN)
-    , fV4_ ()
-    , fV6_ ()
 {
     if (not s.empty ()) {
         if (af == AddressFamily::UNKNOWN) {
@@ -110,4 +128,57 @@ namespace   Stroika {
             }
         }
     }
+}
+
+
+bool    InternetAddress::IsLocalhostAddress () const
+{
+    Require (not empty ());
+    switch (fAddressFamily_) {
+        case AddressFamily::V4: {
+                // 127.0.0.x
+                // Not sure - might have byte order backwards?
+                return fV4_.S_un.S_un_b.s_b1 == 127 && fV4_.S_un.S_un_b.s_b2 == 0 and fV4_.S_un.S_un_b.s_b3 == 0;
+            }
+            break;
+        case AddressFamily::V6: {
+                return
+                    (fV6_.s6_words[0] == 0) and
+                    (fV6_.s6_words[1] == 0) and
+                    (fV6_.s6_words[2] == 0) and
+                    (fV6_.s6_words[3] == 0) and
+                    (fV6_.s6_words[4] == 0) and
+                    (fV6_.s6_words[5] == 0) and
+                    (fV6_.s6_words[6] == 0) and
+                    (fV6_.s6_words[7] == 0x0100)
+                    ;
+            }
+            break;
+    }
+    AssertNotReached ();
+    return false;
+}
+
+bool    InternetAddress::IsPrivateAddress () const
+{
+    AssertNotImplemented ();
+    return false;
+}
+
+bool    InternetAddress::IsMulticastAddress () const
+{
+    Require (not empty ());
+    switch (fAddressFamily_) {
+        case AddressFamily::V4: {
+                // Not sure - might have byte order backwards??? or totally wrong - a bit of a guess?
+                return (fV4_.S_un.S_un_b.s_b1 & 0xF0) == 0xE0;
+            }
+            break;
+        case AddressFamily::V6: {
+                return (fV6_.s6_bytes[0] == 0xff);
+            }
+            break;
+    }
+    AssertNotReached ();
+    return false;
 }

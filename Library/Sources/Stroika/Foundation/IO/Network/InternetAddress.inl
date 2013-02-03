@@ -23,15 +23,11 @@ namespace   Stroika {
                  */
                 inline  InternetAddress::InternetAddress ()
                     : fAddressFamily_ (AddressFamily::UNKNOWN)
-                    , fV4_ ()
-                    , fV6_ ()
                 {
                 }
 #if     qPlatform_POSIX
                 inline  InternetAddress::InternetAddress (const in_addr_t& i)
                     : fAddressFamily_ (AddressFamily::V4)
-                    , fV4_ ()
-                    , fV6_ ()
                 {
                     fV4_.s_addr = i;
                 }
@@ -39,12 +35,10 @@ namespace   Stroika {
                 inline  InternetAddress::InternetAddress (const in_addr& i)
                     : fAddressFamily_ (AddressFamily::V4)
                     , fV4_ (i)
-                    , fV6_ ()
                 {
                 }
                 inline  InternetAddress::InternetAddress (const in6_addr& i)
                     : fAddressFamily_ (AddressFamily::V6)
-                    , fV4_ ()
                     , fV6_ (i)
                 {
                 }
