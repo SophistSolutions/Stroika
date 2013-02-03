@@ -1,0 +1,27 @@
+include ../../Configuration.mk
+include	../../SharedBuildRules.mk
+include	../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/UPnP/
+
+.PHONY:			SSDP
+
+vpath %cpp $(SrcDir)
+
+SubDirs	=	\
+	SSDP	\
+
+Objs	=	\
+	$(ObjDir)Device.o\
+
+all:	$(Objs)
+
+SSDP_OBJS := $(shell cd SSDP; make -s list-objs)
+SSDP_OBJS := $(addprefix "./SSDP/", $(SSDP_OBJS))
+
+list-objs::
+	@echo $(SSDP_OBJS)
+
+SSDP:
+	(cd SSDP; make)

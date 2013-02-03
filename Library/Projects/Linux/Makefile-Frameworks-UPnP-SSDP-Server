@@ -1,0 +1,13 @@
+include ../../../../Configuration.mk
+include	../../../../SharedBuildRules.mk
+include	../../../../SharedMakeVariables.mk
+
+RelPathToStroikaDevRoot		=	../../../../../../../../
+SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks/UPnP/SSDP/Server/
+
+vpath %cpp $(SrcDir)
+
+Objs	=	\
+	$(ObjDir)Main.o\
+
+all:	$(Objs)
