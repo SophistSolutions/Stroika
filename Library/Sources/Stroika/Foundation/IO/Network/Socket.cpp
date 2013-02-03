@@ -33,11 +33,13 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
+
+
 namespace   {
 #if     qPlatform_Windows
-    const   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE  =   INVALID_SOCKET;
+    constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   INVALID_SOCKET;
 #elif   qPlatform_POSIX
-    const   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE  =   -1; // right value??
+    constexpr   Socket::PlatformNativeHandle    kINVALID_NATIVE_HANDLE_  =   -1; // right value??
 #endif
 }
 
@@ -59,12 +61,12 @@ namespace   {
                 : fSD_ (sd) {
             }
             ~Rep_ () {
-                if (fSD_ != kINVALID_NATIVE_HANDLE) {
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
                     Close ();
                 }
             }
             virtual void    Close () override {
-                if (fSD_ != kINVALID_NATIVE_HANDLE) {
+                if (fSD_ != kINVALID_NATIVE_HANDLE_) {
 #if     qPlatform_Windows
                     ::closesocket (fSD_);
 #elif   qPlatform_POSIX
@@ -72,7 +74,7 @@ namespace   {
 #else
                     AssertNotImplemented ();
 #endif
-                    fSD_ = kINVALID_NATIVE_HANDLE;
+                    fSD_ = kINVALID_NATIVE_HANDLE_;
                 }
             }
             virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
@@ -88,6 +90,28 @@ namespace   {
 #endif
             }
             virtual void    Write (const Byte* start, const Byte* end) override {
+                // Must do erorr checking and throw exceptions!!!
+#if     qPlatform_Windows
+                AssertNotImplemented ();
+                //int       n   =   ::_write (fSD_, start, end - start);
+#elif   qPlatform_POSIX
+                int     n   =   Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual void  SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override {
+                // Must do erorr checking and throw exceptions!!!
+                sockaddr sa = sockAddr.As<sockaddr> ();
+#if     qPlatform_Windows
+                Execution::ThrowErrNoIfNegative (::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
+#elif   qPlatform_POSIX
+                Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
+#else
+                AssertNotImplemented ();
+#endif
+            }
+            virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, const SocketAddress& sockAddr) override {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
                 AssertNotImplemented ();
@@ -148,12 +172,13 @@ AGAIN:
 
 
 
+
+
 /*
  ********************************************************************************
  ****************************** Network::Socket::_Rep ***************************
  ********************************************************************************
  */
-
 Socket::_Rep::~_Rep ()
 {
 }
@@ -169,13 +194,25 @@ Socket::_Rep::~_Rep ()
  ********************************** Network::Socket *****************************
  ********************************************************************************
  */
+#if 0
 const   String  Socket::BindProperties::kANYHOST;
-
-
+#endif
 
 Socket::Socket ()
     : fRep_ ()
 {
+}
+
+Socket::Socket (SocketKind socketKind)
+    : fRep_ ()
+{
+    Socket::PlatformNativeHandle    sfd;
+#if     qPlatform_POSIX
+    Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
+#else
+    Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
+#endif
+    fRep_ = std::move (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sfd)));
 }
 
 Socket::Socket (const shared_ptr<_Rep>& rep)
@@ -199,8 +236,12 @@ Socket  Socket::Attach (PlatformNativeHandle sd)
 
 Socket::PlatformNativeHandle    Socket::Detach ()
 {
-    AssertNotImplemented ();
-    return 0;
+    PlatformNativeHandle    h   =   kINVALID_NATIVE_HANDLE_;
+    if (fRep_.get () != nullptr) {
+        h = fRep_->GetNativeSocket ();
+    }
+    fRep_.reset ();
+    return h;
 }
 
 const Socket& Socket::operator= (const Socket& s)
@@ -211,10 +252,30 @@ const Socket& Socket::operator= (const Socket& s)
     return *this;
 }
 
+void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
+{
+    PlatformNativeHandle    sfd =    fRep_->GetNativeSocket ();
+    sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
+    Execution::Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));});
+}
+
+
+#if 0
+struct  BindProperties {
+    static  const   String          kANYHOST;
+    static  const   int             kANYPORT                =   0;
+    static  const   int             kDefaultListenBacklog   =   100;
+    String          fHostName;
+    int             fPort;
+    unsigned int    fListenBacklog;
+    unsigned int    fExtraBindFlags;        // eg. SO_REUSEADDR
+};
+// throws if socket already bound or valid - only legal on empty socket
+nonvirtual  void    OLD_Bind (const BindProperties& bindProperties);
 void    Socket::OLD_Bind (const BindProperties& bindProperties)
 {
     // Should this throw if already has something bound - already non-null!???
-    if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE) {
+    if (fRep_.get () != nullptr and fRep_->GetNativeSocket () != kINVALID_NATIVE_HANDLE_) {
         throw Execution::StringException (L"Cannot bind an already bound socket");
     }
 
@@ -260,6 +321,7 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
 
     fRep_  = shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
 }
+#endif
 
 void    Socket::Listen (unsigned int backlog)
 {
@@ -281,9 +343,21 @@ void    Socket::Write (const Byte* start, const Byte* end)
     fRep_->Write (start, end);
 }
 
+void    Socket::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)
+{
+    fRep_->SendTo (start, end, sockAddr);
+}
+
+size_t    Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, const SocketAddress& sockAddr)
+{
+    return fRep_->ReceiveFrom (intoStart, intoEnd, sockAddr);
+}
+
 void    Socket::Close ()
 {
     // not importnat to null-out, but may as well...
-    fRep_->Close ();
-    fRep_.reset ();
+    if (fRep_.get () != nullptr) {
+        fRep_->Close ();
+        fRep_.reset ();
+    }
 }
