@@ -12,6 +12,7 @@ VPATH		=	$(SrcDir) $(StroikaLibDir)
 SubDirs=	\
 		Service\
 		WebServer\
+		UPnP\
 
 
 all-objs:
