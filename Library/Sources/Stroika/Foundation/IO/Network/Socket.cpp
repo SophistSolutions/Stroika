@@ -166,6 +166,22 @@ AGAIN:
 #endif
                 return Socket::Attach (r);
             }
+            virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
+                ip_mreq m;
+                memset (&m, 0, sizeof (m));
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
+                m.imr_multiaddr = iaddr.As<in_addr> ();
+                m.imr_interface = onInterface.As<in_addr> ();
+                Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+            }
+            void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
+                ip_mreq m;
+                memset (&m, 0, sizeof (m));
+                Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
+                m.imr_multiaddr = iaddr.As<in_addr> ();
+                m.imr_interface = onInterface.As<in_addr> ();
+                Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+            }
             virtual Socket::PlatformNativeHandle    GetNativeSocket () const override {
                 return fSD_;
             }
@@ -317,6 +333,16 @@ void    Socket::Listen (unsigned int backlog)
 Socket  Socket::Accept ()
 {
     return fRep_->Accept ();
+}
+
+void    Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
+{
+    fRep_->JoinMulticastGroup (iaddr, onInterface);
+}
+
+void    Socket::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
+{
+    fRep_->LeaveMulticastGroup (iaddr, onInterface);
 }
 
 size_t  Socket::Read (Byte* intoStart, Byte* intoEnd)

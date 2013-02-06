@@ -136,6 +136,16 @@ namespace   Stroika {
 
                 public:
                     /**
+                     */
+                    void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+
+                public:
+                    /**
+                     */
+                    void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+
+                public:
+                    /**
                      *  @todo   Need timeout on this API? Or global (for instance) timeout?
                      *
                      *   throws on error, and otherwise means should call accept
@@ -224,6 +234,8 @@ namespace   Stroika {
                     virtual size_t                  ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) = 0;
                     virtual void                    Listen (unsigned int backlog) = 0;
                     virtual Socket                  Accept () = 0;
+                    virtual void                    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+                    virtual void                    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                 };
 
