@@ -1643,9 +1643,9 @@ CodePagesInstalled::CodePagesInstalled ()
 
     shared_ptr<set<CodePage>>   accum (new set<CodePage> ());
 #if     qPlatform_Windows
-    static  recursive_mutex  sCritSec_;
+    static  mutex  sCritSec_;
     {
-        lock_guard<recursive_mutex> enterCritSection (sCritSec_);
+        lock_guard<mutex> enterCritSection (sCritSec_);
         Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
         s_EnumCodePagesProc_Accumulator_ = accum;
         ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);

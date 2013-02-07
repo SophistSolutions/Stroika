@@ -994,7 +994,7 @@ TempFileLibrarian::TempFileLibrarian (const TString& privateDirectory, bool purg
     , fPrivateDirectory (privateDirectory)
     , fMakeTMPDIRRel (makeTMPDIRRel)
     , fDeleteFilesOnDescruction (deleteFilesOnDescruction)
-    , fCriticalSection ()
+    , fCriticalSection_ ()
 {
     ::srand (static_cast<unsigned int> (::time (0)));
     if (purgeDirectory and fPrivateDirectory.size () > 0) {
@@ -1054,7 +1054,7 @@ TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
             HANDLE  f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 CloseHandle (f);
-                lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+                lock_guard<mutex> enterCriticalSection (fCriticalSection_);
                 fFiles.insert (s);
                 return s;
             }
@@ -1085,13 +1085,13 @@ TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
         char    buf[100];
         {
             // man page doesn't gaurantee thread-safety of rand ()
-            lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+            lock_guard<mutex> enterCriticalSection (fCriticalSection_);
             (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         }
         s.append (ToTString  (buf));
         if (not FileSystem::DirectoryExists (s)) {
             FileSystem::CreateDirectory (s, true);
-            lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
+            lock_guard<mutex> enterCriticalSection (fCriticalSection_);
             fFiles.insert (s);
             return s;
         }
