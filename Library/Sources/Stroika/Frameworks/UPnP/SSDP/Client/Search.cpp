@@ -21,6 +21,13 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
+/*
+ *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
+ *  for details on the SSDP specification.
+ *
+ *  And http://www.upnp-hacks.org/upnp.html for more hints.
+ */
+
 namespace {
     constexpr   char    SSDP_MULTICAST[]    =      "239.255.255.250";
     constexpr   int     SSDP_PORT           =       1900;
@@ -34,7 +41,12 @@ public:
     Rep_ (const String& serviceType, const std::function<void(const Device& d)>& callOnFinds)
         : fCallOnFinds_ (callOnFinds)
         , fSocket_ (Socket::SocketKind::DGRAM) {
+
         SocketAddress multicastSSDPDestAddr = SocketAddress (InternetAddress (SSDP_MULTICAST, InternetAddress::AddressFamily::V4), SSDP_PORT);
+        /// Note - most of thjis must run in another thread
+
+        /// better error handling - maybe a separate callback for errors?
+
 
         string  request;
         {
@@ -56,13 +68,15 @@ public:
         FD_SET(fSocket_.GetNativeSocket (), &fds);
         timeout.tv_sec = 30;        // think out timeouts..., and use stroika time code..
         timeout.tv_usec = 0;
+
+        // maybe just lose throw here - and intentionally ignore errors?
         Execution::ThrowErrNoIfNegative (select (fSocket_.GetNativeSocket () + 1, &fds, NULL, NULL, &timeout));
         if (FD_ISSET (fSocket_.GetNativeSocket (), &fds)) {
 
-            Byte buf[1024];
+            Byte buf[4 * 1024]; // not sure what right size here would be?
             try {
                 SocketAddress clientSock;
-                size_t  len = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), MSG_PEEK, &clientSock);
+                size_t  len = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &clientSock);
                 buf[len] = '\0';
             }
             catch (...) {
@@ -94,6 +108,4 @@ Search::Search (const String& serviceType, const std::function<void(const Device
     : fRep_ (new Rep_ (serviceType, callOnFinds))
 {
 }
-
-
 
