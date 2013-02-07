@@ -29,9 +29,9 @@ namespace   Stroika {
                     ~BlockAllocation_ModuleInit_ ();
                 };
 
-                extern  recursive_mutex*    sCritSection_;
+                extern  mutex*    sCritSection_;
 
-                inline  recursive_mutex&    GetCritSection_ ()
+                inline  mutex&    GetCritSection_ ()
                 {
                     AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
                     return *sCritSection_;
@@ -182,7 +182,7 @@ namespace   Stroika {
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
 #if     qAllowBlockAllocation
-                lock_guard<recursive_mutex>  critSec (Private::GetCritSection_ ());
+                lock_guard<mutex>  critSec (Private::GetCritSection_ ());
                 /*
                  * To implement linked list of BlockAllocated(T)'s before they are
                  * actually alloced, re-use the begining of this as a link pointer.
@@ -203,7 +203,7 @@ namespace   Stroika {
             {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
-                    lock_guard<recursive_mutex>  critSec (Private::GetCritSection_ ());
+                    lock_guard<mutex>  critSec (Private::GetCritSection_ ());
                     (*(void**)p) = GetNextLink_ ();
                     SetNextLink_ (p);
                 }

@@ -22,7 +22,7 @@ using   namespace   Execution;
 
 
 
-recursive_mutex*    Private::sCritSection_  =   nullptr;
+mutex*    Private::sCritSection_  =   nullptr;
 
 
 
@@ -34,7 +34,7 @@ recursive_mutex*    Private::sCritSection_  =   nullptr;
 BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
     Require (sCritSection_ == nullptr);
-    sCritSection_ = DEBUG_NEW recursive_mutex ();
+    sCritSection_ = DEBUG_NEW mutex ();
 }
 
 BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()
