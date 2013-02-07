@@ -17,6 +17,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
+#if !qJustUseStdCCritSecStuff
             //  class   CriticalSection
             inline  CriticalSection::CriticalSection ()
             {
@@ -51,7 +52,6 @@ namespace   Stroika {
 #endif
             }
 
-
             //  class   AutoCriticalSection
             template    <typename LOCKTYPE>
             inline  AutoCriticalSectionT<LOCKTYPE>::AutoCriticalSectionT (LOCKTYPE& critSec)
@@ -64,6 +64,7 @@ namespace   Stroika {
             {
                 fCritSec_.Unlock ();
             }
+#endif
 
         }
     }

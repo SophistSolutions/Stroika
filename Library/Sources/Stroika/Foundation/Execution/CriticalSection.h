@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
 #if     qUseThreads_StdCPlusPlus
 #include    <mutex>
 #elif   qUseThreads_WindowsNative
@@ -19,6 +20,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
+
+
+#if qJustUseStdCCritSecStuff
+			typedef std::recursive_mutex   CriticalSection;
+#else
 
             class   CriticalSection {
             public:
@@ -34,6 +41,10 @@ namespace   Stroika {
                 nonvirtual  void    Unlock ();
 
             public:
+				nonvirtual  void    lock () {Lock (); }
+				nonvirtual  void    unlock () { Unlock (); }
+
+			public:
                 template    <typename T>
                 nonvirtual  T   As ();
 
@@ -53,11 +64,14 @@ namespace   Stroika {
             }
 #endif
 
+#endif
 
 
+#if qJustUseStdCCritSecStuff
+			typedef lock_guard<CriticalSection>   AutoCriticalSection;
+#else
+			// enter  in CTOR and LEAVE in DTOR
 
-
-            // enter  in CTOR and LEAVE in DTOR
             template    <typename LOCKTYPE>
             class   AutoCriticalSectionT {
             public:
@@ -68,6 +82,8 @@ namespace   Stroika {
                 LOCKTYPE&   fCritSec_;
             };
             typedef AutoCriticalSectionT<CriticalSection>   AutoCriticalSection;
+#endif
+			
 
 
         }

@@ -15,6 +15,11 @@
 #if     defined(__cplusplus)
 
 
+#ifndef qJustUseStdCCritSecStuff
+#define	qJustUseStdCCritSecStuff	1
+#endif // qJustUseStdCCritSecStuff
+
+
 #ifndef qHas_pid_t
 #define qHas_pid_t  qPlatform_POSIX
 #endif
