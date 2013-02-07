@@ -52,7 +52,7 @@ namespace   Stroika {
 
 
             namespace   Private {
-                template    <typename BASE, typename LOCKTYPE = CriticalSection>
+                template    <typename BASE, typename LOCKTYPE = recursive_mutex>
                 class   Lockable_POD : public LOCKTYPE {
                 public:
                     Lockable_POD ()
@@ -80,64 +80,64 @@ namespace   Stroika {
             }
             //  Specailizations for POD types
             template    <>
-            class   Lockable<bool, CriticalSection> : public Private::Lockable_POD<bool, CriticalSection>  {
+            class   Lockable<bool, recursive_mutex> : public Private::Lockable_POD<bool, recursive_mutex>  {
             public:
                 typedef bool    T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
-            class   Lockable<char, CriticalSection> : public Private::Lockable_POD<char, CriticalSection>  {
+            class   Lockable<char, recursive_mutex> : public Private::Lockable_POD<char, recursive_mutex>  {
             public:
                 typedef char    T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
-            class   Lockable<unsigned char, CriticalSection> : public Private::Lockable_POD<unsigned char, CriticalSection>  {
+            class   Lockable<unsigned char, recursive_mutex> : public Private::Lockable_POD<unsigned char, recursive_mutex>  {
             public:
                 typedef unsigned char   T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
-            class   Lockable<int, CriticalSection> : public Private::Lockable_POD<int, CriticalSection>  {
+            class   Lockable<int, recursive_mutex> : public Private::Lockable_POD<int, recursive_mutex>  {
             public:
                 typedef int T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                 { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
-            class   Lockable<unsigned int, CriticalSection> : public Private::Lockable_POD<unsigned int, CriticalSection>  {
+            class   Lockable<unsigned int, recursive_mutex> : public Private::Lockable_POD<unsigned int, recursive_mutex>  {
             public:
                 typedef unsigned int    T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
             template    <>
-            class   Lockable<double, CriticalSection> : public Private::Lockable_POD<double, CriticalSection>  {
+            class   Lockable<double, recursive_mutex> : public Private::Lockable_POD<double, recursive_mutex>  {
             public:
                 typedef double  T;
-                Lockable<T, CriticalSection> ()                                                                                          {}
-                Lockable<T, CriticalSection> (T from):                                           Lockable_POD<T, CriticalSection> (from)  {}
-                Lockable<T, CriticalSection> (const Lockable<T, CriticalSection>& from):          Lockable_POD<T, CriticalSection> (from)  {}
-                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
-                const Lockable_POD& operator= (const Lockable<T, CriticalSection>& rhs)                                                  { return Lockable_POD<T, CriticalSection>::operator= (rhs); }
+                Lockable<T, recursive_mutex> ()                                                                                          {}
+                Lockable<T, recursive_mutex> (T from):                                           Lockable_POD<T, recursive_mutex> (from)  {}
+                Lockable<T, recursive_mutex> (const Lockable<T, recursive_mutex>& from):          Lockable_POD<T, recursive_mutex> (from)  {}
+                const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
+                const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
 
 

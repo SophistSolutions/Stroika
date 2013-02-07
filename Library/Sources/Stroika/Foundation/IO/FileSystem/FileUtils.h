@@ -171,7 +171,7 @@ namespace   Stroika {
                     TString                     fPrivateDirectory;
                     bool                        fMakeTMPDIRRel;
                     bool                        fDeleteFilesOnDescruction;
-                    Execution::CriticalSection  fCriticalSection;
+                    recursive_mutex				fCriticalSection;
                 };
 
 

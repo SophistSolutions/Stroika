@@ -110,7 +110,7 @@ namespace   Stroika {
 #endif
                 class   MyRunnable_;
             private:
-                mutable CriticalSection fCriticalSection_;
+                mutable recursive_mutex fCriticalSection_;
                 bool                    fAborted_;
                 vector<Thread>          fThreads_;
                 list<TaskType>          fTasks_;            // Use Stroika Queue

@@ -40,7 +40,7 @@ protected:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         Assert ((fStart_ <= fCursor_) and (fCursor_ <= fEnd_));
         size_t  nAvail      =   fEnd_ - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -50,12 +50,12 @@ protected:
     }
 
     virtual SeekOffsetType  GetOffset () const override {
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);    // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);    // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
         return fCursor_ - fStart_;
     }
 
     virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override {
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -97,10 +97,10 @@ protected:
     }
 
 private:
-    mutable Execution::CriticalSection  fCriticalSection_;
-    const Byte*                         fStart_;
-    const Byte*                         fEnd_;
-    const Byte*                         fCursor_;
+    mutable recursive_mutex  fCriticalSection_;
+    const Byte*              fStart_;
+    const Byte*              fEnd_;
+    const Byte*              fCursor_;
 };
 
 

@@ -1054,7 +1054,7 @@ TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
             HANDLE  f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 CloseHandle (f);
-                AutoCriticalSection enterCriticalSection (fCriticalSection);
+                lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
                 fFiles.insert (s);
                 return s;
             }
@@ -1085,13 +1085,13 @@ TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
         char    buf[100];
         {
             // man page doesn't gaurantee thread-safety of rand ()
-            AutoCriticalSection enterCriticalSection (fCriticalSection);
+            lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
             (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         }
         s.append (ToTString  (buf));
         if (not FileSystem::DirectoryExists (s)) {
             FileSystem::CreateDirectory (s, true);
-            AutoCriticalSection enterCriticalSection (fCriticalSection);
+            lock_guard<recursive_mutex> enterCriticalSection (fCriticalSection);
             fFiles.insert (s);
             return s;
         }

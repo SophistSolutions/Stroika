@@ -18,7 +18,7 @@ using   namespace   Stroika::Foundation::Execution;
 
 #if     !qCompilerAndStdLib_Supports_stdatomic && qPlatform_Win32
 namespace   {
-    CriticalSection sCritSec_;
+    recursive_mutex sCritSec_;
 }
 #endif
 
@@ -27,7 +27,7 @@ namespace   {
 int64_t Execution::AtomicIncrement (volatile int64_t* p)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p)++;
     return *p;
 }
@@ -35,7 +35,7 @@ int64_t Execution::AtomicIncrement (volatile int64_t* p)
 uint64_t    Execution::AtomicIncrement (volatile uint64_t* p)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p)++;
     return *p;
 }
@@ -43,7 +43,7 @@ uint64_t    Execution::AtomicIncrement (volatile uint64_t* p)
 int64_t Execution::AtomicDecrement (volatile int64_t* p)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p)--;
     return *p;
 }
@@ -51,7 +51,7 @@ int64_t Execution::AtomicDecrement (volatile int64_t* p)
 uint64_t    Execution::AtomicDecrement (volatile uint64_t* p)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p)--;
     return *p;
 }
@@ -59,7 +59,7 @@ uint64_t    Execution::AtomicDecrement (volatile uint64_t* p)
 int64_t Execution::AtomicAdd (volatile int64_t* p, int64_t arg)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p) += arg;
     return *p;
 }
@@ -67,7 +67,7 @@ int64_t Execution::AtomicAdd (volatile int64_t* p, int64_t arg)
 uint64_t    Execution::AtomicAdd (volatile uint64_t* p, uint64_t arg)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p) += arg;
     return *p;
 }
@@ -75,7 +75,7 @@ uint64_t    Execution::AtomicAdd (volatile uint64_t* p, uint64_t arg)
 int64_t Execution::AtomicSubtract (volatile int64_t* p, int64_t arg)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p) -= arg;
     return *p;
 }
@@ -83,7 +83,7 @@ int64_t Execution::AtomicSubtract (volatile int64_t* p, int64_t arg)
 uint64_t    Execution::AtomicSubtract (volatile uint64_t* p, uint64_t arg)
 {
     RequireNotNull (p);
-    AutoCriticalSection critSec (sCritSec_);
+    lock_guard<recursive_mutex> critSec (sCritSec_);
     (*p) -= arg;
     return *p;
 }

@@ -208,7 +208,7 @@ namespace   Stroika {
                 nonvirtual  void        DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
 
             private:
-                mutable Execution::CriticalSection  fCritSection_;
+                mutable recursive_mutex				fCritSection_;
                 AbstractGeneralPurposeAllocator&    fBaseAllocator_;
                 PTRMAP                              fAllocations_;
             };

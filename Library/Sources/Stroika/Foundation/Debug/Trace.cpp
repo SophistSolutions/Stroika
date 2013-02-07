@@ -88,7 +88,7 @@ namespace   {
  ********************************************************************************
  */
 namespace   {
-    CriticalSection*    sEmitTraceCritSec   =   nullptr;
+    recursive_mutex*    sEmitTraceCritSec   =   nullptr;
 #if     qTraceToFile
     ofstream*   sTraceFile  =   nullptr;
 #endif
@@ -118,7 +118,7 @@ TraceModuleData_::TraceModuleData_ ()
     : fStringDependency (Characters::MakeModuleDependency_String ())
 {
     Assert (sEmitTraceCritSec == nullptr);
-    sEmitTraceCritSec = DEBUG_NEW CriticalSection ();
+    sEmitTraceCritSec = DEBUG_NEW recursive_mutex ();
 #if     qDefaultTracingOn
     Assert (sCounts == nullptr);
     sCounts = DEBUG_NEW map<Thread::IDType, unsigned int> ();
@@ -152,7 +152,7 @@ TraceModuleData_::~TraceModuleData_ ()
 
 
 namespace   {
-    inline  CriticalSection&    GetCritSection_ ()
+    inline  recursive_mutex&    GetCritSection_ ()
     {
         // this is a 'false' or 'apparent' memory leak, but we allocate the object this way because in C++ things
         // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
@@ -331,7 +331,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
 template    <typename   CHARTYPE>
 Emitter::TraceLastBufferedWriteTokenType    Emitter::DoEmitMessage_ (size_t bufferLastNChars, const CHARTYPE* p, const CHARTYPE* e)
 {
-    AutoCriticalSection critSec (GetCritSection_ ());
+    lock_guard<recursive_mutex> critSec (GetCritSection_ ());
     FlushBufferedCharacters_ ();
     static  Time::DurationSecondsType   sStartOfTime    =   0.0;
     if (sStartOfTime == 0.0) {
@@ -427,7 +427,7 @@ void    Emitter::FlushBufferedCharacters_ ()
 
 bool    Emitter::UnputBufferedCharactersForMatchingToken (TraceLastBufferedWriteTokenType token)
 {
-    AutoCriticalSection critSec (GetCritSection_ ());
+    lock_guard<recursive_mutex> critSec (GetCritSection_ ());
     // If the fLastNCharBuf_Token_ matches (no new tokens written since the saved one) and the time
     // hasn't been too long (we currently write 1/100th second timestamp resolution).
     // then blank unput (ignore) buffered characters, and return true so caller knows to write
@@ -501,7 +501,7 @@ namespace   {
     inline  unsigned int    GetCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        AutoCriticalSection critSec (GetCritSection_ ());
+        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts->find (threadID);
         if (i == sCounts->end ()) {
             return 0;
@@ -512,7 +512,7 @@ namespace   {
     inline  void    IncCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        AutoCriticalSection critSec (GetCritSection_ ());
+        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
         if (i == sCounts->end ()) {
             (void)sCounts->insert (map<Thread::IDType, unsigned int>::value_type (threadID, 1)).first;
@@ -525,7 +525,7 @@ namespace   {
     inline  void    DecrCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
-        AutoCriticalSection critSec (GetCritSection_ ());
+        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
         map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
         Assert (i != sCounts->end ());
         i->second--;
@@ -567,7 +567,7 @@ TraceContextBumper::~TraceContextBumper ()
 {
     DecrCount ();
     if (fDoEndMarker) {
-        AutoCriticalSection critSec (GetCritSection_ ());
+        lock_guard<recursive_mutex> critSec (GetCritSection_ ());
         if (Emitter::Get ().UnputBufferedCharactersForMatchingToken (fLastWriteToken_)) {
             Emitter::Get ().EmitUnadornedText ("/>");
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());

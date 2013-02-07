@@ -47,7 +47,7 @@ public:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
@@ -57,12 +57,12 @@ public:
     }
 
     virtual SeekOffsetType  GetOffset () const override {
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -105,9 +105,9 @@ public:
 
 private:
     // round size of usage up to around 1k (include vtableptr) - no real good reason - # doesnt matter much...
-    DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(Execution::CriticalSection) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
+    DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
 
-    mutable Execution::CriticalSection                  fCriticalSection_;
+    mutable recursive_mutex								fCriticalSection_;
     Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
     const Byte*                                         fCursor_;
 };

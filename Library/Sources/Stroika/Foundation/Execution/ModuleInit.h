@@ -86,13 +86,13 @@ namespace   Stroika {
              *              struct  MyModuleData_ {
              *                  MyModuleData_ () {}
              *                  ~MyModuleData_ () {}
-             *                  CriticalSection fCritSection;
+             *                  recursive_mutex fCritSection;
              *              };
              *          }
              *      };
              *      namespace   {
              *          Execution::ModuleInitializer<ExampleModule::Private::MyModuleData_>  _MI_;   // this object constructed for the CTOR/DTOR per-module side-effects
-             *          inline CriticalSection&    GetCritSection_ () { return Execution::ModuleInitializer<Private::MyModuleData_>::Actual ().fCritSection; }
+             *          inline recursive_mutex&    GetCritSection_ () { return Execution::ModuleInitializer<Private::MyModuleData_>::Actual ().fCritSection; }
              *      }
              *
              *  In the MyModuleData_::CTOR you initialize your module (in this case, fCritSection). And in the

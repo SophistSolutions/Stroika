@@ -123,7 +123,7 @@ namespace   Stroika {
                 static      void    SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress);
 
             private:
-                mutable CriticalSection     fCritSect_;
+                mutable recursive_mutex     fCritSect_;
                 bool                        fCanceled_;
                 ProgressRangeType           fCurrentProgress_;
                 CurrentTaskInfo             fCurrentTaskInfo_;

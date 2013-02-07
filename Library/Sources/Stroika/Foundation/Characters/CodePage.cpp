@@ -4,12 +4,12 @@
 #include    "../StroikaPreComp.h"
 
 #include    <algorithm>
+#include	<mutex>
 #include    <set>
 
 #include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
-#include    "../Execution/CriticalSection.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/SmallStackBuffer.h"
 
@@ -1643,9 +1643,9 @@ CodePagesInstalled::CodePagesInstalled ()
 
     shared_ptr<set<CodePage>>   accum (new set<CodePage> ());
 #if     qPlatform_Windows
-    static  Execution::CriticalSection  sCritSec_;
+    static  recursive_mutex  sCritSec_;
     {
-        Execution::AutoCriticalSection enterCritSection (sCritSec_);
+		lock_guard<recursive_mutex> enterCritSection (sCritSec_);
         Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
         s_EnumCodePagesProc_Accumulator_ = accum;
         ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);

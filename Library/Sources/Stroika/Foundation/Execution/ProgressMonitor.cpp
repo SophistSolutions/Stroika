@@ -47,13 +47,13 @@ ProgressMontior::~ProgressMontior ()
 
 void    ProgressMontior::AddCallback (const shared_ptr<ICallback>& callback)
 {
-    AutoCriticalSection enterCriticalSection (fCritSect_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSect_);
     fCallbacks.push_back (callback);
 }
 
 void    ProgressMontior::CallNotifyProgress_ () const
 {
-    AutoCriticalSection enterCriticalSection (fCritSect_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSect_);
     for (vector<shared_ptr<ICallback>>::const_iterator i = fCallbacks.begin (); i != fCallbacks.end (); ++i) {
         i->get ()->NotifyOfProgress (*this);
     }

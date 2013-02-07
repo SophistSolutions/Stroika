@@ -25,13 +25,13 @@ public:
     }
 
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
-        Execution::AutoCriticalSection  critSec (fCriticalSection_);
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         return fRealIn_.Read (intoStart, intoEnd);
     }
 
 private:
-    mutable Execution::CriticalSection      fCriticalSection_;
-    BinaryInputStream                       fRealIn_;
+    mutable recursive_mutex			fCriticalSection_;
+    BinaryInputStream               fRealIn_;
 };
 
 

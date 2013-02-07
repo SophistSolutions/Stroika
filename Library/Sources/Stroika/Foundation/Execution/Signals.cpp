@@ -19,7 +19,7 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 namespace   {
-    CriticalSection sCritSection_;
+    recursive_mutex sCritSection_;
 
     map<SignalIDType, set<SignalHandlerType>>    sHandlers_;
 
@@ -34,7 +34,7 @@ namespace   {
         DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
         set<SignalHandlerType>  handlers;
         {
-            AutoCriticalSection critSec (sCritSection_);
+            lock_guard<recursive_mutex> critSec (sCritSection_);
             map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.find (signal);
             Assert (i != sHandlers_.end ());
             handlers = i->second;
@@ -73,7 +73,7 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
 {
     set<SignalIDType>   result;
     {
-        AutoCriticalSection critSec (sCritSection_);
+        lock_guard<recursive_mutex> critSec (sCritSection_);
         for (auto i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
             result.insert (i->first);
         }
@@ -83,7 +83,7 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
 
 set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
 {
-    AutoCriticalSection critSec (sCritSection_);
+    lock_guard<recursive_mutex> critSec (sCritSection_);
     map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.find (signal);
     if (i == sHandlers_.end ()) {
         return set<SignalHandlerType> ();
@@ -107,7 +107,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set
 {
     Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
-    AutoCriticalSection critSec (sCritSection_);
+    lock_guard<recursive_mutex> critSec (sCritSection_);
     map<SignalIDType, set<SignalHandlerType>>::iterator i = sHandlers_.find (signal);
     if (i == sHandlers_.end ()) {
         if (not handlers.empty ()) {

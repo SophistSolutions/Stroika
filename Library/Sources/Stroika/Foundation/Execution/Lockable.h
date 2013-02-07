@@ -27,11 +27,11 @@ namespace   Stroika {
              * This template provides essentially no functionality - except that its a handy way to associate a CriticalSection with a
              * piece of data it locks (making it easier and more practical to have a single critical section for each peice of data)
              *
-             * You can use Lockable<T> in most places like a "T" - but with the added ability to use it with AutoCriticalSection.
+             * You can use Lockable<T> in most places like a "T" - but with the added ability to use it with lock_guard<recursive_mutex>.
              *
              * @note this works with POD-types like bool etc, only through explicit template specialization.
              */
-            template    <typename BASE, typename LOCKTYPE = CriticalSection>
+            template    <typename BASE, typename LOCKTYPE = recursive_mutex>
             class   Lockable : public BASE, public LOCKTYPE {
             public:
                 Lockable ();

@@ -20,10 +20,9 @@ using   namespace   Stroika::Foundation::Execution;
 
 using   namespace   Execution;
 
-using   Execution::CriticalSection;
 
 
-CriticalSection*    Private::sCritSection_  =   nullptr;
+recursive_mutex*    Private::sCritSection_  =   nullptr;
 
 
 
@@ -35,7 +34,7 @@ CriticalSection*    Private::sCritSection_  =   nullptr;
 BlockAllocation_ModuleInit_::BlockAllocation_ModuleInit_ ()
 {
     Require (sCritSection_ == nullptr);
-    sCritSection_ = DEBUG_NEW CriticalSection ();
+    sCritSection_ = DEBUG_NEW recursive_mutex ();
 }
 
 BlockAllocation_ModuleInit_::~BlockAllocation_ModuleInit_ ()

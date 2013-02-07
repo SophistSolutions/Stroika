@@ -103,8 +103,8 @@ namespace   Stroika {
 #endif
 
             private:
-                mutable CriticalSection fStatusCriticalSection;
-                Status                  fStatus;
+                mutable	recursive_mutex	fStatusCriticalSection_;
+                Status                  fStatus_;
                 Event                   fRefCountBumpedEvent_;
                 Event                   fOK2StartEvent_;
 #if     qUseThreads_StdCPlusPlus
@@ -124,8 +124,8 @@ namespace   Stroika {
 #if         qUseThreads_WindowsNative
                 Require (GetCurrentThreadID () == GetID ());
 #endif
-                AutoCriticalSection enterCritcalSection (fStatusCriticalSection);
-                if (fStatus == Status::eAborting) {
+                lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+                if (fStatus_ == Status::eAborting) {
                     DoThrow (ThreadAbortException ());
                 }
             }

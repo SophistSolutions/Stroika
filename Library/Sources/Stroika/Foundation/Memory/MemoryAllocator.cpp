@@ -19,7 +19,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
 
 
-using   Execution::AutoCriticalSection;
 
 using   Debug::TraceContextBumper;
 
@@ -256,7 +255,7 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 {
     void*   memptr  =   fBaseAllocator_.Allocate (size);
     AssertNotNull (memptr);
-    AutoCriticalSection enterCriticalSection (fCritSection_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
     try {
         fAllocations_.insert (PTRMAP::value_type (memptr, size));
         return memptr;
@@ -270,7 +269,7 @@ void*   LeakTrackingGeneralPurposeAllocator::Allocate (size_t size)
 void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 {
     RequireNotNull (p);
-    AutoCriticalSection enterCriticalSection (fCritSection_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
     PTRMAP::iterator    i   =   fAllocations_.find (p);
     SUPER_ASSERT_ (i != fAllocations_.end ());
     fAllocations_.erase (i);
@@ -279,13 +278,13 @@ void    LeakTrackingGeneralPurposeAllocator::Deallocate (void* p)
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocationCount () const
 {
-    AutoCriticalSection enterCriticalSection (fCritSection_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
     return fAllocations_.size ();
 }
 
 size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 {
-    AutoCriticalSection enterCriticalSection (fCritSection_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
     size_t  total   =   0;
     for (auto i = fAllocations_.begin (); i != fAllocations_.end (); ++i) {
         total += i->second;
@@ -295,7 +294,7 @@ size_t  LeakTrackingGeneralPurposeAllocator::GetNetAllocatedByteCount () const
 
 LeakTrackingGeneralPurposeAllocator::Snapshot   LeakTrackingGeneralPurposeAllocator::GetSnapshot () const
 {
-    AutoCriticalSection enterCriticalSection (fCritSection_);
+    lock_guard<recursive_mutex> enterCriticalSection (fCritSection_);
     return Snapshot (fAllocations_);
 }
 
