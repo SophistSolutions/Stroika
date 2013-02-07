@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <memory>
+#include    <mutex>
 
 #if     qPlatform_Windows
 #include    <Windows.h>
@@ -14,7 +15,6 @@
 
 #include    "../Configuration/Common.h"
 
-#include    "CriticalSection.h"
 
 
 namespace   Stroika {
@@ -22,38 +22,19 @@ namespace   Stroika {
         namespace   Execution {
 
 
-			//PROBABLY OBSOLETE - NO NEW USES... WILL BE GOING AWAY
+            //PROBABLY OBSOLETE - NO NEW USES... WILL BE GOING AWAY
             class   CopyableCriticalSection {
             private:
-#if qJustUseStdCCritSecStuff
-				shared_ptr<std::recursive_mutex>  fCritSec;
-#else
-                shared_ptr<CriticalSection>  fCritSec;
-#endif
+                shared_ptr<std::recursive_mutex>  fCritSec;
             public:
                 CopyableCriticalSection ();
 
             public:
                 nonvirtual  void    Lock ();
                 nonvirtual  void    Unlock ();
-				nonvirtual  void    lock () { Lock (); }
-				nonvirtual  void    unlock () { Unlock (); }
-#if 0
-            public:
-                template    <typename T>
-                T   As ();
-#endif
+                nonvirtual  void    lock () { Lock (); }
+                nonvirtual  void    unlock () { Unlock (); }
             };
-#if 0
-#if     qUseThreads_WindowsNative
-            template    <>
-            inline  CRITICAL_SECTION&   CopyableCriticalSection::As ()
-            {
-                return fCritSec->As<CRITICAL_SECTION&> ();
-            }
-#endif
-#endif
-
 
         }
     }

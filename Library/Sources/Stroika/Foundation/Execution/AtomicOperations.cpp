@@ -3,9 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     !qCompilerAndStdLib_Supports_stdatomic && qPlatform_Win32
-#include    "CriticalSection.h"
-#endif
+#include    <mutex>
 
 #include    "AtomicOperations.h"
 

@@ -6,9 +6,10 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../Configuration/Common.h"
 
-#include    "CriticalSection.h"
 #include    "Exceptions.h"
 #include    "Event.h"
 

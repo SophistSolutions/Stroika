@@ -9,6 +9,8 @@
 #include    "../Containers/Common.h"
 #endif
 
+#include    "../Execution/Exceptions.h"
+
 #include    "ExternallyOwnedMemoryBinaryInputStream.h"
 
 

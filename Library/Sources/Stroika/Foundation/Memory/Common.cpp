@@ -10,6 +10,8 @@
 
 #include    <new>
 
+#include    "../Debug/Trace.h"
+
 #include    "MemoryAllocator.h"
 
 #include    "Common.h"

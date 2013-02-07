@@ -103,7 +103,7 @@ namespace   Stroika {
 #endif
 
             private:
-                mutable	recursive_mutex	fStatusCriticalSection_;
+                mutable recursive_mutex fStatusCriticalSection_;
                 Status                  fStatus_;
                 Event                   fRefCountBumpedEvent_;
                 Event                   fOK2StartEvent_;

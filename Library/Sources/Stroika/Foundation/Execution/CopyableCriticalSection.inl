@@ -19,11 +19,7 @@ namespace   Stroika {
 
             //  class   CopyableCriticalSection
             inline  CopyableCriticalSection::CopyableCriticalSection ()
-#if qJustUseStdCCritSecStuff
-				: fCritSec (DEBUG_NEW recursive_mutex ())
-#else
-				: fCritSec (DEBUG_NEW CriticalSection ())
-#endif
+                : fCritSec (DEBUG_NEW recursive_mutex ())
             {
             }
             inline  void    CopyableCriticalSection::Lock ()

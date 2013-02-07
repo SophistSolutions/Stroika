@@ -256,7 +256,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
@@ -497,7 +496,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h" />
@@ -679,7 +677,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\AtomicOperations.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableCriticalSection.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\DLLSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ErrNoException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Event.inl" />

@@ -6,7 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "CriticalSection.h"
+#include    <mutex>
+
 
 /**
  *  \file

@@ -6,12 +6,12 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
 #include    <string>
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/VariantValue.h"
 
-#include    "CriticalSection.h"
 
 
 /**

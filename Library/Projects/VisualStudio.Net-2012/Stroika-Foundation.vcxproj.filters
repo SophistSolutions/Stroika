@@ -144,9 +144,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
@@ -498,9 +495,6 @@
       <Filter>Sources\Time</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.h">
-      <Filter>Sources\Execution</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Event.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
@@ -1024,9 +1018,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl">
       <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\CriticalSection.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Event.inl">
       <Filter>Sources\Execution</Filter>

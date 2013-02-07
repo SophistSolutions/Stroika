@@ -8,8 +8,7 @@
 
 #include    <map>
 #include    <memory>
-
-#include    "../Execution/CriticalSection.h"
+#include    <mutex>
 
 #include    "Common.h"
 
@@ -208,7 +207,7 @@ namespace   Stroika {
                 nonvirtual  void        DUMPCurMemStats (const Snapshot& sinceSnapshot = Snapshot ());
 
             private:
-                mutable recursive_mutex				fCritSection_;
+                mutable recursive_mutex             fCritSection_;
                 AbstractGeneralPurposeAllocator&    fBaseAllocator_;
                 PTRMAP                              fAllocations_;
             };

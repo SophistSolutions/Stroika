@@ -3,7 +3,9 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Execution/CriticalSection.h"
+#include    <mutex>
+
+#include    "../Execution/Exceptions.h"
 #include    "../Streams/BinaryInputStream.h"
 
 #include    "BLOB.h"

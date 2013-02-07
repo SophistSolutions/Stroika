@@ -7,9 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    <list>
+#include    <mutex>
 #include    <vector>
 
-#include    "CriticalSection.h"
 #include    "Event.h"
 #include    "Thread.h"
 

@@ -171,7 +171,7 @@ namespace   {
 #if     qXMLDBTrackAllocs
         void    DUMPCurMemStats () {
             TraceContextBumper ctx (TSTR ("MyXercesMemMgr::DUMPCurMemStats"));
-			lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
+            lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
             fLastSnapshot = fAllocator.GetSnapshot ();

@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Execution/CriticalSection.h"
+#include    <mutex>
 
 #include    "BufferedBinaryInputStream.h"
 
@@ -30,7 +30,7 @@ public:
     }
 
 private:
-    mutable recursive_mutex			fCriticalSection_;
+    mutable recursive_mutex         fCriticalSection_;
     BinaryInputStream               fRealIn_;
 };
 

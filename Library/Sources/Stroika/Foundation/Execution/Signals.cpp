@@ -4,10 +4,10 @@
 #include    "../StroikaPreComp.h"
 
 #include    <map>
+#include    <mutex>
 
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
-#include    "CriticalSection.h"
 
 #include    "Signals.h"
 

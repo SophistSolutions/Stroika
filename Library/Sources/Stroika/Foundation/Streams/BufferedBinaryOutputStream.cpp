@@ -3,8 +3,9 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../Containers/Common.h"
-#include    "../Execution/CriticalSection.h"
 
 #include    "BufferedBinaryOutputStream.h"
 
@@ -121,7 +122,7 @@ public:
     }
 
 private:
-    mutable recursive_mutex				fCriticalSection_;
+    mutable recursive_mutex             fCriticalSection_;
     vector<Byte>                        fBuffer_;
     BinaryOutputStream                  fRealOut_;
 #if     qDebug

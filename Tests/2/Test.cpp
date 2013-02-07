@@ -4,10 +4,10 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <mutex>
 #include    <sstream>
 
 #include    "Stroika/Foundation/Execution/AtomicOperations.h"
-#include    "Stroika/Foundation/Execution/CriticalSection.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"

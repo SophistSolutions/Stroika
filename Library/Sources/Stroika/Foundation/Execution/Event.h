@@ -6,8 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     qUseThreads_StdCPlusPlus
 #include    <mutex>
+
+#if     qUseThreads_StdCPlusPlus
 #include    <condition_variable>
 #elif   qUseThreads_WindowsNative
 #include    <windows.h>
@@ -15,7 +16,6 @@
 
 #include    "../Configuration/Common.h"
 
-#include    "CriticalSection.h"
 #include    "Exceptions.h"
 
 

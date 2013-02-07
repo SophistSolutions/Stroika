@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Execution/CriticalSection.h"
+#include    <mutex>
 
 #include    "BlockAllocated.h"
 

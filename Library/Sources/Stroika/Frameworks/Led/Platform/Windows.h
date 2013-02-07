@@ -19,6 +19,7 @@
 
 #include    "../../../Foundation/Characters/CodePage.h"
 #include    "../../../Foundation/Characters/Format.h"
+#include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Memory/SmallStackBuffer.h"
 
 #include    "../TextInteractor.h"

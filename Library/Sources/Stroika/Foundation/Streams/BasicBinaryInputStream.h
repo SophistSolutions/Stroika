@@ -6,8 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../Configuration/Common.h"
-#include    "../Execution/CriticalSection.h"
 #include    "../Memory/SmallStackBuffer.h"
 
 #include    "BinaryInputStream.h"

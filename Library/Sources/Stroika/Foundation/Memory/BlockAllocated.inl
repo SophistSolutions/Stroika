@@ -11,50 +11,31 @@
  ********************************************************************************
  */
 #include    <algorithm>
+#include    <mutex>
 
 #include    "../Debug/Assertions.h"
-
-#include    "../Execution/CriticalSection.h"
 
 #include    "Common.h"
 
 
 namespace   Stroika {
     namespace   Foundation {
-#if !qJustUseStdCCritSecStuff
-        namespace   Execution {
-            class   CriticalSection;
-        }
-#endif
         namespace   Memory {
 
             namespace   Private {
-#if !qJustUseStdCCritSecStuff
-                using   Stroika::Foundation::Execution::CriticalSection;
-#endif
 
                 struct  BlockAllocation_ModuleInit_ {
                     BlockAllocation_ModuleInit_ ();
                     ~BlockAllocation_ModuleInit_ ();
                 };
 
-#if qJustUseStdCCritSecStuff
-				extern  recursive_mutex*    sCritSection_;
+                extern  recursive_mutex*    sCritSection_;
 
                 inline  recursive_mutex&    GetCritSection_ ()
                 {
                     AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
                     return *sCritSection_;
                 }
-#else
-                extern  CriticalSection*    sCritSection_;
-
-                inline  CriticalSection&    GetCritSection_ ()
-                {
-                    AssertNotNull (sCritSection_);  // automatically initailized by BlockAllocated::Private::ActualModuleInit
-                    return *sCritSection_;
-                }
-#endif
             }
 
 

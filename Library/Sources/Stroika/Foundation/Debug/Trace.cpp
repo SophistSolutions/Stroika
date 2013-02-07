@@ -3,16 +3,16 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <cmath>
 #include    <cstdarg>
 #include    <cstdio>
 #include    <fstream>
 #include    <map>
-#include    <cmath>
+#include    <mutex>
 
 #include    "../Characters/Format.h"
 #include    "../Characters/LineEndings.h"
 #include    "../Characters/StringUtils.h"
-#include    "../Execution/CriticalSection.h"
 #include    "../Execution/Module.h"
 #include    "../Execution/Process.h"
 #include    "../Execution/Thread.h"

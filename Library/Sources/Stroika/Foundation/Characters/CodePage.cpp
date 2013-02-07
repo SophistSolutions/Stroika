@@ -4,7 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <algorithm>
-#include	<mutex>
+#include    <mutex>
 #include    <set>
 
 #include    "../Characters/Format.h"
@@ -1645,7 +1645,7 @@ CodePagesInstalled::CodePagesInstalled ()
 #if     qPlatform_Windows
     static  recursive_mutex  sCritSec_;
     {
-		lock_guard<recursive_mutex> enterCritSection (sCritSec_);
+        lock_guard<recursive_mutex> enterCritSection (sCritSec_);
         Assert (s_EnumCodePagesProc_Accumulator_.get () == nullptr);
         s_EnumCodePagesProc_Accumulator_ = accum;
         ::EnumSystemCodePages (EnumCodePagesProc_, CP_INSTALLED);

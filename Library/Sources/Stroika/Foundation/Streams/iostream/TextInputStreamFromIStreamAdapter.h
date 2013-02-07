@@ -7,9 +7,9 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <istream>
+#include    <mutex>
 
 #include    "../../Configuration/Common.h"
-#include    "../../Execution/CriticalSection.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "../TextInputStream.h"

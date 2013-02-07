@@ -107,7 +107,7 @@ private:
     // round size of usage up to around 1k (include vtableptr) - no real good reason - # doesnt matter much...
     DEFINE_CONSTEXPR_CONSTANT(size_t, USE_BUFFER_BYTES, 1024 - sizeof(recursive_mutex) - sizeof(Byte*) - sizeof (BinaryInputStream::_IRep) - sizeof (Seekable::_IRep));
 
-    mutable recursive_mutex								fCriticalSection_;
+    mutable recursive_mutex                             fCriticalSection_;
     Memory::SmallStackBuffer < Byte, USE_BUFFER_BYTES>  fData_;
     const Byte*                                         fCursor_;
 };

@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #if         qPlatform_Windows
 #include    <process.h>
 #elif   qPlatform_POSIX
@@ -15,7 +17,6 @@
 
 #include    "../Configuration/Common.h"
 
-#include    "CriticalSection.h"
 #include    "Exceptions.h"
 
 

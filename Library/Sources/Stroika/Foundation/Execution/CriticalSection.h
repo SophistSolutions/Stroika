@@ -23,67 +23,10 @@ namespace   Stroika {
 
 
 
-#if qJustUseStdCCritSecStuff
-			typedef std::recursive_mutex   CriticalSection;
-#else
-
-            class   CriticalSection {
-            public:
-                NO_COPY_CONSTRUCTOR(CriticalSection);
-                NO_ASSIGNMENT_OPERATOR(CriticalSection);
-
-            public:
-                CriticalSection ();
-                ~CriticalSection ();
-
-            public:
-                nonvirtual  void    Lock ();
-                nonvirtual  void    Unlock ();
-
-            public:
-				nonvirtual  void    lock () {Lock (); }
-				nonvirtual  void    unlock () { Unlock (); }
-
-			public:
-                template    <typename T>
-                nonvirtual  T   As ();
-
-#if     qUseThreads_StdCPlusPlus
-            private:
-                std::recursive_mutex    fMutex_;
-#elif   qUseThreads_WindowsNative
-            private:
-                CRITICAL_SECTION fCritSec_;
-#endif
-            };
-#if     qUseThreads_WindowsNative
-            template    <>
-            inline  CRITICAL_SECTION&   CriticalSection::As ()
-            {
-                return fCritSec_;
-            }
-#endif
-
-#endif
+            typedef std::recursive_mutex   CriticalSection;
 
 
-#if qJustUseStdCCritSecStuff
-			typedef lock_guard<CriticalSection>   AutoCriticalSection;
-#else
-			// enter  in CTOR and LEAVE in DTOR
-
-            template    <typename LOCKTYPE>
-            class   AutoCriticalSectionT {
-            public:
-                explicit AutoCriticalSectionT (LOCKTYPE& critSec);
-                ~AutoCriticalSectionT ();
-
-            private:
-                LOCKTYPE&   fCritSec_;
-            };
-            typedef AutoCriticalSectionT<CriticalSection>   AutoCriticalSection;
-#endif
-			
+            typedef lock_guard<CriticalSection>   AutoCriticalSection;
 
 
         }

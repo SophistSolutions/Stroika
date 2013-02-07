@@ -6,8 +6,10 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+#include    <vector>
+
 #include    "../Configuration/Common.h"
-#include    "../Execution/CriticalSection.h"
 
 #include    "BinaryInputStream.h"
 #include    "Seekable.h"
