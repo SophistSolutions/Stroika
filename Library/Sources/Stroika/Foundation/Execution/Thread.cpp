@@ -450,7 +450,7 @@ void    Thread::SetThreadPriority (int nPriority)
 #if     qPlatform_POSIX
 void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
-    Execution::lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
+    lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {
         if (sHandlerInstalled_) {
             SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
@@ -536,7 +536,7 @@ void    Thread::Abort ()
 #if     qPlatform_POSIX
         {
             {
-                Execution::lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
+                lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
                 if (not sHandlerInstalled_) {
                     SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
                     sHandlerInstalled_ = true;
