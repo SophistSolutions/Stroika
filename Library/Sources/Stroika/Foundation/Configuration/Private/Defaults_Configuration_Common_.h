@@ -192,4 +192,22 @@
 
 
 
+
+/**
+ *      qSupportDeprecatedStroikaFeatures
+ *
+ *      This will be set to off for the near future, but once Stroika stabalizes, this can be used
+ *  when new features are added to deprecate older code. Compatability can be written conditionally
+ *  and users can transition thier Stroika-based code by temporarily turning this on, when they
+ *  upgrade to a new Stroika version.
+ */
+#ifndef qSupportDeprecatedStroikaFeatures
+#define qSupportDeprecatedStroikaFeatures            0
+#endif
+
+
+
+
+
+
 #endif  /*_Stroika_Foundation_Configuration_Private_Defaults_Configuration_Common_h_*/
