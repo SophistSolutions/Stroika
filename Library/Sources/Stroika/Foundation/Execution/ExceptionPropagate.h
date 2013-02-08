@@ -30,6 +30,9 @@
                     return current_exception();
                 }
             This is particularly useful for transmitting an exception from one thread to another
+
+     (o)        MAJOR KEY IS USING
+                    http://en.cppreference.com/w/cpp/error/make_exception_ptr
 */
 
 
