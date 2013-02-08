@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <mutex>
+#include    <vector>
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/SmallStackBuffer.h"

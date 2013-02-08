@@ -22,9 +22,7 @@
 using   namespace   Stroika::Foundation;
 
 
-using   Execution::CriticalSection;
 using   Execution::Lockable;
-using   Execution::AutoCriticalSection;
 using   Execution::SimpleRunnable;
 using   Execution::Thread;
 using   Execution::ThreadPool;
@@ -60,7 +58,7 @@ namespace   {
 
 
 namespace   {
-    CriticalSection sharedCriticalSection_;
+    recursive_mutex sharedCriticalSection_;
     void    RegressionTest2_ ()
     {
         Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest2_"));
@@ -70,7 +68,7 @@ namespace   {
             static  void    DoIt (void* ignored) {
                 int*    argP    =   reinterpret_cast<int*> (ignored);
                 for (int i = 0; i < 10; i++) {
-                    AutoCriticalSection critSect (sharedCriticalSection_);
+                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
                     int tmp = *argP;
                     Execution::Sleep (.01);
                     //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
@@ -300,7 +298,7 @@ namespace   {
                 static  void    DoIt (void* ignored) {
                     Lockable<int>*  argP    =   reinterpret_cast<Lockable<int>*> (ignored);
                     for (int i = 0; i < 10; i++) {
-                        AutoCriticalSection critSect (*argP);
+                        lock_guard<recursive_mutex> critSect (*argP);
                         int tmp = *argP;
                         Execution::Sleep (.01);
                         //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
@@ -428,7 +426,7 @@ namespace   {
             static  void    DoIt (void* ignored) {
                 int*    argP    =   reinterpret_cast<int*> (ignored);
                 for (int i = 0; i < 10; i++) {
-                    AutoCriticalSection critSect (sharedCriticalSection_);
+                    lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
                     int tmp = *argP;
                     Execution::Sleep (.01);
                     //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
