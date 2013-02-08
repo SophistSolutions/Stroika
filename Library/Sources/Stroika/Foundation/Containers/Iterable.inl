@@ -12,7 +12,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-            // Class Iterable<T>::_IRep
+
+            /*
+             ********************************************************************************
+             *************************** Iterable<T>::_IRep *********************************
+             ********************************************************************************
+             */
             template    <typename T>
             inline  Iterable<T>::_IRep::_IRep ()
             {
@@ -218,8 +223,9 @@ namespace   Stroika {
                 };
                 return _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
 #endif
-
             }
+
+
         }
     }
 }
