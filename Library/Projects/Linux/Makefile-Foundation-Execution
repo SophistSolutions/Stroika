@@ -16,7 +16,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)AtomicOperations.o\
 	$(ObjDir)CommandLine.o\
-	$(ObjDir)CopyableCriticalSection.o\
+	$(ObjDir)CopyableMutex.o\
 	$(ObjDir)DLLSupport.o\
 	$(ObjDir)ErrNoException.o\
 	$(ObjDir)ExceptionPropagate.o\
