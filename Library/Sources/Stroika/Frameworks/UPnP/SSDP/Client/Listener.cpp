@@ -59,6 +59,7 @@ public:
         fSocket_.JoinMulticastGroup (InternetAddress (SSDP_MULTICAST));
     }
     void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
+        lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
     }
     void    Start () {
@@ -78,7 +79,7 @@ public:
                 Assert (nBytesRead <= NEltsOf (buf));
                 {
                     Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
-                    ReadPacketAndSendNotifies_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
+                    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
                 }
             }
             catch (const Execution::ThreadAbortException&) {
@@ -91,7 +92,7 @@ public:
             }
         }
     }
-    void    ReadPacketAndSendNotifies_ (Streams::TextInputStream in) {
+    void    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
         String firstLine    =   in.ReadLine ().Trim ();
         const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
@@ -125,8 +126,12 @@ public:
                     d.fServer = value;
                 }
             }
+
+            {
+                lock_guard<recursive_mutex> critSection (fCritSection_);
 for (auto i : fFoundCallbacks_) {
-                i (d);
+                    i (d);
+                }
             }
         }
     }
@@ -148,11 +153,6 @@ private:
  ********************************************************************************
  */
 Listener::Listener ()
-    : fRep_ (new Rep_ ())
-{
-}
-
-Listener::Listener (const std::function<void(const Result& d)>& callOnFinds)
     : fRep_ (new Rep_ ())
 {
 }

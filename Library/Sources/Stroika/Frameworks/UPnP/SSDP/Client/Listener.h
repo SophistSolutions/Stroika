@@ -13,6 +13,10 @@
 /**
  * TODO:
  *      @todo   Consider adding OnError callback?
+ *
+ *      @todo   Fix Result object to return other interesting fields
+ *
+ *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
  */
 
 namespace   Stroika {
@@ -31,7 +35,7 @@ namespace   Stroika {
                         class Result;
                     public:
                         Listener ();
-                        Listener (const std::function<void(const Result& d)>& callOnFinds);
+
                     public:
                         NO_COPY_CONSTRUCTOR (Listener);
                         NO_ASSIGNMENT_OPERATOR (Listener);
@@ -53,7 +57,8 @@ namespace   Stroika {
 
                     public:
                         /**
-                         * Starts listener (probably starts a thread).
+                         *  Starts listener (probably starts a thread).
+                         *  \req not already started.
                          */
                         nonvirtual  void    Start ();
 
@@ -73,6 +78,8 @@ namespace   Stroika {
                     /**
                      */
                     class Listener::Result : public Device {
+                    public:
+
                     };
 
 

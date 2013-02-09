@@ -14,9 +14,21 @@
 
 /**
  * TODO:
- *      @todo   Lots of rethinking needed for thread  management, and CTOR arg for search, or jsut Start()/Stop() methods?
- *              But in background, wehnw estart  - we want to use shared_ptr<> rep, and thread in private area todo search
- *              and document callback can be called back on any thread
+ *
+ *      @todo   VERY VERY ROUGH DRAFT - just stubbed in  - with right thread stuff and so on.
+ *              must re-read ssdp spec for exact format of messages!
+ *
+ *      @todo   Must have some API for how often to send searches, and how long to listen for responses (maybe forever on responses?)
+ *
+ *      @todo   Consider adding OnError callback?
+ *
+ *      @todo   Fix Result object to return other interesting fields
+ *
+ *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
+ *
+ *      @todo   Consider some synchonous API, so it sends a certian number of times, and
+ *              then returns all the answers.
+ *
  */
 
 namespace   Stroika {
@@ -30,17 +42,55 @@ namespace   Stroika {
                      */
                     class   Search {
                     public:
-                        //...
-                        //args - ST, strings, uuid etc.
-                        Search (const String& serviceType, const std::function<void(const Device& d)>& callOnFinds);
+                        class Result;
                     public:
-                        NO_DEFAULT_CONSTRUCTOR (Search);
+                        Search ();
+                    public:
                         NO_COPY_CONSTRUCTOR (Search);
                         NO_ASSIGNMENT_OPERATOR (Search);
+
+                    public:
+                        /**
+                         *  Its OK to destroy a searcher while running. It will silently stop the running searcher thread.
+                         */
+                        ~Search ();
+
+                    public:
+                        /**
+                         *  Using std::function, no way to compare for operator==, so no way to remove.
+                         *  @todo    RETHINK!
+                         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
+                         *  This can be done after the listening has started.
+                         */
+                        void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds);
+
+                    public:
+                        /**
+                         *  Starts searcher (probably starts a thread).
+                         *  args - ST, strings, uuid etc.
+                         *
+                         *  If already running, this automatically stops an existing search, and restarts it with
+                         *  the given serviceType parameters.
+                         */
+                        nonvirtual  void    Start (const String& serviceType);
+
+                    public:
+                        /**
+                         *  Stop an already running search. Not an error to call if not already started (just does nothing).
+                         *  This will block until the listner is stopped.
+                         */
+                        nonvirtual  void    Stop ();
 
                     private:
                         class Rep_;
                         shared_ptr<Rep_>    fRep_;
+                    };
+
+
+                    /**
+                     */
+                    class Search::Result : public Device {
+                    public:
                     };
 
 

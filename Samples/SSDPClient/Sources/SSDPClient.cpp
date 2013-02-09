@@ -21,19 +21,24 @@ using   namespace Stroika::Frameworks::UPnP::SSDP;
 
 using   Characters::String;
 using   Memory::Optional;
+using   Client::Listener;
+using   Client::Search;
 
-using Client::Listener;
+
 
 namespace {
     void    DoListening_ (Listener* l)
     {
         cout << "Listening..." << endl;
         l->AddOnFoundCallback ([] (const Listener::Result & d) {
-            static  mutex       m;
+            static  mutex       m;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
             lock_guard<mutex> critSection (m);
-            cout << "\tFound device:" << endl;
+            cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
+
+            // INCLUDE FLAG ABOUT ALLIVE
+
             cout << "\t\tST:       " << d.fST.AsUTF8 () << endl;
             if (not d.fServer.empty ()) {
                 cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
@@ -45,25 +50,50 @@ namespace {
 }
 
 namespace {
-    void    DoSearching_ (const String& searchFor)
+    void    DoSearching_ (Search* searcher, const String& searchFor)
     {
         cout << "Searching for " << searchFor.AsUTF8 () << "..." << endl;
+        searcher->AddOnFoundCallback ([] (const Search::Result & d) {
+            static  mutex       m;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
+            lock_guard<mutex> critSection (m);
+            cout << "\tFound device (MATCHED SEARCH):" << endl;
+            cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
+            cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
+            cout << "\t\tST:       " << d.fST.AsUTF8 () << endl;
+            if (not d.fServer.empty ()) {
+                cout << "\t\tServer:   " << d.fServer.AsUTF8 () << endl;
+            }
+            cout << endl;
+        });
+        searcher->Start (L"roku");
     }
 }
 
 
-int main(int argc, const char* argv[])
+
+
+int main (int argc, const char* argv[])
 {
     bool    listen  =   false;
     Optional<String>    searchFor;
 
-for (String arg : Execution::ParseCommandLine (argc, argv)) {
-        if (Execution::MatchesCommandLineArgument (arg, L"l")) {
+    vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
+    for (auto argi = args.begin (); argi != args.end(); ++argi) {
+        if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
             listen = true;
+        }
+        if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
+            ++argi;
+            if (argi != args.end ()) {
+                searchFor = *argi;
+            }
+            else {
+                cerr << "Expected arg to -s" << endl;
+            }
         }
     }
 
-#if qPlatform_Windows
+#if     qPlatform_Windows
     {
         // Initialize Winsock
         WSADATA wsaData;
@@ -80,8 +110,9 @@ for (String arg : Execution::ParseCommandLine (argc, argv)) {
     if (listen) {
         DoListening_ (&l);
     }
-    else if (not searchFor.empty ()) {
-        DoSearching_ (*searchFor);
+    Search  s;
+    if (not searchFor.empty ()) {
+        DoSearching_ (&s, *searchFor);
     }
 
     Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c

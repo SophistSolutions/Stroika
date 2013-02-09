@@ -6,7 +6,11 @@
 #include    <sstream>
 
 #include    "../../../../Foundation/Execution/ErrNoException.h"
+#include    "../../../../Foundation/Execution/Sleep.h"
+#include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
+#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "Search.h"
 
@@ -21,6 +25,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
+
 /*
  *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
  *  for details on the SSDP specification.
@@ -29,74 +34,127 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
  */
 
 namespace {
-    constexpr   char    SSDP_MULTICAST[]    =      "239.255.255.250";
-    constexpr   int     SSDP_PORT           =       1900;
+    constexpr   char            SSDP_MULTICAST[]        =   "239.255.255.250";
+    constexpr   int             SSDP_PORT               =   1900;
+    constexpr   SocketAddress   kMulticastSSDPDestAddr  =   SocketAddress (InternetAddress (SSDP_MULTICAST, InternetAddress::AddressFamily::V4), SSDP_PORT);
 }
 
 
 
-// @todo must run this on another thread
+
+
 class   Search::Rep_ {
 public:
-    Rep_ (const String& serviceType, const std::function<void(const Device& d)>& callOnFinds)
-        : fCallOnFinds_ (callOnFinds)
-        , fSocket_ (Socket::SocketKind::DGRAM) {
+    Rep_ ()
+        : fCritSection_ ()
+        , fFoundCallbacks_ ()
+        , fSocket_ (Socket::SocketKind::DGRAM)
+        , fThread_ () {
+    }
+    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
+        lock_guard<recursive_mutex> critSection (fCritSection_);
+        fFoundCallbacks_.push_back (callOnFinds);
+    }
+    void    Start (const String& serviceType) {
+        fThread_ = Execution::Thread ([this, serviceType] () { DoRun_ (serviceType); });
+        fThread_.Start ();
+    }
+    void    Stop () {
+        fThread_.AbortAndWaitForDone ();
+    }
+    void    DoRun_ (const String& serviceType) {
 
-        SocketAddress multicastSSDPDestAddr = SocketAddress (InternetAddress (SSDP_MULTICAST, InternetAddress::AddressFamily::V4), SSDP_PORT);
-        /// Note - most of thjis must run in another thread
 
-        /// better error handling - maybe a separate callback for errors?
+        /// MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
 
 
-        string  request;
         {
-            const   int kMaxHops_   =   3;
-            stringstream    requestBuf;
-            requestBuf << "M-SEARCH * HTTP/1.1\r\n";
-            requestBuf << "Host: " << SSDP_MULTICAST << ":" << SSDP_PORT << "\r\n";
-            requestBuf << "Man: \"ssdp:discover\"\r\n";
-            requestBuf << "ST: " << serviceType.c_str () << "\r\n";
-            requestBuf << "MX: " << kMaxHops_ << "\r\n";
-            requestBuf << "\r\n";
-            request = requestBuf.str ();
+            string  request;
+            {
+                const   int kMaxHops_   =   3;
+                stringstream    requestBuf;
+                requestBuf << "M-SEARCH * HTTP/1.1\r\n";
+                requestBuf << "Host: " << SSDP_MULTICAST << ":" << SSDP_PORT << "\r\n";
+                requestBuf << "Man: \"ssdp:discover\"\r\n";
+                requestBuf << "ST: " << serviceType.c_str () << "\r\n";
+                requestBuf << "MX: " << kMaxHops_ << "\r\n";
+                requestBuf << "\r\n";
+                request = requestBuf.str ();
+            }
+            fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), kMulticastSSDPDestAddr);
         }
-        fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), multicastSSDPDestAddr);
 
-        fd_set fds;
-        timeval timeout;
-        FD_ZERO(&fds);
-        FD_SET(fSocket_.GetNativeSocket (), &fds);
-        timeout.tv_sec = 30;        // think out timeouts..., and use stroika time code..
-        timeout.tv_usec = 0;
-
-        // maybe just lose throw here - and intentionally ignore errors?
-        Execution::ThrowErrNoIfNegative (select (fSocket_.GetNativeSocket () + 1, &fds, NULL, NULL, &timeout));
-        if (FD_ISSET (fSocket_.GetNativeSocket (), &fds)) {
-
-            Byte buf[4 * 1024]; // not sure what right size here would be?
+        // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
+        while (1) {
             try {
-                SocketAddress clientSock;
-                size_t  len = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &clientSock);
-                buf[len] = '\0';
+                Byte    buf[3 * 1024];  // not sure of max packet size
+                SocketAddress   from;
+                size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
+                Assert (nBytesRead <= NEltsOf (buf));
+                {
+                    Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
+                    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
+                }
+            }
+            catch (const Execution::ThreadAbortException&) {
+                Execution::DoReThrow ();
             }
             catch (...) {
-                // ignore errors here/?? maybe??
+                // ignore errors - and keep on trucking
+                // but avoid wasting too much time if we get into an error storm
+                Execution::Sleep (1.0);
             }
-
-            /* Check the HTTP response code */
-            if(strncmp(reinterpret_cast<char*> (buf), "HTTP/1.1 200 OK", 12) != 0) {
-                //printf("err: ssdp parsing ");
-                // must loop and ignore these
-//                return -1;
-            }
-            // do callback - but first must parse buffer...
-            //fCallOnFinds_ (buffer);
         }
     }
+    void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
+        ///// WRONG - THIS IS FOR NOTIFY - MUST CHECK FOR MULTICAST RESPONSE OK MESAGE FROM SEARCH!!!
+        String firstLine    =   in.ReadLine ().Trim ();
+        const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200 OK ";
+        if (firstLine.length () > kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
+            Result d;
+            while (true) {
+                String line =   in.ReadLine ().Trim ();
+                if (line.empty ()) {
+                    break;
+                }
 
+                // Need to simplify this code (stroika string util)
+                String  label;
+                String  value;
+                {
+                    size_t n = line.IndexOf (':');
+                    if (n != Characters::kBadStringIndex) {
+                        label = line.SubString (0, n);
+                        value = line.SubString (n + 1).Trim ();
+                    }
+                }
+                if (label == L"Location") {
+                    d.fLocation = value;
+                }
+                else if (label == L"NT") {
+                    d.fST = value;
+                }
+                else if (label == L"USN") {
+                    d.fUSN = value;
+                }
+                else if (label == L"Server") {
+                    d.fServer = value;
+                }
+            }
+            {
+                // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
+                lock_guard<recursive_mutex> critSection (fCritSection_);
+for (auto i : fFoundCallbacks_) {
+                    i (d);
+                }
+            }
+        }
+    }
 private:
-    std::function<void(const Device& d)>    fCallOnFinds_;
-    Socket                                  fSocket_;
+    recursive_mutex                                 fCritSection_;
+    vector<std::function<void(const Result& d)>>    fFoundCallbacks_;
+    Socket                                          fSocket_;
+    Execution::Thread                               fThread_;
 };
 
 
@@ -104,8 +162,34 @@ private:
 
 
 
-Search::Search (const String& serviceType, const std::function<void(const Device& d)>& callOnFinds)
-    : fRep_ (new Rep_ (serviceType, callOnFinds))
+
+/*
+ ********************************************************************************
+ *************************************** Search *********************************
+ ********************************************************************************
+ */
+Search::Search ()
+    : fRep_ (new Rep_ ())
 {
+}
+
+Search::~Search ()
+{
+    IgnoreExceptionsForCall (fRep_->Stop ());
+}
+
+void    Search::AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds)
+{
+    fRep_->AddOnFoundCallback (callOnFinds);
+}
+
+void    Search::Start (const String& serviceType)
+{
+    fRep_->Start (serviceType);
+}
+
+void    Search::Stop ()
+{
+    fRep_->Stop ();
 }
 
