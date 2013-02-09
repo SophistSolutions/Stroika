@@ -29,6 +29,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
@@ -258,7 +259,7 @@ void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
     }
 
     sockaddr                useSockAddr =   sockAddr.As<sockaddr> ();
-    Execution::Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));});
+    ThrowErrNoIfNegative (Handle_ErrNoResultInteruption ([&sfd, &useSockAddr] () -> int { return ::bind (sfd, (sockaddr*)&useSockAddr, sizeof (useSockAddr));}));
 }
 
 

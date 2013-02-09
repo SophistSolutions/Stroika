@@ -40,8 +40,16 @@ namespace   Stroika {
                     : fRep_ (rep)
                 {
                 }
+                inline  Socket::Socket (shared_ptr<_Rep> && rep)
+                    : fRep_ (std::move (rep))
+                {
+                }
                 inline  Socket::Socket (const Socket& s)
                     : fRep_ (s.fRep_)
+                {
+                }
+                inline  Socket::Socket (Socket && s)
+                    : fRep_ (std::move (s.fRep_))
                 {
                 }
                 inline  Socket::~Socket ()
@@ -64,10 +72,6 @@ namespace   Stroika {
                 inline  Socket::PlatformNativeHandle    Socket::GetNativeSocket () const
                 {
                     return fRep_->GetNativeSocket ();
-                }
-                inline  Socket::Socket (Socket && s)
-                    : fRep_ (std::move (s.fRep_))
-                {
                 }
 
 
