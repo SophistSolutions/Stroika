@@ -40,6 +40,7 @@ namespace {
 
     }
 }
+
 namespace {
     void    DoSearching_ (const String& searchFor)
     {
@@ -47,13 +48,14 @@ namespace {
     }
 }
 
+
 int main(int argc, const char* argv[])
 {
     bool    listen  =   false;
     Optional<String>    searchFor;
 
 for (String arg : Execution::ParseCommandLine (argc, argv)) {
-        if (Execution::MatchesCommandLineArgument (arg, TSTR ("l"))) {
+        if (Execution::MatchesCommandLineArgument (arg, L"l")) {
             listen = true;
         }
     }
@@ -80,4 +82,3 @@ for (String arg : Execution::ParseCommandLine (argc, argv)) {
 
     return 0;
 }
-
