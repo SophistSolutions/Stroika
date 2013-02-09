@@ -21,7 +21,8 @@ namespace   Stroika {
 
             using   Characters::String;
 
-            vector<String>  ParseCommandLine (int argc, const Characters::TChar* argv[]);
+            vector<String>  ParseCommandLine (int argc, const char* argv[]);
+            vector<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
 
             //
             // This utility function takes a given 'matchesArgPattern' - which is basically what you declare your parameter to be, and returns

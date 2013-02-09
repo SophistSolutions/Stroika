@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/TString.h"
+
 #include    "CommandLine.h"
 
 
@@ -15,15 +17,27 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
-
-vector<String>  Execution::ParseCommandLine (int argc, const Characters::TChar* argv[])
+vector<String>  Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);
     vector<String>  results;
     results.reserve (argc);
 
     for (int i = 0; i < argc; ++i) {
-        results.push_back (String::FromTString (argv[i]));
+        results.push_back (Characters::NarrowSDKStringToWide (argv[i]));
+    }
+
+    return results;
+}
+
+vector<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
+{
+    Require (argc >= 0);
+    vector<String>  results;
+    results.reserve (argc);
+
+    for (int i = 0; i < argc; ++i) {
+        results.push_back (argv[i]);
     }
 
     return results;
