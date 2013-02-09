@@ -10,11 +10,12 @@
 #include    "String.h"
 
 
-/*
+/**
  * TODO:
  *
- *      (o) Consider adding new Split() function. It seems that is quite similar - maybe idnetical to the Tokenize() funciton.
- *          Consider overloads for String - returing Sequnce<String> and taking Set<Character>.
+ *      @todo   Consider adding new Split() function. It seems that is quite similar - maybe identical to
+ *              the Tokenize() funciton. Consider overloads for String - returing Sequnce<String>
+ *              and taking Set<Character>.
  */
 
 
