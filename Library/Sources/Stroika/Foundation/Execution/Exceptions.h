@@ -88,6 +88,12 @@ namespace   Stroika {
 #define IgnoreExceptionsForCall(theCode)        try {theCode;} catch (...) {}
 
 
+            class   ThreadAbortException;
+            /**
+             */
+#define IgnoreExceptionsExceptThreadAbortForCall(theCode)        try {theCode;} catch (Execution::ThreadAbortException& e) { DoReThrow (); } catch (...) {}
+
+
         }
     }
 }
