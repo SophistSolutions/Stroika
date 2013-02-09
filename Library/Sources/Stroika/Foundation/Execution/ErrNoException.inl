@@ -28,12 +28,14 @@ namespace   Stroika {
             }
 
 
-            inline  void    ThrowErrNoIfNegative (int returnCode)
+            template    <typename INT_TYPE>
+            inline  void    ThrowErrNoIfNegative (INT_TYPE returnCode)
             {
                 if (returnCode < 0) {
                     errno_ErrorException::DoThrow (errno);
                 }
             }
+
 
 #if     qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
             template    <typename CALL>

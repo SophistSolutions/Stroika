@@ -51,7 +51,8 @@ namespace   Stroika {
              * This function is useful for wrapping calls to those style functions. It checks if the argument result is negative (so -1 covers that) and
              * throws and errno_ErrorException () excpetion.
              */
-            void    ThrowErrNoIfNegative (int returnCode);
+            template    <typename INT_TYPE>
+            void    ThrowErrNoIfNegative (INT_TYPE returnCode);
 
 
 
