@@ -6,13 +6,17 @@ require "../../ScriptsLib/BuildUtils.pl";
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
 my @kConfigurations = (	
+					"Configuration=Debug-A-32,Platform=Win32",
+					"Configuration=Release-A-32,Platform=Win32",
 					"Configuration=Debug-U-32,Platform=Win32",
+					"Configuration=Debug-U-64,Platform=x64",
 					"Configuration=Release-U-32,Platform=Win32",
+					"Configuration=Release-U-64,Platform=x64",
 					);
 
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
-print("Building Samples/SimpleLedTest...\n");
+print("Building Samples/SSDPClient...\n");
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
