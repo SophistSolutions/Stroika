@@ -5,6 +5,8 @@
 
 #include    "../../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
+#include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "Listener.h"
 
@@ -51,10 +53,51 @@ public:
             Byte    buf[1024];
             SocketAddress   from;
             size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
+            Assert (nBytesRead <= NEltsOf (buf));
+
             // maybe dont pass from - we ignore..
             // Bind buffer to input text stream (readonly) - and read strings from it...
             // then see if it looks like SSDP notify (see ssdp spec above for format - or run wireshark and see what devcices send out)
             // then call callback with results..
+            {
+                Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
+                Streams::TextInputStreamBinaryAdapter           readDataTextStream (readDataAsBinStream);
+                String firstLine    =   readDataTextStream.ReadLine ().Trim ();
+                const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
+                if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
+                    Device d;
+                    while (true) {
+                        String line =   readDataTextStream.ReadLine ().Trim ();
+                        if (line.empty ()) {
+                            break;
+                        }
+
+                        // Need to simplify this code (stroika string util)
+                        String  label;
+                        String  value;
+                        {
+                            size_t n = line.IndexOf (':');
+                            if (n != Characters::kBadStringIndex) {
+                                label = line.SubString (0, n);
+                                value = line.SubString (n + 1).Trim ();
+                            }
+                        }
+                        if (label == L"Location") {
+                            d.fLocation = value;
+                        }
+                        else if (label == L"NT") {
+                            d.fST = value;
+                        }
+                        else if (label == L"USN") {
+                            d.fUSN = value;
+                        }
+                        else if (label == L"Server") {
+                            d.fServer = value;
+                        }
+                    }
+                    callOnFinds (d);
+                }
+            }
         }
     }
 
