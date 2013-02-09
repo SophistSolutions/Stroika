@@ -12,10 +12,6 @@
 
 /**
  * TODO:
- *      @todo   Lots of rethinking needed for thread  management, and CTOR arg for search, or jsut Start()/Stop() methods?
- *              But in background, wehnw estart  - we want to use shared_ptr<> rep, and thread in private area todo search
- *              and document callback can be called back on any thread
- *
  *      @todo   Consider adding OnError callback?
  */
 
@@ -27,18 +23,56 @@ namespace   Stroika {
 
 
                     /**
+                     *  The SSDP Listener object will listen for SSDP 'muticast' messages, and call any designated callbacks
+                     *  with the values in those SSDP muticast 'NOTIFY' messages.
                      */
                     class   Listener {
                     public:
-                        Listener (const std::function<void(const Device& d)>& callOnFinds);
+                        class Result;
                     public:
-                        NO_DEFAULT_CONSTRUCTOR (Listener);
+                        Listener ();
+                        Listener (const std::function<void(const Result& d)>& callOnFinds);
+                    public:
                         NO_COPY_CONSTRUCTOR (Listener);
                         NO_ASSIGNMENT_OPERATOR (Listener);
+
+                    public:
+                        /**
+                         *  Its OK to destroy a listener while running. It will silently stop the running listner thread.
+                         */
+                        ~Listener ();
+
+                    public:
+                        /**
+                         *  Using std::function, no way to compare for operator==, so no way to remove.
+                         *  @todo    RETHINK!
+                         *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
+                         *  This can be done after the listening has started.
+                         */
+                        void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds);
+
+                    public:
+                        /**
+                         * Starts listener (probably starts a thread).
+                         */
+                        nonvirtual  void    Start ();
+
+                    public:
+                        /**
+                         *  Stop an already running listener. Not an error to call if not already started (just does nothing).
+                         *  This will block until the listner is stopped.
+                         */
+                        nonvirtual  void    Stop ();
 
                     private:
                         class Rep_;
                         shared_ptr<Rep_>    fRep_;
+                    };
+
+
+                    /**
+                     */
+                    class Listener::Result : public Device {
                     };
 
 

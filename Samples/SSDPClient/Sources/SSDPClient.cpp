@@ -4,9 +4,11 @@
 #include    <winsock2.h>
 #endif
 
+#include    <mutex>
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
+#include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Client/Listener.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Client/Search.h"
@@ -20,14 +22,15 @@ using   namespace Stroika::Frameworks::UPnP::SSDP;
 using   Characters::String;
 using   Memory::Optional;
 
+using Client::Listener;
 
 namespace {
-    void    DoListening_ ()
+    void    DoListening_ (Listener* l)
     {
-        using Client::Listener;
         cout << "Listening..." << endl;
-
-        Listener l ([] (const Device & d) {
+        l->AddOnFoundCallback ([] (const Listener::Result & d) {
+            static  mutex       m;
+            lock_guard<mutex> critSection (m);
             cout << "\tFound device:" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
@@ -37,7 +40,7 @@ namespace {
             }
             cout << endl;
         });
-
+        l->Start ();
     }
 }
 
@@ -73,12 +76,15 @@ for (String arg : Execution::ParseCommandLine (argc, argv)) {
 #endif
 
     // for now - given current API (and not using threads) - do just one or the other
+    Listener l;
     if (listen) {
-        DoListening_ ();
+        DoListening_ (&l);
     }
     else if (not searchFor.empty ()) {
         DoSearching_ (*searchFor);
     }
+
+    Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
 
     return 0;
 }
