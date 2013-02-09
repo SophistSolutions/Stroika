@@ -114,7 +114,7 @@ namespace   Stroika {
                 nonvirtual  Character   Read () const;
 
             public:
-                /*&
+                /**
                  * Readline looks for a trailing bare CR, or bare LF, or CRLF. It returns whatever line-terminator
                  * it encounters as part of the read line.
                  */
