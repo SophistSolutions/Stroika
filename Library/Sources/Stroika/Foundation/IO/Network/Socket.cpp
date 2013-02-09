@@ -109,7 +109,8 @@ namespace   {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if     qPlatform_Windows
-                Execution::ThrowErrNoIfNegative (::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
+                Require (end - start < numeric_limits<int>::max ());
+                Execution::ThrowErrNoIfNegative (::sendto (fSD_, reinterpret_cast<const char*> (start), static_cast<int> (end - start), 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)));
 #elif   qPlatform_POSIX
                 Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &start, &end, &sa] () -> int { return ::sendto (fSD_, reinterpret_cast<const char*> (start), end - start, 0, reinterpret_cast<sockaddr*> (&sa), sizeof(sa)); }));
 #else
@@ -122,7 +123,8 @@ namespace   {
                 socklen_t   salen   =   sizeof(sa);
                 int         result  =   0;
 #if     qPlatform_Windows
-                Execution::ThrowErrNoIfNegative (result = ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen));
+                Require (intoEnd - intoStart < numeric_limits<int>::max ());
+                Execution::ThrowErrNoIfNegative (result = ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen));
 #elif   qPlatform_POSIX
                 Execution::ThrowErrNoIfNegative (result = Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); }));
 #else
