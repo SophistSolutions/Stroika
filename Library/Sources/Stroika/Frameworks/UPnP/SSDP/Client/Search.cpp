@@ -11,7 +11,7 @@
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
-#include	"../Common.h"
+#include    "../Common.h"
 
 #include    "Search.h"
 
@@ -67,7 +67,7 @@ public:
                 const   int kMaxHops_   =   3;
                 stringstream    requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
-				requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << SSDP::V4::kSocketAddress.GetPort () << "\r\n";
+                requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << SSDP::V4::kSocketAddress.GetPort () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
                 requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
@@ -84,10 +84,8 @@ public:
                 SocketAddress   from;
                 size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
-                {
-                    Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
-                    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
-                }
+                Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
+                ReadPacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();

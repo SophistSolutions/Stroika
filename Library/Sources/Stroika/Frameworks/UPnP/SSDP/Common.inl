@@ -14,10 +14,10 @@
 namespace   Stroika {
     namespace   Frameworks {
         namespace   UPnP {
-			namespace   SSDP {
+            namespace   SSDP {
 
 
-			}
+            }
         }
     }
 }

@@ -12,24 +12,21 @@
 
 
 
-/*
- * TODO:
- */
-
 namespace   Stroika {
     namespace   Frameworks {
         namespace   UPnP {
-			namespace   SSDP {
-
-				namespace V4 {
-					extern	const		Foundation::IO::Network::SocketAddress  kSocketAddress;
-				}
-				namespace V6 {
-					// NYI
-				}
+            namespace   SSDP {
 
 
-			}
+                namespace V4 {
+                    extern  const       Foundation::IO::Network::SocketAddress  kSocketAddress;
+                }
+                namespace V6 {
+                    // NYI
+                }
+
+
+            }
         }
     }
 }

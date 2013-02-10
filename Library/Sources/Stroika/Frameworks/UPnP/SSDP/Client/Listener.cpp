@@ -11,7 +11,7 @@
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
-#include	"../Common.h"
+#include    "../Common.h"
 
 #include    "Listener.h"
 
@@ -51,8 +51,8 @@ public:
         , fThread_ () {
         Socket::BindFlags   bindFlags   =   Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
-		fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
-		fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
+        fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+        fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
     void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
         lock_guard<recursive_mutex> critSection (fCritSection_);
@@ -73,10 +73,8 @@ public:
                 SocketAddress   from;
                 size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
-                {
-                    Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
-                    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
-                }
+                Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
+                ParsePacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();
@@ -109,16 +107,16 @@ public:
                         value = line.SubString (n + 1).Trim ();
                     }
                 }
-                if (label == L"Location") {
+                if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fLocation = value;
                 }
-                else if (label == L"NT") {
+                else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fST = value;
                 }
-                else if (label == L"USN") {
+                else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fUSN = value;
                 }
-                else if (label == L"Server") {
+                else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fServer = value;
                 }
             }

@@ -14,10 +14,10 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 
 
 namespace {
-    constexpr   char		SSDP_MULTICAST[]    =      "239.255.255.250";
-    constexpr   uint16_t    SSDP_PORT           =       1900;
+    constexpr   char        SSDP_MULTICAST_[]    =      "239.255.255.250";
+    constexpr   uint16_t    SSDP_PORT_           =       1900;
 }
 
 
-const	SocketAddress   UPnP::SSDP::V4::kSocketAddress =   SocketAddress (InternetAddress (SSDP_MULTICAST, InternetAddress::AddressFamily::V4), SSDP_PORT);
+const   SocketAddress   UPnP::SSDP::V4::kSocketAddress =   SocketAddress (InternetAddress (SSDP_MULTICAST_, InternetAddress::AddressFamily::V4), SSDP_PORT_);
 

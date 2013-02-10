@@ -113,8 +113,7 @@ namespace   Stroika {
                                 const char*   result  =   ::inet_ntop (AF_INET, &fV4_, buf, sizeof (buf));
                                 return result == nullptr ? String () : String::FromUTF8 (result);
 #else
-                                AssertNotImplemented ();
-                                return String ();
+                                return String::FromUTF8 (::inet_ntoa (fV4_));
 #endif
                             }
                             break;
