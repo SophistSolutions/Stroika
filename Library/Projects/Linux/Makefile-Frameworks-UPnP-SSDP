@@ -14,6 +14,7 @@ SubDirs	=	\
 	Server	\
 
 Objs	=	\
+	$(ObjDir)Common.o\
 
 all:	$(Objs) $(SubDirs)
 

@@ -65,7 +65,7 @@ namespace   Stroika {
 #endif
 #if     qPlatform_POSIX
                 template    <>
-                in_addr_t   InternetAddress::As<in_addr_t> () const
+                inline  in_addr_t   InternetAddress::As<in_addr_t> () const
                 {
                     Require (fAddressFamily_ == AddressFamily::V4);
                     return fV4_.s_addr;
