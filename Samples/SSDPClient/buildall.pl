@@ -17,7 +17,23 @@ my @kConfigurations = (
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
 print("Building Samples/SSDPClient...\n");
-if ("$^O" eq "cygwin") {
+if ("$^O" eq "linux") {
+	use Cwd;
+	use Cwd 'abs_path';
+	my $savedDir = abs_path (getcwd ());
+
+	chdir ("../IntermediateFiles/Platform_Linux/Debug/");
+	if ($useBld eq "rebuild") {
+		print ("Samples_SSDPClient; clobber...\n");
+		system ("cd Samples_SSDPClient; make -s clobber");
+		$useBld = "all";
+	}
+	
+	print ("Samples_SSDPClient; $useBld...\n");
+	system ("cd Samples_SSDPClient; make -s $useBld");
+	chdir ($savedDir);
+}
+else if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();

@@ -226,6 +226,9 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/Makefile");
 		system ("ln -s ../../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
+		mkdir "$intermediateFiles/$platform/$target/Samples_SSDPClient";
+		system ("ln -s ../../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SSDPClient/Makefile");
+
 		foreach $tst (GetAllTests ()) {
 			mkdir "$intermediateFiles/$platform/$target/Test$tst";
 			system ("ln -s ../../../../Tests/Projects/Linux/$tst/Makefile $intermediateFiles/$platform/$target/Test$tst/Makefile");
