@@ -25,14 +25,16 @@ using   Client::Listener;
 using   Client::Search;
 
 
+namespace {
+    mutex       kStdOutMutex_;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
+}
 
 namespace {
     void    DoListening_ (Listener* l)
     {
         cout << "Listening..." << endl;
         l->AddOnFoundCallback ([] (const Listener::Result & d) {
-            static  mutex       m;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
-            lock_guard<mutex> critSection (m);
+            lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
@@ -54,8 +56,7 @@ namespace {
     {
         cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
         searcher->AddOnFoundCallback ([] (const Search::Result & d) {
-            static  mutex       m;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
-            lock_guard<mutex> critSection (m);
+            lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
             cout << "\t\tLocation: " << d.fLocation.AsUTF8 () << endl;
