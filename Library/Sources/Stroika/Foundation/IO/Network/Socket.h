@@ -137,12 +137,38 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+                    nonvirtual  void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
 
                 public:
                     /**
                      */
-                    void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+                    nonvirtual  void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface = V4::kAddrAny);
+
+                public:
+                    /**
+                     *  This specifies the number of networks to traverse in sending the multicast message.
+                     *  It defaults to 1.
+                     */
+                    nonvirtual  uint8_t     GetMulticastTTL ();
+
+                public:
+                    /**
+                     *  This specifies the number of networks to traverse in sending the multicast message.
+                     *  It defaults to 1.
+                     */
+                    nonvirtual  void        SetMulticastTTL (uint8_t ttl);
+
+                public:
+                    /**
+                     *  This determines whether the data sent will be looped back to sender host or not.
+                     */
+                    nonvirtual  bool        GetMulticastLoopMode ();
+
+                public:
+                    /**
+                     *  This determines whether the data sent will be looped back to sender host or not.
+                     */
+                    nonvirtual  void        SetMulticastLoopMode (bool loopMode);
 
                 public:
                     /**
@@ -236,6 +262,10 @@ namespace   Stroika {
                     virtual Socket                  Accept () = 0;
                     virtual void                    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
                     virtual void                    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) = 0;
+                    virtual uint8_t                 GetMulticastTTL () const = 0;
+                    virtual void                    SetMulticastTTL (uint8_t ttl) = 0;
+                    virtual bool                    GetMulticastLoopMode () const = 0;
+                    virtual void                    SetMulticastLoopMode (bool loopMode) = 0;
                     virtual PlatformNativeHandle    GetNativeSocket () const = 0;
                 };
 

@@ -177,13 +177,33 @@ AGAIN:
                 m.imr_interface = onInterface.As<in_addr> ();
                 Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
             }
-            void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
+            virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
                 ip_mreq m;
                 memset (&m, 0, sizeof (m));
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
                 m.imr_multiaddr = iaddr.As<in_addr> ();
                 m.imr_interface = onInterface.As<in_addr> ();
                 Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
+            }
+            virtual uint8_t     GetMulticastTTL ()  const override {
+                char ttl    =   0;
+                int size    =   sizeof (ttl);
+                Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &ttl, &size));
+                return ttl;
+            }
+            virtual void        SetMulticastTTL (uint8_t ttl)  override {
+                char useTTL =   ttl;
+                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &useTTL, sizeof (useTTL)));
+            }
+            virtual bool        GetMulticastLoopMode ()  const override {
+                char loop   =   0;
+                int size    =   sizeof (loop);
+                Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, &size));
+                return !!loop;
+            }
+            virtual void        SetMulticastLoopMode (bool loopMode)  override {
+                char loop   =   loopMode;
+                Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
             }
             virtual Socket::PlatformNativeHandle    GetNativeSocket () const override {
                 return fSD_;
@@ -336,6 +356,26 @@ void    Socket::Listen (unsigned int backlog)
 Socket  Socket::Accept ()
 {
     return fRep_->Accept ();
+}
+
+uint8_t     Socket::GetMulticastTTL ()
+{
+    return fRep_->GetMulticastTTL ();
+}
+
+void        Socket::SetMulticastTTL (uint8_t ttl)
+{
+    fRep_->SetMulticastTTL (ttl);
+}
+
+bool        Socket::GetMulticastLoopMode ()
+{
+    return fRep_->GetMulticastLoopMode ();
+}
+
+void        Socket::SetMulticastLoopMode (bool loopMode)
+{
+    fRep_->SetMulticastLoopMode (loopMode);
 }
 
 void    Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)

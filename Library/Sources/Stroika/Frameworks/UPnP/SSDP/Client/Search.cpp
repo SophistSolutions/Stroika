@@ -58,6 +58,7 @@ public:
     }
     void    DoRun_ (const String& serviceType) {
 
+        fSocket_.SetMulticastLoopMode (true);       // probably should make this configurable
 
         /// MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)
 
@@ -65,7 +66,7 @@ public:
         {
             string  request;
             {
-                const   int kMaxHops_   =   3;
+                const   unsigned int kMaxHops_   =   3;
                 stringstream    requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
                 requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << SSDP::V4::kSocketAddress.GetPort () << "\r\n";
@@ -74,6 +75,7 @@ public:
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
                 requestBuf << "\r\n";
                 request = requestBuf.str ();
+                fSocket_.SetMulticastTTL (kMaxHops_);
             }
             fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), SSDP::V4::kSocketAddress);
         }

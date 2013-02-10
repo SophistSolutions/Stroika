@@ -90,6 +90,7 @@ int main (int argc, const char* argv[])
             }
             else {
                 cerr << "Expected arg to -s" << endl;
+                return EXIT_FAILURE;
             }
         }
     }
@@ -101,7 +102,7 @@ int main (int argc, const char* argv[])
         int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
         if (iResult != 0) {
             cerr << "WSAStartup failed " << iResult << endl;
-            return 1;
+            return EXIT_FAILURE;
         }
     }
 #endif
@@ -121,8 +122,8 @@ int main (int argc, const char* argv[])
     }
     else {
         cerr << "Specify -l to listen or -s STRING to search" << endl;
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
