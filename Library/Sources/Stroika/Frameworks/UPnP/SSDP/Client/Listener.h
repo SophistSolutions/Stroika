@@ -64,8 +64,8 @@ namespace   Stroika {
 
                     public:
                         /**
-                         *  Stop an already running listener. Not an error to call if not already started (just does nothing).
-                         *  This will block until the listner is stopped.
+                         *  Stop an already running listener. Not an error to call if not already started
+                         *  (just does nothing). This will block until the listner is stopped.
                          */
                         nonvirtual  void    Stop ();
 

@@ -15,10 +15,10 @@
 /**
  * TODO:
  *
- *      @todo   VERY VERY ROUGH DRAFT - just stubbed in  - with right thread stuff and so on.
- *              must re-read ssdp spec for exact format of messages!
+ *      @todo   must re-read ssdp spec for exact format of messages!
  *
- *      @todo   Must have some API for how often to send searches, and how long to listen for responses (maybe forever on responses?)
+ *      @todo   Must have some API for how often to send searches, and how long
+ *              to listen for responses (maybe forever on responses?)
  *
  *      @todo   Consider adding OnError callback?
  *

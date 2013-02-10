@@ -17,6 +17,11 @@
 
 /**
  *  \file
+ *
+ *      @todo   ADD TO DOCUMENTATION AND IMPLEMNENTATION - when CONTAINER (smartptr)
+ *              goes out of scope - AUTO-CLOSE the stream (so any future reads just return
+ *              EOF, or special 'CLOSED'? Or ASSERT ERROR? DECIDE AND DOCUMENT AND DO.
+ *
  *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
  *
  *      @todo   qCompilerAndStdLib_Supports_ConstructorDelegation - do like BasicBinaryInputStream constructors
@@ -27,6 +32,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
+
 
             /**
              *  \brief  ExternallyOwnedMemoryBinaryInputStream takes a block of binary data
@@ -54,6 +60,7 @@ namespace   Stroika {
                 ExternallyOwnedMemoryBinaryInputStream (const vector<Byte>& v);
                 ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end);
             };
+
 
         }
     }

@@ -26,6 +26,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
+
 /*
  *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
  *  for details on the SSDP specification.
@@ -84,8 +85,8 @@ public:
                 SocketAddress   from;
                 size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
-                Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
-                ReadPacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
+                using   namespace   Streams;
+                ReadPacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead)));
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();

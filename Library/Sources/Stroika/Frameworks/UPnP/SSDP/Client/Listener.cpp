@@ -73,8 +73,8 @@ public:
                 SocketAddress   from;
                 size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
-                Streams::ExternallyOwnedMemoryBinaryInputStream readDataAsBinStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead);
-                ParsePacketAndNotifyCallbacks_ (Streams::TextInputStreamBinaryAdapter (readDataAsBinStream));
+                using   namespace   Streams;
+                ParsePacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead)));
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();
