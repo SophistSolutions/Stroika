@@ -187,7 +187,7 @@ AGAIN:
             }
             virtual uint8_t     GetMulticastTTL ()  const override {
                 char ttl    =   0;
-                int size    =   sizeof (ttl);
+                socklen_t size    =   sizeof (ttl);
                 Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &ttl, &size));
                 return ttl;
             }
@@ -197,7 +197,7 @@ AGAIN:
             }
             virtual bool        GetMulticastLoopMode ()  const override {
                 char loop   =   0;
-                int size    =   sizeof (loop);
+                socklen_t size    =   sizeof (loop);
                 Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, &size));
                 return !!loop;
             }
@@ -347,66 +347,6 @@ void    Socket::OLD_Bind (const BindProperties& bindProperties)
     fRep_  = shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sd));
 }
 #endif
-
-void    Socket::Listen (unsigned int backlog)
-{
-    fRep_->Listen (backlog);
-}
-
-Socket  Socket::Accept ()
-{
-    return fRep_->Accept ();
-}
-
-uint8_t     Socket::GetMulticastTTL ()
-{
-    return fRep_->GetMulticastTTL ();
-}
-
-void        Socket::SetMulticastTTL (uint8_t ttl)
-{
-    fRep_->SetMulticastTTL (ttl);
-}
-
-bool        Socket::GetMulticastLoopMode ()
-{
-    return fRep_->GetMulticastLoopMode ();
-}
-
-void        Socket::SetMulticastLoopMode (bool loopMode)
-{
-    fRep_->SetMulticastLoopMode (loopMode);
-}
-
-void    Socket::JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
-{
-    fRep_->JoinMulticastGroup (iaddr, onInterface);
-}
-
-void    Socket::LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface)
-{
-    fRep_->LeaveMulticastGroup (iaddr, onInterface);
-}
-
-size_t  Socket::Read (Byte* intoStart, Byte* intoEnd)
-{
-    return fRep_->Read (intoStart, intoEnd);
-}
-
-void    Socket::Write (const Byte* start, const Byte* end)
-{
-    fRep_->Write (start, end);
-}
-
-void    Socket::SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr)
-{
-    fRep_->SendTo (start, end, sockAddr);
-}
-
-size_t    Socket::ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress)
-{
-    return fRep_->ReceiveFrom (intoStart, intoEnd, flag, fromAddress);
-}
 
 void    Socket::Close ()
 {
