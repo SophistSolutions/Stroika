@@ -11,6 +11,7 @@
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include	"../Common.h"
 
 #include    "Listener.h"
 
@@ -34,11 +35,6 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
  */
 
 
-namespace {
-    constexpr   char    SSDP_MULTICAST[]    =      "239.255.255.250";
-    constexpr   int     SSDP_PORT           =       1900;
-}
-
 
 
 /*
@@ -55,8 +51,8 @@ public:
         , fThread_ () {
         Socket::BindFlags   bindFlags   =   Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
-        fSocket_.Bind (SocketAddress (V4::kAddrAny, SSDP_PORT), bindFlags);
-        fSocket_.JoinMulticastGroup (InternetAddress (SSDP_MULTICAST));
+		fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
+		fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
     void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
         lock_guard<recursive_mutex> critSection (fCritSection_);

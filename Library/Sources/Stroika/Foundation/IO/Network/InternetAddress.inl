@@ -54,6 +54,8 @@ namespace   Stroika {
                 {
                     return fAddressFamily_;
                 }
+                template    <>
+                String InternetAddress::As<String> () const;
 #if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
                 template    <typename T>
                 T   InternetAddress::As () const

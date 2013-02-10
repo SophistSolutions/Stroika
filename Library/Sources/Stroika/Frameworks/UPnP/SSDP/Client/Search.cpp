@@ -11,6 +11,7 @@
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include	"../Common.h"
 
 #include    "Search.h"
 
@@ -31,14 +32,6 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
  *
  *  And http://www.upnp-hacks.org/upnp.html for more hints.
  */
-
-
-namespace {
-    constexpr   char            SSDP_MULTICAST[]        =   "239.255.255.250";
-    constexpr   int             SSDP_PORT               =   1900;
-    constexpr   SocketAddress   kMulticastSSDPDestAddr  =   SocketAddress (InternetAddress (SSDP_MULTICAST, InternetAddress::AddressFamily::V4), SSDP_PORT);
-}
-
 
 
 
@@ -74,14 +67,14 @@ public:
                 const   int kMaxHops_   =   3;
                 stringstream    requestBuf;
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
-                requestBuf << "Host: " << SSDP_MULTICAST << ":" << SSDP_PORT << "\r\n";
+				requestBuf << "Host: " << SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().AsUTF8 () << ":" << SSDP::V4::kSocketAddress.GetPort () << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
                 requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
                 requestBuf << "\r\n";
                 request = requestBuf.str ();
             }
-            fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), kMulticastSSDPDestAddr);
+            fSocket_.SendTo (reinterpret_cast<const Byte*> (request.c_str ()), reinterpret_cast<const Byte*> (request.c_str () + request.length ()), SSDP::V4::kSocketAddress);
         }
 
         // only stopped by thread abort (which we PROBALY SHOULD FIX - ONLY SEARCH FOR CONFIRABLE TIMEOUT???)
