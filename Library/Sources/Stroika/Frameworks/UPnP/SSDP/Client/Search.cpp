@@ -24,7 +24,7 @@ using   namespace   Stroika::Frameworks::UPnP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
-
+#include <iostream>
 
 /*
  *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
@@ -50,6 +50,9 @@ public:
         , fFoundCallbacks_ ()
         , fSocket_ (Socket::SocketKind::DGRAM)
         , fThread_ () {
+        // I don't think this is needed for sending, but double check the docs!!!
+        // -- LGP 2013-02-09
+        fSocket_.JoinMulticastGroup (InternetAddress (SSDP_MULTICAST));
     }
     void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
         lock_guard<recursive_mutex> critSection (fCritSection_);
@@ -76,7 +79,7 @@ public:
                 requestBuf << "M-SEARCH * HTTP/1.1\r\n";
                 requestBuf << "Host: " << SSDP_MULTICAST << ":" << SSDP_PORT << "\r\n";
                 requestBuf << "Man: \"ssdp:discover\"\r\n";
-                requestBuf << "ST: " << serviceType.c_str () << "\r\n";
+                requestBuf << "ST: " << serviceType.AsUTF8 ().c_str () << "\r\n";
                 requestBuf << "MX: " << kMaxHops_ << "\r\n";
                 requestBuf << "\r\n";
                 request = requestBuf.str ();
@@ -109,8 +112,10 @@ public:
     void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
         ///// WRONG - THIS IS FOR NOTIFY - MUST CHECK FOR MULTICAST RESPONSE OK MESAGE FROM SEARCH!!!
         String firstLine    =   in.ReadLine ().Trim ();
-        const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200 OK ";
-        if (firstLine.length () > kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
+
+
+        const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";
+        if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
             Result d;
             while (true) {
                 String line =   in.ReadLine ().Trim ();
@@ -128,16 +133,16 @@ public:
                         value = line.SubString (n + 1).Trim ();
                     }
                 }
-                if (label == L"Location") {
+                if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fLocation = value;
                 }
-                else if (label == L"NT") {
+                else if (label.Compare (L"ST", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fST = value;
                 }
-                else if (label == L"USN") {
+                else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fUSN = value;
                 }
-                else if (label == L"Server") {
+                else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fServer = value;
                 }
             }

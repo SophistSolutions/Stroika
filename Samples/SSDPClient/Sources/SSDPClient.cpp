@@ -52,7 +52,7 @@ namespace {
 namespace {
     void    DoSearching_ (Search* searcher, const String& searchFor)
     {
-        cout << "Searching for " << searchFor.AsUTF8 () << "..." << endl;
+        cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
         searcher->AddOnFoundCallback ([] (const Search::Result & d) {
             static  mutex       m;      // If the listener impl uses multiple listen threads, prevent display from getting messed up
             lock_guard<mutex> critSection (m);
@@ -65,7 +65,7 @@ namespace {
             }
             cout << endl;
         });
-        searcher->Start (L"roku");
+        searcher->Start (searchFor);
     }
 }
 
@@ -115,7 +115,13 @@ int main (int argc, const char* argv[])
         DoSearching_ (&s, *searchFor);
     }
 
-    Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+    if (listen or not searchFor.empty ()) {
+        Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+    }
+    else {
+        cerr << "Specify -l to listen or -s STRING to search" << endl;
+        return 1;
+    }
 
     return 0;
 }
