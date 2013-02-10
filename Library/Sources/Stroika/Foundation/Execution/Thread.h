@@ -50,46 +50,51 @@
 
 
 /*
- * TODO:        PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
+ * TODO:
+ *  \file
  *
- *      o   must define C++ static signal handler
+ *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
- *      o   must install handler when about to call Abort() - no need - I think - to install sooner - bnut maybe a good idea to???
+ *      @todo   Windows thread interuption with CRITICALSECTION/lock_gaurd<>
+ *              Currently we use EnterCriticalSeciton alot, But thats not 'alertable' - which potentially causes problems
+ *              with thread interuption.
  *
- *      o   in signal handler - set threadlocalstorage value (asssert in context of right thread id) - set sAborted.
+ *              Perhaps should use something like TryEnterCriticalSection, and loop, with SleepEx(0) or equiv, sprinkled.
  *
- *      o   use pthread_kill (use native_handle() from threadobj) - to send the signal.
+ *              MAYBE FIXED NOW THAT WE DIRECLTY USE STL lock_guard! - or maybe worse!
  *
- *      o   MAJOR REWRITE OF THREAD DOCUMENTAITON ON INTERUPTION:
- *          >>  I THINK these are all - both posix and windows - really cooperative.
- *          >>  VEIRYF thats the case on Windows - under the debugger.
- *          >>  Changes or really clarifications on the ad interruption design. Test mt theory with long loop being interopted with and without debugger on windiws
- *          >>  I THINK we can just document all cooperative interuption and clearly document
-            >>      that deisgn choice
+ *                  run test case where one thread is blocked in a critical section, and
+ *                  another thread owns that critical section,
+ *                  and a third thread tries to call AbortThread(). If this doesn't work, I may need
+ *                  to add my OWN 'auto-critical-section' class BACK, and have it support cancelability.
+ *
+ *      @todo   must define C++ static signal handler
+ *
+ *      @todo   must install handler when about to call Abort() - no need - I think - to install sooner - bnut maybe a good idea to???
+ *
+ *      @todo   in signal handler - set threadlocalstorage value (asssert in context of right thread id) - set sAborted.
+ *
+ *      @todo   use pthread_kill (use native_handle() from threadobj) - to send the signal.
+ *
+ *      @todo   MAJOR REWRITE OF THREAD DOCUMENTAITON ON INTERUPTION:
+ *              >>  I THINK these are all - both posix and windows - really cooperative.
+ *              >>  VEIRYF thats the case on Windows - under the debugger.
+ *              >>  Changes or really clarifications on the ad interruption design. Test mt theory with long loop being interopted with and without debugger on windiws
+ *              >>  I THINK we can just document all cooperative interuption and clearly document
+                >>      that deisgn choice
  *
  *
- *      o   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling - calling detatch when a thread is never waited for.
- *          (GNU/C+++ thread impl only)
+ *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling - calling detatch when a thread is never waited for.
+ *              (GNU/C+++ thread impl only)
  *
- *      o   Do a PURE PTHREAD implemenation - not using the C++-wrapper classes. I think they are similar enuoguh and a number of things are only
- *          possible using native PTHreads. MAYBE refine qUseThreads_StdCPlusPlus into qUseThreads_StdCPlusPlus_PURE and qUseThreads_StdCPlusPlus_PTHREAD
- *          and what we have now is really the latter)
+ *      @todo   Do a PURE PTHREAD implemenation - not using the C++-wrapper classes. I think they are similar enuoguh and a number of things are only
+ *              possible using native PTHreads. MAYBE refine qUseThreads_StdCPlusPlus into qUseThreads_StdCPlusPlus_PURE and qUseThreads_StdCPlusPlus_PTHREAD
+ *              and what we have now is really the latter)
  *
- *      o
- *
- *
- *
- */
-
-
-/*
- * TODO/Notes:
- *
- *      o   Windows thread interuption.
- *          Currently we use EnterCriticalSeciton alot, But thats not 'alertable' - which potentially causes problems
- *          with thread interuption.
- *
- *          Perhaps should use something like TryEnterCriticalSection, and loop, with SleepEx(0) or equiv, sprinkled.
+ *      @todo   Add a Method (maybe overload of Start) - which takes a new Runnable, so that the thread object can be re-run.
+ *              This will be needed (or at least highly advantageous) for implementing thread pools.
+ *              << turns out NOT necessary for thread pools (already draft impl not using it). Not sure if good idea - so leave this here.
+ *              MAYBE>>
  *
  */
 
@@ -105,14 +110,6 @@ namespace   Stroika {
             typedef int     SignalIDType;
 #endif
 
-
-            /*
-             * TODO:
-             *      o   Add a Method (maybe overload of Start) - which takes a new Runnable, so that the thread object can be re-run.
-             *          This will be needed (or at least highly advantageous) for implementing thread pools.
-             *          << turns out NOT necessary for thread pools (already draft impl not using it). Not sure if good idea - so leave this here.
-             *          MAYBE>>
-             */
 
 
             /*
