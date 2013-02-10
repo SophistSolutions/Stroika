@@ -11,7 +11,7 @@ Includes				+=	-I.
 TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Samples_SSDPClient
 
 
-VPATH	=			$(SrcDir)
+VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\

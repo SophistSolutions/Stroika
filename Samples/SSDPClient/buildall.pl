@@ -22,7 +22,7 @@ if ("$^O" eq "linux") {
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
 
-	chdir ("../IntermediateFiles/Platform_Linux/Debug/");
+	chdir ("../../IntermediateFiles/Platform_Linux/Debug/");
 	if ($useBld eq "rebuild") {
 		print ("Samples_SSDPClient; clobber...\n");
 		system ("cd Samples_SSDPClient; make -s clobber");
@@ -33,7 +33,7 @@ if ("$^O" eq "linux") {
 	system ("cd Samples_SSDPClient; make -s $useBld");
 	chdir ($savedDir);
 }
-else if ("$^O" eq "cygwin") {
+if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
