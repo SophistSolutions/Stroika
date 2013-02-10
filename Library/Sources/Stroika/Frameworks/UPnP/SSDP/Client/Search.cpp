@@ -24,7 +24,6 @@ using   namespace   Stroika::Frameworks::UPnP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
-#include <iostream>
 
 /*
  *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
@@ -32,6 +31,7 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
  *
  *  And http://www.upnp-hacks.org/upnp.html for more hints.
  */
+
 
 namespace {
     constexpr   char            SSDP_MULTICAST[]        =   "239.255.255.250";
@@ -50,9 +50,6 @@ public:
         , fFoundCallbacks_ ()
         , fSocket_ (Socket::SocketKind::DGRAM)
         , fThread_ () {
-        // I don't think this is needed for sending, but double check the docs!!!
-        // -- LGP 2013-02-09
-        fSocket_.JoinMulticastGroup (InternetAddress (SSDP_MULTICAST));
     }
     void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
         lock_guard<recursive_mutex> critSection (fCritSection_);
@@ -110,9 +107,7 @@ public:
         }
     }
     void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
-        ///// WRONG - THIS IS FOR NOTIFY - MUST CHECK FOR MULTICAST RESPONSE OK MESAGE FROM SEARCH!!!
         String firstLine    =   in.ReadLine ().Trim ();
-
 
         const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
