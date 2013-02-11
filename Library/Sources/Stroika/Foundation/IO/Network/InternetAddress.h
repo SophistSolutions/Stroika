@@ -74,11 +74,13 @@ namespace   Stroika {
 #if     qPlatform_POSIX
                     /**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
+                     *  Note that returned in_addr must already be in network order.
                      */
                     InternetAddress (const in_addr_t& i);
 #endif
                     /**
                      *  Construct an InternetAddress from in_addr - V4 address.
+                     *  Note that returned in_addr must already be in network order.
                      */
                     InternetAddress (const in_addr& i);
                     /**
@@ -111,6 +113,8 @@ namespace   Stroika {
                      *      As<in_addr_t> ();       // qPlatform_POSIX ONLY
                      *      As<in_addr> ();         // GetAddressFamily () == V4 only
                      *      As<in6_addr> ();        // GetAddressFamily () == V6 only
+                     *
+                     *  Note that returned in_addr, in_addr_t addresses already in network order.
                      */
                     template    <typename T>
                     nonvirtual  T   As () const;
