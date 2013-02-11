@@ -17,6 +17,8 @@
  *      @todo   Fix Result object to return other interesting fields
  *
  *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
+ *
+ *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.
  */
 
 namespace   Stroika {
@@ -27,8 +29,14 @@ namespace   Stroika {
 
 
                     /**
-                     *  The SSDP Listener object will listen for SSDP 'muticast' messages, and call any designated callbacks
-                     *  with the values in those SSDP muticast 'NOTIFY' messages.
+                     *  The SSDP Listener object will listen for SSDP 'muticast' messages, and call any
+                     *  designated callbacks with the values in those SSDP muticast 'NOTIFY' messages.
+                     *
+                     *  Firewall Note:
+                     *      Firewalls can occasionally block SSDP multicast listening support. Perhaps
+                     *      because they are blocking the multicast group add? I've never seen an explicit
+                     *      error message, but often turning off firewalls, rebooting, and trying again
+                     *      makes the listen problem go away.
                      */
                     class   Listener {
                     public:
