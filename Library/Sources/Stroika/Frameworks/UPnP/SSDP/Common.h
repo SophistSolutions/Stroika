@@ -11,6 +11,15 @@
 #include    "../../../Foundation/IO/Network/SocketAddress.h"
 
 
+/**
+ *  \file
+ *
+ *  See http://quimby.gnus.org/internet-drafts/draft-cai-ssdp-v1-03.txt
+ *  for details on the SSDP specification.
+ *
+ *  And http://www.upnp-hacks.org/upnp.html for more hints.
+ */
+
 
 namespace   Stroika {
     namespace   Frameworks {
