@@ -5,6 +5,7 @@
 
 #include    <sstream>
 
+#include    "../../../../Foundation/Debug/Trace.h"
 #include    "../../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
 #include    "../../../../Foundation/Execution/Thread.h"
@@ -26,6 +27,8 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP;
 using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
+// Comment this in to turn on tracing in this module
+//#define   USE_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -44,6 +47,7 @@ public:
     }
     void    Start (const String& serviceType) {
         fThread_ = Execution::Thread ([this, serviceType] () { DoRun_ (serviceType); });
+        fThread_.SetThreadName (L"SSDP Searcher");
         fThread_.Start ();
     }
     void    Stop () {
@@ -57,6 +61,9 @@ public:
 
 
         {
+#if     USE_TRACE_IN_THIS_MODULE_
+            Debug::TraceContextBumper (TSTR ("Sending M-SEARCH"));
+#endif
             string  request;
             {
                 const   unsigned int kMaxHops_   =   3;
@@ -95,6 +102,11 @@ public:
     }
     void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
         String firstLine    =   in.ReadLine ().Trim ();
+
+#if     USE_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper (TSTR ("Read Reply"));
+        DbgTrace ("(firstLine: %s)", firstLine.c_str ());
+#endif
 
         const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {

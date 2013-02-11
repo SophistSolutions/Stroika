@@ -5,6 +5,7 @@
 
 #include    <vector>
 
+#include    "../../../../Foundation/Debug/Trace.h"
 #include    "../../../../Foundation/Execution/ErrNoException.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
 #include    "../../../../Foundation/Execution/Thread.h"
@@ -28,6 +29,8 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Client;
 
 
 
+// Comment this in to turn on tracing in this module
+//#define   USE_TRACE_IN_THIS_MODULE_       1
 
 
 
@@ -54,6 +57,7 @@ public:
     }
     void    Start () {
         fThread_ = Execution::Thread ([this] () { DoRun_ (); });
+        fThread_.SetThreadName (L"SSDP Listener");
         fThread_.Start ();
     }
     void    Stop () {
@@ -82,6 +86,11 @@ public:
     }
     void    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
         String firstLine    =   in.ReadLine ().Trim ();
+
+#if     USE_TRACE_IN_THIS_MODULE_
+        Debug::TraceContextBumper (TSTR ("Read SSDP Packet"));
+        DbgTrace ("(firstLine: %s)", firstLine.c_str ());
+#endif
         const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
             Result d;
