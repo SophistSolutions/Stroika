@@ -292,9 +292,14 @@ namespace   Stroika {
             private:
                 nonvirtual  Status  GetStatus_ () const;
 
-                // Thread name does NOT need to be unique and defaults to '', but can be used on advisory basis for
-                //
             public:
+                /**
+                 *  Thread name does NOT need to be unique and defaults to '', but can be used on advisory basis for
+                 *  debugging. Also - setting the thread name, and then getting it back, may not produce the same result.
+                 *  Some OSes may munge the name to make it unique, or conform to some naming convention.
+                 *
+                 *  These names should not be counted on for program logic.
+                 */
                 nonvirtual  wstring GetThreadName () const;
                 nonvirtual  void    SetThreadName (const wstring& threadName);
 
