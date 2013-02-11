@@ -43,6 +43,17 @@ namespace   Stroika {
                         depending on how useful people find it. This defaults to being on only for Windows and if @'qDebug' is
                         on (windows only cuz thats the only place I've implemented the trace message emitter so far).</p>
                             <p>See also @'qDebug' and @'DebugTrace'</p>
+
+                        Note ALSO - many Stroika modules (CPP files) contain a private
+                            // Comment this in to turn on tracing in this module
+                            //#define   USE_TRACE_IN_THIS_MODULE_       1
+                        define.
+
+                        This is often not enabled by default because it could produce lots of unintersting noise in logfiles
+                        (when tracing on).
+
+                        Turn these flags on selectively just to enable extra detailed logging on a per module basis.
+
              */
 #if     !defined (qDefaultTracingOn)
 #error "qDefaultTracingOn should normally be defined indirectly by StroikaConfig.h"
