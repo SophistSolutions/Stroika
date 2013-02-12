@@ -443,7 +443,7 @@ void    IO::Network::AutosetupWinsock (bool setup)
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
-			// this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
+            // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
             template    <>
             inline  void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
             {
