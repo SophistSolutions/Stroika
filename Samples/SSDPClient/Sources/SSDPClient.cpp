@@ -1,8 +1,7 @@
+/*
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
+ */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
-
-#if     qPlatform_Windows
-#include    <winsock2.h>
-#endif
 
 #include    <mutex>
 #include    <iostream>
