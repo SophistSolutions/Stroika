@@ -26,7 +26,7 @@ namespace   Stroika {
                 /**
                  * TODO:
                  *
-                 *      @todo   Docuemnt (or define new expcetion) thrown when operaiton done on CLOSED socket.
+                 *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
                  *              and acutally handle all the nullptr cases...
                  *
                  *      @todo   Document THREADSAFETY.
