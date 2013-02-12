@@ -168,16 +168,17 @@ namespace   Stroika {
             {
                 return fRep_ < rhs.fRep_;
             }
-            inline  wstring Thread::GetThreadName () const
-            {
-                return fRep_->fThreadName_;
-            }
             inline  Thread::Status  Thread::GetStatus () const noexcept
             {
                 if (fRep_.get () == nullptr) {
                     return Status::eNull;
                 }
                 return GetStatus_ ();
+            }
+            inline  wstring Thread::GetThreadName () const
+            {
+                Require (GetStatus () != Status::eNull);
+                return fRep_->fThreadName_;
             }
 
 

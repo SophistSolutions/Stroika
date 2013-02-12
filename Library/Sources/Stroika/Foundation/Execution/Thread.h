@@ -341,6 +341,21 @@ namespace   Stroika {
                     eAborting,          // Abort () called, but the thread still hasn't yet unwound
                     eCompleted,         // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
                 };
+                /**
+                 *  Each Thread object has an associated state. Since this can be accessed from one thread while things
+                 *  in another thread, by the time the answer is returned, the value may have changed.
+                 *
+                 *  But only certain transitions are legal. Status::eNull is the starting state for SOME Thread constructors (no arg).
+                 *  Nothing transitions back to the Status:eNull state. From there when you specify an IRunnable to run,
+                 *  then you transition to Status::eNotYetRunning.
+                 *
+                 *  From eNotYetRunning, you can transition to eRunning with Start ().
+                 *
+                 *  From eRunning (or eNotYetRunning) you can transition to eAborting or eCompleted (or from eAborting to eCompleted).
+                 *
+                 *  A thread object can never transition back (by this I mean the underlying pointed to rep - the container of
+                 *  course can transition back by being assigned another ThreadRep).
+                 */
                 nonvirtual  Status  GetStatus () const noexcept;
 
             private:
@@ -348,6 +363,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \req GetStatus () != Status::eNull
+                 *
                  *  Thread name does NOT need to be unique and defaults to '', but can be used on advisory
                  *  basis for debugging. Also - setting the thread name, and then getting it back, may not
                  *  produce the same result. Some OSes may munge the name to make it unique, or conform
@@ -357,6 +374,8 @@ namespace   Stroika {
                  */
                 nonvirtual  wstring GetThreadName () const;
                 /**
+                 *  \req GetStatus () != Status::eNull
+                 *
                  *  @see GetThreadName ();
                  */
                 nonvirtual  void    SetThreadName (const wstring& threadName);
