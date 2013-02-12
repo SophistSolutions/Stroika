@@ -88,7 +88,7 @@ namespace   {
  ********************************************************************************
  */
 namespace   {
-    recursive_mutex*    sEmitTraceCritSec   =   nullptr;
+    recursive_mutex*    sEmitTraceCritSec_   =   nullptr;
 #if     qTraceToFile
     ofstream*   sTraceFile  =   nullptr;
 #endif
@@ -117,8 +117,8 @@ namespace   {
 TraceModuleData_::TraceModuleData_ ()
     : fStringDependency (Characters::MakeModuleDependency_String ())
 {
-    Assert (sEmitTraceCritSec == nullptr);
-    sEmitTraceCritSec = DEBUG_NEW recursive_mutex ();
+    Assert (sEmitTraceCritSec_ == nullptr);
+    sEmitTraceCritSec_ = DEBUG_NEW recursive_mutex ();
 #if     qDefaultTracingOn
     Assert (sCounts == nullptr);
     sCounts = DEBUG_NEW map<Thread::IDType, unsigned int> ();
@@ -132,8 +132,8 @@ TraceModuleData_::TraceModuleData_ ()
 
 TraceModuleData_::~TraceModuleData_ ()
 {
-    delete sEmitTraceCritSec;
-    sEmitTraceCritSec = nullptr;
+    delete sEmitTraceCritSec_;
+    sEmitTraceCritSec_ = nullptr;
 #if     qTraceToFile
     AssertNotNull (sTraceFile);
     sTraceFile->close ();
@@ -158,8 +158,8 @@ namespace   {
         // can be destroyed in any order, (across OBJs), and though this gets destroyed late, its still possible
         // someone might do a trace message.
         //      -- LGP 2008-12-21
-        EnsureNotNull (sEmitTraceCritSec);
-        return *sEmitTraceCritSec;
+        EnsureNotNull (sEmitTraceCritSec_);
+        return *sEmitTraceCritSec_;
     }
 }
 
