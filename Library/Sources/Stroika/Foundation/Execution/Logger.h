@@ -23,24 +23,26 @@ namespace   Stroika {
             using   Characters::String;
 
 
-
-
-            /*
+            /**
              *  OVERVIEW:
              *
-             *      The point of the Logging Module is to provide a simple, portable wrapper on end-user-targetted application logging.
-             *  This form of logging is the kind of logging you leave builtin to your application, and write focused on end-user readability.
-             *  It is NOT (primarily) for debugging (for that - use the Stroika::Foundation::Debug::Trace module).
+             *      The point of the Logging Module is to provide a simple, portable wrapper on end-user-targetted
+             *  application logging. This form of logging is the kind of logging you leave builtin to your application,
+             *  and write focused on end-user readability. It is NOT (primarily) for debugging (for that -
+             *  use the Stroika::Foundation::Debug::Trace module).
              *
              *      Think of this as a simple/portable wrapper on syslog/log4j/WindowsEventlog.
              *
-             *      The Logger is a singleton object. It can be set at any number of application logging levels. And it will write information to the
-             *  backend logger its setup with. But default - this is none.
+             *      The Logger is a singleton object. It can be set at any number of application logging
+             *  levels. And it will write information to the backend logger its setup with. But default -
+             *  this is none.
              *
-             *      To use the logger and actually get logging - pick a logger rep, and call SetLoggingAppender ();
+             *      To use the logger and actually get logging - pick a logger rep, and call
+             *  SetLoggingAppender ();
              *
-             *      This logging API CANNOT be used before main () has started, or after main () has completed [if we choose to allow that we must use ModuleInit,
-             *      but since this requires a call to setup a logger, that seems unlikely]
+             *      This logging API CANNOT be used before main () has started, or after main () has completed
+             *  [if we choose to allow that we must use ModuleInit, but since this requires a call to setup a
+             *  logger, that seems unlikely]
              *
              */
             class   Logger {
@@ -100,9 +102,10 @@ namespace   Stroika {
                 // Get/Set LogLevel - this affects what WE EAT INLINE versus passon
 
 
-
             public:
-                // DoLog
+                /**
+                 *  DoLog
+                 */
                 static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
             private:
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
@@ -113,13 +116,19 @@ namespace   Stroika {
             };
 
 
+            /**
+             */
             class   Logger::IAppenderRep {
             public:
                 virtual ~IAppenderRep ();
             public:
                 virtual void    Log (Priority logLevel, const String& message) = 0;
             };
+
+
 #if     qHas_Syslog
+            /**
+             */
             class   Logger::SysLogAppender : public Logger::IAppenderRep {
             public:
                 SysLogAppender (const String& applicationName);
@@ -131,12 +140,17 @@ namespace   Stroika {
                 TString fApplicationName_;  // must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
             };
 #endif
+
+
+            /**
+             */
             class   Logger::FileAppender : public Logger::IAppenderRep {
             public:
                 FileAppender (const String& fileName);
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
             };
+
 
         }
     }
