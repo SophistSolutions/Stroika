@@ -12,6 +12,17 @@
 #include    "StringException.h"
 
 
+/**
+ *  TODO:
+ *
+ *  @todo   Redo exceptions to be more C++11 frinedly
+ *          (DOCUMENTED – but NYI)
+ *          <system_error>
+ *          http://en.cppreference.com/w/cpp/error
+ *          It has building copyale excpetions.
+ *          It has builtin errno type exceptions and error CLASSIFICATION (very heflpful)
+ *
+ */
 
 
 namespace   Stroika {

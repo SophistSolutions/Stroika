@@ -22,6 +22,14 @@
  *              for YES is that it may sometimes be useful. We also ONLY use IRunnable with shared_ptr<T> -
  *              so probably causes no harm. I gues sit depends how hard it is to mixin later (mix Irunnable
  *              and enable_shared_from_this)?
+ *
+ *      @todo   Investigate if any codesize penalty for always using std::function instead of c++
+ *              style function pointer in calls (LARGELY DONE BUT DOCUMENT CLEARLY AND TEST ON GCC AS WELL).
+ *
+ *              Document someplace this is why we use IRunnablePtr in many places, instead of std::function.
+ *              If it turns out there is no performance overhead with std::function compared to IRunnablePtr
+ *              consdier just switching to std::funtion.
+ *
  */
 
 

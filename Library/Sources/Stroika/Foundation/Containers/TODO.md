@@ -18,5 +18,5 @@ TODO (Foundation::Containers)
 			abstractions (like Iterable<T>) are appropriate to extract from Colleciton<T> to
 			make shared/common bases.
 
-
-
+	(o)		Suggestion from kdj (around 2013-01-15)
+			http://google-opensource.blogspot.com/2013/01/c-containers-that-save-memory-and-time.html 
