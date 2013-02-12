@@ -20,8 +20,10 @@
 #include    "../../Execution/Sleep.h"
 #include    "../../Execution/Thread.h"
 #include    "../../Execution/ErrNoException.h"
+#if     qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 #include    "../../Memory/BlockAllocated.h"
-
 
 #include    "Socket.h"
 
@@ -50,6 +52,25 @@ namespace   {
 
 
 
+
+#if     qPlatform_Windows
+namespace {
+    bool    sStartedUp_ =   false;
+    bool    sAutoSetup_ =   true;
+
+    void    CheckStarup_ ()
+    {
+        if (not sStartedUp_) {
+            WSADATA wsaData;        // Initialize Winsock
+            int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
+            if (iResult != 0) {
+                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+            }
+            sStartedUp_ = true;
+        }
+    }
+}
+#endif
 
 
 
@@ -243,6 +264,10 @@ Socket::_Rep::~_Rep ()
 Socket::Socket (SocketKind socketKind)
     : fRep_ ()
 {
+#if     qPlatform_Windows
+    CheckStarup_ ();
+#endif
+
     Socket::PlatformNativeHandle    sfd;
 #if     qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (sfd = Execution::Handle_ErrNoResultInteruption ([&socketKind]() -> int { return socket (AF_INET, static_cast<int> (socketKind), 0); }));
@@ -250,6 +275,22 @@ Socket::Socket (SocketKind socketKind)
     Execution::ThrowErrNoIfNegative (sfd = ::socket (AF_INET, static_cast<int> (socketKind), 0));
 #endif
     fRep_ = std::move (shared_ptr<_Rep> (DEBUG_NEW REALSOCKET_::Rep_ (sfd)));
+}
+
+Socket::Socket (const shared_ptr<_Rep>& rep)
+    : fRep_ (rep)
+{
+#if     qPlatform_Windows
+    CheckStarup_ ();
+#endif
+}
+
+Socket::Socket (shared_ptr<_Rep> && rep)
+    : fRep_ (std::move (rep))
+{
+#if     qPlatform_Windows
+    CheckStarup_ ();
+#endif
 }
 
 Socket  Socket::Attach (PlatformNativeHandle sd)
@@ -364,3 +405,45 @@ bool    Socket::IsOpen () const
     }
     return false;
 }
+
+
+
+
+
+
+
+
+#if     qPlatform_Windows
+/**
+ * This must be called before any Sockets are created, otherwise its
+ *  an erorr (requirement failure).
+ *
+ *  This defaults to ON
+ */
+void    IO::Network::AutosetupWinsock (bool setup)
+{
+    Require (not sStartedUp_);
+    sAutoSetup_ =   setup;
+}
+#endif
+
+
+
+
+
+
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+            template    <>
+            inline  void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
+            {
+                if (returnCode == kINVALID_NATIVE_HANDLE_) {
+                    Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+                }
+            }
+        }
+    }
+}
+
+

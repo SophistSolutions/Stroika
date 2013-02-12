@@ -8,6 +8,8 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Execution/ErrNoException.h"
+
 #include    "SocketAddress.h"
 
 
@@ -270,10 +272,36 @@ namespace   Stroika {
                 };
 
 
+
+#if qPlatform_Windows
+                /**
+                 * This must be called before any Sockets are created, otherwise its
+                 *  an erorr (requirement failure).
+                 *
+                 *  This defaults to ON
+                 */
+                void    AutosetupWinsock(bool setup);
+#endif
+
+
             }
         }
     }
 }
+
+
+namespace Stroika {
+    namespace Foundation {
+        namespace Execution {
+#if     qPlatform_Windows
+            template    <>
+            void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
+        }
+    }
+}
+#endif
+
+
 #endif  /*_Stroika_Foundation_IO_Network_Socket_h_*/
 
 

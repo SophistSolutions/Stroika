@@ -36,14 +36,6 @@ namespace   Stroika {
                     : fRep_ ()
                 {
                 }
-                inline  Socket::Socket (const shared_ptr<_Rep>& rep)
-                    : fRep_ (rep)
-                {
-                }
-                inline  Socket::Socket (shared_ptr<_Rep> && rep)
-                    : fRep_ (std::move (rep))
-                {
-                }
                 inline  Socket::Socket (const Socket& s)
                     : fRep_ (s.fRep_)
                 {

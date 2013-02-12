@@ -94,34 +94,31 @@ int main (int argc, const char* argv[])
             }
         }
     }
+    if (not listen and searchFor.empty ()) {
+        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
+        return EXIT_FAILURE;
+    }
 
-#if     qPlatform_Windows
-    {
-        // Initialize Winsock
-        WSADATA wsaData;
-        int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
-        if (iResult != 0) {
-            cerr << "WSAStartup failed " << iResult << endl;
+    try {
+        Listener l;
+        if (listen) {
+            DoListening_ (&l);
+        }
+        Search  s;
+        if (not searchFor.empty ()) {
+            DoSearching_ (&s, *searchFor);
+        }
+
+        if (listen or not searchFor.empty ()) {
+            Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
+        }
+        else {
+            cerr << "Specify -l to listen or -s STRING to search" << endl;
             return EXIT_FAILURE;
         }
     }
-#endif
-
-    // for now - given current API (and not using threads) - do just one or the other
-    Listener l;
-    if (listen) {
-        DoListening_ (&l);
-    }
-    Search  s;
-    if (not searchFor.empty ()) {
-        DoSearching_ (&s, *searchFor);
-    }
-
-    if (listen or not searchFor.empty ()) {
-        Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
-    }
-    else {
-        cerr << "Specify -l to listen or -s STRING to search" << endl;
+    catch (...) {
+        cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
     }
 
