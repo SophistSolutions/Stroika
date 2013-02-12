@@ -26,6 +26,11 @@
  *              and then POST an event to this Q when available. Then the caller can wait on events
  *              for that Q.
  *
+ *      @todo   Consider linking this to ThreadPools - so that instead of having a single
+ *              thread running the Q, you have an entire threadpool. Maybe thats an attachable
+ *              attribute of the Q?
+ *
+ *
  */
 namespace   Stroika {
     namespace   Foundation {
