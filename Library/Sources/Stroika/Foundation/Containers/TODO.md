@@ -10,7 +10,8 @@ TODO (Foundation::Containers)
             Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?".
 
 			Do this. See design spec for CONCEPTS (rejected for C++11 but probably in C++next). Maybe just do as DOCS. OR maybe real
-			classes.
+			classes. Note - looking at the gcc 4.5.x implementation of libstdc++, it appears they already do something
+			similar.
 
 	(o)		When this code matures (when we have most containers implemented to first draft level),
 			plan is to OBSOLETE/DELETE the Collection code. Make sure the appropraite APIs from
