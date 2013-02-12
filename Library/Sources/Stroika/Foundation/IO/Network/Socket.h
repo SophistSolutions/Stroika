@@ -290,10 +290,10 @@ namespace   Stroika {
 }
 
 
+#if     qPlatform_Windows
 namespace Stroika {
     namespace Foundation {
         namespace Execution {
-#if     qPlatform_Windows
             template    <>
             void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
         }
