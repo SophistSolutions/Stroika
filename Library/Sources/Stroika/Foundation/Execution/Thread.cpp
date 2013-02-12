@@ -499,6 +499,7 @@ void    Thread::SetThreadName (const wstring& threadName)
 void    Thread::Start ()
 {
     RequireNotNull (fRep_);
+    Require (GetStatus () == Status::eNotYetRunning);
 #if         qUseThreads_WindowsNative
     Assert (fRep_->fThread_ != INVALID_HANDLE_VALUE);
 #endif
@@ -694,7 +695,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
 }
 #endif
 
-Thread::Status  Thread::GetStatus_ () const
+Thread::Status  Thread::GetStatus_ () const noexcept
 {
     Require (fRep_.get () != nullptr);
     if (fRep_.get () == nullptr) {

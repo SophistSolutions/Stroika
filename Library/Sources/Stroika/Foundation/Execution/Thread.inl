@@ -133,7 +133,7 @@ namespace   Stroika {
 
             // class    Thread
 #if         qUseThreads_WindowsNative
-            inline  HANDLE  Thread::GetOSThreadHandle () const
+            inline  HANDLE  Thread::GetOSThreadHandle () const noexcept
             {
                 return fRep_->fThread_;
             }
@@ -151,8 +151,7 @@ namespace   Stroika {
                 }
                 return fRep_->GetID ();
             }
-            inline  Thread::NativeHandleType    Thread::GetNativeHandle ()
-            {
+            inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept {
                 if (fRep_.get () == nullptr) {
                     return Thread::NativeHandleType (nullptr);
                 }
@@ -173,7 +172,7 @@ namespace   Stroika {
             {
                 return fRep_->fThreadName_;
             }
-            inline  Thread::Status  Thread::GetStatus () const
+            inline  Thread::Status  Thread::GetStatus () const noexcept
             {
                 if (fRep_.get () == nullptr) {
                     return Status::eNull;
@@ -183,8 +182,7 @@ namespace   Stroika {
 
 
 
-            inline  Thread::IDType  GetCurrentThreadID ()
-            {
+            inline  Thread::IDType  GetCurrentThreadID () noexcept {
 #if     qUseThreads_WindowsNative
                 return ::GetCurrentThreadId ();
 #elif   qUseThreads_StdCPlusPlus

@@ -14,7 +14,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            /*
+            /**
              * The portable Sleep() function - will wait the given amount of time - blocking the running thread.
              * It CAN be interupted. If interupted, one overload will return the amount of time remaining, allowing
              * easy re-sleeping. The other overload (/1) - will check for aborting, but otherwise keep sleeping

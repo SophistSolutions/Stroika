@@ -31,7 +31,8 @@
  *
  *      @todo   IsPrivateIP() NYI
  *
- *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 - and endianness. Only about 1/2 right...
+ *      @todo   Check impl of IsMulticastAddress/IsLocalhostAddress - esp for IPV4 -
+ *              and endianness. Only about 1/2 right...
  *
  *      @todo   It would be nice if we could find a reasonable way to make kAddrAny etc constexpr
  *
@@ -74,13 +75,13 @@ namespace   Stroika {
 #if     qPlatform_POSIX
                     /**
                      *  Construct an InternetAddress from in_addr_t (v4 ip addr as a long).
-                     *  Note that returned in_addr must already be in network order.
+                     *  Note that provided in_addr must already be in network order.
                      */
                     InternetAddress (const in_addr_t& i);
 #endif
                     /**
                      *  Construct an InternetAddress from in_addr - V4 address.
-                     *  Note that returned in_addr must already be in network order.
+                     *  Note that provided in_addr must already be in network order.
                      */
                     InternetAddress (const in_addr& i);
                     /**
@@ -90,13 +91,15 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Check if unspecified.
+                     *  Check if unspecified internet address.
+                     *  @see clear()
                      */
                     nonvirtual  bool    empty () const;
 
                 public:
                     /**
                      *  Make it empty().
+                     *  @see empty()
                      */
                     nonvirtual  void    clear ();
 
