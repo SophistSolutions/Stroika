@@ -456,6 +456,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -987,6 +990,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1420,6 +1426,9 @@
       <Filter>Sources\IO\Network</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CopyableMutex.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl">
       <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
