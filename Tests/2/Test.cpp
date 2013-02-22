@@ -11,7 +11,6 @@
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
-#include    "Stroika/Foundation/Execution/SimpleRunnable.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Foundation/Execution/ThreadPool.h"
 #include    "Stroika/Foundation/Execution/WaitTimedOutException.h"
@@ -23,10 +22,8 @@ using   namespace   Stroika::Foundation;
 
 
 using   Execution::Lockable;
-using   Execution::SimpleRunnable;
 using   Execution::Thread;
 using   Execution::ThreadPool;
-
 
 
 
@@ -406,7 +403,7 @@ namespace   {
                 }
             };
             int intVal  =   3;
-            shared_ptr<Execution::IRunnable>    task    =   SimpleRunnable::MAKE (bind (FRED::DoIt, &intVal));
+            shared_ptr<Execution::IRunnable>    task    =   Execution::mkIRunnablePtr (bind (FRED::DoIt, &intVal));
             p.AddTask (task);
             p.WaitForTask (task);
             p.AbortAndWaitForDone ();
@@ -439,8 +436,8 @@ namespace   {
             ThreadPool  p;
             p.SetPoolSize (threadPoolSize);
             int updaterValue    =   0;
-            shared_ptr<Execution::IRunnable>    task1   =   SimpleRunnable::MAKE (bind (&FRED::DoIt, &updaterValue));
-            shared_ptr<Execution::IRunnable>    task2   =   SimpleRunnable::MAKE (bind (&FRED::DoIt, &updaterValue));
+            shared_ptr<Execution::IRunnable>    task1   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
+            shared_ptr<Execution::IRunnable>    task2   =   Execution::mkIRunnablePtr (bind (&FRED::DoIt, &updaterValue));
             p.AddTask (task1);
             p.AddTask (task2);
             p.WaitForTask (task1);
