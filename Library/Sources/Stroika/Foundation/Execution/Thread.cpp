@@ -499,7 +499,7 @@ void    Thread::SetThreadName (const wstring& threadName)
         }
 #elif   qPlatform_POSIX
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
-        pthread_setname_np (fRep_->native_handle(), String (threadName).AsUTF8 ().c_str ());
+        pthread_setname_np (fRep_->GetNativeHandle (), String (threadName).AsUTF8 ().c_str ());
 #endif
 #endif
     }
