@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <algorithm>
 #include    <cstddef>
 
 #include    "../Configuration/Common.h"
