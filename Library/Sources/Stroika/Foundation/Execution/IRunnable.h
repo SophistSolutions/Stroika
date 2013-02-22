@@ -65,6 +65,20 @@ namespace   Stroika {
              */
             typedef shared_ptr<IRunnable>   IRunnablePtr;
 
+
+            /**
+             *  mkIRunnablePtr is an easy way to map a simple object or function (optionally with args) to
+             *  an IRunnable - the basic type used in threading and background processing classes.
+             *
+             *  Note - there is more runtime overhead in using the std::function<> variant than the
+             *  bare function pointer variant, but not too much in either case. But the most efficent
+             *  way is generally to do your own IRunnable subclass.
+             */
+            IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) ());
+            IRunnablePtr    mkIRunnablePtr (void (*fun2CallOnce) (void* arg), void* arg);
+            IRunnablePtr    mkIRunnablePtr (const std::function<void()>& fun2CallOnce);
+
+
         }
     }
 }

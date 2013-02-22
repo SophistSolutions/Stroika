@@ -23,6 +23,7 @@ Objs	=	\
 	$(ObjDir)ExceptionPropagate.o\
 	$(ObjDir)Event.o\
 	$(ObjDir)FeatureNotSupportedInThisVersionException.o\
+	$(ObjDir)IRunnable.o\
 	$(ObjDir)Logger.o\
 	$(ObjDir)Module.o\
 	$(ObjDir)ModuleInit.o\
@@ -31,7 +32,6 @@ Objs	=	\
 	$(ObjDir)RequiredComponentMissingException.o\
 	$(ObjDir)RequiredComponentVersionMismatchException.o\
 	$(ObjDir)SilentException.o\
-	$(ObjDir)SimpleRunnable.o\
 	$(ObjDir)Signals.o\
 	$(ObjDir)Sleep.o\
 	$(ObjDir)Thread.o\

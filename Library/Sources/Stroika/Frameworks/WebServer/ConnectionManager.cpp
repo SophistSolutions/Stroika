@@ -11,7 +11,6 @@
 #include    "../../Foundation/DataExchangeFormat/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Execution/Exceptions.h"
-#include    "../../Foundation/Execution/SimpleRunnable.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/IO/Network/HTTP/Exception.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
@@ -45,7 +44,7 @@ ConnectionManager::~ConnectionManager ()
 
 void    ConnectionManager::Start ()
 {
-    fThreads_.AddTask (Execution::SimpleRunnable::MAKE (bind (&ConnectionManager::DoMainConnectionLoop_, this)));
+    fThreads_.AddTask (Execution::mkIRunnablePtr (bind (&ConnectionManager::DoMainConnectionLoop_, this)));
 }
 
 void    ConnectionManager::Abort ()

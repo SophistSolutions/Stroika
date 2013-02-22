@@ -315,9 +315,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.cpp">
-      <Filter>Sources\Execution</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClCompile>
@@ -457,6 +454,9 @@
       <Filter>Sources\Execution</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
   </ItemGroup>
@@ -779,9 +779,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h">
       <Filter>Sources\Time</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.h">
-      <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
@@ -1225,9 +1222,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl">
       <Filter>Sources\Time</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl">
-      <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl">
       <Filter>Sources\IO\Network\HTTP</Filter>

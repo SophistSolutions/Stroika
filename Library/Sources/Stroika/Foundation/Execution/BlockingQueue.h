@@ -25,6 +25,10 @@
  *              Maybe add utility class that runs threads that wait on each individual object,
  *              and then POST an event to this Q when available. Then the caller can wait on events
  *              for that Q.
+ *                  Maybe at least have a utility class that takes a socket set (fd_set) and
+ *              posts (but what?) to the Q (maybe utility class templated and takes value to
+ *              be posted?) - so does a posix select/poll (careful to be cancelable) - and
+ *              posts to event Q as needed.
  *
  *      @todo   Consider linking this to ThreadPools - so that instead of having a single
  *              thread running the Q, you have an entire threadpool. Maybe thats an attachable
@@ -48,20 +52,29 @@ namespace   Stroika {
              *  Remove              remove()            poll()              take()              poll(time, unit)
              *  Examine             Front()             peek()              not applicable      not applicable
              */
+            template    <typename E>
             class   BlockingQueue {
-                typedef int E;
-                //
                 /**
+                 *  Blocks unti item added, and throws if timeout exceeded.
+                 *
+                 *  This one function corresponds to the java BlockingQueue add/put/offer (with overloading), and right
+                 *  now I see no value in offer(e).
                  */
-                void Add (E e);
+                void Add (E e, Time::DurationSecondsType timeout = Time::kInfinite);
+
                 /**
+                 *  Blocks unti item added, and throws if timeout exceeded.
+                 *
+                 *  This one function corresponds to the java BlockingQueue remove/take/poll (with overloading), and right
+                 *  now I see no value in offer(e).
                  */
-                void Remove (E e);
+                void Remove (E e, Time::DurationSecondsType timeout = Time::kInfinite);
+
                 /**
                  * java element()
                  */
                 E Front ();
-                /// ... just starting to think out - the 'special value' stuff only works if we use Optioanl...
+                /// ... just starting to think out - the 'special value' stuff only works if we use Optional...
             };
 
 

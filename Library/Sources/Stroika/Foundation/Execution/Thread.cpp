@@ -18,7 +18,6 @@
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
-#include    "SimpleRunnable.h"
 
 #if     qUseThreads_WindowsNative
 #include    "Platform/Windows/WaitSupport.h"
@@ -46,6 +45,11 @@ using   Time::DurationSecondsType;
 //#define   qSupportSetThreadNameDebuggerCall   0
 #ifndef qSupportSetThreadNameDebuggerCall
 #if     qDebug && qPlatform_Windows
+#define qSupportSetThreadNameDebuggerCall   1
+#endif
+#endif
+#ifndef qSupportSetThreadNameDebuggerCall
+#if     qPlatform_POSIX
 #define qSupportSetThreadNameDebuggerCall   1
 #endif
 #endif
@@ -428,7 +432,7 @@ Thread::Thread ()
 }
 
 Thread::Thread (const std::function<void()>& fun2CallOnce)
-    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (SimpleRunnable::MAKE (fun2CallOnce))))
+    : fRep_ (shared_ptr<Rep_> (DEBUG_NEW Rep_ (mkIRunnablePtr (fun2CallOnce))))
 {
     Rep_::DoCreate (&fRep_);
 }
@@ -474,6 +478,7 @@ void    Thread::SetThreadName (const wstring& threadName)
         DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
         fRep_->fThreadName_ = threadName;
 #if     qSupportSetThreadNameDebuggerCall
+#if     qPlatform_Windows
         if (::IsDebuggerPresent ()) {
             // This hack from http://www.codeproject.com/KB/threads/Name_threads_in_debugger.aspx
             struct THREADNAME_INFO {
@@ -492,6 +497,10 @@ void    Thread::SetThreadName (const wstring& threadName)
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info));
         }
+#elif   qPlatform_POSIX
+        // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
+        pthread_setname_np (fRep_->native_handle(), String (threadName).AsUTF8 ().c_str ());
+#endif
 #endif
     }
 }

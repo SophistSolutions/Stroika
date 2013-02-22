@@ -262,6 +262,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Event.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ExceptionPropagate.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\FeatureNotSupportedInThisVersionException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Logger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Module.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.cpp" />
@@ -321,7 +322,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Signals.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Thread.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.cpp" />
@@ -547,7 +547,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Resources\ResourceNotFoundException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Signals.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SubProcess.h" />
@@ -703,7 +702,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Concrete\WindowsResourceManager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Execution\SimpleRunnable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />
