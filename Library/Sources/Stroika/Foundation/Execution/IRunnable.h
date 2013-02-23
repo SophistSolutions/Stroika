@@ -42,7 +42,7 @@ namespace   Stroika {
              *  Just create Shared<IRunnable> entites and you can pass the tasks around, and the shared
              *  semantics exactly keep all the results and code etc alive until the last reference.
              *
-             *  @see SimpleRunnable
+             *  @see mkIRunnablePtr
              */
             class   IRunnable {
             private:

@@ -63,16 +63,19 @@ namespace {
  */
 IRunnablePtr    Execution::mkIRunnablePtr (void (*fun2CallOnce) ())
 {
+    RequireNotNull (fun2CallOnce);
     return IRunnablePtr (DEBUG_NEW SimpleRunnable1_ (fun2CallOnce));
 }
 
 IRunnablePtr    Execution::mkIRunnablePtr (void (*fun2CallOnce) (void* arg), void* arg)
 {
+    RequireNotNull (fun2CallOnce);
     return IRunnablePtr (DEBUG_NEW SimpleRunnable2_ (fun2CallOnce, arg));
 }
 
 IRunnablePtr    Execution::mkIRunnablePtr (const std::function<void()>& fun2CallOnce)
 {
+    Require (static_cast<bool> (fun2CallOnce));
     return IRunnablePtr (DEBUG_NEW SimpleRunnable3_ (fun2CallOnce));
 }
 
