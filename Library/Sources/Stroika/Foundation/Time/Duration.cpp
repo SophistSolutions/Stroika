@@ -77,12 +77,17 @@ Duration::Duration (const wstring& durationStr)
     (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
 }
 
-Duration::Duration (int32_t duration)
+Duration::Duration (int duration)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
 
-Duration::Duration (int64_t duration)
+Duration::Duration (long duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (long long duration)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }

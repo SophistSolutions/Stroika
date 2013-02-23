@@ -80,8 +80,9 @@ namespace   Stroika {
                 // Throws (FormatException) if bad format
                 Duration ();
                 explicit Duration (const wstring& durationStr);
-                explicit Duration (int32_t duration);
-                explicit Duration (int64_t duration);
+                explicit Duration (int duration);
+                explicit Duration (long duration);
+                explicit Duration (long long duration);
                 explicit Duration (double duration);
 #if     qCompilerAndStdLib_Supports_stdchrono
                 Duration (const std::chrono::duration<double>& d);
