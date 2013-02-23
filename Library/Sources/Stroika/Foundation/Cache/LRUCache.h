@@ -16,6 +16,10 @@
  *
  * TODO:
  *
+ *      @todo   NOTE - I'm NOT sure public API for this is stable yet - there are many problems (though
+ *              I've used this class quite a lot - its not buggy - just not flexibly designed or good
+ *              thread safety properties).
+ *
  *      @todo   Test and make sure ITERATOR stuff works properly when using Hashing mode (HASTABLE SIZE > 1)
  *
  *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
@@ -36,7 +40,10 @@
  *              COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays
  *              attention to the logical key parts?
  *
- *      @todo   Cleanup docs to reflect new TRAITS style
+ *      @todo   Cleanup docs to reflect new TRAITS style, and document each public method (still todo) and docs for
+ *              main class needs cleanup).
+ *
+ *              AND docs for main class need a simple example of usage (without a traits override).
  *
  *      @todo   Verify the size of  TRAITS::StatsType   fStats; is zero, or go back to old qKeepLRUCacheStats
  *              macro stuff to avoid wasted space.
@@ -44,6 +51,9 @@
  *                      so there WOULD be cost. Could avoid that by having the TRAITS
  *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
  *                      used for testing, could still be usable that way...
+ *
+ *      @todo   Come up with easy way to persist cache. I suppose this counts on fact that you can load/store
+ *              cached elements – so persist mechanism must parameterize that).
  *
  */
 
@@ -138,6 +148,11 @@ namespace   Stroika {
                     <p>To iterate over the elements of the cache - use an @'LRUCache<ELEMENT>::CacheIterator'.
                     <p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
                 to internal data structures (the cached elements).
+                *
+
+                *NOTE that this the reason for the ELEMNET first arg to LRUCache template is so I can do default
+                * template more easily - for second argument. Otherwise, its really not needed and must agree with
+                * the elemnt in TRAITS::ElementType;
             */
             template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT> >
             class   LRUCache {
@@ -167,11 +182,15 @@ namespace   Stroika {
                 nonvirtual  void    ClearCache ();
 
             public:
-                // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                // In TRAITS object.
+                /**
+                 * NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+                * In TRAITS object.
+                */
                 nonvirtual  ELEMENT*    AddNew (const KeyType& item);
-                // NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                // In TRAITS object.
+                /*
+                 * NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
+                 * In TRAITS object.
+                 */
                 nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
             public:

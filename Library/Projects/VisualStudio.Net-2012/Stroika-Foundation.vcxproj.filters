@@ -987,6 +987,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h">
+      <Filter>Sources\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1421,6 +1424,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl">
+      <Filter>Sources\Math</Filter>
     </None>
   </ItemGroup>
 </Project>
