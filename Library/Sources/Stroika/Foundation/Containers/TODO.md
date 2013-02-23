@@ -21,3 +21,8 @@ TODO (Foundation::Containers)
 
 	(o)		Suggestion from kdj (around 2013-01-15)
 			http://google-opensource.blogspot.com/2013/01/c-containers-that-save-memory-and-time.html 
+
+
+	(o)		CONCEPTS: - consider using bits/boost_concepts - or at least assume they have the right names
+			to use?
+
