@@ -16,9 +16,9 @@
  *
  * TODO:
  *
- *          o   Test and make sure ITERATOR stuff works properly when using Hashing mode (HASTABLE SIZE > 1)
+ *      @todo   Test and make sure ITERATOR stuff works properly when using Hashing mode (HASTABLE SIZE > 1)
  *
- *          o   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
+ *      @todo   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
  *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
  *              To re-free, even though order distorted by shuffles, we can always figure out which was
  *              the original array head by which has the lowest address!
@@ -26,7 +26,7 @@
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
  *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why its better.
  *
- *          o   Consider restructuring the API more like STL-MAP
+ *      @todo   Consider restructuring the API more like STL-MAP
  *              KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
  *              Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon.
  *              BUt it will be a bit of a PITA for all/some of the existing LRUCache<> uses...
@@ -36,17 +36,16 @@
  *              COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays
  *              attention to the logical key parts?
  *
- *          o   Cleanup docs to reflect new TRAITS style
+ *      @todo   Cleanup docs to reflect new TRAITS style
  *
- *          o   PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods
- *              in TRAITS, and STATS subobject in traits So no cost. Trouble with subobject approach is C++ seems to
- *              force all objects to be at least one byte, so there WOULD be cost. Could avoid that by having the TRAITS
- *              OBJECT ITSELF be what owns the counters - basically global vars. Since just used for testing, could still
- *              be usable that way...
+ *      @todo   Verify the size of  TRAITS::StatsType   fStats; is zero, or go back to old qKeepLRUCacheStats
+ *              macro stuff to avoid wasted space.
+ *                  o  Trouble with subobject approach is C++ seems to force all objects to be at least one byte,
+ *                      so there WOULD be cost. Could avoid that by having the TRAITS
+ *                      OBJECT ITSELF be what owns the counters - basically global vars. Since just
+ *                      used for testing, could still be usable that way...
+ *
  */
-
-
-
 
 
 
@@ -56,36 +55,62 @@ namespace   Stroika {
         namespace   Cache {
 
 
-            /*
-            @CONFIGVAR:     qKeepLRUCacheStats
-            @DESCRIPTION:   <p>Defines whether or not we capture statistics (for debugging purposes) in @'LRUCache<ELEMENT>'.
-             */
-#if     !defined (qKeepLRUCacheStats)
-#error "qKeepLRUCacheStats should normally be defined indirectly by StroikaConfig.h"
+            namespace   LRUCacheSupport {
+
+
+                /**
+                 *  Helper detail class for analyzing and tuning cache statistics.
+                 */
+                struct  Stats_Basic {
+                    Stats_Basic ();
+                    size_t      fCachedCollected_Hits;
+                    size_t      fCachedCollected_Misses;
+
+                    void    IncrementHits ();
+                    void    IncrementMisses ();
+                };
+
+
+                /**
+                 *  Helper for DefaultTraits - when not collecting stats.
+                 */
+                struct  Stats_Null {
+                    void    IncrementHits ();
+                    void    IncrementMisses ();
+                };
+
+
+                /*
+                 * The DefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
+                 */
+                template    <typename   ELEMENT, typename KEY = ELEMENT>
+                struct  DefaultTraits {
+                    typedef ELEMENT     ElementType;
+                    typedef KEY         KeyType;
+
+                    // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
+                    DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, 1);
+
+                    static  KeyType ExtractKey (const ElementType& e);
+
+                    // If KeyType different type than ElementType we need a hash for that too
+                    static  size_t  Hash (const KeyType& e);
+
+                    // defaults to using default CTOR for ElementType and copying over
+                    static  void    Clear (ElementType* element);
+
+                    // defaults to operator==
+                    static  bool    Equal (const KeyType& lhs, const KeyType& rhs);
+
+#if     qDebug
+                    typedef Stats_Basic     StatsType;
+#else
+                    typedef Stats_Null      StatsType;
 #endif
+                };
 
 
-
-
-            /*
-             * The LRUCacheDefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
-             */
-            template    <typename   ELEMENT, typename KEY = ELEMENT>
-            struct  LRUCacheDefaultTraits {
-                typedef ELEMENT     ElementType;
-                typedef KEY         KeyType;
-                // HASHTABLESIZE must be >= 1, but if == 1, then Hash function not used
-                DEFINE_CONSTEXPR_CONSTANT(uint8_t, HASH_TABLE_SIZE, 1);
-                static  KeyType ExtractKey (const ElementType& e);
-                // If KeyType different type than ElementType we need a hash for that too
-                static  size_t  Hash (const KeyType& e);
-                // defaults to using default CTOR for ElementType and copying over
-                static  void    Clear (ElementType* element);
-                // defaults to operator==
-                static  bool    Equal (const KeyType& lhs, const KeyType& rhs);
-            };
-
-
+            }
 
 
             /**
@@ -114,7 +139,7 @@ namespace   Stroika {
                     <p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
                 to internal data structures (the cached elements).
             */
-            template    <typename   ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT> >
+            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT> >
             class   LRUCache {
             public:
                 typedef typename TRAITS::ElementType    ElementType;
@@ -124,25 +149,17 @@ namespace   Stroika {
                 LRUCache (size_t maxCacheSize);
 
             public:
+                NO_DEFAULT_CONSTRUCTOR(LRUCache);
+                NO_COPY_CONSTRUCTOR(LRUCache);
+                NO_ASSIGNMENT_OPERATOR(LRUCache);
+
+            public:
                 nonvirtual  size_t  GetMaxCacheSize () const;
                 nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
             public:
-            private:
-                struct  CacheElement_ {
-                public:
-                    CacheElement_ ();
-
-                public:
-                    CacheElement_*   fNext;
-                    CacheElement_*   fPrev;
-
-                public:
-                    ElementType     fElement;
-                };
-
-            public:
                 struct  CacheIterator;
+            public:
                 nonvirtual  CacheIterator   begin ();
                 nonvirtual  CacheIterator   end ();
 
@@ -157,11 +174,21 @@ namespace   Stroika {
                 // In TRAITS object.
                 nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
-#if     qKeepLRUCacheStats
             public:
-                size_t      fCachedCollected_Hits;
-                size_t      fCachedCollected_Misses;
-#endif
+                typename TRAITS::StatsType  fStats;
+
+            private:
+                struct  CacheElement_ {
+                public:
+                    CacheElement_ ();
+
+                public:
+                    CacheElement_*   fNext;
+                    CacheElement_*   fPrev;
+
+                public:
+                    ElementType     fElement;
+                };
 
             private:
                 vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
@@ -179,21 +206,25 @@ namespace   Stroika {
                             <p>Please note that while an CacheIterator object exists for an LRUCache - it is not
                         safe to do other operations on the LRUCache - like @'LRUCache<ELEMENT>::LookupElement' or @'LRUCache<ELEMENT>::AddNew'.
                         </p>
+                //TODO: Must update implementation to support BUCKETS (hashtable)
+                //TODO: NOTE: UNSAFE ITERATION - UNLIKE the rest of Stroika (yes - SB fixed) - really an STL-style - not stroika style - iterator...
             */
-//TODO: Must update implementation to support BUCKETS (hashtable)
             template    <typename   ELEMENT, typename TRAITS>
             struct  LRUCache<ELEMENT, TRAITS>::CacheIterator {
                 explicit CacheIterator (CacheElement_** start, CacheElement_** end);
 
-                CacheElement_**  fCurV;
-                CacheElement_**  fEndV;
-                CacheElement_*   fCur;
-
+            public:
                 nonvirtual  CacheIterator& operator++ ();
                 nonvirtual  ELEMENT& operator* ();
                 nonvirtual  bool operator== (CacheIterator rhs);
                 nonvirtual  bool operator!= (CacheIterator rhs);
+
+            private:
+                CacheElement_**  fCurV;
+                CacheElement_**  fEndV;
+                CacheElement_*   fCur;
             };
+
 
         }
     }

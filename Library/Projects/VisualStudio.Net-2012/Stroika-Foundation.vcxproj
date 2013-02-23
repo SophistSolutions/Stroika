@@ -434,7 +434,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_LRUCache_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_TimedCache_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_StringUtils_.h" />

@@ -344,7 +344,6 @@ sub WriteStroikaConfigCHeader
 	print (OUT "//Out of alphabetic order because other defaults depend on qDebug\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Assertions_.h\"\n");
 	print (OUT "\n");
-	print (OUT "#include	\"Private/Defaults_Cache_LRUCache_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Cache_TimedCache_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_Character_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Characters_StringUtils_.h\"\n");

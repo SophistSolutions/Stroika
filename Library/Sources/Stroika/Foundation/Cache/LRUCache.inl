@@ -18,32 +18,72 @@ namespace   Stroika {
         namespace   Cache {
 
 
-            //  class   LRUCacheDefaultTraits<ELEMENT,TRAITS>
+            /*
+             ********************************************************************************
+             ************************ LRUCacheSupport::Stats_Basic **************************
+             ********************************************************************************
+             */
+            inline  LRUCacheSupport::Stats_Basic::Stats_Basic ()
+                : fCachedCollected_Hits (0)
+                , fCachedCollected_Misses (0)
+            {
+            }
+            inline  void    LRUCacheSupport::Stats_Basic::IncrementHits ()
+            {
+                fCachedCollected_Hits++;
+            }
+            inline  void    LRUCacheSupport::Stats_Basic::IncrementMisses ()
+            {
+                fCachedCollected_Misses++;
+            }
+
+
+            /*
+             ********************************************************************************
+             ************************ LRUCacheSupport::Stats_Null **************************
+             ********************************************************************************
+             */
+            inline  void    LRUCacheSupport::Stats_Null::IncrementHits ()
+            {
+            }
+            inline  void    LRUCacheSupport::Stats_Null::IncrementMisses ()
+            {
+            }
+
+
+
+            /*
+             ********************************************************************************
+             *********** LRUCacheSupport::DefaultTraits<ELEMENT,TRAITS> *********************
+             ********************************************************************************
+             */
             template    <typename   ELEMENT, typename KEY>
-            inline  typename    LRUCacheDefaultTraits<ELEMENT, KEY>::KeyType LRUCacheDefaultTraits<ELEMENT, KEY>::ExtractKey (const ElementType& e)
+            inline  typename    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::KeyType LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::ExtractKey (const ElementType& e)
             {
                 return e;
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  size_t  LRUCacheDefaultTraits<ELEMENT, KEY>::Hash (const KeyType& e)
+            inline  size_t  LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Hash (const KeyType& e)
             {
                 return 0;
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  void    LRUCacheDefaultTraits<ELEMENT, KEY>::Clear (ElementType* element)
+            inline  void    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Clear (ElementType* element)
             {
                 (*element) = ElementType ();
             }
             template    <typename   ELEMENT, typename KEY>
-            inline  bool    LRUCacheDefaultTraits<ELEMENT, KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
+            inline  bool    LRUCacheSupport::DefaultTraits<ELEMENT, KEY>::Equal (const KeyType& lhs, const KeyType& rhs)
             {
                 return lhs == rhs;
             }
 
 
-
-
-            //  class   LRUCache<ELEMENT,TRAITS>::CacheElement_
+            /*
+             ********************************************************************************
+             ************** LRUCache<ELEMENT, TRAITS>::CacheElement_ ************************
+             ********************************************************************************
+             */
             template    <typename   ELEMENT, typename TRAITS>
             inline  LRUCache<ELEMENT, TRAITS>::CacheElement_::CacheElement_ ()
                 : fNext (nullptr)
@@ -53,8 +93,11 @@ namespace   Stroika {
             }
 
 
-
-            //  class   LRUCache<ELEMENT,TRAITS>::CacheIterator
+            /*
+             ********************************************************************************
+             *************** LRUCache<ELEMENT,TRAITS>::CacheIterator ************************
+             ********************************************************************************
+             */
             template    <typename   ELEMENT, typename TRAITS>
             inline  LRUCache<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement_** start, CacheElement_** end)
                 : fCurV (start)
@@ -91,18 +134,14 @@ namespace   Stroika {
             }
 
 
-            //  class   LRUCache<ELEMENT,TRAITS>
+            /*
+             ********************************************************************************
+             ****************************** LRUCache<ELEMENT,TRAITS> ************************
+             ********************************************************************************
+             */
             template    <typename   ELEMENT, typename TRAITS>
             LRUCache<ELEMENT, TRAITS>::LRUCache (size_t maxCacheSize)
-#if 0
-                : fCachedElts_BUF_ ()
-                , fCachedElts_First_ (nullptr)
-                , fCachedElts_fLast_ (nullptr)
-#endif
-#if     qKeepLRUCacheStats
-                : fCachedCollected_Hits (0)
-                , fCachedCollected_Misses (0)
-#endif
+                : fStats ()
             {
                 // TODO: Find more elegant but equally efficent way to initailize and say these are all initialized to zero
                 // (INCLUDING fCachedElts_BUF_)
@@ -202,15 +241,11 @@ namespace   Stroika {
                 for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
                     if (TRAITS::Equal (TRAITS::ExtractKey (cur->fElement), item)) {
                         ShuffleToHead_ (chainIdx, cur);
-#if     qKeepLRUCacheStats
-                        fCachedCollected_Hits++;
-#endif
+                        fStats.IncrementHits ();
                         return &fCachedElts_First_[chainIdx]->fElement;
                     }
                 }
-#if     qKeepLRUCacheStats
-                fCachedCollected_Misses++;
-#endif
+                fStats.IncrementMisses ();
                 return nullptr;
             }
             template    <typename   ELEMENT, typename TRAITS>
@@ -227,6 +262,7 @@ namespace   Stroika {
                 ShuffleToHead_ (chainIdx, fCachedElts_fLast_[chainIdx]);
                 return &fCachedElts_First_[chainIdx]->fElement;
             }
+
 
         }
     }

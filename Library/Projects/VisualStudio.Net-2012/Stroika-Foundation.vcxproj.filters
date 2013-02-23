@@ -873,9 +873,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h">
       <Filter>Sources\Cache</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_LRUCache_.h">
-      <Filter>Sources\Configuration\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_TimedCache_.h">
       <Filter>Sources\Configuration\Private</Filter>
     </ClInclude>

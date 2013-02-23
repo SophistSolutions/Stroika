@@ -21,6 +21,8 @@
 
 /// NOT TOTALLY SURE WHY - REVIEW - THIS MAYBE USEFUL - SEE WHERE USED?
 
+//// IF WE DO KEEP THIS - FIX qKeepTimedCacheStats to be using TRAITS the way we did (2013-02-22 for LRUCache).
+
 
 namespace   Stroika {
     namespace   Foundation {
