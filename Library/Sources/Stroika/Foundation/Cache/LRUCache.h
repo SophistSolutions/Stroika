@@ -11,33 +11,38 @@
 #include    "../Configuration/Common.h"
 
 
-/*
+/**
+ *      \file
+ *
  * TODO:
  *
  *          o   Test and make sure ITERATOR stuff works properly when using Hashing mode (HASTABLE SIZE > 1)
  *
- *          o   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz has first/last, or do our own storage managemnet
- *              with secondary array? - we do the mallocs/frees. To re-free, even though order distorted by shuffles, we can always figure out which was
+ *          o   Currently we have redundant storage - _Buf, and _First, and _Last (really just need _Buf cuz
+ *              has first/last, or do our own storage managemnet with secondary array? - we do the mallocs/frees.
+ *              To re-free, even though order distorted by shuffles, we can always figure out which was
  *              the original array head by which has the lowest address!
  *
- *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward in impl, consider using _fEnd? Or if it is (I think last maybe better
- *              then document clearly why its better.
+ *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
+ *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why its better.
  *
  *          o   Consider restructuring the API more like STL-MAP
  *              KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
- *              Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon. BUt it will be a bit of a PITA for all/some
- *              of the existing LRUCache<> uses...
+ *              Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon.
+ *              BUt it will be a bit of a PITA for all/some of the existing LRUCache<> uses...
  *
- *              Problem of doing this is that in some cases - we may want to create a cache of objects that already pre-exist, and have the 'key part' as a subobject
- *              of themselves. Not a killer as we COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays attention to
- *              the logical key parts?
+ *              Problem of doing this is that in some cases - we may want to create a cache of objects that
+ *              already pre-exist, and have the 'key part' as a subobject of themselves. Not a killer as we
+ *              COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays
+ *              attention to the logical key parts?
  *
  *          o   Cleanup docs to reflect new TRAITS style
  *
- *          o   PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods in TRAITS, and STATS subobject in traits
- *              So no cost. Trouble with subobject approach is C++ seems to force all objects to be at least one byte, so there WOULD be cost. Could avoid
- *              that by having the TRAITS OBJECT ITSELF be what owns the counters - basically global vars. Since just used for testing, could still be usable
- *              that way...
+ *          o   PERHAPS get rid of qKeepLRUCacheStats - and instead have INCREMTEN_HITS()/INCREMNT_REQUESTS_ methods
+ *              in TRAITS, and STATS subobject in traits So no cost. Trouble with subobject approach is C++ seems to
+ *              force all objects to be at least one byte, so there WOULD be cost. Could avoid that by having the TRAITS
+ *              OBJECT ITSELF be what owns the counters - basically global vars. Since just used for testing, could still
+ *              be usable that way...
  */
 
 
@@ -83,9 +88,13 @@ namespace   Stroika {
 
 
 
-            /*
-                @CLASS:         LRUCache<ELEMENT>
-                @DESCRIPTION:   <p>A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
+            /**
+             *  A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
+             *
+             *  TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
+             *
+             *
+             *
                 <br>
                 <code>
                     struct  ELEMENT {
@@ -95,7 +104,6 @@ namespace   Stroika {
                     };
                 </code>
                 </p>
-            TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
                     <p>The <code>COMPARE_ITEM</code> is an object which defines the attributes which make the given item UNIQUE (for Lookup purposes).
                 Think of it as the KEY. The <code>Clear ()</code> method must be provided to invaliate the given item (usually by setting part of the COMPARE_ITEM
                 to an invalid value) so it won't get found by a Lookup. The 'Equal' method compares an element and a COMPARE_ITEM in the Lookup method.
@@ -105,7 +113,6 @@ namespace   Stroika {
                     <p>To iterate over the elements of the cache - use an @'LRUCache<ELEMENT>::CacheIterator'.
                     <p>Note this class is NOT THREADSAFE, and must be externally locked. This is because it returns pointers
                 to internal data structures (the cached elements).
-                </p>
             */
             template    <typename   ELEMENT, typename TRAITS = LRUCacheDefaultTraits<ELEMENT> >
             class   LRUCache {
@@ -121,13 +128,14 @@ namespace   Stroika {
                 nonvirtual  void    SetMaxCacheSize (size_t maxCacheSize);
 
             public:
-                struct  CacheElement {
+            private:
+                struct  CacheElement_ {
                 public:
-                    CacheElement ();
+                    CacheElement_ ();
 
                 public:
-                    CacheElement*   fNext;
-                    CacheElement*   fPrev;
+                    CacheElement_*   fNext;
+                    CacheElement_*   fPrev;
 
                 public:
                     ElementType     fElement;
@@ -156,12 +164,12 @@ namespace   Stroika {
 #endif
 
             private:
-                vector<CacheElement>    fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
-                CacheElement*           fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
-                CacheElement*           fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
+                vector<CacheElement_>   fCachedElts_BUF_[TRAITS::HASH_TABLE_SIZE];      // we don't directly use these, but use the First_Last pointers instead which are internal to this buf
+                CacheElement_*          fCachedElts_First_[TRAITS::HASH_TABLE_SIZE];
+                CacheElement_*          fCachedElts_fLast_[TRAITS::HASH_TABLE_SIZE];
 
             private:
-                nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement* b);
+                nonvirtual  void    ShuffleToHead_ (size_t chainIdx, CacheElement_* b);
             };
 
 
@@ -175,11 +183,11 @@ namespace   Stroika {
 //TODO: Must update implementation to support BUCKETS (hashtable)
             template    <typename   ELEMENT, typename TRAITS>
             struct  LRUCache<ELEMENT, TRAITS>::CacheIterator {
-                explicit CacheIterator (CacheElement** start, CacheElement** end);
+                explicit CacheIterator (CacheElement_** start, CacheElement_** end);
 
-                CacheElement**  fCurV;
-                CacheElement**  fEndV;
-                CacheElement*   fCur;
+                CacheElement_**  fCurV;
+                CacheElement_**  fEndV;
+                CacheElement_*   fCur;
 
                 nonvirtual  CacheIterator& operator++ ();
                 nonvirtual  ELEMENT& operator* ();

@@ -43,9 +43,9 @@ namespace   Stroika {
 
 
 
-            //  class   LRUCache<ELEMENT,TRAITS>::CacheElement
+            //  class   LRUCache<ELEMENT,TRAITS>::CacheElement_
             template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache<ELEMENT, TRAITS>::CacheElement::CacheElement ()
+            inline  LRUCache<ELEMENT, TRAITS>::CacheElement_::CacheElement_ ()
                 : fNext (nullptr)
                 , fPrev (nullptr)
                 , fElement ()
@@ -56,7 +56,7 @@ namespace   Stroika {
 
             //  class   LRUCache<ELEMENT,TRAITS>::CacheIterator
             template    <typename   ELEMENT, typename TRAITS>
-            inline  LRUCache<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement** start, CacheElement** end)
+            inline  LRUCache<ELEMENT, TRAITS>::CacheIterator::CacheIterator (CacheElement_** start, CacheElement_** end)
                 : fCurV (start)
                 , fEndV (end)
                 , fCur (start == end ? nullptr : *fCurV)
@@ -148,7 +148,7 @@ namespace   Stroika {
                 return CacheIterator (nullptr, nullptr);
             }
             template    <typename   ELEMENT, typename TRAITS>
-            inline  void    LRUCache<ELEMENT, TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement* b)
+            inline  void    LRUCache<ELEMENT, TRAITS>::ShuffleToHead_ (size_t chainIdx, CacheElement_* b)
             {
                 Require (chainIdx < TRAITS::HASH_TABLE_SIZE);
                 RequireNotNull (b);
@@ -156,7 +156,7 @@ namespace   Stroika {
                     Assert (b->fPrev == nullptr);
                     return; // already at head
                 }
-                CacheElement*   prev    =   b->fPrev;
+                CacheElement_*   prev    =   b->fPrev;
                 AssertNotNull (prev);                   // don't call this if already at head
                 // patch following and preceeding blocks to point to each other
                 prev->fNext = b->fNext;
@@ -169,7 +169,7 @@ namespace   Stroika {
                 }
 
                 // Now patch us into the head of the list
-                CacheElement*   oldFirst    =   fCachedElts_First_[chainIdx];
+                CacheElement_*   oldFirst    =   fCachedElts_First_[chainIdx];
                 AssertNotNull (oldFirst);
                 b->fNext = oldFirst;
                 oldFirst->fPrev = b;
@@ -183,7 +183,7 @@ namespace   Stroika {
             inline  void    LRUCache<ELEMENT, TRAITS>::ClearCache ()
             {
                 for (size_t hi = 0; hi < TRAITS::HASH_TABLE_SIZE; hi++) {
-                    for (CacheElement* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
+                    for (CacheElement_* cur = fCachedElts_First_[hi]; cur != nullptr; cur = cur->fNext) {
                         TRAITS::Clear (&cur->fElement);
                     }
                 }
@@ -199,7 +199,7 @@ namespace   Stroika {
             inline  ELEMENT*    LRUCache<ELEMENT, TRAITS>::LookupElement (const KeyType& item)
             {
                 size_t      chainIdx    =   TRAITS::Hash (item) % TRAITS::HASH_TABLE_SIZE;
-                for (CacheElement* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
+                for (CacheElement_* cur = fCachedElts_First_[chainIdx]; cur != nullptr; cur = cur->fNext) {
                     if (TRAITS::Equal (TRAITS::ExtractKey (cur->fElement), item)) {
                         ShuffleToHead_ (chainIdx, cur);
 #if     qKeepLRUCacheStats
