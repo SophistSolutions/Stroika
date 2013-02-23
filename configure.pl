@@ -19,7 +19,7 @@ sub	DoHelp_
 	print("	    --force                      /* forces rebuild of the given configuration */\n");
 	print("	    --only-if-unconfigured       /* Opposite of --force - only rebuilds the configfiles if absent */\n");
 	print("	    --help                       /* Show this message */\n");
-	print(" ... Other parameters passed through to GenerateConfiguration.pl\n");
+	print(" ... Other parameters passed through to GenerateConfiguration.pl so run ./GenerateConfiguration.pl --help\n");
 	exit (0);
 }
 
