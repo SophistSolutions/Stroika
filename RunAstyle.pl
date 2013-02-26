@@ -1,10 +1,12 @@
 #!/usr/bin/perl
 
 my $astyleEXE	=	"astyle";
-if (-e "ThirdPartyLibs/astyle/astyle-trunk/AStyle/build/gcc/bin/astyle") {
-	$astyleEXE	=	"ThirdPartyLibs/astyle/astyle-trunk/AStyle/build/gcc/bin/astyle";
+
+
+my $astyleEXE_GCC	=	"ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle";
+if (-e "$astyleEXE_GCC") {
+	$astyleEXE	=	$astyleEXE_GCC;
 }
-print "aa = $astyleEXE \n";
 
 my $runFile;
 
