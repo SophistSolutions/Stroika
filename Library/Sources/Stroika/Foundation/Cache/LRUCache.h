@@ -28,17 +28,18 @@
  *              the original array head by which has the lowest address!
  *
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
- *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why its better.
+ *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why
+ *				its better.
  *
  *      @todo   Consider restructuring the API more like STL-MAP
  *              KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
- *              Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container pantheon.
- *              BUt it will be a bit of a PITA for all/some of the existing LRUCache<> uses...
+ *              Doing this MIGHT even allow us to make this class fit more neatly within the Stroika container
+ *              pantheon. BUt it will be a bit of a PITA for all/some of the existing LRUCache<> uses...
  *
  *              Problem of doing this is that in some cases - we may want to create a cache of objects that
  *              already pre-exist, and have the 'key part' as a subobject of themselves. Not a killer as we
- *              COULD just call the KEY/ELEMENT the same type and just use a simple test traits function that just pays
- *              attention to the logical key parts?
+ *              COULD just call the KEY/ELEMENT the same type and just use a simple test traits function
+ *              that just pays attention to the logical key parts?
  *
  *      @todo   Cleanup docs to reflect new TRAITS style, and document each public method (still todo) and docs for
  *              main class needs cleanup).
@@ -90,7 +91,7 @@ namespace   Stroika {
                 };
 
 
-                /*
+                /**
                  * The DefaultTraits<> is a simple default traits implementation for building an LRUCache<>.
                  */
                 template    <typename   ELEMENT, typename KEY = ELEMENT>
@@ -183,13 +184,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 * NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                * In TRAITS object.
-                */
+                 *	NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+				 *	value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                 */
                 nonvirtual  ELEMENT*    AddNew (const KeyType& item);
+            
+			public:
                 /*
-                 * NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key value if you specified HASH_TABLE_SIZE != 1
-                 * In TRAITS object.
+                 *	NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+				 *	value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
                  */
                 nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 

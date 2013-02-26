@@ -31,7 +31,8 @@ namespace   Stroika {
              *  case where two regions touch only at the edges (lhs of one == rhs of the other).
              *
              *  In my experience - this is NOT an interesting case (at least in the case of Led,
-             *  a word-processor, that wasn't an interesting case, and it appears to be equally applicable here.
+             *  a word-processor, that wasn't an interesting case, and it appears to be equally
+			 *	applicable here).
              *
              *      @todo   VERIFY THIS FUNCTION SYMETRIC??? MUST CHANGE EDGE RULE TO MAKE IT SYMETRIC.
              *
