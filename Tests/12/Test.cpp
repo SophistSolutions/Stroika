@@ -38,7 +38,7 @@ namespace   {
 
         VerifyTestResult (s.GetLength () == 0);
 
-for (TallyEntry<size_t> i : s) {
+        for (TallyEntry<size_t> i : s) {
             VerifyTestResult (false);
         }
 
@@ -57,7 +57,7 @@ for (TallyEntry<size_t> i : s) {
             VerifyTestResult (s.GetLength () == kTestSize);
 
             {
-for (TallyEntry<size_t> it : s) {
+                for (TallyEntry<size_t> it : s) {
                     for (size_t i = 1; i <= kTestSize; i++) {
                         VerifyTestResult (s.Contains (i));
                         VerifyTestResult (s.GetLength () == kTestSize - i + 1);

@@ -126,7 +126,7 @@ public:
 
             {
                 lock_guard<recursive_mutex> critSection (fCritSection_);
-for (auto i : fFoundCallbacks_) {
+                for (auto i : fFoundCallbacks_) {
                     i (d);
                 }
             }

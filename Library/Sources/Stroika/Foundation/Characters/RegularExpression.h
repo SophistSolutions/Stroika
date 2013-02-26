@@ -39,7 +39,7 @@ namespace   Stroika {
             class   RegularExpression {
             public:
                 // not sure what these types mean - find out and document clearly
-            enum class SyntaxType : uint8_t { eECMAScript, eBasic };
+                enum class SyntaxType : uint8_t { eECMAScript, eBasic };
             public:
                 explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eBasic);
 

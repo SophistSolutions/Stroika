@@ -143,7 +143,7 @@ namespace   Stroika {
                  *  Checks the state of the given service. NOTE - this works ACROSS PROCESSES. It can be called to ask in a controller exe
                  *  if the serviceMain EXE is running. It also - COULD give the wrong answer - given races, so use with care.
                  */
-            enum  class State : uint8_t {
+                enum  class State : uint8_t {
                     eStopped,
                     eRunning,
                     ePaused,        // STOPPED in unix

@@ -106,7 +106,7 @@ namespace   Stroika {
                  *  However - the "Kind" function returns Unknown in case your application wants to treat it
                  *  differently.
                  */
-            enum class Timezone : uint8_t {
+                enum class Timezone : uint8_t {
                     eLocalTime,
                     eUTC,
                     eUnknown,
@@ -154,7 +154,7 @@ namespace   Stroika {
 #endif
 
             public:
-            enum class  PrintFormat : uint8_t {
+                enum class  PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
