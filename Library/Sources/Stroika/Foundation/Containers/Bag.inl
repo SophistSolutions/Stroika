@@ -106,12 +106,12 @@ namespace   Stroika {
                 if (&_GetRep () == &items._GetRep ()) {
                     // Copy - so we don't update this while we are copying from it...
                     Bag<T>  copiedItems =   items;
-for (T i : copiedItems) {
+                    for (T i : copiedItems) {
                         _GetRep ().Add (i);
                     }
                 }
                 else {
-for (T i : items) {
+                    for (T i : items) {
                         _GetRep ().Add (i);
                     }
                 }
@@ -140,7 +140,7 @@ for (T i : items) {
                     RemoveAll ();
                 }
                 else {
-for (T i : items) {
+                    for (T i : items) {
                         _GetRep ().Remove (i);
                     }
                 }
@@ -154,7 +154,7 @@ for (T i : items) {
             size_t    Bag<T>::TallyOf (T item) const
             {
                 size_t  count = 0;
-for (T i : *this) {
+                for (T i : *this) {
                     if (i == item) {
                         count++;
                     }
@@ -179,7 +179,7 @@ for (T i : *this) {
                 }
 
                 // n^2 algorithm!!!
-for (T i : lhs) {
+                for (T i : lhs) {
                     if (lhs.TallyOf (i) != rhs.TallyOf (i)) {
                         return (false);
                     }

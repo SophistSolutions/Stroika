@@ -13,7 +13,7 @@ namespace   Stroika {
 
             class   Angle {
             public:
-            enum class AngleFormat : uint8_t {
+                enum class AngleFormat : uint8_t {
                     eRadians,
                     eDegrees,
                     eGradians

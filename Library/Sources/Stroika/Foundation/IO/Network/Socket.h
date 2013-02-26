@@ -66,7 +66,7 @@ namespace   Stroika {
                     /**
                      * 'second arg' to ::socket() call
                      */
-                enum class SocketKind : int {
+                    enum class SocketKind : int {
                         STREAM  =   SOCK_STREAM,
                         DGRAM   =   SOCK_DGRAM,
                         RAW     =   SOCK_RAW,

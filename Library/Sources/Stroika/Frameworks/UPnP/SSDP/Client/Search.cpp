@@ -143,7 +143,7 @@ public:
             {
                 // bad practice to keep mutex lock here - DEADLOCK CITY - find nice CLEAN way todo this...
                 lock_guard<recursive_mutex> critSection (fCritSection_);
-for (auto i : fFoundCallbacks_) {
+                for (auto i : fFoundCallbacks_) {
                     i (d);
                 }
             }

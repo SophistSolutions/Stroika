@@ -14,7 +14,7 @@ namespace   Stroika {
             // First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
             // But this will do for now...
             //      -- LGP 2009-08-15
-enum class FileAccessMode : uint8_t {
+            enum class FileAccessMode : uint8_t {
                 eRead_FAM   = 0x1,
                 eWrite_FAM  = 0x2,
 

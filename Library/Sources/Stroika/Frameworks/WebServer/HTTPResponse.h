@@ -91,7 +91,7 @@ namespace   Stroika {
                 nonvirtual  void                    SetCodePage (Characters::CodePage codePage);
 
             public:
-            enum class State : uint8_t {
+                enum class State : uint8_t {
                     eInProgress,                // A newly constructed Response starts out InProgress
                     eInProgressHeaderSentState, // It then transitions to 'header sent' state
                     eCompleted                  // and finally to Completed
@@ -99,7 +99,7 @@ namespace   Stroika {
                 nonvirtual  State   GetState () const;
 
             public:
-            enum class ContentSizePolicy : uint8_t {
+                enum class ContentSizePolicy : uint8_t {
                     eAutoCompute,
                     eExact,
                     eNone

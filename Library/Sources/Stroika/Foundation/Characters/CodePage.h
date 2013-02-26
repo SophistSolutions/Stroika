@@ -278,7 +278,7 @@ namespace   Stroika {
             */
             class   CodePagesGuesser {
             public:
-            enum class Confidence : uint8_t { eLow = 0, eMedium = 10, eHigh = 100 };
+                enum class Confidence : uint8_t { eLow = 0, eMedium = 10, eHigh = 100 };
 
             public:
                 /*

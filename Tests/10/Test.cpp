@@ -44,7 +44,7 @@ namespace   {
                 }
 
                 VerifyTestResult(s.GetLength() == kTestSize);
-for (size_t i : s) {
+                for (size_t i : s) {
                     size_t  oldLength = s.GetLength ();
                     VerifyTestResult(s.Contains(i));
                     VerifyTestResult(s.Contains(s.GetLength ()));
@@ -58,7 +58,7 @@ for (size_t i : s) {
                 }
 
                 {
-for (size_t it : s) {
+                    for (size_t it : s) {
                         for(size_t i = 1; i <= kTestSize; i++) {
                             VerifyTestResult(s.Contains(i));
                             VerifyTestResult(s.GetLength() == kTestSize - i + 1);
@@ -76,7 +76,7 @@ for (size_t it : s) {
                 }
                 VerifyTestResult(s.GetLength() == kTestSize);
                 {
-for (size_t i : s) {
+                    for (size_t i : s) {
                         s.Remove(i);
                     }
                     VerifyTestResult(s.IsEmpty());
@@ -88,7 +88,7 @@ for (size_t i : s) {
                 }
                 VerifyTestResult(s.GetLength() == kTestSize);
 
-for (size_t i : s) {
+                for (size_t i : s) {
                     s.Remove(i);
                 }
                 VerifyTestResult(s.GetLength() == 0);
@@ -105,8 +105,8 @@ for (size_t i : s) {
                 VerifyTestResult(s.GetLength() == kTestSize);
 
                 size_t i =  1;
-for (size_t it : s) {
-for (size_t it2 : s) {
+                for (size_t it : s) {
+                    for (size_t it2 : s) {
                         for (Iterator<size_t> it3 = s.begin (); it3 != s.end (); ++it3) {
                             s.Update (it3, i);
                             s.Remove(it3);
@@ -134,22 +134,22 @@ for (size_t it2 : s) {
             }
 
             for(size_t i = 1; i <= s.GetLength(); i++) {
-for (size_t it : s) {
+                for (size_t it : s) {
                     if(it == i) {
                         break;
                     }
                 }
             }
-for (size_t it : s) {
-for (size_t it1 : s) {
+            for (size_t it : s) {
+                for (size_t it1 : s) {
                     s.RemoveAll();
                 }
             }
             VerifyTestResult(s.IsEmpty());
             VerifyTestResult(s.GetLength() == 0);
 
-for (size_t it1 : s) {
-for (size_t it2 : s) {
+            for (size_t it1 : s) {
+                for (size_t it2 : s) {
                     VerifyTestResult(false);
                 }
             }

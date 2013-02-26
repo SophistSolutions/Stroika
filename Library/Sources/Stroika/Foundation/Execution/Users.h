@@ -16,7 +16,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-enum class  UserNameFormat : uint8_t {
+            enum class  UserNameFormat : uint8_t {
                 ePrettyName,
                 eDEFAULT = ePrettyName,
             };

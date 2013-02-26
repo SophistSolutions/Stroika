@@ -79,7 +79,7 @@ namespace   Stroika {
                 explicit TimeOfDay (uint32_t t);
 
 
-            enum  class PrintFormat : uint8_t {
+                enum  class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,

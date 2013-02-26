@@ -61,7 +61,7 @@ namespace   Stroika {
 
             /**
              */
-enum class  DayOfWeek : uint8_t {
+            enum class  DayOfWeek : uint8_t {
                 eMonday = 1,
                 eTuesday = 2,
                 eWednesday = 3,
@@ -78,7 +78,7 @@ enum class  DayOfWeek : uint8_t {
 
             /**
              */
-enum class  MonthOfYear : uint8_t {
+            enum class  MonthOfYear : uint8_t {
                 eEmptyMonthOfYear   = 0,        // only zero if date empty
                 eJanuary = 1,
                 eFebruary = 2,
@@ -102,7 +102,7 @@ enum class  MonthOfYear : uint8_t {
 
             /**
              */
-enum  class     DayOfMonth : uint8_t {
+            enum  class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
                 e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
                 e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
@@ -118,7 +118,7 @@ enum  class     DayOfMonth : uint8_t {
 
             /**
              */
-enum class  DayOfYear : uint16_t {
+            enum class  DayOfYear : uint16_t {
                 eFirstDayOfYear = 1,
                 eLastDayOfYear = 366,
                 Define_Start_End_Count (eFirstDayOfYear, eLastDayOfYear)
@@ -127,7 +127,7 @@ enum class  DayOfYear : uint16_t {
 
             /**
              */
-enum class Year : short {
+            enum class Year : short {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
@@ -183,7 +183,7 @@ enum class Year : short {
             public:
                 /**
                  */
-            enum class PrintFormat : uint8_t {
+                enum class PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
