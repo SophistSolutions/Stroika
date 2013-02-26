@@ -37,6 +37,11 @@ if (-e "CURRENT/AStyle/build/gcc/bin/astyle") {
 	goto DONE;
 	exit (0);
 }
+if (-e "CURRENT/AStyle/build/gcc/bin/astyle.exe") {
+	print ("already up to date\n");
+	goto DONE;
+	exit (0);
+}
 
 require "../../ScriptsLib/ConfigurationReader.pl";
 print ("Extracting astyle...\n");
@@ -64,46 +69,9 @@ sub RunAndPrint
 
 
 
-sub BuildVCDotNet
-{
-	my $PROJVVCVERSUBDIR = $_[0];
-	my $SHORTVCVERDIR = $_[1];
 
-	my $EXTRA_MSBUILD_ARGS = "/nologo /v:quiet /clp:Summary";
-	require "../../Library/Projects/$PROJVVCVERSUBDIR/SetupBuildCommonVars.pl";
-	
-	chdir ("CURRENT/Projects/Win32/$SHORTVCVERDIR/xerces-all/XercesLib");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=Win32 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=Win32 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Debug\",Platform=x64 /target:$BLD_TRG");
-		RunAndPrint ("MSBuild.exe $EXTRA_MSBUILD_ARGS XercesLib.vcxproj /p:Configuration=\"Static Release\",Platform=x64 /target:$BLD_TRG");
-	chdir ("../../../../../../");
-
-	# cleaning needless objs (leave libs)
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Debug/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Release/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Debug/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Release/obj/'");
-}
-
-
-
-print ("Building Xerces...\n");
-if ("$^O" eq "linux") {
-	system ("cd CURRENT/AStyle/build/gcc/ ; make all");
-}
-else {
-	my $myPlatformSubDir =	GetProjectPlatformSubdir ();
-	print ("Target Platform subdir: $myPlatformSubDir\n");
-	my $myBinOutDir = '';
-	if ($myPlatformSubDir eq 'VisualStudio.Net-2010') {
-		$myBinOutDir = 'VC10';
-	}
-	if ($myPlatformSubDir eq 'VisualStudio.Net-2012') {
-		$myBinOutDir = 'VC11';
-	}
-	BuildVCDotNet ($myPlatformSubDir, $myBinOutDir);
-}
+print ("Building astyle...\n");
+system ("cd CURRENT/AStyle/build/gcc/ ; make all");
 
 system ("perl checkall.pl");
 
