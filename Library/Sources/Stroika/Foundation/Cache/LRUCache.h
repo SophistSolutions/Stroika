@@ -29,7 +29,7 @@
  *
  *              Also somewhat related, _Last usage is C++ unconvnetional - though maybe OK. If not more awkward
  *              in impl, consider using _fEnd? Or if it is (I think last maybe better then document clearly why
- *				its better.
+ *              its better.
  *
  *      @todo   Consider restructuring the API more like STL-MAP
  *              KEY,VALUE, intead of LRUCache<ELEMENT> and the ability to extract an element.
@@ -184,15 +184,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 *	NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
-				 *	value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
                  */
                 nonvirtual  ELEMENT*    AddNew (const KeyType& item);
-            
-			public:
+
+            public:
                 /*
-                 *	NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
-				 *	value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
+                 *  NOTE - though you can CHANGE the value of ELEMENT, it is illegal to change its KEY part/key
+                 *  value if you specified HASH_TABLE_SIZE != 1 in TRAITS object.
                  */
                 nonvirtual  ELEMENT*    LookupElement (const KeyType& item);
 
