@@ -1,5 +1,11 @@
 #!/usr/bin/perl
 
+my $astyleEXE	=	"astyle";
+if (-e "ThirdPartyLibs/astyle/astyle-trunk/AStyle/build/gcc/bin/astyle") {
+	$astyleEXE	=	"ThirdPartyLibs/astyle/astyle-trunk/AStyle/build/gcc/bin/astyle";
+}
+print "aa = $astyleEXE \n";
+
 my $runFile;
 
 my $aStyleArgs = "";
@@ -43,28 +49,28 @@ if ($runFile == "") {
 	$aStyleFileTargets .= "Library/*.cpp ";
 	$aStyleFileTargets .= "Library/*.h ";
 	$aStyleFileTargets .= "Library/*.inl ";
-	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
 	
 	my $aStyleFileTargets = "";
 	$aStyleFileTargets .= "Samples/*.cpp ";
 	$aStyleFileTargets .= "Samples/*.h ";
 	$aStyleFileTargets .= "Samples/*.inl ";
-	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
 	
 	my $aStyleFileTargets = "";
 	$aStyleFileTargets .= "Tests/*.cpp ";
 	$aStyleFileTargets .= "Tests/*.h ";
 	$aStyleFileTargets .= "Tests/*.inl ";
-	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
 	
 	my $aStyleFileTargets = "";
 	$aStyleFileTargets .= "Tools/*.cpp ";
 	$aStyleFileTargets .= "Tools/*.h ";
 	$aStyleFileTargets .= "Tools/*.inl ";
-	system ("astyle $aStyleArgs --recursive $aStyleFileTargets");
+	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
 }
 else {
-	system ("astyle $aStyleArgs < $runFile > $runFile.XXX");
+	system ("$astyleEXE $aStyleArgs < $runFile > $runFile.XXX");
 	system ("mv $runFile.XXX $runFile");
 }
 
