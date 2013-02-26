@@ -7,6 +7,10 @@ my $astyleEXE_GCC	=	"ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle";
 if (-e "$astyleEXE_GCC") {
 	$astyleEXE	=	$astyleEXE_GCC;
 }
+my $astyleEXE_GCC	=	"ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle.exe";
+if (-e "$astyleEXE_GCC") {
+	$astyleEXE	=	$astyleEXE_GCC;
+}
 
 my $runFile;
 
