@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Optional.h"
 
 #include    "Exceptions.h"
 
@@ -34,7 +35,6 @@
  *              thread running the Q, you have an entire threadpool. Maybe thats an attachable
  *              attribute of the Q?
  *
- *
  */
 namespace   Stroika {
     namespace   Foundation {
@@ -52,29 +52,45 @@ namespace   Stroika {
              *  Remove              remove()            poll()              take()              poll(time, unit)
              *  Examine             Front()             peek()              not applicable      not applicable
              */
-            template    <typename E>
+            template    <typename T>
             class   BlockingQueue {
+            public:
                 /**
-                 *  Blocks unti item added, and throws if timeout exceeded.
+                 *  Blocks until item added, and throws if timeout exceeded. About the only way the
+                 *  throw can happen is if the Q is full (or timeout is very small).
                  *
-                 *  This one function corresponds to the java BlockingQueue add/put/offer (with overloading), and right
-                 *  now I see no value in offer(e).
+                 *  Analagous to the java BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
-                void Add (E e, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  void    Add (T e, Time::DurationSecondsType timeout = Time::kInfinite);
 
+
+            public:
                 /**
-                 *  Blocks unti item added, and throws if timeout exceeded.
+                 *  Blocks unti item removed, and throws if timeout exceeded.
                  *
-                 *  This one function corresponds to the java BlockingQueue remove/take/poll (with overloading), and right
-                 *  now I see no value in offer(e).
+                 *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
                  */
-                void Remove (E e, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  T       Remove (Time::DurationSecondsType timeout = Time::kInfinite);
 
+
+            public:
                 /**
-                 * java element()
+                 *  If the Q is empty, return an empty Optional<T>, and otherwise the same as Remove(0). Not blocking,
+                 *  and will not timeout.
+                 *
+                 *  Analagous to the java BlockingQueue<T>::poll() method.
                  */
-                E Front ();
-                /// ... just starting to think out - the 'special value' stuff only works if we use Optional...
+                nonvirtual  Memory::Optional<T>     RemoveIfPossible ();
+
+
+            public:
+                /**
+                 *  Returns the front element from the Q, if there is one, and an empty Optional<T> if
+                 *  there is none.
+                 *
+                 *  Analagous to the java BlockingQueue<T>::peek() method.
+                 */
+                nonvirtual  Memory::Optional<T> PeekFront () const;
             };
 
 
