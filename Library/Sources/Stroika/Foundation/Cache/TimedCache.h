@@ -19,11 +19,17 @@
  *      \file
  *
  * TODO:
+ *
+ *      @todo   DOCS
+ *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
  *      @todo   Add regression test for this class
  *
  *      @todo   Add mutex and docs about thread safety
+ *
+ *      @todo   ACCESS () API IS INTRINSICTLY UN-THREADSAFE!!! We document threadsafe, but thats not really right. Fix that
+ *              API so it is threadsafe??? Or adverise all threadafe except thtat?
  *
  *      @todo   Move accessFreshensDate into DefaultTraits
  *
@@ -101,6 +107,11 @@ namespace   Stroika {
              *  Note - this class doesn't employ a thread to throw away old items, so if you count on that
              *  happening (e.g. because the RESULT object DTOR has a side-effect like closing a file), then
              *  you may call DoBookkeeping () peridocially.
+             *
+             *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
+             *
+             *  \note   \em Thread-Safety
+             *       This class should be fully threadsafe. It is safe to update and read from separate threads.
              */
             template    <typename   KEY, typename RESULT, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, RESULT>>
             class   TimedCache {
