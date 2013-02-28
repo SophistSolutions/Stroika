@@ -1,7 +1,7 @@
 #!/usr/bin/perl 
 
 require "../../../ScriptsLib/test-Run-template.pl";
-DoRun (NNN);
+DoRun ("NNN");
 
 exit(0);
 
