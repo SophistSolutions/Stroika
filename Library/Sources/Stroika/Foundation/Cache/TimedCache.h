@@ -28,8 +28,15 @@
  *
  *      @todo   Add mutex and docs about thread safety
  *
- *      @todo   ACCESS () API IS INTRINSICTLY UN-THREADSAFE!!! We document threadsafe, but thats not really right. Fix that
+ *      @todo   AccessElement () API IS INTRINSICTLY UN-THREADSAFE!!! We document threadsafe, but thats not really right. Fix that
  *              API so it is threadsafe??? Or adverise all threadafe except thtat?
+ *
+ *              AccessElement () - maybe - could return Memory::Optional<T>
+ *
+ *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
+ *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we dont ahve problem with
+ *              creating the default, specify default type to create in the TRAITS object (so for example, if using Hash,
+ *              we dont force having operator< for BTREE map).
  *
  *      @todo   Move accessFreshensDate into DefaultTraits
  *
@@ -117,6 +124,10 @@ namespace   Stroika {
             class   TimedCache {
             public:
                 TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
+
+            private:
+                NO_COPY_CONSTRUCTOR (TimedCache);
+                NO_ASSIGNMENT_OPERATOR (TimedCache);
 
             public:
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);

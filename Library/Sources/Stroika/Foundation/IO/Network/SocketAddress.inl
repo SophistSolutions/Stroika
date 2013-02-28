@@ -140,14 +140,14 @@ namespace   Stroika {
                 template    <>
                 inline  sockaddr_in   SocketAddress::As<sockaddr_in> () const
                 {
-                    Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
+                    Assert (sizeof (sockaddr_in) == sizeof (fSocketAddress_));
                     const sockaddr_in& as = reinterpret_cast<const sockaddr_in&> (fSocketAddress_);
                     return as;
                 }
                 template    <>
                 inline  sockaddr_in6   SocketAddress::As<sockaddr_in6> () const
                 {
-                    Assert (sizeof (sockaddr_in6) == sizeof (sockaddr));
+                    Assert (sizeof (sockaddr_in6) == sizeof (fSocketAddress_));
                     const sockaddr_in6& as = reinterpret_cast<const sockaddr_in6&> (fSocketAddress_);
                     return as;
                 }
