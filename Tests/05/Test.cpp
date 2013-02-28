@@ -1,6 +1,7 @@
 /*
 * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
 */
+//	TEST	Foundation::Containers::Bag
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -15,6 +16,7 @@
 
 #include    "Stroika/Foundation/Containers/Concrete/Bag_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Bag_LinkedList.h"
+
 
 
 using   namespace   Stroika;

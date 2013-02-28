@@ -1,25 +1,31 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//	TEST	Foundation::IO::Network
+//	TEST	Foundation::Caching
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
-#include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Foundation/Memory/SharedByValue.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
+#include    "Stroika/Foundation/Cache/LRUCache.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
+
+
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Cache;
 
 
 namespace   {
+	void	Test1_Simple_ ()
+	{
+		LRUCache<string> tmp (3);
+		tmp.AddNew ("x");
+	}
 }
 
 
@@ -27,6 +33,7 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
+        Test1_Simple_ ();
     }
 }
 

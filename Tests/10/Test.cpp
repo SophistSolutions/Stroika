@@ -1,63 +1,66 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
+ * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
+//	TEST	Foundation::Execution::Exceptions
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Execution/Signals.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
+#include    <iostream>
+#include    <sstream>
 
+#if     qPlatform_Windows
+#include    <Windows.h>
+#include    <winerror.h>
+#include    <wininet.h>     // for error codes
+#endif
 
-#include    "../TestHarness/SimpleClass.h"
+#include    "Stroika/Foundation/Execution/Exceptions.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
+
 #include    "../TestHarness/TestHarness.h"
 
 
 
-using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
 
 
+
+
+
 namespace   {
-    static  bool    Test1_Basic_called_ =   false;
-    static  void    Test1_Basic_DoIt_ (SignalIDType signal)
+    void    RegressionTest1_ ()
     {
-        Test1_Basic_called_ = true;
-    }
-    void    Test1_Basic_ ()
-    {
-        set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-#if 1
-        Test1_Basic_called_ =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, Test1_Basic_DoIt_);
-        ::raise (SIGINT);
-        VerifyTestResult (Test1_Basic_called_);
-#else
-        // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
-        bool    called  =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [&called] (SignalIDType signal) -> void {called = true;});
-        ::raise (SIGINT);
-        VerifyTestResult (called);
+#if         qPlatform_Windows
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
 #endif
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }
+
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test1_Basic_ ();
+        RegressionTest1_ ();
     }
 
 }
 
 
+
+
+
 #if qOnlyOneMain
-extern  int Test_Signals ()
+extern  int TestExceptions ()
 #else
 int main (int argc, const char* argv[])
 #endif

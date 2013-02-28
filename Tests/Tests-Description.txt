@@ -1,15 +1,19 @@
-[01]	Foundation::Characters::Strings
-[02]	Foundation::Containers::Private::Array
-[03]	Foundation::Containers::Private::LinkedList
-[04]	Foundation::Containers::Bag
-[05]	Foundation::Containers::Tally
-[06]	Foundation::Cryptography
-[07]	Foundation::DataExchangeFormat::JSON
-[08]	Foundation::DataExchangeFormat::XML::SaxParser
-[09]	Foundation::Execution::Exceptions
-[10]	Foundation::Execution::Signals
-[11]	Foundation::Execution::Threads		[Note - includes atomics]
-[12]	Foundation::IO::Network::Transfer
-[13]	Foundation::Memory
-[14]	Foundation::Streams
-[15]	Foundation::Time
+[01]	Foundation::Caching
+[02]	Foundation::Characters::Strings
+[03]	Foundation::Containers::Private::Array
+[04]	Foundation::Containers::Private::LinkedList
+[05]	Foundation::Containers::Bag
+[06]	Foundation::Containers::Tally
+[07]	Foundation::Cryptography
+[08]	Foundation::DataExchangeFormat::JSON
+[09]	Foundation::DataExchangeFormat::XML::SaxParser
+[10]	Foundation::Execution::Exceptions
+[11]	Foundation::Execution::Signals
+[12]	Foundation::Execution::Threads		[Note - includes atomics]
+[13]	Foundation::IO::Network
+[14]	Foundation::IO::Network::HTTP
+[15]	Foundation::IO::Network::Transfer
+[16]	Foundation::Math
+[17]	Foundation::Memory
+[18]	Foundation::Streams
+[19]	Foundation::Time

@@ -1,6 +1,7 @@
 ﻿/*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
+//	TEST	Foundation::DataExchangeFormat::JSON
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -15,6 +16,8 @@
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 
 #include    "../TestHarness/TestHarness.h"
+
+
 
 
 using   namespace   Stroika::Foundation;

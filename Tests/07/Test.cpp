@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
+//	Foundation::Cryptography
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -18,6 +19,9 @@
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
+
+
+
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Cryptography;

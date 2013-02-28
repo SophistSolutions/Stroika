@@ -1,6 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
+//	TEST	Foundation::Characters::Strings
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -15,6 +16,8 @@
 #include    "Stroika/Foundation/Time/Realtime.h"
 
 #include    "../TestHarness/TestHarness.h"
+
+
 
 
 using   namespace   Stroika::Foundation;
