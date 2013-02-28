@@ -5,43 +5,41 @@
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Execution/Signals.h"
-#include    "Stroika/Foundation/Execution/Sleep.h"
 
+#include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Memory/SharedByValue.h"
+#include    "Stroika/Foundation/Memory/VariantValue.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
 
+
+
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Execution;
+using   namespace   Stroika::Foundation::Memory;
 
 
+//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
 
 namespace   {
-    static  bool    Test1_Basic_called_ =   false;
-    static  void    Test1_Basic_DoIt_ (SignalIDType signal)
+    void    Test1_Optional ()
     {
-        Test1_Basic_called_ = true;
+        {
+            Optional<int>   x;
+            VerifyTestResult (x.empty ());
+            x = 1;
+            VerifyTestResult (not x.empty ());
+            VerifyTestResult (*x == 1);
+        }
     }
-    void    Test1_Basic_ ()
+    void    Test1_SharedByValue ()
     {
-        set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-#if 1
-        Test1_Basic_called_ =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, Test1_Basic_DoIt_);
-        ::raise (SIGINT);
-        VerifyTestResult (Test1_Basic_called_);
-#else
-        // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
-        bool    called  =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [&called] (SignalIDType signal) -> void {called = true;});
-        ::raise (SIGINT);
-        VerifyTestResult (called);
-#endif
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+    }
+    void    Test1_VariantValue ()
+    {
     }
 }
 
@@ -50,20 +48,20 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test1_Basic_ ();
+        Test1_Optional ();
+        Test1_SharedByValue ();
+        Test1_VariantValue ();
     }
-
 }
 
 
-#if qOnlyOneMain
-extern  int Test_Signals ()
-#else
+
 int main (int argc, const char* argv[])
-#endif
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
+
+
 

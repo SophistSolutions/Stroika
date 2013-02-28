@@ -1,293 +1,129 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
+ * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
-#include    <sstream>
 
+#include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
+#if     qHasFeature_libcurl
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
+#endif
+#if     qHasFeature_WinHTTP
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
+#endif
 
-
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
-
-
-#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
-
-
-using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::IO;
+using   namespace   Stroika::Foundation::IO::Network;
+using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
-using   Concrete::Tally_Array;
-using   Concrete::Tally_LinkedList;
 
 
 
-namespace   {
-
-    void    TallyIteratorTests_ (Tally<size_t>& s)
+namespace {
+    void    TestURLParsing_ ()
     {
-        const   size_t  kTestSize   =   6;
-
-        VerifyTestResult (s.GetLength () == 0);
-
-        for (TallyEntry<size_t> i : s) {
-            VerifyTestResult (false);
-        }
-
-        /*
-         * Try removes while iterating forward.
-         */
         {
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
-            }
-
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                s.UpdateCount (it, 1);
-            }
-
-            VerifyTestResult (s.GetLength () == kTestSize);
-
-            {
-                for (TallyEntry<size_t> it : s) {
-                    for (size_t i = 1; i <= kTestSize; i++) {
-                        VerifyTestResult (s.Contains (i));
-                        VerifyTestResult (s.GetLength () == kTestSize - i + 1);
-                        s.Remove (i);
-                        VerifyTestResult (not s.Contains (i - 1));
-                    }
-                }
-                VerifyTestResult (s.IsEmpty ());
-                VerifyTestResult (s.GetLength () == 0);
-            }
-
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
-            }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            {
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    s.Remove (it);
-                }
-                VerifyTestResult (s.IsEmpty ());
-                VerifyTestResult (s.GetLength () == 0);
-            }
-
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
-            }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                s.Remove (it2.Current ().fItem);
-            }
-            VerifyTestResult (s.GetLength () == 0);
+            URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.fQuery == L"ThemeName=Cupertino");
+            VerifyTestResult (url.fHost.empty ());
+            VerifyTestResult (url.fRelPath == L"StyleSheet.css");
+            VerifyTestResult (url.fFragment.empty ());
+            VerifyTestResult (url.fProtocol == L"http");
         }
-
-        /*
-         * Try removes multiple iterators present.
-         */
         {
-            s.RemoveAll ();
-            VerifyTestResult (s.GetLength () == 0);
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
-            }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            size_t i =  1;
-
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                    for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
-                        if (s.GetLength () != 0) {
-                            s.UpdateCount (it3, 3);
-                            s.Remove (it3);
-                            s.Add (i);
-                            s.Remove (i);
-                        }
-                    }
-                }
-            }
+            URL url (L"http://www.recordsforliving.com/");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.fQuery.empty ());
+            VerifyTestResult (url.fFragment.empty ());
+            VerifyTestResult (url.fRelPath.empty ());
+            VerifyTestResult (url.fHost == L"www.recordsforliving.com");
+            VerifyTestResult (url.fProtocol == L"http");
         }
     }
-
-    void    SimpleTallyTests (Tally<size_t>& s)
-
-    {
-        size_t  three = 3;
-
-        Tally<size_t>   s1 (s);
-
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s1 == s);
-        Tally<size_t>   s2 = s1;
-
-        VerifyTestResult (s2 == s);
-        VerifyTestResult (s2 == s1);
-        s2.Add (three);
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s2 != s1);
-
-        TallyIteratorTests_ (s);
-
-        const   size_t  K = 500;
-
-        VerifyTestResult (s.IsEmpty ());
-        s.Add (three);
-        VerifyTestResult (s.GetLength () == 1);
-        s += three;
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 2);
-        s.Remove (three);
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 1);
-        s.Remove (three);
-        VerifyTestResult (s.IsEmpty ());
-        s.RemoveAll ();
-        VerifyTestResult (s.IsEmpty ());
-        for (size_t i = 1; i <= K; i++) {
-            s.Add (i);
-        }
-
-        for (size_t i = 1; i <= s.GetLength (); i++) {
-            VerifyTestResult (s.Contains (i));
-            VerifyTestResult (not s.Contains (0));
-        }
-
-        for (size_t i = 1; i <= s.GetLength (); i++) {
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                if (it.Current ().fItem == i) {
-                    break;
-                }
-            }
-        }
-        for (auto it = s.begin (); it != s.end (); ++it) {
-            for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
-                s.RemoveAll ();
-            }
-        }
-        VerifyTestResult (s.IsEmpty ());
-        VerifyTestResult (s.GetLength () == 0);
-
-        for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
-            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                VerifyTestResult (false);
-            }
-        }
-        VerifyTestResult (s.IsEmpty ());
-
-
-        for (size_t i = 1; i <= K; i++) {
-            s.Add (i);
-            VerifyTestResult (s.Contains (i));
-            VerifyTestResult (s.TallyOf (i) == 1);
-            VerifyTestResult (s.GetLength () == i);
-        }
-        for (size_t i = K; i > 0; i--) {
-            s.Remove (i);
-            VerifyTestResult (not s.Contains (i));
-            VerifyTestResult (s.GetLength () == (i - 1));
-        }
-        VerifyTestResult (s.IsEmpty ());
-
-        for (size_t i = 1; i <= K / 2; i++) {
-            s += 1;
-            VerifyTestResult (s.TallyOf (1) == i);
-        }
-        size_t oldLength = s.GetLength ();
-        size_t oldTotal = s.TotalTally ();
-        s += s;
-        VerifyTestResult (s.GetLength () == oldLength);
-        VerifyTestResult (s.TotalTally () == oldTotal * 2);
-    }
-
-    void    SimpleTallyTests (Tally<SimpleClass>& s)
-    {
-        SimpleClass three = 3;
-
-        Tally<SimpleClass>  s1 (s);
-
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s1 == s);
-        Tally<SimpleClass>  s2 = s1;
-
-        VerifyTestResult (s2 == s);
-        VerifyTestResult (s2 == s1);
-        s2.Add (three);
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s2 != s1);
-
-        VerifyTestResult (s.IsEmpty ());
-        s.Add (three);
-        VerifyTestResult (s.GetLength () == 1);
-        s += three;
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 2);
-        s.Remove (three);
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 1);
-        s.Remove (three);
-        VerifyTestResult (s.IsEmpty ());
-        s.RemoveAll ();
-        VerifyTestResult (s.IsEmpty ());
-    }
-
 }
 
 
-namespace   {
 
+namespace   {
+    void    Test_1_SimpleFetch_Google_C_ (Connection c)
+    {
+        c.SetURL (URL (L"http://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
+    }
+    void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
+    {
+        c.SetURL (URL (L"https://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
+    }
+}
+
+
+
+
+//// CREATE TEMPLATE THAT ITERATES OVER ALL USEFUL CONNECTION TYPES (default one, and special chosen depending on available defines - so eventually
+// on windows, we test BTOH win32 and curl (if avaialble).
+
+namespace   {
+    void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+    {
+        Test_1_SimpleFetch_Google_C_ ((factory) ());
+        Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
+    }
+
+#if     !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     qHasFeature_WinHTTP
+    Connection  mk_WinHTTP_ ()
+    {
+        return Connection_WinHTTP ();
+    }
+#endif
+#if     qHasFeature_libcurl
+    Connection  mk_LIBCURL_ ()
+    {
+        return Connection_LibCurl ();
+    }
+#endif
+#endif
     void    DoRegressionTests_ ()
     {
+        TestURLParsing_ ();
 
-        {
-            Tally_LinkedList<size_t>    s;
-            SimpleTallyTests (s);
-        }
+        DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
 
-        {
-            Tally_LinkedList<SimpleClass>   s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_Array<size_t> s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_Array<SimpleClass>    s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            // just proof that they can be constructed
-            Tally<size_t> t;
-            Tally<SimpleClass>  s1;
-        }
+#if     qHasFeature_libcurl
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_LIBCURL_);
+#endif
+#endif
+#if     qHasFeature_WinHTTP
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
+#endif
+#endif
     }
 }
 
 
-#if qOnlyOneMain
-extern  int Test_Tallys ()
-#else
+
+
+
 int main (int argc, const char* argv[])
-#endif
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-
