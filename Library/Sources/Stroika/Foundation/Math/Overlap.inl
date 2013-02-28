@@ -34,8 +34,8 @@ namespace   Stroika {
                         Assert (p2End >= p1Start);
                         overlapSize = min (p2End - p1Start, p2End - p2Start);
                     }
-                    Assert (overlapSize <= (p1End - p1Start));
-                    Assert (overlapSize <= (p2End - p2Start));
+                    Assert (overlapSize <= static_cast<size_t> (p1End - p1Start));
+                    Assert (overlapSize <= static_cast<size_t> (p2End - p2Start));
 
                     if (overlapSize == 0) {
                         /*
