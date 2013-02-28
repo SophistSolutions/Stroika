@@ -16,7 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            //  class   Lockable
+
+			/*
+			 ********************************************************************************
+			 ********************** Execution::Lockable<BASE, LOCKTYPE> *********************
+			 ********************************************************************************
+			 */
             template    <typename BASE, typename LOCKTYPE>
             inline  Lockable<BASE, LOCKTYPE>::Lockable ()
                 : BASE ()
@@ -139,7 +144,6 @@ namespace   Stroika {
                 const Lockable_POD& operator= (const T& rhs)                                                                            { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
                 const Lockable_POD& operator= (const Lockable<T, recursive_mutex>& rhs)                                                  { return Lockable_POD<T, recursive_mutex>::operator= (rhs); }
             };
-
 
 
         }
