@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//	TEST	Foundation::Caching
+//  TEST    Foundation::Caching
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -21,16 +21,21 @@ using   namespace   Stroika::Foundation::Cache;
 
 
 namespace   {
-	void	Test1_Simple_ ()
-	{
-		LRUCache<string> tmp (3);
-		tmp.AddNew ("x");
-	}
+    void    Test1_Simple_ ()
+    {
+        LRUCache<string> tmp (3);
+        *tmp.AddNew ("x") = "x";
+        *tmp.AddNew ("y") = "y";
+        *tmp.AddNew ("z") = "z";
+        *tmp.AddNew ("a") = "a";
+        VerifyTestResult (tmp.LookupElement ("a") != nullptr);
+        VerifyTestResult (tmp.LookupElement ("z") != nullptr);
+        VerifyTestResult (tmp.LookupElement ("x") == nullptr);
+    }
 }
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
         Test1_Simple_ ();

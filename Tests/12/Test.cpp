@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//	TEST	Foundation::Execution::Threads
+//  TEST    Foundation::Execution::Threads
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

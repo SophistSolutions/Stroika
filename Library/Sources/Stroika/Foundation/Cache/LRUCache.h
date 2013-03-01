@@ -16,6 +16,15 @@
  *
  * TODO:
  *
+ *      @todo   TERRIBLE API!
+ *                  LRUCache<string> tmp (3);
+ *                  *tmp.AddNew ("x") = "x";
+ *                  *tmp.AddNew ("y") = "y";
+ *                  *tmp.AddNew ("z") = "z";
+ *                  *tmp.AddNew ("a") = "a";
+ *              So awkward to use!!! - find better - more map like - API
+ *
+ *
  *      @todo   NOTE - I'm NOT sure public API for this is stable yet - there are many problems (though
  *              I've used this class quite a lot - its not buggy - just not flexibly designed or good
  *              thread safety properties).

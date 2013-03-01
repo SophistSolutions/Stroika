@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//	TEST	Foundation::Time
+//  TEST    Foundation::Time
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #if     qCompilerAndStdLib_Supports_stdchrono

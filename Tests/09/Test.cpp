@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//	TEST	Foundation::DataExchangeFormat::XML::SaxParser
+//  TEST    Foundation::DataExchangeFormat::XML::SaxParser
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

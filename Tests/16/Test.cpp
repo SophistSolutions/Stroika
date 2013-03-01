@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//	TEST	Foundation::Math
+//  TEST    Foundation::Math
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -23,13 +23,13 @@ using   namespace   Stroika::Foundation::Math;
 
 
 namespace   {
-	void	Test1_Overlap_ ()
-	{
-		VerifyTestResult (OverlapOrStrictlyContains<int> (1, 3, 2, 2));
-		VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 3, 3, 4));
-		VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 10, 3, 4));
-		VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 10, 3, 3));
-	}
+    void    Test1_Overlap_ ()
+    {
+        VerifyTestResult (OverlapOrStrictlyContains<int> (1, 3, 2, 2));
+        VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 3, 3, 4));
+        VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 10, 3, 4));
+        VerifyTestResult (not OverlapOrStrictlyContains<int> (1, 10, 3, 3));
+    }
 }
 
 
@@ -37,7 +37,7 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-		Test1_Overlap_ ();
+        Test1_Overlap_ ();
     }
 }
 
