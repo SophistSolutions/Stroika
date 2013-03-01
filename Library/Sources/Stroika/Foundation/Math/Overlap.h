@@ -24,7 +24,7 @@ namespace   Stroika {
              *
              *  This overlap algorithm computes if two intervals on a common range share any points,
              *  or if one contains the other. Here we consider one interval contained if it has no
-             *  points outside the others range.
+             *  points outside the others range, and it intersects (even at edges).
              *
              *  This is almost like computing the intersection between two intervals,
              *  and returning true iff its non-empty.
