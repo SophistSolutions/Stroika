@@ -24,13 +24,54 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            bool    Overlaps (const pair<T, T>& p1, const pair<T, T>& p2)
+            bool    Overlaps (const pair<T, T>& i1, const pair<T, T>& i2)
             {
-                Require (p1.first <= p1.second);
-                Require (p2.first <= p2.second);
+                Require (i1.first <= i1.second);
+                Require (i2.first <= i2.second);
 
+                /*
+                 *                         |                i1               |
+                 *  | A |                | B |             | C |           | D |           | E |
+                 *  |                                        F                                 |
+                 *
+                 *  The algorithm is completely symetric. Pick one point as i1, and consider possible ranges for
+                 *  interval i2, and name them A, B, C, D, E, or F.
+                 *
+                 *  The above captures the basic cases. i1 is a given range, and we consdier the possible
+                 *  placements of A-F relative to i1.
+                 *
+                 *  The only ones obviously visually outside of the range p1 are A and E.
+                 *
+                 *  We CHOOSE to consider the case of empty insersections to be Overlap() - iff i2 (A-F) is empty.
+                 */
+#if 1
+                // CASE A
+                if (i2.second < i1.first) {
+                    return false;
+                }
+                // variant of case "A" where they touch at the edges but not the empty "A" case
+                if (i2.second <= i1.first and (i1.first != i1.second and i2.first != i2.second)) {
+                    return false;
+                }
+                // CASE E
+                if (i2.first > i1.second) {
+                    return false;
+                }
+                // variant of case "E" where they touch at the edges but not the empty "A" case
+                if (i2.first >= i1.second and (i1.first != i1.second and i2.first != i2.second)) {
+                    return false;
+                }
+                return true;
+#else
+#if 0
+                // check for case "B" or "D" where "B" or "D" is empty
+                if (p2.first == p2.second and (p2.first == p1.first or p2.first == p1.second)) {
+                    return true;
+                }
+#endif
                 bool    doesntOverlap   =   (p2.second <= p1.first) or (p2.first >= p1.second);
                 return not doesntOverlap;
+#endif
 #if 0
                 if ((p1.first <= p2.second) and (p2.first <= p1.second)) {
                     // Maybe overlap - handle nuanced cases of zero-sized overlaps

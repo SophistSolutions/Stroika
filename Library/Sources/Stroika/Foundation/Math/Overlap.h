@@ -20,11 +20,14 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Check if two intervals overlap, or if one contains the other
+             *  \brief  Check if two intervals overlap (including empty overlap if one interval empty)
              *
              *  This overlap algorithm computes if two intervals on a common range share any points,
-             *  or if one contains the other. This is almost like computing the intersection between two
-             *  intervals, and returning true iff its non-empty.
+             *  or if one contains the other. Here we consider one interval contained if it has no
+             *  points outside the others range.
+             *
+             *  This is almost like computing the intersection between two intervals,
+             *  and returning true iff its non-empty.
              *
              *  The one case one might plausibly consider overlap which this routine does NOT is the
              *  case where two regions touch only at the edges (lhs of one == rhs of the other).
@@ -36,16 +39,15 @@ namespace   Stroika {
              *      @see    TextStore::Overlap - from where this function is derived
              */
             template    <typename T>
-            bool    Overlaps (const pair<T, T>& p1, const pair<T, T>& p2);
+            bool    Overlaps (const pair<T, T>& i1, const pair<T, T>& i2);
             template    <typename T>
-            bool    Overlaps (T p1Start, T p1End, T p2Start, T p2End);
+            bool    Overlaps (T i1Start, T i1End, T i2Start, T i2End);
 
 
         }
     }
 }
 #endif  /*_Stroika_Foundation_Math_Overlap_h_*/
-
 
 
 
