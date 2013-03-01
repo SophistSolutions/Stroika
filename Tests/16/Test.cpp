@@ -7,6 +7,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
+#include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Math/Overlap.h"
 
 #include    "../TestHarness/SimpleClass.h"
@@ -44,6 +45,14 @@ namespace   {
         VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
         VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
     }
+    void    Test2_Round_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (RoundUpTo (2, 10) == 10);
+        VerifyTestResult (RoundDownTo (2, 10) == 0);
+        VerifyTestResult (RoundUpTo (2, 2) == 2);
+        VerifyTestResult (RoundDownTo (2, 2) == 2);
+    }
 }
 
 
@@ -51,6 +60,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Overlap_ ();
+        Test2_Round_ ();
     }
 }
 

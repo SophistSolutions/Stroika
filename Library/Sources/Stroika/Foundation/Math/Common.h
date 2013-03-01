@@ -12,7 +12,8 @@
 
 /*
  *  TODO:
- *      o   This rounding code doesn't work for floating point numbers. That should either be fixed or documented better why.
+ *      @todo   This rounding code doesn't work for floating point numbers. That should either be fixed
+ *              or documented better why.
  */
 
 
@@ -29,18 +30,22 @@ namespace   Stroika {
             const   double  kPi =   3.14159265358979323846;
 
 
-            /*
+            /**
              * RoundUpTo() - round towards positive infinity.
-             * T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
-             *     (after review of this API/implementation, probably should add short/char with unsigned variants to this list)
+             *
+             *  T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
+             *  (after review of this API/implementation, probably should add short/char with unsigned variants
+             *  to this list)
              */
             template    <typename T>
             T   RoundUpTo (T x, T toNearest);
 
-            /*
-             * RoundDownTo() - round towards negative infinity.
-             * T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
-             *      (after review of this API/implementation, probably should add short/char with unsigned variants to this list)
+            /**
+             *  RoundDownTo() - round towards negative infinity.
+             *
+             *  T can be any of int, long, or long long, or unsigned int, or unsigned long, or unsigned long long
+             *  (after review of this API/implementation, probably should add short/char with unsigned variants
+             *  to this list)
              */
             template    <typename T>
             T   RoundDownTo (T x, T toNearest);
