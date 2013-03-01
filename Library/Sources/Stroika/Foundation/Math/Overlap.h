@@ -10,7 +10,6 @@
 
 /**
  *  \file
- *      @todo   Add Math regression test file - and put regression test for this in.
  */
 
 
@@ -34,12 +33,12 @@ namespace   Stroika {
              *  a word-processor, that wasn't an interesting case, and it appears to be equally
              *  applicable here).
              *
-             *      @todo   VERIFY THIS FUNCTION SYMETRIC??? MUST CHANGE EDGE RULE TO MAKE IT SYMETRIC.
-             *
              *      @see    TextStore::Overlap - from where this function is derived
              */
             template    <typename T>
-            bool    OverlapOrStrictlyContains (T p1Start, T p1End, T p2Start, T p2End);
+            bool    Overlaps (const pair<T, T>& p1, const pair<T, T>& p2);
+            template    <typename T>
+            bool    Overlaps (T p1Start, T p1End, T p2Start, T p2End);
 
 
         }
