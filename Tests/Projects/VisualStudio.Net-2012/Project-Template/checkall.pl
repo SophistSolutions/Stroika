@@ -2,4 +2,4 @@
 
 require "../../../ScriptsLib/test-checkall-template.pl";
 
-DoCheckBuilds (NNN);
+DoCheckBuilds ("NNN");
