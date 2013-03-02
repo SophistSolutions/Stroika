@@ -231,7 +231,8 @@ namespace   {
             locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             DateTime    dt (d, TimeOfDay (101));
-            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM");
+
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM" or dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/05/1903 12:01:41 AM");
             DateTime    dt2 (d, TimeOfDay (60));
             //TOFIX!!!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
             locale::global (prevLocale);
