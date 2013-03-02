@@ -83,17 +83,35 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \brief  DisplayFormat is a representation which a TimeOfDay can be transformed in and out of
+                 *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class ParseFormat : uint8_t {
+                enum  class DisplayFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
+                    Define_Start_End_Count (eCurrentLocale, eXML)
+                };
+
+            public:
+                /**
+                 *  Conceptually subclasses from DisplayFormat
+                 *
+                 *      @see DisplayFormat
+                 *      @see eCurrentLocale
+                 */
+                enum  class ParseFormat : uint8_t {
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
+
+            public:
                 static  TimeOfDay   Parse (const String& rep, ParseFormat pf);
                 static  TimeOfDay   Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
@@ -129,25 +147,25 @@ namespace   Stroika {
                 // returns 0..59
                 nonvirtual  uint8_t GetSeconds () const;
 
-
             public:
                 /**
-                 *  eCurrentLocale
-                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *  Conceptually subclasses from DisplayFormat
                  *
                  *  eCurrentLocaleWithZerosStripped
                  *      eCurrentLocaleWithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
+                 *
+                 *      @see DisplayFormat
+                 *      @see eCurrentLocale
                  */
-                enum  class PrintFormat : uint8_t {
-                    eCurrentLocale,
-                    eISO8601,
-                    eXML,
+                enum  class     PrintFormat : uint8_t {
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
 
                     eCurrentLocale_WithZerosStripped,
-                    Define_Start_End_Count (eCurrentLocale, eXML)
+                    Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:
@@ -157,6 +175,7 @@ namespace   Stroika {
                 nonvirtual  String  Format (const locale& l) const;
 
 #if     qPlatform_Windows
+            public:
                 nonvirtual  String  Format (LCID lcid) const;
 #endif
 
@@ -179,6 +198,7 @@ namespace   Stroika {
             public:
                 FormatException ();
             };
+
 
         }
     }

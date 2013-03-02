@@ -22,6 +22,9 @@
 /**
  * TODO:
  *
+ *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
+ *              de-supporting.
+ *
  *      @todo   Consider using strptime/strftime (or more likely the existing locale-based APIs) -
  *              and possibly use that to replace windows formatting APIs? The problem with this is
  *              that the Windows ones seem to currntly produce BETTER answers (more closely follow
@@ -55,6 +58,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
+
 
             using   Characters::String;
 
@@ -182,15 +186,32 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
+                 *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum    class   ParseFormat : uint8_t {
+                enum  class DisplayFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
                     eJavascript,
+                    Define_Start_End_Count (eCurrentLocale, eJavascript)
+                };
+
+            public:
+                /**
+                 *  Conceptually subclasses from DisplayFormat
+                 *
+                 *      @see DisplayFormat
+                 *      @see eCurrentLocale
+                 */
+                enum  class ParseFormat : uint8_t {
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
+                    eJavascript         =   DisplayFormat::eJavascript,
 
                     Define_Start_End_Count (eCurrentLocale, eJavascript)
                 };
@@ -224,15 +245,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  eCurrentLocale
-                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *  Conceptually subclasses from DisplayFormat
+                 *
+                 *  eCurrentLocaleWithZerosStripped
+                 *      eCurrentLocaleWithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
+                 *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
+                 *      and 04:06:00 PM will become 4:06 PM.
+                 *
+                 *      @see DisplayFormat
+                 *      @see eCurrentLocale
                  */
                 enum class PrintFormat : uint8_t {
-                    eCurrentLocale,
-                    eISO8601,
-                    eXML,
-                    eJavascript,
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
+                    eJavascript         =   DisplayFormat::eJavascript,
+
+
+                    //?NYI eCurrentLocaleWithZerosStripped
 
                     Define_Start_End_Count (eCurrentLocale, eJavascript)
                 };

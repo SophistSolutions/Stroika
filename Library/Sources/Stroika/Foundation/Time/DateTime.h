@@ -28,6 +28,8 @@
 /**
  * TODO:
  *
+ *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
+ *              de-supporting.
  *
  *      @todo   Current logic for TIMEZONE conversion is questionable. When we output to XML,
  *              we output the timezone offset of the currnet timezone and the daylight savingstime
@@ -155,14 +157,31 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
+                 *
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 */
+                enum  class DisplayFormat : uint8_t {
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
+                    Define_Start_End_Count (eCurrentLocale, eXML)
+                };
+
+            public:
+                /**
+                 *  Conceptually subclasses from DisplayFormat
+                 *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
                 enum class  ParseFormat : uint8_t {
-                    eCurrentLocale,
-                    eISO8601,
-                    eXML,
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
@@ -212,14 +231,16 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Conceptually subclasses from DisplayFormat
+                 *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
                 enum class  PrintFormat : uint8_t {
-                    eCurrentLocale,
-                    eISO8601,
-                    eXML,
+                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
+                    eISO8601            =   DisplayFormat::eISO8601,
+                    eXML                =   DisplayFormat::eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
