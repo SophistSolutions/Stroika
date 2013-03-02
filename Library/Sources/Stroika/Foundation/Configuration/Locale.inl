@@ -22,7 +22,7 @@ namespace   Stroika {
              */
             inline  std::locale GetPlatformDefaultLocale ()
             {
-                return std::locale (string ());
+                return std::locale ("");
             }
 
 
