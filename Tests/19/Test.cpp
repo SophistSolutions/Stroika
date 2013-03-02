@@ -11,6 +11,7 @@
 #include    <iostream>
 #include    <sstream>
 
+#include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
@@ -90,7 +91,7 @@ namespace   {
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            locale  prevLocale = locale::global (locale ("en-US"));
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
             //VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM");
@@ -103,7 +104,6 @@ namespace   {
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
             VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
         }
-
         {
 #if     qPlatform_Windows
             const   LCID    kUS_ENGLISH_LOCALE  =   MAKELCID (MAKELANGID (LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
@@ -228,7 +228,7 @@ namespace   {
 #endif
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
-            locale  prevLocale = locale::global (locale ("en-US"));
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             DateTime    dt (d, TimeOfDay (101));
             VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM");
