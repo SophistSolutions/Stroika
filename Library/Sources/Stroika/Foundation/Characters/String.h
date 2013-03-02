@@ -52,6 +52,12 @@
  * TODO:
  *
  *
+ *      @todo   String search API SUCKS!!! See example code in TimeOfDay:
+ *                  wstring  tmp =    Format (locale ()).As<wstring> ();
+ *                  size_t i;
+ *                  while ( (i = tmp.find (L":00")) != wstring::npos) {
+ *              Had todo with wstring cuz so painful with my pathetic search API Here!!!
+ *
  *      @todo   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistent
  *               with other APIs.
  *

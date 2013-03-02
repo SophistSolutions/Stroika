@@ -8,6 +8,13 @@
  *
  *  \file
  *
+ *  @todo   Consider having Iterator<T> have begin(), end() methods that to magic so
+ *          you can also directly use an intertor in
+ *              for (auto i : soemthingThatReturnsIterator()) {
+ *              }
+ *          I think easy and useful, and biggest concern is the potential for subtle
+ *          overload confusion generation.
+ *
  *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
  *          constructed in the wrong state and requiring an initial ++.
  *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
