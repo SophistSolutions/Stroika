@@ -75,6 +75,7 @@ namespace   {
         }
         {
             VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3PM", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
             VerifyTestResult (TimeOfDay::Parse (L"3am", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
             VerifyTestResult (TimeOfDay::Parse (L"3:00", locale::classic ()).GetAsSecondsCount () == 3 * 60 * 60);
             VerifyTestResult (TimeOfDay::Parse (L"16:00", locale::classic ()).GetAsSecondsCount () == 16 * 60 * 60);
@@ -86,6 +87,13 @@ namespace   {
             VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
             VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
             VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
+        }
+        {
+            // SHOULD TAKE ACTUAL LOCALE ARGUMENT - THIS ASSUMES US LOCALE
+            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01 AM");
         }
 
         {
@@ -210,6 +218,15 @@ namespace   {
             //VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
         }
 #endif
+        {
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+            DateTime    dt (d, TimeOfDay (101));
+            /// TODO: Really this test is wrong - and this should only work for US LOCALE (or at least not all locales)
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01:41 AM");
+            DateTime    dt2 (d, TimeOfDay (60));
+            /// TODO: Really this test is wrong - and this should only work for US LOCALE (or at least not all locales)
+            VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+        }
     }
 
 }

@@ -117,6 +117,9 @@ namespace   {
                         if (useHour > 12) {
                             useHour -= 12;
                         }
+                        if (useHour == 0) {
+                            useHour = 12;       // always print '12' as the hour for '0' - 12 o'clock is really in many ways 0 o'clock
+                        }
                         outBuf += Format (leadingZero ? L"%02d" : L"%d", useHour);
                     }
                     break;
