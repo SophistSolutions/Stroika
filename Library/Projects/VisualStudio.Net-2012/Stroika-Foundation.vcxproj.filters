@@ -459,6 +459,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\IRunnable.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -990,6 +993,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Math\Overlap.h">
       <Filter>Sources\Math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1427,6 +1433,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Math\Overlap.inl">
       <Filter>Sources\Math</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>
