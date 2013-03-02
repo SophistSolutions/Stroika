@@ -87,7 +87,6 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
     //  --LGP 2013-03-02
     //
     // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
-#if 1
     set<String> part1;
     part1.insert (iso2LetterLanguageCode);
     part1.insert (iso2LetterLanguageCode.ToLowerCase ());
@@ -113,18 +112,6 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
             }
         }
     }
-#else
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode + L"_" + iso2LetterTerritoryCode).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode + L"-" + iso2LetterTerritoryCode).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"_" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"-" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"-" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"-" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"-" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"_" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"_" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
-    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"_" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
-#endif
     Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Locale not found"));
 }
 
