@@ -174,13 +174,13 @@ Date::Date (Year year, MonthOfYear month, DayOfMonth day)
 {
 }
 
-Date    Date::Parse (const String& rep, PrintFormat pf)
+Date    Date::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
         return Date ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale: {
+        case    ParseFormat::eCurrentLocale: {
 #if     qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -193,8 +193,8 @@ Date    Date::Parse (const String& rep, PrintFormat pf)
 #endif
             }
             break;
-        case    PrintFormat::eISO8601:
-        case    PrintFormat::eXML: {
+        case    ParseFormat::eISO8601:
+        case    ParseFormat::eXML: {
                 /*
                  * We intentionally ignore TZ here - if any - because there is no notion of TZ in Date module - just DateTime...
                  */
@@ -217,7 +217,7 @@ Date    Date::Parse (const String& rep, PrintFormat pf)
                 }
             }
             break;
-        case    PrintFormat::eJavascript: {
+        case    ParseFormat::eJavascript: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
@@ -297,14 +297,6 @@ String Date::Format (PrintFormat pf) const
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
                 return Format (locale ());
-#if 0
-#if     qPlatform_Windows
-                return Format (LOCALE_USER_DEFAULT);
-#else
-                AssertNotImplemented ();
-                return String ();
-#endif
-#endif
             }
             break;
         case    PrintFormat::eISO8601:

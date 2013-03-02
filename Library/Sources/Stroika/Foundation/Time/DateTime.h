@@ -159,14 +159,16 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum class  PrintFormat : uint8_t {
+                enum class  ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
-                static  DateTime    Parse (const String& rep, PrintFormat pf);
+
+            public:
+                static  DateTime    Parse (const String& rep, ParseFormat pf);
                 static  DateTime    Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
                 static  DateTime    Parse (const String& rep, LCID lcid);
@@ -207,6 +209,20 @@ namespace   Stroika {
                 // Creates a new DateTime object known to be in UTC. If this DateTime is unknown, then the
                 // conversion is also unknown (but either treat Kind as localtime or UTC)
                 nonvirtual  DateTime    AsUTC () const;
+
+            public:
+                /**
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 */
+                enum class  PrintFormat : uint8_t {
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
+
+                    Define_Start_End_Count (eCurrentLocale, eXML)
+                };
 
             public:
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;

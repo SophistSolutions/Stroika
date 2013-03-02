@@ -186,7 +186,7 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum class PrintFormat : uint8_t {
+                enum    class   ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
@@ -194,7 +194,9 @@ namespace   Stroika {
 
                     Define_Start_End_Count (eCurrentLocale, eJavascript)
                 };
-                static  Date    Parse (const String& rep, PrintFormat pf);
+
+            public:
+                static  Date    Parse (const String& rep, ParseFormat pf);
                 static  Date    Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
                 static  Date    Parse (const String& rep, LCID lcid);
@@ -221,7 +223,23 @@ namespace   Stroika {
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
             public:
+                /**
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 */
+                enum class PrintFormat : uint8_t {
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
+                    eJavascript,
+
+                    Define_Start_End_Count (eCurrentLocale, eJavascript)
+                };
+            public:
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+
+            public:
                 nonvirtual  String Format (const locale& l) const;
 
 #if     qPlatform_Windows

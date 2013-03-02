@@ -127,7 +127,7 @@ namespace   {
 namespace   {
     void    VERIFY_ROUNDTRIP_XML_ (const Date& d)
     {
-        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eXML), Date::PrintFormat::eXML) == d);
+        VerifyTestResult (Date::Parse (d.Format (Date::PrintFormat::eXML), Date::ParseFormat::eXML) == d);
     }
 
     void    Test_3_TestDate_ ()
@@ -185,8 +185,8 @@ namespace   {
         }
 #endif
         {
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::PrintFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
-            VerifyTestResult (Date::Parse (L"11/1/2001", Date::PrintFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript) == Date (Year (2001), Time::MonthOfYear::eNovember, DayOfMonth (1)));
+            VerifyTestResult (Date::Parse (L"11/1/2001", Date::ParseFormat::eJavascript).Format (Date::PrintFormat::eJavascript) == L"11/01/2001");
         }
         {
             VerifyTestResult (Date::kMin < Date::kMax);

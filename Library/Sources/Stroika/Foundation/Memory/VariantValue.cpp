@@ -233,7 +233,7 @@ Date VariantValue::As() const
         case    Type::eString: {
                 auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Date::Parse (v->fVal, Date::PrintFormat::eISO8601);
+                return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
@@ -261,7 +261,7 @@ DateTime VariantValue::As () const
         case    Type::eString: {
                 auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return DateTime::Parse (v->fVal, DateTime::PrintFormat::eISO8601);
+                return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());

@@ -190,13 +190,13 @@ DateTime::DateTime (const FILETIME& fileTime, Timezone tz)
 }
 #endif
 
-DateTime    DateTime::Parse (const String& rep, PrintFormat pf)
+DateTime    DateTime::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
         return Date ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale: {
+        case    ParseFormat::eCurrentLocale: {
 #if         qPlatform_Windows
                 /*
                  * Windows Parser does better job than POSIX one - for reasons which elude me.
@@ -399,7 +399,7 @@ String DateTime::Format (PrintFormat pf) const
                     // TODO:
                     //      This probably shouldn't be needed!!! - think through more carefully.
                     //          --LGP 2011-10-07
-                    DateTime    parsed  =   DateTime::Parse (r, PrintFormat::eXML);
+                    DateTime    parsed  =   DateTime::Parse (r, ParseFormat::eXML);
                     if (parsed.GetTimezone () != GetTimezone ()) {
                         parsed = DateTime (parsed.GetDate (), parsed.GetTimeOfDay (), parsed.GetTimezone ());
                     }
