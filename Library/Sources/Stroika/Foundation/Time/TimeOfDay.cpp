@@ -249,10 +249,13 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, PrintFormat pf)
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
+                return Parse (rep, locale ());
+#if 0
 #if     qPlatform_Windows
                 return Parse (rep, LOCALE_USER_DEFAULT);
 #elif   qPlatform_POSIX
                 return Parse (rep, locale ());
+#endif
 #endif
             }
         case    PrintFormat::eISO8601:
@@ -293,6 +296,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
     ios::iostate state  =   ios::goodbit;
     wistringstream iss (rep.As<wstring> ());
+    //iss.imbue (l);        // not sure if/why needed/not/needed
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when;
@@ -387,10 +391,13 @@ String TimeOfDay::Format (PrintFormat pf) const
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
+                return Format (locale ());
+#if 0
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
                 Format (locale ());
+#endif
 #endif
             }
         case    PrintFormat::eISO8601:
@@ -423,10 +430,8 @@ String TimeOfDay::Format (const locale& l) const
     when.tm_min = GetMinutes ();
     when.tm_sec = GetSeconds ();
     wostringstream oss;
-    //wchar_t pattern[]=L"Now it's: %I:%M%p\n";
-    //wchar_t pattern[]=L"%I:%M%p";
-    // %X MAYBE just what we want  - locale DEPENDENT!!!
-    wchar_t pattern[] = L"%X";
+    //oss.imbue (l);        // not sure if/why needed/not/needed
+    wchar_t pattern[] = L"%X";      // %X locale dependent
     tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
     return oss.str ();
 }

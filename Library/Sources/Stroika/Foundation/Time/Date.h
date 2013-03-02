@@ -182,6 +182,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
                 enum class PrintFormat : uint8_t {
                     eCurrentLocale,

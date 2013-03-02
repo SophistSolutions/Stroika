@@ -367,10 +367,13 @@ String DateTime::Format (PrintFormat pf) const
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
+                return Format (locale ());
+#if 0
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
                 return Format (locale ());
+#endif
 #endif
             }
             break;

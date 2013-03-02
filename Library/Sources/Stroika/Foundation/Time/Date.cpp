@@ -296,11 +296,14 @@ String Date::Format (PrintFormat pf) const
     }
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
+                return Format (locale ());
+#if 0
 #if     qPlatform_Windows
                 return Format (LOCALE_USER_DEFAULT);
 #else
                 AssertNotImplemented ();
                 return String ();
+#endif
 #endif
             }
             break;
@@ -363,9 +366,7 @@ String Date::Format (const locale& l) const
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
     tm when =   Date2TM_ (*this);
     wostringstream oss;
-    // Read docs - not sure how to use this to get the local-appropriate format
-    // %X MAYBE just what we want  - locale DEPENDENT!!!
-    wchar_t pattern[] = L"%x";
+    wchar_t pattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
     tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
     return oss.str ();
 }

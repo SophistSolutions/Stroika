@@ -89,11 +89,19 @@ namespace   {
             VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
-            // SHOULD TAKE ACTUAL LOCALE ARGUMENT - THIS ASSUMES US LOCALE
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (locale ("en-US"));
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
-            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
+            //VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM");
-            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01 AM");
+            //VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01 AM");
+            locale::global (prevLocale);
+        }
+        {
+            VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:00");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
+            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
         }
 
         {
@@ -219,13 +227,22 @@ namespace   {
         }
 #endif
         {
-            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (locale ("en-US"));
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             DateTime    dt (d, TimeOfDay (101));
-            /// TODO: Really this test is wrong - and this should only work for US LOCALE (or at least not all locales)
-            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01:41 AM");
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM");
             DateTime    dt2 (d, TimeOfDay (60));
-            /// TODO: Really this test is wrong - and this should only work for US LOCALE (or at least not all locales)
-            VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //TOFIX!!!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            locale::global (prevLocale);
+        }
+        {
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
+            DateTime    dt (d, TimeOfDay (101));
+            VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/06/03 00:01:41");
+            DateTime    dt2 (d, TimeOfDay (60));
+            // want a variant that does this formatting!
+            //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
     }
 
@@ -454,7 +471,6 @@ namespace   {
         Test_10_std_duration_ ();
     }
 }
-
 
 
 
