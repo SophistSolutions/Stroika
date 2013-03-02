@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <set>
+
 #include    "StroikaConfig.h"
 
 #include    "../Characters/TString.h"
@@ -76,14 +78,53 @@ vector<Characters::String>    Configuration::GetAvailableLocales ()
 */
 Characters::String    Configuration::FindLocaleName (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
+    using   Characters::String;
     Require (iso2LetterLanguageCode.length () == 2);
     Require (iso2LetterTerritoryCode.length () == 2);       // may lift this in teh future and make it optional
 
     // This is a HORRIBLE way - but I know of no better (especially no better portable way).
     // See todo for planned fixes
     //  --LGP 2013-03-02
+    //
+    // Could make less heinous with memoizing, but not currently used much, and I plan todo much better impl...
+#if 1
+    set<String> part1;
+    part1.insert (iso2LetterLanguageCode);
+    part1.insert (iso2LetterLanguageCode.ToLowerCase ());
+    part1.insert (iso2LetterLanguageCode.ToUpperCase ());
+    set<String> part2;
+    part2.insert (L"-");
+    part2.insert (L"_");
+    part2.insert (L".");
+    part2.insert (L" ");
+    set<String> part3;
+    part3.insert (iso2LetterTerritoryCode);
+    part3.insert (iso2LetterTerritoryCode.ToLowerCase ());
+    part3.insert (iso2LetterTerritoryCode.ToUpperCase ());
+    set<String> part4;
+    part4.insert (L"");
+    part4.insert (L".utf8");
+    for (String i1 : part1) {
+        for (String i2 : part2) {
+            for (String i3 : part3) {
+                for (String i4 : part4) {
+                    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((i1 + i2 + i3 + i4).AsUTF8 ().c_str ()).name ()));
+                }
+            }
+        }
+    }
+#else
     IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode + L"_" + iso2LetterTerritoryCode).AsUTF8 ().c_str ()).name ()));
     IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode + L"-" + iso2LetterTerritoryCode).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"_" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"-" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"-" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"-" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"-" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"_" + iso2LetterTerritoryCode.ToUpperCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToLowerCase () + L"_" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
+    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((iso2LetterLanguageCode.ToUpperCase () + L"_" + iso2LetterTerritoryCode.ToLowerCase ()).AsUTF8 ().c_str ()).name ()));
+#endif
     Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Locale not found"));
 }
 
