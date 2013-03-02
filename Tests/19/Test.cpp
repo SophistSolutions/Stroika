@@ -94,7 +94,7 @@ namespace   {
             locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
             //VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
-            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
             //VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01 AM");
             locale::global (prevLocale);
         }
