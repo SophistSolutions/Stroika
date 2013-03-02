@@ -19,8 +19,8 @@ using   namespace   Stroika::Foundation::Configuration;
 *********** Configuration::UsePlatformDefaultLocaleAsDefaultLocale *************
 ********************************************************************************
 */
-void	Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+void    Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
 {
-	locale::global (GetPlatformDefaultLocale ());
+    locale::global (GetPlatformDefaultLocale ());
 }
 

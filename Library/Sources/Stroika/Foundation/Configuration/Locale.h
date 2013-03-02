@@ -24,23 +24,23 @@ namespace   Stroika {
         namespace   Configuration {
 
 
-			/**
-			 *	In C++, the default locale in "C", not the one inherited from the OS.
-			 *	Its not hard to get/set the one from the OS, but I've found it not well documented,
-			 *	so this is intended to make it a little easier/more readable.
-			 */
-			std::locale	GetPlatformDefaultLocale ();
+            /**
+             *  In C++, the default locale in "C", not the one inherited from the OS.
+             *  Its not hard to get/set the one from the OS, but I've found it not well documented,
+             *  so this is intended to make it a little easier/more readable.
+             */
+            std::locale GetPlatformDefaultLocale ();
 
 
-			/**
-			 *	\brief	Set the operating system locale into the current C++ locale used by locale functions (and most locale-dependent stroika funcitons).
-			 *
-			 *	In C++, the default locale in "C", not the one inherited from the OS.
-			 *	Its not hard to get/set the one from the OS, but I've found it not well documented,
-			 *	so this is intended to make it a little easier/more readable.
-			 *
-			 */
-			void	UsePlatformDefaultLocaleAsDefaultLocale ();
+            /**
+             *  \brief  Set the operating system locale into the current C++ locale used by locale functions (and most locale-dependent stroika funcitons).
+             *
+             *  In C++, the default locale in "C", not the one inherited from the OS.
+             *  Its not hard to get/set the one from the OS, but I've found it not well documented,
+             *  so this is intended to make it a little easier/more readable.
+             *
+             */
+            void    UsePlatformDefaultLocaleAsDefaultLocale ();
 
 
         }

@@ -20,10 +20,10 @@ namespace   Stroika {
              **************** Configuration::GetPlatformDefaultLocale ***********************
              ********************************************************************************
              */
-			inline	std::locale	GetPlatformDefaultLocale ()
-			{
-				return std::locale (string ());
-			}
+            inline  std::locale GetPlatformDefaultLocale ()
+            {
+                return std::locale (string ());
+            }
 
 
         }
