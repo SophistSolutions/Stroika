@@ -15,6 +15,11 @@
  *  \file
  *
  * TODO:
+ *      @todo   verify and document if for windows this is LOCALE_USER_DEFAULT or LOCALE_SYSTEM_DEFAULT.
+ *              SB USER!
+ *
+ *      @todo   reconsider  if GetPlatformDefaultLocale SB inlined, since calls inline funciton that seems relatively
+ *              big and I think maybe OK to cache value (static).
  *
  */
 
