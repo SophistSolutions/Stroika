@@ -210,8 +210,8 @@ DateTime    DateTime::Parse (const String& rep, ParseFormat pf)
                 return DateTime ();
             }
             break;
-        case    PrintFormat::eISO8601:
-        case    PrintFormat::eXML: {
+        case    ParseFormat::eISO8601:
+        case    ParseFormat::eXML: {
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;

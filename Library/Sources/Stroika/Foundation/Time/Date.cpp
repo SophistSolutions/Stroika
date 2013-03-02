@@ -299,6 +299,22 @@ String Date::Format (PrintFormat pf) const
                 return Format (locale ());
             }
             break;
+        case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
+                wstring  tmp =    Format (locale ()).As<wstring> ();
+                /*
+                 * This logic probably needs to be locale-specific, but this is good enuf for now...
+                 *
+                 *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
+                 *  Adjust String API so this code can be made clear!
+                 *          -- LGP 2013-03-02
+                 */
+                size_t i;
+                while ( (i = tmp.rfind (L"00")) != wstring::npos) {
+                    // any 00 is replaced with a single '0'
+                    tmp = tmp.substr (0, i) + tmp.substr (i + 1);
+                }
+                return tmp;
+            }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 wchar_t buf[20];    // really only  11 needed (so long as no negatives - which I dont think is allowed)

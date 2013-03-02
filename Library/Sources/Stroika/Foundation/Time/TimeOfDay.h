@@ -83,30 +83,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  DisplayFormat is a representation which a TimeOfDay can be transformed in and out of
+                 *  \brief  ParseFormat is a representation which a TimeOfDay can be transformed out of
                  *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class DisplayFormat : uint8_t {
+                enum    class   ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
-                    Define_Start_End_Count (eCurrentLocale, eXML)
-                };
-
-            public:
-                /**
-                 *  Conceptually subclasses from DisplayFormat
-                 *
-                 *      @see DisplayFormat
-                 *      @see eCurrentLocale
-                 */
-                enum  class ParseFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
@@ -149,22 +135,23 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Conceptually subclasses from DisplayFormat
+                 *  \brief  PrintFormat is a representation which a TimeOfDay can be transformed into
                  *
-                 *  eCurrentLocaleWithZerosStripped
-                 *      eCurrentLocaleWithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *
+                 *  eCurrentLocale_WithZerosStripped
+                 *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
-                 *
-                 *      @see DisplayFormat
-                 *      @see eCurrentLocale
                  */
                 enum  class     PrintFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
-
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
                     eCurrentLocale_WithZerosStripped,
+
                     Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 

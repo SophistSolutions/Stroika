@@ -65,7 +65,7 @@ namespace   Stroika {
 
             /**
              */
-            enum class  DayOfWeek : uint8_t {
+            enum    class   DayOfWeek : uint8_t {
                 eMonday = 1,
                 eTuesday = 2,
                 eWednesday = 3,
@@ -82,7 +82,7 @@ namespace   Stroika {
 
             /**
              */
-            enum class  MonthOfYear : uint8_t {
+            enum    class   MonthOfYear : uint8_t {
                 eEmptyMonthOfYear   = 0,        // only zero if date empty
                 eJanuary = 1,
                 eFebruary = 2,
@@ -106,7 +106,7 @@ namespace   Stroika {
 
             /**
              */
-            enum  class     DayOfMonth : uint8_t {
+            enum    class     DayOfMonth : uint8_t {
                 eEmptyDayOfMonth = 0,       // only zero if date empty
                 e1 = 1, e2, e3, e4, e5, e6, e7, e8, e9, e10,
                 e11 = 11, e12, e13, e14, e15, e16, e17, e18, e19, e20,
@@ -131,7 +131,7 @@ namespace   Stroika {
 
             /**
              */
-            enum class Year : short {
+            enum    class   Year : short {
                 eEmptyYear = SHRT_MIN,
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
@@ -192,26 +192,11 @@ namespace   Stroika {
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class DisplayFormat : uint8_t {
+                enum  class ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
                     eJavascript,
-                    Define_Start_End_Count (eCurrentLocale, eJavascript)
-                };
-
-            public:
-                /**
-                 *  Conceptually subclasses from DisplayFormat
-                 *
-                 *      @see DisplayFormat
-                 *      @see eCurrentLocale
-                 */
-                enum  class ParseFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
-                    eJavascript         =   DisplayFormat::eJavascript,
 
                     Define_Start_End_Count (eCurrentLocale, eJavascript)
                 };
@@ -245,26 +230,25 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Conceptually subclasses from DisplayFormat
+                 *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
                  *
-                 *  eCurrentLocaleWithZerosStripped
-                 *      eCurrentLocaleWithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *
+                 *  eCurrentLocale_WithZerosStripped
+                 *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
                  *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
                  *      and 04:06:00 PM will become 4:06 PM.
-                 *
-                 *      @see DisplayFormat
-                 *      @see eCurrentLocale
                  */
-                enum class PrintFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
-                    eJavascript         =   DisplayFormat::eJavascript,
+                enum    class   PrintFormat : uint8_t {
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
+                    eJavascript,
+                    eCurrentLocale_WithZerosStripped,
 
-
-                    //?NYI eCurrentLocaleWithZerosStripped
-
-                    Define_Start_End_Count (eCurrentLocale, eJavascript)
+                    Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
             public:
                 nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;

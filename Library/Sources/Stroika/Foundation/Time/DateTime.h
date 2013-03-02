@@ -157,31 +157,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
-                 *
-                 *  eCurrentLocale
-                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
-                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
-                 */
-                enum  class DisplayFormat : uint8_t {
-                    eCurrentLocale,
-                    eISO8601,
-                    eXML,
-                    Define_Start_End_Count (eCurrentLocale, eXML)
-                };
-
-            public:
-                /**
-                 *  Conceptually subclasses from DisplayFormat
+                 *  \brief  ParseFormat is a representation which a datetime can be transformed out of
                  *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
                 enum class  ParseFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
@@ -231,16 +216,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Conceptually subclasses from DisplayFormat
+                 *  \brief  PrintFormat is a representation which a datetime can be transformed into
                  *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
                 enum class  PrintFormat : uint8_t {
-                    eCurrentLocale      =   DisplayFormat::eCurrentLocale,
-                    eISO8601            =   DisplayFormat::eISO8601,
-                    eXML                =   DisplayFormat::eXML,
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
@@ -254,7 +239,9 @@ namespace   Stroika {
 #endif
 
             public:
-                // returns number of days since this point - relative to NOW. Never less than zero
+                /**
+                 *  Returns number of days since this point - relative to NOW. Never less than zero.
+                 */
                 nonvirtual  Date::JulianRepType DaysSince () const;
 
             public:
