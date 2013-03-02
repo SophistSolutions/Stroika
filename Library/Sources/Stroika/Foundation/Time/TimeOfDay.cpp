@@ -392,13 +392,6 @@ String TimeOfDay::Format (PrintFormat pf) const
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
                 return Format (locale ());
-#if 0
-#if     qPlatform_Windows
-                return Format (LOCALE_USER_DEFAULT);
-#else
-                Format (locale ());
-#endif
-#endif
             }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {

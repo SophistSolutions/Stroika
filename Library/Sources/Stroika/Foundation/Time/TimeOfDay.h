@@ -128,8 +128,11 @@ namespace   Stroika {
                 // returns 0..59
                 nonvirtual  uint8_t GetSeconds () const;
 
+
             public:
                 nonvirtual  String  Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+
+            public:
                 nonvirtual  String  Format (const locale& l) const;
 
 #if     qPlatform_Windows
