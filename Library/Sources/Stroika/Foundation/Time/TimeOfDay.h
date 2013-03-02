@@ -25,7 +25,10 @@
  * TODO:
  *
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
-*               use Optional<>
+ *               use Optional<>
+ *
+ *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
+ *              de-supporting.
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
@@ -78,26 +81,24 @@ namespace   Stroika {
                  */
                 explicit TimeOfDay (uint32_t t);
 
-
             public:
                 /**
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  */
-                enum  class PrintFormat : uint8_t {
+                enum  class ParseFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
 
                     Define_Start_End_Count (eCurrentLocale, eXML)
                 };
-                static  TimeOfDay   Parse (const String& rep, PrintFormat pf);
+                static  TimeOfDay   Parse (const String& rep, ParseFormat pf);
                 static  TimeOfDay   Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
                 static  TimeOfDay   Parse (const String& rep, LCID lcid);
 #endif
-
 
             public:
                 /**
@@ -130,7 +131,27 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+                /**
+                 *  eCurrentLocale
+                 *      Note this is the current C++ locale, which may not be the same as the platform default locale.
+                 *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *
+                 *  eCurrentLocaleWithZerosStripped
+                 *      eCurrentLocaleWithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
+                 *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
+                 *      and 04:06:00 PM will become 4:06 PM.
+                 */
+                enum  class PrintFormat : uint8_t {
+                    eCurrentLocale,
+                    eISO8601,
+                    eXML,
+
+                    eCurrentLocale_WithZerosStripped,
+                    Define_Start_End_Count (eCurrentLocale, eXML)
+                };
+
+            public:
+                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eCurrentLocale_WithZerosStripped) const;
 
             public:
                 nonvirtual  String  Format (const locale& l) const;

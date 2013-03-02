@@ -242,24 +242,17 @@ TimeOfDay::TimeOfDay (uint32_t t)
 {
 }
 
-TimeOfDay   TimeOfDay::Parse (const String& rep, PrintFormat pf)
+TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
 {
     if (rep.empty ()) {
         return TimeOfDay ();
     }
     switch (pf) {
-        case    PrintFormat::eCurrentLocale:  {
+        case    ParseFormat::eCurrentLocale:  {
                 return Parse (rep, locale ());
-#if 0
-#if     qPlatform_Windows
-                return Parse (rep, LOCALE_USER_DEFAULT);
-#elif   qPlatform_POSIX
-                return Parse (rep, locale ());
-#endif
-#endif
             }
-        case    PrintFormat::eISO8601:
-        case    PrintFormat::eXML: {
+        case    ParseFormat::eISO8601:
+        case    ParseFormat::eXML: {
                 int hour    =   0;
                 int minute  =   0;
                 int secs    =   0;
@@ -392,6 +385,38 @@ String TimeOfDay::Format (PrintFormat pf) const
     switch (pf) {
         case    PrintFormat::eCurrentLocale:  {
                 return Format (locale ());
+            }
+        case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
+                wstring  tmp =    Format (locale ()).As<wstring> ();
+                /*
+                 * This logic probably needs to be locale-specific, but this is good enuf for now...
+                 *
+                 *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
+                 *  Adjust String API so this code can be made clear!
+                 *          -- LGP 2013-03-02
+                 */
+                size_t i;
+                while ( (i = tmp.rfind (L":00")) != wstring::npos) {
+                    // if its a TRAILING :00 - lose it...
+                    bool trailing = false;
+                    if (i + 3 == tmp.size ()) {
+                        trailing = true;
+                    }
+                    else if (i + 3 < tmp.size () and tmp[i + 3] == ' ') {
+                        trailing = true;
+                    }
+                    if (trailing) {
+                        tmp = tmp.substr (0, i) + tmp.substr (i + 3);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                // Next lose prefxing 0, as in 01:04
+                if (not tmp.empty () and tmp[0] == '0') {
+                    tmp = tmp.substr (1);
+                }
+                return tmp;
             }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {

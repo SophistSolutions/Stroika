@@ -84,24 +84,27 @@ namespace   {
         {
             // Not sure these should ALWAYS work in any locale. Probably not. But any locale I'd test in??? Maybe... Good for starters anyhow...
             //      -- LGP 2011-10-08
-            VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 15 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
-            VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::PrintFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 15 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 3 * 60 * 60);
+            VerifyTestResult (TimeOfDay::Parse (L"16:00", TimeOfDay::ParseFormat::eCurrentLocale).GetAsSecondsCount () == 16 * 60 * 60);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01:41 AM");
-            //VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"12:01 AM");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"12:01 AM");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01:41 AM" or TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41 AM");
-            //VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"1:01 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41 AM");
+            VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01 AM");
             locale::global (prevLocale);
         }
         {
             VerifyTestResult (TimeOfDay (101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:41");
             VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"00:01:00");
+            VerifyTestResult (TimeOfDay (60).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"0:01");
             VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:41");
+            VerifyTestResult (TimeOfDay (60 * 60 + 101).Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped) == L"1:01:41");
             VerifyTestResult (TimeOfDay (60 * 60 + 60).Format (TimeOfDay::PrintFormat::eCurrentLocale) == L"01:01:00");
         }
         {
@@ -226,15 +229,16 @@ namespace   {
             //VerifyTestResult (DateTime::Parse (testCase, kUS_ENGLISH_LOCALE) == DateTime::Parse (testCase, locale::classic ()));
         }
 #endif
+
+        //// TODO - FIX FOR PrintFormat::eCurrentLocale_WITHZEROESTRIPPED!!!!
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
             DateTime    dt (d, TimeOfDay (101));
-
             VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/5/1903 12:01:41 AM" or dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/05/1903 12:01:41 AM");
             DateTime    dt2 (d, TimeOfDay (60));
-            //TOFIX!!!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
+            //TOFIX!VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
             locale::global (prevLocale);
         }
         {
@@ -264,15 +268,15 @@ namespace   {
             VerifyTestResult (d.As<time_t> () == 802278000);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::PrintFormat::eCurrentLocale));
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3pm", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802278000);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::PrintFormat::eCurrentLocale));
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3am", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
-            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale));
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
         }
         {
@@ -394,7 +398,7 @@ namespace   {
     void    Test_8_DateTimeWithDuration_ ()
     {
         {
-            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::PrintFormat::eCurrentLocale));
+            DateTime    d   =   DateTime (Date (Year (1995), MonthOfYear::eJune, DayOfMonth (4)), TimeOfDay::Parse (L"3:00", TimeOfDay::ParseFormat::eCurrentLocale));
             VerifyTestResult (d.As<time_t> () == 802234800);    // source - http://www.onlineconversion.com/unix_time.htm
             const   Duration    k30Days     =   Duration (L"P30D");
             DateTime    d2  =   d + k30Days;
