@@ -22,6 +22,12 @@
 /**
  * TODO:
  *
+ *      @todo   See if Year should maybe be based on uint16_t.
+ *
+ *      @todo   Maybe get rid of eFirstDayOfWeek/eLastDayOfWeek, and eFirstDayOfMonth/...
+ *              Instead just use DayOfWeek::eSTART, ... etc.. standardized way of naming
+ *              these things - already redundant.
+ *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
@@ -114,7 +120,6 @@ namespace   Stroika {
                 eFirstMonthOfYear = eJanuary,
                 eLastMonthOfYear = eDecember,
 
-                // Can do for (i = eSTART; i != eEND; i = Inc (i));
                 Define_Start_End_Count (eFirstMonthOfYear, eLastMonthOfYear)
             };
 
@@ -151,7 +156,6 @@ namespace   Stroika {
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
 
-                // Can do for (i = eSTART; i != eEND; i = Inc (i));
                 Define_Start_End_Count (eFirstYear, eLastfYear)
             };
 
