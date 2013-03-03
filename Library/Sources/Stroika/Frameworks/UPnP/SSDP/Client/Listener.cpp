@@ -110,6 +110,9 @@ public:
                         value = line.SubString (n + 1).Trim ();
                     }
                 }
+                if (not label.empty ()) {
+                    d.fRawHeaders.insert (map<String, String>::value_type (label, value));
+                }
                 if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fLocation = value;
                 }
@@ -121,6 +124,17 @@ public:
                 }
                 else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fServer = value;
+                }
+                else if (label.Compare (L"NTS", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                    if (value.Compare (L"ssdp:alive", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                        d.fAlive = true;
+                    }
+                    else if (value.Compare (L"ssdp:bye", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                        d.fAlive = false;
+                    }
+                }
+                else {
+                    int hreab = 1;
                 }
             }
 

@@ -7,6 +7,9 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    <functional>
+#include    <map>
+
+#include    "../../../../Foundation/Memory/Optional.h"
 
 #include    "../../Device.h"
 
@@ -87,7 +90,8 @@ namespace   Stroika {
                      */
                     class Listener::Result : public Device {
                     public:
-
+                        map<String, String>      fRawHeaders;
+                        Memory::Optional<bool>  fAlive; // else Bye notification, or empty if neither
                     };
 
 
