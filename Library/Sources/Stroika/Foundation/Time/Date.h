@@ -258,10 +258,12 @@ namespace   Stroika {
                     eCurrentLocale_WithZerosStripped,
 
                     Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+
+                    eDEFAULT    =   eCurrentLocale_WithZerosStripped,
                 };
 
             public:
-                nonvirtual  String Format (PrintFormat pf) const;
+                nonvirtual  String Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
 
             public:
                 nonvirtual  String Format (const locale& l) const;
