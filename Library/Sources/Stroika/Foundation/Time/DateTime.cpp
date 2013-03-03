@@ -371,10 +371,14 @@ String DateTime::Format (PrintFormat pf) const
             }
             break;
         case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
-                wstring  tmp =    Format (locale ()).As<wstring> ();
-                /// tricky to combine other agorithms...
-                ///&&&
-                return tmp;
+                /*
+                 *  Not sure what todo here - becaue I'm not sure its locale neutral to put the date first, but thats
+                 *  what we do in Format (locale) anyhow - with the format string was pass in.
+                 *
+                 *  Good enuf for now...
+                 *      -- LGP 2013-03-02
+                 */
+                return fDate_.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) + L" " + fTimeOfDay_.Format (TimeOfDay::PrintFormat::eCurrentLocale_WithZerosStripped);
             }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
@@ -410,7 +414,7 @@ String DateTime::Format (PrintFormat pf) const
             break;
         default: {
                 AssertNotReached ();
-                return wstring ();
+                return String ();
             }
             break;
     }
@@ -428,7 +432,7 @@ String DateTime::Format (const locale& l) const
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
     const wchar_t kPattern[] = L"%x %X";
-    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

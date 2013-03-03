@@ -119,7 +119,6 @@ namespace   Stroika {
                 eFirstDayOfMonth = 1,
                 eLastDayOfMonth = 31,
 
-                // Can do for (i = eSTART; i != eEND; i = Inc (i));
                 Define_Start_End_Count (eFirstDayOfMonth, eLastDayOfMonth)
             };
 
@@ -129,6 +128,7 @@ namespace   Stroika {
             enum class  DayOfYear : uint16_t {
                 eFirstDayOfYear = 1,
                 eLastDayOfYear = 366,
+
                 Define_Start_End_Count (eFirstDayOfYear, eLastDayOfYear)
             };
 
@@ -190,7 +190,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief  DisplayFormat is a representation which a date can be transformed in and out of
+                 *  \brief  ParseFormat is a representation which a date can be transformed out of
                  *
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
@@ -227,8 +227,13 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Year            GetYear () const;
+
+            public:
                 nonvirtual  MonthOfYear     GetMonth () const;
+
+            public:
                 nonvirtual  DayOfMonth      GetDayOfMonth () const;
+
             public:
                 nonvirtual  void            mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const;
 
@@ -254,6 +259,7 @@ namespace   Stroika {
 
                     Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
+
             public:
                 nonvirtual  String Format (PrintFormat pf) const;
 
@@ -317,6 +323,7 @@ namespace   Stroika {
 
             String  GetFormattedAge (const Date& birthDate, const Date& deathDate = Date ());   // returns ? if not a good src date
             String  GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDate = Date (), bool allowMonths = true, bool abbrevUnit = true);  // returns ? if not a good src date
+
 
         }
     }

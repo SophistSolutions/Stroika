@@ -9,7 +9,6 @@
 
 #if     qPlatform_Windows
 #include    <atlbase.h>     // For CComBSTR
-#elif   qPlatform_POSIX
 #endif
 
 #include    "../Characters/Format.h"
@@ -390,8 +389,8 @@ String Date::Format (const locale& l) const
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
     tm when =   Date2TM_ (*this);
     wostringstream oss;
-    wchar_t pattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-    tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
+    const wchar_t kPattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
+    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

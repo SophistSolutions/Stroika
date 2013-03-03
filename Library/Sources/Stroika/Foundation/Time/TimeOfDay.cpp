@@ -449,8 +449,8 @@ String TimeOfDay::Format (const locale& l) const
     when.tm_sec = GetSeconds ();
     wostringstream oss;
     //oss.imbue (l);        // not sure if/why needed/not/needed
-    wchar_t pattern[] = L"%X";      // %X locale dependent
-    tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
+    const wchar_t kPattern[] = L"%X";      // %X locale dependent
+    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

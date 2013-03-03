@@ -31,6 +31,11 @@
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
  *               use Optional<>
  *
+ *              PROS:   probably more logical and typesafe; empty is kindof a 'sentinal' value used
+ *                      typically used to represent not present
+ *              CONS:   we use this clear/empty notion alot, so may involve many changes, and we have
+ *                      a sensible fittable sentinal value handy.
+ *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
  *
@@ -51,7 +56,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
+
             using   Characters::String;
+
 
             /**
              * Description:
@@ -130,11 +137,21 @@ namespace   Stroika {
                 nonvirtual  void    ClearSecondsField ();
 
             public:
-                // returns 0..23
+                /**
+                 * returns 0..23
+                 */
                 nonvirtual  uint8_t GetHours () const;
-                // returns 0..59
+
+            public:
+                /**
+                 *  returns 0..59
+                 */
                 nonvirtual  uint8_t GetMinutes () const;
-                // returns 0..59
+
+            public:
+                /**
+                 *  returns 0..59
+                 */
                 nonvirtual  uint8_t GetSeconds () const;
 
             public:

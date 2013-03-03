@@ -10,14 +10,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
+#include    "../Execution/Exceptions.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
 
-            //  class TimeOfDay
+            /*
+             ********************************************************************************
+             ************************************ TimeOfDay *********************************
+             ********************************************************************************
+             */
             inline  bool    TimeOfDay::empty () const
             {
                 return fTime_ == static_cast<unsigned int> (-1);
@@ -77,6 +81,7 @@ namespace   Stroika {
                 return lhs.Compare (rhs) != 0;
             }
 
+
         }
 
 
@@ -90,5 +95,6 @@ namespace   Stroika {
         }
 
     }
+
 }
 #endif  /*_Stroika_Foundation_Time_TimeOfDay_inl_*/

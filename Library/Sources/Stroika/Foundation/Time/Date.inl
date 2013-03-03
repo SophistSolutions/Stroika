@@ -10,15 +10,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
+#include    "../Execution/Exceptions.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
 
-
-            //  class Date
+            /*
+             ********************************************************************************
+             *************************************** Date ***********************************
+             ********************************************************************************
+             */
             inline  Date::JulianRepType Date::GetJulianRep () const
             {
                 return (fJulianDateRep_ == kEmptyJulianRep ? kMinJulianRep : fJulianDateRep_);
@@ -68,6 +71,7 @@ namespace   Stroika {
                 return lhs.Compare (rhs) != 0;
             }
 
+
         }
 
 
@@ -79,6 +83,7 @@ namespace   Stroika {
                 throw e2Throw;
             }
         }
+
 
     }
 }
