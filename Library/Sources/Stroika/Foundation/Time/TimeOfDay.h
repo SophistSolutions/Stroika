@@ -24,9 +24,8 @@
 /*
  * TODO:
  *
- *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
- *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
- *              args until this is stable and I'm sure what makes sense.
+ *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
+ *              to use separate format print arg or???
  *
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
  *               use Optional<>
@@ -41,6 +40,14 @@
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
+ *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
+ *              Same format
+ *              That doesn’t use std::locale()
+ *              En.cppreference.com/w/cpp/io/manip/get_time
+ *              istringstream xxx (“2011-feb…”)
+ *              ss.imbue(std::locale() (“de-DE”));
+ *              ss >> std::get_time(&t, “%FT%T%z”)
+ *
  *      @todo   Locale based parsing code seems quite poor. Haven't really evaluated locale-based
  *              print code (but I'm not optimistic). I'm not sure if I have it wrong, or if it just
  *              sucks (main issue is Vis Studio integration - doesn't appear to pay attention to
@@ -48,6 +55,10 @@
  *              about what it accepts). But also the %X output (again - at least for windows/vis studio)
  *              looks terrible - military format - full zero precision - even if not needed?).
  *              MAYBE try %EX is the locale's alternative time representation.
+ *
+ *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
+ *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
+ *              locking to bump refcount?
  *
  */
 

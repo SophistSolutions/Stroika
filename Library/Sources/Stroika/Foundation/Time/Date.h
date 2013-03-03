@@ -22,9 +22,8 @@
 /**
  * TODO:
  *
- *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
- *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
- *              args until this is stable and I'm sure what makes sense.
+ *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
+ *              to use separate format print arg or???
  *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
@@ -43,6 +42,14 @@
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
  *
+ *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
+ *              Same format
+ *              That doesn’t use std::locale()
+ *              En.cppreference.com/w/cpp/io/manip/get_time
+ *              istringstream xxx (“2011-feb…”)
+ *              ss.imbue(std::locale() (“de-DE”));
+ *              ss >> std::get_time(&t, “%FT%T%z”)
+
  *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we
  *              should support BOTH here?
  *              Maybe where they differ doesn't matter for this class?
@@ -55,6 +62,10 @@
  *      @todo   It would be highly desirable to allow this date code to represent lareger/smaller dates
  *              (without the julian calendar restriction).
  *              That maybe a longer term issue.
+ *
+ *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
+ *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
+ *              locking to bump refcount?
  */
 
 

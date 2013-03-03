@@ -28,9 +28,8 @@
 /**
  * TODO:
  *
- *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
- *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
- *              args until this is stable and I'm sure what makes sense.
+ *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
+ *              to use separate format print arg or???
  *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
@@ -43,8 +42,17 @@
  *              should alway use UTC? If we use localtime and the timezone changes while we are running
  *              (timezone or DST) - we could get funky results.
  *
+ *
+ *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
+ *              Same format
+ *              That doesn’t use std::locale()
+ *              En.cppreference.com/w/cpp/io/manip/get_time
+ *              istringstream xxx (“2011-feb…”)
+ *              ss.imbue(std::locale() (“de-DE”));
+ *              ss >> std::get_time(&t, “%FT%T%z”)
+ *
  *      @todo   Maybe use wcsftime (buf, NEltsOf (buf), L"%I:%M %p", &temp);   or related for formatting dates/time?
-
+ *
  *      @todo   Consider using strptime/strftime - and possibly use that to replace windows formatting APIs?
  *
  *      @todo   Should we PIN or throw OVERFLOW exception on values/requests which are out of range?
@@ -75,6 +83,9 @@
  *              fractional number of seconds. COULD use LINUX style struct with number of seconds and fixed
  *              point like number of nanoseconds (or some such)
  *
+ *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) –
+ *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
+ *              locking to bump refcount?
  */
 
 
