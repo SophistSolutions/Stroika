@@ -65,7 +65,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Overlaps (T p1Start, T p1End, T p2Start, T p2End)
             {
-                return Overlaps (pair<T, T> (p1Start, p1Start), pair<T, T> (p2Start, p2End));
+                return Overlaps (pair<T, T> (p1Start, p1End), pair<T, T> (p2Start, p2End));
             }
 
 
