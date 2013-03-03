@@ -17,11 +17,12 @@
  * TODO:
  *      @todo   Consider adding OnError callback?
  *
- *      @todo   Fix Result object to return other interesting fields
- *
  *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
  *
  *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.
+ *
+ *      @todo   Fix Result object do a better job summarizing original map of headers
+ *              verus unused headers (now just all raw headers returned).
  */
 
 namespace   Stroika {
@@ -90,8 +91,8 @@ namespace   Stroika {
                      */
                     class Listener::Result : public Device {
                     public:
-                        map<String, String>      fRawHeaders;
-                        Memory::Optional<bool>  fAlive; // else Bye notification, or empty if neither
+                        map<String, String>         fRawHeaders;
+                        Memory::Optional<bool>      fAlive; // else Bye notification, or empty if neither
                     };
 
 
