@@ -28,6 +28,10 @@
 /**
  * TODO:
  *
+ *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
+ *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
+ *              args until this is stable and I'm sure what makes sense.
+ *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
  *
@@ -221,17 +225,23 @@ namespace   Stroika {
                  *  eCurrentLocale
                  *      Note this is the current C++ locale, which may not be the same as the platform default locale.
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
+                 *
+                 *  eCurrentLocale_WithZerosStripped
+                 *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
+                 *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
+                 *      and 04:06:00 PM will become 4:06 PM.
                  */
                 enum class  PrintFormat : uint8_t {
                     eCurrentLocale,
                     eISO8601,
                     eXML,
+                    eCurrentLocale_WithZerosStripped,
 
-                    Define_Start_End_Count (eCurrentLocale, eXML)
+                    Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
 
             public:
-                nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+                nonvirtual  String Format (PrintFormat pf) const;
                 nonvirtual  String Format (const locale& l) const;
 
 #if     qPlatform_Windows

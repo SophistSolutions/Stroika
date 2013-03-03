@@ -308,10 +308,26 @@ String Date::Format (PrintFormat pf) const
                  *  Adjust String API so this code can be made clear!
                  *          -- LGP 2013-03-02
                  */
-                size_t i;
-                while ( (i = tmp.rfind (L"00")) != wstring::npos) {
-                    // any 00 is replaced with a single '0'
-                    tmp = tmp.substr (0, i) + tmp.substr (i + 1);
+                size_t i = 0;
+                while ( (i = tmp.find (L"0", i)) != wstring::npos) {
+                    // any 0N (where n a digit) is replaced with a single '0'
+                    bool isLeadingZero = false;
+                    if (i < tmp.length () and iswdigit (tmp[i + 1])) {
+                        if (i == 0 or not iswdigit (tmp[i - 1])) {
+                            // don't strip leading zeros if its the YEAR - the last part of a X/Y/Z combo...
+                            //
+                            // this test is quite inadequate...
+                            if (i + 2 < tmp.length ()) {
+                                isLeadingZero = true;
+                            }
+                        }
+                    }
+                    if (isLeadingZero) {
+                        tmp = tmp.substr (0, i) + tmp.substr (i + 1);
+                    }
+                    else {
+                        i = i + 1;
+                    }
                 }
                 return tmp;
             }

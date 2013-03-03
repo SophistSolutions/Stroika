@@ -24,6 +24,10 @@
 /*
  * TODO:
  *
+ *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
+ *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
+ *              args until this is stable and I'm sure what makes sense.
+ *
  *      @todo   Consider getting rid of empty () method and empty state. Instead - in DateTime code -
  *               use Optional<>
  *
@@ -156,7 +160,7 @@ namespace   Stroika {
                 };
 
             public:
-                nonvirtual  String  Format (PrintFormat pf = PrintFormat::eCurrentLocale_WithZerosStripped) const;
+                nonvirtual  String  Format (PrintFormat pf) const;
 
             public:
                 nonvirtual  String  Format (const locale& l) const;

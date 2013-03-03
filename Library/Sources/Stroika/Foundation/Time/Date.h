@@ -22,6 +22,10 @@
 /**
  * TODO:
  *
+ *      @todo   Used to have Format take PrintFormat::eCurrentLocale_WithZerosStripped default argument
+ *              but I'm not sure eCurrentLocale_WithZerosStripped is a good idea, and so no default
+ *              args until this is stable and I'm sure what makes sense.
+ *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
  *
@@ -251,7 +255,7 @@ namespace   Stroika {
                     Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
                 };
             public:
-                nonvirtual  String Format (PrintFormat pf = PrintFormat::eCurrentLocale) const;
+                nonvirtual  String Format (PrintFormat pf) const;
 
             public:
                 nonvirtual  String Format (const locale& l) const;

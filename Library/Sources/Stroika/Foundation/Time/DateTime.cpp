@@ -368,15 +368,14 @@ String DateTime::Format (PrintFormat pf) const
     switch (pf) {
         case    PrintFormat::eCurrentLocale: {
                 return Format (locale ());
-#if 0
-#if     qPlatform_Windows
-                return Format (LOCALE_USER_DEFAULT);
-#else
-                return Format (locale ());
-#endif
-#endif
             }
             break;
+        case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
+                wstring  tmp =    Format (locale ()).As<wstring> ();
+                /// tricky to combine other agorithms...
+                ///&&&
+                return tmp;
+            }
         case    PrintFormat::eISO8601:
         case    PrintFormat::eXML: {
                 String  r       =   fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
@@ -428,8 +427,8 @@ String DateTime::Format (const locale& l) const
     wostringstream oss;
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
-    wchar_t pattern[] = L"%x %X";
-    tmput.put (oss, oss, ' ', &when, StartOfArray (pattern), StartOfArray (pattern) + wcslen (pattern));
+    const wchar_t kPattern[] = L"%x %X";
+    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + wcslen (kPattern));
     return oss.str ();
 }
 

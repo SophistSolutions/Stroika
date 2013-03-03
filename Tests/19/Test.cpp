@@ -55,8 +55,8 @@ namespace   {
             VerifyTestResult (t < t2);
             VerifyTestResult (t.GetAsSecondsCount () == 0);
             VerifyTestResult (not t2.empty ());
-            VerifyTestResult (t.Format ().empty ());
-            VerifyTestResult (not t2.Format ().empty ());
+            VerifyTestResult (t.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
+            VerifyTestResult (not t2.Format (TimeOfDay::PrintFormat::eCurrentLocale).empty ());
             VerifyTestResult (t2.GetHours () == 0);
             VerifyTestResult (t2.GetMinutes () == 0);
             VerifyTestResult (t2.GetSeconds () == 2);
@@ -193,6 +193,19 @@ namespace   {
             VerifyTestResult (Date::kMin <= Date::kMax);
             VerifyTestResult (not (Date::kMin > Date::kMax));
             VerifyTestResult (not (Date::kMin >= Date::kMax));
+        }
+        {
+            // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
+            locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
+            locale::global (prevLocale);
+        }
+        {
+            Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903"  or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/03");
+            VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
     }
 

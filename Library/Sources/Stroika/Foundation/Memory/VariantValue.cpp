@@ -279,12 +279,12 @@ wstring VariantValue::As () const
         case    Type::eDate: {
                 auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format ().As<wstring> ();
+                return v->fVal.Format (Date::PrintFormat::eISO8601).As<wstring> ();
             }
         case    Type::eDateTime: {
                 auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format ().As<wstring> ();
+                return v->fVal.Format (DateTime::PrintFormat::eISO8601).As<wstring> ();
             }
         case    Type::eString: {
                 auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
