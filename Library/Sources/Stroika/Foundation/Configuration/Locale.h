@@ -25,6 +25,10 @@
  *
  *      @todo   Enhance FindLocaleName() to make second param - optional (territory)
  *
+ *      @todo   Consider the idea of a thread-local current locale (locale()). This would be handy
+ *              for server applications like HealthFrameWorks Server which might get a locale
+ *              from the client connection, for use in generating reports etc.
+ *
  *      @todo   rewrite GetAvailableLocales and FindLocaleName() to look at source code for
  *              locale -a, and see what it does on posix systems, and to use EnumSystemLocales()
  *              and mapping to locale names, on windows platform (or better strategy if I can find it).
