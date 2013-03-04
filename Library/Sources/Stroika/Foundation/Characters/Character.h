@@ -120,8 +120,20 @@ namespace   Stroika {
                 wchar_t     fCharacterCode_;
             };
 
+
             template<>
             wchar_t Character::As () const;
+
+
+            /// NOT GOOD IDEA/NOT GOOD PRACTICE - BUT AT LEAST MODULARIZE THE BAD PRACTICE
+            /// SO I CAN SEARCH FOR IT AND FIX IT WHEN I HAVE A GOOD IDEA HOW.
+            //
+            // ASSUME sizeof(wchar_t) same as sizeof (Character) everwhere so the cast between
+            // them is safe
+            inline  const wchar_t*  CVT_CHARACTER_2_wchar_t (const Character* c)
+            {
+                return reinterpret_cast<const wchar_t*> (c);
+            }
 
 
             bool    operator== (Character lhs, Character rhs);
@@ -130,6 +142,8 @@ namespace   Stroika {
             bool    operator> (Character lhs, Character rhs);
             bool    operator<= (Character lhs, Character rhs);
             bool    operator< (Character lhs, Character rhs);
+
+
         }
     }
 }
