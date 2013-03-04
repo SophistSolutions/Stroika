@@ -8,12 +8,15 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
+#include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -215,6 +218,72 @@ namespace   {
 }
 
 
+
+namespace {
+    void    ParseRegressionTest_1_ ()
+    {
+        {
+            const char  kJSONExample_[] =
+                "{"
+                "    \"Automated Backups\" : {"
+                "        \"From\" : {"
+                "            \"CurrentHRWildcard\" : true,"
+                "            \"PrintName\" : \"{Current HR}\""
+                "        },"
+                "        \"LastRanAt\" : {"
+                "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
+                "        },"
+                "        \"Operation\" : 0,"
+                "        \"Output\" : {"
+                "            \"AttachmentPolicy\" : 2,"
+                "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
+                "            \"MaxFiles\" : 0,"
+                "            \"NamePolicy\" : 1,"
+                "            \"Password\" : \"\""
+                "        },"
+                "        \"PolicyName\" : \"Automated Backups\","
+                "        \"Schedule\" : 2,"
+                "        \"To\" : {"
+                "            \"DefaultBackupDirectory\" : true,"
+                "            \"PrintName\" : \"{Default Backup Directory}\""
+                "        }"
+                "    }"
+                "}"
+                ;
+            Memory::VariantValue v = DataExchangeFormat::JSON::Reader (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (StartOfArray (kJSONExample_)), reinterpret_cast<const Byte*> (StartOfArray (kJSONExample_)) + strlen (kJSONExample_)));
+            map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
+            VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
+            map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
+            outputMap[L"MaxFiles"] = 123456789;
+            mv[L"Output"] = outputMap;
+            v = mv;
+
+            string  jsonExampleWithUpdatedMaxFilesReference;
+            {
+                stringstream    tmpStrm;
+                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                jsonExampleWithUpdatedMaxFilesReference = tmpStrm.str ();
+            }
+            {
+                stringstream    tmpStrm;
+                tmpStrm.imbue (locale ("C"));
+                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.str ());
+            }
+            {
+                stringstream    tmpStrm;
+                tmpStrm.imbue (Configuration::FindNamedLocale (L"en", L"us"));
+                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+#if 0
+// to be fixed - issue is interally JSON print uses locale!!!
+                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.str ());
+#endif
+            }
+
+        }
+    }
+}
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -223,6 +292,7 @@ namespace   {
         DoRegressionTests_Reader_ ();
         CheckCanReadFromSmallBadSrc_ ();
         CheckStringQuoting_ ();
+        ParseRegressionTest_1_ ();
     }
 }
 
