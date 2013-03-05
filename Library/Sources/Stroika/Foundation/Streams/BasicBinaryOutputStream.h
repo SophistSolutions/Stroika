@@ -18,8 +18,8 @@
 
 /*
  *  \file
- *      @todo   This would be a good candidate class to rewrite using new ChunkedArray class (when I implement it)
- *              based on Led chunked arrays).
+ *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
+ *              class (when I implement it) based on Led chunked arrays).
  *
  */
 
