@@ -14,6 +14,7 @@ SubDirs	=	\
 
 Objs	=	\
 	$(ObjDir)BasicBinaryInputStream.o\
+	$(ObjDir)BasicBinaryOutputStream.o\
 	$(ObjDir)BinaryStream.o\
 	$(ObjDir)BinaryInputStream.o\
 	$(ObjDir)BinaryInputOutputStream.o\
