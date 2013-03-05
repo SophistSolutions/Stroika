@@ -39,6 +39,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
              *
              */
@@ -50,6 +51,7 @@ namespace   Stroika {
             private:
                 shared_ptr<_IRep> mk_ (const BinaryInputStream& src);
             };
+
 
         }
     }
