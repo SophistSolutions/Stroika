@@ -61,7 +61,7 @@ Again:
 #else
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
-        string tmp = WideStringToUTF8 (wstring (sc, ec));
+        string tmp = Characters::WideStringToUTF8 (wstring (sc, ec));
         _fSource.Write (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp)));
 #endif
     }
