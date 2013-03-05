@@ -5,13 +5,13 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
+
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
-
-
 
 
 
@@ -50,12 +50,50 @@ namespace   {
 
 
 
+namespace   {
+    namespace   BasicBinaryOutputStream_ {
+
+        void    TestBasicConstruction_ ()
+        {
+            {
+                BasicBinaryOutputStream  s;
+                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s.IsSeekable ());
+            }
+            {
+                BasicBinaryOutputStream  s;
+                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s.IsSeekable ());
+
+                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
+                s.Write (StartOfArray (kData_), EndOfArray (kData_));
+#if 0
+                Memory::BLOB    b = s.As<Memory::BLOB> ();
+                VerifyTestResult (b.size () == sizeof (kData_));
+                VerifyTestResult (b == Memory::BLOB (StartOfArray (kData_), EndOfArray (kData_));
+#endif
+            }
+        }
+
+
+                          void    Tests_ ()
+        {
+            TestBasicConstruction_ ();
+        }
+    }
+}
+
+
+
+
+
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         BasicBinaryInputStream_::Tests_ ();
+        BasicBinaryOutputStream_::Tests_ ();
     }
 }
 

@@ -41,6 +41,7 @@ public:
             if (roomLeft < roomRequired) {
                 size_t  curOffset = fCursor_ - fData_.begin ();
                 Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft);
+                fData_.resize (curOffset + roomRequired);
                 fCursor_ = fData_.begin () + curOffset;
                 Assert (fCursor_ < fData_.end ());
             }
