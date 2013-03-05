@@ -3,7 +3,9 @@
  */
 #include    "../StroikaPreComp.h"
 
+#if     qCompilerAndStdLib_Supports_string_conversions
 #include    <codecvt>
+#endif
 
 #include    "../Characters/CodePage.h"
 #include    "../Containers/Common.h"
@@ -34,6 +36,7 @@ public:
 
 protected:
     virtual void    Write (const Character* start, const Character* end)  override {
+#if    qCompilerAndStdLib_Supports_string_conversions
         codecvt_utf8<wchar_t>   converter;
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
@@ -57,6 +60,9 @@ Again:
             // not sure waht to throw!
             Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Error converting characters codepage"));
         }
+#else
+        AssertNotImplemented ();
+#endif
     }
 
 protected:
