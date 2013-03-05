@@ -16,8 +16,6 @@
 #include    "TextOutputStreamBinaryAdapter.h"
 
 
-
-
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
@@ -61,7 +59,10 @@ Again:
             Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Error converting characters codepage"));
         }
 #else
-        AssertNotImplemented ();
+        const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
+        const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
+        string tmp = WideStringToUTF8 (wstring (sc, ec));
+        _fSource.Write (reinterpret_cast<const Byte*> (Containers::Start (tmp)), reinterpret_cast<const Byte*> (Containers::End (tmp)));
 #endif
     }
 
