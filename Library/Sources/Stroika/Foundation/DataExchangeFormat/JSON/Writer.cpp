@@ -60,6 +60,13 @@ namespace   {
     {
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%f", v);
+        Assert (::wcslen (buf) >= 1);
+        // trim trailing 0
+        for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
+            if (i >= 0 and buf[i - 1] != '.') {
+                buf[i] = '\0';
+            }
+        }
         out.Write (buf);
     }
     void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
