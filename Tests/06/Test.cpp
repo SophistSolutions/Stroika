@@ -279,11 +279,7 @@ namespace   {
 }
 
 
-#if qOnlyOneMain
-extern  int Test_Tallys ()
-#else
-int main (int argc, const char* argv[])
-#endif
+int     main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
