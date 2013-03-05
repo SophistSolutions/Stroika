@@ -25,6 +25,7 @@ Objs	=	\
 	$(ObjDir)TextStream.o\
 	$(ObjDir)TextInputStream.o\
 	$(ObjDir)TextInputStreamBinaryAdapter.o\
+	$(ObjDir)TextOutputStreamBinaryAdapter.o\
 	$(ObjDir)TextOutputStream.o\
 
 all:	$(Objs)  $(SubDirs)
