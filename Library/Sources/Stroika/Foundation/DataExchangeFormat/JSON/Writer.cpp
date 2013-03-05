@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "../../Streams/TextOutputStreamBinaryAdapter.h"
 
 #include    "Writer.h"
@@ -159,4 +160,9 @@ namespace   {
 void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
 {
     PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+}
+
+void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
+{
+    PrettyPrint (v, Streams::iostream::BinaryOutputStreamFromOStreamAdapter (out));
 }

@@ -40,6 +40,8 @@ namespace   Stroika {
                  * Note that PrettyPrint () writes in UTF-8 format to the output stream.
                  */
                 void    PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
+                void    PrettyPrint (const Memory::VariantValue& v, ostream& out);
+
 
             }
         }
