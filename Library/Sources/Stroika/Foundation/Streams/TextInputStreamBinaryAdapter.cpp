@@ -24,7 +24,8 @@ using   namespace   Stroika::Foundation::Streams;
 class   TextInputStreamBinaryAdapter::IRep_ : public TextInputStream::_IRep, public Seekable::_IRep {
 public:
     IRep_ (const BinaryInputStream& src)
-        : fSource_ (src)
+        : fCriticalSection_ ()
+        , fSource_ (src)
         , fTmpHackTextRemaining_ ()
         , fOffset_ (0) {
     }
@@ -33,6 +34,7 @@ protected:
     virtual size_t    _Read (Character* intoStart, Character* intoEnd) override {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
 #if 1
         if (fTmpHackTextRemaining_.empty ()) {
             // only happens once
@@ -66,10 +68,12 @@ protected:
     }
 
     virtual SeekOffsetType  GetOffset () const override {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         return fOffset_;
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
@@ -114,9 +118,10 @@ protected:
     }
 
 private:
-    BinaryInputStream   fSource_;
-    String              fTmpHackTextRemaining_;
-    size_t              fOffset_;
+    mutable recursive_mutex     fCriticalSection_;
+    BinaryInputStream           fSource_;
+    String                      fTmpHackTextRemaining_;
+    size_t                      fOffset_;
 };
 
 

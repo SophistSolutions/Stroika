@@ -24,7 +24,8 @@ using   namespace   Stroika::Foundation::Streams;
 class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_IRep_ : public TextOutputStream::_IRep {
 public:
     UnSeekable_UTF8_IRep_ (const BinaryOutputStream& src, bool useBOM)
-        : _fSource (src) {
+        : _fCriticalSection ()
+        , _fSource (src) {
         const   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             _fSource.Write (StartOfArray (kBOM), EndOfArray (kBOM));
@@ -44,8 +45,11 @@ protected:
         //char  outBuf[10*1024];
         char    outBuf[10]; // to test
         char*   p   =   StartOfArray (outBuf);
+        lock_guard<recursive_mutex>  critSec (_fCriticalSection);
 Again:
         codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, StartOfArray (outBuf), EndOfArray (outBuf), p);
+        Assert (StartOfArray (outBuf) <= p and p <= EndOfArray (outBuf));
+        _fSource.Write (reinterpret_cast<const Byte*> (StartOfArray (outBuf)), reinterpret_cast<const Byte*> (p));
         if (r == codecvt_utf8<wchar_t>::partial) {
             goto Again;
         }
@@ -56,7 +60,8 @@ Again:
     }
 
 protected:
-    BinaryOutputStream  _fSource;
+    mutable recursive_mutex     _fCriticalSection;
+    BinaryOutputStream          _fSource;
 };
 
 
@@ -76,7 +81,7 @@ protected:
     }
 
 protected:
-    BinaryOutputStream  _fSource;
+    BinaryOutputStream          _fSource;
 };
 
 

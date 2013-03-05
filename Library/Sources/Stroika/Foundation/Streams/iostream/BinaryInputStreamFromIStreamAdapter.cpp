@@ -3,6 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "BinaryInputStreamFromIStreamAdapter.h"
@@ -21,7 +23,8 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
     IRep_ (istream& originalStream)
-        : fOriginalStream_ (originalStream) {
+        : fCriticalSection_ ()
+        , fOriginalStream_ (originalStream) {
     }
 
 protected:
@@ -30,6 +33,7 @@ protected:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
 
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         if (fOriginalStream_.eof ()) {
             return 0;
         }
@@ -46,10 +50,12 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override {
         // instead of tellg () - avoids issue with EOF where fail bit set???
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekg (offset, ios::beg);
@@ -65,7 +71,8 @@ protected:
     }
 
 private:
-    istream&    fOriginalStream_;
+    mutable recursive_mutex fCriticalSection_;
+    istream&                fOriginalStream_;
 };
 
 
