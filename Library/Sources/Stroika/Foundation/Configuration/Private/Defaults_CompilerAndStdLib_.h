@@ -799,27 +799,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_string_conversions
-@DESCRIPTION:   22.3.3.2.2  string conversions  N
-*/
-#ifndef qCompilerAndStdLib_Supports_string_conversions
-
-#if     defined (__GNUC__)
-// not sure what version this will be added
-#define qCompilerAndStdLib_Supports_string_conversions              ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
-#else
-#define qCompilerAndStdLib_Supports_string_conversions              1
-#endif
-
-#endif
-
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */

@@ -13,10 +13,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     qCompilerAndStdLib_Supports_string_conversions
 #include    <codecvt>
-#endif
-
 #include    <string>
 #include    <vector>
 
