@@ -15,7 +15,15 @@
 /**
  *  \file
  *
+ *  TODO:
+ *      @todo   Consider if Seek () past end of stream on writable stream should be
+ *              allowed. Often - like in UNIX - this works - and you can then write there,
+ *              and this creates a hole in teh file read back as zeros.
  *
+ *              Its easier to DISALLOW this now, and then lift the restriction, and later allow it,
+ *              so since I'm unsure, disallow for now. This can always be simulated with an extra
+ *              zero write, and it assuming no seek past EOF makes implementations simpler, and
+ *              definition more consistent (read).
  */
 namespace   Stroika {
     namespace   Foundation {
@@ -111,8 +119,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 * The new position, measured in bytes, is obtained by adding offset bytes to the position specified by whence.
-                 * Seek () returns the new resulting position.
+                 * The new position, measured in bytes, is obtained by adding offset bytes to the position
+                 *  specified by whence.
+                 *
+                 *  Seek () past the end of stream is NOT legal (may reconsider).
+                 *
+                 *  Seek () returns the new resulting position.
                  */
                 nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
                 nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;

@@ -35,6 +35,10 @@ namespace   Stroika {
              *      o   BinaryInputStream and BinaryOutputStream CAN be naturally mixed togehter to make
              *          an input/output stream. Simlarly, they can both be mixed together with Seekable.
              *          But NONE of the Binary*Stream classes may be mixed together with Text*Stream classes.
+             *
+             *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
+             *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
+             *  instead of inserting.
              */
             class   BinaryOutputStream : public BinaryStream {
             protected:

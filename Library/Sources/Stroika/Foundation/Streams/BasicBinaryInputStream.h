@@ -31,7 +31,7 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  BasicBinaryInputStream takes a block of binary data and exposes it as a
+             *  \brief  Simplest to use BinaryInputStream; BasicBinaryInputStream takes a block of binary data and exposes it as a
              *          BinaryInputStream (copies)
              *
              *  BasicBinaryInputStream takes a block of binary data and exposes it as a BinaryInputStream.
