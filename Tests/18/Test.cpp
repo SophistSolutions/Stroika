@@ -67,16 +67,14 @@ namespace   {
 
                 const Byte  kData_[] = { 3, 53, 43, 23, 3 };
                 s.Write (StartOfArray (kData_), EndOfArray (kData_));
-#if 0
                 Memory::BLOB    b = s.As<Memory::BLOB> ();
                 VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (StartOfArray (kData_), EndOfArray (kData_));
-#endif
+                VerifyTestResult (b == Memory::BLOB (StartOfArray (kData_), EndOfArray (kData_)));
             }
         }
 
 
-                          void    Tests_ ()
+        void    Tests_ ()
         {
             TestBasicConstruction_ ();
         }

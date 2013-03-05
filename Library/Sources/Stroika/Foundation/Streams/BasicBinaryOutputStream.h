@@ -10,7 +10,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
-#include    "../Memory/SmallStackBuffer.h"
+#include    "../Memory/BLOB.h"
 
 #include    "BinaryOutputStream.h"
 #include    "Seekable.h"
@@ -46,7 +46,23 @@ namespace   Stroika {
                 class   IRep_;
             public:
                 BasicBinaryOutputStream ();
+
+            public:
+                /**
+                 *  Convert the current contents of this BasicBinaryOutputStream into one of the "T" representations.
+                 *  T can be one of:
+                 *      Memory::BLOB
+                 *      vector<Byte>
+                 */
+                template    <typename   T>
+                nonvirtual  T   As () const;
             };
+
+
+            template    <>
+            Memory::BLOB   BasicBinaryOutputStream::As () const;
+            template    <>
+            vector<Byte>   BasicBinaryOutputStream::As () const;
 
 
         }

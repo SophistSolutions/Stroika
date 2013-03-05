@@ -99,6 +99,16 @@ public:
         return GetOffset ();
     }
 
+    Memory::BLOB   AsBLOB () const {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        return Memory::BLOB (fData_);
+    }
+
+    vector<Byte>   AsVector () const {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        return fData_;
+    }
+
 private:
     mutable recursive_mutex     fCriticalSection_;
     vector<Byte>                fData_;
@@ -118,3 +128,18 @@ BasicBinaryOutputStream::BasicBinaryOutputStream ()
     : BinaryOutputStream (shared_ptr<_IRep> (new IRep_ ()))
 {
 }
+
+template    <>
+Memory::BLOB   BasicBinaryOutputStream::As () const
+{
+    const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
+    return rep.AsBLOB ();
+}
+
+template    <>
+vector<Byte>   BasicBinaryOutputStream::As () const
+{
+    const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
+    return rep.AsVector ();
+}
+

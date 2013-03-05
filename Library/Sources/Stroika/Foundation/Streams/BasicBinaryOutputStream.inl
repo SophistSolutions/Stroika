@@ -15,6 +15,20 @@ namespace   Stroika {
         namespace   Streams {
 
 
+            /*
+             ********************************************************************************
+             ***************************** Implementation Details ***************************
+             ********************************************************************************
+             */
+#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+            template    <typename   T>
+            T   BasicBinaryOutputStream::As () const
+            {
+                static_assert (false, "Only specifically specialized variants are supported");
+            }
+#endif
+
+
         }
     }
 }
