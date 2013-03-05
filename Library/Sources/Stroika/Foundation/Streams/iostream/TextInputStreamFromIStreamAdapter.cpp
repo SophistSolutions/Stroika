@@ -29,7 +29,7 @@ protected:
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
 
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         if (fOriginalStream_.eof ()) {
             return 0;
         }
@@ -46,12 +46,12 @@ protected:
 
     virtual SeekOffsetType  GetOffset () const override {
         // instead of tellg () - avoids issue with EOF where fail bit set???
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
 
     virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart:
                 fOriginalStream_.seekg (offset, ios::beg);
@@ -67,8 +67,8 @@ protected:
     }
 
 private:
-    mutable recursive_mutex fCriticalSection_;
-    wistream&               fOriginalStream_;
+    mutable mutex   fCriticalSection_;
+    wistream&       fOriginalStream_;
 };
 
 
