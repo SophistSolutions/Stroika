@@ -28,6 +28,7 @@ namespace   Stroika {
         namespace   Streams {
             namespace   iostream {
 
+
                 /**
                  *
                  */
@@ -37,6 +38,7 @@ namespace   Stroika {
                 public:
                     TextInputStreamFromIStreamAdapter (wistream& originalStream);
                 };
+
 
             }
         }
