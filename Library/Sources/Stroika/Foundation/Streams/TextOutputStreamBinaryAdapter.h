@@ -23,13 +23,13 @@
  *      @todo   Extend format with eUTF16... and eUTF32, and note that wWCharT could be same as eUTF16/32 depending
  *              on system defaults.
  *
- *		@todo	Seekable case NYI
+ *      @todo   Seekable case NYI
  *
  *      @todo   Seekable. Should this be seekable? Take CTOR param indicating if seekable? Maybe also conditional
  *              on if arg is seekable? (documentd, but unsure)
  *
- *					Clarify behavior if src (CTOR ARG) stream is or is not seekable. And also what about if src is not
- *					seeked to beginning for BOM? Clarify exact semantics!!!
+ *                  Clarify behavior if src (CTOR ARG) stream is or is not seekable. And also what about if src is not
+ *                  seeked to beginning for BOM? Clarify exact semantics!!!
  *
  *      @todo   Thread/Locking...
  *

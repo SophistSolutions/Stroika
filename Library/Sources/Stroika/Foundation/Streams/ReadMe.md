@@ -6,8 +6,6 @@ TODO:
 		(NOTE - if/when we implemented Sequence_ChunkedArray, that would be a GREAT implemenation backend for
 		BasicBinaryOutputStream and BasicBinaryInputOutputStream)
 
-	o	Add TextOutputStreamBinaryAdapter
-	
 	o	Must add BasicTextInputStream and BasicTextOutputStream (memory-based). MAYBE. Probably helpful, though could just
 		use TextInputStreamBinaryAdapator and TextOutputStreamBinaryAdapter. MAYBE even make that the first
 		draft implemeantion (using those two together)

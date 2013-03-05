@@ -29,6 +29,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
              *  \brief  BasicBinaryInputStream takes a block of binary data and exposes it as a
              *          BinaryInputStream (copies)
@@ -58,6 +59,7 @@ namespace   Stroika {
 #endif
                 BasicBinaryInputStream (const Byte* start, const Byte* end);
             };
+
 
         }
     }
