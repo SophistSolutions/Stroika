@@ -4,14 +4,21 @@
 //  TEST    Foundation::Streams
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    <sstream>
+
 #include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
+using   namespace   Stroika::Foundation::Streams::iostream;
 
 
 
@@ -86,12 +93,39 @@ namespace   {
 
 
 
+namespace   {
+    namespace   BinaryOutputStreamFromOStreamAdapter_ {
+
+        void    T1_ ()
+        {
+            {
+                stringstream s;
+                BinaryOutputStreamFromOStreamAdapter  so (s);
+                const char kData_[] = "ddasdf3294234";
+                so.Write (reinterpret_cast<const Byte*> (StartOfArray (kData_)), reinterpret_cast<const Byte*> (StartOfArray (kData_)) + strlen (kData_));
+                VerifyTestResult (s.str () == kData_);
+            }
+        }
+
+        void    Tests_ ()
+        {
+            T1_ ();
+        }
+    }
+}
+
+
+
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         BasicBinaryInputStream_::Tests_ ();
         BasicBinaryOutputStream_::Tests_ ();
+        BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
     }
 }
 

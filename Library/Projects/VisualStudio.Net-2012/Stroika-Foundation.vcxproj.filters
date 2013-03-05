@@ -468,6 +468,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.cpp">
       <Filter>Sources\Streams</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.cpp">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1007,6 +1010,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\BinaryOutputStreamFromOStreamAdapter.h">
+      <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
