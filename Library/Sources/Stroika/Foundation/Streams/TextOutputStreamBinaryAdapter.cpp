@@ -3,7 +3,9 @@
  */
 #include    "../StroikaPreComp.h"
 
+#if     qCompilerAndStdLib_Supports_string_conversions
 #include    <codecvt>
+#endif
 
 #include    "../Characters/CodePage.h"
 #include    "../Containers/Common.h"
@@ -34,16 +36,16 @@ public:
 
 protected:
     virtual void    Write (const Character* start, const Character* end)  override {
+#if     qCompilerAndStdLib_Supports_string_conversions
         codecvt_utf8<wchar_t>   converter;
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);
         const wchar_t*  pc  =   sc;
 
         // convert characters to bytes using codepage, and then
-        mbstate_t mb = mbstate_t(); // docs say this is OK, but on windows maybe not???
+        mbstate_t mb = mbstate_t(); // docs say this is OK, but on windows maybe not??? - may need to be zero-inited for windoze
 
-        //char  outBuf[10*1024];
-        char    outBuf[10]; // to test
+        char  outBuf[10 * 1024];
         char*   p   =   StartOfArray (outBuf);
         lock_guard<recursive_mutex>  critSec (_fCriticalSection);
 Again:
@@ -57,6 +59,9 @@ Again:
             // not sure waht to throw!
             Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Error converting characters codepage"));
         }
+#else
+        AssertNotImplemented ();
+#endif
     }
 
 protected:
