@@ -3,13 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    <sstream>
+#include    "../../Streams/TextOutputStreamBinaryAdapter.h"
 
 #include    "Writer.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::Streams;
 
 
 /*
@@ -27,94 +28,98 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
  ********************************************************************************
  */
 namespace   {
-    void    Indent_ (ostream& out, int indentLevel)
+    void    Indent_ (const TextOutputStream& out, int indentLevel)
     {
         for (int i = 0; i < indentLevel; ++i) {
-            out << "    ";
+            out.Write (L"    ");
         }
     }
 }
 namespace   {
-    void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel);
-    void    PrettyPrint_Null_ (ostream& out)
+    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel);
+    void    PrettyPrint_Null_ (const TextOutputStream& out)
     {
-        out << "null";
+        out.Write (L"null");
     }
-    void    PrettyPrint_ (bool v, ostream& out)
+    void    PrettyPrint_ (bool v, const TextOutputStream& out)
     {
         if (v) {
-            out << "true";
+            out.Write (L"true");
         }
         else {
-            out << "false";
+            out.Write (L"false");
         }
     }
-    void    PrettyPrint_ (int v, ostream& out)
+    void    PrettyPrint_ (int v, const TextOutputStream& out)
     {
-        out << v;
+        wchar_t buf[1024];
+        ::swprintf (buf, NEltsOf (buf), L"%d", v);
+        out.Write (buf);
     }
-    void    PrettyPrint_ (float v, ostream& out)
+    void    PrettyPrint_ (float v, const TextOutputStream& out)
     {
-        out << v;
+        wchar_t buf[1024];
+        ::swprintf (buf, NEltsOf (buf), L"%f", v);
+        out.Write (buf);
     }
-    void    PrettyPrint_ (const wstring& v, ostream& out)
+    void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
     {
-        out << "\"";
-        string  tmp =   Characters::WideStringToUTF8 (v);
-        for (auto i = tmp.begin (); i != tmp.end (); ++i) {
+        out.Write (L"\"");
+        for (auto i = v.begin (); i != v.end (); ++i) {
             switch (*i) {
                 case '\"':
-                    out << "\\\"";
+                    out.Write (L"\\\"");
                     break;
                 case '\\':
-                    out << "\\\\";
+                    out.Write (L"\\\\");
                     break;
                 case '\n':
-                    out << "\\n";
+                    out.Write (L"\\n");
                     break;
                 case '\r':
-                    out << "\\r";
+                    out.Write (L"\\r");
                     break;
 // unclear if we need to quote other chars such as \f\t\b\ but probably not...
                 default:
-                    out << *i;
+                    wchar_t c = *i;
+                    out.Write (&c, &c + 1);
                     break;
             }
         }
-        out << "\"";
+        out.Write (L"\"");
     }
-    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, ostream& out, int indentLevel)
+    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
-        out << "[" << endl;
+        out.Write (L"[\n");
         for (auto i = v.begin (); i != v.end (); ++i) {
             Indent_ (out, indentLevel + 1);
             PrettyPrint_ (*i, out, indentLevel + 1);
             if (i + 1 != v.end ()) {
-                out << ",";
+                out.Write (L",");
             }
-            out << endl;
+            out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out << "]";
+        out.Write (L"]");
     }
-    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, ostream& out, int indentLevel)
+    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
-        out << "{" << endl;
+        out.Write (L"{\n");
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel + 1);
             PrettyPrint_ (i->first, out, indentLevel + 1);
-            out << " : ";
+            out.Write (L" : ");
             PrettyPrint_ (i->second, out, indentLevel + 1);
             ++i;
             if (i != v.end ()) {
-                out << ",";
+                out.Write (L",");
             }
-            out << endl;
+            out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out << "}";
+        out.Write (L"}");
     }
-    void    PrettyPrint_ (const Memory::VariantValue& v, ostream& out, int indentLevel)
+    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
         switch (v.GetType ()) {
             case    Memory::VariantValue::Type::eNull:
@@ -144,7 +149,7 @@ namespace   {
     }
 }
 
-void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
+void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
 {
-    PrettyPrint_ (v, out, 0);
+    PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
 }

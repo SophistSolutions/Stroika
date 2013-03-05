@@ -16,13 +16,22 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   TextOutputStream::_IRep
+
+            /*
+             ********************************************************************************
+             **************************** TextOutputStream::_IRep ***************************
+             ********************************************************************************
+             */
             inline  TextOutputStream::_IRep::_IRep ()
             {
             }
 
 
-            //  class   TextOutputStream
+            /*
+             ********************************************************************************
+             *********************************** TextOutputStream ***************************
+             ********************************************************************************
+             */
             inline  TextOutputStream::TextOutputStream (const _SharedIRep& rep)
                 : TextStream (rep)
             {
@@ -45,6 +54,11 @@ namespace   Stroika {
                 static_assert (sizeof (wchar_t) == sizeof (Character), "This cast assumes the types are the same");
                 Write (reinterpret_cast<const Character*> (start), reinterpret_cast<const Character*> (end));
             }
+            inline  void    TextOutputStream::Write (const wchar_t* cStr) const
+            {
+                return Write (cStr, cStr + ::wcslen (cStr));
+            }
+
 
         }
     }

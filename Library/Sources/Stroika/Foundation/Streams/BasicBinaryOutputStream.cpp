@@ -109,6 +109,11 @@ public:
         return fData_;
     }
 
+    string   AsString () const {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
+    }
+
 private:
     mutable recursive_mutex     fCriticalSection_;
     vector<Byte>                fData_;
@@ -141,5 +146,12 @@ vector<Byte>   BasicBinaryOutputStream::As () const
 {
     const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsVector ();
+}
+
+template    <>
+string   BasicBinaryOutputStream::As () const
+{
+    const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
+    return rep.AsString ();
 }
 

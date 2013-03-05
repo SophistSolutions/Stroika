@@ -6,19 +6,13 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <ostream>
-
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/VariantValue.h"
+#include    "../../Streams/BinaryOutputStream.h"
 
 
 /*
  * TODO:
- *      o   MUST RE-IMPLEMENT USING STROIKA TEXT_STREAM OUTPUT!!! BUT THATS NOT IMPLEMENTED/SHAKEN OUT ENUF!!! and needs tie-in to
- *          stdio streams so can work effectively...
- *
- *      o   When we have BINPARYOUTPUTSTREAM_IOSTREAM - then we can use that to impem,ent the ostrean& overload and just use
- *          regular BINARYOUTPUTSTREAM version for basic impl.
  */
 
 
@@ -45,7 +39,7 @@ namespace   Stroika {
                  *
                  * Note that PrettyPrint () writes in UTF-8 format to the output stream.
                  */
-                void    PrettyPrint (const Memory::VariantValue& v, ostream& out);
+                void    PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
 
             }
         }

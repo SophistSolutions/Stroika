@@ -14,6 +14,7 @@
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
@@ -44,15 +45,15 @@ using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
 namespace   {
     void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
     {
-        stringstream    out;
+        Streams::BasicBinaryOutputStream    out;
         DataExchangeFormat::JSON::PrettyPrint (v, out);
-        string x = out.str ();
+        string x = out.As<string> ();
         for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
             if (x[i] != expected[i]) {
                 VerifyTestResult (false);
             }
         }
-        VerifyTestResult (out.str () == expected);
+        VerifyTestResult (out.As<string> () == expected);
     }
 
     void    DoRegressionTests_Writer_ ()
@@ -192,9 +193,9 @@ namespace   {
     {
         string  encodedRep;
         {
-            stringstream    out;
+            Streams::BasicBinaryOutputStream    out;
             DataExchangeFormat::JSON::PrettyPrint (v, out);
-            encodedRep = out.str ();
+            encodedRep = out.As<string> ();
         }
         {
             stringstream    tmp;
@@ -260,24 +261,25 @@ namespace {
 
             string  jsonExampleWithUpdatedMaxFilesReference;
             {
-                stringstream    tmpStrm;
+                Streams::BasicBinaryOutputStream    tmpStrm;
                 DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                jsonExampleWithUpdatedMaxFilesReference = tmpStrm.str ();
+                jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
             }
             {
-                stringstream    tmpStrm;
-                tmpStrm.imbue (locale ("C"));
+                // Verify change of locale has no effect on results
+                locale  prevLocale  =   locale::global (locale ("C"));
+                Streams::BasicBinaryOutputStream    tmpStrm;
                 DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.str ());
+                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                locale::global (prevLocale);
             }
             {
-                stringstream    tmpStrm;
-                tmpStrm.imbue (Configuration::FindNamedLocale (L"en", L"us"));
+                // Verify change of locale has no effect on results
+                locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                Streams::BasicBinaryOutputStream    tmpStrm;
                 DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-#if 0
-// to be fixed - issue is interally JSON print uses locale!!!
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.str ());
-#endif
+                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                locale::global (prevLocale);
             }
 
         }

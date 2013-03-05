@@ -53,6 +53,7 @@ namespace   Stroika {
                  *  T can be one of:
                  *      Memory::BLOB
                  *      vector<Byte>
+                 *      string
                  */
                 template    <typename   T>
                 nonvirtual  T   As () const;
@@ -60,9 +61,11 @@ namespace   Stroika {
 
 
             template    <>
-            Memory::BLOB   BasicBinaryOutputStream::As () const;
+            Memory::BLOB    BasicBinaryOutputStream::As () const;
             template    <>
-            vector<Byte>   BasicBinaryOutputStream::As () const;
+            vector<Byte>    BasicBinaryOutputStream::As () const;
+            template    <>
+            string          BasicBinaryOutputStream::As () const;
 
 
         }

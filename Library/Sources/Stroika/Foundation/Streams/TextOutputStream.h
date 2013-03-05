@@ -63,9 +63,12 @@ namespace   Stroika {
                  *  then can they be nullptr.
                  *
                  *  Writes always succeed fully or throw (no partial writes).
+                 *
+                 *  Write/1 (cstr arg) assumes its argument is NUL-terminated, and does not write the trailing NUL-character.
                  */
                 nonvirtual  void    Write (const wchar_t* start, const wchar_t* end) const;
                 nonvirtual  void    Write (const Character* start, const Character* end) const;
+                nonvirtual  void    Write (const wchar_t* cStr) const;
             };
 
             /**
