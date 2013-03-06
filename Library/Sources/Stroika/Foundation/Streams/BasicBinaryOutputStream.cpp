@@ -5,6 +5,7 @@
 
 #include    <algorithm>
 
+#include    "../Execution/Exceptions.h"
 #include    "../Memory/BlockAllocated.h"
 
 #include    "BasicBinaryOutputStream.h"
@@ -24,7 +25,8 @@ public:
     NO_ASSIGNMENT_OPERATOR(IRep_);
 
 public:
-    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
+// re-enable when I fix BlockAllocation / private bug... -- LGP 2013-03-04
+//    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
 
 public:
     IRep_ ()
