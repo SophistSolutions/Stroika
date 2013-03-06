@@ -83,7 +83,7 @@ namespace   Stroika {
               * DECLARE_USE_BLOCK_ALLOCATION() macro.
             */
             template    <typename   T>
-            class   BlockAllocated {
+            class   BlockAllocated  {
             public:
                 static  void*   operator new (size_t n);
                 static  void    operator delete (void* p);
