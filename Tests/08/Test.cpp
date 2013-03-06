@@ -286,6 +286,34 @@ namespace {
     }
 }
 
+namespace {
+    void    ParseRegressionTest_2_ ()
+    {
+        auto f = [] () {
+            map<wstring, VariantValue>  mv;
+            mv[L"MaxFiles"] = Memory::VariantValue (405);
+            Memory::VariantValue    v   =    Memory::VariantValue (mv);
+
+            string  encoded;
+            {
+                stringstream    tmpStrm;
+                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                encoded = tmpStrm.str ();
+            }
+            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (stringstream (encoded)));
+            VerifyTestResult (v1 == v);
+        };
+        f ();
+        {
+            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            f ();
+            locale::global (prevLocale);
+        }
+    }
+}
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -295,6 +323,7 @@ namespace   {
         CheckCanReadFromSmallBadSrc_ ();
         CheckStringQuoting_ ();
         ParseRegressionTest_1_ ();
+        ParseRegressionTest_2_ ();
     }
 }
 
