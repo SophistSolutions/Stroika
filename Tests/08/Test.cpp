@@ -300,7 +300,8 @@ namespace {
                 DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
                 encoded = tmpStrm.str ();
             }
-            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (stringstream (encoded)));
+            stringstream    tnmStrStrm (encoded);
+            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
             VerifyTestResult (v1 == v);
         };
         f ();
