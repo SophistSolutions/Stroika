@@ -105,7 +105,7 @@ namespace   Stroika {
 
 #if     qAllowBlockAllocation
             template    <typename   T>
-            inline  void*   BlockAllocated<T>::GetNextLink_ ()
+            inline  void*   BlockAllocationSupport<T>::GetNextLink_ ()
             {
                 using   namespace   Private;
 
@@ -143,7 +143,7 @@ namespace   Stroika {
              * NB: always return a pointer sized >= sizeof (void*) - even if n < sizeof (void*)
              */
             template    <typename   T>
-            inline  void    BlockAllocated<T>::SetNextLink_ (void* nextLink)
+            inline  void    BlockAllocationSupport<T>::SetNextLink_ (void* nextLink)
             {
                 using   namespace   Private;
 
@@ -176,7 +176,7 @@ namespace   Stroika {
             }
 #endif
             template    <typename   T>
-            inline  void*   BlockAllocated<T>::operator new (size_t n)
+            inline  void*   BlockAllocationSupport<T>::operator new (size_t n)
             {
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
@@ -199,7 +199,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            inline  void    BlockAllocated<T>::operator delete (void* p)
+            inline  void    BlockAllocationSupport<T>::operator delete (void* p)
             {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
@@ -212,7 +212,8 @@ namespace   Stroika {
 #endif
             }
 #if     qAllowBlockAllocation
-            template    <typename   T>  void    BlockAllocated<T>::GetMem_ ()
+            template    <typename   T>
+            void    BlockAllocationSupport<T>::GetMem_ ()
             {
                 using   namespace   Private;
 #if     qDebug
@@ -255,8 +256,9 @@ namespace   Stroika {
             }
 
             template    <typename   T>
-            void*   BlockAllocated<T>::sNextLink = nullptr;
+            void*   BlockAllocationSupport<T>::sNextLink = nullptr;
 #endif
+
 
         }
     }

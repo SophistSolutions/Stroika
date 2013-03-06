@@ -67,54 +67,11 @@ namespace   Stroika {
 
 
 
-            /**
-              * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
-              *
-              * BlockAllocated<T> is a templated class designed to allow easy use
-              * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
-              * size blocks (with the only problem being the storage is never - or almost never - returned to the
-              * free store - it doesn't leak - but cannot be used for other things. This is often a useful
-              * tradeoff for things you allocate a great number of.
-              *
-              * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
-              * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
-              *
-              * Note also - you can avoid some of the uglines of the overload declarations by using the
-              * DECLARE_USE_BLOCK_ALLOCATION() macro.
-            */
             template    <typename   T>
-            class   BlockAllocated  {
+            class   BlockAllocationSupport  {
             public:
                 static  void*   operator new (size_t n);
                 static  void    operator delete (void* p);
-
-            public:
-                /**
-                 * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
-                 *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
-                 *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
-                 */
-                BlockAllocated () : fValue_ () {}
-                BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
-                BlockAllocated (const T& t) : fValue_ (t) {}
-                BlockAllocated (T && t) : fValue_ (std::move (t)) {}
-                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t) {
-                    fValue_ = t.fValue_;
-                    return *this;
-                }
-                nonvirtual const BlockAllocated<T>& operator= (const T& t) {
-                    fValue_ = t;
-                    return *this;
-                }
-                nonvirtual  operator T () const {
-                    return fValue_;
-                }
-                nonvirtual  T* get () {
-                    return &fValue_;
-                }
-
-            private:
-                T   fValue_;
 
 #if     qAllowBlockAllocation
             private:
@@ -127,6 +84,10 @@ namespace   Stroika {
                 static  void    SetNextLink_ (void* nextLink);
 #endif
             };
+
+
+
+
 
 
             /**
@@ -154,10 +115,10 @@ namespace   Stroika {
              */
 #if     qAllowBlockAllocation
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocated<THIS_CLASS>::operator new (n)); }\
-    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocated<THIS_CLASS>::operator new (n)); }\
-    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocated<THIS_CLASS>::operator delete (p);       }\
-    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocated<THIS_CLASS>::operator delete (p);       }
+    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator new (n)); }\
+    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator new (n)); }\
+    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator delete (p);       }\
+    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator delete (p);       }
 #else
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
@@ -197,6 +158,57 @@ namespace   Stroika {
 #else
 #define DECLARE_DONT_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
+
+
+
+            /**
+              * \brief  Utility class to implement special memory allocator pattern which can greatly improve performance - @see DECLARE_USE_BLOCK_ALLOCATION()
+              *
+              * BlockAllocated<T> is a templated class designed to allow easy use
+              * of a block-allocated memory strategy. This means zero overhead malloc/memory allocation for fixed
+              * size blocks (with the only problem being the storage is never - or almost never - returned to the
+              * free store - it doesn't leak - but cannot be used for other things. This is often a useful
+              * tradeoff for things you allocate a great number of.
+              *
+              * You shouldn't disable it lightly. But you may wish to temporarily disable block-allocation
+              * while checking for memory leaks by shutting of the qAllowBlockAllocation compile-time configuration variable.
+              *
+              * Note also - you can avoid some of the uglines of the overload declarations by using the
+              * DECLARE_USE_BLOCK_ALLOCATION() macro.
+            */
+            template    <typename   T>
+            class   BlockAllocated   {
+            public:
+                DECLARE_USE_BLOCK_ALLOCATION(T);
+
+            public:
+                /**
+                 * @todo Clean this section of code (BlockAllocated) up. See if some better way to wrap type T, with extras.
+                 *      something that does good job forwarding CTOR arguments (perfect forwarding?) and does a better job
+                 *      with stuff like operator==, operaotr<, etc... (maybe explicitly override  each)?
+                 */
+                BlockAllocated () : fValue_ () {}
+                BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
+                BlockAllocated (const T& t) : fValue_ (t) {}
+                BlockAllocated (T && t) : fValue_ (std::move (t)) {}
+                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t) {
+                    fValue_ = t.fValue_;
+                    return *this;
+                }
+                nonvirtual const BlockAllocated<T>& operator= (const T& t) {
+                    fValue_ = t;
+                    return *this;
+                }
+                nonvirtual  operator T () const {
+                    return fValue_;
+                }
+                nonvirtual  T* get () {
+                    return &fValue_;
+                }
+
+            private:
+                T   fValue_;
+            };
 
 
             /**
