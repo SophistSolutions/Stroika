@@ -303,6 +303,10 @@ namespace   {
         VerifyTestResult (t1 == L"Fred Flintstone");
         t5 = t1.SubString (5, 5 + 10);
         VerifyTestResult (t5 == L"Flintstone");
+        VerifyTestResult (t5.IndexOf (L"STONE") == kBadStringIndex);
+        VerifyTestResult (not t5.Contains (L"SToNE"));
+        VerifyTestResult (t5.IndexOf (L"STONE", CompareOptions::eCaseInsensitive) == 5);
+        VerifyTestResult (t5.Contains (L"SToNE", CompareOptions::eCaseInsensitive));
 
         t1.SetLength (20);
         t1.SetLength (4);

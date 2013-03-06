@@ -185,21 +185,21 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-            const size_t    kBadStringIndex   = wstring::npos;
+            constexpr size_t    kBadStringIndex   = wstring::npos;
 
             class   RegularExpression;
 
             /**
-             * The Stroika String class is an alternatve for the std::wstring class, which should be largely
-             * interoperable with code using wstring (there is wstring constructor and As<wstring>()
-             * methods).
+             *  The Stroika String class is an alternatve for the std::wstring class, which should be largely
+             *  interoperable with code using wstring (there is wstring constructor and As<wstring>()
+             *  methods).
              *
-             * The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
-             * no obvious way to map the Stroika String to a std::string. However, if you specify a codepage
-             * for conversion, or are converting to/from TString/TChar, there is builtin support for that.
+             *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
+             *  no obvious way to map the Stroika String to a std::string. However, if you specify a codepage
+             *  for conversion, or are converting to/from TString/TChar, there is builtin support for that.
              *
              *
-             * EOS Handling:
+             *  EOS Handling:
              *      The Stroika String class does support having embedded NUL-characters. It also supports
              *      returning wchar_t* strings which are NUL-terminated. But - Stroika generally does NOT
              *      maintain strings internally as NUL-terminated (generally). It may add a performance
@@ -211,7 +211,7 @@ namespace   Stroika {
              */
             class   String {
             public:
-                /*
+                /**
                  * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
                  * except for the case of single char* argument constructors - which find the length based on
                  * the terminating NUL-character.
@@ -231,6 +231,8 @@ namespace   Stroika {
             public:
                 static  String  FromUTF8 (const char* from);
                 static  String  FromUTF8 (const std::string& from);
+
+            public:
                 static  String  FromTString (const TChar* from);
                 static  String  FromTString (const TString& from);
 
@@ -240,6 +242,8 @@ namespace   Stroika {
 
             public:
                 nonvirtual  size_t  GetLength () const;
+
+            public:
                 /*
                  * NOTE - when you increase the size of a string with SetLength() - the extra characters
                  * added are not initialized, and will have random values.
@@ -248,6 +252,8 @@ namespace   Stroika {
 
             public:
                 nonvirtual  bool    empty () const;
+
+            public:
                 nonvirtual  void    clear ();
 
             public:
@@ -284,16 +290,15 @@ namespace   Stroika {
                  * inherited from Sequence. Lookup the character (or string) in this string, and return
                  * its index - either starting from the front, or end of the string. Returns kBadStringIndex
                  * if none found.
-                 */
-                nonvirtual  size_t  IndexOf (Character c) const;
-                /*
+                 *
                  * IndexOf (substring) returns the index of the first occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
                  * given substring, or kBadStringIndex otherwise.
                  */
-                nonvirtual  size_t  IndexOf (const String& subString) const;
+                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
-
+            public:
                 nonvirtual  size_t  RIndexOf (Character c) const;
 
                 /*
@@ -303,8 +308,9 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  RIndexOf (const String& subString) const;
 
-                nonvirtual  bool    Contains (Character c) const;
-                nonvirtual  bool    Contains (const String& subString) const;
+            public:
+                nonvirtual  bool    Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  bool    Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /*
@@ -315,18 +321,18 @@ namespace   Stroika {
                 nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
 
             public:
-                /*
-                 * Apply the given regular expression return true if it matches this string. This only
-                 * returns true if the expression matches the ENTIRE string - all the way to the end.
-                 * See also 'Search()' - to find a set of things which match.
+                /**
+                 *  Apply the given regular expression return true if it matches this string. This only
+                 *  returns true if the expression matches the ENTIRE string - all the way to the end.
+                 *  See also 'Search()' - to find a set of things which match.
                  *
-                 * For example:
+                 *  For example:
                  *      Assert (String (L"abc").Match (L"abc"));
                  *      Assert (not (String (L"abc").Match (L"bc")));
                  *      Assert (String (L"abc").Match (L".*bc"));
                  *      Assert (not String (L"abc").Match (L"b.*c"));
                  *
-                 * Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
+                 *  Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
                  *      bool StartsWith (String X) { return Match (X + L".*"); }
                  *      bool EndsWith (String X) { return Match (L".*" + X); }
                  *  with the only caveat being 'quoting' X so its not interpreted as a regular expression.
@@ -605,7 +611,6 @@ namespace   Stroika {
                 virtual _SharedPtrIRep      Clone () const                          = 0;
 
                 virtual size_t              GetLength () const                      = 0;
-                virtual bool                Contains (Character item) const         = 0;
                 virtual void                RemoveAll ()                            = 0;
 
                 virtual Character           GetAt (size_t index) const              = 0;

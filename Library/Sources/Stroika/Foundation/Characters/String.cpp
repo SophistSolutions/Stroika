@@ -72,15 +72,6 @@ namespace   {
                 Assert (_fStart <= _fEnd);
                 return _fEnd - _fStart;
             }
-            virtual     bool    Contains (Character item) const override {
-                Assert (_fStart <= _fEnd);
-                for (auto i = _fStart; i != _fEnd; ++i) {
-                    if (*i == item) {
-                        return true;
-                    }
-                }
-                return false;
-            }
             virtual     Character   GetAt (size_t index) const override {
                 Assert (_fStart <= _fEnd);
                 Require (index < GetLength ());
@@ -475,7 +466,6 @@ namespace   {
             virtual     _IRep*   Clone () const override;
 
             virtual     size_t  GetLength () const override;
-            virtual     bool    Contains (Character item) const override;
             virtual     void    RemoveAll () override;
 
             virtual     Character   GetAt (size_t index) const override;
@@ -684,19 +674,32 @@ void    String::Remove (Character c)
     }
 }
 
-size_t  String::IndexOf (Character c) const
+size_t  String::IndexOf (Character c, CompareOptions co) const
 {
     //TODO: HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
-    for (size_t i = 0; i < length; i++) {
-        if (_fRep->GetAt (i) == c) {
-            return (i);
-        }
+    switch (co) {
+        case CompareOptions::eCaseInsensitive: {
+                for (size_t i = 0; i < length; i++) {
+                    if (_fRep->GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
+                        return (i);
+                    }
+                }
+            }
+            break;
+        case CompareOptions::eWithCase: {
+                for (size_t i = 0; i < length; i++) {
+                    if (_fRep->GetAt (i) == c) {
+                        return (i);
+                    }
+                }
+            }
+            break;
     }
     return (kBadStringIndex);
 }
 
-size_t  String::IndexOf (const String& subString) const
+size_t  String::IndexOf (const String& subString, CompareOptions co) const
 {
     if (subString.GetLength () == 0) {
         return ((GetLength () == 0) ? kBadStringIndex : 0);
@@ -708,15 +711,33 @@ size_t  String::IndexOf (const String& subString) const
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     size_t  subStrLen   =   subString.GetLength ();
     size_t  limit       =   GetLength () - subStrLen;
-    for (size_t i = 0; i <= limit; i++) {
-        for (size_t j = 0; j < subStrLen; j++) {
-            if (_fRep->GetAt (i + j) != subString._fRep->GetAt (j)) {
-                goto nogood;
+    switch (co) {
+        case CompareOptions::eCaseInsensitive: {
+                for (size_t i = 0; i <= limit; i++) {
+                    for (size_t j = 0; j < subStrLen; j++) {
+                        if (_fRep->GetAt (i + j).ToLowerCase () != subString._fRep->GetAt (j).ToLowerCase ()) {
+                            goto nogood1;
+                        }
+                    }
+                    return (i);
+nogood1:
+                    ;
+                }
             }
-        }
-        return (i);
-nogood:
-        ;
+            break;
+        case CompareOptions::eWithCase: {
+                for (size_t i = 0; i <= limit; i++) {
+                    for (size_t j = 0; j < subStrLen; j++) {
+                        if (_fRep->GetAt (i + j) != subString._fRep->GetAt (j)) {
+                            goto nogood2;
+                        }
+                    }
+                    return (i);
+nogood2:
+                    ;
+                }
+            }
+            break;
     }
     return (kBadStringIndex);
 }
@@ -753,14 +774,14 @@ size_t  String::RIndexOf (const String& subString) const
     return (kBadStringIndex);
 }
 
-bool    String::Contains (Character c) const
+bool    String::Contains (Character c, CompareOptions co) const
 {
-    return (_fRep->Contains (c));
+    return bool (IndexOf (c, co) != kBadStringIndex);
 }
 
-bool    String::Contains (const String& subString) const
+bool    String::Contains (const String& subString, CompareOptions co) const
 {
-    return bool (IndexOf (subString) != kBadStringIndex);
+    return bool (IndexOf (subString, co) != kBadStringIndex);
 }
 
 bool    String::Match (const RegularExpression& regEx, CompareOptions co) const

@@ -22,6 +22,9 @@
 /*
  * TODO:
  *
+ *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DONT DO until I have a STRING class
+ *              implementation based on UTF-8, to minimize the performance costs...
+ *
  *      (1)     Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
  *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
  *              of Character.
@@ -56,9 +59,11 @@ namespace   Stroika {
         namespace   Characters {
 
 
-            enum class CompareOptions : uint8_t {
+            enum    class   CompareOptions : uint8_t {
                 eWithCase,
                 eCaseInsensitive,
+
+                Define_Start_End_Count(eWithCase, eCaseInsensitive)
             };
 
 
