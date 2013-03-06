@@ -34,6 +34,13 @@ namespace   {
             VerifyTestResult (not x.empty ());
             VerifyTestResult (*x == 1);
         }
+        {
+            // Careful about self-assignment
+            Optional<int>   x;
+            x = 3;
+            x = max (*x, 1);
+            VerifyTestResult (x == 3);
+        }
     }
     void    Test1_SharedByValue ()
     {

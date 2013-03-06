@@ -75,33 +75,41 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& from)
             {
-                delete fValue_;
-                fValue_ = nullptr;
-                fValue_ = new BlockAllocated<T> (from);
+                if (fValue_->get () != &from) {
+                    delete fValue_;
+                    fValue_ = nullptr;
+                    fValue_ = new BlockAllocated<T> (from);
+                }
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && from)
             {
-                fValue_ = new BlockAllocated<T> (std::move (from));
+                if (fValue_->get () != &from) {
+                    fValue_ = new BlockAllocated<T> (std::move (from));
+                }
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional<T, TRAITS>& from)
             {
-                delete fValue_;
-                fValue_ = nullptr;
-                if (from.fValue_ != nullptr) {
-                    fValue_ = new BlockAllocated<T> (*from.fValue_);
+                if (fValue_->get () != from.fValue_->get ()) {
+                    delete fValue_;
+                    fValue_ = nullptr;
+                    if (from.fValue_ != nullptr) {
+                        fValue_ = new BlockAllocated<T> (*from.fValue_);
+                    }
                 }
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional<T, TRAITS> && from)
             {
-                delete fValue_;
-                fValue_ = from.fValue_;
-                from.fValue_ = nullptr;
+                if (fValue_->get () != from.fValue_->get ()) {
+                    delete fValue_;
+                    fValue_ = from.fValue_;
+                    from.fValue_ = nullptr;
+                }
                 return *this;
             }
             template    <typename T, typename TRAITS>
