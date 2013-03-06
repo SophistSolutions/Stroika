@@ -40,6 +40,9 @@ namespace   Stroika {
              *  those will remain in-tact).
              *
              *  BasicBinaryOutputStream is Seekable.
+             *
+             *  Since BasicBinaryOutputStream keeps its data all in memory, it has the limitation that attempts to seek
+             *  or write more than will fit in RAM will fail (with an exception).
              */
             class   BasicBinaryOutputStream : public BinaryOutputStream {
             private:

@@ -38,6 +38,8 @@ namespace   Stroika {
                 eFromStart,
                 eFromCurrent,
                 eFromEnd,
+
+                Define_Start_End_Count(eFromStart, eFromEnd)
             };
 
 

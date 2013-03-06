@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include    "../../Memory/BlockAllocated.h"
 #include    "../../Execution/OperationNotSupportedException.h"
 
 #include    "BinaryInputStreamFromIStreamAdapter.h"
@@ -21,6 +22,9 @@ using   namespace   Stroika::Foundation::Streams::iostream;
 
 
 class   BinaryInputStreamFromIStreamAdapter::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
+public:
+    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
+
 public:
     IRep_ (istream& originalStream)
         : fCriticalSection_ ()

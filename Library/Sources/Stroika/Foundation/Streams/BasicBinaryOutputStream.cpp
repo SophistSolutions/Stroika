@@ -5,7 +5,7 @@
 
 #include    <algorithm>
 
-#include    "../Execution/OperationNotSupportedException.h"
+#include    "../Memory/BlockAllocated.h"
 
 #include    "BasicBinaryOutputStream.h"
 
@@ -24,6 +24,9 @@ public:
     NO_ASSIGNMENT_OPERATOR(IRep_);
 
 public:
+    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
+
+public:
     IRep_ ()
         : fCriticalSection_ ()
         , fData_ ()
@@ -34,8 +37,7 @@ public:
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
-            lock_guard<recursive_mutex>  critSec (fCriticalSection_);
-
+            lock_guard<mutex>  critSec (fCriticalSection_);
             size_t  roomLeft        =   fData_.end () - fCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
@@ -52,22 +54,21 @@ public:
     }
 
     virtual SeekOffsetType  GetOffset () const override {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
+        lock_guard<mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
     virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (offset) > fData_.size ()) {
-                        // REALLY ERROR
+                    if (offset > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + offset;
+                    fCursor_ = fData_.begin () + static_cast<size_t> (offset);
                 }
                 break;
             case    Whence::eFromCurrent: {
@@ -79,7 +80,7 @@ public:
                     if (static_cast<size_t> (newOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + newOffset;
+                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                 }
                 break;
             case    Whence::eFromEnd: {
@@ -91,33 +92,33 @@ public:
                     if (static_cast<size_t> (newOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + newOffset;
+                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                 }
                 break;
         }
         Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
-        return GetOffset ();
+        return fCursor_ - fData_.begin ();
     }
 
     Memory::BLOB   AsBLOB () const {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         return Memory::BLOB (fData_);
     }
 
     vector<Byte>   AsVector () const {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         return fData_;
     }
 
     string   AsString () const {
-        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        lock_guard<mutex>  critSec (fCriticalSection_);
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }
 
 private:
-    mutable recursive_mutex     fCriticalSection_;
-    vector<Byte>                fData_;
-    vector<Byte>::iterator      fCursor_;
+    mutable mutex           fCriticalSection_;
+    vector<Byte>            fData_;
+    vector<Byte>::iterator  fCursor_;
 };
 
 
@@ -137,6 +138,7 @@ BasicBinaryOutputStream::BasicBinaryOutputStream ()
 template    <>
 Memory::BLOB   BasicBinaryOutputStream::As () const
 {
+    RequireNotNull (_GetRep ().get ());
     const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsBLOB ();
 }
@@ -144,6 +146,7 @@ Memory::BLOB   BasicBinaryOutputStream::As () const
 template    <>
 vector<Byte>   BasicBinaryOutputStream::As () const
 {
+    RequireNotNull (_GetRep ().get ());
     const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsVector ();
 }
@@ -151,6 +154,7 @@ vector<Byte>   BasicBinaryOutputStream::As () const
 template    <>
 string   BasicBinaryOutputStream::As () const
 {
+    RequireNotNull (_GetRep ().get ());
     const IRep_&    rep =   *reinterpret_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsString ();
 }
