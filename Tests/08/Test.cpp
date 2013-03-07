@@ -313,6 +313,34 @@ namespace {
     }
 }
 
+namespace {
+    void    Parser_TestReadWriteBasictypes_3_ ()
+    {
+        using   namespace   Time;
+        auto f = [] (VariantValue v) {
+            string  encoded;
+            {
+                stringstream    tmpStrm;
+                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                encoded = tmpStrm.str ();
+            }
+            stringstream    tnmStrStrm (encoded);
+            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+            // JSON reader comes back with strings - because date/datetime are not native types
+            if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
+                v1 = VariantValue (v1.As<Time::Date> ());
+            }
+            if (v.GetType () == VariantValue::Type::eDateTime and v1.GetType () == VariantValue::Type::eString) {
+                v1 = VariantValue (v1.As<Time::DateTime> ());
+            }
+            VerifyTestResult (v1 == v);
+        };
+        f (Memory::VariantValue (405));
+        f (Memory::VariantValue (L"'"));
+        f (Memory::VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
+        f (Memory::VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+    }
+}
 
 
 namespace   {
@@ -325,6 +353,7 @@ namespace   {
         CheckStringQuoting_ ();
         ParseRegressionTest_1_ ();
         ParseRegressionTest_2_ ();
+        Parser_TestReadWriteBasictypes_3_ ();
     }
 }
 

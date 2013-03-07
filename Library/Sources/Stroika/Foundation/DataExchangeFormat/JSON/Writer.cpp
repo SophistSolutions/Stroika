@@ -136,6 +136,12 @@ namespace   {
             case    Memory::VariantValue::Type::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
+            case    Memory::VariantValue::Type::eDate:
+                PrettyPrint_ (v.As<wstring> (), out);
+                break;
+            case    Memory::VariantValue::Type::eDateTime:
+                PrettyPrint_ (v.As<wstring> (), out);
+                break;
             case    Memory::VariantValue::Type::eInteger:
                 PrettyPrint_ (v.As<int> (), out);
                 break;
