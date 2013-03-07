@@ -416,6 +416,9 @@ public:
 
 
 
+
+
+
 /*
  * TODO:
  *      o   COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range.
@@ -493,6 +496,18 @@ namespace   {
 
 
 
+
+
+
+
+
+namespace   {
+    regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
+    {
+        regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
+        return f;
+    }
+}
 
 
 
@@ -674,7 +689,7 @@ void    String::Remove (Character c)
     }
 }
 
-size_t  String::IndexOf (Character c, CompareOptions co) const
+size_t  String::Find (Character c, CompareOptions co) const
 {
     //TODO: HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
@@ -699,7 +714,7 @@ size_t  String::IndexOf (Character c, CompareOptions co) const
     return (kBadStringIndex);
 }
 
-size_t  String::IndexOf (const String& subString, CompareOptions co) const
+size_t  String::Find (const String& subString, CompareOptions co) const
 {
     if (subString.GetLength () == 0) {
         return ((GetLength () == 0) ? kBadStringIndex : 0);
@@ -742,6 +757,36 @@ nogood2:
     return (kBadStringIndex);
 }
 
+vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co) const
+{
+    vector<String>  result;
+    wstring tmp     =   As<wstring> ();
+    wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    std::wsmatch res;
+    regex_search (tmp, res, regExp);
+    result.reserve (res.size ());
+    for (auto i = res.begin (); i != res.end (); ++i) {
+        result.push_back (String (*i));
+    }
+    return result;
+}
+
+#if 0
+vector<String>  String::Find (const String& string2SearchFor, CompareOptions co) const
+{
+    AssertNotReached ();
+    vector<String>  result;
+    wstring tmp     =   As<wstring> ();
+    wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
+    std::wsmatch res;
+    regex_search (tmp, res, regExp);
+    result.reserve (res.size ());
+    for (auto i = res.begin (); i != res.end (); ++i) {
+        result.push_back (String (*i));
+    }
+    return result;
+}
+#endif
 size_t  String::RIndexOf (Character c) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
@@ -797,13 +842,6 @@ vector<pair<size_t, size_t>>  String::Search (const String& string2SearchFor, Co
     return result;
 }
 
-namespace   {
-    regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
-    {
-        regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
-        return f;
-    }
-}
 vector<pair<size_t, size_t>>  String::Search (const RegularExpression& regEx, CompareOptions co) const
 {
     vector<pair<size_t, size_t>>  result;
@@ -820,35 +858,6 @@ vector<pair<size_t, size_t>>  String::Search (const RegularExpression& regEx, Co
 #else
     AssertNotImplemented ();
 #endif
-    return result;
-}
-
-vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co) const
-{
-    vector<String>  result;
-    wstring tmp     =   As<wstring> ();
-    wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
-    std::wsmatch res;
-    regex_search (tmp, res, regExp);
-    result.reserve (res.size ());
-    for (auto i = res.begin (); i != res.end (); ++i) {
-        result.push_back (String (*i));
-    }
-    return result;
-}
-
-vector<String>  String::Find (const String& string2SearchFor, CompareOptions co) const
-{
-    AssertNotReached ();
-    vector<String>  result;
-    wstring tmp     =   As<wstring> ();
-    wregex  regExp  =   wregex (string2SearchFor.As<wstring> ());
-    std::wsmatch res;
-    regex_search (tmp, res, regExp);
-    result.reserve (res.size ());
-    for (auto i = res.begin (); i != res.end (); ++i) {
-        result.push_back (String (*i));
-    }
     return result;
 }
 

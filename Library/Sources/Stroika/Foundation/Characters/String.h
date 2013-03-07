@@ -285,18 +285,14 @@ namespace   Stroika {
                 nonvirtual  void        Remove (Character c);
 
             public:
-/// NOT SURE WE SHOULD DO INDEXOF /RINDEX OF - CUZ OF REGEX VERSIONS
-                /*
-                 * inherited from Sequence. Lookup the character (or string) in this string, and return
-                 * its index - either starting from the front, or end of the string. Returns kBadStringIndex
-                 * if none found.
-                 *
-                 * IndexOf (substring) returns the index of the first occurance of the given substring in
-                 * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or kBadStringIndex otherwise.
-                 */
-                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const {
+                    // back compat API - tmphack
+                    return Find (c, co);
+                }
+                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const {
+                    // back compat API - tmphack
+                    return Find (subString, co);
+                }
 
             public:
                 nonvirtual  size_t  RIndexOf (Character c) const;
@@ -358,6 +354,19 @@ namespace   Stroika {
                 nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
+/// NOT SURE WE SHOULD DO INDEXOF /RINDEX OF - CUZ OF REGEX VERSIONS
+                /**
+                 * inherited from Sequence. Lookup the character (or string) in this string, and return
+                 * its index - either starting from the front, or end of the string. Returns kBadStringIndex
+                 * if none found.
+                 *
+                 * IndexOf (substring) returns the index of the first occurance of the given substring in
+                 * this string. This function always returns a valid string index, which is followed by the
+                 * given substring, or kBadStringIndex otherwise.
+                 */
+                nonvirtual  size_t  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t  Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+            public:
                 /*
                  * Apply the given regular expression, and return a vector of the starts of all substring
                  * matches.
@@ -365,7 +374,7 @@ namespace   Stroika {
                 *       TODO: GIVE EXAMPLES
                  */
                 nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
+//                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /*
