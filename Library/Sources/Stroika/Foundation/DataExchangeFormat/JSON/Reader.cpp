@@ -19,14 +19,6 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 
 
-/*
- * TODO:
- *      @todo   Review \u style Unicode characters (such as "\uFDD0") parsing. Its mostly right, but
- *              some sloppiness about surrogates, versus 4-byte wchar_t, versus char16_, char32_t, etc.
- */
-
-
-
 
 
 namespace   {
@@ -419,15 +411,12 @@ namespace   {
 
 /*
  ********************************************************************************
- ******************** DataExchangeFormat::JSON::Reader **************************
+ *********************** DataExchangeFormat::JSON::Reader ***********************
  ********************************************************************************
  */
 Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::TextInputStream& in)
 {
-    /// TODO! Once we fix TextInputStream SMARTPOINTER stuff - we can lose this const-cast
-    Streams::TextInputStream&   IN_BWA_ =   const_cast<Streams::TextInputStream&> (in);
-
-    wstring     tmp =   IN_BWA_.ReadAll ().As<wstring> ();
+    wstring     tmp =   in.ReadAll ().As<wstring> ();
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());
 }
