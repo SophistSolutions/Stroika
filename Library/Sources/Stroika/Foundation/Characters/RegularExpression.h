@@ -35,6 +35,8 @@ namespace   Stroika {
 
             /**
              *      @todo   VERY PRELIMINARY DRAFT
+             *      @todo   add , CompareOptions co = CompareOptions::eWithCase support, and map to
+             *              regex_constants::icase in regex CTOR...
              */
             class   RegularExpression {
             public:

@@ -285,16 +285,6 @@ namespace   Stroika {
                 nonvirtual  void        Remove (Character c);
 
             public:
-                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const {
-                    // back compat API - tmphack
-                    return Find (c, co);
-                }
-                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const {
-                    // back compat API - tmphack
-                    return Find (subString, co);
-                }
-
-            public:
                 nonvirtual  size_t  RIndexOf (Character c) const;
 
                 /*
@@ -360,21 +350,48 @@ namespace   Stroika {
                  * its index - either starting from the front, or end of the string. Returns kBadStringIndex
                  * if none found.
                  *
+                 *  <<<DOCS BASICALLY ALL WRONG >>>>
+                 *
                  * IndexOf (substring) returns the index of the first occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
                  * given substring, or kBadStringIndex otherwise.
-                 */
-                nonvirtual  size_t  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t  Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-            public:
-                /*
+                 *
                  * Apply the given regular expression, and return a vector of the starts of all substring
                  * matches.
-                * See regex_replace () for definition of the regEx language
-                *       TODO: GIVE EXAMPLES
+                 * See regex_replace () for definition of the regEx language
+                 *       TODO: GIVE EXAMPLES
+                 *
+                 * The variant returning pair<size_t,size_t> defines the range of the matching result.
+                 *
+                 *  \req (startAt <= GetLength ());
+                 *
                  */
-                nonvirtual  vector<String>  Find (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t              Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t              Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t              Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t              Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  pair<size_t, size_t> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+
+            public:
+                nonvirtual  vector<String>  FindAll (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
+
+#if 0
+            public:
+                /*
+                 */
 //                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
+#endif
+
+            public:
+                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const {
+                    // back compat API - tmphack
+                    return Find (c, co);
+                }
+                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const {
+                    // back compat API - tmphack
+                    return Find (subString, co);
+                }
+
 
             public:
                 /*

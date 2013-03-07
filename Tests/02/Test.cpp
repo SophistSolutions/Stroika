@@ -650,11 +650,13 @@ namespace   {
     }
 }
 
-
-
-
-
 namespace   {
+    void    Test17_Find_ ()
+    {
+        VerifyTestResult (String (L"abc").Find (L"b") == 1);
+        VerifyTestResult (String (L"abc").Find (L"x") == kBadStringIndex);
+        VerifyTestResult (String (L"abc").Find (L"b", 2) == kBadStringIndex);
+    }
     void    Test17_RegExp_Match_ ()
     {
         VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
@@ -691,11 +693,12 @@ namespace   {
     }
     void    Test17_RegExp_ ()
     {
+        Test17_Find_ ();
         Test17_RegExp_Match_ ();
         Test17_RegExp_Search_ ();
 #if     qCompilerAndStdLib_Supports_regex_replace
-        VerifyTestResult (String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)).size () == 1);
-        vector<String>  r   =   String (L"<h2>Egg prices</h2>").Find (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
+        VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
+        vector<String>  r   =   String (L"<h2>Egg prices</h2>").FindAll (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
         VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
         VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 #endif
@@ -842,6 +845,7 @@ namespace   {
         Test14_String_StackLifetimeReadWrite_ ();
         Test15_StripAll_ ();
         Test16_Format_ ();
+        Test17_Find_ ();
         Test17_RegExp_ ();
         Test18_Compare_ ();
         Test19_ConstCharStar_ ();

@@ -691,11 +691,17 @@ void    String::Remove (Character c)
 
 size_t  String::Find (Character c, CompareOptions co) const
 {
+    return Find (c, 0, co);
+}
+
+size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
+{
+    Require (startAt <= GetLength ());
     //TODO: HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
-                for (size_t i = 0; i < length; i++) {
+                for (size_t i = startAt; i < length; i++) {
                     if (_fRep->GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
                         return (i);
                     }
@@ -703,7 +709,7 @@ size_t  String::Find (Character c, CompareOptions co) const
             }
             break;
         case CompareOptions::eWithCase: {
-                for (size_t i = 0; i < length; i++) {
+                for (size_t i = startAt; i < length; i++) {
                     if (_fRep->GetAt (i) == c) {
                         return (i);
                     }
@@ -716,6 +722,12 @@ size_t  String::Find (Character c, CompareOptions co) const
 
 size_t  String::Find (const String& subString, CompareOptions co) const
 {
+    return Find (subString, 0, co);
+}
+
+size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
+{
+    Require (startAt <= GetLength ());
     if (subString.GetLength () == 0) {
         return ((GetLength () == 0) ? kBadStringIndex : 0);
     }
@@ -728,7 +740,7 @@ size_t  String::Find (const String& subString, CompareOptions co) const
     size_t  limit       =   GetLength () - subStrLen;
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
-                for (size_t i = 0; i <= limit; i++) {
+                for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
                         if (_fRep->GetAt (i + j).ToLowerCase () != subString._fRep->GetAt (j).ToLowerCase ()) {
                             goto nogood1;
@@ -741,7 +753,7 @@ nogood1:
             }
             break;
         case CompareOptions::eWithCase: {
-                for (size_t i = 0; i <= limit; i++) {
+                for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
                         if (_fRep->GetAt (i + j) != subString._fRep->GetAt (j)) {
                             goto nogood2;
@@ -757,7 +769,21 @@ nogood2:
     return (kBadStringIndex);
 }
 
-vector<String>  String::Find (const RegularExpression& regEx, CompareOptions co) const
+pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
+{
+    Require (startAt <= GetLength ());
+    Assert (startAt == 0);  // else NYI
+    wstring tmp     =   As<wstring> ();
+    wregex  regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    std::wsmatch res;
+    regex_search (tmp, res, regExp);
+    if (res.size () >= 1) {
+        return pair<size_t, size_t> (res.position (), res.position () + res.length ());
+    }
+    return pair<size_t, size_t> (kBadStringIndex, kBadStringIndex);
+}
+
+vector<String>  String::FindAll (const RegularExpression& regEx, CompareOptions co) const
 {
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
