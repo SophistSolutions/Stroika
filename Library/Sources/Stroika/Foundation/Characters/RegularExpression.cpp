@@ -18,7 +18,7 @@ namespace   {
     {
         regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
         if (co == CompareOptions::eCaseInsensitive) {
-            f |= regex_constants::syntax_option_type::icase;
+            f |= regex_constants::icase;
         }
         return f;
     }
