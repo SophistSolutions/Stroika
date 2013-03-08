@@ -597,6 +597,11 @@ String  String::FromUTF8 (const char* from)
     return UTF8StringToWide (from);
 }
 
+String  String::FromUTF8 (const char* from, const char* to)
+{
+    return UTF8StringToWide (string (from, to));
+}
+
 String  String::FromUTF8 (const std::string& from)
 {
     return UTF8StringToWide (from);

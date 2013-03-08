@@ -220,6 +220,7 @@ namespace   Stroika {
 
             public:
                 static  String  FromUTF8 (const char* from);
+                static  String  FromUTF8 (const char* from, const char* to);
                 static  String  FromUTF8 (const std::string& from);
 
             public:

@@ -190,7 +190,7 @@ size_t  Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size
 
 size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
 {
-    String  from    =   String::FromUTF8 (tmp);
+    String  from    =   String::FromUTF8 (reinterpret_cast<const char*> (ptr), reinterpret_cast<const char*> (ptr) + nBytes);
     String  to;
     sized_t i       =   from.find (':');
     if (i != string::npos) {
