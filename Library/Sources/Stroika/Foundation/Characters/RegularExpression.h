@@ -35,9 +35,9 @@ namespace   Stroika {
 
 
             /**
-             *      @todo   VERY PRELIMINARY DRAFT
-             *      @todo   add , CompareOptions co = CompareOptions::eWithCase support, and map to
-             *              regex_constants::icase in regex CTOR...
+             *  \brief RegularExpression is a compiled regular expression which can be used to match on a String class
+             *
+             *  This class is a simple wrapper on the std::wregex class.
              */
             class   RegularExpression {
             public:
@@ -47,10 +47,12 @@ namespace   Stroika {
                  **** MAYBE REDO SO DEFAULT IS ECMASCRIPT?
                  */
                 enum    class   SyntaxType : uint8_t {
-                    eECMAScript,
                     eBasic ,
+                    eECMAScript,
 
                     DEFAULT = SyntaxType::eBasic,
+
+                    Define_Start_End_Count(eBasic, eECMAScript)
                 };
 
             public:
@@ -61,19 +63,7 @@ namespace   Stroika {
             public:
                 nonvirtual  const wregex&   GetCompiled () const;
 
-#if 0
-            public:
-                nonvirtual  const  String&  GetAsStr () const;
-
-            public:
-                nonvirtual  SyntaxType  GetSyntaxType () const;
-#endif
-
             private:
-#if 0
-                SyntaxType  fSyntaxType_;
-                String      fVal_;
-#endif
                 wregex      fCompiledRegExp_;
             };
 

@@ -28,16 +28,6 @@ namespace   Stroika {
             {
                 return fCompiledRegExp_;
             }
-#if 0
-            inline  const String&  RegularExpression::GetAsStr () const
-            {
-                return fVal_;
-            }
-            inline  RegularExpression::SyntaxType  RegularExpression::GetSyntaxType () const
-            {
-                return fSyntaxType_;
-            }
-#endif
 
 
         }

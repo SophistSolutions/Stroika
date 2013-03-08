@@ -51,16 +51,6 @@
 /**
  * TODO:
  *
- *      @todo   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
- *              separate logically and have trivial wrappers here.
- *
- *          UNCLEAR.
- *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
- *          ***
- *          AT SOME TIME I FIX THIS  - HAVE RegularExpression create subobjet with compiled regrexp - so re-usable and not need to be recompiled/
- *          reconstructed (and so any erorrs get thrown not when used but when compiled).
- *
- *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
  *
