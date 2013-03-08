@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
@@ -818,6 +819,22 @@ namespace {
             VerifyTestResult (Math::NearlyEquals (String2Float ("-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float (String (L"44.4333")), 44.4333));
+        }
+        auto runLocaleIndepTest = [] () {
+            VerifyTestResult (Float2String (3000.5) == L"3000.5");
+            VerifyTestResult (Float2String (30000.5) == L"30000.5");
+        };
+        {
+            // Verify change of locale has no effect on results
+            locale  prevLocale  =   locale::global (locale ("C"));
+            runLocaleIndepTest ();
+            locale::global (prevLocale);
+        }
+        {
+            // Verify change of locale has no effect on results
+            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            runLocaleIndepTest ();
+            locale::global (prevLocale);
         }
     }
 }

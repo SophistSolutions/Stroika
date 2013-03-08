@@ -18,6 +18,7 @@
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Math/Common.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -333,12 +334,37 @@ namespace {
             if (v.GetType () == VariantValue::Type::eDateTime and v1.GetType () == VariantValue::Type::eString) {
                 v1 = VariantValue (v1.As<Time::DateTime> ());
             }
-            VerifyTestResult (v1 == v);
+            if (v.GetType () == VariantValue::Type::eFloat) {
+                VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
+            }
+            else {
+                VerifyTestResult (v1 == v);
+            }
         };
-        f (Memory::VariantValue (405));
-        f (Memory::VariantValue (L"'"));
-        f (Memory::VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
-        f (Memory::VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+        auto    doAll = [f] () {
+            f (Memory::VariantValue (405));
+            f (Memory::VariantValue (4405));
+            f (Memory::VariantValue (44905));
+            f (Memory::VariantValue (405.1));
+            f (Memory::VariantValue (4405.2));
+            f (Memory::VariantValue (44905.3));
+            f (Memory::VariantValue (L"'"));
+            f (Memory::VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
+            f (Memory::VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+
+            {
+                stringstream    tmpStrm;
+                DataExchangeFormat::JSON::PrettyPrint (Memory::VariantValue (44905.3), tmpStrm);
+                string tmp = tmpStrm.str ();
+                VerifyTestResult (tmp.find (",") == string::npos);
+            }
+        };
+        {
+            doAll ();
+            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+            doAll ();
+            locale::global (prevLocale);
+        }
     }
 }
 
