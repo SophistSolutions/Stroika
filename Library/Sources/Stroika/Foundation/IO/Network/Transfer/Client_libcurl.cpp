@@ -194,8 +194,8 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
     String  to;
     sized_t i       =   from.find (':');
     if (i != string::npos) {
-        from = tmp.SubString (0, i);
-        to = tmp.SubString (i + 1);
+        to = from.SubString (i + 1);
+        from = from.SubString (0, i);
     }
     from = from.Trim ();
     to = to.Trim ();

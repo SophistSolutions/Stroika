@@ -279,17 +279,17 @@ namespace   Stroika {
                  *  Produce a substring of this string, starting at from, and up to to
                  *  (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
                  *  then return all the way to the end of the string.
-				 *
-				 *	*NB* This function treats the second argument differntly than String::substr () - 
-				 *	which respects the STL basic_string API. This function treats the second argument
-				 *	as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
-				 *	very common cases of substr(N) - because second argument is defaulted, and,
-				 *	substr (0, N) - because then the count and end are the same.
+                 *
+                 *  *NB* This function treats the second argument differntly than String::substr () -
+                 *  which respects the STL basic_string API. This function treats the second argument
+                 *  as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
+                 *  very common cases of substr(N) - because second argument is defaulted, and,
+                 *  substr (0, N) - because then the count and end are the same.
                  *
                  *  \req  ((from <= to) or (to == kBadStringIndex));
                  *  \req  ((to <= GetLength ()) or (to == kBadStringIndex));
-				 *
-				 *	@see substr
+                 *
+                 *  @see substr
                  */
                 nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
 
@@ -580,11 +580,11 @@ namespace   Stroika {
                 nonvirtual  void    push_back (Character c);
 
                 /**
-				 *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
-                 *	as Stroika::String::SubString (where the second argument is a 'to')
-				 *
-				 *	@see SubString
-				 */
+                 *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
+                 *  as Stroika::String::SubString (where the second argument is a 'to')
+                 *
+                 *  @see SubString
+                 */
                 nonvirtual  String      substr (size_t from, size_t count = kBadStringIndex) const;
 
             protected:
