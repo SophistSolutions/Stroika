@@ -658,14 +658,6 @@ namespace   {
         VerifyTestResult (String (L"abc").Find (L"x") == kBadStringIndex);
         VerifyTestResult (String (L"abc").Find (L"b", 2) == kBadStringIndex);
     }
-    void    Test17_RegExp_Match_ ()
-    {
-        VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
-        VerifyTestResult (not (String (L"abc").Match (RegularExpression (L"bc"))));
-        VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
-        VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));
-        VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello")));
-    }
     void    Test17_RegExp_Search_ ()
     {
 #if     qCompilerAndStdLib_Supports_regex_replace
@@ -695,7 +687,6 @@ namespace   {
     void    Test17_RegExp_ ()
     {
         Test17_Find_ ();
-        Test17_RegExp_Match_ ();
         Test17_RegExp_Search_ ();
 #if     qCompilerAndStdLib_Supports_regex_replace
         VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
@@ -840,6 +831,25 @@ namespace {
 }
 
 
+namespace {
+    void    Test22_StartsWithEndsWithMatch_ ()
+    {
+        VerifyTestResult (String (L"abc").Match (RegularExpression (L"abc")));
+        VerifyTestResult (not (String (L"abc").Match (RegularExpression (L"bc"))));
+        VerifyTestResult (String (L"abc").Match (RegularExpression (L".*bc")));
+        VerifyTestResult (not String (L"abc").Match (RegularExpression (L"b.*c")));
+        VerifyTestResult (not String (L"Hello world").Match (RegularExpression (L"ello")));
+        VerifyTestResult (String (L"abc").StartsWith (L"AB", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String (L"abc").StartsWith (L"AB", CompareOptions::eWithCase));
+        VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (String (L"abc").EndsWith (L"bc", CompareOptions::eWithCase));
+        VerifyTestResult (String (L"abc").EndsWith (L"BC", CompareOptions::eCaseInsensitive));
+        VerifyTestResult (not String (L"abc").EndsWith (L"BC", CompareOptions::eWithCase));
+    }
+
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -868,6 +878,7 @@ namespace   {
         Test19_ConstCharStar_ ();
         Test20_CStringHelpers_ ();
         Test21_StringToIntEtc_ ();
+        Test22_StartsWithEndsWithMatch_ ();
     }
 }
 

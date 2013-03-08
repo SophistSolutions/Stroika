@@ -835,7 +835,23 @@ size_t  String::RFind (const String& subString) const
     return (kBadStringIndex);
 }
 
-bool    String::Match (const RegularExpression& regEx, CompareOptions co) const
+bool    String::StartsWith (const String& subString, CompareOptions co) const
+{
+    if (subString.GetLength () >  GetLength ()) {
+        return false;
+    }
+    return SubString (0, subString.GetLength ()).Compare (subString, co) == 0;
+}
+
+bool    String::EndsWith (const String& subString, CompareOptions co) const
+{
+    if (subString.GetLength () >  GetLength ()) {
+        return false;
+    }
+    return SubString (GetLength () - subString.GetLength (), GetLength ()).Compare (subString, co) == 0;
+}
+
+bool    String::Match (const RegularExpression& regEx) const
 {
     wstring tmp =   As<wstring> ();
     return regex_match (tmp.begin(), tmp.end(), wregex (regEx.GetAsStr ().As<wstring> ()));
@@ -886,6 +902,7 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 String  String::SubString (size_t from, size_t to) const
 {
     Require ((from <= to) or (to == kBadStringIndex));
+    Require ((to <= GetLength ()) or (to == kBadStringIndex));
 
     size_t  myLength    =   GetLength ();
     size_t  length  =   (to == kBadStringIndex) ? (myLength - from) : (to - from);

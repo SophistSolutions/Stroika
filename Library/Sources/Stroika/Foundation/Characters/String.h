@@ -51,20 +51,25 @@
 /**
  * TODO:
  *
- *      @todo   Review if Match (const... should have CASECOMPARE options). May not fit with regexp stuff?
- *              If it does, we should add back for FIND () code.
- *
- *      @todo   Maybe Get Rid of /RENAME Search () API to FindAll(). Maybe same thing, and clearer name(s).
- *
- *      @todo   Redo SetLength() API, so caller must specify fill-character.
- *
- *      @todo   FindAll() needs overloads - mostly to mimic Find() API (except not startat).
- *
  *      @todo   String search API SUCKS!!! See example code in TimeOfDay:
  *                  wstring  tmp =    Format (locale ()).As<wstring> ();
  *                  size_t i;
  *                  while ( (i = tmp.find (L":00")) != wstring::npos) {
  *              Had todo with wstring cuz so painful with my pathetic search API Here!!!
+ *
+ *
+ *      @todo   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
+ *              separate logically and have trivial wrappers here.
+ *
+ *          UNCLEAR.
+ *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
+ *
+ *
+ *
+ *
+ *      @todo   Maybe Get Rid of /RENAME Search () API to FindAll(). Maybe same thing, and clearer name(s).
+ *
+ *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *
  *      @todo   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistent
  *               with other APIs.
@@ -77,13 +82,6 @@
  *              not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
  *              Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
  *              not totally clear what name is best (split or tokenize()).
- *
- *      @todo   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
- *              separate logically and have trivial wrappers here.
- *
- *          UNCLEAR.
- *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
- *
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
@@ -291,16 +289,53 @@ namespace   Stroika {
                 nonvirtual  void        Remove (Character c);
 
             public:
+                /**
+                 *  Produce a substring of this string, starting at from, and up to to
+                 *  (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
+                 *  then return all the way to the end of the string.
+                 *
+                 *  \req  ((from <= to) or (to == kBadStringIndex));
+                 *  \req  ((to <= GetLength ()) or (to == kBadStringIndex));
+                 */
+                nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
+
+            public:
+                /**
+                 *  Returns true if the argument character or string is found anywhere inside this string.
+                 *  This is equivilent to
+                 *      return Match (".*" + X + L".*");    // If X had no characters which look like they are part of
+                 *                                          // a regular expression
+                 *
+                 *  @see Match
+                 */
                 nonvirtual  bool    Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  bool    Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
-                 * Produce a substring of this string, starting at from, and up to to
-                 * (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
-                 * then return all the way to the end of the string.
+                 *  Returns true iff the given substring is contained in this string.
+                 *
+                 *  Similar to:
+                 *      return Match (X + L".*");
+                 *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+                 *
+                 *  @see Match
+                 *  @see EndsWith
                  */
-                nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
+                nonvirtual  bool    StartsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+
+            public:
+                /**
+                 *  Returns true iff the given substring is contained in this string.
+                 *
+                 *  Similar to:
+                 *      return Match (X + L".*");
+                 *  except for the fact that with StartsWith() doesn't interpet 'X' as a regular expression
+                 *
+                 *  @see Match
+                 *  @see StartsWith
+                 */
+                nonvirtual  bool    EndsWith (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -314,15 +349,14 @@ namespace   Stroika {
                  *      Assert (String (L"abc").Match (L".*bc"));
                  *      Assert (not String (L"abc").Match (L"b.*c"));
                  *
-                 *  Note - there is no reason for StartsWith/EndsWith. These correspond roughly to:
-                 *      bool StartsWith (String X) { return Match (X + L".*"); }
-                 *      bool EndsWith (String X) { return Match (L".*" + X); }
-                 *  with the only caveat being 'quoting' X so its not interpreted as a regular expression.
-                 *
                  *  Details on the regular expression language/format can be found at:
                  *      http://en.wikipedia.org/wiki/C%2B%2B11#Regular_expressions
+                 *
+                 *  @see Contains
+                 *  @see StartsWith
+                 *  @see EndsWith
                  */
-                nonvirtual  bool    Match (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  bool    Match (const RegularExpression& regEx) const;
 
             public:
                 /*
@@ -340,7 +374,6 @@ namespace   Stroika {
                 nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
-/// NOT SURE WE SHOULD DO INDEXOF /RINDEX OF - CUZ OF REGEX VERSIONS
                 /**
                  * inherited from Sequence. Lookup the character (or string) in this string, and return
                  * its index - either starting from the front, or end of the string. Returns kBadStringIndex
@@ -348,7 +381,7 @@ namespace   Stroika {
                  *
                  *  <<<DOCS BASICALLY ALL WRONG >>>>
                  *
-                 * IndexOf (substring) returns the index of the first occurance of the given substring in
+                 * Find (substring) returns the index of the first occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
                  * given substring, or kBadStringIndex otherwise.
                  *
@@ -374,6 +407,10 @@ namespace   Stroika {
                  *  occurrances of the given argument substring. Accumulate those results and return the actual
                  *  substrings.
                  *
+                 *  *Design Note*:
+                 *
+                 *  There is no overload for FindAll() taking a Character or SubString, because the results
+                 *  wouldn't be useful. Their count might be, but the results would each be identical to the argument.
                  */
                 nonvirtual  vector<String>  FindAll (const RegularExpression& regEx) const;
 
