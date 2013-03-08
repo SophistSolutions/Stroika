@@ -157,17 +157,11 @@
 #ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
 
 #if     defined (__GNUC__)  && !defined (__clang__)
-
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-
 #elif   defined (_MSC_VER)
-
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER > _MS_VS_2k12_VER_)
-
 #else
-
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
-
 #endif
 
 #endif
