@@ -683,15 +683,10 @@ void    String::RemoveAt (size_t index, size_t nCharsToRemove)
 
 void    String::Remove (Character c)
 {
-    size_t index = IndexOf (c);
+    size_t index = Find (c, CompareOptions::eWithCase);
     if (index != kBadStringIndex) {
         RemoveAt (index, 1);
     }
-}
-
-size_t  String::Find (Character c, CompareOptions co) const
-{
-    return Find (c, 0, co);
 }
 
 size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
@@ -718,11 +713,6 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
             break;
     }
     return (kBadStringIndex);
-}
-
-size_t  String::Find (const String& subString, CompareOptions co) const
-{
-    return Find (subString, 0, co);
 }
 
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
@@ -783,7 +773,7 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
     return pair<size_t, size_t> (kBadStringIndex, kBadStringIndex);
 }
 
-vector<String>  String::FindAll (const RegularExpression& regEx, CompareOptions co) const
+vector<String>  String::FindAll (const RegularExpression& regEx) const
 {
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
@@ -813,7 +803,7 @@ vector<String>  String::Find (const String& string2SearchFor, CompareOptions co)
     return result;
 }
 #endif
-size_t  String::RIndexOf (Character c) const
+size_t  String::RFind (Character c) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
@@ -825,7 +815,7 @@ size_t  String::RIndexOf (Character c) const
     return (kBadStringIndex);
 }
 
-size_t  String::RIndexOf (const String& subString) const
+size_t  String::RFind (const String& subString) const
 {
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     /*
@@ -843,16 +833,6 @@ size_t  String::RIndexOf (const String& subString) const
         }
     }
     return (kBadStringIndex);
-}
-
-bool    String::Contains (Character c, CompareOptions co) const
-{
-    return bool (IndexOf (c, co) != kBadStringIndex);
-}
-
-bool    String::Contains (const String& subString, CompareOptions co) const
-{
-    return bool (IndexOf (subString, co) != kBadStringIndex);
 }
 
 bool    String::Match (const RegularExpression& regEx, CompareOptions co) const

@@ -51,6 +51,14 @@
 /**
  * TODO:
  *
+ *      @todo   Review if Match (const... should have CASECOMPARE options). May not fit with regexp stuff?
+ *              If it does, we should add back for FIND () code.
+ *
+ *      @todo   Maybe Get Rid of /RENAME Search () API to FindAll(). Maybe same thing, and clearer name(s).
+ *
+ *      @todo   Redo SetLength() API, so caller must specify fill-character.
+ *
+ *      @todo   FindAll() needs overloads - mostly to mimic Find() API (except not startat).
  *
  *      @todo   String search API SUCKS!!! See example code in TimeOfDay:
  *                  wstring  tmp =    Format (locale ()).As<wstring> ();
@@ -80,8 +88,6 @@
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
  *      @todo   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
- *
- *      @todo   Think out RINDEX/INDEXOF compare with REGEXP versions.
  *
  *      @todo   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
  *              StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
@@ -244,7 +250,7 @@ namespace   Stroika {
                 nonvirtual  size_t  GetLength () const;
 
             public:
-                /*
+                /**
                  * NOTE - when you increase the size of a string with SetLength() - the extra characters
                  * added are not initialized, and will have random values.
                  */
@@ -285,21 +291,11 @@ namespace   Stroika {
                 nonvirtual  void        Remove (Character c);
 
             public:
-                nonvirtual  size_t  RIndexOf (Character c) const;
-
-                /*
-                 * RIndexOf (substring) returns the index of the last occurance of the given substring in
-                 * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or kBadStringIndex otherwise.
-                 */
-                nonvirtual  size_t  RIndexOf (const String& subString) const;
-
-            public:
                 nonvirtual  bool    Contains (Character c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  bool    Contains (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
-                /*
+                /**
                  * Produce a substring of this string, starting at from, and up to to
                  * (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
                  * then return all the way to the end of the string.
@@ -366,32 +362,29 @@ namespace   Stroika {
                  *  \req (startAt <= GetLength ());
                  *
                  */
-                nonvirtual  size_t              Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t              Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t              Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  size_t              Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  pair<size_t, size_t> Find (const RegularExpression& regEx, size_t startAt = 0) const;
+                nonvirtual  size_t                  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t                  Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t                  Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  size_t                  Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  pair<size_t, size_t>    Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
-                nonvirtual  vector<String>  FindAll (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
-
-#if 0
-            public:
-                /*
+                /**
+                 *  Run Find (), starting at the beginning of the string and iterating through, capturing all the
+                 *  occurrances of the given argument substring. Accumulate those results and return the actual
+                 *  substrings.
+                 *
                  */
-//                nonvirtual  vector<String>  Find (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
-#endif
+                nonvirtual  vector<String>  FindAll (const RegularExpression& regEx) const;
 
             public:
-                nonvirtual  size_t  IndexOf (Character c, CompareOptions co = CompareOptions::eWithCase) const {
-                    // back compat API - tmphack
-                    return Find (c, co);
-                }
-                nonvirtual  size_t  IndexOf (const String& subString, CompareOptions co = CompareOptions::eWithCase) const {
-                    // back compat API - tmphack
-                    return Find (subString, co);
-                }
-
+                /**
+                 * RFind (substring) returns the index of the last occurance of the given substring in
+                 * this string. This function always returns a valid string index, which is followed by the
+                 * given substring, or kBadStringIndex otherwise.
+                 */
+                nonvirtual  size_t  RFind (Character c) const;
+                nonvirtual  size_t  RFind (const String& subString) const;
 
             public:
                 /*

@@ -121,10 +121,10 @@ namespace   {
         // I cannot see how to get other fields using CoInternetParseURL??? - LGP 2004-04-13...
         {
             String  matchStr        =   *protocol + L"://" + *host;
-            size_t  startOfPath     =   canonical.IndexOf (matchStr);
+            size_t  startOfPath     =   canonical.Find (matchStr);
             if (startOfPath == kBadStringIndex) {
                 matchStr        =   *protocol + L":";
-                startOfPath     =   canonical.IndexOf (matchStr);
+                startOfPath     =   canonical.Find (matchStr);
             }
             if (startOfPath == kBadStringIndex) {
                 startOfPath = canonical.length ();

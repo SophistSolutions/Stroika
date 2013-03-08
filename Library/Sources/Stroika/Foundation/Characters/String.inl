@@ -94,6 +94,22 @@ namespace   Stroika {
             {
                 *this = String ();
             }
+            inline  size_t  String::Find (Character c, CompareOptions co) const
+            {
+                return Find (c, 0, co);
+            }
+            inline  size_t  String::Find (const String& subString, CompareOptions co) const
+            {
+                return Find (subString, 0, co);
+            }
+            inline  bool    String::Contains (Character c, CompareOptions co) const
+            {
+                return bool (Find (c, co) != kBadStringIndex);
+            }
+            inline  bool    String::Contains (const String& subString, CompareOptions co) const
+            {
+                return bool (Find (subString, co) != kBadStringIndex);
+            }
             inline  void    String::InsertAt (Character c, size_t at)
             {
                 InsertAt (&c, &c + 1, at);
@@ -247,11 +263,11 @@ namespace   Stroika {
             }
             inline  size_t String::find (wchar_t c) const
             {
-                return IndexOf (c);
+                return Find (c, CompareOptions::eWithCase);
             }
             inline  size_t String::rfind (wchar_t c) const
             {
-                return RIndexOf (c);
+                return RFind (c);
             }
             inline  void    String::push_back (wchar_t c)
             {
