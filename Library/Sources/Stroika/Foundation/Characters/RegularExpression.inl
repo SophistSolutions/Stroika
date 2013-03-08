@@ -9,19 +9,27 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Debug/Assertions.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
-            //  class  RegularExpression
-            inline  RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType)
-                : fVal_ (re)
-                , fSyntaxType_ (syntaxType)
+
+            /*
+             ********************************************************************************
+             ********************** Characters::RegularExpression ***************************
+             ********************************************************************************
+             */
+            inline  RegularExpression::RegularExpression (const wregex& regEx)
+                :  fCompiledRegExp_ (regEx)
             {
             }
-            inline  String  RegularExpression::GetAsStr () const
+            inline  const wregex&  RegularExpression::GetCompiled () const
+            {
+                return fCompiledRegExp_;
+            }
+#if 0
+            inline  const String&  RegularExpression::GetAsStr () const
             {
                 return fVal_;
             }
@@ -29,6 +37,8 @@ namespace   Stroika {
             {
                 return fSyntaxType_;
             }
+#endif
+
 
         }
     }
