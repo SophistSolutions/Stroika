@@ -190,16 +190,12 @@ size_t  Connection_LibCurl::Rep_::s_ResponseHeaderWriteHandler_ (void* ptr, size
 
 size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes)
 {
-    string tmp (reinterpret_cast<const char*> (ptr), nBytes);
-    string::size_type i = tmp.find (':');
-    String  from;
+    String  from    =   String::FromUTF8 (tmp);
     String  to;
-    if (i == string::npos) {
-        from = String::FromUTF8 (tmp);
-    }
-    else {
-        from = String::FromUTF8 (tmp.substr (0, i));
-        to = String::FromUTF8 (tmp.substr (i + 1));
+    sized_t i       =   from.find (':');
+    if (i != string::npos) {
+        from = tmp.SubString (0, i);
+        to = tmp.SubString (i + 1);
     }
     from = from.Trim ();
     to = to.Trim ();

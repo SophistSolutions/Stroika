@@ -51,18 +51,19 @@
 /**
  * TODO:
  *
- *      @todo   String search API SUCKS!!! See example code in TimeOfDay:
- *                  wstring  tmp =    Format (locale ()).As<wstring> ();
- *                  size_t i;
- *                  while ( (i = tmp.find (L":00")) != wstring::npos) {
- *              Had todo with wstring cuz so painful with my pathetic search API Here!!!
- *
- *
  *      @todo   CompareOptions maybe needs to go in same file with RegularExpression (maybe here - maybe separate file - better more
  *              separate logically and have trivial wrappers here.
  *
  *          UNCLEAR.
  *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
+ *
+ *      @todo   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
+ *
+ *      @todo   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
+ *              StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
+ *
+ *
+ *
  *
  *
  *
@@ -85,11 +86,6 @@
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
- *      @todo   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
- *
- *      @todo   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
- *              StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
- *
  *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
  *              documentation, and make clearer, and document the tricky bits loosely
  *              alluded to in the appropriate place if the API is truely DOABLE.
@@ -108,28 +104,22 @@
  *
  *              o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
  *
- *
  *      @todo   Fix const   Memory::SharedByValue<String::String::Rep>  String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
  *              to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
  *              just in CPP file
  *
- *
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
  *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
- *
  *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
- *
  *      @todo   Try and get rid of the Peek () API
- *
  *
  *      @todo   WRITEUP THREAD SAFETY:
  *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
  *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
- *
  *
  *      @todo   Migrate most of the StringUtils stuff here like:
  *              > Contains- with CI optin
@@ -141,7 +131,6 @@
  *
  *
  *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
- *
  *
  *      @todo   Compare
  *          template    <typename TCHAR>
@@ -156,21 +145,17 @@
  *                  }
  *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
  *
- *
  *      @todo   when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class
  *              (will work beatifulyl with new stdc++ foreach() stuff).
  *
  *              (OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
  *
- *
  *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
- *
  *
  *      @todo   Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally.
  *              Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
  *              (what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT –
  *              but pretty sure we want some sort of String_stdwstring().
- *
  *
  *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
@@ -178,6 +163,7 @@
  *
  *      @todo   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
  *              and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
+ *
  */
 
 
@@ -293,9 +279,17 @@ namespace   Stroika {
                  *  Produce a substring of this string, starting at from, and up to to
                  *  (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
                  *  then return all the way to the end of the string.
+				 *
+				 *	*NB* This function treats the second argument differntly than String::substr () - 
+				 *	which respects the STL basic_string API. This function treats the second argument
+				 *	as a 'to', STL substr() treats it as a count. This amounts to the same thing for the
+				 *	very common cases of substr(N) - because second argument is defaulted, and,
+				 *	substr (0, N) - because then the count and end are the same.
                  *
                  *  \req  ((from <= to) or (to == kBadStringIndex));
                  *  \req  ((to <= GetLength ()) or (to == kBadStringIndex));
+				 *
+				 *	@see substr
                  */
                 nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
 
@@ -585,8 +579,12 @@ namespace   Stroika {
                 nonvirtual  void    push_back (wchar_t c);
                 nonvirtual  void    push_back (Character c);
 
-                // Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
-                // as Stroika::String::SubString (where the second argument is a 'to')
+                /**
+				 *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
+                 *	as Stroika::String::SubString (where the second argument is a 'to')
+				 *
+				 *	@see SubString
+				 */
                 nonvirtual  String      substr (size_t from, size_t count = kBadStringIndex) const;
 
             protected:

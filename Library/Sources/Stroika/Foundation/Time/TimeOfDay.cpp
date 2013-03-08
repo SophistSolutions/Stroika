@@ -387,7 +387,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                 return Format (locale ());
             }
         case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
-                wstring  tmp =    Format (locale ()).As<wstring> ();
+                String  tmp =    Format (locale ());
                 /*
                  * This logic probably needs to be locale-specific, but this is good enuf for now...
                  *
@@ -396,7 +396,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                  *          -- LGP 2013-03-02
                  */
                 size_t i;
-                while ( (i = tmp.rfind (L":00")) != wstring::npos) {
+                while ( (i = tmp.RFind (L":00")) != kBadStringIndex) {
                     // if its a TRAILING :00 - lose it...
                     bool trailing = false;
                     if (i + 3 == tmp.size ()) {
@@ -406,7 +406,7 @@ String TimeOfDay::Format (PrintFormat pf) const
                         trailing = true;
                     }
                     if (trailing) {
-                        tmp = tmp.substr (0, i) + tmp.substr (i + 3);
+                        tmp = tmp.SubString (0, i) + tmp.SubString (i + 3);
                     }
                     else {
                         break;

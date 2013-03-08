@@ -299,7 +299,7 @@ String Date::Format (PrintFormat pf) const
             }
             break;
         case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
-                wstring  tmp =    Format (locale ()).As<wstring> ();
+                String  tmp =    Format (locale ());
                 /*
                  * This logic probably needs to be locale-specific, but this is good enuf for now...
                  *
@@ -308,11 +308,11 @@ String Date::Format (PrintFormat pf) const
                  *          -- LGP 2013-03-02
                  */
                 size_t i = 0;
-                while ( (i = tmp.find (L"0", i)) != wstring::npos) {
+                while ( (i = tmp.Find (L"0", i)) != wstring::npos) {
                     // any 0N (where n a digit) is replaced with a single '0'
                     bool isLeadingZero = false;
-                    if (i < tmp.length () and iswdigit (tmp[i + 1])) {
-                        if (i == 0 or not iswdigit (tmp[i - 1])) {
+                    if (i < tmp.length () and tmp[i + 1].IsDigit ()) {
+                        if (i == 0 or not tmp[i - 1].IsDigit ()) {
                             // don't strip leading zeros if its the YEAR - the last part of a X/Y/Z combo...
                             //
                             // this test is quite inadequate...
