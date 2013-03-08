@@ -119,9 +119,7 @@ ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (
 {
 }
 
-#if     !qCompilerAndStdLib_Supports_ConstructorDelegation
 ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const vector<Byte>& v)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (Containers::Start (v), Containers::End (v))))
 {
 }
-#endif
