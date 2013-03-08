@@ -11,11 +11,12 @@
 #include    "../../Streams/BinaryOutputStream.h"
 
 
-/*
+/**
+ *	\file
+ *
  * TODO:
+ *
  */
-
-
 
 namespace   Stroika {
     namespace   Foundation {
