@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <locale>
 #include    <string>
 
 #include    "../Configuration/Common.h"
@@ -16,8 +17,12 @@
 
 /*
  * TODO:
- *      o   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
- *          AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
+ *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
+ *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
+ *
+ *      @todo   Consdier if we should have variants of these funtions taking a locale, or
+ *              always using C/currnet locale. For the most part - I find it best to use the C locale.
+ *              But DOCUMENT in all cases!!! And maybe implement variants...
  */
 
 
@@ -156,6 +161,7 @@ namespace   Stroika {
             double  String2Float (const String& s);
 
             /**
+             *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
              */
             wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 

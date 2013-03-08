@@ -344,6 +344,7 @@ wstring Characters::Float2String (double f, unsigned int precision)
         return wstring ();
     }
     stringstream s;
+    s.imbue (locale ("C"));
     s << setprecision (precision) << f;
     wstring r = ASCIIStringToWide (s.str ());
     return r;
