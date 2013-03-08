@@ -778,7 +778,33 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
     return pair<size_t, size_t> (kBadStringIndex, kBadStringIndex);
 }
 
-vector<String>  String::FindAll (const RegularExpression& regEx) const
+vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions co) const
+{
+    vector<size_t>  result;
+    AssertNotImplemented ();
+    return result;
+}
+
+vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) const
+{
+    vector<pair<size_t, size_t>>  result;
+#if     qCompilerAndStdLib_Supports_regex_replace
+    wstring         tmp     =   As<wstring> ();
+    wregex          regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
+    std::wsmatch    res;
+    regex_search (tmp, res, regExp);
+    result.reserve (res.size ());
+    size_t  nMatches    =   res.size ();
+    for (size_t mi = 0; mi < nMatches; ++mi) {
+        result.push_back (pair<size_t, size_t> (res.position (mi), res.length (mi)));
+    }
+#else
+    AssertNotImplemented ();
+#endif
+    return result;
+}
+
+vector<String>  String::FindEachString (const RegularExpression& regEx) const
 {
     vector<String>  result;
     wstring tmp     =   As<wstring> ();
@@ -860,32 +886,6 @@ bool    String::Match (const RegularExpression& regEx) const
 {
     wstring tmp =   As<wstring> ();
     return regex_match (tmp.begin(), tmp.end(), wregex (regEx.GetAsStr ().As<wstring> ()));
-}
-
-vector<pair<size_t, size_t>>  String::Search (const String& string2SearchFor, CompareOptions co) const
-{
-    vector<pair<size_t, size_t>>  result;
-    AssertNotImplemented ();
-    return result;
-}
-
-vector<pair<size_t, size_t>>  String::Search (const RegularExpression& regEx, CompareOptions co) const
-{
-    vector<pair<size_t, size_t>>  result;
-#if     qCompilerAndStdLib_Supports_regex_replace
-    wstring         tmp     =   As<wstring> ();
-    wregex          regExp  =   wregex (regEx.GetAsStr ().As<wstring> (), mkOption_ (regEx.GetSyntaxType ()));
-    std::wsmatch    res;
-    regex_search (tmp, res, regExp);
-    result.reserve (res.size ());
-    size_t  nMatches    =   res.size ();
-    for (size_t mi = 0; mi < nMatches; ++mi) {
-        result.push_back (pair<size_t, size_t> (res.position (mi), res.length (mi)));
-    }
-#else
-    AssertNotImplemented ();
-#endif
-    return result;
 }
 
 String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const

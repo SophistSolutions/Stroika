@@ -56,19 +56,13 @@
  *
  *          UNCLEAR.
  *              o   Probably add td::tr1::regex_constants::icase support, so there is an option
- *
- *      @todo   CompareOptions NOT SUPPORTED in implemantions yet for SEARCH/MATCH/FIND ETC
- *
- *      @todo   EITHER add "StartsWith" method, or document (via examples) how to use Match() to do
- *              StartsWith/EndsWith. It MUST be in the docString! and test cases in the test suite...
+ *          ***
+ *          AT SOME TIME I FIX THIS  - HAVE RegularExpression create subobjet with compiled regrexp - so re-usable and not need to be recompiled/
+ *          reconstructed (and so any erorrs get thrown not when used but when compiled).
  *
  *
- *
- *
- *
- *
- *
- *      @todo   Maybe Get Rid of /RENAME Search () API to FindAll(). Maybe same thing, and clearer name(s).
+ *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
+ *              sure - think through...
  *
  *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *
@@ -124,8 +118,6 @@
  *      @todo   Migrate most of the StringUtils stuff here like:
  *              > Contains- with CI optin
  *overload so can be string arg OR lambda!
- *              > StartsWtih- with CI optin
- *              > EndsWith- with CI optin
  *              > Compare () - returns < less > more =0 for equal- with CI optin
  *              > Equals() - with CI optin
  *
@@ -336,7 +328,7 @@ namespace   Stroika {
                 /**
                  *  Apply the given regular expression return true if it matches this string. This only
                  *  returns true if the expression matches the ENTIRE string - all the way to the end.
-                 *  See also 'Search()' - to find a set of things which match.
+                 *  @see FindEach() or @see Find - to find a set of things which match.
                  *
                  *  For example:
                  *      Assert (String (L"abc").Match (L"abc"));
@@ -350,51 +342,50 @@ namespace   Stroika {
                  *  @see Contains
                  *  @see StartsWith
                  *  @see EndsWith
+                 *  @see Find
+                 *  @see FindEach
                  */
                 nonvirtual  bool    Match (const RegularExpression& regEx) const;
 
             public:
-                /*
-                 * Apply the given regular expression, and return a vector of the starts of all substring
-                 * matches.
-                * See regex_replace () for definition of the regEx language
-                *       TODO: GIVE EXAMPLES
-
-                VERY BROKEN - GET WORKING - and maybe use this or Find() API????
-                -- LGP 2012-06-14
-
-                 */
-                // 2 overloads - wtih string - its a literal search, with regexp it does regexp search
-                nonvirtual  vector<pair<size_t, size_t>>  Search (const RegularExpression& regEx, CompareOptions co = CompareOptions::eWithCase) const;
-                nonvirtual  vector<pair<size_t, size_t>>  Search (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
-
-            public:
                 /**
-                 * inherited from Sequence. Lookup the character (or string) in this string, and return
-                 * its index - either starting from the front, or end of the string. Returns kBadStringIndex
-                 * if none found.
+                 *  Find returns the index of the first occurance of the given Character/substring argument in
+                 *  this string. Find () always returns a valid string index, which is followed by the
+                 *  given substring, or kBadStringIndex otherwise.
                  *
-                 *  <<<DOCS BASICALLY ALL WRONG >>>>
+                 *  Find () can optionally be provided a 'startAt' offset to begin the search at.
                  *
-                 * Find (substring) returns the index of the first occurance of the given substring in
-                 * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or kBadStringIndex otherwise.
-                 *
-                 * Apply the given regular expression, and return a vector of the starts of all substring
-                 * matches.
-                 * See regex_replace () for definition of the regEx language
-                 *       TODO: GIVE EXAMPLES
-                 *
-                 * The variant returning pair<size_t,size_t> defines the range of the matching result.
+                 *  And the overload taking a RegularExpression - returns BOTH the location where the match
+                 *  is found, but the length of the match.
                  *
                  *  \req (startAt <= GetLength ());
                  *
+                 *  @see FindEach ()
+                 *  @see FindEachString ()
                  */
                 nonvirtual  size_t                  Find (Character c, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  size_t                  Find (Character c, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  size_t                  Find (const String& subString, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  size_t                  Find (const String& subString, size_t startAt, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  pair<size_t, size_t>    Find (const RegularExpression& regEx, size_t startAt = 0) const;
+
+            public:
+                /*
+                 *  This is just like Find, but captures all the matching results in an iterable result.
+                 *  The reason the overload for RegularExpression's returns a list of pair<size_t,size_t> is because
+                 *  the endpoint of the match is ambiguous. For fixed string Find, the end of match is computable
+                 *  from the arguments.
+                 *
+                 *  FindEach () can be more handy to use than directly using Find () in scenarios where you want
+                 *  to iterate over each match:
+                 *      e.g.:
+                 *          for (auto i : s.FindEach ("xxx")) {....}
+                 *
+                 *  @see Find ()
+                 *  @see FindEachString ()
+                 */
+                nonvirtual  vector<pair<size_t, size_t>>    FindEach (const RegularExpression& regEx) const;
+                nonvirtual  vector<size_t>                  FindEach (const String& string2SearchFor, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
                 /**
@@ -404,10 +395,10 @@ namespace   Stroika {
                  *
                  *  *Design Note*:
                  *
-                 *  There is no overload for FindAll() taking a Character or SubString, because the results
+                 *  There is no overload for FindEachString() taking a Character or SubString, because the results
                  *  wouldn't be useful. Their count might be, but the results would each be identical to the argument.
                  */
-                nonvirtual  vector<String>  FindAll (const RegularExpression& regEx) const;
+                nonvirtual  vector<String>  FindEachString (const RegularExpression& regEx) const;
 
             public:
                 /**
@@ -541,10 +532,12 @@ namespace   Stroika {
 
 
             public:
-                // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                nonvirtual  int Compare (const String& rhs, CompareOptions co) const;
-                nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const;
-                nonvirtual  int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const;
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 */
+                nonvirtual  int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
 
 
                 // StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without
