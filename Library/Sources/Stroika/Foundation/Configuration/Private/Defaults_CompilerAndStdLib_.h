@@ -42,7 +42,7 @@
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
 #endif
-#if     (__GNUC__ == 4 && (__GNUC_MINOR__ > 6))
+#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 7))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
@@ -247,8 +247,8 @@
 */
 #ifndef qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
 
-#if     defined (__GNUC__) && !defined (__clang__) &&  (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            1
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded			(__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
 #endif
@@ -631,7 +631,7 @@
 //at least fails with clang 3.0
 #define qCompilerAndStdLib_Supports_lambda_default_argument     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument     1
 #endif
