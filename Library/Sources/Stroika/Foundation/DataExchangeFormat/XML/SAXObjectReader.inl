@@ -218,7 +218,7 @@ namespace   Stroika {
                         }
                         readingAT_ = true;
                         curTReading_ = typename TRAITS::ElementType (); // clear because dont' want to keep values from previous elements
-                        _this->PushNewObjPtr (r, DEBUG_NEW typename TRAITS::ReaderType (&curTReading_, attrs));
+                        this->PushNewObjPtr (r, DEBUG_NEW typename TRAITS::ReaderType (&curTReading_, attrs));
                     }
                     else {
                         ThrowUnRecognizedStartElt (uri, localName);
