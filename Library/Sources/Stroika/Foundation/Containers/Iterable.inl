@@ -177,13 +177,8 @@ namespace   Stroika {
                         (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
                     }
                 };
-#if qCompilerAndStdLib_Supports_AddressOfTemporary
-                _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
-#else
                 CheapLambda_    tmp =   CheapLambda_(doToElement);
                 _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE (&tmp, &CheapLambda_::DoToItem));
-#endif
-
 #endif
             }
             template    <typename T>

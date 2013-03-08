@@ -192,7 +192,7 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
 {
     String  from    =   String::FromUTF8 (reinterpret_cast<const char*> (ptr), reinterpret_cast<const char*> (ptr) + nBytes);
     String  to;
-    size_t	i       =   from.find (':');
+    size_t  i       =   from.find (':');
     if (i != string::npos) {
         to = from.SubString (i + 1);
         from = from.SubString (0, i);
