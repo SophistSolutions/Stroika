@@ -6,6 +6,9 @@
 #if     qPlatform_Windows
 #include    <windows.h>
 #endif
+#if     qPlatform_POSIX && qSupport_Proc_Filesystem
+#include    <unistd.h>
+#endif
 
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Exceptions.h"
