@@ -154,12 +154,12 @@ namespace   Stroika {
                 template    <typename T>
                 void      Tally_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
-                    return _Apply (doToElement);
+                    this->_Apply (doToElement);
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>>     Tally_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
-                    return _ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
                 bool   Tally_LinkedList<T>::Rep_::Contains (T item) const

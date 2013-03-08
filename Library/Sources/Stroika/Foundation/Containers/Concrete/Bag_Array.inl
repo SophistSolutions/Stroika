@@ -147,12 +147,12 @@ namespace   Stroika {
                 template    <typename T>
                 void      Bag_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
-                    return _Apply (doToElement);
+                    this->_Apply (doToElement);
                 }
                 template    <typename T>
                 Iterator<T>     Bag_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
-                    return _ApplyUntilTrue (doToElement);
+                    return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Compact ()
