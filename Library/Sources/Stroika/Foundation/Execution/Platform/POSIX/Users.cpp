@@ -3,6 +3,8 @@
  */
 #include    "../../../StroikaPreComp.h"
 
+#include    <unistd.h>
+
 #include    "../../../Memory/SmallStackBuffer.h"
 #include    "../../ErrNoException.h"
 
