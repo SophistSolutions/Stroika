@@ -290,8 +290,8 @@
 */
 #ifndef qCompilerAndStdLib_Supports_regex_replace
 
-#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#define qCompilerAndStdLib_Supports_regex_replace       0
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_regex_replace       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #else
 #define qCompilerAndStdLib_Supports_regex_replace       1
 #endif

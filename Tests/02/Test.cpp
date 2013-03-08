@@ -664,8 +664,8 @@ namespace   {
         {
             RegularExpression   regExp (L"abc");
             String              testStr2Search  =   String (L"abc");
-            VerifyTestResult (testStr2Search.Search (regExp).size () == 1);
-            VerifyTestResult ((testStr2Search.Search (regExp)[0] == pair<size_t, size_t> (0, 3)));
+            VerifyTestResult (testStr2Search.FindEach (regExp).size () == 1);
+            VerifyTestResult ((testStr2Search.FindEach (regExp)[0] == pair<size_t, size_t> (0, 3)));
         } {
             // Test replace crlfs
             String  stringWithCRLFs =   L"abc\r\ndef\r\n";
@@ -690,7 +690,7 @@ namespace   {
         Test17_RegExp_Search_ ();
 #if     qCompilerAndStdLib_Supports_regex_replace
         VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
-        vector<String>  r   =   String (L"<h2>Egg prices</h2>").FindAll (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
+        vector<String>  r   =   String (L"<h2>Egg prices</h2>").FindEachString (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
         VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");
         VerifyTestResult (String (L"Hello world").ReplaceAll (RegularExpression (L"world"), L"Planet") == L"Hello Planet");
 #endif
