@@ -95,7 +95,7 @@ Logger::SysLogAppender::~SysLogAppender ()
     closelog ();
 }
 
-void    Logger::SysLogAppender::Log (Priority logLevel, const String& message) override
+void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
     DbgTrace (L"%s", message.c_str ());
     syslog (static_cast<int> (logLevel), "%s", message.AsTString ().c_str ());

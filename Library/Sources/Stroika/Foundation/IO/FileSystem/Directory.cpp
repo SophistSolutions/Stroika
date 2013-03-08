@@ -16,6 +16,9 @@
 #include    <shlobj.h>
 #include    <windows.h>
 #endif
+#if		qPlatform_POSIX
+#include	<unistd.h>
+#endif
 
 #include    "../../Characters/Format.h"
 #include    "../../Characters/StringUtils.h"
