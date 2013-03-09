@@ -161,6 +161,29 @@ namespace   Stroika {
                 }
                 return (count);
             }
+            template    <typename T>
+            bool  Bag<T>::operator== (const Bag<T>& rhs) const
+            {
+                if (&_GetRep () == &rhs._GetRep ()) {
+                    return (true);
+                }
+                if (GetLength () != rhs.GetLength ()) {
+                    return (false);
+                }
+
+                // n^2 algorithm!!!
+                for (T i : *this) {
+                    if (this->TallyOf (i) != rhs.TallyOf (i)) {
+                        return (false);
+                    }
+                }
+                return (true);
+            }
+            template    <typename T>
+            inline  bool    Bag<T>::operator!= (const Bag<T>& rhs) const
+            {
+                return (not (*this == rhs));
+            }
 
 
             /*
@@ -168,24 +191,6 @@ namespace   Stroika {
              ************************************ operators *********************************
              ********************************************************************************
              */
-            template    <typename T>
-            bool  operator== (const Bag<T>& lhs, const Bag<T>& rhs)
-            {
-                if (&lhs._GetRep () == &rhs._GetRep ()) {
-                    return (true);
-                }
-                if (lhs.GetLength () != rhs.GetLength ()) {
-                    return (false);
-                }
-
-                // n^2 algorithm!!!
-                for (T i : lhs) {
-                    if (lhs.TallyOf (i) != rhs.TallyOf (i)) {
-                        return (false);
-                    }
-                }
-                return (true);
-            }
             template    <typename T>
             Bag<T>    operator+ (const Bag<T>& lhs, const Bag<T>& rhs)
             {
@@ -199,11 +204,6 @@ namespace   Stroika {
                 Bag<T>  temp    = lhs;
                 temp -= rhs;
                 return (temp);
-            }
-            template    <typename T>
-            inline  bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs)
-            {
-                return (not operator== (lhs, rhs));
             }
 
 

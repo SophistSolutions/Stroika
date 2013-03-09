@@ -187,23 +187,16 @@ namespace   Stroika {
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
 
-            private:
-                friend  bool    operator==<T> (const Bag<T>& lhs, const Bag<T>& rhs);   // friend to check if reps equal...
+            public:
+                nonvirtual  bool    operator== (const Bag<T>& rhs) const;
+                nonvirtual  bool    operator!= (const Bag<T>& rhs) const;
             };
-
-
-            template    <typename T>
-            bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
-            template    <typename T>
-            bool    operator!= (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
             template    <typename T>
             Bag<T>  operator+ (const Bag<T>& lhs, const Bag<T>& rhs);
             template    <typename T>
             Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
-
-
 
 
             /**
@@ -245,4 +238,3 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Bag.inl"
-
