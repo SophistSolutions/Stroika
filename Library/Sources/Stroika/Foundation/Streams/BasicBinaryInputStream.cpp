@@ -5,10 +5,7 @@
 
 #include    <algorithm>
 
-#if     !qCompilerAndStdLib_Supports_ConstructorDelegation
 #include    "../Containers/Common.h"
-#endif
-
 #include    "../Execution/OperationNotSupportedException.h"
 
 #include    "BasicBinaryInputStream.h"
