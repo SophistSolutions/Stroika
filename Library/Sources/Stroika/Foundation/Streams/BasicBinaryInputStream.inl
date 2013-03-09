@@ -14,7 +14,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-#if     qCompilerAndStdLib_Supports_ConstructorDelegation
+#if     qCompilerAndStdLib_Supports_ConstructorDelegation && 0
             template    <typename RandomAccessIteratorT>
             inline  Stroika::Foundation::Streams::BasicBinaryInputStream::BasicBinaryInputStream (RandomAccessIteratorT start, RandomAccessIteratorT end)
                 : BasicBinaryInputStream (&*start, &*end)

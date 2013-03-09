@@ -20,6 +20,8 @@
  *  \file
  *
  *      @todo   Re-implement using atomics to avoid critical section (cheaper).
+ *
+ *      @todo   #if qCompilerAndStdLib_Supports_ConstructorDelegation && 0 -- see why not working on gcc 4.7.2
  */
 
 
@@ -49,7 +51,7 @@ namespace   Stroika {
             private:
                 class   IRep_;
             public:
-#if     qCompilerAndStdLib_Supports_ConstructorDelegation
+#if     qCompilerAndStdLib_Supports_ConstructorDelegation && 0
                 template    <typename RandomAccessIteratorT>
                 BasicBinaryInputStream (RandomAccessIteratorT start, RandomAccessIteratorT end);
                 template    <typename ContainerOfT>

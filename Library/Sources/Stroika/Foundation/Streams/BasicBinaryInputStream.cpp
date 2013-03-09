@@ -126,7 +126,7 @@ BasicBinaryInputStream::BasicBinaryInputStream (const Byte* start, const Byte* e
 {
 }
 
-#if     !qCompilerAndStdLib_Supports_ConstructorDelegation
+#if     !qCompilerAndStdLib_Supports_ConstructorDelegation || 1
 BasicBinaryInputStream::BasicBinaryInputStream (const vector<Byte>& v)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (Containers::Start (v), Containers::End (v))))
 {
