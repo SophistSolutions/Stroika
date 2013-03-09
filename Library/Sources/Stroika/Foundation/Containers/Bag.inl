@@ -164,10 +164,10 @@ namespace   Stroika {
             template    <typename T>
             bool  Bag<T>::operator== (const Bag<T>& rhs) const
             {
-                if (&_GetRep () == &rhs._GetRep ()) {
+                if (&this->_GetRep () == &rhs._GetRep ()) {
                     return (true);
                 }
-                if (GetLength () != rhs.GetLength ()) {
+                if (this->GetLength () != rhs.GetLength ()) {
                     return (false);
                 }
 
