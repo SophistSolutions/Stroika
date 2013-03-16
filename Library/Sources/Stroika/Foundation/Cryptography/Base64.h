@@ -17,14 +17,16 @@
 
 
 /**
- * TODO:
+ *  \file
  *
+ * TODO:
  *
  *      @todo   EncodeBase64 should return STROIKA string, or BLOB - not std::string? Or maybe std::string
  *              best - but document why - cuz always ascii data so more compact?? No - not good reason cuz
  *              we can construct a SUBTYPE of String that takes advantage of it.
  *
- *      @todo   Consider if DecodeBase64 should take a binarystream as argument?
+ *      @todo   DecodeBase64() should have an overload taking BinaryInputStream, and EncodeBase64()
+ *              should have an overload with BinaryOutputStream (keeping exsting overloads).
  *
  *      @todo   Tons todo optimizing this implementation (to not use temporary objects and
  *              avoiding copying).
