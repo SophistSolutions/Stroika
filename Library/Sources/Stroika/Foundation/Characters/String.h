@@ -51,6 +51,8 @@
 /**
  * TODO:
  *
+ *      @todo   FromTString() overload like FromUTF8(), and docs for BOTH
+ *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
  *

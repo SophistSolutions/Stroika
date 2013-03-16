@@ -5,11 +5,14 @@
 #define _Stroika_Foundation_Characters_RegularExpression_h_    1
 
 /**
+ *  \file
  *
  * Description:
  *
  *
- *     ...
+ * TODO:
+ *
+ *      o   ...
  */
 
 #include    "../StroikaPreComp.h"
@@ -18,14 +21,6 @@
 
 #include    "String.h"
 
-
-
-/**
- * TODO:
- *
- *      o   ...
- *
- */
 
 
 
@@ -47,16 +42,20 @@ namespace   Stroika {
                  **** MAYBE REDO SO DEFAULT IS ECMASCRIPT?
                  */
                 enum    class   SyntaxType : uint8_t {
-                    eBasic ,
-                    eECMAScript,
+                    eECMAScript     =   regex_constants::syntax_option_type::ECMAScript,
+                    eBasic          =   regex_constants::syntax_option_type::basic,
+                    eExtended       =   regex_constants::syntax_option_type::extended ,
+                    eAwk            =   regex_constants::syntax_option_type::awk ,
+                    eGrep           =   regex_constants::syntax_option_type::grep ,
+                    eEGrep          =   regex_constants::syntax_option_type::egrep ,
 
-                    DEFAULT = SyntaxType::eBasic,
+                    eDEFAULT = SyntaxType::eBasic,
 
                     Define_Start_End_Count(eBasic, eECMAScript)
                 };
 
             public:
-                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::DEFAULT, CompareOptions co = CompareOptions::eWithCase);
+                explicit RegularExpression (const String& re, SyntaxType syntaxType = SyntaxType::eDEFAULT, CompareOptions co = CompareOptions::eWithCase);
                 explicit RegularExpression (const String& re, CompareOptions co);
                 RegularExpression (const wregex& regEx);
 

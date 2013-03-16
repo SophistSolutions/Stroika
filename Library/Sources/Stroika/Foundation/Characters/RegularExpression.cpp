@@ -16,7 +16,7 @@ using   namespace   Stroika::Foundation::Characters;
 namespace   {
     regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st, CompareOptions co)
     {
-        regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
+        regex_constants::syntax_option_type f   =   static_cast<regex_constants::syntax_option_type> (st);
         if (co == CompareOptions::eCaseInsensitive) {
             f |= regex_constants::icase;
         }
@@ -38,7 +38,7 @@ RegularExpression::RegularExpression (const String& re, SyntaxType syntaxType, C
 }
 
 RegularExpression::RegularExpression (const String& re, CompareOptions co)
-    :  fCompiledRegExp_ (re.As<wstring> (), mkOption_ (SyntaxType::DEFAULT, co))
+    :  fCompiledRegExp_ (re.As<wstring> (), mkOption_ (SyntaxType::eDEFAULT, co))
 {
 }
 
