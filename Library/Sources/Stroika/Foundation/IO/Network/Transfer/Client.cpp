@@ -195,4 +195,5 @@ Connection  Transfer::CreateConnection ()
 #if     qHasFeature_WinHTTP
     return Connection_WinHTTP ();
 #endif
+    Execution::DoThrow<Execution::StringException> (Execution::StringException (L"No registered transfer connection implementation"));  // not sure what to throw
 }
