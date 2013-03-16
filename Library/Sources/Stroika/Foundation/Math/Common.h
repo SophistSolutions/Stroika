@@ -16,18 +16,18 @@
  *              or documented better why.
  */
 
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
 
             using   std::numeric_limits;
 
+
             double  nan ();
 
-            const   double  kE  =   2.71828182845904523536;
-            const   double  kPi =   3.14159265358979323846;
+
+            constexpr   double  kE  =   2.71828182845904523536;
+            constexpr   double  kPi =   3.14159265358979323846;
 
 
             /**
@@ -40,6 +40,7 @@ namespace   Stroika {
             template    <typename T>
             T   RoundUpTo (T x, T toNearest);
 
+
             /**
              *  RoundDownTo() - round towards negative infinity.
              *
@@ -49,7 +50,6 @@ namespace   Stroika {
              */
             template    <typename T>
             T   RoundDownTo (T x, T toNearest);
-
 
 
             /**
@@ -89,5 +89,3 @@ namespace   std {
  ********************************************************************************
  */
 #include    "Common.inl"
-
-
