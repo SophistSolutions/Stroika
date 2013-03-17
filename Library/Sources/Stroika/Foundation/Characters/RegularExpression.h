@@ -41,7 +41,7 @@ namespace   Stroika {
                  *
                  **** MAYBE REDO SO DEFAULT IS ECMASCRIPT?
                  */
-                enum    class   SyntaxType : uint8_t {
+                enum    class   SyntaxType {
                     eECMAScript     =   regex_constants::ECMAScript,
                     eBasic          =   regex_constants::basic,
                     eExtended       =   regex_constants::extended,
