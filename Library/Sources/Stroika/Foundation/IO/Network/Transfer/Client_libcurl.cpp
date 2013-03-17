@@ -138,33 +138,33 @@ Connection_LibCurl::Rep_::~Rep_ ()
     }
 }
 
-DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const override
+DurationSecondsType Connection_LibCurl::Rep_::GetTimeout () const
 {
     AssertNotImplemented ();
     return 0;
 }
 
-void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout) override
+void    Connection_LibCurl::Rep_::SetTimeout (DurationSecondsType timeout)
 {
     MakeHandleIfNeeded_ ();
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_TIMEOUT_MS, static_cast<int> (timeout * 1000)));
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_CONNECTTIMEOUT_MS, static_cast<int> (timeout * 1000)));
 }
 
-URL     Connection_LibCurl::Rep_::GetURL () const override
+URL     Connection_LibCurl::Rep_::GetURL () const
 {
     // needs work... - not sure this is safe - may need to cache orig... instead of reparsing...
     return URL (String::FromUTF8 (fCURLCache_URL_).As<wstring> ());
 }
 
-void    Connection_LibCurl::Rep_::SetURL (const URL& url) override
+void    Connection_LibCurl::Rep_::SetURL (const URL& url)
 {
     MakeHandleIfNeeded_ ();
     fCURLCache_URL_ = String (url.GetURL ()).AsUTF8 ();
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 }
 
-void    Connection_LibCurl::Rep_::Close ()  override
+void    Connection_LibCurl::Rep_::Close ()
 {
     if (fCurlHandle_ != nullptr) {
         ::curl_easy_cleanup (fCurlHandle_);
@@ -203,7 +203,7 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
     return nBytes;
 }
 
-Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)   override
+Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
 {
     MakeHandleIfNeeded_ ();
     fResponseData_.clear ();
