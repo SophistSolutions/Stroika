@@ -42,16 +42,14 @@ namespace   Stroika {
                  **** MAYBE REDO SO DEFAULT IS ECMASCRIPT?
                  */
                 enum    class   SyntaxType : uint8_t {
-                    eECMAScript     =   regex_constants::syntax_option_type::ECMAScript,
-                    eBasic          =   regex_constants::syntax_option_type::basic,
-                    eExtended       =   regex_constants::syntax_option_type::extended ,
-                    eAwk            =   regex_constants::syntax_option_type::awk ,
-                    eGrep           =   regex_constants::syntax_option_type::grep ,
-                    eEGrep          =   regex_constants::syntax_option_type::egrep ,
+                    eECMAScript     =   regex_constants::ECMAScript,
+                    eBasic          =   regex_constants::basic,
+                    eExtended       =   regex_constants::extended,
+                    eAwk            =   regex_constants::awk,
+                    eGrep           =   regex_constants::grep,
+                    eEGrep          =   regex_constants::egrep,
 
                     eDEFAULT = SyntaxType::eBasic,
-
-                    Define_Start_End_Count(eBasic, eECMAScript)
                 };
 
             public:
