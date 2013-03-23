@@ -330,7 +330,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, const locale& l)
     };
     if (state & ios::failbit) {
         string  tmp =   WideStringToNarrowSDKString (rep.As<wstring> ());
-        for (auto i = StartOfArray (kFmtStrs2Try); (state & ios::failbit) and (i != EndOfArray (kFmtStrs2Try)); ++i) {
+        for (auto i = std::begin (kFmtStrs2Try); (state & ios::failbit) and (i != std::end (kFmtStrs2Try)); ++i) {
             memset (&when, 0, sizeof (when));
             state = (strptime (tmp.c_str (), *i, &when) == nullptr) ? ios::failbit : ios::goodbit;
         }
@@ -450,7 +450,7 @@ String TimeOfDay::Format (const locale& l) const
     wostringstream oss;
     //oss.imbue (l);        // not sure if/why needed/not/needed
     const wchar_t kPattern[] = L"%X";      // %X locale dependent
-    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

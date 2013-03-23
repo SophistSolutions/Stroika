@@ -50,7 +50,7 @@ namespace   Stroika {
                 RequireNotNull (e);
                 const   wchar_t kEOL[]  =   L"\r\n";
                 write (e, e + ::wcslen (e));
-                write (StartOfArray (kEOL), EndOfArray (kEOL));
+                write (std::begin (kEOL), std::end (kEOL));
             }
             inline  void    HTTPResponse::writeln (const wstring& e)
             {
@@ -58,7 +58,7 @@ namespace   Stroika {
                 if (not e.empty ()) {
                     write (Containers::Start (e), Containers::End (e));
                 }
-                write (StartOfArray (kEOL), EndOfArray (kEOL));
+                write (std::begin (kEOL), std::end (kEOL));
             }
             inline  void    HTTPResponse::clear ()
             {

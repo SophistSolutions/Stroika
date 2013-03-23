@@ -390,7 +390,7 @@ String Date::Format (const locale& l) const
     tm when =   Date2TM_ (*this);
     wostringstream oss;
     const wchar_t kPattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)
-    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

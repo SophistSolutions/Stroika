@@ -28,8 +28,8 @@ Memory::BLOB BinaryInputStream::ReadAll () const
     vector<Byte>    r;
     size_t          n;
     Byte            buf[10 * 1024];
-    while ( (n = this->Read (StartOfArray (buf), EndOfArray (buf))) != 0) {
-        r.insert (r.end (), StartOfArray (buf), StartOfArray (buf) + n);
+    while ( (n = this->Read (std::begin (buf), std::end (buf))) != 0) {
+        r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
     }
     return Memory::BLOB (r);
 }

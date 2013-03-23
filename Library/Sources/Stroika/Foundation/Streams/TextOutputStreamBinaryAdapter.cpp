@@ -28,7 +28,7 @@ public:
         , _fSource (src) {
         const   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
-            _fSource.Write (StartOfArray (kBOM), EndOfArray (kBOM));
+            _fSource.Write (std::begin (kBOM), std::end (kBOM));
         }
     }
 
@@ -45,12 +45,12 @@ protected:
 
         //char  outBuf[10*1024];
         char    outBuf[10]; // to test
-        char*   p   =   StartOfArray (outBuf);
+        char*   p   =   std::begin (outBuf);
         lock_guard<recursive_mutex>  critSec (_fCriticalSection);
 Again:
-        codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, StartOfArray (outBuf), EndOfArray (outBuf), p);
-        Assert (StartOfArray (outBuf) <= p and p <= EndOfArray (outBuf));
-        _fSource.Write (reinterpret_cast<const Byte*> (StartOfArray (outBuf)), reinterpret_cast<const Byte*> (p));
+        codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
+        Assert (std::begin (outBuf) <= p and p <= std::end (outBuf));
+        _fSource.Write (reinterpret_cast<const Byte*> (std::begin (outBuf)), reinterpret_cast<const Byte*> (p));
         if (r == codecvt_utf8<wchar_t>::partial) {
             goto Again;
         }

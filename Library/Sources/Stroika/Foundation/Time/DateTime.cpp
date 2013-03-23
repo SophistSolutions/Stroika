@@ -432,7 +432,7 @@ String DateTime::Format (const locale& l) const
     // Read docs - not sure how to use this to get the local-appropriate format
     // %X MAYBE just what we want  - locale DEPENDENT!!!
     const wchar_t kPattern[] = L"%x %X";
-    tmput.put (oss, oss, ' ', &when, StartOfArray (kPattern), StartOfArray (kPattern) + ::wcslen (kPattern));
+    tmput.put (oss, oss, ' ', &when, std::begin (kPattern), std::begin (kPattern) + ::wcslen (kPattern));
     return oss.str ();
 }
 

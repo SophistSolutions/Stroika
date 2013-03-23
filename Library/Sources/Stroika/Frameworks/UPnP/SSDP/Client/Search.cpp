@@ -85,10 +85,10 @@ public:
             try {
                 Byte    buf[3 * 1024];  // not sure of max packet size
                 SocketAddress   from;
-                size_t nBytesRead = fSocket_.ReceiveFrom (StartOfArray (buf), EndOfArray (buf), 0, &from);
+                size_t nBytesRead = fSocket_.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ReadPacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (StartOfArray (buf), StartOfArray (buf) + nBytesRead)));
+                ReadPacketAndNotifyCallbacks_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)));
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();

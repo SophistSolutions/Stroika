@@ -58,13 +58,13 @@ String TextInputStream::ReadAll () const
     String      result;
     while (true) {
         Character buf[1024];
-        size_t n = Read (StartOfArray (buf), EndOfArray (buf));
+        size_t n = Read (std::begin (buf), std::end (buf));
         Assert (0 <= n and n <= NEltsOf (buf));
         if (n == 0) {
             break;
         }
         else {
-            result.Append (StartOfArray (buf), StartOfArray (buf) + n);
+            result.Append (std::begin (buf), std::begin (buf) + n);
         }
     }
     return result;

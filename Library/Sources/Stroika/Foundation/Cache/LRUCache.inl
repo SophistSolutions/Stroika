@@ -179,7 +179,7 @@ namespace   Stroika {
             template    <typename   ELEMENT, typename TRAITS>
             inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator LRUCache<ELEMENT, TRAITS>::begin ()
             {
-                return CacheIterator (StartOfArray (fCachedElts_First_), EndOfArray (fCachedElts_First_));
+                return CacheIterator (std::begin (fCachedElts_First_), std::end (fCachedElts_First_));
             }
             template    <typename   ELEMENT, typename TRAITS>
             inline  typename    LRUCache<ELEMENT, TRAITS>::CacheIterator LRUCache<ELEMENT, TRAITS>::end ()

@@ -459,11 +459,11 @@ namespace   {
         VerifyTestResult (s == L"frxex");
         {
             wchar_t kZero[] =   L"";
-            s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 0);
+            s.InsertAt (std::begin (kZero), std::begin (kZero), 0);
             VerifyTestResult (s == L"frxex");
-            s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 1);
+            s.InsertAt (std::begin (kZero), std::begin (kZero), 1);
             VerifyTestResult (s == L"frxex");
-            s.InsertAt (StartOfArray (kZero), StartOfArray (kZero), 5);
+            s.InsertAt (std::begin (kZero), std::begin (kZero), 5);
             VerifyTestResult (s == L"frxex");
         }
     }

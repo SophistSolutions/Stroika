@@ -35,11 +35,11 @@ namespace   {
             }
             {
                 const char  kData[] =   "1";
-                BasicBinaryInputStream  s (reinterpret_cast<const Byte*> (StartOfArray(kData)), reinterpret_cast<const Byte*> (EndOfArray(kData)));
+                BasicBinaryInputStream  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
                 VerifyTestResult (not s.empty ());
                 VerifyTestResult (s.IsSeekable ());
                 Byte    result[100] = { 0 };
-                VerifyTestResult (s.Read (StartOfArray (result), EndOfArray (result)) == 2);
+                VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
                 VerifyTestResult (result[0] == '1');
                 VerifyTestResult (result[1] == '\0');
             }
@@ -73,10 +73,10 @@ namespace   {
                 VerifyTestResult (s.IsSeekable ());
 
                 const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (StartOfArray (kData_), EndOfArray (kData_));
+                s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB    b = s.As<Memory::BLOB> ();
                 VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (StartOfArray (kData_), EndOfArray (kData_)));
+                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
 
@@ -102,7 +102,7 @@ namespace   {
                 stringstream s;
                 BinaryOutputStreamFromOStreamAdapter  so (s);
                 const char kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const Byte*> (StartOfArray (kData_)), reinterpret_cast<const Byte*> (StartOfArray (kData_)) + strlen (kData_));
+                so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
                 VerifyTestResult (s.str () == kData_);
             }
         }

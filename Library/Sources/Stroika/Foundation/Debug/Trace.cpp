@@ -542,7 +542,7 @@ TraceContextBumper::TraceContextBumper (const TChar* contextName)
     fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + strlen (GetEOL<char> ()), TSTR ("<%s> {"), contextName);
     size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<TChar>::length (contextName));
     char_traits<TChar>::copy (fSavedContextName_, contextName, len);
-    *(EndOfArray (fSavedContextName_) - 1) = '\0';
+    *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len] = '\0';
     IncCount ();
 }

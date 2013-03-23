@@ -252,7 +252,7 @@ namespace {
                 "    }"
                 "}"
                 ;
-            Memory::VariantValue v = DataExchangeFormat::JSON::Reader (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (StartOfArray (kJSONExample_)), reinterpret_cast<const Byte*> (StartOfArray (kJSONExample_)) + strlen (kJSONExample_)));
+            Memory::VariantValue v = DataExchangeFormat::JSON::Reader (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
             map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
             VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
             map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
