@@ -10,6 +10,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Common.h"
 
 
 
@@ -44,21 +45,24 @@
 #endif
 
 
-
 namespace   Stroika {
     namespace   Foundation {
-
         namespace   Streams {
             class   BinaryInputStream;
         }
+    }
+}
 
+namespace   Stroika {
+    namespace   Foundation {
         namespace   Memory {
+
 
             using   namespace   std;
 
-            using   namespace   Stroika::Foundation;
-            using   namespace   Stroika::Foundation::Configuration;
-            using   namespace   Stroika::Foundation::Memory;
+
+            using   namespace   Configuration;
+            using   namespace   Memory;
 
 
             /**

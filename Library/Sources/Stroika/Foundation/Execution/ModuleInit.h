@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Common.h"
 
 
 
@@ -25,7 +26,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            using   namespace   Configuration;
+
+            //using   namespace   Configuration;
+            using   Memory::Byte;
 
 
             /**

@@ -12,7 +12,7 @@
 
 
 /*
- * See DOCS in Stroika/Foundation/Memory/Common.h
+ * See DOCS in Stroika/Foundation/Memory/LeakChecker.h
  */
 #if     !defined (qMSVisualStudioCRTMemoryDebug)
 #define qMSVisualStudioCRTMemoryDebug   0

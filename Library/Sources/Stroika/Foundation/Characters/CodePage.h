@@ -21,6 +21,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Common.h"
 
 
 
@@ -52,6 +53,9 @@ namespace   Stroika {
             using   std::string;
             using   std::wstring;
             using   std::basic_string;
+
+            using   Memory::Byte;
+
 
             enum    {
                 kCodePage_INVALID                   =   0xffffffff, // I hope this is always an invalid code page???

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_Basic_h_
-#define _Stroika_Foundation_Memory_Basic_h_ 1
+#ifndef _Stroika_Foundation_Memory_Common_h_
+#define _Stroika_Foundation_Memory_Common_h_ 1
 
 #include    "../StroikaPreComp.h"
 
@@ -11,33 +11,10 @@
 #include    "../Configuration/Common.h"
 
 
-/*
+/**
  * TODO:
- *
- *      @todo   See if Valgrind works well tracking leaks. If so - even on windows - see about just losing
- *              DEBUG_NEW code! (maybe http://code.google.com/p/drmemory/
- *              - or http://www.codersnotes.com/sleepy
- *
- *              SERIOUSLY consider losing DEBUG_NEW anyhow - because it really interacts badly with overloaded
- *              operator new - such as with block allocation.
  */
 
-
-
-/*
-@CONFIGVAR:     qMSVisualStudioCRTMemoryDebug
-@DESCRIPTION:   <p>The qMSVisualStudioCRTMemoryDebug macro is '1' if Stroika is compiled using the Microsoft Visual Studio crtdbg facility. If so - many
-            places in Stroika will use a placement operator new - which gives the crtdbg code line number info about where something was allocated.
-            This also enables some additional error checking in the C runtime memory allocator. But it has significant runtime overhead.</p>
-            <p>
-                This used to be #define qMSVisualStudioCRTMemoryDebug   qDebug && qPlatform_Windows, but for reasons I don't fully understand, it appears
-                to interfere with MFC (at least LedIt/MFC).
-
-            </p>
-*/
-#if     !defined (qMSVisualStudioCRTMemoryDebug)
-#error  "qMSVisualStudioCRTMemoryDebug should normally be defined indirectly by StroikaConfig.h"
-#endif
 
 
 
@@ -54,35 +31,58 @@
 
 
 
-/**
- * Support for using the MSVC CRT memleak detector. If not available, then DBG_NEW simply expands
- * to 'new' so it can be safely used in places where the global new operator would have been used.
- *      -- LGP 2009-05-25
- *
- *  If DEBUG_NEW is already defined (eg because of import of <afx.h> - MFC) - don't redefine, but just allow
- *  use of MFC version.
- */
-#if      !defined (DEBUG_NEW)
-#if     qMSVisualStudioCRTMemoryDebug
-#define     _CRTDBG_MAP_ALLOC
-#include    <crtdbg.h>
-#define DEBUG_NEW   new (_NORMAL_BLOCK, __FILE__, __LINE__)
-#else   /*qMSVisualStudioCRTMemoryDebug*/
-#define DEBUG_NEW    new
-#endif  /*qMSVisualStudioCRTMemoryDebug*/
-#endif  /*!defined (DEBUG_NEW)*/
-
-
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-            /*
+
+            /**
+             *  \brief Byte is same as defined to be a uint8_t, but more readable and clear its like 'void' for pointer types
+             *
+             *  Byte is same as defined to be a uint8_t. It can be used to make much code which used void* a
+             *  bit more readable.
+             *
+             *  For example, if you have some typeless data, you can declare
+             *      std::vector<Byte> d;    // cannot say vector<void> d;
+             *
+             *  and the stride is the usual stride one would expect and manually enforce with void* data.
+             *
+             *  Typically - programmers just use 'char' or 'unsigned char' for this, but this makes that
+             *  intent more clear.
+             */
+            typedef uint8_t   Byte;
+
+
+            /**
+             *  \brief NEltsOf(X) returns the number of elements in array X
+             *
+             *      @todo   Found std::begin() could be used to replace old StartOfArray() macro -
+             *              see if this too can be replaced with something in C++11?
+             */
+            template <typename ARRAY_TYPE, size_t SIZE_OF_ARRAY>
+            inline  constexpr size_t    NEltsOf_REAL_(ARRAY_TYPE (&arr)[SIZE_OF_ARRAY])
+            {
+                return (SIZE_OF_ARRAY);
+            }
+// after testing - do this - cuz otherwise use in constant array arg wont work
+#if     qCompilerAndStdLib_Supports_constexpr
+#define NEltsOf(X)      Stroika::Foundation::Memory::NEltsOf_REAL_(X)
+#else
+#define NEltsOf(X)      (sizeof((X))/sizeof((X)[0]))
+#endif
+
+
+            /**
              *  API to return memory allocation statistics. Generally - these will be inaccurate,
              *  unless certain defines are set in Memory.cpp - but at least some stats can be
              *  returned in either case.
+             *
+             *  Note - this currently only produces useful answers on windows, but can easily pull
+             *  similar values out of /proc fs stuff with linux (nyi).
+             *
+             *  @todo   Does this belong in "Execution" module"
              */
             struct  GlobalAllocationStatistics {
                 GlobalAllocationStatistics ();
@@ -96,12 +96,6 @@ namespace   Stroika {
             GlobalAllocationStatistics  GetGlobalAllocationStatistics ();
 
 
-            namespace   LeakChecker {
-                // Note - this functionality is just for debugging, and may be disabled inside the Memory leakchecker module, in which
-                // case it will link but do nothing...
-                void    ForceCheckpoint ();
-                void    DumpLeaksSinceLastCheckpoint ();
-            }
 
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
             namespace Private {
@@ -118,9 +112,11 @@ namespace   Stroika {
 
 
         }
+
+
     }
 }
-#endif  /*_Stroika_Foundation_Memory_Basic_h_*/
+#endif  /*_Stroika_Foundation_Memory_Common_h_*/
 
 
 

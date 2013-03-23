@@ -12,6 +12,7 @@ Objs	=	\
 	$(ObjDir)BLOB.o\
 	$(ObjDir)BlockAllocated.o\
 	$(ObjDir)Common.o\
+	$(ObjDir)LeakChecker.o\
 	$(ObjDir)MemoryAllocator.o\
 	$(ObjDir)VariantValue.o\
 

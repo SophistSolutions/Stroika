@@ -10,11 +10,16 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Common.h"
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
+
+
+            using   Memory::Byte;
+
 
             // Returns 16 character hex string
             string  ComputeMD5Digest (const Byte* s, const Byte* e);
@@ -22,6 +27,7 @@ namespace   Stroika {
 
             template    <typename T>
             string  ComputeMD5Digest_UsingOStream (const T& elt);
+
 
         }
     }

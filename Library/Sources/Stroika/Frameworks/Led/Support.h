@@ -6,6 +6,7 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Memory/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Time/Realtime.h"
 
@@ -53,7 +54,7 @@ namespace   Stroika {
         namespace   Led {
 
 
-            using   Foundation::Byte;
+            using   Foundation::Memory::Byte;
 
 
 

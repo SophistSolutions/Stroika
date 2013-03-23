@@ -29,6 +29,7 @@ namespace   Stroika {
         namespace   Led {
 
             using   Foundation::Characters::CodePage;
+            using   Foundation::Memory::Byte;
 
             class   ReaderFlavorPackage;
             class   WriterFlavorPackage;

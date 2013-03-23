@@ -9,6 +9,7 @@
 #include    <memory>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/Common.h"
 
 #include    "BinaryStream.h"
 
@@ -27,7 +28,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
+            using   Memory::Byte;
+
+
             class   BinaryInputOutputStream;
+
 
             /**
              * Design Overview:

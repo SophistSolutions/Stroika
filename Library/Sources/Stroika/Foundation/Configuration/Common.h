@@ -18,28 +18,11 @@ namespace   Stroika {
 
 
             /**
-             *  \brief Byte is same as defined to be a uint8_t, but more readable and clear its like 'void' for pointer types
-             *
-             *  @todo REDOCUMENT
-             */
-            typedef uint8_t   Byte;
-
-
-            /**
              *  \def nonvirtual
              *      Is for documentation purposes, to make clear a method is intended to be not 'virtual'
              */
 #define nonvirtual
 
-
-            /**
-             *  \def NEltsOf(X) returns the number of elements in array X
-             *
-             *      @todo   maybe move this to Memory/Common.h
-             *      @todo   found std::begin() could be used to replace old StartOfArray() macro - see if this too
-             *              can be replaced with something in C++11?
-             */
-#define NEltsOf(X)      (sizeof((X))/sizeof((X)[0]))
 
 
             /**
@@ -66,8 +49,6 @@ namespace   Stroika {
 
 
         }
-
-        using   Configuration::Byte;
     }
 }
 

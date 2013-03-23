@@ -29,9 +29,8 @@ using   namespace   Stroika::Foundation::Characters;
 
 
 
-/*
+/**
  * TODO:
- *
  *
  *      (o) Must write ASAP a performance comparison suite for String class as part of string automated test.
  *          Print a table of results (X/Y – wstring versus String (maybe versus other string types?)).

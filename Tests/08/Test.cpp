@@ -27,6 +27,7 @@
 
 using   namespace   Stroika::Foundation;
 
+using   Memory::Byte;
 using   Memory::VariantValue;
 
 using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;

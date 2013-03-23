@@ -44,6 +44,7 @@ namespace   Stroika {
 
                 using   Characters::TChar;
                 using   Characters::TString;
+                using   Memory::Byte;
                 using   Time::DateTime;
 
                 typedef int64_t FileOffset_t;

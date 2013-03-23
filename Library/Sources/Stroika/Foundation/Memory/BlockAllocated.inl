@@ -14,6 +14,7 @@
 #include    <mutex>
 
 #include    "../Debug/Assertions.h"
+#include    "../Memory/LeakChecker.h"
 
 #include    "Common.h"
 

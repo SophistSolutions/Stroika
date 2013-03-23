@@ -21,7 +21,7 @@ namespace   Stroika {
 
 
                 using   Characters::String;
-
+                using   Memory::Byte;
 
                 /**
                  * TODO:

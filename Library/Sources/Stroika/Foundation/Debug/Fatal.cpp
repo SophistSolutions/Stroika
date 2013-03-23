@@ -41,7 +41,6 @@ namespace   {
 
 
 
-
 void    Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const TChar* msg))
 {
     sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErorrHandler_ : fatalErrorHandler;

@@ -60,6 +60,7 @@ namespace   Stroika {
 
                     using   Characters::String;
                     using   DataExchangeFormat::InternetMediaType;
+                    using   Memory::Byte;
                     using   Time::DurationSecondsType;
 
 

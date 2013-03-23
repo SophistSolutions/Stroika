@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Memory_Basic_inl_
-#define _Stroika_Foundation_Memory_Basic_inl_   1
+#ifndef _Stroika_Foundation_Memory_Common_inl_
+#define _Stroika_Foundation_Memory_Common_inl_   1
 
 
 /*
@@ -10,8 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Debug/Assertions.h"
-#include    "../Execution/ModuleInit.h"
 
 
 namespace   Stroika {
@@ -30,14 +28,6 @@ namespace   Stroika {
             }
 
 
-            // Module initialization
-            namespace   Private {
-                struct  ModuleData_ {
-                    ModuleData_ ();
-                    ~ModuleData_ ();
-                };
-            }
-
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
             namespace Private {
                 template<class _InIt, class _OutIt>
@@ -51,12 +41,8 @@ namespace   Stroika {
             }
 #endif
 
+
         }
     }
 }
-
-
-namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Memory::Private::ModuleData_>   _Stroika_Foundation_Memory_Common_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
-}
-#endif  /*_Stroika_Foundation_Memory_Basic_inl_*/
+#endif  /*_Stroika_Foundation_Memory_Common_inl_*/

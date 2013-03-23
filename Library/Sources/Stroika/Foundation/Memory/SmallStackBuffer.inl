@@ -15,6 +15,7 @@
 
 #include    "../Debug/Assertions.h"
 #include    "Common.h"
+#include    "LeakChecker.h"
 
 namespace   Stroika {
     namespace   Foundation {

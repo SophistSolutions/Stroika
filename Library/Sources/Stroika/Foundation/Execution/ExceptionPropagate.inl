@@ -11,6 +11,8 @@
  ********************************************************************************
  */
 #include    "../Memory/Common.h"
+#include    "../Memory/LeakChecker.h"
+
 
 namespace   Stroika {
     namespace   Foundation {

@@ -18,6 +18,9 @@ namespace   Stroika {
             namespace   Resources {
 
 
+                using   Memory::Byte;
+
+
                 /**
                  * A resource Manager is a abstract class (effectively smart pointer) to a source of resources. You instantiate
                  * an appropriate resource manager subclass, and call ReadResource() as needed. ReadResource() returns a proxy
