@@ -24,6 +24,10 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Increment the given enumeration safely, without a bunch of casts.
+             *
+             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              */
             template    <typename   ENUM>
             ENUM    Inc (ENUM e);

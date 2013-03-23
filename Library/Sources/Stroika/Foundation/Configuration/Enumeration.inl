@@ -17,12 +17,13 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************** Configuration::GetPlatformDefaultLocale ***********************
+             *********************************Configuration::Inc ****************************
              ********************************************************************************
              */
             template    <typename   ENUM>
             inline  ENUM    Inc (ENUM e)
             {
+                Require (e >= typename ENUM::eSTART and e < typename ENUM::eEND);
                 return static_cast<ENUM> (e + 1);
             }
 
