@@ -26,7 +26,7 @@ namespace   Stroika {
              *  acts like a mutex in providing a lock/unlock API.
              */
             template    <typename   REAL_MUTUX = recursive_mutex>
-            class CopyableMutex {
+            class   CopyableMutex {
             public:
                 CopyableMutex ();
 

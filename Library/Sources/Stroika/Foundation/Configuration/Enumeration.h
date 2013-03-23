@@ -13,7 +13,8 @@
  *  \file
  *
  * TODO:
- *
+ *      @todo - maybe stuff like Add(ENUM, ENUM), and DIFF (ENum,ENUM) to workouarnd
+ *              issues with too-strong typing with enum class?? (avoid so many casts)
  */
 
 
@@ -23,12 +24,6 @@ namespace   Stroika {
 
 
             /**
-             *  @todo - maybe move this and other helpers into 'enumeration' module
-             *          maybe stuff like Add(ENUM, ENUM), and DIFF (ENum,ENUM) to workouarnd
-             *          issues with too-strong typing with enum class?? (avoid so many casts)
-             *
-             *      Maybe move this (and that future module) to memory).
-             *      Maybe move definestartendcount stuff to memory/Enumerations module?
              */
             template    <typename   ENUM>
             ENUM    Inc (ENUM e);
@@ -36,6 +31,7 @@ namespace   Stroika {
 
             /**
              *  \def Define_Start_End_Count
+             *
              *      Define meta information on enums using standardized names, so you can generically
              *      write things like Can do for (i = eSTART; i != eEND; i = Inc (i));
              */
