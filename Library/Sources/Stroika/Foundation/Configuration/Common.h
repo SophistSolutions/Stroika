@@ -8,12 +8,14 @@
 #include    <cstdint>
 #include    <ciso646>
 
+namespace   Stroika {
+    namespace   Foundation {
+        using   namespace   std;
+    }
+}
 
 namespace   Stroika {
     namespace   Foundation {
-
-        using   namespace   std;
-
         namespace   Configuration {
 
 
@@ -27,8 +29,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 #endif  /*_Stroika_Foundation_Configuration_Common_h_*/
 
 
@@ -41,5 +41,3 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Common.inl"
-
-

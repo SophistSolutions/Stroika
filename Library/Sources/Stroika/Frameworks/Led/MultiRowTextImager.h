@@ -107,11 +107,7 @@ namespace   Stroika {
 
             private:
                 class   PMInfoCacheMgr;
-#if     qAutoPtrBrokenBug
-                shared_ptr<PMInfoCacheMgr>   fPMCacheMgr;
-#else
                 unique_ptr<PMInfoCacheMgr>        fPMCacheMgr;
-#endif
 
 
                 // Row Reference support routines...
@@ -400,11 +396,7 @@ namespace   Stroika {
                 mutable PartitionMarker*                                fCurFillCachePM;
                 mutable PartitionElementCacheInfo                       fCurFillCacheInfo;
                 MultiRowTextImager&                                     fImager;
-#if     qAutoPtrBrokenBug
-                shared_ptr<MyMarker>                             fMyMarker;
-#else
-                unique_ptr<MyMarker>                             fMyMarker;
-#endif
+                unique_ptr<MyMarker>                                    fMyMarker;
             private:
                 friend  class   MyMarker;
             };

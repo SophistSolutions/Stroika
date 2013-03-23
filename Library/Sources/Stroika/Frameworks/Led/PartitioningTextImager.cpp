@@ -400,20 +400,12 @@ PartitioningTextImager::~PartitioningTextImager ()
 void    PartitioningTextImager::SetPartition (const PartitionPtr& partitionPtr)
 {
 #if     qCacheTextMeasurementsForPM
-#if     qAutoPtr_NoResetMethodBug
-    fMeasureTextCache = unique_ptr<MeasureTextCache> (nullptr);
-#else
     fMeasureTextCache.reset ();
-#endif
 #endif
     fPartition = partitionPtr;
 #if     qCacheTextMeasurementsForPM
     if (partitionPtr.get () != nullptr) {
-#if     qAutoPtrBrokenBug
-        fMeasureTextCache = shared_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
-#else
         fMeasureTextCache = unique_ptr<MeasureTextCache> (new MeasureTextCache (partitionPtr));
-#endif
     }
 #endif
 }
