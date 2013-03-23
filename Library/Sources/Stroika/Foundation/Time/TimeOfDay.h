@@ -16,6 +16,7 @@
 
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Enumeration.h"
 #include    "../Execution/StringException.h"
 
 

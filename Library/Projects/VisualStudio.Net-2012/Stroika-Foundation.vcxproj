@@ -139,6 +139,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
@@ -439,6 +440,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cache_TimedCache_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Characters_Character_.h" />
@@ -643,6 +645,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaConfig-ReadMe.md" />

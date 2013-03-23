@@ -17,6 +17,7 @@
 
 #include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Enumeration.h"
 
 #include    "Date.h"
 #include    "TimeOfDay.h"

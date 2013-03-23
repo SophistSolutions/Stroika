@@ -10,8 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Memory/LeakChecker.h"
 
-#include    "../Memory/Common.h"
 
 namespace   Stroika {
     namespace   Foundation {

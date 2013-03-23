@@ -10,6 +10,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Enumeration.h"
 #include    "../Time/DateTime.h"
 
 

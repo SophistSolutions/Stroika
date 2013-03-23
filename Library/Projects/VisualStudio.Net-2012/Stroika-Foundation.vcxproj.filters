@@ -474,6 +474,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1020,6 +1023,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1466,6 +1472,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>
