@@ -34,6 +34,16 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
+             *
+             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+             */
+            template    <typename   ENUM>
+            int    Int (ENUM e);
+
+
+            /**
              *  \def Define_Start_End_Count
              *
              *      Define meta information on enums using standardized names, so you can generically

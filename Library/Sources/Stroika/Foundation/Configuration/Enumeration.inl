@@ -19,16 +19,27 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************************Configuration::Inc ****************************
+             ******************************** Configuration::Inc ****************************
              ********************************************************************************
              */
             template    <typename   ENUM>
             inline  ENUM    Inc (ENUM e)
             {
-                Require (e >= ENUM::eSTART and e < ENUM::eEND);
+                Require (ENUM::eSTART <= e and e < ENUM::eEND);
                 return static_cast<ENUM> (e + 1);
             }
 
+            /*
+             ********************************************************************************
+             ******************************** Configuration::Int ****************************
+             ********************************************************************************
+             */
+            template    <typename   ENUM>
+            inline  int    Int (ENUM e)
+            {
+                Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+                return static_cast<int> (e);
+            }
 
         }
     }
