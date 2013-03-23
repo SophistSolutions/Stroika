@@ -25,7 +25,7 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  ENUM    Inc (ENUM e)
             {
-                Require (e >= typename ENUM::eSTART and e < typename ENUM::eEND);
+                Require (e >= ENUM::eSTART and e < ENUM::eEND);
                 return static_cast<ENUM> (e + 1);
             }
 
