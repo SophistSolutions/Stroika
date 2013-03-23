@@ -5159,7 +5159,7 @@ void    WordProcessorTextIOSrcStream::SummarizeFontAndColorTable (set<Led_SDK_St
             for (size_t r = 0; r < rows; ++r) {
                 size_t  columns =   tiom.GetColumns (r);
                 for (size_t c = 0; c < columns; ++c) {
-                    auto_ptr<StyledTextIOWriter::SrcStream> subSrcStream (tiom.MakeCellSubSrcStream (r, c));
+                    unique_ptr<StyledTextIOWriter::SrcStream> subSrcStream (tiom.MakeCellSubSrcStream (r, c));
                     if (subSrcStream.get () != nullptr) {
                         subSrcStream.get ()->SummarizeFontAndColorTable (fontNames, colorsUsed);
                     }
@@ -7982,10 +7982,6 @@ Led_Distance    WordProcessor::Table::EmbeddedTableWordProcessor::GetDesiredHeig
  ****************** WordProcessor::Table::SavedTextRepWSel **********************
  ********************************************************************************
  */
-
-#if     qNameLookupXXXInBaseClassWhenItIsNestedSometimesFailsBug
-typedef InteractiveReplaceCommand::SavedTextRep SavedTextRep;
-#endif
 WordProcessor::Table::SavedTextRepWSel::SavedTextRepWSel (SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag):
     inherited (table.GetStart (), table.GetEnd ()),
     fWPRelativeFlag (wPRelativeFlag),

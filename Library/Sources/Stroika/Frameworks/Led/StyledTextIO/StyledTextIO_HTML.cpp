@@ -2245,7 +2245,7 @@ void    StyledTextIOWriter_HTML::WriteBodyCharacter (WriterContext& writerContex
             break;
 
         case    kEmbeddingSentinalChar: {
-                auto_ptr<Table>     table (writerContext.GetSrcStream ().GetTableAt (writerContext.GetCurSrcOffset () - 1));
+                unique_ptr<Table>     table (writerContext.GetSrcStream ().GetTableAt (writerContext.GetCurSrcOffset () - 1));
                 if (table.get () != nullptr) {
                     WriteTable (writerContext, table.get ());
                     size_t  x   =   table->GetOffsetEnd ();
@@ -2338,7 +2338,7 @@ void    StyledTextIOWriter_HTML::WriteTable (WriterContext& writerContext, Table
         size_t              columns =   cellInfos.size ();
         for (size_t c = 0; c < columns; c++) {
             WriteOpenTag (writerContext, "td");
-            auto_ptr<SrcStream> srcStream   =   auto_ptr<SrcStream> (table->MakeCellSubSrcStream (r, c));
+            unique_ptr<SrcStream> srcStream   =   unique_ptr<SrcStream> (table->MakeCellSubSrcStream (r, c));
             if (srcStream.get () != nullptr) {
                 WriterContext   wc (writerContext, *srcStream.get ());
                 vector<StandardStyledTextImager::InfoSummaryRecord> x   =   fStyleRunSummary;

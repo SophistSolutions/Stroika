@@ -77,7 +77,7 @@ namespace   Stroika {
             void    MultiRowTextImager::SetPartition (const PartitionPtr& partitionPtr)
             {
 #if     qAutoPtr_NoResetMethodBug
-                fPMCacheMgr = auto_ptr<PMInfoCacheMgr> (nullptr);
+                fPMCacheMgr = unique_ptr<PMInfoCacheMgr> (nullptr);
 #else
                 fPMCacheMgr.reset ();
 #endif
@@ -90,7 +90,7 @@ namespace   Stroika {
 #if     qAutoPtrBrokenBug
                     fPMCacheMgr = shared_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 #else
-                    fPMCacheMgr = auto_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
+                    fPMCacheMgr = unique_ptr<PMInfoCacheMgr> (new PMInfoCacheMgr (*this));
 #endif
                     fTopLinePartitionMarkerInWindow = GetFirstPartitionMarker ();
 //      ReValidateSubRowInTopLineInWindow ();
@@ -1420,7 +1420,7 @@ namespace   Stroika {
 #if     qAutoPtrBrokenBug
                 fMyMarker = shared_ptr<MyMarker> (new MyMarker (*this));
 #else
-                fMyMarker = auto_ptr<MyMarker> (new MyMarker (*this));
+                fMyMarker = unique_ptr<MyMarker> (new MyMarker (*this));
 #endif
                 TextStore&  ts  =   part->GetTextStore ();
                 ts.AddMarker (fMyMarker.get (), 0, ts.GetLength () + 1, part.get ());

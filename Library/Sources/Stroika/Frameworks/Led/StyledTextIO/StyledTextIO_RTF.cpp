@@ -1415,10 +1415,10 @@ StyledTextIOReader_RTF::ReaderContext::ReaderContext (StyledTextIOReader_RTF& re
     memset (fMultiByteInputCharBuf, 0, sizeof (fMultiByteInputCharBuf));
 #endif
 #if     qCannotAssignRValueAutoPtrToExistingOneInOneStepBug || qTroubleOverloadingXofXRefCTORWithTemplatedMemberCTOR
-    auto_ptr<Destination_> x = auto_ptr<Destination_> (new SinkStreamDestination (reader));
+    unique_ptr<Destination_> x = unique_ptr<Destination_> (new SinkStreamDestination (reader));
     fDefaultDestination = x;
 #else
-    fDefaultDestination = auto_ptr<Destination_> (new SinkStreamDestination (reader));
+    fDefaultDestination = unique_ptr<Destination_> (new SinkStreamDestination (reader));
 #endif
     SetDestination (fDefaultDestination.get ());
 }
@@ -2783,7 +2783,7 @@ bool    StyledTextIOReader_RTF::HandleControlWord_object (ReaderContext& readerC
                                      *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
                                      *      --LGP 2000-07-08
                                      */
-                                    auto_ptr<Led_DIB>   dib =   auto_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
+                                    unique_ptr<Led_DIB>   dib =   unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
                                     bool    createSucceeded =   dib.get () != nullptr;
                                     if (dib.get () != nullptr) {
                                         RTFIO::UnknownRTFEmbedding* e   =   new RTFIO::UnknownRTFEmbedding (RTFIO::kRTFBodyGroupFragmentClipFormat, RTFIO::kRTFBodyGroupFragmentEmbeddingTag, s.c_str (), s.length (), dib.get ());
@@ -2885,7 +2885,7 @@ bool    StyledTextIOReader_RTF::HandleControlWord_pict (ReaderContext& readerCon
      *  meta-file data to DIB data can be lossy, and can make the data size much larger - both bad things.
      *      --LGP 2000-07-08
      */
-    auto_ptr<Led_DIB>   dib =   auto_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
+    unique_ptr<Led_DIB>   dib =   unique_ptr<Led_DIB> (ConstructDIBFromData (shownSize, imageFormat, bmSize, objData.size (), &objData.front ()));
     bool    createSucceeded =   dib.get () != nullptr;
     SimpleEmbeddedObjectStyleMarker*    embedding   =   nullptr;
     if (createSucceeded) {
@@ -4523,7 +4523,7 @@ void    StyledTextIOWriter_RTF::WriteBodyCharacter (WriterContext& writerContext
             break;
 
         case    kEmbeddingSentinalChar: {
-                auto_ptr<StyledTextIOWriter_RTF::Table>     table (writerContext.GetCurRTFTable ());
+                unique_ptr<StyledTextIOWriter_RTF::Table>     table (writerContext.GetCurRTFTable ());
                 if (table.get () != nullptr) {
                     Assert (writerContext.fCharsToSkip == 0);   // must preserve / restore for nested tables?
                     WriteTable (writerContext, table.get ());
@@ -4801,7 +4801,7 @@ void    StyledTextIOWriter_RTF::WriteTable (WriterContext& writerContext, Table*
         size_t  nCellsWritten   =   0;
 #endif
         for (size_t c = 0; c < columns; c++) {
-            auto_ptr<StyledTextIOWriter::SrcStream> srcStream   =   auto_ptr<StyledTextIOWriter::SrcStream> (table->MakeCellSubSrcStream (r, c));
+            unique_ptr<StyledTextIOWriter::SrcStream> srcStream   =   unique_ptr<StyledTextIOWriter::SrcStream> (table->MakeCellSubSrcStream (r, c));
             if (srcStream.get () != nullptr) {
                 WriterContext   wc (writerContext, *srcStream.get ());
                 vector<StandardStyledTextImager::InfoSummaryRecord> x   =   fStyleRunSummary;
@@ -4951,7 +4951,7 @@ bool    StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*wri
 
         void*   theDataBytes    =   nullptr;
         size_t  nBytes          =   0;
-        auto_ptr<BYTE>  theDataBytes_;
+        unique_ptr<BYTE>  theDataBytes_;
         {
             Led_Tablet_     screenDC    =   (::GetWindowDC (nullptr));      // not sure what DC to use to convert MetaFile to DIB - but this seems like a decent guess
             UINT            mapMode =   MM_TEXT;
@@ -4980,7 +4980,7 @@ bool    StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*wri
             Verify (::GetWinMetaFileBits (hMF, nBytes, bytes, mapMode, screenDC) == nBytes);
 
             theDataBytes = bytes;
-            theDataBytes_ = auto_ptr<BYTE> (bytes);
+            theDataBytes_ = unique_ptr<BYTE> (bytes);
 
             ::DeleteEnhMetaFile (hMF);
         }

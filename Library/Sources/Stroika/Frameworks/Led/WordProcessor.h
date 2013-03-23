@@ -1799,11 +1799,7 @@ namespace   Stroika {
                 enum    WPRelativeFlag { eWPDirect, eWPAbove };
 
             public:
-#if     qNameLookupXXXInBaseClassWhenItIsNestedSometimesFailsBug
-                SavedTextRepWSel (InteractiveReplaceCommand::SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag);
-#else
                 SavedTextRepWSel (SavedTextRep* delegateTo, Table& table, WPRelativeFlag wPRelativeFlag);
-#endif
 
             public:
                 virtual     size_t  GetLength () const override;
@@ -1811,19 +1807,15 @@ namespace   Stroika {
                 virtual     void    ApplySelection (TextInteractor* imager) override;
 
             private:
-                WPRelativeFlag          fWPRelativeFlag;
-#if     qNameLookupXXXInBaseClassWhenItIsNestedSometimesFailsBug
-                auto_ptr<InteractiveReplaceCommand::SavedTextRep>   fRealRep;
-#else
-                auto_ptr<SavedTextRep>  fRealRep;
-#endif
-                size_t                  fRowSelStart;
-                size_t                  fRowSelEnd;
-                size_t                  fColSelStart;
-                size_t                  fColSelEnd;
-                bool                    fIntraCellMode;
-                size_t                  fIntraCellSelStart;
-                size_t                  fIntraCellSelEnd;
+                WPRelativeFlag              fWPRelativeFlag;
+                unique_ptr<SavedTextRep>    fRealRep;
+                size_t                      fRowSelStart;
+                size_t                      fRowSelEnd;
+                size_t                      fColSelStart;
+                size_t                      fColSelEnd;
+                bool                        fIntraCellMode;
+                size_t                      fIntraCellSelStart;
+                size_t                      fIntraCellSelEnd;
             };
 
 

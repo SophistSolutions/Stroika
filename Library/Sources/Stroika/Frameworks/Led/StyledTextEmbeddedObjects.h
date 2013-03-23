@@ -625,7 +625,7 @@ namespace   Stroika {
                 size_t                  fLength;
                 Led_ClipFormat          fFormat;
                 Led_PrivateEmbeddingTag fEmbeddingTag;
-                auto_ptr<Led_DIB>       fDisplayDIB;
+                unique_ptr<Led_DIB>     fDisplayDIB;
             };
 
 

@@ -713,7 +713,7 @@ namespace   Stroika {
                 private:
                     Destination_*           fCurrentDestination;
                 public:
-                    auto_ptr<Destination_>  fDefaultDestination;
+                    unique_ptr<Destination_>  fDefaultDestination;
 
                 public:
                     class   GroupContext;

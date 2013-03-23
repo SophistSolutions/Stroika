@@ -110,7 +110,7 @@ namespace   Stroika {
 #if     qAutoPtrBrokenBug
                 shared_ptr<PMInfoCacheMgr>   fPMCacheMgr;
 #else
-                auto_ptr<PMInfoCacheMgr>        fPMCacheMgr;
+                unique_ptr<PMInfoCacheMgr>        fPMCacheMgr;
 #endif
 
 
@@ -403,7 +403,7 @@ namespace   Stroika {
 #if     qAutoPtrBrokenBug
                 shared_ptr<MyMarker>                             fMyMarker;
 #else
-                auto_ptr<MyMarker>                                  fMyMarker;
+                unique_ptr<MyMarker>                             fMyMarker;
 #endif
             private:
                 friend  class   MyMarker;

@@ -247,7 +247,7 @@ namespace   Stroika {
 #if     qAutoPtrBrokenBug
                 shared_ptr<MeasureTextCache> fMeasureTextCache;
 #else
-                auto_ptr<MeasureTextCache>      fMeasureTextCache;
+                unique_ptr<MeasureTextCache>      fMeasureTextCache;
 #endif
             protected:
                 virtual     void        InvalidateAllCaches () override;

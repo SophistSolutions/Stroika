@@ -1060,7 +1060,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_Native (ReaderFla
         {
             // Be sure these guys in scope like this so caches get flusehd before we update cursor position
             StyledTextIOSrcStream_Memory                source (buf, length);
-            auto_ptr<StandardStyledTextIOSinkStream>    sink (mkStandardStyledTextIOSinkStream (start));
+            unique_ptr<StandardStyledTextIOSinkStream>    sink (mkStandardStyledTextIOSinkStream (start));
             StyledTextIOReader_LedNativeFileFormat      textReader (&source, sink.get ());
             textReader.Read ();
             sink->Flush (); // would be called implcitly in DTOR, but call like this so exceptions get propagates...
@@ -1093,7 +1093,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_RTF (ReaderFlavor
         {
             // Be sure these guys in scope like this so caches get flusehd before we update cursor position
             StyledTextIOSrcStream_Memory                source (buf, length);
-            auto_ptr<StandardStyledTextIOSinkStream>    sink (mkStandardStyledTextIOSinkStream (start));
+            unique_ptr<StandardStyledTextIOSinkStream>    sink (mkStandardStyledTextIOSinkStream (start));
             StyledTextIOReader_RTF                      textReader (&source, sink.get ());
             textReader.Read ();
             sink->Flush (); // would be called implcitly in DTOR, but call like this so exceptions get propagates...
@@ -1120,7 +1120,7 @@ bool    StyledTextFlavorPackageInternalizer::InternalizeFlavor_HTML (ReaderFlavo
         {
             // Be sure these guys in scope like this so caches get flusehd before we update cursor position
             StyledTextIOSrcStream_Memory                source (buf, length);
-            auto_ptr<StandardStyledTextIOSinkStream>    sink (mkStandardStyledTextIOSinkStream (start));
+            unique_ptr<StandardStyledTextIOSinkStream>  sink (mkStandardStyledTextIOSinkStream (start));
             StyledTextIOReader_HTML                     textReader (&source, sink.get ());
             textReader.Read ();
             sink->Flush (); // would be called implcitly in DTOR, but call like this so exceptions get propagates...
@@ -1273,7 +1273,7 @@ void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_Native (WriterFla
 {
     Require (from <= to);
     Require (to <= GetTextStore ().GetEnd ());
-    auto_ptr<StandardStyledTextIOSrcStream>     source (mkStandardStyledTextIOSrcStream (from, to));
+    unique_ptr<StandardStyledTextIOSrcStream>   source (mkStandardStyledTextIOSrcStream (from, to));
     StyledTextIOWriterSinkStream_Memory         sink;
     StyledTextIOWriter_LedNativeFileFormat      textWriter (source.get (), &sink);
     textWriter.Write ();
@@ -1285,9 +1285,9 @@ void    StyledTextFlavorPackageExternalizer::ExternalizeFlavor_RTF (WriterFlavor
 {
     Require (from <= to);
     Require (to <= GetTextStore ().GetEnd ());
-    auto_ptr<StandardStyledTextIOSrcStream> source (mkStandardStyledTextIOSrcStream (from, to));
-    StyledTextIOWriterSinkStream_Memory     sink;
-    StyledTextIOWriter_RTF                  textWriter (source.get (), &sink);
+    unique_ptr<StandardStyledTextIOSrcStream>   source (mkStandardStyledTextIOSrcStream (from, to));
+    StyledTextIOWriterSinkStream_Memory         sink;
+    StyledTextIOWriter_RTF                      textWriter (source.get (), &sink);
     textWriter.Write ();
     flavorPackage.AddFlavorData (kRTFClipFormat, sink.GetLength (), sink.PeekAtData ());
 }
