@@ -38,6 +38,10 @@ namespace   Stroika {
              *
              *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+             *
+             *  This function is hadny since class enum's cannot be automatically promoted to integers.
+             *
+             *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
             int    Int (ENUM e);

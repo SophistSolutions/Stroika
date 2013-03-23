@@ -26,8 +26,13 @@ namespace   Stroika {
             inline  ENUM    Inc (ENUM e)
             {
                 Require (ENUM::eSTART <= e and e < ENUM::eEND);
-                return static_cast<ENUM> (e + 1);
+                //
+                //  @todo   The ideal would not be to cast to int, but to the appropriate underlying integral type
+                //          for 'e' - which maybe now possible with new meta-type info in C++11.
+                //
+                return static_cast<ENUM> (static_cast<int> (e) + 1);
             }
+
 
             /*
              ********************************************************************************
@@ -40,6 +45,7 @@ namespace   Stroika {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
                 return static_cast<int> (e);
             }
+
 
         }
     }
