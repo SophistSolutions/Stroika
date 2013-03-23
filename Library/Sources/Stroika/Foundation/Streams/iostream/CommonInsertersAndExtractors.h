@@ -11,9 +11,10 @@
 #include    "../../Characters/String.h"
 
 
-/*
+/**
  * TODO:
- *      o
+ *
+ *      @todo   Completley untested....
  */
 
 
