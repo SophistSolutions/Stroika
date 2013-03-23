@@ -477,6 +477,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1026,6 +1029,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h">
+      <Filter>Sources\Streams\iostream</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1475,6 +1481,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.inl">
       <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.inl">
+      <Filter>Sources\Streams\iostream</Filter>
     </None>
   </ItemGroup>
 </Project>
