@@ -421,7 +421,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_errno_t)
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_errno_t (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#define qCompilerAndStdLib_Supports_errno_t (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_errno_t 1
 #else
