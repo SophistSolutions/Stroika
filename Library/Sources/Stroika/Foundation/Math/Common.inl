@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Math_Basic_inl_
-#define _Stroika_Foundation_Math_Basic_inl_ 1
+#ifndef _Stroika_Foundation_Math_Common_inl_
+#define _Stroika_Foundation_Math_Common_inl_ 1
 
 
 /*
@@ -16,12 +16,24 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
-            using   namespace   std;
+
+
+            /*
+             ********************************************************************************
+             ************************************ Math::nan *********************************
+             ********************************************************************************
+             */
             inline  double  nan ()
             {
                 return numeric_limits<double>::quiet_NaN ();
             }
 
+
+            /*
+             ********************************************************************************
+             ****************************** Math::RoundUpTo *********************************
+             ********************************************************************************
+             */
             namespace   Private {
                 template    <typename T>
                 T   RoundUpTo_UnSignedHelper_ (T x, T toNearest);
@@ -58,9 +70,6 @@ namespace   Stroika {
                     return ((x / toNearest) * toNearest);
                 }
             }
-
-
-
             template    <>
             inline  int RoundUpTo (int x, int toNearest)
             {
@@ -93,7 +102,11 @@ namespace   Stroika {
             }
 
 
-
+            /*
+             ********************************************************************************
+             **************************** Math::RoundDownTo *********************************
+             ********************************************************************************
+             */
             template    <>
             inline  int RoundDownTo (int x, int toNearest)
             {
@@ -126,8 +139,11 @@ namespace   Stroika {
             }
 
 
-
-
+            /*
+             ********************************************************************************
+             **************************** Math::NearlyEquals ********************************
+             ********************************************************************************
+             */
             template    <typename   FloatType>
             inline  FloatType   NearlyEquals (FloatType l, FloatType r, FloatType epsilon)
             {
@@ -159,7 +175,5 @@ namespace   std {
 }
 #endif
 
-#endif  /*_Stroika_Foundation_Math_Basic_inl_*/
-
-
+#endif  /*_Stroika_Foundation_Math_Common_inl_*/
 

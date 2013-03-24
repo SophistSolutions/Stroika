@@ -73,6 +73,3 @@ namespace   Stroika {
     }
 }
 #endif  /*_Stroika_Foundation_Math_Overlap_inl_*/
-
-
-

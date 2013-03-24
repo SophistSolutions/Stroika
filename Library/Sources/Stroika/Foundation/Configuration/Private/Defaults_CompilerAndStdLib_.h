@@ -16,8 +16,6 @@
 
 
 
-
-
 /*
  *******************************************************************
  *******************************************************************
@@ -118,13 +116,11 @@
 @DESCRIPTION:   <p></p>
 */
 #ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
-
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    1
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    (_MSC_VER <= _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    0
 #endif
-
 #endif
 
 
@@ -136,13 +132,11 @@
 @DESCRIPTION:   <p>Strange overloading bug - for reasons that elude me - gcc 4.6.3 doesnt find an obvious std::find() use, but if I say find() it works fine???</p>
 */
 #if     !defined (qCompilerAndStdLib_StdFindOverloadBug)
-
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_StdFindOverloadBug       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #else
 #define qCompilerAndStdLib_StdFindOverloadBug       0
 #endif
-
 #endif
 
 
@@ -178,22 +172,11 @@
 @DESCRIPTION:   <p></p>
 */
 #ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  0
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
 #endif
-
-#endif
-
-
-
-
-// MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
-// easy enough to disable ;-)
-#if     defined (_MSC_VER) && _MSC_VER == _MS_VS_2k12_VER_
-#define _ALLOW_KEYWORD_MACROS
 #endif
 
 
@@ -204,22 +187,14 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
-
-// Maybe not totally broken for clang - but broken enough to disable for now...
 #if     defined (__clang__)
-
+// Maybe not totally broken for clang - but broken enough to disable for now...
 #define qCompilerAndStdLib_Supports_constexpr   ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
-
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-
-#define qCompilerAndStdLib_Supports_constexpr   0
-
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_constexpr   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
-
 #define qCompilerAndStdLib_Supports_constexpr   1
-
 #endif
-
 #endif
 
 
@@ -240,13 +215,11 @@
             more obvious of type mismatches with As<> etc templates.</p>
 */
 #ifndef qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
-
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
 #endif
-
 #endif
 
 
@@ -354,16 +327,14 @@
 
 
 
+#ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
+#if     defined (__GNUC__) && !defined (__clang__)
 // Not totally clear what compiler is wrong, but I'm not sure why I would need to pre-declare the
 // template the way GCC 4.6.3 appears to require        -- LGP 2012-07-27
-#ifndef qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
-
-#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 1
+#define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
 #else
 #define qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction 0
 #endif
-
 #endif
 
 
@@ -401,41 +372,23 @@
 
 
 
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_threads
 @DESCRIPTION:   <p>Defined true if the compiler supports the stdc++ threads library</p>
 */
 #ifndef qCompilerAndStdLib_Supports_threads
-
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-
+#if     defined (_MSC_VER)
 // MAYBE OK FOR 2k12, but requires a little work so disable for now--LGP 2012-10-19
-#define qCompilerAndStdLib_Supports_threads 0
+#define qCompilerAndStdLib_Supports_threads (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_threads 1
 #endif
-
 #endif
 
 
 
 
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_isnan
-@DESCRIPTION:   <p>Defines if the compiler stdC++/c99 library supports the std::isnan() function</p>
-*/
-#ifndef qCompilerAndStdLib_isnan
-#if     defined (__GNUC__)
-#define qCompilerAndStdLib_isnan    1
-#else
-// default off cuz we have a good safe impl
-#define qCompilerAndStdLib_isnan    0
-#endif
-#endif
 
 
 
@@ -450,8 +403,8 @@
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib__isnan   1
 #else
-// default off cuz we have a good safe impl
-#define qCompilerAndStdLib__isnan   0
+///testing...--2013-03-24
+#define qCompilerAndStdLib__isnan   1
 #endif
 #endif
 
@@ -467,15 +420,13 @@
                 of errno_t (gcc for example just assumes its int)</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_errno_t)
-
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_errno_t 0
+#define qCompilerAndStdLib_Supports_errno_t (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_errno_t 1
 #else
 #define qCompilerAndStdLib_Supports_errno_t 1
 #endif
-
 #endif
 
 
@@ -488,41 +439,18 @@
 @DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports <chrono>.</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono)
-
 #if     defined (__clang__)
-
 // Because of constexpr
 #define qCompilerAndStdLib_Supports_stdchrono       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
-
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-
-#define qCompilerAndStdLib_Supports_stdchrono       0
-
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_stdchrono       (_MSC_VER > _MS_VS_2k10_VER_)
 #else
-
 #define qCompilerAndStdLib_Supports_stdchrono       1
-
+#endif
 #endif
 
-#endif
 
 
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_stdthreads
-@DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports threads.</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_stdthreads)
-
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-#define qCompilerAndStdLib_Supports_stdthreads  0
-#else
-#define qCompilerAndStdLib_Supports_stdthreads  1
-#endif
-
-#endif
 
 
 
@@ -536,13 +464,11 @@
 @DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports varadic templates.</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
-
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_Supports_varadic_templates  0
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_varadic_templates  (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_varadic_templates  1
 #endif
-
 #endif
 
 
@@ -560,26 +486,15 @@
 @DESCRIPTION:   <p>Controls whether or not the compiler supports std::atomic.</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdatomic)
-
 #if     defined (__clang__)
-
 #define qCompilerAndStdLib_Supports_stdatomic   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
-
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-
-#define qCompilerAndStdLib_Supports_stdatomic   0
-
-#elif     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-
+#elif   defined (_MSC_VER)
+//#define qCompilerAndStdLib_Supports_stdatomic   (_MSC_VER > _MS_VS_2k10_VER_)
 // really is supported, but fake off for now til we fix it --LGP 2012-10-20
-#define qCompilerAndStdLib_Supports_stdatomic   0
-
+#define qCompilerAndStdLib_Supports_stdatomic   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
-
 #define qCompilerAndStdLib_Supports_stdatomic   1
-
 #endif
-
 #endif
 
 
@@ -594,7 +509,6 @@
 @DESCRIPTION:   <p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_override)
-
 #if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
 #define qCompilerAndStdLib_Supports_override    0
 #elif   defined (_MSC_VER)
@@ -602,7 +516,6 @@
 #else
 #define qCompilerAndStdLib_Supports_override    1
 #endif
-
 #endif
 
 
@@ -620,16 +533,13 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports lambda functions as default arguments to other functions</p>
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument
-
 #if     defined (__clang__)
-//at least fails with clang 3.0
 #define qCompilerAndStdLib_Supports_lambda_default_argument     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument     1
 #endif
-
 #endif
 
 
@@ -641,13 +551,11 @@
 @DESCRIPTION:   <p></p>
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
-
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast    (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast     qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
-
 #endif
 
 
@@ -670,26 +578,22 @@
 </p>
 */
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (_MSC_VER >= _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
 #endif
-
 #endif
 
 
 
 
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
-
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
-
 #endif
 
 
@@ -701,13 +605,11 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__PRETTY_FUNCTION__
-
 #if     defined (__GNUC__)
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   1
 #else
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   0
 #endif
-
 #endif
 
 
@@ -719,13 +621,11 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__func__
-
 #if     defined (__GNUC__)
 #define qCompilerAndStdLib_Support__func__   1
 #else
 #define qCompilerAndStdLib_Support__func__   0
 #endif
-
 #endif
 
 
@@ -737,13 +637,11 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__FUNCTION__
-
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Support__FUNCTION__   1
 #else
 #define qCompilerAndStdLib_Support__FUNCTION__   0
 #endif
-
 #endif
 
 
@@ -758,10 +656,10 @@
             </p>
 */
 #ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  1
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug      (_MSC_VER <= _MS_VS_2k12_VER_)
 #else
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug  0
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug      0
 #endif
 #endif
 
@@ -779,14 +677,12 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-
 #if     defined (__GNUC__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       qCompilerAndStdLib_Supports_constexpr
 #endif
-
 #endif
 
 
@@ -797,13 +693,11 @@
 @DESCRIPTION:   <p></p>
 */
 #ifndef qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug   (_MSC_VER <= _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       (_MSC_VER <= _MS_VS_2k12_VER_)
 #else
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug   0
+#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       0
 #endif
-
 #endif
 
 
@@ -839,6 +733,16 @@
  */
 
 
+// MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
+// easy enough to disable ;-)
+#if     defined (_MSC_VER) && _MSC_VER == _MS_VS_2k12_VER_
+#define _ALLOW_KEYWORD_MACROS
+#endif
+
+
+
+
+
 // SHOULD GO ELSEWHERE -- LGP 2011-10-27
 #if     !qCompilerAndStdLib_Supports_noexcept
 #define noexcept    throw ()
@@ -868,9 +772,7 @@
  *   to shutup compiler warnings in those cases.
  */
 #if     !defined (Arg_Unused)
-
 #define Arg_Unused(x)   ((void) &x)
-
 #endif
 
 
@@ -891,7 +793,6 @@
  *      this warning or error.
  */
 #if     !defined (_NoReturn_)
-
 #if     defined(_MSC_VER)
 #define _NoReturn_  __declspec(noreturn)
 #elif   defined (__GNUG__ )
@@ -899,7 +800,6 @@
 #else
 #define _NoReturn_
 #endif
-
 #endif
 
 
@@ -910,20 +810,19 @@
  * trace macros).
  */
 #if     !defined (_NoOp_)
-
 #if defined(_MSC_VER)
 #define _NoOp_  __noop
 #else
 #define _NoOp_(...)
 #endif
-
 #endif
 
 
 
+
 /*
-* NB: we can lose these macros once all our compilers support the new C++ syntax.
-*/
+ * NB: we can lose these macros once all our compilers support the new C++ syntax.
+ */
 #if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     static  constexpr TYPE NAME = VALUE;
@@ -931,6 +830,7 @@
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     enum  { NAME = VALUE };
 #endif
+
 
 
 
@@ -963,8 +863,6 @@
 
 
 #endif  /*defined(__cplusplus)*/
-
-
 
 
 
