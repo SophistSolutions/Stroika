@@ -396,15 +396,15 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_isnan
+@CONFIGVAR:     qCompilerAndStdLib_Supports_isnan
 @DESCRIPTION:   <p>Defines if the compiler stdC++/c99 library supports the std::isnan() function</p>
 */
-#ifndef qCompilerAndStdLib_isnan
+#ifndef qCompilerAndStdLib_Supports_isnan
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_isnan   1
+// msvc has _isnan
+#define qCompilerAndStdLib_Supports_isnan   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
-///testing...--2013-03-24
-#define qCompilerAndStdLib_isnan   1
+#define qCompilerAndStdLib_Supports_isnan   1
 #endif
 #endif
 

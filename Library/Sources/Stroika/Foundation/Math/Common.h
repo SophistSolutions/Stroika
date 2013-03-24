@@ -69,9 +69,9 @@ namespace   Stroika {
     }
 }
 
-#if     !qCompilerAndStdLib_isnan
-// SB in std namespace
+#if     !qCompilerAndStdLib_Supports_isnan
 namespace   std {
+    // Must be in std namespace
     bool    isnan (float f);
     bool    isnan (double d);
 }

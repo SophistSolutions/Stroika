@@ -150,15 +150,17 @@ namespace   Stroika {
                 return std::fabs ( l - r ) < epsilon;
             }
 
+
         }
     }
 }
 
-#if     !qCompilerAndStdLib_isnan
+
+#if     !qCompilerAndStdLib_Supports_isnan
 namespace   std {
     inline  bool    isnan (float f)
     {
-#if     qCompilerAndStdLib__isnan
+#if     _MSC_VER
         return static_cast<bool> (!!_isnan (f));
 #else
         return f != f;
@@ -166,7 +168,7 @@ namespace   std {
     }
     inline  bool    isnan (double f)
     {
-#if     qCompilerAndStdLib__isnan
+#if     _MSC_VER
         return static_cast<bool> (!!_isnan (f));
 #else
         return f != f;
@@ -174,6 +176,7 @@ namespace   std {
     }
 }
 #endif
+
 
 #endif  /*_Stroika_Foundation_Math_Common_inl_*/
 
