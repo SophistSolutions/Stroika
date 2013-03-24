@@ -48,6 +48,18 @@ namespace   Stroika {
 
 
             /**
+             *  \brief  offset of given enum from ENUM::eSTART
+             *
+             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+             *
+             *  @todo   See if there is some better way for this.
+             */
+            template    <typename   ENUM>
+            unsigned int    OffsetFromStart (ENUM e);
+
+
+            /**
              *  \def Define_Start_End_Count
              *
              *      Define meta information on enums using standardized names, so you can generically

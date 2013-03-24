@@ -47,6 +47,19 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ******************** Configuration::OffsetFromStart ****************************
+             ********************************************************************************
+             */
+            template    <typename   ENUM>
+            inline  unsigned int    OffsetFromStart (ENUM e)
+            {
+                Require (ENUM::eSTART <= e and e <= ENUM::eEND);
+                return static_cast<unsigned int> (Int (e) - Int (ENUM::eSTART));
+            }
+
+
         }
     }
 }
