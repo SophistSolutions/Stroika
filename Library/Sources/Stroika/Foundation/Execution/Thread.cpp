@@ -492,7 +492,11 @@ void    Thread::SetThreadName (const wstring& threadName)
             {
                 info.dwType = 0x1000;
                 info.szName = useThreadName.c_str ();
+#if     qUseThreads_WindowsNative
                 info.dwThreadID = MyGetThreadId_ (fRep_->fThread_);
+#else
+                info.dwThreadID = MyGetThreadId_ (fRep_->fThread_.native_handle ());
+#endif
                 info.dwFlags = 0;
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info));

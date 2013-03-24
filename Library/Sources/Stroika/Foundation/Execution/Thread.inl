@@ -147,7 +147,11 @@ namespace   Stroika {
             inline  Thread::IDType  Thread::GetID () const
             {
                 if (fRep_.get () == nullptr) {
+#if     qUseThreads_WindowsNative
                     return Thread::IDType (0);
+#elif   qPlatform_POSIX
+                    return Thread::IDType ();
+#endif
                 }
                 return fRep_->GetID ();
             }

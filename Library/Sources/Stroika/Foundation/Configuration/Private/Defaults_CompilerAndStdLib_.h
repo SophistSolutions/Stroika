@@ -379,8 +379,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_threads
 #if     defined (_MSC_VER)
-// MAYBE OK FOR 2k12, but requires a little work so disable for now--LGP 2012-10-19
-#define qCompilerAndStdLib_Supports_threads (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_threads (_MSC_VER >= _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_threads 1
 #endif
