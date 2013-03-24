@@ -797,13 +797,13 @@ namespace {
             VerifyTestResult (HexString2Int ("     ") == 0);
         }
         {
-            VerifyTestResult (Math::isnan (String2Float (String ())));
-            VerifyTestResult (Math::isnan (String2Float (string ())));
-            VerifyTestResult (Math::isnan (String2Float (wstring ())));
-            VerifyTestResult (Math::isnan (String2Float ("")));
-            VerifyTestResult (Math::isnan (String2Float (wstring (L""))));
-            VerifyTestResult (Math::isnan (String2Float (String ())));
-            VerifyTestResult (Math::isnan (String2Float ("     ")));
+            VerifyTestResult (std::isnan (String2Float (String ())));
+            VerifyTestResult (std::isnan (String2Float (string ())));
+            VerifyTestResult (std::isnan (String2Float (wstring ())));
+            VerifyTestResult (std::isnan (String2Float ("")));
+            VerifyTestResult (std::isnan (String2Float (wstring (L""))));
+            VerifyTestResult (std::isnan (String2Float (String ())));
+            VerifyTestResult (std::isnan (String2Float ("     ")));
         }
         {
             VerifyTestResult (Math::NearlyEquals (String2Float ("-44.4"), -44.4));
