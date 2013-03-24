@@ -29,8 +29,11 @@
 // On Windows - its quite unclear if one is better off using the stdc++ implementation (since it doesnt yet exist its hard to tell what features it
 // will have) or the stdc++ implemeentation. Luckily - there is only one for unix & one for windoze now, so its clear in the very short term...
 //      --LGP 2011-09-01
-//#define   qUseThreads_WindowsNative   qPlatform_Windows
-#define qUseThreads_WindowsNative   0
+//
+// force still using native til I have tim eto test more...
+//      -- LGP 2013-03-24
+#define   qUseThreads_WindowsNative   qPlatform_Windows
+//#define qUseThreads_WindowsNative   0
 #else
 #define qUseThreads_WindowsNative   qPlatform_Windows
 #endif
