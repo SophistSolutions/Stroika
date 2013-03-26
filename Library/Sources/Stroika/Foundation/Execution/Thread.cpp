@@ -439,13 +439,32 @@ Thread::Thread (const IRunnablePtr& runnable)
     Rep_::DoCreate (&fRep_);
 }
 
-#if         qUseThreads_WindowsNative
-void    Thread::SetThreadPriority (int nPriority)
+void    Thread::SetThreadPriority (Priority priority)
 {
     RequireNotNull (fRep_);
-    Verify (::SetThreadPriority (GetNativeHandle (), nPriority));
-}
+#if         qPlatform_Windows
+    switch (priority) {
+        case Priority::eLowest:
+            Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_LOWEST));
+            break;
+        case Priority::eBelowNormal:
+            Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_BELOW_NORMAL));
+            break;
+        case Priority::eNormal:
+            Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_NORMAL));
+            break;
+        case Priority::eAboveNormal:
+            Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_ABOVE_NORMAL));
+            break;
+        case Priority::eHighest:
+            Verify (::SetThreadPriority (GetNativeHandle (), THREAD_PRIORITY_HIGHEST));
+            break;
+    }
+#else
+    // for pthreads - use http://man7.org/linux/man-pages/man3/pthread_getschedparam.3.html
+    AssertNotImplemented();
 #endif
+}
 
 #if     qPlatform_POSIX
 void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)

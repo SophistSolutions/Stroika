@@ -314,10 +314,21 @@ namespace   Stroika {
                 nonvirtual  void    WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;
 #endif
 
-#if         qUseThreads_WindowsNative
+
+
             public:
-                nonvirtual  void    SetThreadPriority (int nPriority = THREAD_PRIORITY_NORMAL);
-#endif
+                enum class Priority {
+                    eLowest,
+                    eBelowNormal,
+                    eNormal,
+                    eAboveNormal,
+                    eHighest,
+                };
+                /**
+                 *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
+                 *  APIs. You can always directly call low-level native APIs using GetNativeHandle().
+                 */
+                nonvirtual  void    SetThreadPriority (Priority priority = Priority::eNormal);
 
 
 #if     qPlatform_POSIX
