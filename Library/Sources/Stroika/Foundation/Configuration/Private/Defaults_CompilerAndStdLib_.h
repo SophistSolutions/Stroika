@@ -466,13 +466,13 @@
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_stdchrono_diff_double
 @DESCRIPTION:   fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> didnt
-				compile without this hack...
+                compile without this hack...
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono_diff_double)
 #if   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdchrono_diff_double       (_MSC_VER > _MS_VS_2k12_VER_)
 #else
-#define qCompilerAndStdLib_Supports_stdchrono					qCompilerAndStdLib_Supports_stdchrono
+#define qCompilerAndStdLib_Supports_stdchrono_diff_double       qCompilerAndStdLib_Supports_stdchrono
 #endif
 #endif
 
