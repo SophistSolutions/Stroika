@@ -30,6 +30,13 @@
  *              handles either form of decimal separator! Add to regression tests, and make sure
  *              it works.
  *
+ *      @todo   Do better job converting to/from std::duration<>. Unclear if I should just use
+ *              templated CTOR to map all the types or overload the predefined milliseconds/microseconds
+ *              etc.
+ *
+ *              One issue with the template stuff is that when it goes wrong, its a horrid mess to understand
+ *              the error. But thats probably a temporary issue.
+ *
  *      @todo   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
  *      @todo   Add support for long double (and perhaps others?). And consider using long double for
@@ -85,6 +92,7 @@ namespace   Stroika {
                 explicit Duration (long long duration);
                 explicit Duration (double duration);
 #if     qCompilerAndStdLib_Supports_stdchrono
+                Duration (const std::chrono::milliseconds& d);
                 Duration (const std::chrono::duration<double>& d);
 #endif
 
@@ -99,6 +107,7 @@ namespace   Stroika {
                  *      wstring
                  *      double
                  *      std::chrono::duration<double>           (if qCompilerAndStdLib_Supports_stdchrono)
+                 *      std::chrono::milliseconds               (if qCompilerAndStdLib_Supports_stdchrono)
                  *
                  *  Note - if 'empty' - As<> for numeric types returns 0.
                  */
@@ -161,6 +170,8 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_stdchrono
             template    <>
             chrono::duration<double>  Duration::As () const;
+            template    <>
+            chrono::milliseconds  Duration::As () const;
 #endif
 
             bool operator< (const Duration& lhs, const Duration& rhs);

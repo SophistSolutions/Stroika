@@ -102,6 +102,11 @@ Duration::Duration (const std::chrono::duration<double>& d)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
 {
 }
+
+Duration::Duration (const std::chrono::milliseconds& d)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / 1000.0))
+{
+}
 #endif
 
 void    Duration::clear ()
@@ -144,6 +149,28 @@ namespace   Stroika {
 #else
 template    <>
 std::chrono::duration<double>  Duration::As () const
+{
+    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
+}
+#endif
+
+#if 1
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
+            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+            // -- LGP 2012-05-26
+            template    <>
+            std::chrono::milliseconds  Duration::As () const
+            {
+                return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
+            }
+        }
+    }
+}
+#else
+template    <>
+std::chrono::milliseconds  Duration::As () const
 {
     return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
