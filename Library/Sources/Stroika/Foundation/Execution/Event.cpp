@@ -96,7 +96,7 @@ Again:
         remaining = min (remaining, 5.0);       // hack to force quick wakeup shutting down threadpool (and other threads waiting on a semaphore)
 #endif
 
-#if		qCompilerAndStdLib_Supports_stdchrono_diff_double
+#if     qCompilerAndStdLib_Supports_stdchrono_diff_double
         if (fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> ()) == std::cv_status::timeout) {
             // No need for this, since could be caught next time through the loop...
             // And it interferes with the bounding of the 'remaining' count used to avoid overflows
