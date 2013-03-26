@@ -390,6 +390,16 @@
 
 
 
+#ifndef qCompilerAndStdLib_Supports_thread_local_keyword
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_thread_local_keyword (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define qCompilerAndStdLib_Supports_thread_local_keyword (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#endif
+#endif
+
+
+
 
 
 
@@ -762,6 +772,21 @@
 #if     !qCompilerAndStdLib_Supports_override
 #define override
 #endif
+
+
+
+
+
+#if     !qCompilerAndStdLib_Supports_thread_local_keyword
+#if     defined (__GNUC__)
+#define thread_local    __thread
+#else
+#define thread_local    __declspec(thread)
+#endif
+#endif
+
+
+
 
 
 

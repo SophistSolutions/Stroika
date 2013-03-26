@@ -65,11 +65,7 @@ using   namespace   Execution;
 
 
 #if     qUseTLSForSAbortingFlag
-#if     defined (__GNUC__)
-__thread bool   s_Aborting  =   false;
-#else
-__declspec(thread)  bool    s_Aborting  =   false;
-#endif
+thread_local bool   s_Aborting  =   false;
 #endif
 
 
@@ -596,7 +592,7 @@ void    Thread::Abort_Forced_Unsafe ()
 void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Time::DurationSecondsType   endTime =   Time::GetTickCount () + timeout;
-    // as abort may need to be resent (since there could be a race and we may need to force wakeup again)
+    // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
     while (true) {
         const   Time::DurationSecondsType   kTimeBetweenAborts_     =   1.0f;
         Abort ();
