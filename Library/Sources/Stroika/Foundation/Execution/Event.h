@@ -19,16 +19,6 @@
 #include    "Exceptions.h"
 
 
-//
-// Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
-// -- LGP 2012-05-27
-//
-//      MAYBE use http://www.mkssoftware.com/docs/man3/pthread_cancel.3.asp
-//
-//
-#ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG     qUseThreads_StdCPlusPlus
-#endif
 
 
 
