@@ -443,7 +443,7 @@ Thread::Thread (const IRunnablePtr& runnable)
 void    Thread::SetThreadPriority (int nPriority)
 {
     RequireNotNull (fRep_);
-    Verify (::SetThreadPriority (GetOSThreadHandle (), nPriority));
+    Verify (::SetThreadPriority (GetNativeHandle (), nPriority));
 }
 #endif
 

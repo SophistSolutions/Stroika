@@ -36,6 +36,11 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /*
+             ********************************************************************************
+             ********************************* Thread::Rep_ *********************************
+             ********************************************************************************
+             */
             class   Thread::Rep_ {
             public:
                 Rep_ (const IRunnablePtr& runnable);
@@ -114,7 +119,11 @@ namespace   Stroika {
             };
 
 
-            // class    Thread::Rep_
+            /*
+             ********************************************************************************
+             *********************************** Thread::Rep_ *******************************
+             ********************************************************************************
+             */
             inline  void    Thread::Rep_::Start ()
             {
                 fOK2StartEvent_.Set ();
@@ -131,13 +140,11 @@ namespace   Stroika {
             }
 
 
-            // class    Thread
-#if         qUseThreads_WindowsNative
-            inline  HANDLE  Thread::GetOSThreadHandle () const noexcept
-            {
-                return fRep_->fThread_;
-            }
-#endif
+            /*
+             ********************************************************************************
+             ************************************* Thread ***********************************
+             ********************************************************************************
+             */
 #if     qPlatform_POSIX
             inline  SignalIDType        Thread::GetSignalUsedForThreadAbort ()
             {
@@ -186,7 +193,11 @@ namespace   Stroika {
             }
 
 
-
+            /*
+             ********************************************************************************
+             ************************* GetCurrentThreadID ***********************************
+             ********************************************************************************
+             */
             inline  Thread::IDType  GetCurrentThreadID () noexcept {
 #if     qUseThreads_WindowsNative
                 return ::GetCurrentThreadId ();
@@ -199,7 +210,11 @@ namespace   Stroika {
             }
 
 
-            // class    CheckForThreadAborting
+            /*
+             ********************************************************************************
+             ************************* CheckForThreadAborting *******************************
+             ********************************************************************************
+             */
             template    <unsigned int kEveryNTimes>
             void    CheckForThreadAborting ()
             {

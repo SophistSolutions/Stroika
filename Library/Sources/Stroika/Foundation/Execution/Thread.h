@@ -93,8 +93,7 @@
  *              >>  Changes or really clarifications on the ad interruption design. Test mt theory
  *              >>  with long loop being interopted with and without debugger on windiws
  *              >>  I THINK we can just document all cooperative interuption and clearly document
-                >>      that deisgn choice
- *
+ *              >>      that deisgn choice
  *
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
@@ -244,12 +243,12 @@ namespace   Stroika {
                 explicit Thread (const std::function<void()>& fun2CallOnce);
                 explicit Thread (const IRunnablePtr& runnable);
 
-#if         qUseThreads_WindowsNative
-            public:
-                nonvirtual  HANDLE      GetOSThreadHandle () const noexcept;
-#endif
 
             public:
+                /**
+                 *  Each thread has associated an IRunnable, which gets run by the thread. It can be accessed
+                 *  via GetRunnable(), but is only settable in the thread constructor.
+                 */
                 nonvirtual  shared_ptr<IRunnable>    GetRunnable () const;
 
             public:
@@ -308,9 +307,6 @@ namespace   Stroika {
                  *  Its NOT an erorr if the timeout is exceeded.
                  */
                 nonvirtual  void    PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
-#endif
-
-#if     qPlatform_Windows
             public:
                 /**
                  *  throws if timeout
@@ -373,6 +369,8 @@ namespace   Stroika {
                  *  These names should not be counted on for program logic.
                  */
                 nonvirtual  wstring GetThreadName () const;
+
+            public:
                 /**
                  *  \req GetStatus () != Status::eNull
                  *
