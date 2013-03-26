@@ -38,7 +38,7 @@ namespace   {
         struct  FRED {
             static  void    DoIt (void* ignored) {
                 for (int i = 1; i < 10; i++) {
-                    Execution::Sleep (.01);
+                    Execution::Sleep (.001);
                 }
             }
         };
@@ -68,7 +68,7 @@ namespace   {
                 for (int i = 0; i < 10; i++) {
                     lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
                     int tmp = *argP;
-                    Execution::Sleep (.01);
+                    Execution::Sleep (.001);
                     //DbgTrace ("Updating value in thread id %d", ::GetCurrentThreadId  ());
                     *argP = tmp + 1;
                 }
@@ -105,7 +105,7 @@ namespace   {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T1_.Wait ();
                         int tmp = *argP;
-                        Execution::Sleep (.01);
+                        Execution::Sleep (.001);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
                         VerifyTestResult (tmp % 2 == 0);
                         //DbgTrace ("FRED1: Updating value in of %d", tmp);
@@ -120,7 +120,7 @@ namespace   {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T2_.Wait ();
                         int tmp = *argP;
-                        Execution::Sleep (.01);
+                        Execution::Sleep (.001);
                         //DbgTrace ("FRED2: Updating value in of %d", tmp);
                         *argP = tmp + 1;
                         sRegTest3Event_T1_.Set ();
@@ -154,7 +154,7 @@ namespace   {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T1_.Wait (5.0);
                         int tmp = *argP;
-                        Execution::Sleep (.01);
+                        Execution::Sleep (.001);
                         // Since fred1/fred2 always take turns, and Fred1 always goes first...
                         VerifyTestResult (tmp % 2 == 0);
                         //DbgTrace ("FRED1: Updating value in of %d", tmp);
@@ -169,7 +169,7 @@ namespace   {
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T2_.Wait (5.0);
                         int tmp = *argP;
-                        Execution::Sleep (.01);
+                        Execution::Sleep (.001);
                         //DbgTrace ("FRED2: Updating value in of %d", tmp);
                         *argP = tmp + 1;
                         sRegTest3Event_T1_.Set ();
@@ -331,7 +331,7 @@ namespace   {
         Thread  thread (&FRED::DoIt);
         thread.Start ();
         try {
-            thread.WaitForDone (1.0);   // should timeout
+            thread.WaitForDone (0.3);   // should timeout
             VerifyTestResult (false);
         }
         catch (const Execution::WaitTimedOutException&) {
@@ -354,7 +354,7 @@ namespace   {
         Debug::TraceContextBumper traceCtx (TSTR ("RegressionTest6_ThreadWaiting_"));
         struct  FRED {
             static  void    DoIt () {
-                Execution::Sleep (0.1);
+                Execution::Sleep (0.01);
             }
         };
 
@@ -458,19 +458,19 @@ namespace   {
         // between the create of thread and Abort
         struct  FRED {
             static  void    DoItInnerThread () {
-                Execution::Sleep (.1);
+                Execution::Sleep (.01);
             }
             static  void    DoOuterThread () {
                 while (true) {
                     Thread t (DoItInnerThread);
-                    Execution::Sleep (.2);
+                    Execution::Sleep (.02);
                     t.Start ();
                 }
             }
         };
         Thread  thread (&FRED::DoOuterThread);
         thread.Start ();
-        Execution::Sleep (5);
+        Execution::Sleep (.5);
         thread.AbortAndWaitForDone ();
     }
 }
