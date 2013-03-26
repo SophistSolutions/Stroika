@@ -24,6 +24,9 @@
 #include    "../../Characters/StringUtils.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
+#if     qPlatform_Windows
+#include    "../../Execution/Platform/Windows/Exception.h"
+#endif
 #include    "../../Containers/Common.h"
 #include    "../../Containers/STL/SetUtils.h"
 #include    "../../Debug/Trace.h"

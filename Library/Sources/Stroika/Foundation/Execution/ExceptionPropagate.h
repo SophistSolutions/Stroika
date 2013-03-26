@@ -7,6 +7,10 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Execution/SilentException.h"
+#if     qPlatform_Windows
+#include    "../Execution/Platform/Windows/Exception.h"
+#include    "../Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 #include    "../IO/FileBusyException.h"
 #include    "../IO/FileFormatException.h"
 #include    "IRunnable.h"
