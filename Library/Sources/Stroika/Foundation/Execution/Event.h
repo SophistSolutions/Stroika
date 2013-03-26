@@ -84,7 +84,7 @@ namespace   Stroika {
                 // Simple wait. Can use operator HANDLE() to do fancier waits
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
             public:
                 operator HANDLE () const;
             private:

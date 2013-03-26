@@ -11,6 +11,10 @@
 #endif
 
 #include    "../../Execution/Exceptions.h"
+#if     qPlatform_Windows
+#include    "../../Execution/Platform/Windows/Exception.h"
+#include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
+#endif
 
 #include    "FileUtils.h"
 #include    "PathName.h"

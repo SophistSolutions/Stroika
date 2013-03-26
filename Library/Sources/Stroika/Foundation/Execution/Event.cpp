@@ -58,7 +58,7 @@ void    Event::Wait (Time::DurationSecondsType timeout)
     //Debug::TraceContextBumper ctx (TSTR ("Event::Wait"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     CheckForThreadAborting ();
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
     AssertNotNull (fEventHandle);
     // must be careful about rounding errors in int->DurationSecondsType->int
 Again:

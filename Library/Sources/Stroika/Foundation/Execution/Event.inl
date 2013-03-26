@@ -13,7 +13,7 @@
 #include    "AtomicOperations.h"
 #include    "WaitAbandonedException.h"
 #include    "WaitTimedOutException.h"
-#if     qPlatform_Windows
+#if     qUseThreads_WindowsNative
 #include    "Platform/Windows/WaitSupport.h"
 #include    "Platform/Windows/Exception.h"
 #include    "Platform/Windows/HRESULTErrorException.h"
@@ -38,7 +38,7 @@ namespace   Stroika {
                 : fEventHandle (::CreateEvent (nullptr, false, false, nullptr))
 #endif
             {
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
                 Platform::Windows::ThrowIfFalseGetLastError (fEventHandle != nullptr);
 #if     qTrack_Execution_HandleCounts
                 Execution::AtomicIncrement (&sCurAllocatedHandleCount);
@@ -51,7 +51,7 @@ namespace   Stroika {
             }
             inline  Event::~Event ()
             {
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
                 Verify (::CloseHandle (fEventHandle));
 #if     qTrack_Execution_HandleCounts
                 AtomicDecrement (&sCurAllocatedHandleCount);
@@ -61,7 +61,7 @@ namespace   Stroika {
             inline  void    Event::Reset ()
             {
                 //Debug::TraceContextBumper ctx (TSTR ("Event::Reset"));
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
                 AssertNotNull (fEventHandle);
                 Verify (::ResetEvent (fEventHandle));
 #elif       qUseThreads_StdCPlusPlus
@@ -76,7 +76,7 @@ namespace   Stroika {
             inline  void    Event::Set ()
             {
                 //Debug::TraceContextBumper ctx (TSTR ("Event::Set"));
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
                 AssertNotNull (fEventHandle);
                 Verify (::SetEvent (fEventHandle));
 #elif       qUseThreads_StdCPlusPlus
@@ -89,7 +89,7 @@ namespace   Stroika {
                 AssertNotImplemented ();
 #endif
             }
-#if         qPlatform_Windows
+#if         qUseThreads_WindowsNative
             inline  Event::operator HANDLE () const
             {
                 AssertNotNull (fEventHandle);
