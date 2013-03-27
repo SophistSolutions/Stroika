@@ -206,7 +206,7 @@ namespace   Stroika {
              */
             class   Thread {
             public:
-                /*
+                /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
                  */
 #if     qUseThreads_StdCPlusPlus
@@ -252,7 +252,13 @@ namespace   Stroika {
                 nonvirtual  shared_ptr<IRunnable>    GetRunnable () const;
 
             public:
+                /**
+                  */
                 nonvirtual  IDType              GetID () const;
+
+            public:
+                /**
+                  */
                 nonvirtual  NativeHandleType    GetNativeHandle () noexcept;
 
             public:
@@ -261,6 +267,7 @@ namespace   Stroika {
                   */
                 nonvirtual  void    Start ();
 
+            public:
                 /**
                  *  Send  (ThreadAbortException) to the given thread.
                  *  This call is (generally) non-blocking (may block for critical section to update status,
@@ -271,6 +278,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Abort ();
 
+            public:
                 /*
                  *  Note that its legal to call Stop_Forced_Unsafe on a thread in any state -
                  *  including nullptr. Some may just have no effect
@@ -280,6 +288,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
 
+            public:
                 /**
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
                  *  Note that its legal to call WaitForDone on a thread in any state - including nullptr.
@@ -287,6 +296,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    WaitForDone (Time::DurationSecondsType timeout = Time::kInfinite) const;
 
+            public:
                 /**
                  *  Note that its legal to call AbortAndWaitForDone on a thread in any state -
                  *  including nullptr. Some may just have no effect
@@ -301,14 +311,15 @@ namespace   Stroika {
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
 #if     qPlatform_Windows
+            private:
+                /**
+                 */
+                nonvirtual  void    PumpMessagesAndReturnWhenDoneOrAfterTime_ (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
             public:
                 /**
                  *  Look pumping messages until either time2Pump is exceeded or the thread completes.
                  *  Its NOT an erorr if the timeout is exceeded.
-                 */
-                nonvirtual  void    PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
-            public:
-                /**
+                 *
                  *  throws if timeout
                  */
                 nonvirtual  void    WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout = Time::kInfinite) const;

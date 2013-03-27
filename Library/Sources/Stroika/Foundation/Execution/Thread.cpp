@@ -679,7 +679,7 @@ Again:
 }
 
 #if     qPlatform_Windows
-void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime (Time::DurationSecondsType timeToPump) const
+void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime_ (Time::DurationSecondsType timeToPump) const
 {
     if (fRep_.get () == nullptr) {
         // then its effectively already done.
@@ -712,7 +712,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
         if (time2Wait <= 0) {
             DoThrow (WaitTimedOutException ());
         }
-        PumpMessagesAndReturnWhenDoneOrAfterTime (time2Wait);
+        PumpMessagesAndReturnWhenDoneOrAfterTime_ (time2Wait);
     }
 }
 #endif
@@ -786,16 +786,14 @@ void    Execution::CheckForThreadAborting ()
         Execution::DoThrow (ThreadAbortException ());
     }
 #if     qUseSleepExForSAbortingFlag
-    ::SleepEx (0, true);
-#else
-    Assert (false);
     /*
         * I think we could use SleepEx() or WaitForMultipleObjectsEx(), but SleepEx(0,true) may cause a thread to give up
         * the CPU (ask itself to be rescheduled). WaitForMultipleObjectsEx - from the docs - doesn't appear to do this.
         * I think its a lower-cost way to check for a thread being aborted...
         *           -- LGP 2010-10-26
         */
-//              (void)::WaitForMultipleObjectsEx (0, nullptr, false, 0, true);
+//      (void)::WaitForMultipleObjectsEx (0, nullptr, false, 0, true);
+    ::SleepEx (0, true);
 #endif
 }
 
