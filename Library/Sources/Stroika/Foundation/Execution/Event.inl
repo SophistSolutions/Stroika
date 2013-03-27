@@ -28,7 +28,12 @@ namespace   Stroika {
             //redeclare to avoid having to include Thread code
             void    CheckForThreadAborting ();
 
-            // class    Event
+
+            /*
+             ********************************************************************************
+             ******************************** Execution::Event ******************************
+             ********************************************************************************
+             */
             inline  Event::Event ()
 #if     qUseThreads_StdCPlusPlus
                 : fMutex_ ()
@@ -40,22 +45,22 @@ namespace   Stroika {
             {
 #if         qUseThreads_WindowsNative
                 Platform::Windows::ThrowIfFalseGetLastError (fEventHandle != nullptr);
-#if     qTrack_Execution_HandleCounts
-                Execution::AtomicIncrement (&sCurAllocatedHandleCount);
-#endif
 #elif       qUseThreads_StdCPlusPlus
                 // initialized above
 #else
                 AssertNotImplemented ();
 #endif
+#if     qTrack_Execution_HandleCounts
+                Execution::AtomicIncrement (&sCurAllocatedHandleCount);
+#endif
             }
             inline  Event::~Event ()
             {
-#if         qUseThreads_WindowsNative
-                Verify (::CloseHandle (fEventHandle));
 #if     qTrack_Execution_HandleCounts
                 AtomicDecrement (&sCurAllocatedHandleCount);
 #endif
+#if         qUseThreads_WindowsNative
+                Verify (::CloseHandle (fEventHandle));
 #endif
             }
             inline  void    Event::Reset ()

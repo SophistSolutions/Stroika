@@ -46,10 +46,11 @@ namespace   Stroika {
 #endif
 
 
-            /*
-             * AutoReset Event (like Windwow CreateEvent (false, false).
-             * Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm, and simpler to assume always in unset
-             * state by default.
+            /**
+             *  AutoReset Event (like Windwow CreateEvent (false, false).
+             *
+             *  Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm,
+             *  and simpler to assume always in unset state by default.
              */
             class   Event {
 #if     qTrack_ThreadUtils_HandleCounts
@@ -65,27 +66,36 @@ namespace   Stroika {
                 ~Event ();
 
             public:
-                // Set the event to the non-signaled state
+                /**
+                 *  Set the event to the non-signaled state
+                 */
                 nonvirtual  void    Reset ();
 
-                // Set the event to the signaled state
+            public:
+                /**
+                 *  Set the event to the signaled state
+                 */
                 nonvirtual  void    Set ();
 
-                // Simple wait. Can use operator HANDLE() to do fancier waits
+            public:
+                /**
+                 *  Simple wait. Can use operator HANDLE() to do fancier waits
+                 */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
-#if         qUseThreads_WindowsNative
+#if     qUseThreads_StdCPlusPlus
+            private:
+                std::mutex              fMutex_;
+                std::condition_variable fConditionVariable_;
+                bool                    fTriggered_;
+#elif   qUseThreads_WindowsNative
             public:
                 operator HANDLE () const;
             private:
                 HANDLE  fEventHandle;
 #endif
-#if     qUseThreads_StdCPlusPlus
-                std::mutex              fMutex_;
-                std::condition_variable fConditionVariable_;
-                bool                    fTriggered_;
-#endif
             };
+
 
         }
     }
