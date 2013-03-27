@@ -409,6 +409,8 @@ namespace   Stroika {
             };
 
 
+            /**
+             */
             Thread::IDType  GetCurrentThreadID () noexcept;
 
 
