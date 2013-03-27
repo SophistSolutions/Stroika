@@ -365,7 +365,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
         }
         Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 #elif   qPlatform_Windows
-        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
+        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, GetNativeHandle (), reinterpret_cast<ULONG_PTR> (this)));
 #endif
     }
 }
