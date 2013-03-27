@@ -542,7 +542,6 @@ namespace   {
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
         RegressionTest1_ ();

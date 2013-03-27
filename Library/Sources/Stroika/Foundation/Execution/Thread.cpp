@@ -63,10 +63,9 @@ using   namespace   Characters;
 using   namespace   Execution;
 
 
-
-#if     qUseTLSForSAbortingFlag
-thread_local bool   s_Aborting  =   false;
-#endif
+namespace {
+	thread_local bool   s_Aborting_  =   false;
+}
 
 
 
@@ -138,9 +137,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 #elif   qUseThreads_WindowsNative
     : fThread_ (INVALID_HANDLE_VALUE)
 #endif
-#if     qUseTLSForSAbortingFlag
-    , fTLSAbortFlag (nullptr)           // Can only be set properly within the MAINPROC of the thread
-#endif
+    , _fTLSAbortFlag (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fStatusCriticalSection_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fOK2StartEvent_ ()
@@ -228,11 +225,10 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
          */
         shared_ptr<Rep_> incRefCnt   =   *thisThreadRep; // assure refcount incremented so object not deleted while the thread is running
 
-#if     qUseTLSForSAbortingFlag
-        s_Aborting = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
-        // -- LGP 2011-10-03
-        incRefCnt->fTLSAbortFlag = &s_Aborting;
+#if     !qCompilerAndStdLib_thread_local_initializersSupported
+        s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
 #endif
+        incRefCnt->_fTLSAbortFlag = &s_Aborting_;
 
         try {
             // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
@@ -279,7 +275,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
         catch (const ThreadAbortException&) {
 #if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-            s_Aborting = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
+            s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
@@ -293,7 +289,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
         catch (...) {
 #if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
-            s_Aborting = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
+            s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
@@ -343,11 +339,9 @@ void    Thread::Rep_::NotifyOfAbort ()
     if (GetCurrentThreadID () == GetID ()) {
         ThrowAbortIfNeeded ();
     }
-#if     qUseTLSForSAbortingFlag
-    AssertNotNull (fTLSAbortFlag);
-    *fTLSAbortFlag = true;
-#elif   qUseThreads_StdCPlusPlus
-#elif   qUseThreads_WindowsNative
+    AssertNotNull (_fTLSAbortFlag);
+    *_fTLSAbortFlag = true;
+#if   qUseThreads_WindowsNative
     if (fStatus_ == Status::eAborting) {
         Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
     }
@@ -382,7 +376,7 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 void    Thread::Rep_::AbortProc_ (SignalIDType signal)
 {
     TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
-    s_Aborting = true;
+    s_Aborting_ = true;
     /*
      * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
      * will return EINTR - which is crucial to our strategy to interupt them!
@@ -788,11 +782,10 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadAborting ()
 {
-#if     qUseTLSForSAbortingFlag
-    if (s_Aborting) {
+    if (s_Aborting_) {
         Execution::DoThrow (ThreadAbortException ());
     }
-#elif   qUseSleepExForSAbortingFlag
+#if		qUseSleepExForSAbortingFlag
     ::SleepEx (0, true);
 #else
     Assert (false);
