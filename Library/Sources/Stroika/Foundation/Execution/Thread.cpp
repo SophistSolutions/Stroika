@@ -490,13 +490,13 @@ void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
     lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
         sHandlerInstalled_ = false;
     }
     sSignalUsedForThreadAbort_ = signalNumber;
     // install new handler
     if (not sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
         sHandlerInstalled_ = true;
     }
 }
