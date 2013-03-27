@@ -759,6 +759,9 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
         return Characters::Format (L"0x%016lx", threadIDInt);
     }
     else {
+        //
+        // @todo: this case is wrong - sizeof(unsigned int) could be 64bits, but sizeof(threadID) smaller so peeking at bad data!!!
+        //
         unsigned int    threadIDInt =   *reinterpret_cast<unsigned int*> (&threadID);
         if (threadIDInt <= 0xffff) {
             return Characters::Format (L"0x%04x", threadIDInt);
