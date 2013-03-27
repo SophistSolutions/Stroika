@@ -798,7 +798,13 @@ void    Execution::CheckForThreadAborting ()
     }
 //      http://bugzilla/show_bug.cgi?id=646
 //      I THINK this is obsolete.... throw should  be fine
-#define qUseSleepExForSAbortingFlag 0
+
+// RE-ENABLE for windows - qUseSleepExForSAbortingFlag - this is BAD, NOT GOOD.
+// MUST get this working again...
+//  -- LGP 2013-03-26
+
+
+//#define qUseSleepExForSAbortingFlag 0
 #ifndef qUseSleepExForSAbortingFlag
 #define qUseSleepExForSAbortingFlag qPlatform_Windows
 #endif
