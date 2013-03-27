@@ -32,8 +32,8 @@
 //
 // force still using native til I have tim eto test more...
 //      -- LGP 2013-03-24
-#define   qUseThreads_WindowsNative   qPlatform_Windows
-//#define qUseThreads_WindowsNative   0
+//#define   qUseThreads_WindowsNative   qPlatform_Windows
+#define qUseThreads_WindowsNative   0
 #else
 #define qUseThreads_WindowsNative   qPlatform_Windows
 #endif
