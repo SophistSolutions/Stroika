@@ -11,28 +11,35 @@
  ********************************************************************************
  */
 #include    "../Debug/Assertions.h"
+#include    "Common.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
 
+
+            /*
+             ********************************************************************************
+             *********************************** Math::Angle ********************************
+             ********************************************************************************
+             */
             inline  Angle::Angle ()
-                : fAngleInRadians (0)
+                : fAngleInRadians_ (0)
             {
             }
             inline  Angle::Angle (double angle, AngleFormat angleFormat)
-                : fAngleInRadians (angle)
+                : fAngleInRadians_ (angle)
             {
                 switch (angleFormat) {
-                    case eRadians:
+                    case AngleFormat::eRadians:
                         break;
 
-                    case eDegrees:
-                        fAngleInRadians *= (2 * kPi) / 360.0;
+                    case AngleFormat::eDegrees:
+                        fAngleInRadians_ *= (2 * kPi) / 360.0;
                         break;
 
-                    case eGradians:
-                        fAngleInRadians *= (2 * kPi) / 400.0;
+                    case AngleFormat::eGradians:
+                        fAngleInRadians_ *= (2 * kPi) / 400.0;
                         break;
 
                     default:
@@ -41,34 +48,34 @@ namespace   Stroika {
             }
             inline  double  Angle::AsRadians () const
             {
-                return (fAngleInRadians);
+                return (fAngleInRadians_);
             }
             inline  double  Angle::AsDegrees () const
             {
-                return (fAngleInRadians * 360.0 / (2 * kPi));
+                return (fAngleInRadians_ * 360.0 / (2 * kPi));
             }
             inline  double  Angle::AsGradians () const
             {
-                return (fAngleInRadians * 400.0 / (2 * kPi));
+                return (fAngleInRadians_ * 400.0 / (2 * kPi));
             }
             inline  const   Angle&  Angle::operator+= (const Angle& rhs)
             {
-                fAngleInRadians += rhs.AsRadians ();
+                fAngleInRadians_ += rhs.AsRadians ();
                 return (*this);
             }
             inline  const   Angle&  Angle::operator-= (const Angle& rhs)
             {
-                fAngleInRadians -= rhs.AsRadians ();
+                fAngleInRadians_ -= rhs.AsRadians ();
                 return (*this);
             }
             inline  const   Angle&  Angle::operator*= (double rhs)
             {
-                fAngleInRadians *= rhs;
+                fAngleInRadians_ *= rhs;
                 return (*this);
             }
             inline  const   Angle&  Angle::operator/= (double rhs)
             {
-                fAngleInRadians /= rhs;
+                fAngleInRadians_ /= rhs;
                 return (*this);
             }
 
@@ -127,10 +134,8 @@ namespace   Stroika {
                 return ((a1 > a2) ? a1 : a2);
             }
 
+
         }
     }
 }
 #endif  /*_Stroika_Foundation_Math_Angle_inl_*/
-
-
-

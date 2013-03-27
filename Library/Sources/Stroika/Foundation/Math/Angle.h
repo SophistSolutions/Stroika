@@ -12,6 +12,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Math {
 
+
+            /**
+             */
             class   Angle {
             public:
                 enum class AngleFormat : uint8_t {
@@ -32,7 +35,7 @@ namespace   Stroika {
                 nonvirtual  const   Angle&  operator/= (double rhs);
 
             private:
-                double  fAngleInRadians;
+                double  fAngleInRadians_;
             };
 
 
@@ -57,21 +60,10 @@ namespace   Stroika {
             extern  bool    operator>= (const Angle& lhs, const Angle& rhs);
 
 
-            extern  Angle   Min (const Angle& a1, const Angle& a2);
-            extern  Angle   Max (const Angle& a1, const Angle& a2);
-
-
         }
     }
 }
 
-#if 0
-/*
- * iostream support. -- NOT SURE IF/HOW TODO WITH STROIKA - DONT WANT TO INTROUCE DEPENDENCY HERE??? MAYBE SEP FILE FOR ANGLE_IOSTREAM?
- */
-extern  std::ostream&   operator<< (std::ostream& out, const Stroika::Foundation::Math::Angle& a);
-extern  std::istream&   operator>> (std::istream& in, Stroika::Foundation::Math::Angle& a);
-#endif
 
 #endif  /*_Stroika_Foundation_Math_Angle_h_*/
 
