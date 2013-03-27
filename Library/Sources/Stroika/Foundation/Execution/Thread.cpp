@@ -790,6 +790,12 @@ void    Execution::CheckForThreadAborting ()
     if (s_Aborting_) {
         Execution::DoThrow (ThreadAbortException ());
     }
+//      http://bugzilla/show_bug.cgi?id=646
+//		I THINK this is obsolete.... throw should  be fine
+#define qUseSleepExForSAbortingFlag 0
+#ifndef qUseSleepExForSAbortingFlag
+#define qUseSleepExForSAbortingFlag qPlatform_Windows
+#endif
 #if     qUseSleepExForSAbortingFlag
     /*
         * I think we could use SleepEx() or WaitForMultipleObjectsEx(), but SleepEx(0,true) may cause a thread to give up

@@ -13,13 +13,6 @@
 #include    "ThreadAbortException.h"
 
 
-// RE-Examine altenrate appraoches to this and beter docuemnt!!!!
-//
-//      http://bugzilla/show_bug.cgi?id=646
-#ifndef qUseSleepExForSAbortingFlag
-#define qUseSleepExForSAbortingFlag qPlatform_Windows
-#endif
-
 
 namespace   Stroika {
     namespace   Foundation {
