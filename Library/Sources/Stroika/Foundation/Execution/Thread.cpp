@@ -334,18 +334,30 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
     //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
-    // CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
-    lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+
+    // Harmless todo multiple times - even if already set
+    AssertNotNull (fTLSAbortFlag_);
+    *fTLSAbortFlag_ = true;
+
     if (GetCurrentThreadID () == GetID ()) {
         ThrowAbortIfNeededFromRepThread_ ();
     }
-    AssertNotNull (fTLSAbortFlag_);
-    *fTLSAbortFlag_ = true;
-#if   qUseThreads_WindowsNative
+
+    lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
     if (fStatus_ == Status::eAborting) {
+#if     qPlatform_POSIX
+        {
+            lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
+            if (not sHandlerInstalled_) {
+                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+                sHandlerInstalled_ = true;
+            }
+        }
+        Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
+#elif   qPlatform_Windows
         Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
-    }
 #endif
+    }
 }
 
 Thread::IDType  Thread::Rep_::GetID () const
@@ -556,18 +568,6 @@ void    Thread::Abort ()
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfAbortFromAnyThread_ ();
-#if     qPlatform_POSIX
-        {
-            {
-                lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
-                if (not sHandlerInstalled_) {
-                    SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
-                    sHandlerInstalled_ = true;
-                }
-            }
-            Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
-        }
-#endif
     }
 }
 
