@@ -64,7 +64,7 @@ using   namespace   Execution;
 
 
 namespace {
-	thread_local bool   s_Aborting_  =   false;
+    thread_local bool   s_Aborting_  =   false;
 }
 
 
@@ -137,7 +137,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 #elif   qUseThreads_WindowsNative
     : fThread_ (INVALID_HANDLE_VALUE)
 #endif
-    , _fTLSAbortFlag (nullptr)           // Can only be set properly within the MAINPROC of the thread
+    , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fStatusCriticalSection_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fOK2StartEvent_ ()
@@ -145,7 +145,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     , fThreadDone_ ()
 #endif
     , fRefCountBumpedEvent_ ()
-    , fRunnable (runnable)
+    , fRunnable_ (runnable)
 {
 }
 
@@ -208,9 +208,9 @@ Thread::Rep_::~Rep_ ()
 #endif
 }
 
-void    Thread::Rep_::Run ()
+void    Thread::Rep_::Run_ ()
 {
-    fRunnable->Run ();
+    fRunnable_->Run ();
 }
 
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
@@ -228,7 +228,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #if     !qCompilerAndStdLib_thread_local_initializersSupported
         s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
 #endif
-        incRefCnt->_fTLSAbortFlag = &s_Aborting_;
+        incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
 
         try {
             // We cannot possibly get interupted BEFORE this - because only after this fRefCountBumpedEvent_ does the rest of the APP know about our thread ID
@@ -261,7 +261,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 }
             }
             if (doRun) {
-                incRefCnt->Run ();
+                incRefCnt->Run_ ();
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
@@ -330,17 +330,17 @@ unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
 }
 #endif
 
-void    Thread::Rep_::NotifyOfAbort ()
+void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
-    //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbort"));
+    //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
     // CAREFUL WHEN OVERRIDING CUZ CALLED TYPICALLY FROM ANOTHER  THREAD!!!
     lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
     if (GetCurrentThreadID () == GetID ()) {
-        ThrowAbortIfNeeded ();
+        ThrowAbortIfNeededFromRepThread_ ();
     }
-    AssertNotNull (_fTLSAbortFlag);
-    *_fTLSAbortFlag = true;
+    AssertNotNull (fTLSAbortFlag_);
+    *fTLSAbortFlag_ = true;
 #if   qUseThreads_WindowsNative
     if (fStatus_ == Status::eAborting) {
         Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
@@ -390,7 +390,7 @@ void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus_ == Status::eAborting || rep->fStatus_ == Status::eCompleted);
     Require (GetCurrentThreadID () == rep->GetID ());
-    rep->ThrowAbortIfNeeded ();
+    rep->ThrowAbortIfNeededFromRepThread_ ();
     // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
     Require (rep->fStatus_ == Status::eCompleted);
@@ -555,7 +555,7 @@ void    Thread::Abort ()
     }
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
-        fRep_->NotifyOfAbort ();
+        fRep_->NotifyOfAbortFromAnyThread_ ();
 #if     qPlatform_POSIX
         {
             {
@@ -785,7 +785,7 @@ void    Execution::CheckForThreadAborting ()
     if (s_Aborting_) {
         Execution::DoThrow (ThreadAbortException ());
     }
-#if		qUseSleepExForSAbortingFlag
+#if     qUseSleepExForSAbortingFlag
     ::SleepEx (0, true);
 #else
     Assert (false);

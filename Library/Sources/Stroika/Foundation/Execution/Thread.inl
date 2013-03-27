@@ -42,26 +42,34 @@ namespace   Stroika {
             public:
                 nonvirtual  void    Start ();
 
-            protected:
-                nonvirtual  void    Run ();
+            public:
+                nonvirtual  Thread::IDType              GetID () const;
 
+            public:
+                nonvirtual  Thread::NativeHandleType    GetNativeHandle ();
 
-            protected:
-				// We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
+            private:
+                shared_ptr<IRunnable>    fRunnable_;
+
+            private:
+                nonvirtual  void    Run_ ();
+
+            private:
+                // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                bool*   _fTLSAbortFlag; 
+                bool*   fTLSAbortFlag_;
 
-            protected:
+            private:
                 // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
                 // and is just called by Thread::Abort (). It CAN be hooked by subclassses to do soemthing to
                 // force a quicker abort.
                 //
                 // BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!
-                nonvirtual  void    NotifyOfAbort ();
+                nonvirtual  void    NotifyOfAbortFromAnyThread_ ();
 
-            protected:
+            private:
                 // Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
-                nonvirtual  void    ThrowAbortIfNeeded () const;
+                nonvirtual  void    ThrowAbortIfNeededFromRepThread_ () const;
 
             private:
                 static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
@@ -71,7 +79,7 @@ namespace   Stroika {
                 static  unsigned int    __stdcall   ThreadProc_ (void* lpParameter);
 #endif
 
-#if     qPlatform_POSIX
+#if         qPlatform_POSIX
             private:
                 static  void    AbortProc_ (SignalIDType signal);
 #elif       qUseThreads_WindowsNative
@@ -79,24 +87,12 @@ namespace   Stroika {
                 static  void    CALLBACK    AbortProc_ (ULONG_PTR lpParameter);
 #endif
 
-            public:
-                nonvirtual  Thread::IDType              GetID () const;
-                nonvirtual  Thread::NativeHandleType    GetNativeHandle ();
-
-            public:
-                shared_ptr<IRunnable>    fRunnable;
-
-            private:
-                friend class    Thread;
-
             private:
 #if     qUseThreads_StdCPlusPlus
-                std::thread     fThread_;
+                std::thread             fThread_;
 #elif   qUseThreads_WindowsNative
-                HANDLE          fThread_;
+                HANDLE                  fThread_;
 #endif
-
-            private:
                 mutable recursive_mutex fStatusCriticalSection_;
                 Status                  fStatus_;
                 Event                   fRefCountBumpedEvent_;
@@ -105,6 +101,9 @@ namespace   Stroika {
                 Event                   fThreadDone_;
 #endif
                 wstring                 fThreadName_;
+
+            private:
+                friend class    Thread;
             };
 
 
@@ -117,11 +116,9 @@ namespace   Stroika {
             {
                 fOK2StartEvent_.Set ();
             }
-            inline  void    Thread::Rep_::ThrowAbortIfNeeded () const
+            inline  void    Thread::Rep_::ThrowAbortIfNeededFromRepThread_ () const
             {
-#if         qUseThreads_WindowsNative
                 Require (GetCurrentThreadID () == GetID ());
-#endif
                 lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
                 if (fStatus_ == Status::eAborting) {
                     DoThrow (ThreadAbortException ());
@@ -162,7 +159,7 @@ namespace   Stroika {
                 if (fRep_.get () == nullptr) {
                     return shared_ptr<IRunnable> ();
                 }
-                return fRep_->fRunnable;
+                return fRep_->fRunnable_;
             }
             inline  bool    Thread::operator< (const Thread& rhs) const
             {
@@ -184,7 +181,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* GetCurrentThreadID ***********************************
+             *************************** GetCurrentThreadID *********************************
              ********************************************************************************
              */
             inline  Thread::IDType  GetCurrentThreadID () noexcept {
