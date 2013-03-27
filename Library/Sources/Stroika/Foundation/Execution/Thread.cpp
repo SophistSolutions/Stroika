@@ -359,13 +359,13 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
         {
             lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
             if (not sHandlerInstalled_) {
-                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
                 sHandlerInstalled_ = true;
             }
         }
         Execution::SendSignal (GetNativeHandle (), GetSignalUsedForThreadAbort ());
 #elif   qPlatform_Windows
-        Verify (::QueueUserAPC (&AbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
+        Verify (::QueueUserAPC (&CalledInRepThreadAbortProc_, fThread_, reinterpret_cast<ULONG_PTR> (this)));
 #endif
     }
 }
@@ -395,9 +395,10 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 }
 
 #if     qPlatform_POSIX
-void    Thread::Rep_::AbortProc_ (SignalIDType signal)
+void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalIDType signal)
 {
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
+    TraceContextBumper ctx (TSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
     s_Aborting_ = true;
     /*
      * siginterupt gaurantees for the given signal - the SA_RESTART flag is not set, so that any pending system calls
@@ -405,12 +406,17 @@ void    Thread::Rep_::AbortProc_ (SignalIDType signal)
      */
     Verify (::siginterrupt (signal, true) == 0);
 }
-#elif           qUseThreads_WindowsNative
-void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
+#elif           qPlatform_Windows
+void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::AbortProc_"));
+    TraceContextBumper ctx (TSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    s_Aborting_ = true;
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus_ == Status::eAborting || rep->fStatus_ == Status::eCompleted);
+    /*
+     *  Note - this only gets called by special thread-proces marked as alertable (like sleepex or waitfor...event,
+     *  so its safe to throw there.
+     */
     Require (GetCurrentThreadID () == rep->GetID ());
     rep->ThrowAbortIfNeededFromRepThread_ ();
     // normally we don't reach this - but we could if we've already been marked completed somehow
@@ -791,7 +797,7 @@ void    Execution::CheckForThreadAborting ()
         Execution::DoThrow (ThreadAbortException ());
     }
 //      http://bugzilla/show_bug.cgi?id=646
-//		I THINK this is obsolete.... throw should  be fine
+//      I THINK this is obsolete.... throw should  be fine
 #define qUseSleepExForSAbortingFlag 0
 #ifndef qUseSleepExForSAbortingFlag
 #define qUseSleepExForSAbortingFlag qPlatform_Windows

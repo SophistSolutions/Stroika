@@ -72,12 +72,11 @@ namespace   Stroika {
                 static  unsigned int    __stdcall   ThreadProc_ (void* lpParameter);
 #endif
 
+            private:
 #if         qPlatform_POSIX
-            private:
-                static  void    AbortProc_ (SignalIDType signal);
-#elif       qUseThreads_WindowsNative
-            private:
-                static  void    CALLBACK    AbortProc_ (ULONG_PTR lpParameter);
+                static  void    CalledInRepThreadAbortProc_ (SignalIDType signal);
+#elif       qPlatform_Windows
+                static  void    CALLBACK    CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
 
             private:
