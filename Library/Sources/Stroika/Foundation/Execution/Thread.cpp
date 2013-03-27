@@ -126,6 +126,16 @@ using   Debug::TraceContextBumper;
 
 
 
+
+#if     qPlatform_POSIX
+namespace   {
+    Lockable<bool>  sHandlerInstalled_      =   false;
+}
+#endif
+
+
+
+
 /*
  ********************************************************************************
  ************************************* Thread::Rep_ *****************************
@@ -422,9 +432,6 @@ void    CALLBACK    Thread::Rep_::AbortProc_ (ULONG_PTR lpParameter)
  ********************************************************************************
  */
 #if     qPlatform_POSIX
-namespace   {
-    Lockable<bool>  sHandlerInstalled_      =   false;
-}
 SignalIDType        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
 #endif
 
@@ -477,10 +484,8 @@ void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
     lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {
-        if (sHandlerInstalled_) {
-            SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
-            sHandlerInstalled_ = false;
-        }
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::AbortProc_);
+        sHandlerInstalled_ = false;
     }
     sSignalUsedForThreadAbort_ = signalNumber;
     // install new handler
