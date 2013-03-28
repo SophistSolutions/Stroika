@@ -7,6 +7,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
+#include    "Stroika/Foundation/Math/Angle.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Math/Overlap.h"
 
@@ -53,6 +54,14 @@ namespace   {
         VerifyTestResult (RoundUpTo (2, 2) == 2);
         VerifyTestResult (RoundDownTo (2, 2) == 2);
     }
+    void    Test3_Angle_ ()
+    {
+        // really could use more cases!!!
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (360, Angle::AngleFormat::eDegrees));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
+        VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
+    }
 }
 
 
@@ -61,6 +70,7 @@ namespace   {
     {
         Test1_Overlap_ ();
         Test2_Round_ ();
+        Test3_Angle_ ();
     }
 }
 
