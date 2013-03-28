@@ -137,34 +137,6 @@ namespace   {
 
 
 
-#if     qUseThreads_StdCPlusPlus
-namespace {
-
-    inline  Lockable<list<thread>>& THREADS2KILL_()
-    {
-        return _Stroika_Foundation_Execution_Thread_ModuleInit_.Actual ().fThreads2Kill_;
-    }
-    void    AddThread2KillList_ (thread && t)
-    {
-        lock_guard<recursive_mutex> critSec ();
-        THREADS2KILL_().emplace_back (std::move (t));
-    }
-    void    ClearThread2KillList_ ()
-    {
-        lock_guard<recursive_mutex> critSec (THREADS2KILL_());
-        for (auto i = THREADS2KILL_().begin (); i != THREADS2KILL_().end (); ) {
-            i->join ();
-            i = THREADS2KILL_().erase (i);
-        }
-        Ensure (THREADS2KILL_().empty ());
-    }
-}
-Private_::ThreadModuleData_::~ThreadModuleData_ ()
-{
-    // Assure s_Threads2Kill_ cleared before process exit
-    ClearThread2KillList_ ();
-}
-#endif
 
 /*
  ********************************************************************************
@@ -194,10 +166,6 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
-
-#if     qUseThreads_StdCPlusPlus
-    ClearThread2KillList_ ();
-#endif
 
 #if     qPlatform_POSIX
     ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
@@ -232,20 +200,16 @@ Thread::Rep_::~Rep_ ()
     Assert (fStatus_ != Status::eRunning);
 #if     qUseThreads_StdCPlusPlus
     /*
-     *  You cannot join a thread object from the same thread. However, detaching has the side-effect
-     *  of leaking the memory (I think).
+     *  Use thread::detach() - since we have no desire to wait, and detach
+     *  will cause all resources for the thread to be deleted once the thread
+     *  terminates.
      *
-     *      @todo   Verify this this KILLLIST code is actually needed???
-     *
-     *  Maintain killlist to assure everything eventually killed from another thread.
+     *  From http://en.cppreference.com/w/cpp/thread/thread/detach:
+     *      Separates the thread of execution from the thread object, allowing execution to continue
+     *      independently. Any allocated resources will be freed once the thread exits.
      */
     if (fThread_.joinable  ()) {
-        if (this_thread::get_id () == fThread_.get_id ()) {
-            AddThread2KillList_ (std::move (fThread_));
-        }
-        else {
-            fThread_.join ();
-        }
+        fThread_.detach ();
     }
 #elif   qUseThreads_WindowsNative
     if (fThread_ != INVALID_HANDLE_VALUE) {
