@@ -139,27 +139,30 @@ namespace   {
 
 #if     qUseThreads_StdCPlusPlus
 namespace {
-    Lockable<list<thread>>  s_Threads2Kill_;    // all joinable threads, but couldn't join them cuz cannot join from existing thread
+
+    inline  Lockable<list<thread>>& THREADS2KILL_()
+    {
+        return _Stroika_Foundation_Execution_Thread_ModuleInit_.Actual ().fThreads2Kill_;
+    }
     void    AddThread2KillList_ (thread && t)
     {
-        lock_guard<recursive_mutex> critSec (s_Threads2Kill_);
-        s_Threads2Kill_.emplace_back (std::move (t));
+        lock_guard<recursive_mutex> critSec ();
+        THREADS2KILL_().emplace_back (std::move (t));
     }
     void    ClearThread2KillList_ ()
     {
-        lock_guard<recursive_mutex> critSec (s_Threads2Kill_);
-        for (auto i = s_Threads2Kill_.begin (); i != s_Threads2Kill_.end (); ) {
+        lock_guard<recursive_mutex> critSec (THREADS2KILL_());
+        for (auto i = THREADS2KILL_().begin (); i != THREADS2KILL_().end (); ) {
             i->join ();
-            i = s_Threads2Kill_.erase (i);
+            i = THREADS2KILL_().erase (i);
         }
-        Ensure (s_Threads2Kill_.empty ());
+        Ensure (THREADS2KILL_().empty ());
     }
-    struct delme_ {
-        ~delme_ () {
-            // Assure s_Threads2Kill_ cleared before process exit
-            ClearThread2KillList_ ();
-        }
-    }   _delme_;
+}
+Private_::ThreadModuleData_::~ThreadModuleData_ ()
+{
+    // Assure s_Threads2Kill_ cleared before process exit
+    ClearThread2KillList_ ();
 }
 #endif
 

@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <list>
+#include    "Lockable.h"
 #include    "ThreadAbortException.h"
 
 
@@ -202,7 +204,21 @@ namespace   Stroika {
             }
 
 
+            namespace   Private_ {
+                struct   ThreadModuleData_ {
+                    ~ThreadModuleData_ ();
+                    Lockable<list<thread>>  fThreads2Kill_;    // all joinable threads, but couldn't join them cuz cannot join from existing thread
+                };
+            }
+
         }
     }
 }
+
+
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Execution::Private_::ThreadModuleData_>  _Stroika_Foundation_Execution_Thread_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+}
+
+
 #endif  /*_Stroika_Foundation_Execution_Thread_inl_*/
