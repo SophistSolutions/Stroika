@@ -697,7 +697,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
         return;
     }
     HANDLE  thread  =   fRep_->GetNativeHandle ();
-    if (thread == nullptr) {
+    if (thread == INVALID_HANDLE_VALUE) {
         return;
     }
     DurationSecondsType timeoutAt   =   Time::GetTickCount () + timeout;
