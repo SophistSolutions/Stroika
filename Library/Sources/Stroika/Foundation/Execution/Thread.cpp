@@ -19,11 +19,11 @@
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
 
-#if     qUseThreads_WindowsNative
-#include    "Platform/Windows/WaitSupport.h"
-#endif
 #if     qPlatform_POSIX
 #include    "Signals.h"
+#endif
+#if     qPlatform_Windows
+#include    "Platform/Windows/WaitSupport.h"
 #endif
 
 #include    "Thread.h"
@@ -690,40 +690,24 @@ Again:
 }
 
 #if     qPlatform_Windows
-void    Thread::PumpMessagesAndReturnWhenDoneOrAfterTime_ (Time::DurationSecondsType timeToPump) const
+void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
 {
     if (fRep_.get () == nullptr) {
         // then its effectively already done.
         return;
     }
-#if         qUseThreads_WindowsNative
-    HANDLE  thread  =   nullptr;
-    {
-        lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
-        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus_ != Status::eCompleted) {
-            thread = fRep_->fThread_;
-        }
+    HANDLE  thread  =   fRep_->GetNativeHandle ();
+    if (thread == nullptr) {
+        return;
     }
-    if (thread != nullptr) {
-        Platform::Windows::WaitAndPumpMessages (nullptr, Containers::STL::mkV<HANDLE> (thread), timeToPump);
-    }
-#else
-    AssertNotImplemented ();
-#endif
-}
-#endif
-
-#if     qPlatform_Windows
-void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeout) const
-{
     DurationSecondsType timeoutAt   =   Time::GetTickCount () + timeout;
     // CRUDDY impl - but decent enuf for first draft
     while (GetStatus () != Thread::Status::eCompleted) {
-        DurationSecondsType time2Wait   =   timeoutAt - Time::GetTickCount ();
+        DurationSecondsType     time2Wait   =   timeoutAt - Time::GetTickCount ();
         if (time2Wait <= 0) {
             DoThrow (WaitTimedOutException ());
         }
-        PumpMessagesAndReturnWhenDoneOrAfterTime_ (time2Wait);
+        Platform::Windows::WaitAndPumpMessages (nullptr, Containers::STL::mkV<HANDLE> (thread), time2Wait);
     }
 }
 #endif

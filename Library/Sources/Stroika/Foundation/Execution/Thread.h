@@ -311,10 +311,6 @@ namespace   Stroika {
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
 #if     qPlatform_Windows
-            private:
-                /**
-                 */
-                nonvirtual  void    PumpMessagesAndReturnWhenDoneOrAfterTime_ (Time::DurationSecondsType timeToPump = Time::kInfinite) const;
             public:
                 /**
                  *  Look pumping messages until either time2Pump is exceeded or the thread completes.
