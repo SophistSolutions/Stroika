@@ -5,6 +5,7 @@
 
 #include    "../Configuration/StroikaConfig.h"
 
+#include    <list>
 #if     qPlatform_Windows
 #include    <process.h>
 #include    <windows.h>
@@ -136,6 +137,32 @@ namespace   {
 
 
 
+#if     qUseThreads_StdCPlusPlus
+namespace {
+    Lockable<list<thread>>  s_Threads2Kill_;    // all joinable threads, but couldn't join them cuz cannot join from existing thread
+    void    AddThread2KillList_ (thread && t)
+    {
+        lock_guard<recursive_mutex> critSec (s_Threads2Kill_);
+        s_Threads2Kill_.emplace_back (std::move (t));
+    }
+    void    ClearThread2KillList_ ()
+    {
+        lock_guard<recursive_mutex> critSec (s_Threads2Kill_);
+        for (auto i = s_Threads2Kill_.begin (); i != s_Threads2Kill_.end (); ) {
+            i->join ();
+            i = s_Threads2Kill_.erase (i);
+        }
+        Ensure (s_Threads2Kill_.empty ());
+    }
+    struct delme_ {
+        ~delme_ () {
+            // Assure s_Threads2Kill_ cleared before process exit
+            ClearThread2KillList_ ();
+        }
+    }   _delme_;
+}
+#endif
+
 /*
  ********************************************************************************
  ************************************* Thread::Rep_ *****************************
@@ -165,7 +192,11 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
-#if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
+#if     qUseThreads_StdCPlusPlus
+    ClearThread2KillList_ ();
+#endif
+
+#if     qPlatform_POSIX
     ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 #endif
 
@@ -197,15 +228,17 @@ Thread::Rep_::~Rep_ ()
 {
     Assert (fStatus_ != Status::eRunning);
 #if     qUseThreads_StdCPlusPlus
-    // In case thread ran and terminated without any ever waiting for it.
-    //
-    // NOT SURE IF THIS IS A LEAK OR NOT - BUT IT AVOIDS CRASH
-    //
-    // TODO: UNDERATNAD IF THIS IS THE RIGHT THING TODO...
-    //      -- LGP 2011-10-23
+    /*
+     *  You cannot join a thread object from the same thread. However, detaching has the side-effect
+     *  of leaking the memory (I think).
+     *
+     *      @todo   Verify this this KILLLIST code is actually needed???
+     *
+     *  Maintain killlist to assure everything eventually killed from another thread.
+     */
     if (fThread_.joinable  ()) {
         if (this_thread::get_id () == fThread_.get_id ()) {
-            fThread_.detach ();
+            AddThread2KillList_ (std::move (fThread_));
         }
         else {
             fThread_.join ();
@@ -656,8 +689,12 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
     }
     bool    doWait  =   false;
 #if     qUseThreads_StdCPlusPlus
-    fRep_->fThreadDone_.Wait (timeout);     // this will throw on timeout...
-    // If not joinable, presume that means cuz it sdone
+    /*
+     *  First wait on fThreadDone_. If we get passed it, its safe to block indefinitely (since we're exiting
+     *  the thread).
+     */
+    fRep_->fThreadDone_.Wait (timeout);
+    // If not joinable, presume that means cuz its done
     if (fRep_->fThread_.joinable  ()) {
         // this will block indefinitely - but if a timeout was specified
         fRep_->fThread_.join ();

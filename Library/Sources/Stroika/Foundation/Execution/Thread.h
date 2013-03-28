@@ -322,7 +322,6 @@ namespace   Stroika {
 #endif
 
 
-
             public:
                 enum class Priority {
                     eLowest,

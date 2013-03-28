@@ -13,7 +13,6 @@
 #include    "ThreadAbortException.h"
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
