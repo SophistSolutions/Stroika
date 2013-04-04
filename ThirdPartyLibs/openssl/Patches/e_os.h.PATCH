@@ -1,0 +1,19 @@
+*** ORIG_DATA\tmp32\e_os.h	2010-05-07 23:18:19.808233200 -0400
+--- CURRENT\tmp32\e_os.h	2010-05-07 23:21:01.410178600 -0400
+***************
+*** 150,156 ****
+  #define clear_socket_error()	WSASetLastError(0)
+  #define readsocket(s,b,n)	recv((s),(b),(n),0)
+  #define writesocket(s,b,n)	send((s),(b),(n),0)
+! #define EADDRINUSE		WSAEADDRINUSE
+  #elif defined(__DJGPP__)
+  #define WATT32
+  #define get_last_socket_error()	errno
+--- 150,156 ----
+  #define clear_socket_error()	WSASetLastError(0)
+  #define readsocket(s,b,n)	recv((s),(b),(n),0)
+  #define writesocket(s,b,n)	send((s),(b),(n),0)
+! //#define EADDRINUSE		WSAEADDRINUSE
+  #elif defined(__DJGPP__)
+  #define WATT32
+  #define get_last_socket_error()	errno
