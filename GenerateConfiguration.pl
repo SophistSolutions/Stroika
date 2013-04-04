@@ -33,6 +33,7 @@ my @useExtraCDefines;
 my @useExtraMakeDefines;
 
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -101,7 +102,10 @@ sub	SetInitialDefaults_
 			}
 		}
 	}
-
+	
+	if ("$^O" eq "linux" && -e '/usr/include/openssl/conf.h') {
+		$ENABLE_OPENSSL = 1;
+	}
 	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
 		$ENABLE_LIBCURL = 1;
 	}
@@ -207,6 +211,12 @@ sub	ParseCommandLine_Remaining_
 		elsif ((lc ($var) eq "-default-assertions") or (lc ($var) eq "--default-assertions")) {
 			$ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
 		}
+		elsif ((lc ($var) eq "-has-openssl") or (lc ($var) eq "--has-openssl")) {
+			$ENABLE_OPENSSL = 1;
+		}
+		elsif ((lc ($var) eq "-no-has-openssl") or (lc ($var) eq "--no-has-openssl")) {
+			$ENABLE_OPENSSL = 0;
+		}
 		elsif ((lc ($var) eq "-has-libcurl") or (lc ($var) eq "--has-libcurl")) {
 			$ENABLE_LIBCURL = 1;
 		}
@@ -308,6 +318,7 @@ sub	WriteConfigFile_
 	
 	print (OUT "    <qHasLibrary_Xerces>$useThirdPartyXerces</qHasLibrary_Xerces>\n");
 	print (OUT "    <qHasFeature_libcurl>$ENABLE_LIBCURL</qHasFeature_libcurl>\n");
+	print (OUT "    <qHasFeature_openssl>$ENABLE_OPENSSL</qHasFeature_openssl>\n");
 	print (OUT "    <qHasFeature_WinHTTP>$ENABLE_WINHTTP</qHasFeature_WinHTTP>\n");
 
 	if ($ENABLE_TRACE2FILE != DEFAULT_BOOL_OPTIONS) {
