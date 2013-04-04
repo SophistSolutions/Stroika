@@ -21,10 +21,6 @@
  *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where
  *              it was a PROPERTY OF THE CLASS (or alternate API) where writes timeout after
  *              a certain point.
- *
- *      @todo   Consider adding a Flush() method. For some streams (such as buffered streams, sockets,
- *              and OpenSSLCryptStream) - they may not finish their writes until they are destroyed.
- *              The trouble then - is that they cannot propagate exceptions!
  */
 
 
@@ -79,6 +75,19 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end) const;
 
+            public:
+                /**
+                 *  \brief forces any data contained in this stream to be written.
+                 *
+                 *  Forces any data contained in this stream to be written.
+                 *
+                 *  For some streams (such as buffered streams, sockets, and OpenSSLCryptStream) - they may not
+                 *  finish their writes until they are destroyed. The trouble then - is that they cannot
+                 *  propagate exceptions! Calling Flush() before destroying the output stream allows exceptions
+                 *  to be propagated properly.
+                 */
+                nonvirtual  void    Flush () const;
+
             private:
                 friend  class   BinaryInputOutputStream;
             };
@@ -101,6 +110,12 @@ namespace   Stroika {
                  *  Writes always succeed fully or throw.
                  */
                 virtual void    Write (const Byte* start, const Byte* end)         =   0;
+
+            public:
+                /**
+                 *
+                 */
+                virtual void    Flush ()         =   0;
             };
 
         }

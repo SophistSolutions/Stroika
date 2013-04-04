@@ -55,6 +55,10 @@ public:
         }
     }
 
+    virtual void     Flush () override {
+        // nothing todo - write 'writes thru'
+    }
+
     virtual SeekOffsetType  GetOffset () const override {
         lock_guard<mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();

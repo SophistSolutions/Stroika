@@ -16,13 +16,22 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   BinaryOutputStream::_IRep
+
+            /*
+             ********************************************************************************
+             ************************** BinaryOutputStream::_IRep ***************************
+             ********************************************************************************
+             */
             inline  BinaryOutputStream::_IRep::_IRep ()
             {
             }
 
 
-            //  class   BinaryOutputStream
+            /*
+             ********************************************************************************
+             ***************************** BinaryOutputStream *******************************
+             ********************************************************************************
+             */
             inline  BinaryOutputStream::BinaryOutputStream (const _SharedIRep& rep)
                 : BinaryStream (rep)
             {
@@ -40,6 +49,11 @@ namespace   Stroika {
                     _GetRep ()->Write (start, end);
                 }
             }
+            inline  void    BinaryOutputStream::Flush () const
+            {
+                _GetRep ()->Flush ();
+            }
+
 
         }
     }

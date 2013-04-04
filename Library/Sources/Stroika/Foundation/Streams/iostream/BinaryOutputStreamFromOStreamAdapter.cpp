@@ -40,6 +40,14 @@ protected:
         }
     }
 
+    virtual void    Flush () override {
+        lock_guard<recursive_mutex>  critSec (fCriticalSection_);
+        fOriginalStream_.flush ();
+        if (fOriginalStream_.fail ()) {
+            Execution::DoThrow (Execution::StringException (L"Failed to flush ostream"));
+        }
+    }
+
     virtual SeekOffsetType  GetOffset () const override {
         // instead of tellg () - avoids issue with EOF where fail bit set???
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);

@@ -46,6 +46,10 @@ public:
         fSD_.Write (start, end);
     }
 
+    virtual void     Flush () override {
+        // socket has no flush API, so write must do the trick...
+    }
+
 private:
     Socket  fSD_;
 };
