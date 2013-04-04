@@ -45,11 +45,40 @@ namespace   Stroika {
                 // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
                 OpenSSLCryptoParams (const std::function<void(EVP_CIPHER_CTX*, bool)>& f);
 
+                /**
+                 *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
+                 */
                 enum class Algorithm {
+                    eAES_128_CBC,
+                    eAES_128_ECB,
+                    eAES_128_OFB,
+                    eAES_128_CFB1,
+                    eAES_128_CFB8,
+                    eAES_128_CFB128,
+                    eAES_192_CBC,
+                    eAES_192_ECB,
+                    eAES_192_OFB,
+                    eAES_192_CFB1,
+                    eAES_192_CFB8,
+                    eAES_192_CFB128,
+                    eAES_256_CBC,
+                    eAES_256_ECB,
+                    eAES_256_OFB,
+                    eAES_256_CFB1,
+                    eAES_256_CFB8,
+                    eAES_256_CFB128,
+
                     eBlowfish_CBC,
+                    eBlowfish_ECB,
+                    eBlowfish_CFB,
+                    eBlowfish_OFB,
+
                     eRC2,
+
+                    eRC4,
+
                 };
-                // allowed Algorith's for this CTOR include 'eBlowfish_CBC, eRC2'
+                // allowed Algorith's for this CTOR include eAES_*, eBlowfish_*, eRC2'
                 OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV = Memory::BLOB ());
 
             public:
