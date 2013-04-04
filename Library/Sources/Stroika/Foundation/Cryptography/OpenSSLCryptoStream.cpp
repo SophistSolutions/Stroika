@@ -196,7 +196,7 @@ private:
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Direction direction, Memory::BLOB key, Memory::BLOB initialIV)
+OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV)
     : fInitializer ()
 {
     bool    enc = (direction == Direction::eEncrypt);

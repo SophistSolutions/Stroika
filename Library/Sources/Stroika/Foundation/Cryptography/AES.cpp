@@ -72,7 +72,7 @@ namespace {
  */
 Streams::BinaryInputStream  Cryptography::DecodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
 {
-    return OpenSSLInputStream (OpenSSLCryptoParams (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
+    return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
 }
 #endif
 
@@ -88,7 +88,7 @@ Streams::BinaryInputStream  Cryptography::DecodeAES (const Memory::BLOB& key, St
  */
 Streams::BinaryInputStream  Cryptography::EncodeAES (const Memory::BLOB& key, Streams::BinaryInputStream in, AESOptions options)
 {
-    return OpenSSLInputStream (OpenSSLCryptoParams (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
+    return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
 }
 #endif
 
