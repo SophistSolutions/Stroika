@@ -334,7 +334,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
             break;
         case Algorithm::eRC2_CBC: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_cbc (), NULL, NULL, NULL);
+                    EVP_CipherInit_ex (ctx, EVP_rc2_cbc (), NULL, NULL, NULL, enc);
                     EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
@@ -342,7 +342,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
             break;
         case Algorithm::eRC2_ECB: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_ecb (), NULL, NULL, NULL);
+                    EVP_CipherInit_ex (ctx, EVP_rc2_ecb (), NULL, NULL, NULL, enc);
                     EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
@@ -350,7 +350,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
             break;
         case Algorithm::eRC2_CFB: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_cfb (), NULL, NULL, NULL);
+                    EVP_CipherInit_ex (ctx, EVP_rc2_cfb (), NULL, NULL, NULL, enc);
                     EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
@@ -358,7 +358,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
             break;
         case Algorithm::eRC2_OFB: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_ofb (), NULL, NULL, NULL);
+                    EVP_CipherInit_ex (ctx, EVP_rc2_ofb (), NULL, NULL, NULL, enc);
                     EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
                     EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
