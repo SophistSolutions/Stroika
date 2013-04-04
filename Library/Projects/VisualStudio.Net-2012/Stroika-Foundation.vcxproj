@@ -141,6 +141,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Enumeration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Locale.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.cpp" />
@@ -483,6 +484,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Base64.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.h" />

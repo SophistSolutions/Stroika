@@ -31,6 +31,9 @@
  *              constructors with just the needed data = maybe not even ctors - maybe functions - that
  *              take a stream, and return a decrpting (or encyrpting) stream - with arg params that make
  *              sense for that algoritjm. They are only defined #if qSSLAvail, but otherwise include
+ *
+ *              DONE for AES - BUt do the others - just like that - and maybe cleanup Base64/MD5 APIs to
+ *              be done like for AES...
  *              ...
  *
  */
@@ -43,8 +46,17 @@ namespace   Stroika {
 #if     qHas_OpenSSL
             class   OpenSSLCryptoParams {
             public:
+                /**
+                 */
+                enum class Direction {
+                    eEncrypt,
+                    eDecrypt,
+                };
+
+            public:
                 // use this CTOR and fill in parameters manually for EVP_EncryptInit_ex
                 OpenSSLCryptoParams (const std::function<void(EVP_CIPHER_CTX*, bool)>& f);
+
 
                 /**
                  *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
@@ -83,7 +95,7 @@ namespace   Stroika {
 
                 };
                 // allowed Algorith's for this CTOR include eAES_*, eBlowfish_*, eRC2'
-                OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV = Memory::BLOB ());
+                OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV = Memory::BLOB ());
 
             public:
                 std::function<void(EVP_CIPHER_CTX*, bool)>  fInitializer;

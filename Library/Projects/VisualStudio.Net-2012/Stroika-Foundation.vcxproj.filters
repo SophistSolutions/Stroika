@@ -483,6 +483,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.cpp">
       <Filter>Sources\Cryptography</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.cpp">
+      <Filter>Sources\Cryptography</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1036,6 +1039,9 @@
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.h">
+      <Filter>Sources\Cryptography</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h">
       <Filter>Sources\Cryptography</Filter>
     </ClInclude>
   </ItemGroup>

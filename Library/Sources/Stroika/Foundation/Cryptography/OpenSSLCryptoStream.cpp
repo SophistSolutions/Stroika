@@ -196,9 +196,10 @@ private:
  ******************** Cryptography::OpenSSLInputStream **************************
  ********************************************************************************
  */
-OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memory::BLOB initialIV)
+OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Direction direction, Memory::BLOB key, Memory::BLOB initialIV)
     : fInitializer ()
 {
+    bool    enc = (direction == Direction::eEncrypt);
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
