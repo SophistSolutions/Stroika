@@ -21,6 +21,10 @@
  *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where
  *              it was a PROPERTY OF THE CLASS (or alternate API) where writes timeout after
  *              a certain point.
+ *
+ *      @todo   Consider adding a Flush() method. For some streams (such as buffered streams, sockets,
+ *              and OpenSSLCryptStream) - they may not finish their writes until they are destroyed.
+ *              The trouble then - is that they cannot propagate exceptions!
  */
 
 
