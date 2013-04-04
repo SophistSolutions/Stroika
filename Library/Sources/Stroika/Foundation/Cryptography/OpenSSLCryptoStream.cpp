@@ -69,8 +69,8 @@ namespace {
             Ensure (outLen <= (outBufEnd - outBufStart));
             return size_t (outLen);
         }
-        EVP_CIPHER_CTX	fCTX_;
-        bool 			fFinalCalled_;
+        EVP_CIPHER_CTX  fCTX_;
+        bool            fFinalCalled_;
     };
 }
 #endif
@@ -153,7 +153,7 @@ public:
     virtual ~IRep_ () {
         // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
         try {
-        	Flush ();
+            Flush ();
         }
         catch (...) {
             // not great to do in DTOR, because we must drop exceptions on the floor!
@@ -164,7 +164,7 @@ public:
     // Writes always succeed fully or throw.
     virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
-        Memory::SmallStackBuffer<Byte, 1000 + EVP_MAX_BLOCK_LENGTH>  outBuf (GetMinOutBufSize (end - start));
+        Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (GetMinOutBufSize (end - start));
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
@@ -302,7 +302,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                 };
             }
             break;
-        case Algorithm::eAES_256_CFB256: {
+        case Algorithm::eAES_256_CFB128: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
                     EVP_CipherInit_ex (ctx, EVP_aes_256_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
