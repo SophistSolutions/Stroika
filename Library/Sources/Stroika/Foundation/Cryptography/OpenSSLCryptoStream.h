@@ -22,7 +22,7 @@
 /**
  *  \file
  *
- *      @todo   Very preliminary draft - not tested, and probably not even compiling....
+ *      @todo   Very preliminary draft - not tested.
  *
  *      @todo   Generate exceptions on errors
  *
