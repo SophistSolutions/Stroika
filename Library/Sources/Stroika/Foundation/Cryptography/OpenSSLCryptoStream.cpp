@@ -26,40 +26,48 @@ using   namespace   Stroika::Foundation::Streams;
 #if     qHas_OpenSSL
 namespace {
     struct InOutStrmCommon_ {
-        /* Allow enough space in output buffer for additional block */
-        char inbuf[1024];
-        char outbuf[1024 + EVP_MAX_BLOCK_LENGTH];
-        int inlen, outlen;
-
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, bool encrypt)
-            : fCTX_ () {
+            : fCTX_ ()
+            , fFinalCalled_ (false) {
             ::EVP_CIPHER_CTX_init (&fCTX_);
             cryptoParams.fInitializer (&fCTX_, encrypt);
         }
-
         ~InOutStrmCommon_ () {
             EVP_CIPHER_CTX_cleanup (&fCTX_);
         }
-
-        int _runOnce () {
-            inlen = fread(inbuf, 1, 1024, in);
-            if(inlen <= 0) break;
-            if(!EVP_CipherUpdate(&ctx, outbuf, &outlen, inbuf, inlen)) {
+        static  constexpr   GetMinOutBufSize (size_t n) {
+            return n + EVP_MAX_BLOCK_LENGTH;
+        }
+        // return nBytes in outBuf, throws on error
+        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd) {
+            Require ((outBufEnd - outBufStart) >= GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
+            size_t outLen = 0;
+            if(!EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, data2ProcessEnd - data2ProcessStart)) {
                 /* Error */
+                // THROW
                 return 0;
             }
-            fwrite(outbuf, 1, outlen, out);
-	        return 1;
+            Ensure (outLen <= (outBufEnd - outBufStart));
+            return outLen;
         }
-		int _cipherFinal ()
-		{
-			if(!EVP_CipherFinal_ex(&ctx, outbuf, &outlen)) {
-				/* Error */
-				return 0;
-			}
-			fwrite(outbuf, 1, outlen, out);
-			return 1;
-		}
+        // return nBytes in outBuf, throws on error
+        // Can call multiple times - it keeps track itself if finalized.
+        size_t _cipherFinal (Byte* outBufStart, Byte* outBufEnd) {
+            Require ((outBufEnd - outBufStart) >= GetMinOutBufSize (0));
+            if (fFinalCalled_) {
+                return 0;   // not an error - just zero more bytes
+            }
+            size_t outLen = 0;
+            if(!EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen)) {
+                /* Error */
+                // THROW
+                return 0;
+            }
+            fFinalCalled_ = true;
+            Ensure (outLen <= (outBufEnd - outBufStart));
+            return outLen;
+        }
+        bool fFinalCalled_;
     };
 }
 #endif
@@ -68,23 +76,59 @@ namespace {
 
 #if     qHas_OpenSSL
 class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, public InOutStrmCommon_ {
+private:
+    DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 1024);
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
         , InOutStrmCommon_ (cryptoParams, false)
         , fCriticalSection_ ()
+        , fOutBuf_ ()
+        , fOutBufStart_ (nullptr)
+        , fOutBufEnd_ (nullptr)
         , fRealIn_ (realIn) {
     }
 
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
-        lock_guard<mutex>  critSec (fCriticalSection_);
-        return fRealIn_.Read (intoStart, intoEnd);
+        {
+            /*
+             *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
+             *  If none to read there - pull from fRealIn_ src, and push those through the cipher.
+             *  and use that to re-populate fOutBuf_.
+             */
+            Require (intoStart < intoEnd);
+            lock_guard<mutex>  critSec (fCriticalSection_);
+            if (fOutBufStart_ == fOutBufEnd_) {
+                Byte toDecryptBuf[kInBufSize_];
+                size_t n2Decrypt = fRealIn_.Read (begin (toDecryptBuf), end (toDecryptBuf));
+                if (n2Decrypt == 0) {
+                    size_t nBytesInOutBuf = _cipherFinal (fOutBuf_.begin (), fOutBuf_.end ());
+                    fOutBufStart_ = fOutBuf_.begin ();
+                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                }
+                else {
+                    fOutBuf_.resize (GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                    size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
+                    fOutBufStart_ = fOutBuf_.begin ();
+                    fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
+                }
+            }
+            if (fOutBufStart_ < fOutBufEnd_) {
+                size_t  n2Copy = min (fOutBufEnd_ - fOutBufStart_, intoEnd - intoStart);
+                memcpy (intoStart, fOutBufStart_, n2Copy);
+                fOutBufStart_ += n2Copy;
+                return n2Copy;
+            }
+        }
+        return 0;   // EOF
     }
 
 private:
-    mutable mutex           fCriticalSection_;
-    EVP_CIPHER_CTX          fCTX_;
-    BinaryInputStream       fRealIn_;
+    mutable mutex                                                       fCriticalSection_;
+    Memory::SmallStackBuffer < Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH >  fOutBuf_;
+    Byte*                                                               fOutBufStart_;
+    Byte*                                                               fOutBufEnd_;
+    BinaryInputStream                                                   fRealIn_;
 };
 #endif
 
@@ -103,18 +147,33 @@ public:
         , fRealOut_ (realOut) {
     }
 
+    virtual ~IRep_ () {
+        // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
+        try {
+            Byte    outBuf[EVP_MAX_BLOCK_LENGTH];
+            size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
+            Assert (nBytesInOutBuf < sizeof (outBuf));
+            fRealOut_.Write (begin (outBuf), begin (outBuf) + nBytesInOutBuf);
+        }
+        catch (...) {
+            // not great to do in DTOR, because we must drop exceptions on the floor!
+        }
+    }
+
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
-    virtual void            Write (const Byte* start, const Byte* end) override {
+    virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
-        Require (not fAborted_);
+        Memory::SmallStackBuffer < Byte, kInBufSize_ + EVP_MAX_BLOCK_LENGTH >  outBuf (GetMinOutBufSize (end - start));
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
-        fRealOut_.Write (start, end);
+        size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
+        Assert (nBytesEncypted <= outBuf.size ());
+        fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
 
 private:
-    mutable recursive_mutex             fCriticalSection_;
-    BinaryOutputStream                  fRealOut_;
+    mutable recursive_mutex   fCriticalSection_;
+    BinaryOutputStream        fRealOut_;
 };
 #endif
 

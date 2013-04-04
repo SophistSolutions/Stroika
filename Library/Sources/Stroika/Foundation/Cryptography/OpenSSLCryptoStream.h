@@ -25,12 +25,12 @@
  *
  *      @todo   Generate exceptions on errors
  *
- *		@todo	this module includes <openssl> stuff in the header. Add additioanl modules inside
- *				Crypto that just are called 'Blowfish', and 'rc2', and these have classes that tkae
- *				constructors with just the needed data = maybe not even ctors - maybe functions - that
- *				take a stream, and return a decrpting (or encyrpting) stream - with arg params that make
- *				sense for that algoritjm. They are only defined #if qSSLAvail, but otherwise include
- *				...
+ *      @todo   this module includes <openssl> stuff in the header. Add additioanl modules inside
+ *              Crypto that just are called 'Blowfish', and 'rc2', and these have classes that tkae
+ *              constructors with just the needed data = maybe not even ctors - maybe functions - that
+ *              take a stream, and return a decrpting (or encyrpting) stream - with arg params that make
+ *              sense for that algoritjm. They are only defined #if qSSLAvail, but otherwise include
+ *              ...
  *
  */
 
