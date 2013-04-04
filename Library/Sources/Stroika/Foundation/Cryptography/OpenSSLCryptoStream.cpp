@@ -145,7 +145,7 @@ class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, public In
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut)
         : BinaryOutputStream::_IRep ()
-        , InOutStrmCommon_ (cryptoParams, true)
+        , InOutStrmCommon_ (cryptoParams)
         , fCriticalSection_ ()
         , fRealOut_ (realOut) {
     }
@@ -179,7 +179,7 @@ public:
     }
 
 private:
-    mutable recursive_mutex   fCriticalSection_;
+    mutable recursive_mutex  fCriticalSection_;
     BinaryOutputStream        fRealOut_;
 };
 #endif
@@ -202,13 +202,13 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
     bool    enc = (direction == Direction::eEncrypt);
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
-                fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
+                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
                     EVP_CipherInit_ex (ctx, EVP_aes_128_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_ECB: {
-                fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
+                fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
                     EVP_CipherInit_ex (ctx, EVP_aes_128_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
