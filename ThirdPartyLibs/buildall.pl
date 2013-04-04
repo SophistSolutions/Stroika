@@ -5,6 +5,7 @@ if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
 }
 
-system ("cd Xerces; perl buildall.pl $BLD_TRG");
-system ("cd doxygen; perl buildall.pl $BLD_TRG");
 system ("cd astyle; perl buildall.pl $BLD_TRG");
+system ("cd doxygen; perl buildall.pl $BLD_TRG");
+system ("cd openssl; perl buildall.pl $BLD_TRG");
+system ("cd Xerces; perl buildall.pl $BLD_TRG");
