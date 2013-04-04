@@ -67,7 +67,7 @@ Streams::BinaryInputStream  Cryptography::EncodeRC4 (const Memory::BLOB& key, St
  ************************* Cryptography::RC4Encoder *****************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
+Streams::BinaryOutputStream  Cryptography::RC4Decoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
 {
     return OpenSSLOutputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eDecrypt), out);
 }
@@ -83,7 +83,7 @@ Streams::BinaryOutputStream  Cryptography::RC4Encoder (const Memory::BLOB& key, 
  *************************** Cryptography::RC4Encoder ***************************
  ********************************************************************************
  */
-Streams::BinaryOutputStream  Cryptography::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
+Streams::BinaryOutputStream  Cryptography::RC4Encoder (const Memory::BLOB& key, Streams::BinaryOutputStream out)
 {
     return OpenSSLOutputStream (cvt_ (key, OpenSSLCryptoParams::Direction::eEncrypt), out);
 }
