@@ -259,7 +259,7 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Memor
                 };
             }
             break;
-        case Algorithm::eAES_192_CFB192: {
+        case Algorithm::eAES_192_CFB128: {
                 fInitializer = [&key, &initialIV] (EVP_CIPHER_CTX * ctx, bool enc) {
                     EVP_CipherInit_ex (ctx, EVP_aes_192_cfb128 (), NULL, key, iv);
                 };
