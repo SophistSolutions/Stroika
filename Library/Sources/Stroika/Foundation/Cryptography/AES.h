@@ -66,6 +66,20 @@ namespace   Stroika {
 #endif
 
 
+#if     qHas_OpenSSL
+            /**
+             */
+            Streams::BinaryOutputStream  AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
+#endif
+
+
+#if     qHas_OpenSSL
+            /**
+             */
+            Streams::BinaryOutputStream  AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options = AESOptions::eDEFAULT);
+#endif
+
+
         }
     }
 }

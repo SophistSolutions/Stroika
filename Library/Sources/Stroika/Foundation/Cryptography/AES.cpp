@@ -64,6 +64,9 @@ namespace {
 #endif
 
 
+
+
+
 #if     qHas_OpenSSL
 /*
  ********************************************************************************
@@ -91,4 +94,47 @@ Streams::BinaryInputStream  Cryptography::EncodeAES (const Memory::BLOB& key, St
     return OpenSSLInputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
 }
 #endif
+
+
+
+
+
+
+
+#if     qHas_OpenSSL
+/*
+ ********************************************************************************
+ ************************* Cryptography::AESEncoder *****************************
+ ********************************************************************************
+ */
+Streams::BinaryOutputStream  Cryptography::AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
+{
+    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
+}
+#endif
+
+
+
+
+
+#if     qHas_OpenSSL
+/*
+ ********************************************************************************
+ *************************** Cryptography::AESEncoder ***************************
+ ********************************************************************************
+ */
+Streams::BinaryOutputStream  Cryptography::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
+{
+    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
+}
+#endif
+
+
+
+
+
+
+
+
+
 
