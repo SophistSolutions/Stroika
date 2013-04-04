@@ -31,6 +31,7 @@ my @useExtraMakeDefines;
 
 ## FOR NOW ONLY USED ON LINUX BUILDS
 my $ENABLE_ASSERTIONS = DEFAULT_BOOL_OPTIONS;
+my $ENABLE_OPENSSL = 0;
 my $ENABLE_LIBCURL = 0;
 my $ENABLE_WINHTTP = 0;
 my $ENABLE_TRACE2FILE = DEFAULT_BOOL_OPTIONS;
@@ -90,6 +91,8 @@ sub	ReadConfiguration_
 	$COMPILER_DRIVER = GetConfigurationParameter("CompilerDriver");
 
 	$useThirdPartyXerces = ConfigParam2BoolInt (GetConfigurationParameter("qHasLibrary_Xerces"));
+
+	$ENABLE_OPENSSL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_openssl"));
 	$ENABLE_LIBCURL = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_libcurl"));
 	$ENABLE_WINHTTP = ConfigParam2BoolInt (GetConfigurationParameter("qHasFeature_WinHTTP"));
 	$ENABLE_ASSERTIONS = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_ASSERTIONS"));
@@ -287,6 +290,16 @@ sub WriteStroikaConfigCHeader
 		}
 		print (OUT "\n");
 	}
+	print (OUT "\n");
+
+
+	print (OUT "//--has-openssl or --no-has-openssl\n");
+	if ($ENABLE_OPENSSL) {
+		print (OUT "#define	qHas_OpenSSL 1\n");
+	}	
+	else {
+		print (OUT "#define	qHas_OpenSSL 0\n");
+	}	
 	print (OUT "\n");
 
 
