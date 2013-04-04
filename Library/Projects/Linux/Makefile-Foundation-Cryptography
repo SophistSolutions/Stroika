@@ -17,6 +17,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Base64.o\
+	$(ObjDir)OpenSSLCryptoStream.o\
 	$(ObjDir)MD5.o\
 
 all:	$(Objs) $(SubDirs)
