@@ -13,6 +13,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Cryptography/SSL/Common.h"
 #include    "../Memory/Common.h"
+#include    "../Memory/BLOB.h"
 #include    "../Streams/BinaryInputStream.h"
 #include    "../Streams/BinaryOutputStream.h"
 
