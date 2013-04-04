@@ -109,7 +109,7 @@ Streams::BinaryInputStream  Cryptography::EncodeAES (const Memory::BLOB& key, St
  */
 Streams::BinaryOutputStream  Cryptography::AESDecoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
 {
-    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), in);
+    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eDecrypt), out);
 }
 #endif
 
@@ -125,7 +125,7 @@ Streams::BinaryOutputStream  Cryptography::AESDecoder (const Memory::BLOB& key, 
  */
 Streams::BinaryOutputStream  Cryptography::AESEncoder (const Memory::BLOB& key, Streams::BinaryOutputStream out, AESOptions options)
 {
-    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), in);
+    return OpenSSLOutputStream (cvt_ (key, options, OpenSSLCryptoParams::Direction::eEncrypt), out);
 }
 #endif
 
