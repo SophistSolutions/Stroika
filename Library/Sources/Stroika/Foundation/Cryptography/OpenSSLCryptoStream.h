@@ -74,7 +74,10 @@ namespace   Stroika {
                     eBlowfish_CFB,
                     eBlowfish_OFB,
 
-                    eRC2,
+                    eRC2_CBC,
+                    eRC2_ECB,
+                    eRC2_CFB,
+                    eRC2_OFB,
 
                     eRC4,
 
