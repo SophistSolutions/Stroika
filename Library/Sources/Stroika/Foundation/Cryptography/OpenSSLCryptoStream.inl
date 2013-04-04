@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************* Cryptography::OpenSSLCryptoParams ************************
              ********************************************************************************
              */
-            inline  OpenSSLCryptoParams::OpenSSLCryptoParams (const std::function<void(EVP_CIPHER_CTX*, bool)>& f)
+            inline  OpenSSLCryptoParams::OpenSSLCryptoParams (const std::function<void(EVP_CIPHER_CTX*)>& f)
                 : fInitializer (f)
             {
             }

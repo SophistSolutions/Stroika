@@ -26,11 +26,11 @@ using   namespace   Stroika::Foundation::Streams;
 #if     qHas_OpenSSL
 namespace {
     struct InOutStrmCommon_ {
-        InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams, bool encrypt)
+        InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams)
             : fCTX_ ()
             , fFinalCalled_ (false) {
             ::EVP_CIPHER_CTX_init (&fCTX_);
-            cryptoParams.fInitializer (&fCTX_, encrypt);
+            cryptoParams.fInitializer (&fCTX_);
         }
         ~InOutStrmCommon_ () {
             EVP_CIPHER_CTX_cleanup (&fCTX_);
@@ -80,11 +80,11 @@ namespace {
 #if     qHas_OpenSSL
 class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, public InOutStrmCommon_ {
 private:
-    DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 1024);
+    DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
-        , InOutStrmCommon_ (cryptoParams, false)
+        , InOutStrmCommon_ (cryptoParams)
         , fCriticalSection_ ()
         , fOutBuf_ (GetMinOutBufSize (kInBufSize_))
         , fOutBufStart_ (nullptr)
