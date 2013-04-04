@@ -40,7 +40,7 @@ namespace {
             case AESOptions::e192_CFB1:
                 return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB1, key, direction);
             case AESOptions::e192_CFB8:
-                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_128_CBC, key, direction);
+                return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB8, key, direction);
             case AESOptions::e192_CFB128:
                 return OpenSSLCryptoParams (OpenSSLCryptoParams::Algorithm::eAES_192_CFB128, key, direction);
             case AESOptions::e256_CBC:
