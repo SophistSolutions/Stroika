@@ -13,7 +13,7 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 require "$thisScriptDir/ConfigurationReader.pl";
 
 
-my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdir ();
+my $useProjectDir= "$thisScriptDir/../Library/Projects/" . GetProjectPlatformSubdirIfAny ();
 if (-e "$useProjectDir/SetupBuildCommonVars.pl") {
 	require "$useProjectDir/SetupBuildCommonVars.pl";
 }

@@ -10,6 +10,8 @@ my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
 
 require (GetThisScriptDir () + "StringUtils.pl");
 
+my $fileErr = "";
+
 # Declare the subroutines
 sub	GetThisScriptDir {
 	use File::Basename;
@@ -52,7 +54,10 @@ sub	ReadConfigFile_ {
 	my @useExtraCDefines;
 	my @useExtraMakeDefines;
 
-	open (FILE, "$masterXMLConfigFile") or die("Unable to open $masterXMLConfigFile");
+	open (FILE, "$masterXMLConfigFile") or $fileErr = "Unable to open $masterXMLConfigFile";
+	if ($fileErr ne '') {
+		return;
+	}
 	my @data = <FILE>;
 	close(FILE);
 	foreach $line (@data) {
@@ -75,6 +80,10 @@ sub	ReadConfigFile_ {
 		my $pps = ReadValue_($line, "<qHasLibrary_Xerces>");
 		if (defined $pps) {
 			$configuration {'qHasLibrary_Xerces'} = $pps;
+		}
+		my $pps = ReadValue_($line, "<qHasFeature_openssl>");
+		if (defined $pps) {
+			$configuration {'qHasFeature_openssl'} = $pps;
 		}
 		my $pps = ReadValue_($line, "<qHasFeature_libcurl>");
 		if (defined $pps) {
@@ -122,13 +131,31 @@ sub	ReadConfigFile_ {
 
 ### PUBLIC APIS
 sub	GetProjectPlatformSubdir {
+	if ($fileErr ne "") {
+		print ("Cannot GetProjectPlatformSubdir: $fileErr");
+		exit (1);
+	}
 	if ($configuration{'ProjectPlatformSubdir'} eq "") {
 		die ("GetProjectPlatformSubdir () EMPTY\n");
 	}
 	return $configuration{'ProjectPlatformSubdir'};
 }
 
+sub	GetProjectPlatformSubdirIfAny {
+	if ($fileErr ne "") {
+		return "";
+	}
+	if ($configuration{'ProjectPlatformSubdir'} eq "") {
+		return "";
+	}
+	return $configuration{'ProjectPlatformSubdir'};
+}
+
 sub	GetConfigurationParameter {
+	if ($fileErr ne "") {
+		print ("Cannot GetConfigurationParameter: $fileErr");
+		exit (1);
+	}
 	my $paramName = shift;
 	return $configuration{$paramName};
 }

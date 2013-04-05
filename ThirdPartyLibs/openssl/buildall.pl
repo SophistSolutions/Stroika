@@ -8,10 +8,11 @@ if ($BLD_TRG eq '') {
 
 require ("../../ScriptsLib/BuildUtils.pl");
 
-print "PATH=";
-print (" $ENV{'PATH'};");
+#print "PATH=";
+#print (" $ENV{'PATH'};");
 
-my $BASENAME	=	"openssl-1.0.0";
+my $BASENAME	=	"openssl-1.0.1e";
+#my $BASENAME	=	"openssl-1.0.0";
 
 my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
@@ -86,11 +87,12 @@ chdir ("..");
 
 
 if ("$^O" eq "linux") {
-	print ("Configurating Xerces...\n");
+	print ("Configurating openssl...\n");
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
 	system ("cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl");
 }
+
 system ("rm -f NUL");
 
 
