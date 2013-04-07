@@ -7,12 +7,15 @@ if ($BLD_TRG eq '') {
 }
 
 require ("../../ScriptsLib/BuildUtils.pl");
+require ("../../ScriptsLib/StringUtils.pl");
 
 #print "PATH=";
 #print (" $ENV{'PATH'};");
 
-my $BASENAME	=	"openssl-1.0.1e";
-#my $BASENAME	=	"openssl-1.0.0";
+#both seem to work (2013-04-06) - but test with old for regressions first cuz new build
+# process -- LGP 2013-04-06 (part of stroika instead of RFLLib)
+my $BASENAME	=	"openssl-1.0.0";
+#my $BASENAME	=	"openssl-1.0.1e";
 
 my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
@@ -40,12 +43,11 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 if (-e "CURRENT/e_os.h") {
 	print ("already up to date\n");
 	goto DONE;
-	exit (0);
 }
 
-require "../../ScriptsLib/ConfigurationReader.pl";
-print ("Extracting openssl...\n");
 
+
+print ("Extracting openssl...\n");
 system ("rm -rf $trgDirName CURRENT");
 system ("tar xf Origs/$BASENAME.tar.gz 2> /dev/null");
 sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
@@ -70,53 +72,83 @@ sub RunAndPrint
 }
 
 
-
 #REM - only reconfigure if we just did the extract
-
-chdir ("CURRENT");
-	#system ("perl Configure VC-WIN32 nasm --prefix=c:\some\openssl\dir");
-	system ("perl Configure VC-WIN32 nasm");
-	system ("perl util/mkfiles.pl >MINFO");
-	system ("perl util/mk1mf.pl nasm VC-WIN32 >ms/nt.mak");
-	system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
-	system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
-	system ("perl util/mk1mf.pl nasm VC-WIN32 >ms/nt.mak");
-	system ("perl util/mk1mf.pl debug nasm VC-WIN32 >ms/nt-DBG.mak");
-chdir ("..");
-
-
-
+print ("Configurating openssl...\n");
 if ("$^O" eq "linux") {
-	print ("Configurating openssl...\n");
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
 	system ("cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl");
 }
-
-system ("rm -f NUL");
-
+else {if ("$^O" eq "cygwin") {
+	chdir ("CURRENT");
+		system ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
+		## FROM ms\do_ms.bat (with one line skipped - dont bother with DLL)
+		system ("perl util/mkfiles.pl >MINFO");
+		system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
+		#system ("perl util\mk1mf.pl dll no-asm VC-WIN32 >ms/ntdll.mak");
+		system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
+		system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
+		
+		###extras
+		# Build 32-bit DEBUG library
+		system ("perl util/mk1mf.pl debug no-asm VC-WIN32 >ms/nt-DBG.mak");
+		
+		system ("rm -f NUL");
+	chdir ("..");
+}}
 
 print ("Building openssl...\n");
 if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make -s all");
 }
-else {
+else {if ("$^O" eq "cygwin") {
 	chdir ("CURRENT");
-		print (" Make Release Build... (first  quietly - output saved to .txt file)");
-		system ("nmake /NOLOGO -s -f ms/nt.mak banner");
-		system ("nmake /NOLOGO -s -f ms/nt.mak %JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD% >> NT.MAK.BUILD-Output.txt");
-		system ("nmake /NOLOGO -s -f ms/nt.mak");
+
+		#Mostly for debugging - make sure paths setup properly
+		if (trim (`which cl`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") {
+			my $x = trim (`which cl`);
+			print "[WARNING] - Differnt CL: '$x'\n";
+			print ("   ENV= $ENV{'PATH'};\n");
+		}
+		if (trim (`which link`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") {
+			my $x = trim (`which link`);
+			print "[WARNING] - Differnt link: '$x'\n";
+			print ("   ENV= $ENV{'PATH'};\n");
+		}
+
+###NOT FULLY WORKING - SHOULD BUILD MOST STUFF SO NOT NEEDED REBUILD
+		#this trick make line is just to make build more quiet - it can be elimianted and makes all
+		#To get rid of it - just delete the 2 make lines that use this define
+		if (1) {
+			print (" Make Build (first  quietly - output saved to .txt file)...");
+			my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "tmp32 inc32 out32 inc32/openssl headers lib";
+			#my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "";
+			system ("(nmake /NOLOGO -f ms/nt.mak $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD 2>&1) >> NT.MAK.BUILD-Output.txt");
+			system ("(nmake /NOLOGO -f ms/nt-DBG.mak $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD 2>&1) >> NT-DBG.MAK.BUILD-Output.txt");
+		}
 		
-		print (" Make Debug Build... (first  quietly - output saved to .txt file)");
-		system ("nmake /NOLOGO -s -f ms/nt-DBG.mak banner");
-		system ("nmake /NOLOGO -s -f ms/nt-DBG.mak %JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD% >> NT-DBG.MAK.BUILD-Output.txt");
-		system ("nmake /NOLOGO -s -f ms/nt-DBG.mak");
+		print (" ...Make Release...\n");
+		#nb: lose -s to see each compile line
+		system ("(nmake /NOLOGO -s -f ms/nt.mak 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
+
+		print (" ...Make Debug...\n");
+		#nb: lose -s to see each compile line
+		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak 2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
 		
-		print (" running openssl tests...");
+		print (" ...Running openssl tests...");
 		system ("(nmake /NOLOGO -s -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
 		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
 	chdir ("..");
-}
+	
+	
+
+	print ("Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
+	print ("2 lines coming next - each should be less than 40/44 to be safe...\n");
+	my $x = `diff -b CURRENT/TEST-OUT.txt REFERENCEOUTOUT.txt | wc -l`;
+	print "$x\n";
+	$x = `diff -b CURRENT/TEST-DBG-OUT.txt REFERENCEOUTOUT.txt | wc -l`;
+	print "$x\n";
+}}
 
 system ("perl checkall.pl");
 
