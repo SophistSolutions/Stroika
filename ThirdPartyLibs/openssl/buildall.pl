@@ -104,18 +104,6 @@ if ("$^O" eq "linux") {
 else {if ("$^O" eq "cygwin") {
 	chdir ("CURRENT");
 
-		#Mostly for debugging - make sure paths setup properly
-		if (trim (`which cl`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") {
-			my $x = trim (`which cl`);
-			print "[WARNING] - Differnt CL: '$x'\n";
-			print ("   ENV= $ENV{'PATH'};\n");
-		}
-		if (trim (`which link`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") {
-			my $x = trim (`which link`);
-			print "[WARNING] - Differnt link: '$x'\n";
-			print ("   ENV= $ENV{'PATH'};\n");
-		}
-
 ###NOT FULLY WORKING - SHOULD BUILD MOST STUFF SO NOT NEEDED REBUILD
 		#this trick make line is just to make build more quiet - it can be elimianted and makes all
 		#To get rid of it - just delete the 2 make lines that use this define
