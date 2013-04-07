@@ -83,8 +83,7 @@ $ENV{'VCINSTALLDIR'} = 	$VSDIR_VC;
 $ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32:" . $ENV{'PATH'};
 
 $ENV{'PATH'}	= 	"$VSDIR\\VC\\bin:" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\VC\\:" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages/:" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages:" . $ENV{'PATH'};
 $ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE:" . $ENV{'PATH'};
 
 
