@@ -52,10 +52,6 @@ if (0) {
 
 
 
-# Lots of environment variable patches/sets because I cannot find a way to run vcvarsall.bat
-# from the perl script (and capture its environment vars)
-$ENV{'PATH'} = "c\:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319:" . $ENV{'PATH'};
-
 my $VisualStudioVersion = "11.0";
 $ENV{'VisualStudioVersion'}=	$VisualStudioVersion;
 
@@ -65,34 +61,45 @@ local $PROGRAMFILESDIR= $ENV{'PROGRAMFILES'};
 local $PROGRAMFILESDIR86= $ENV{'ProgramFiles(x86)'};
 
 
+sub toCygPath_
+{
+	my $arg = shift;
+	return trim (`cygpath \"$arg\"`);
+}
+
+
 
 my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio $VisualStudioVersion";
-if (! (-e $VSDIR)) {
+if (! (-e toCygPath_ ($VSDIR))) {
 	$VSDIR = "$PROGRAMFILESDIR\\Microsoft Visual Studio $VisualStudioVersion";
 } 
-if (! (-e $VSDIR)) {
+if (! (-e toCygPath_ ($VSDIR))) {
 	die ("directory $VSDIR doesn't exist");
 } 
- 
+
  
 
 my $VSDIR_VC = "$VSDIR\\VC";
 $ENV{'VCINSTALLDIR'} = 	$VSDIR_VC;
 
 
-$ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32:" . $ENV{'PATH'};
+# Lots of environment variable patches/sets because I cannot find a way to run vcvarsall.bat
+# from the perl script (and capture its environment vars)
+$ENV{'PATH'} 	= 	"c\:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319: " . $ENV{'PATH'};
 
-$ENV{'PATH'}	= 	"$VSDIR\\VC\\bin:" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages:" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE:" . $ENV{'PATH'};
+$ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32". ": " . $ENV{'PATH'};
+
+$ENV{'PATH'}	= 	"$VSDIR\\VC\\bin". ": " . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages" . ": " . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE" . ": " . $ENV{'PATH'};
 
 
 ### GUESS IF NEEDED (AND IF RIGHT PATH)
 my $WindowsSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\8.0";
 $ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
 
-my $ExtensionSdkDir = "C\:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v8.0\\ExtensionSDKs";
-$ENV{'ExtensionSdkDir'}=$ExtensionSdkDir;
+#my $ExtensionSdkDir = "C\:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v8.0\\ExtensionSDKs";
+#$ENV{'ExtensionSdkDir'}=$ExtensionSdkDir;
 
 $ENV{'INCLUDE'} =	"";
 $ENV{'INCLUDE'} .=	"$VSDIR_VC\\INCLUDE;";
@@ -108,14 +115,15 @@ $ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
 $ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
 $ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\win8\\um\\x86;";
 
+
 #Mostly for debugging - make sure paths setup properly
-if (trim (`which cl`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") {
-	my $x = trim (`which cl`);
+my $x = trim (`cmd /c 'which cl'`);
+if ($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") {
 	print "[WARNING] - Differnt CL: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
-if (trim (`which link`) ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") {
-	my $x = trim (`which link`);
+my $x = trim (`cmd /c 'which link'`);
+if ($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") {
 	print "[WARNING] - Differnt link: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
