@@ -77,7 +77,7 @@ print ("Configurating openssl...\n");
 if ("$^O" eq "linux") {
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
-	system ("cd CURRENT ; ./configure --enable-static --disable-shared --without-icu --without-curl");
+	system ("cd CURRENT ; ./config -no-shared");
 }
 else {if ("$^O" eq "cygwin") {
 	chdir ("CURRENT");
