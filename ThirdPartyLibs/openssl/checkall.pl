@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+require "../../ScriptsLib/StringUtils.pl";
 require "../../ScriptsLib/ConfigurationReader.pl";
 
 my $myPlatformSubDir =	GetProjectPlatformSubdir ();
@@ -39,4 +40,16 @@ if (! (-e "$ssleay32_DBG")) {
 	print ("Echo [FAILED] - $ssleay32_DBG is missing\n");
 	exit (1);
 }
-print ("ThirdPartyLibs/openssl -  [SUCCEEDED]\n");
+
+my $x1 = `diff -b CURRENT/TEST-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
+my $x2 = `diff -b CURRENT/TEST-DBG-OUT.txt REFERENCE_OUTPUT.txt | wc -l`;
+if (trim ($x1) <= "40" and trim ($x2) <= "44") {
+	print ("ThirdPartyLibs/openssl -  [SUCCEEDED]\n");
+}
+else {
+	print ("Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
+	print ("2 lines coming next - each should be less than 40/44 to be safe...\n");
+	print "$x1\n";
+	print "$x2\n";
+	print ("ThirdPartyLibs/openssl -  [FAILED]\n");
+}

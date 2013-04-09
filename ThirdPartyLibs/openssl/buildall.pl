@@ -58,7 +58,7 @@ if ($DoCreateSymLink) {
 }
 
 print ("Patching openssl...\n");
-system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
+#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
 
 
 sub RunAndPrint
@@ -126,16 +126,8 @@ else {if ("$^O" eq "cygwin") {
 		print (" ...Running openssl tests...");
 		system ("(nmake /NOLOGO -s -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
 		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
+		print ("\n");
 	chdir ("..");
-	
-	
-
-	print ("Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
-	print ("2 lines coming next - each should be less than 40/44 to be safe...\n");
-	my $x = `diff -b CURRENT/TEST-OUT.txt REFERENCEOUTOUT.txt | wc -l`;
-	print "$x\n";
-	$x = `diff -b CURRENT/TEST-DBG-OUT.txt REFERENCEOUTOUT.txt | wc -l`;
-	print "$x\n";
 }}
 
 system ("perl checkall.pl");
