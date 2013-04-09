@@ -18,6 +18,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
 
+
 //// VERY ROUGH DRAFT - NOT VERY CLOSE TO CORRECT FOR ALL ALGORITHSM
 //// SEE http://www.openssl.org/docs/crypto/EVP_EncryptInit.html
 //// for details on what todo
@@ -33,16 +34,16 @@ namespace {
             cryptoParams.fInitializer (&fCTX_);
         }
         ~InOutStrmCommon_ () {
-            EVP_CIPHER_CTX_cleanup (&fCTX_);
+            ::EVP_CIPHER_CTX_cleanup (&fCTX_);
         }
-        static  constexpr   size_t GetMinOutBufSize (size_t n) {
+        static  constexpr   size_t _GetMinOutBufSize (size_t n) {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
         size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd) {
-            Require ((outBufEnd - outBufStart) >= GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
+            Require ((outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
-            if(!EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, data2ProcessEnd - data2ProcessStart)) {
+            if(not ::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, data2ProcessEnd - data2ProcessStart)) {
                 /* Error */
                 // THROW
                 return 0;
@@ -54,12 +55,12 @@ namespace {
         // return nBytes in outBuf, throws on error
         // Can call multiple times - it keeps track itself if finalized.
         size_t _cipherFinal (Byte* outBufStart, Byte* outBufEnd) {
-            Require ((outBufEnd - outBufStart) >= GetMinOutBufSize (0));
+            Require ((outBufEnd - outBufStart) >= _GetMinOutBufSize (0));
             if (fFinalCalled_) {
                 return 0;   // not an error - just zero more bytes
             }
             int outLen = 0;
-            if(!EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen)) {
+            if(not ::EVP_CipherFinal_ex (&fCTX_, outBufStart, &outLen)) {
                 /* Error */
                 // THROW
                 return 0;
@@ -78,15 +79,16 @@ namespace {
 
 
 #if     qHas_OpenSSL
-class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, public InOutStrmCommon_ {
+class   OpenSSLInputStream::IRep_ : public BinaryInputStream::_IRep, private InOutStrmCommon_ {
 private:
     DEFINE_CONSTEXPR_CONSTANT(size_t, kInBufSize_, 10 * 1024);
+
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
         , InOutStrmCommon_ (cryptoParams)
         , fCriticalSection_ ()
-        , fOutBuf_ (GetMinOutBufSize (kInBufSize_))
+        , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
         , fOutBufStart_ (nullptr)
         , fOutBufEnd_ (nullptr)
         , fRealIn_ (realIn) {
@@ -110,7 +112,7 @@ public:
                     fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
                 }
                 else {
-                    fOutBuf_.GrowToSize (GetMinOutBufSize (NEltsOf (toDecryptBuf)));
+                    fOutBuf_.GrowToSize (_GetMinOutBufSize (NEltsOf (toDecryptBuf)));
                     size_t nBytesInOutBuf = _runOnce (begin (toDecryptBuf), begin (toDecryptBuf) + n2Decrypt, fOutBuf_.begin (), fOutBuf_.end ());
                     fOutBufStart_ = fOutBuf_.begin ();
                     fOutBufEnd_ = fOutBufStart_ + nBytesInOutBuf;
@@ -141,7 +143,7 @@ private:
 
 
 #if     qHas_OpenSSL
-class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, public InOutStrmCommon_ {
+class   OpenSSLOutputStream::IRep_ : public BinaryOutputStream::_IRep, private InOutStrmCommon_ {
 public:
     IRep_ (const OpenSSLCryptoParams& cryptoParams, const BinaryOutputStream& realOut)
         : BinaryOutputStream::_IRep ()
@@ -164,7 +166,7 @@ public:
     // Writes always succeed fully or throw.
     virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
-        Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (GetMinOutBufSize (end - start));
+        Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         size_t nBytesEncypted = _runOnce (start, end, outBuf.begin (), outBuf.end ());
         Assert (nBytesEncypted <= outBuf.GetSize ());
@@ -179,8 +181,8 @@ public:
     }
 
 private:
-    mutable recursive_mutex  fCriticalSection_;
-    BinaryOutputStream        fRealOut_;
+    mutable recursive_mutex     fCriticalSection_;
+    BinaryOutputStream          fRealOut_;
 };
 #endif
 
@@ -203,171 +205,171 @@ OpenSSLCryptoParams::OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direc
     switch (alg) {
         case Algorithm::eAES_128_CBC: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_ECB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_OFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB1: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB8: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_128_CFB128: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_128_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_128_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CBC: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_ECB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_OFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB1: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB8: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_192_CFB128: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_192_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_192_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CBC: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_ECB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_OFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB1: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb1 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB8: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb8 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eAES_256_CFB128: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_aes_256_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_aes_256_cfb128 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_CBC: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_bf_cbc (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cbc (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_ECB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_bf_ecb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ecb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_CFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_bf_cfb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_cfb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eBlowfish_OFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_bf_ofb (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_bf_ofb (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC2_CBC: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_cbc (), NULL, NULL, NULL, enc);
-                    EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cbc (), NULL, NULL, NULL, enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC2_ECB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_ecb (), NULL, NULL, NULL, enc);
-                    EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ecb (), NULL, NULL, NULL, enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC2_CFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_cfb (), NULL, NULL, NULL, enc);
-                    EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_cfb (), NULL, NULL, NULL, enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC2_OFB: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_rc2_ofb (), NULL, NULL, NULL, enc);
-                    EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
-                    EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc2_ofb (), NULL, NULL, NULL, enc);
+                    ::EVP_CIPHER_CTX_set_key_length (ctx, key.length ());
+                    ::EVP_CipherInit_ex (ctx, NULL, NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
         case Algorithm::eRC4: {
                 fInitializer = [&key, &initialIV, &enc] (EVP_CIPHER_CTX * ctx) {
-                    EVP_CipherInit_ex (ctx, EVP_rc4 (), NULL, key.begin (), initialIV.begin (), enc);
+                    ::EVP_CipherInit_ex (ctx, ::EVP_rc4 (), NULL, key.begin (), initialIV.begin (), enc);
                 };
             }
             break;
