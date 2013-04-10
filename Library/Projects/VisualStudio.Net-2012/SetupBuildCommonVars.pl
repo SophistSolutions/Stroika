@@ -68,6 +68,7 @@ sub toCygPath_
 }
 
 
+#print ("progrifles = " . toCygPath_($PROGRAMFILESDIR86));
 
 my $VSDIR = "$PROGRAMFILESDIR86\\Microsoft Visual Studio $VisualStudioVersion";
 if (! (-e toCygPath_ ($VSDIR))) {
@@ -85,13 +86,13 @@ $ENV{'VCINSTALLDIR'} = 	$VSDIR_VC;
 
 # Lots of environment variable patches/sets because I cannot find a way to run vcvarsall.bat
 # from the perl script (and capture its environment vars)
-$ENV{'PATH'} 	= 	"c\:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319:" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"/cygdrive/c/Windows/Microsoft.NET/Framework/v4.0.30319" .":" . $ENV{'PATH'};
 
-$ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32". ":" . $ENV{'PATH'};
+$ENV{'PATH'}	= 	"/cygdrive/c/WINDOWS/system32". ":" . $ENV{'PATH'};
 
-$ENV{'PATH'}	= 	"$VSDIR\\VC\\bin". ":" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages" . ":" . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE" . ":" . $ENV{'PATH'};
+$ENV{'PATH'}	= 	toCygPath_ ($VSDIR) . "/VC/bin". ":" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	toCygPath_ ($VSDIR) . "/VC/vcpackages" . ":" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	toCygPath_ ($VSDIR) . "/Common7/IDE" . ":" . $ENV{'PATH'};
 
 
 ### GUESS IF NEEDED (AND IF RIGHT PATH)
@@ -101,12 +102,12 @@ $ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
 #my $ExtensionSdkDir = "C\:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v8.0\\ExtensionSDKs";
 #$ENV{'ExtensionSdkDir'}=$ExtensionSdkDir;
 
-$ENV{'INCLUDE'} =	"";
-$ENV{'INCLUDE'} .=	"$VSDIR_VC\\INCLUDE;";
-$ENV{'INCLUDE'} .=	"$VSDIR_VC\\ATLMFC\\INCLUDE;";
-$ENV{'INCLUDE'} .=	"$WindowsSdkDir\\include\\shared;";
-$ENV{'INCLUDE'} .=	"$WindowsSdkDir\\include\\um;";
-$ENV{'INCLUDE'} .=	"$WindowsSdkDir\\include\\winrt;";
+$ENV{'INCLUDE'}	=	"";
+$ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\INCLUDE;";
+$ENV{'INCLUDE'} 	.=	"$VSDIR_VC\\ATLMFC\\INCLUDE;";
+$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\shared;";
+$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\um;";
+$ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 #print "INCLUDES=", $ENV{'INCLUDE'}, "\n";
 
 
