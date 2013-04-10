@@ -122,12 +122,12 @@ $ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\win8\\um\\x86;";
 
 #Mostly for debugging - make sure paths setup properly
 my $x = trim (`cmd /c 'which cl'`);
-if ($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") {
+if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/cl") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio 11.0/VC/bin/cl")) {
 	print "[WARNING] - Differnt CL: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
 my $x = trim (`cmd /c 'which link'`);
-if ($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") {
+if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio 11.0/VC/bin/link") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio 11.0/VC/bin/link")) {
 	print "[WARNING] - Differnt link: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
