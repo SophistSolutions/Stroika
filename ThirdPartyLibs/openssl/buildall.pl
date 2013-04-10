@@ -47,7 +47,7 @@ if (-e "CURRENT/e_os.h") {
 
 
 
-print ("Extracting openssl...\n");
+print ("Extracting $BASENAME...\n");
 system ("rm -rf $trgDirName CURRENT");
 system ("tar xf Origs/$BASENAME.tar.gz 2> /dev/null");
 sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7

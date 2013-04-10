@@ -85,13 +85,13 @@ $ENV{'VCINSTALLDIR'} = 	$VSDIR_VC;
 
 # Lots of environment variable patches/sets because I cannot find a way to run vcvarsall.bat
 # from the perl script (and capture its environment vars)
-$ENV{'PATH'} 	= 	"c\:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319: " . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"c\:\\Windows\\Microsoft.NET\\Framework\\v4.0.30319:" . $ENV{'PATH'};
 
-$ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32". ": " . $ENV{'PATH'};
+$ENV{'PATH'}	= 	"C\:\\WINDOWS\\system32". ":" . $ENV{'PATH'};
 
-$ENV{'PATH'}	= 	"$VSDIR\\VC\\bin". ": " . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages" . ": " . $ENV{'PATH'};
-$ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE" . ": " . $ENV{'PATH'};
+$ENV{'PATH'}	= 	"$VSDIR\\VC\\bin". ":" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"$VSDIR\\VC\\vcpackages" . ":" . $ENV{'PATH'};
+$ENV{'PATH'} 	= 	"$VSDIR\\Common7\\IDE" . ":" . $ENV{'PATH'};
 
 
 ### GUESS IF NEEDED (AND IF RIGHT PATH)
