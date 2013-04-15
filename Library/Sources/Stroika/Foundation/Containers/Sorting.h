@@ -1,12 +1,10 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Sortable_h_
-#define _Stroika_Foundation_Containers_Sortable_h_  1
+#ifndef _Stroika_Foundation_Containers_Sorting_h_
+#define _Stroika_Foundation_Containers_Sorting_h_  1
 
 /*
- *
- *  <<<RENAME THIS FILE TO "SORTING" from "SORTABLE"
  *
  *  STATUS:
  *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
@@ -16,7 +14,7 @@
  *  TODO:
  *
  *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sortable.hh
+ *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sorting.hh
  *
  *
  */
@@ -106,7 +104,7 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Sortable_h_ */
+#endif  /*_Stroika_Foundation_Containers_Sorting_h_ */
 
 
 
@@ -116,4 +114,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Sortable.inl"
+#include    "Sorting.inl"
