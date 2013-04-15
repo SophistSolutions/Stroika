@@ -522,6 +522,7 @@ namespace   Stroika {
                 virtual bool    StrongEquals (const IRep* rhs) const            = 0;
             };
 
+
         }
     }
 }

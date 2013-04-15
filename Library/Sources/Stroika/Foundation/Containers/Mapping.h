@@ -7,6 +7,10 @@
 /*
  *
  *
+ *  STATUS:
+ *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
+ *
+ *
  *
  *  TODO:
  *
@@ -29,6 +33,58 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            /**
+             *      Mapping which allows for the association of two elements, and key and
+             *  a value. The key UNIQUELY specifies its associated value.
+             *
+             *  @see    Dictionary<Key,T>
+             */
+            template    <class Key, class T>
+            class   Mapping : public Iterable<pair<Key, T>> {
+            public:
+                Mapping ();
+                Mapping (const Mapping<Key, T>& src);
+
+            protected:
+                Mapping (MappingRep<Key, T>* src);
+
+            public:
+                nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src);
+
+            public:
+                nonvirtual  void    RemoveAll ();
+
+            public:
+                nonvirtual  void    Compact ();
+
+            public:
+                nonvirtual  bool Lookup (Key key, T* item) const;
+
+            public:
+                nonvirtual  void    Enter (Key key, T newElt);
+                nonvirtual  void    Enter (const Mapping<Key, T>& items);
+
+            public:
+                nonvirtual  void    Remove (T elt);
+                nonvirtual  void    Remove (const Mapping<Key, T>& items);
+                nonvirtual  void    RemoveAt (Key key);
+
+            public:
+                nonvirtual  Mapping<Key, T>& operator+= (const Mapping<Key, T>& items);
+                nonvirtual  Mapping<Key, T>& operator-= (const Mapping<Key, T>& items);
+
+                nonvirtual  operator Iterator<Key> () const;
+                nonvirtual  operator Iterator<pair<Key, T> > () const;
+
+            protected:
+                nonvirtual  const MappingRep<Key, T>*    GetRep () const;
+                nonvirtual  MappingRep<Key, T>*          GetRep ();
+
+            private:
+                Shared<MappingRep<Key, T> >  fRep;
+            };
 
 
         }

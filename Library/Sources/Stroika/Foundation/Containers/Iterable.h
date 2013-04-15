@@ -57,6 +57,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             /**
              *  \brief  Iterable<T> is a base class for containers which easily produce an Iterator<T>
              *          to traverse them.
@@ -292,6 +293,7 @@ namespace   Stroika {
                 nonvirtual  void        _Apply (_APPLY_ARGTYPE doToElement) const;
                 nonvirtual  Iterator<T> _ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const;
             };
+
 
         }
     }

@@ -24,6 +24,10 @@
  *                  *tmp.AddNew ("a") = "a";
  *              So awkward to use!!! - find better - more map like - API
  *
+ *      @todo   One major source of UNSAFETY (especially thread unsafety) is
+ *              AddNew/Lookup() API returning internal pointers. We really want this to do copy by
+ *              value. But look where its used, and see the costs are not too high of doing copy my value.
+ *              Or maybe use concext update object (maybe taking a lambda) for the update).
  *
  *      @todo   NOTE - I'm NOT sure public API for this is stable yet - there are many problems (though
  *              I've used this class quite a lot - its not buggy - just not flexibly designed or good

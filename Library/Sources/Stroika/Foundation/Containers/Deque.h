@@ -6,7 +6,8 @@
 
 /*
  *
- *
+ *  STATUS:
+ *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
  *
  *  TODO:
  *
@@ -27,6 +28,81 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            /**
+             * Description:
+             *
+             *      A Deque is a queue that allows additions and removals at either end.
+             *
+             *      Deques always iterate from Head to Tail.
+             *
+             *      We currently default to the circular array implementation, as it is
+             *  fastest under most circumstances. One drawback to it is that it has
+             *  unpredictable costs for an Add operation. DoubleLinkList is usually
+             *  slower, but has very predictable costs.
+             *
+             * TODO:
+             *      +   Add CTOR(Iterator<T>) after next release....
+             *
+             * Notes:
+             *
+             *      We currently default to the circular array implementation, as it is
+             *  fastest under most circumstances. One drawback to it is that it has
+             *  unpredictable costs for an Add operation. DoubleLinkList is usually
+             *  slower, but has very predictable costs.
+             *
+            */
+            template    <tyoename T>
+            class   Deque : public Iterable<T> {
+            public:
+                Deque ();
+                Deque (const Deque<T>& src);
+
+            protected:
+                Deque (DequeRep<T>* rep);
+
+            public:
+                nonvirtual  Deque<T>& operator= (const Deque<T>& src);
+
+            public:
+                nonvirtual  void    RemoveAll ();
+
+            public:
+                nonvirtual  void    Compact ();
+
+            public:
+                nonvirtual  operator Iterator<T> () const;
+
+            public:
+                nonvirtual  void    AddHead (T item);
+
+            public:
+                nonvirtual  T       RemoveHead ();
+
+            public:
+                nonvirtual  T       Head () const;
+
+            public:
+                nonvirtual  void    AddTail (T item);
+
+            public:
+                nonvirtual  T       RemoveTail ();
+
+            public:
+                nonvirtual  T       Tail () const;
+
+            protected:
+                nonvirtual  const DequeRep<T>*  GetRep () const;
+                nonvirtual  DequeRep<T>*        GetRep ();
+
+            private:
+                Shared<DequeRep<T> >    fRep;
+
+                static  DequeRep<T>*    Clone (const DequeRep<T>& rep);
+
+                friend  Boolean operator== (const Deque<T>& lhs, const Deque<T>& rhs);
+            };
 
 
         }

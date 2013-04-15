@@ -33,6 +33,21 @@ namespace   Stroika {
         namespace   Cache {
 
 
+            // very rough initial draft of API
+            template    <typename T>
+            class   BloomFilter<T> {
+            public:
+                void Add (T elt);
+
+            public:
+                void Remove (T elt);
+
+            public:
+                //  False positive retrieval results are possible, but false negatives are not;
+                void IsPresent (T elt) const;
+            };
+
+
         }
     }
 }

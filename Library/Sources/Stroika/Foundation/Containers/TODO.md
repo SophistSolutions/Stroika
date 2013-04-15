@@ -1,6 +1,9 @@
 TODO (Foundation::Containers)
 
 
+	(o)		Add New module Dictionary<K,V> which is a Mapping<K,V> which is Mapping<> - but where items are
+			guarnateed to remain sorted by Key.
+
 	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
 			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 
