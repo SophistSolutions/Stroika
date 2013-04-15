@@ -1,6 +1,13 @@
 TODO (Foundation::Containers)
 
 
+	(o)		Maybe enhance API for stuff like PriorityQueue<> and Tally<T> to have method
+			AsIterable<T> () - that returns an Iterable<T> (the undlering thing stuff is ta tallyof or
+			priorityq of, so you can write for (i : priqiryQ.AsIterable<T> ()) {}
+			AsIterable<T> would return a logical COPY of the container (but using smart pointers not cfost
+			much of anything) - and would let you make iterators you could traverse with. NOT for 
+			Mapping/Dictionary - there have method Keys() that returns same thing (container of keys)
+
 	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
 			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 

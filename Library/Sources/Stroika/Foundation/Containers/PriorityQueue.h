@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
             /*
-             *  PriorityQueues are a kind of Queue that allow retrieval based the priority assigned an item.
+             *  PriorityQueues are a like a Queue that allows retrieval based the priority assigned an item.
              *  This priority is given either at the time when the item is Enqueueed to the PriorityQueue, or
              *  by a function. The default function always assigns the lowest possible priority to an item.
              *  Priority start at zero and work upwards, so a zero priority item will be the last item
