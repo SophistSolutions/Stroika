@@ -38,6 +38,9 @@ namespace   Stroika {
             /**
              *      A Dictionary is a Mapping<Key,T> which remains sorted (iterator) by the Key.
              *
+             *
+             *  Note the base class method Keys() will always return an Iterable<Key> in sorted order.
+             *
              *  @see    Dictionary<Key,T>
              */
             template    <class Key, class T>

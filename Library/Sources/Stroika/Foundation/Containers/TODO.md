@@ -8,6 +8,8 @@ TODO (Foundation::Containers)
 			much of anything) - and would let you make iterators you could traverse with. NOT for 
 			Mapping/Dictionary - there have method Keys() that returns same thing (container of keys)
 
+			Iterable<T> AsIterable<T> ()
+
 	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
 			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 

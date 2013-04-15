@@ -8,6 +8,16 @@
 
 /// SOON OBSOLETE
 
+// MAKE SURE TO SOMEHOW INNCLUDE
+//           typename TTRAITS = TWithCompareEquals<T>
+//  (or maybe just in TODO)
+//
+//  And consider each of the modify members like retirainall () - and add to Bag/Sequence - IF
+//  I think they belong there.
+//  And
+
+
+
 /*
  *
  * Description:

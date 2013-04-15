@@ -60,6 +60,12 @@ namespace   Stroika {
                 nonvirtual  void    Compact ();
 
             public:
+                // Note this method may not return a collection which is sorted. Note also, the
+                // returned value is a copy of the keys (by value) - at least logically (implementations
+                // maybe smart enough to use lazy copying)
+                nonvirtual  Iterable<Key>   Keys () const;
+
+            public:
                 nonvirtual  bool Lookup (Key key, T* item) const;
 
             public:

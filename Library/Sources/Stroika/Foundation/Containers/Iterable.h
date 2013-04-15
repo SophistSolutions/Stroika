@@ -81,6 +81,12 @@ namespace   Stroika {
              *      to assure that the underlying type is of the appropriate subtype.
              *
              *      For example - see Bag_Array<T>::GetRep_().
+             *
+             *
+             *  *Important Design Note*:
+             *      Probably important - for performance??? - that all these methods are const,
+             *      so ??? think through - what this implies- but probably soemthing about not
+             *      threading stuff and ???
              */
             template    <typename T>
             class  Iterable {
