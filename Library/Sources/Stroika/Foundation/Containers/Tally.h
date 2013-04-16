@@ -130,6 +130,16 @@ namespace   Stroika {
 
             public:
                 /**
+                 * NYI - but this can be remove duplicates. So you can say
+                 *      for (auto ti : tally) {} OR
+                 *      for (auto i : tally.Elements ()) {}
+                 *
+                 *  Maybe use that to replace MakeBagIterator (and bagbegin etc)...
+                 */
+                nonvirtual  Iterable<T>   Elements () const;
+
+            public:
+                /**
                  * Return an iterator over individual items in the tally - as if the Tally was a Bag,
                  * not a Tally.
                  */

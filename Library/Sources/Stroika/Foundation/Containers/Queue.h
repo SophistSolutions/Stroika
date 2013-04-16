@@ -56,25 +56,30 @@ namespace   Stroika {
              */
             template    <class T>
             class   Queue : public Iterable<T> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /*
+                 */
                 Queue ();
-                Queue (const Queue<T>& src);
+                Queue (const Queue<T>& s);
+                explicit Queue (const T* start, const T* end);
 
             protected:
-                Queue (QueueRep<T>* src);
+                explicit Queue (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Queue<T>& operator= (const Queue<T>& src);
 
             public:
+                /**
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-
-            public:
-                /*
+                /**
                 old DOCS.
                  * Head lets you peek at what would be the result of the next Dequeue. It is
                  * an error to call Head () with an empty Q.
@@ -82,14 +87,18 @@ namespace   Stroika {
                 nonvirtual  void    AddTail (T item);
 
             public:
+                /**
+                 */
                 nonvirtual  T       Head () const;
 
             public:
+                /**
+                 */
                 nonvirtual  T       RemoveHead ();
 
 
             public:
-                /*
+                /**
                 old DOCS.
                  * Stick the given item at the end of the Q. Since a Q is a LIFO structure,
                  * this item will be the removed (by a DeQueue) operation only after all other
@@ -99,7 +108,7 @@ namespace   Stroika {
 
 
             public:
-                /*
+                /**
                 old DOCS.
                  * Remove the first item from the Q. This is an error (assertion) if the Q is
                  * empty. This returns that last most distant (historical/time) item from the Q -
@@ -109,15 +118,8 @@ namespace   Stroika {
 
 
             protected:
-                nonvirtual  const QueueRep<T>*  GetRep () const;
-                nonvirtual  QueueRep<T>*        GetRep ();
-
-            private:
-                Shared<QueueRep<T> >    fRep;
-
-                static  QueueRep<T>*    Clone (const QueueRep<T>& src);
-
-                friend  Boolean operator== (const Queue<T>& lhs, const Queue<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 

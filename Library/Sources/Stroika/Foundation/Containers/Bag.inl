@@ -63,11 +63,6 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
-            inline  void    Bag<T>::Compact ()
-            {
-                _GetRep ().Compact ();
-            }
-            template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
             {
                 Add (item);

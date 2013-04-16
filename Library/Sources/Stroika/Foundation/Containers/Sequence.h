@@ -17,17 +17,27 @@
  *      (o)         Implement first draft of code based on
  *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sequence.hh
  *
- *      (o)         Should inherit from Iterable<T>
+ *      (o)         Need CTOR that works with iterators. Ideally, dynamically check with C++11 traits if operator- supported
+ *                  and use that to allocate if we can, and otherwise just iterate and append.
  *
- *      @todo       Must support SequenceIterator - and that SequenceIterator must work with qsort().
+ *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators.
  *
+ *      @todo       Maybe add (back) SequenceIterator - with support for operator- (difference), and UpdateCurrent, and GetIndex()
+ *                  Maybe also AdvanceBy(), BackBy() methods. Though All these COULD be methods of the underlying Sequence object.
  *
+ *      @todo       Implement stuff like Contains () using ApplyUnti.... and lambdas, so locking works cheaply, and
+ *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
+ *                  for T.
+ *
+ *      @todo       DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
  */
 
 
 #include    "../StroikaPreComp.h"
+
+#include    <limits>
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
@@ -39,14 +49,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            const   size_t  kBadSequenceIndex   =   kMaxSize_T;
-
-            // I think these are a crock, and need to be looked at more closely. There are used in unsafe,
-            // pun fasion - investigate VERY soon - LGP May 23, 1992.
-            enum AddMode {
-                ePrepend = 1,
-                eAppend = -1,
-            };
+            constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
 
 
             /**
@@ -115,48 +118,79 @@ namespace   Stroika {
              *
              *
              */
-            template    <class T>
+            template    <typename T>
             class   Sequence : public Iterable<T> {
-            public:
-                Sequence ();
-                Sequence (const Sequence<T>& src);
-                Sequence (const T* items, size_t size);
-
             protected:
-                Sequence (SequenceRep<T>* rep);
-
-            public:
-                nonvirtual  Sequence<T>& operator= (const Sequence<T>& src);
-
-            public:
-                nonvirtual  Boolean Contains (T item) const;
-
-            public:
-                nonvirtual  void    RemoveAll ();
-
-            public:
-                nonvirtual  void    Compact ();
-
-            public:
-                nonvirtual  T       GetAt (size_t index) const;
-
-            public:
-                nonvirtual  void    SetAt (T item, size_t index);
-
-            public:
-                nonvirtual  T       operator[] (size_t index) const;
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
                 /*
+                 */
+                Sequence ();
+                Sequence (const Sequence<T>& s);
+                explicit Sequence (const T* start, const T* end);
+
+            protected:
+                explicit Sequence (const _SharedPtrIRep& rep);
+
+            public:
+                /**
+                 */
+                nonvirtual  Sequence<T>& operator= (const Sequence<T>& src);
+
+            public:
+                /**
+                 * Only supported if T::operator==()
+                 */
+                nonvirtual  bool Contains (T item) const;
+
+            public:
+                /**
+                 * Only supported of T::Compare() or T::compare() defined
+                 *      (CONSIDER NEW code to detect methods in templates)
+                 *      (MAYBE always use compare() - not Compare)
+                 */
+                nonvirtual  int Compare (T item) const;
+
+            public:
+                /**
+                 * Only supported if T::operator==() defined.
+                 */
+                nonvirtual  bool Equal (T item) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    RemoveAll ();
+
+            public:
+                /**
+                 */
+                nonvirtual  T       GetAt (size_t index) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  void    SetAt (size_t index, T item);
+
+            public:
+                /**
+                 */
+                nonvirtual  T       operator[] (size_t index) const;
+
+            public:
+                /**
                  *      Search the sequence and see if the given item is contained in
                  *  it, and return the index of that item. Comparison is done with
                  *  operator==.
                  */
                 nonvirtual  size_t  IndexOf (T item) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
+                nonvirtual  void    IndexOf (const Iterator<T>& i);
 
             public:
-                /*
+                /**
                  *      Insert the given item into the sequence at the given index.
                  *  Any active iterators will encounter the given item if their
                  *  cursor encounters the new index in the course of iteration.
@@ -168,62 +202,109 @@ namespace   Stroika {
                  *      NB: Adding an item at the CURRENT index has no effect on
                  *  what the iterator says is the current item.
                  */
-                nonvirtual  void    InsertAt (T item, size_t index);
-                nonvirtual  void    InsertAt (const Sequence<T>& items, size_t index);
+                nonvirtual  void    InsertAt (size_t index, T item);
+                nonvirtual  void    InsertAt (size_t index, const Sequence<T>& items);
 
             public:
+                /**
+                 */
                 nonvirtual  void    Prepend (T item);
                 nonvirtual  void    Prepend (const Sequence<T>& items);
 
             public:
+                /**
+                 */
                 nonvirtual  void    Append (T item);
                 nonvirtual  void    Append (const Sequence<T>& items);
 
             public:
-                nonvirtual  Sequence<T>&    operator+= (T item);
-                nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
+                /**
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
+                 */
+                nonvirtual  void    Update (const Iterator<T>& i, T newValue);
+
 
             public:
-                /*
+                /**
                  *      Remove the item at the given position of the sequence. Make sure
                  *  that iteration is not disturbed by this removal. In particular, any
                  *  items (other than the one at index) that would have been seen, will
                  *  still be, and no new items will be seen that wouldn't have been.
                  */
                 nonvirtual  void    RemoveAt (size_t index);
-                nonvirtual  void    RemoveAt (size_t index, size_t amountToRemove);
+                nonvirtual  void    RemoveAt (size_t start, size_t end);
 
             public:
-                /*
+                /**
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is removed.
+                 *
                  * Not an error to remove an item that is not an element of the list, instead has no effect.
                  */
+                nonvirtual  void    Remove (const Iterator<T>& i);
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Sequence<T>& items);
+
+            public:
+                /**
+                 */
+                nonvirtual  void    push_back (T item);
+
+            public:
+                /**
+                 */
+                nonvirtual  T       back () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  T       front () const;
+
+            public:
+                /**
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
+            public:
+                nonvirtual  Sequence<T>&    operator+= (T item);
+                nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
 
             public:
                 nonvirtual  Sequence<T>&    operator-= (T item);
                 nonvirtual  Sequence<T>&    operator-= (const Sequence<T>& items);
 
-                nonvirtual  operator Iterator<T> () const;
-                nonvirtual  SequenceIteratorRep<T>*     MakeSequenceIterator (SequenceDirection d) const;
-                nonvirtual  SequenceMutatorRep<T>*      MakeSequenceMutator (SequenceDirection d);
-                nonvirtual  operator SequenceIterator<T> () const;
-                nonvirtual  operator SequenceMutator<T> ();
-
             protected:
-                nonvirtual  void    AddItems (const T* items, size_t size);
-
-                nonvirtual  const SequenceRep<T>*   GetRep () const;
-                nonvirtual  SequenceRep<T>*         GetRep ();
-
-            private:
-                Shared<SequenceRep<T> > fRep;
-
-                static  SequenceRep<T>* Clone (const SequenceRep<T>& rep);
-
-                friend  Boolean operator== (const Sequence<T>& lhs, const Sequence<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
+
+            /**
+             *  \brief  Implementation detail for Sequence<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Sequence<T> container API.
+             */
+            template    <typename T>
+            class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual bool    Contains (T item) const                     =   0;
+                virtual void    Add (T item)                                =   0;
+                virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
+                virtual void    Remove (T item)                             =   0;
+                virtual void    Remove (const Iterator<T>& i)               =   0;
+                virtual void    RemoveAll ()                                =   0;
+            };
 
 
         }

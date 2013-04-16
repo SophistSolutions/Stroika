@@ -21,3 +21,17 @@ Rejected Ideas
 			'key' concept for Map<>, and use 'index' - which is analagous - but different -
 			for sequence (important difference is stickiness of assocation when container is modified).
 
+
+
+No Compact() methods
+			Stroika 1.0 had Compact() methods - that could be used to generically request that a container
+			be compacted.
+
+			We decided against that for Stroika 2 because
+
+			1>	We COULD always add it back.
+			2>	Its just a class of optimziations which makes sense for some backends. But other 
+				optimizations make snese for other classes of backends. You can always retain a smartptr
+				with OUR type of backend! So really can be added just for _Array<> impls. Note - this
+				rationale doesnt work perfectly due to copy-by-values semantics with 'casts' but still
+				OK.

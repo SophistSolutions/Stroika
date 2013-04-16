@@ -43,36 +43,50 @@ namespace   Stroika {
              */
             template    <class Key, class T>
             class   Mapping : public Iterable<pair<Key, T>> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /**
+                 */
                 Mapping ();
-                Mapping (const Mapping<Key, T>& src);
+                Mapping (const Mapping<TKey, T>& s);
+                explicit Mapping (const pair<Key, T>* start, const pair<Key, T>* end);
 
             protected:
-                Mapping (MappingRep<Key, T>* src);
+                explicit Mapping (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src);
 
             public:
+                /**
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-            public:
-                // Note this method may not return a collection which is sorted. Note also, the
-                // returned value is a copy of the keys (by value) - at least logically (implementations
-                // maybe smart enough to use lazy copying)
+                /**
+                 * Note this method may not return a collection which is sorted. Note also, the
+                 *returned value is a copy of the keys (by value) - at least logically (implementations
+                 * maybe smart enough to use lazy copying)
+                 */
                 nonvirtual  Iterable<Key>   Keys () const;
 
             public:
+                /**
+                 */
                 nonvirtual  bool Lookup (Key key, T* item) const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    Enter (Key key, T newElt);
                 nonvirtual  void    Enter (const Mapping<Key, T>& items);
 
             public:
+                /**
+                 */
                 nonvirtual  void    Remove (T elt);
                 nonvirtual  void    Remove (const Mapping<Key, T>& items);
                 nonvirtual  void    RemoveAt (Key key);
@@ -81,15 +95,9 @@ namespace   Stroika {
                 nonvirtual  Mapping<Key, T>& operator+= (const Mapping<Key, T>& items);
                 nonvirtual  Mapping<Key, T>& operator-= (const Mapping<Key, T>& items);
 
-                nonvirtual  operator Iterator<Key> () const;
-                nonvirtual  operator Iterator<pair<Key, T> > () const;
-
             protected:
-                nonvirtual  const MappingRep<Key, T>*    GetRep () const;
-                nonvirtual  MappingRep<Key, T>*          GetRep ();
-
-            private:
-                Shared<MappingRep<Key, T> >  fRep;
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 

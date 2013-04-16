@@ -39,7 +39,8 @@ namespace   Stroika {
             const   Priority    kMinPriority    =   kMinUInt16;
             const   Priority    kMaxPriority    =   kMaxUInt16;
             // Someday this should be renamed ...
-            template    <class T>   class   PQEntry {
+            template    <typename T>
+            class   PQEntry {
             public:
                 PQEntry (T item, Priority p);
 
@@ -63,14 +64,20 @@ namespace   Stroika {
              *
              *  PriorityQueues always iterate from highest to lowest priority.
              */
-            template    <class T>
+            template    <typename T>
             class   PriorityQueue : public Iterable<pair<T, Priority>> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /*
+                 */
                 PriorityQueue ();
-                PriorityQueue (const PriorityQueue<T>& src);
+                PriorityQueue (const Queue<T>& s);
 
             protected:
-                PriorityQueue (PriorityQueueRep<T>* rep);
+                explicit PriorityQueue (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  PriorityQueue<T>& operator= (const PriorityQueue<T>& src);
@@ -79,19 +86,7 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-            public:
-#if 0
-                // See what I did for
-                //nonvirtual  Iterator<T> MakeBagIterator () const;
-                //nonvirtual  Iterator<T> bagbegin () const;
-                //nonvirtual  Iterator<T> bagend () const;
-                // so can iteratoe over T - nit just pair<t,priority>
-
-                nonvirtual  operator IteratorRep<PQEntry<T> >* () const;
-                nonvirtual  operator IteratorRep<T>* () const;
-#endif
+                Iterable<T> Elements () const;
 
             public:
                 nonvirtual  void        Enqueue (T item);
@@ -115,15 +110,8 @@ namespace   Stroika {
                 nonvirtual  PriorityQueue<T>&   operator-- ();
 
             protected:
-                nonvirtual  const PriorityQueueRep<T>*  GetRep () const;
-                nonvirtual  PriorityQueueRep<T>*        GetRep ();
-
-            private:
-                Shared<PriorityQueueRep<T> >    fRep;
-
-                static  PriorityQueueRep<T>*    Clone (const PriorityQueueRep<T>& rep);
-
-                friend  Boolean operator== (const PriorityQueue<T>& lhs, const PriorityQueue<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 

@@ -43,7 +43,6 @@ namespace   Stroika {
 
                     // Bag<T>::_IRep overrides
                 public:
-                    virtual void                        Compact () override;
                     virtual bool                        Contains (T item) const override;
                     virtual void                        Add (T item) override;
                     virtual void                        Update (const Iterator<T>& i, T newValue) override;
@@ -125,10 +124,6 @@ namespace   Stroika {
                 Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
-                }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Compact ()
-                {
                 }
                 template    <typename  T>
                 bool    Bag_LinkedList<T>::Rep_::Contains (T item) const

@@ -40,6 +40,16 @@ namespace   Stroika {
                     nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
                 public:
+                    /**
+                     *  \brief  Reduce the space used to store the Bag<T> contents.
+                     *
+                     *  This has no semantics, no observable behavior. But depending on the representation of
+                     *  the concrete bag, calling this may save memory.
+                     */
+                    nonvirtual  void    Compact ();
+
+
+                public:
                     /*
                      * This optional API allows pre-reserving space as an optimizaiton.
                      */

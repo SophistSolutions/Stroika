@@ -12,6 +12,8 @@
  *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
+ *      @todo   DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
+ *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
  *      @todo   Because of the definition of operator== (Bag,Bag), we have an expensive implemenation.
@@ -107,6 +109,9 @@ namespace   Stroika {
                 explicit Bag (const _SharedPtrIRep& rep);
 
             public:
+                nonvirtual  Bag<T>& operator= (const Bag<T>& src);
+
+            public:
                 /**
                  * \brief Compares items with operator==, and returns true if any match.
                  */
@@ -124,14 +129,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
-            public:
-                /**
-                 *  \brief  Reduce the space used to store the Bag<T> contents.
-                 *
-                 *  This has no semantics, no observable behavior. But depending on the representation of
-                 *  the concrete bag, calling this may save memory.
-                 */
-                nonvirtual  void    Compact ();
 
             public:
                 /**
@@ -166,6 +163,14 @@ namespace   Stroika {
                  * The value pointed to by 'i' is removed.
                  */
                 nonvirtual  void    Remove (const Iterator<T>& i);
+
+            public:
+                /**
+                 * NYI - but this can be remove duplicates. So you can say
+                 *      for (auto i : bag) {} OR
+                 *      for (auto i : bag.UniqueElements ()) {}
+                 */
+                nonvirtual  Iterable<T>   UniqueElements () const;
 
             public:
                 /**
@@ -214,7 +219,6 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void    Compact ()                                  =   0;
                 virtual bool    Contains (T item) const                     =   0;
                 virtual void    Add (T item)                                =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)   =   0;

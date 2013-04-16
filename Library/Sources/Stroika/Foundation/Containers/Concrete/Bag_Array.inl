@@ -42,7 +42,6 @@ namespace   Stroika {
 
                     // Bag<T>::_IRep overrides
                 public:
-                    virtual void                        Compact () override;
                     virtual bool                        Contains (T item) const override;
                     virtual void                        Add (T item) override;
                     virtual void                        Update (const Iterator<T>& i, T newValue) override;
@@ -155,11 +154,6 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
-                void    Bag_Array<T>::Rep_::Compact ()
-                {
-                    fData_.Compact ();
-                }
-                template    <typename T>
                 bool    Bag_Array<T>::Rep_::Contains (T item) const
                 {
                     return (fData_.Contains (item));
@@ -261,6 +255,11 @@ namespace   Stroika {
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
                     return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
+                }
+                template    <typename T>
+                inline  void    Bag_Array<T>::Compact ()
+                {
+                    _GetRep ().fData_.Compact ();
                 }
                 template    <typename T>
                 inline  size_t  Bag_Array<T>::GetCapacity () const

@@ -54,52 +54,67 @@ namespace   Stroika {
              *  slower, but has very predictable costs.
              *
             */
-            template    <tyoename T>
+            template    <typename T>
             class   Deque : public Iterable<T> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /**
+                 */
                 Deque ();
-                Deque (const Deque<T>& src);
+                Deque (const Deque<T>& s);
+                explicit Deque (const T* start, const T* end);
 
             protected:
-                Deque (DequeRep<T>* rep);
+                /**
+                 */
+                explicit Deque (const _SharedPtrIRep& rep);
 
             public:
+                /**
+                 */
                 nonvirtual  Deque<T>& operator= (const Deque<T>& src);
 
             public:
+                /**
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-            public:
+                /**
+                 */
                 nonvirtual  void    AddHead (T item);
 
             public:
+                /**
+                 */
                 nonvirtual  T       RemoveHead ();
 
             public:
+                /**
+                 */
                 nonvirtual  T       Head () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    AddTail (T item);
 
             public:
+                /**
+                 */
                 nonvirtual  T       RemoveTail ();
 
             public:
+                /**
+                 */
                 nonvirtual  T       Tail () const;
 
             protected:
-                nonvirtual  const DequeRep<T>*  GetRep () const;
-                nonvirtual  DequeRep<T>*        GetRep ();
-
-            private:
-                Shared<DequeRep<T> >    fRep;
-
-                static  DequeRep<T>*    Clone (const DequeRep<T>& rep);
-
-                friend  Boolean operator== (const Deque<T>& lhs, const Deque<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 

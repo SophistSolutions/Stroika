@@ -68,9 +68,6 @@ namespace   Stroika {
                 nonvirtual  void        RemoveAll ();
 
             public:
-                nonvirtual  void        Compact ();
-
-            public:
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (const Iterator<T>& itemsIterator);
 
@@ -83,20 +80,6 @@ namespace   Stroika {
                 nonvirtual  Sorting<T>& operator+= (const Iterator<T>& itemsIterator);
                 nonvirtual  Sorting<T>& operator-= (T item);
                 nonvirtual  Sorting<T>& operator-= (const Iterator<T>& itemsIterator);
-
-            public:
-                nonvirtual  size_t  OccurencesOf (T item) const;
-
-            protected:
-                nonvirtual  void    AddItems (const T* items, size_t size);
-                nonvirtual  const SortingRep<T>*    GetRep () const;
-                nonvirtual  SortingRep<T>*          GetRep ();
-
-                Shared<SortingRep<T> >  fRep;
-
-                static  SortingRep<T>*  Clone (const SortingRep<T>& src);
-
-                friend  Boolean operator== (const Sorting<T>& lhs, const Sorting<T>& rhs);
             };
 
 

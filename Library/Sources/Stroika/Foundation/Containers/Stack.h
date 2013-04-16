@@ -40,55 +40,52 @@ namespace   Stroika {
              *      Iteration proceeds from the top to the bottom of the stack. Top
              *      is the FIRST IN.
              *
-             *
+             *  @todo explain why Stack<T> inherits from Iterable<T> - basically cuz handy (for debugging etc) to be able to traverse and not unreasonable
+             *      or makes impl harder.
              *
              */
             template    <typename T>
             class   Stack : public Iterable<T> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /**
+                 */
                 Stack ();
-                Stack (const Stack<T>& src);
+                Stack (const Stack<T>& s);
+                explicit Stack (const T* start, const T* end);
 
             protected:
-                Stack (StackRep<T>* src);
+                explicit Stack (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Stack<T>& operator= (const Stack<T>& src);
 
             public:
-                nonvirtual  size_t  GetLength () const;
-
-            public:
-                nonvirtual  Boolean IsEmpty () const;
-
-            public:
+                /**
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-            public:
-                nonvirtual  operator Iterator<T> () const;
-
-            public:
+                /**
+                 */
                 nonvirtual  void    Push (T item);
 
             public:
+                /**
+                 */
                 nonvirtual  T       Pop ();
 
             public:
+                /**
+                 */
                 nonvirtual  T       Top () const;
 
             protected:
-                nonvirtual  const StackRep<T>*  GetRep () const;
-                nonvirtual  StackRep<T>*        GetRep ();
-
-            private:
-                Shared<StackRep<T> >    fRep;
-
-                static  StackRep<T>*    Clone (const StackRep<T>& src);
-
-                friend  Boolean operator== (const Stack<T>& lhs, const Stack<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 

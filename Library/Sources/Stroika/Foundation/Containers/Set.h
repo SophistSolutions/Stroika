@@ -14,10 +14,8 @@
  *
  *  TODO:
  *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Set.hh
- *
- *      (o)         Should inherit from Iterable<T>
+ *      @todo   Implement first draft of code based on
+ *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Set.hh
  *
  *
  */
@@ -45,32 +43,42 @@ namespace   Stroika {
              */
             template    <template   T>
             class Set : public Iterable<T> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /**
+                 */
                 Set ();
-                Set (const Set<T>& src);
-                // redo as iterator<T> like STL
-                Set (const T* start, const T* end);
+                Set (const Set<T>& s);
+                explicit Set (const T* start, const T* end);
 
             protected:
-                Set (SetRep<T>* rep);
+                explicit Set (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Set<T>& operator= (const Set<T>& src);
 
             public:
-                nonvirtual  Boolean Contains (T item) const;
+                /**
+                 */
+                nonvirtual  bool Contains (T item) const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  void    Compact ();
-
-            public:
+                /**
+                 */
                 nonvirtual  void    Add (T item);
-                nonvirtual  void    Add (Set<T> items); // note passed by value to avoid s.Add(s) problems
+                nonvirtual  void    Add (Set<T> items); // note passed by value to avoid s.Add(s) problems (makes little sense so see if we can undo this - but think through carefully)
 
             public:
+                /**
+                 */
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Set<T>& items);
                 nonvirtual  void    Remove (Iterator<T> item);
@@ -82,17 +90,8 @@ namespace   Stroika {
                 nonvirtual  Set<T>& operator-= (const Set<T>& items);
 
             protected:
-                nonvirtual  void    AddItems (const T* items, size_t size);
-
-                nonvirtual  const SetRep<T>*    GetRep () const;
-                nonvirtual  SetRep<T>*          GetRep ();
-
-            private:
-                Shared<SetRep<T> >  fRep;
-
-                static  SetRep<T>*  Clone (const SetRep<T>& rep);
-
-                friend  Boolean operator== (const Set<T>& lhs, const Set<T>& rhs);
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 
