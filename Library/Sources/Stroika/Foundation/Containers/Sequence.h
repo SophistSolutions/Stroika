@@ -22,7 +22,7 @@
  *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
- *                  random-access iterators.
+ *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
  *
  *      @todo       Maybe add (back) SequenceIterator - with support for operator- (difference), and UpdateCurrent, and GetIndex()
  *                  Maybe also AdvanceBy(), BackBy() methods. Though All these COULD be methods of the underlying Sequence object.
