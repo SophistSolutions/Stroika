@@ -17,7 +17,7 @@
  *      (o)         Implement first draft of code based on
  *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/PriorityQueue.hh
  *
- *      (o)         Should inherit from Iterable<T>
+ *      (o)         FIX so can remove top prioty itme to return btoih at a time.
  *
  *
  */
@@ -86,10 +86,9 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
-                Iterable<T> Elements () const;
+                nonvirtual  Iterable<T> Elements () const;
 
             public:
-                nonvirtual  void        Enqueue (T item);
                 nonvirtual  void        Enqueue (T item, Priority priority);
 
             public:
@@ -112,6 +111,29 @@ namespace   Stroika {
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+            };
+
+
+            /**
+             *  \brief  Implementation detail for PriorityQueue<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the PriorityQueue<T> container API.
+             */
+            template    <typename T>
+            class   PriorityQueue<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual void        Enqueue (T item, Priority priority)     =   0;
+                virtual T           Dequeue ()                              =   0;
+                virtual T           Head () const                           =   0;
+                virtual void        RemoveAll ()                            =   0;
+                virtual Iterable<T> Elements () const                       =   0;
             };
 
 

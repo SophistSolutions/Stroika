@@ -49,17 +49,23 @@ namespace   Stroika {
              *
              */
             template    <class T>
-            class   Sorting {
+            class   Sorting : public Iterable<T> {
+            protected:
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
             public:
+                /**
+                 */
                 Sorting ();
-                Sorting (const Sorting<T>& src);
-                Sorting (const T* items, size_t size);
+                Sorting (const Set<T>& s);
+                explicit Sorting (const T* start, const T* end);
 
             protected:
-                Sorting (SortingRep<T>* src);
+                explicit Sorting (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Sorting<T>& operator= (const Sorting<T>& src);
+                nonvirtual  Set<T>& operator= (const Set<T>& src);
 
             public:
                 nonvirtual  Boolean     Contains (T item) const;

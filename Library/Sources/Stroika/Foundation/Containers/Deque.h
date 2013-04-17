@@ -118,6 +118,31 @@ namespace   Stroika {
             };
 
 
+            /**
+             *  \brief  Implementation detail for Deque<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Deque<T> container API.
+             */
+            template    <typename T>
+            class   Deque<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual void        AddHead (T item) const                  =   0;
+                virtual T           RemoveHead ()                           =   0;
+                virtual T           Head () const                           =   0;
+                virtual void        AddTail(T item) const                   =   0;
+                virtual T           RemoveTail ()                           =   0;
+                virtual T           Tail () const                           =   0;
+                virtual void        RemoveAll ()                            =   0;
+            };
+
+
         }
     }
 }

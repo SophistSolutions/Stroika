@@ -45,7 +45,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Stack : public Iterable<T> {
+            class   Stack {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -83,9 +83,37 @@ namespace   Stroika {
                  */
                 nonvirtual  T       Top () const;
 
+            public:
+                /**
+                 */
+                nonvirtual  Iterable<T>   Elements () const;
+
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+            };
+
+
+            /**
+             *  \brief  Implementation detail for Stack<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Stack<T> container API.
+             */
+            template    <typename T>
+            class   Stack<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual void        Push (T item) const                     =   0;
+                virtual T           Pop ()                                  =   0;
+                virtual T           Top () const                            =   0;
+                virtual void        RemoveAll ()                            =   0;
+                virtual Iterable<T> Elements () const                       =   0;
             };
 
 

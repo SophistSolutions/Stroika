@@ -95,6 +95,29 @@ namespace   Stroika {
             };
 
 
+            /**
+             *  \brief  Implementation detail for Set<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Set<T> container API.
+             */
+            template    <typename T>
+            class   Set<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual bool    Contains (T item) const                     =   0;
+                virtual void    RemoveAll ()                                =   0;
+                virtual void    Add (T item)                                =   0;
+                virtual void    Remove (T item)                             =   0;
+                virtual void    Remove (const Iterator<T>& i)               =   0;
+            };
+
+
         }
     }
 }

@@ -123,6 +123,28 @@ namespace   Stroika {
             };
 
 
+            /**
+             *  \brief  Implementation detail for Queue<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Queue<T> container API.
+             */
+            template    <typename T>
+            class   Queue<T>::_IRep : public Iterable<T>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual void        Enqueue (T item)                        =   0;
+                virtual T           Dequeue ()                              =   0;
+                virtual T           Head () const                           =   0;
+                virtual void        RemoveAll ()                            =   0;
+            };
+
+
         }
     }
 }

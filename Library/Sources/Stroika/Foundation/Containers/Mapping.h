@@ -87,9 +87,9 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Remove (T elt);
                 nonvirtual  void    Remove (const Mapping<Key, T>& items);
-                nonvirtual  void    RemoveAt (Key key);
+                nonvirtual  void    Remove (Key key);
+                nonvirtual  void    Remove (Iterator<T> i);
 
             public:
                 nonvirtual  Mapping<Key, T>& operator+= (const Mapping<Key, T>& items);
@@ -98,6 +98,30 @@ namespace   Stroika {
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+            };
+
+
+            /**
+             *  \brief  Implementation detail for Mapping<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the Mapping<T> container API.
+             */
+            template    <typename T>
+            class   Mapping<T>::_IRep : public Iterable<pair<Key, T>>::_IRep {
+            protected:
+                _IRep ();
+
+            public:
+                virtual ~_IRep ();
+
+            public:
+                virtual void            RemoveAll ()                        =   0;
+                virtual  Iterable<Key>  Keys () const                       =   0;
+                virtual  bool           Lookup (Key key, T* item) const     =   0;
+                virtual  void           Enter (Key key, T newElt)           =   0;
+                virtual  void           Remove (Key key)                    =   0;
+                virtual  void           Remove (Iterator<T> i)              =   0;
             };
 
 
