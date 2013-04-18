@@ -153,13 +153,13 @@ namespace   Stroika {
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
                  */
-                nonvirtual  int		Compare (T item) const;
+                nonvirtual  int     Compare (const Sequence<T>& rhs) const;
 
             public:
                 /**
                  * Only supported if T::operator==() defined.
                  */
-                nonvirtual  bool	Equal (T item) const;
+                nonvirtual  bool    Equal (const Sequence<T>& rhs) const;
 
             public:
                 /**

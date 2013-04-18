@@ -47,15 +47,29 @@ namespace   Stroika {
             template    <typename T>
             bool    Sequence<T>::Contains (T item) const
             {
-				for (T i : *this) {
-					if (i == item) {
-						return true;
-					}
-				}
+                for (T i : *this) {
+                    if (i == item) {
+                        return true;
+                    }
+                }
+            }
+            template    <typename T>
+            int    Sequence<T>::Compare (const Sequence<T>& rhs) const
+            {
+#if 0
+                auto i =
+                for (T i : *this) {
+                    int cmp = i.Compare (
+                    if (i.Compare () {
+                    return true;
+                }
             }
 #endif
-            template    <typename T>
-            inline  void    Sequence<T>::RemoveAll ()
+            return 0;
+        }
+#endif
+                  template    <typename T>
+        inline  void    Sequence<T>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
