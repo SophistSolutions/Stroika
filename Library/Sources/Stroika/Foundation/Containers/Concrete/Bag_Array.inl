@@ -259,7 +259,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Bag_Array<T>::Compact ()
                 {
-                    _GetRep ().fData_.Compact ();
+                    GetRep_ ().fData_.Compact ();
                 }
                 template    <typename T>
                 inline  size_t  Bag_Array<T>::GetCapacity () const
