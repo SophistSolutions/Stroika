@@ -42,6 +42,8 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
+#include    "Iterable.h"
+#include    "Iterator.h"
 
 
 namespace   Stroika {
@@ -151,13 +153,13 @@ namespace   Stroika {
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
                  */
-                nonvirtual  int Compare (T item) const;
+                nonvirtual  int		Compare (T item) const;
 
             public:
                 /**
                  * Only supported if T::operator==() defined.
                  */
-                nonvirtual  bool Equal (T item) const;
+                nonvirtual  bool	Equal (T item) const;
 
             public:
                 /**

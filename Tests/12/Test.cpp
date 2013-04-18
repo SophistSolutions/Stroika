@@ -8,9 +8,9 @@
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
+//#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
+//#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -25,6 +25,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
+#if 0
 using   Concrete::Tally_Array;
 using   Concrete::Tally_LinkedList;
 
@@ -244,12 +245,13 @@ namespace   {
     }
 
 }
-
+#endif
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
+#if 0
 
         {
             Tally_LinkedList<size_t>    s;
@@ -276,6 +278,7 @@ namespace   {
             Tally<size_t> t;
             Tally<SimpleClass>  s1;
         }
+#endif
     }
 }
 
