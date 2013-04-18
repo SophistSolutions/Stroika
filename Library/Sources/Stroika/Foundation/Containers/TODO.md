@@ -15,6 +15,12 @@ TODO (Foundation::Containers)
 
 	(o)		Probably ready todo Sequence<> next.
 
+	(o)		Seriously consider implementing all of Container code using
+			http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
+			STM
+			Do macros which map to regular locks when stm not available, but using GCC experimental STM 
+			when available
+
 	(o)		CONCEPTS: - consider using bits/boost_concepts - or at least assume they have the right names
 			to use?
 		(o)		See comment "Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions -
