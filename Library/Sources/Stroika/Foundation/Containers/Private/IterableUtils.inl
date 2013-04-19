@@ -91,7 +91,7 @@ namespace   Stroika {
                 {
                     size_t  n = 0;
                     ///tmphack - more complicated - must do like equals above - iterating over both at same time...
-                    AssertNotYetImplemented ();
+                    AssertNotImplemented ();
                     return kBadIndex;
                 }
 
