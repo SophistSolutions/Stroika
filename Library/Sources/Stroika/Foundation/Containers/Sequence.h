@@ -153,13 +153,13 @@ namespace   Stroika {
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
                  */
-                nonvirtual  int     Compare (const Sequence<T>& rhs) const;
+                nonvirtual  int     Compare (const Iterable<T>& rhs) const;
 
             public:
                 /**
                  * Only supported if T::operator==() defined.
                  */
-                nonvirtual  bool    Equal (const Sequence<T>& rhs) const;
+                nonvirtual  bool    Equals (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -185,11 +185,12 @@ namespace   Stroika {
                 /**
                  *      Search the sequence and see if the given item is contained in
                  *  it, and return the index of that item. Comparison is done with
-                 *  operator==.
+                 *  operator== (if its defined). - require concept T::operator==)
+                 *  for first two overloads - third taking iterator always works)
                  */
                 nonvirtual  size_t  IndexOf (T item) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
-                nonvirtual  void    IndexOf (const Iterator<T>& i);
+                nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
 
             public:
                 /**
@@ -204,20 +205,21 @@ namespace   Stroika {
                  *      NB: Adding an item at the CURRENT index has no effect on
                  *  what the iterator says is the current item.
                  */
-                nonvirtual  void    InsertAt (size_t index, T item);
-                nonvirtual  void    InsertAt (size_t index, const Sequence<T>& items);
+                nonvirtual  void    Insert (size_t i, T item);
+                nonvirtual  void    Insert (size_t i, const Iterable<T>& items);
 
             public:
                 /**
                  */
                 nonvirtual  void    Prepend (T item);
-                nonvirtual  void    Prepend (const Sequence<T>& items);
+                nonvirtual  void    Prepend (const Iterable<T>& items);
 
             public:
                 /**
                  */
                 nonvirtual  void    Append (T item);
-                nonvirtual  void    Append (const Sequence<T>& items);
+                nonvirtual  void    Append (const Iterable<T>& items);
+
 
             public:
                 /**
@@ -230,25 +232,21 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      Remove the item at the given position of the sequence. Make sure
-                 *  that iteration is not disturbed by this removal. In particular, any
-                 *  items (other than the one at index) that would have been seen, will
-                 *  still be, and no new items will be seen that wouldn't have been.
-                 */
-                nonvirtual  void    RemoveAt (size_t index);
-                nonvirtual  void    RemoveAt (size_t start, size_t end);
-
-            public:
-                /**
                  * This function requires that the iterator 'i' came from this container.
                  *
                  * The value pointed to by 'i' is removed.
                  *
                  * Not an error to remove an item that is not an element of the list, instead has no effect.
                  */
+                /**
+                 *      Remove the item at the given position of the sequence. Make sure
+                 *  that iteration is not disturbed by this removal. In particular, any
+                 *  items (other than the one at index) that would have been seen, will
+                 *  still be, and no new items will be seen that wouldn't have been.
+                 */
+                nonvirtual  void    Remove (size_t i);
+                nonvirtual  void    Remove (size_t start, size_t end);
                 nonvirtual  void    Remove (const Iterator<T>& i);
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (const Sequence<T>& items);
 
             public:
                 /**
@@ -300,12 +298,11 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool    Contains (T item) const                     =   0;
-                virtual void    Add (T item)                                =   0;
-                virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
-                virtual void    Remove (T item)                             =   0;
-                virtual void    Remove (const Iterator<T>& i)               =   0;
-                virtual void    RemoveAll ()                                =   0;
+                virtual size_t  IndexOf (const Iterator<T>& i) const                =   0;
+                virtual void    Remove (const Iterator<T>& i)                       =   0;
+                virtual void    Update (const Iterator<T>& i, T newValue)           =   0;
+                virtual void    Insert (size_t at, const T* from, const T* to)      =   0;
+                virtual void    Remove (size_t from, size_t to)                     =   0;
             };
 
 

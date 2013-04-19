@@ -13,9 +13,95 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            ///MOVE TO CONTAINERS::PRIVATE::UTILITIES.h/.in
+            // Private::IterableUtils_
+
+            // mostly stuff that checks assumes existence of certian methods, hopefully with concepts to amke clear
+            // and hten uses them. Its just to share code in implemtnating containters.
+
+            namespace Private {
+                constexpr   size_t  kBadIndex   =   numeric_limits<size_t>::max ();
+                template    <typename T>
+                bool    Contains_ (const Iterable<T>& c, T item)
+                {
+                    for (T i : c) {
+                        if (i == item) {
+                            return true;
+                        }
+                    }
+                }
+                template    <typename T>
+                int    Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
+                {
+                    auto li = lhs.begin ();
+                    auto le = lhs.end ();
+                    auto ri = rhs.begin ();
+                    auto re = rhs.end ();
+                    int c;
+                    while (li != le and ri != re and ((c = (*li).Compare (*ri) ) == 0)) {
+                        ++li;
+                        ++ri;
+                    }
+                    if (li == le) {
+                        if (ri == re) {
+                            return 0;   // all items same and loop ended with both things at end
+                        }
+                        else {
+                            return -1;  // lhs shorter but an initial sequence of rhs
+                        }
+                    }
+                    else {
+                        if (ri == re) {
+                            return 1;   // rhs shorter but an initial sequence of lhs
+                        }
+                        else {
+                            Assert (li != le and ri != re);
+                            Assert (c ==  (*li).Compare (*ri));
+                            return c;
+                        }
+                    }
+                }
+                template    <typename T>
+                int   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
+                {
+                    auto li = lhs.begin ();
+                    auto le = lhs.end ();
+                    auto ri = rhs.begin ();
+                    auto re = rhs.end ();
+                    while (li != le and ri != re and * li == *ri) {
+                        ++li;
+                        ++ri;
+                    }
+                    return (li == le) and (ri == re);
+                }
+                template    <typename T>
+                size_t    IndexOf_ (const Iterable<T>& c, T item)
+                {
+                    size_t  n = 0;
+                    for (T i : c) {
+
+                        if (i == item) {
+                            return n;
+                        }
+                        n++;
+                    }
+                    return kBadIndex;
+                }
+                template    <typename T>
+                size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
+                {
+                    size_t  n = 0;
+                    ///tmphack - more complicated - must do like equals above - iterating over both at same time...
+                    AssertNotYetImplemented ();
+                    return kBadIndex;
+                }
+            }
+
+
+
             /*
              ********************************************************************************
-             ****************************** Sequence<T> *************************************
+             ********************************* Sequence<T> **********************************
              ********************************************************************************
              */
 #if 0
@@ -43,35 +129,132 @@ namespace   Stroika {
             {
             }
 #endif
-#if 1
             template    <typename T>
-            bool    Sequence<T>::Contains (T item) const
+            inline  bool    Sequence<T>::Contains (T item) const
             {
-                for (T i : *this) {
-                    if (i == item) {
-                        return true;
-                    }
+                return Private::Contains_ (*this, item);
+            }
+            template    <typename T>
+            inline  int    Sequence<T>::Compare (const Iterable<T>& rhs) const
+            {
+                return Private::Compare_ (*this, rhs);
+            }
+            template    <typename T>
+            inline  bool    Sequence<T>::Equals (const Iterable<T>& rhs) const
+            {
+                return Private::Equals_ (*this, rhs);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::RemoveAll ()
+            {
+                _GetRep ().RemoveAt (0, GetLength ());
+            }
+            template    <typename T>
+            inline  T    Sequence<T>::GetAt (size_t index) const
+            {
+                return _GetRep ().GetAt (index);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::SetAt (size_t index, T item)
+            {
+                _GetRep ().SetAt (index, item);
+            }
+            template    <typename T>
+            inline  T    Sequence<T>::operator[] (size_t index) const
+            {
+                return _GetRep ().GetAt (index);
+            }
+            template    <typename T>
+            inline  size_t    Sequence<T>::IndexOf (T item) const
+            {
+                static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
+                return Private::IndexOf_ (*this, item);
+            }
+            template    <typename T>
+            inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
+            {
+                static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
+                return Private::IndexOf_ (*this, s);
+            }
+            template    <typename T>
+            inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
+            {
+                return _GetRep ().IndexOf (i);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Insert (size_t index, T item)
+            {
+                return _GetRep ().Insert (index, &item, &item + 1);
+            }
+            template    <typename T>
+            void    Sequence<T>::Insert (size_t index, const Iterable<T>& items)
+            {
+                /*
+                 *  Inefficient implementation, but cannot use array insert because sequnece<T> might not be Sequence_Array<T>.
+                 *  @todo IMPROVE
+                 */
+                for (T i : items) {
+                    Insert (index++, i);
                 }
             }
             template    <typename T>
-            int    Sequence<T>::Compare (const Sequence<T>& rhs) const
+            inline  void    Sequence<T>::Prepend (T item)
             {
-#if 0
-                auto i =
-                for (T i : *this) {
-                    int cmp = i.Compare (
-                    if (i.Compare () {
-                    return true;
-                }
+                Insert (0, item);
             }
-#endif
-            return 0;
-        }
-#endif
-                  template    <typename T>
-        inline  void    Sequence<T>::RemoveAll ()
+            template    <typename T>
+            inline  void    Sequence<T>::Prepend (const Iterable<T>& items)
             {
-                _GetRep ().RemoveAll ();
+                Insert (0, items);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Append (T item)
+            {
+                Insert (GetLength (), item);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Append (const Iterable<T>& items)
+            {
+                Insert (GetLength (), items);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
+            {
+                _GetRep ().Update (i, newValue);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (size_t i)
+            {
+                Require (i < GetLength ());
+                _GetRep ().Remove (i, i + 1);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (size_t start, size_t end)
+            {
+                Require (start <= end and end <= GetLength ());
+                _GetRep ().Remove (start, end);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::Remove (const Iterator<T>& i)
+            {
+                _GetRep ().Remove (i);
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::push_back (T item)
+            {
+                Append (item);
+            }
+            template    <typename T>
+            inline  T    Sequence<T>::back () const
+            {
+                Require (not this->GetEmpty ());
+                return GetAt (GetLength () - 1);
+            }
+            template    <typename T>
+            inline  T    Sequence<T>::front () const
+            {
+                Require (not this->GetEmpty ());
+                return GetAt (0);
             }
             template    <typename T>
             inline  void    Sequence<T>::clear ()
@@ -129,51 +312,6 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            void  Bag<T>::Add (const T* begin, const T* end)
-            {
-                for (const T* i = begin; i != end; i++) {
-                    Add (*i);
-                }
-            }
-            template    <typename T>
-            inline  void    Bag<T>::Update (const Iterator<T>& i, T newValue)
-            {
-                _GetRep ().Update (i, newValue);
-            }
-            template    <typename T>
-            inline  void  Bag<T>::Remove (T item)
-            {
-                _GetRep ().Remove (item);
-            }
-            template    <typename T>
-            void  Bag<T>::Remove (const Bag<T>& items)
-            {
-                if (&_GetRep () == &items._GetRep ()) {
-                    RemoveAll ();
-                }
-                else {
-                    for (T i : items) {
-                        _GetRep ().Remove (i);
-                    }
-                }
-            }
-            template    <typename T>
-            inline  void    Bag<T>::Remove (const Iterator<T>& i)
-            {
-                _GetRep ().Remove (i);
-            }
-            template    <typename T>
-            size_t    Bag<T>::TallyOf (T item) const
-            {
-                size_t  count = 0;
-                for (T i : *this) {
-                    if (i == item) {
-                        count++;
-                    }
-                }
-                return (count);
-            }
-            template    <typename T>
             bool  Bag<T>::operator== (const Bag<T>& rhs) const
             {
                 if (&this->_GetRep () == &rhs._GetRep ()) {
@@ -222,35 +360,35 @@ namespace   Stroika {
 #endif
 
 
-#if 0
+
             /*
              ********************************************************************************
-             ******************************** Bag<T>::_IRep *********************************
+             *************************** Sequence<T>::_IRep *********************************
              ********************************************************************************
              */
             template    <typename T>
-            inline  Bag<T>::_IRep::_IRep ()
+            inline  Sequence<T>::_IRep::_IRep ()
             {
             }
             template    <typename T>
-            inline  Bag<T>::_IRep::~_IRep ()
+            inline  Sequence<T>::_IRep::~_IRep ()
             {
             }
             template    <typename T>
-            inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
+            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
-                return *static_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<const Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
             template    <typename T>
-            inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
+            inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
-                return *static_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
-#endif
+
 
 
         }
