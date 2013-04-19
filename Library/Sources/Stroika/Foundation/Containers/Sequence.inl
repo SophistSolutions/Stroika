@@ -59,7 +59,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()
             {
-                _GetRep ().RemoveAt (0, GetLength ());
+                _GetRep ().RemoveAt (0, this->GetLength ());
             }
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t index) const
@@ -122,12 +122,12 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::Append (T item)
             {
-                Insert (GetLength (), item);
+                Insert (this->GetLength (), item);
             }
             template    <typename T>
             inline  void    Sequence<T>::Append (const Iterable<T>& items)
             {
-                Insert (GetLength (), items);
+                Insert (this->GetLength (), items);
             }
             template    <typename T>
             inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
@@ -137,13 +137,13 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::Remove (size_t i)
             {
-                Require (i < GetLength ());
+                Require (i < this->GetLength ());
                 _GetRep ().Remove (i, i + 1);
             }
             template    <typename T>
             inline  void    Sequence<T>::Remove (size_t start, size_t end)
             {
-                Require (start <= end and end <= GetLength ());
+                Require (start <= end and end <= this->GetLength ());
                 _GetRep ().Remove (start, end);
             }
             template    <typename T>
@@ -159,13 +159,13 @@ namespace   Stroika {
             template    <typename T>
             inline  T    Sequence<T>::back () const
             {
-                Require (not this->GetEmpty ());
-                return GetAt (GetLength () - 1);
+                Require (not this->IsEmpty ());
+                return GetAt (this->GetLength () - 1);
             }
             template    <typename T>
             inline  T    Sequence<T>::front () const
             {
-                Require (not this->GetEmpty ());
+                Require (not this->IsEmpty ());
                 return GetAt (0);
             }
             template    <typename T>
