@@ -469,6 +469,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
@@ -667,6 +668,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md" />

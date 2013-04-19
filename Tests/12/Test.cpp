@@ -9,7 +9,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Sequence.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 //#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -25,14 +25,15 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
+using   Concrete::Sequence_Array;
 #if 0
-using   Concrete::Tally_Array;
 using   Concrete::Tally_LinkedList;
-
+#endif
 
 
 namespace   {
 
+#if 0
     void    TallyIteratorTests_ (Tally<size_t>& s)
     {
         const   size_t  kTestSize   =   6;
@@ -243,16 +244,26 @@ namespace   {
         s.RemoveAll ();
         VerifyTestResult (s.IsEmpty ());
     }
+#endif
+
+
+    template <typename T>
+    void    SimpleSequenceTest_1_ (Sequence<T>& s)
+    {
+        VerifyTestResult (s.size () == 0);
+        s.Append (1);
+        VerifyTestResult (s.size () == 1);
+        VerifyTestResult (s.GetAt (0) == 1);
+    }
+
 
 }
-#endif
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
 #if 0
-
         {
             Tally_LinkedList<size_t>    s;
             SimpleTallyTests (s);
@@ -262,23 +273,25 @@ namespace   {
             Tally_LinkedList<SimpleClass>   s;
             SimpleTallyTests (s);
         }
-
-        {
-            Tally_Array<size_t> s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_Array<SimpleClass>    s;
-            SimpleTallyTests (s);
-        }
+#endif
 
         {
             // just proof that they can be constructed
-            Tally<size_t> t;
-            Tally<SimpleClass>  s1;
+            Sequence<size_t> t;
+            SimpleSequenceTest_1_ (t);
+            Sequence<SimpleClass>  s1;
+            SimpleSequenceTest_1_ (s1);
         }
-#endif
+
+        {
+            Sequence_Array<size_t> s;
+            SimpleSequenceTest_1_ (s);
+        }
+
+        {
+            Sequence_Array<SimpleClass>    s;
+            SimpleSequenceTest_1_ (s);
+        }
     }
 }
 

@@ -6,7 +6,8 @@
 
 #include    "../Debug/Assertions.h"
 
-#include	"Private/IterableUtils.h"
+#include    "Concrete/Sequence_Array.h"  // needed for default constructor
+#include    "Private/IterableUtils.h"
 
 
 namespace   Stroika {
@@ -19,13 +20,11 @@ namespace   Stroika {
              ********************************* Sequence<T> **********************************
              ********************************************************************************
              */
-#if 0
             template    <typename T>
             Sequence<T>::Sequence ()
                 : Iterable<T> (Concrete::Sequence_Array<T> ())
             {
             }
-#endif
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& s)
                 : Iterable<T> (s)
@@ -37,13 +36,11 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
-#if 0
             template    <typename T>
             Sequence<T>::Sequence (const T* start, const T* end)
                 : Iterable<T> (Concrete::Sequence_Array<T> (start, end))
             {
             }
-#endif
             template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
             {

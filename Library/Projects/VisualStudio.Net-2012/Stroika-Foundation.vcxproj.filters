@@ -1059,6 +1059,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
       <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1520,6 +1523,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -6,7 +6,7 @@
 #define _Stroika_Foundation_Containers_Private_IterableUtils_h_
 
 /**
- *	Private utilities to support building subtypes of Containers::Iterable<T>
+ *  Private utilities to support building subtypes of Containers::Iterable<T>
  *
  * TODO:
  *
@@ -32,7 +32,7 @@ namespace   Stroika {
                 constexpr   size_t  kBadIndex   =   numeric_limits<size_t>::max ();
 
 
-				template    <typename T>
+                template    <typename T>
                 bool    Contains_ (const Iterable<T>& c, T item);
 
 
@@ -42,17 +42,17 @@ namespace   Stroika {
 
                 template    <typename T>
                 int   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
-				
 
-				template    <typename T>
+
+                template    <typename T>
                 size_t    IndexOf_ (const Iterable<T>& c, T item);
 
-				
-				template    <typename T>
+
+                template    <typename T>
                 size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs);
 
-			
-			}
+
+            }
         }
     }
 }

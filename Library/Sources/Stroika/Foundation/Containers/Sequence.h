@@ -298,6 +298,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
+                virtual T       GetAt (size_t i) const                              =   0;
                 virtual size_t  IndexOf (const Iterator<T>& i) const                =   0;
                 virtual void    Remove (const Iterator<T>& i)                       =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)           =   0;

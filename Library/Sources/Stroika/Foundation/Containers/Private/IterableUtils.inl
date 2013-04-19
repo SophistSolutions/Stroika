@@ -9,8 +9,8 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Private {
 
-			
-				template    <typename T>
+
+                template    <typename T>
                 bool    Contains_ (const Iterable<T>& c, T item)
                 {
                     for (T i : c) {
@@ -52,7 +52,7 @@ namespace   Stroika {
                         }
                     }
                 }
-			
+
 
                 template    <typename T>
                 int   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
@@ -93,8 +93,8 @@ namespace   Stroika {
                     return kBadIndex;
                 }
 
-			
-			}
+
+            }
         }
     }
 }
