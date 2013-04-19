@@ -59,7 +59,7 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()
             {
-                _GetRep ().RemoveAt (0, this->GetLength ());
+                _GetRep ().Remove (0, this->GetLength ());
             }
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t index) const

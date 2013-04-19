@@ -250,14 +250,32 @@ namespace   {
     template <typename T>
     void    SimpleSequenceTest_1_ (Sequence<T>& s)
     {
-        VerifyTestResult (s.size () == 0);
-        s.Append (1);
-        VerifyTestResult (s.size () == 1);
-        VerifyTestResult (s.GetAt (0) == 1);
+        {
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            VerifyTestResult (s.size () == 1);
+            VerifyTestResult (s.GetAt (0) == 1);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s[100] == 100);
+            s.Remove (0);
+            VerifyTestResult (s.size () == 999);
+            for (size_t i = 0; i < 999; ++i) {
+                VerifyTestResult (s[i] == i + 1);
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
     }
-
-
 }
+
+
 
 namespace   {
 
