@@ -115,6 +115,9 @@
     <Filter Include="Sources\Execution\Resources\Concrete">
       <UniqueIdentifier>{2610118a-f979-4563-b819-6f2f8c9293cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Containers\Private">
+      <UniqueIdentifier>{8cade5f7-1717-47f7-8d77-7c3cde56a2ba}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -1053,6 +1056,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
+      <Filter>Sources\Containers\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1511,6 +1517,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
+      <Filter>Sources\Containers\Private</Filter>
     </None>
   </ItemGroup>
 </Project>
