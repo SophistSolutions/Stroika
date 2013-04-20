@@ -1078,7 +1078,7 @@ namespace   {
 
 
     template <typename T>
-    void    SimpleSequenceTest_6_InsertAppendPrepend_ (Sequence<T>& s)
+    void    SimpleSequenceTest_7_InsertAppendPrepend_ (Sequence<T>& s)
     {
         {
             for (size_t i = 0; i < 1000; ++i) {
@@ -1122,6 +1122,31 @@ namespace   {
     }
 
 
+
+
+    template <typename T>
+    void    SimpleSequenceTest_8_Update_ (Sequence<T>& s)
+    {
+        // NYI
+    }
+
+
+
+    template <typename T>
+    void    SimpleSequenceTest_9_Remove_ (Sequence<T>& s)
+    {
+        // NYI
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_10_STLCompatWrappers_ (Sequence<T>& s)
+    {
+        // NYI
+    }
+
+
+
 }
 
 
@@ -1139,7 +1164,10 @@ namespace   {
         SimpleSequenceTest_4_RemoveAll_ (s);
         SimpleSequenceTest_5_GetSetAt_ (s);
         SimpleSequenceTest_6_IndexOf_ (s);
-        SimpleSequenceTest_6_InsertAppendPrepend_ (s);
+        SimpleSequenceTest_7_InsertAppendPrepend_ (s);
+        SimpleSequenceTest_8_Update_ (s);
+        SimpleSequenceTest_9_Remove_ (s);
+        SimpleSequenceTest_10_STLCompatWrappers_ (s);
     }
 
     void    DoRegressionTests_ ()
