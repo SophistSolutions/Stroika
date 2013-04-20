@@ -62,30 +62,38 @@ namespace   Stroika {
                 _GetRep ().Remove (0, this->GetLength ());
             }
             template    <typename T>
-            inline  T    Sequence<T>::GetAt (size_t index) const
+            inline  T    Sequence<T>::GetAt (size_t i) const
             {
-                return _GetRep ().GetAt (index);
+                return _GetRep ().GetAt (i);
             }
             template    <typename T>
-            inline  void    Sequence<T>::SetAt (size_t index, T item)
+            inline  void    Sequence<T>::SetAt (size_t i, T item)
             {
-                _GetRep ().SetAt (index, item);
+                _GetRep ().SetAt (i, item);
             }
             template    <typename T>
-            inline  T    Sequence<T>::operator[] (size_t index) const
+            inline  T    Sequence<T>::operator[] (size_t i) const
             {
-                return _GetRep ().GetAt (index);
+                return _GetRep ().GetAt (i);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (T item) const
             {
+#if     qCompilerAndStdLib_Supports_constexpr
                 static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
+#else
+                Assert (Private::kBadIndex == kBadSequenceIndex);
+#endif
                 return Private::IndexOf_ (*this, item);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
+#if     qCompilerAndStdLib_Supports_constexpr
                 static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
+#else
+                Assert (Private::kBadIndex == kBadSequenceIndex);
+#endif
                 return Private::IndexOf_ (*this, s);
             }
             template    <typename T>

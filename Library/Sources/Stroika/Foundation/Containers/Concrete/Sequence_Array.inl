@@ -43,6 +43,7 @@ namespace   Stroika {
                     // Sequence<T>::_IRep overrides
                 public:
                     virtual T       GetAt (size_t i) const override;
+                    virtual void    SetAt (size_t i, const T& item) override;
                     virtual size_t  IndexOf (const Iterator<T>& i) const override;
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
@@ -156,7 +157,14 @@ namespace   Stroika {
                 template    <typename T>
                 T    Sequence_Array<T>::Rep_::GetAt (size_t i) const
                 {
+                    Require (i < GetLength ());
                     return fData_.GetAt (i);
+                }
+                template    <typename T>
+                void    Sequence_Array<T>::Rep_::SetAt (size_t i, const T& item)
+                {
+                    Require (i < GetLength ());
+                    fData_.SetAt (item, i);
                 }
                 template    <typename T>
                 size_t    Sequence_Array<T>::Rep_::IndexOf (const Iterator<T>& i) const

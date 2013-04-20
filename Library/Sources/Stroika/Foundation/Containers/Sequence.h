@@ -169,17 +169,17 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  T       GetAt (size_t index) const;
+                nonvirtual  T       GetAt (size_t i) const;
 
             public:
                 /**
                  */
-                nonvirtual  void    SetAt (size_t index, T item);
+                nonvirtual  void    SetAt (size_t i, T item);
 
             public:
                 /**
                  */
-                nonvirtual  T       operator[] (size_t index) const;
+                nonvirtual  T       operator[] (size_t i) const;
 
             public:
                 /**
@@ -299,6 +299,7 @@ namespace   Stroika {
 
             public:
                 virtual T       GetAt (size_t i) const                              =   0;
+                virtual void    SetAt (size_t i, const T& item)                     =   0;
                 virtual size_t  IndexOf (const Iterator<T>& i) const                =   0;
                 virtual void    Remove (const Iterator<T>& i)                       =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)           =   0;

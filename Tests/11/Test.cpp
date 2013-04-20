@@ -1007,6 +1007,68 @@ namespace   {
     }
 
 
+    template <typename T>
+    void    SimpleSequenceTest_5_GetSetAt_ (Sequence<T>& s)
+    {
+        VerifyTestResult (s.empty ());
+        for (size_t i = 0; i < 1000; ++i) {
+            s.Append (1);
+            VerifyTestResult (s.GetAt (i) == 1);
+            VerifyTestResult (s[i] == 1);
+        }
+        for (size_t i = 0; i < 1000; ++i) {
+            s.SetAt (i, 5000 + i);
+            VerifyTestResult (s[i] == 5000 + i);
+        }
+        for (size_t i = 0; i < 1000; ++i) {
+            VerifyTestResult (s.GetAt (i) == 5000 + i);
+        }
+        VerifyTestResult (not s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+    }
+
+
+#if 0
+    nonvirtual  size_t  IndexOf (T item) const;
+    nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
+    nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
+#endif
+    template <typename T>
+    void    SimpleSequenceTest_6_IndexOf_ (Sequence<T>& s)
+    {
+        {
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (21 + i);
+            }
+            VerifyTestResult (s.IndexOf (5) == kBadSequenceIndex);
+            VerifyTestResult (not s.empty ());
+
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            VerifyTestResult (not s.empty ());
+            VerifyTestResult (s.size () == 1000);
+
+            Sequence<T> s2 = s;
+            VerifyTestResult (s.IndexOf (s2) == 0);
+            VerifyTestResult (s2.IndexOf (s) == 0);
+
+            Sequence<T> s3;
+            s3.Append (3);
+            s3.Append (4);
+            VerifyTestResult (s3.IndexOf (s) == kBadSequenceIndex);
+            VerifyTestResult (s.IndexOf (s3) == 3);
+
+        }
+    }
+
+
 }
 
 
@@ -1022,6 +1084,8 @@ namespace   {
         SimpleSequenceTest_3_Compare_ (s);
         SimpleSequenceTest_4_Equals_ (s);
         SimpleSequenceTest_4_RemoveAll_ (s);
+        SimpleSequenceTest_5_GetSetAt_ (s);
+        SimpleSequenceTest_6_IndexOf_ (s);
     }
 
     void    DoRegressionTests_ ()

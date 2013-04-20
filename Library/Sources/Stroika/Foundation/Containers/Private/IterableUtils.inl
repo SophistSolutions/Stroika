@@ -91,8 +91,23 @@ namespace   Stroika {
                 size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
                 {
                     size_t  n = 0;
-                    ///tmphack - more complicated - must do like equals above - iterating over both at same time...
-                    AssertNotImplemented ();
+                    for (auto i = c.begin (); i != c.end (); ++i, ++n) {
+                        bool foundDiff = false;
+                        auto ii = i;
+                        for (T r : rhs) {
+                            if (ii == c.end ()) {
+                                return kBadIndex;
+                            }
+                            if (not (r == *ii)) {
+                                foundDiff = true;
+                                break;
+                            }
+                            ++ii;
+                        }
+                        if (not foundDiff) {
+                            return n;
+                        }
+                    }
                     return kBadIndex;
                 }
 
