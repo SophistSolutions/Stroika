@@ -1064,7 +1064,20 @@ namespace   {
             s3.Append (4);
             VerifyTestResult (s3.IndexOf (s) == kBadSequenceIndex);
             VerifyTestResult (s.IndexOf (s3) == 3);
-
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            VerifyTestResult (s.size () == 1000);
+            size_t j = 0;
+            for (Iterator<T> i = s.MakeIterator (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (s.IndexOf (i) == j);
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
         }
     }
 
