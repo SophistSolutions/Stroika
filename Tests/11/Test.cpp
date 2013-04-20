@@ -1127,8 +1127,33 @@ namespace   {
     template <typename T>
     void    SimpleSequenceTest_8_Update_ (Sequence<T>& s)
     {
-        // NYI
+        // NYI =- well a little implemnted - but terrible and needs alot of work
+        {
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                s.Update (i, 5);
+            }
+            for (auto i : s) {
+                VerifyTestResult (i == 5);
+            }
+            s.SetAt (16, 16);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (*i == 16) {
+                    s.Update (i, 17);
+                }
+            }
+            VerifyTestResult (s[16] == 17);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                VerifyTestResult (*i == 5 or s.IndexOf (i) == 16);
+            }
+
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
     }
+
 
 
 
@@ -1136,6 +1161,11 @@ namespace   {
     void    SimpleSequenceTest_9_Remove_ (Sequence<T>& s)
     {
         // NYI
+#if 0
+        nonvirtual  void    Remove (size_t i);
+        nonvirtual  void    Remove (size_t start, size_t end);
+        nonvirtual  void    Remove (const Iterator<T>& i);
+#endif
     }
 
 
