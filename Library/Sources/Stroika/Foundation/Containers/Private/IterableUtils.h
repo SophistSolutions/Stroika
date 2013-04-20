@@ -37,19 +37,19 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                int    Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
+                int     Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
                 template    <typename T>
-                int   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
+                bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
                 template    <typename T>
-                size_t    IndexOf_ (const Iterable<T>& c, T item);
+                size_t  IndexOf_ (const Iterable<T>& c, T item);
 
 
                 template    <typename T>
-                size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs);
+                size_t  IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs);
 
 
             }

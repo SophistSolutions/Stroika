@@ -20,6 +20,7 @@ namespace   Stroika {
                             return true;
                         }
                     }
+                    return false;
                 }
 
 
@@ -57,7 +58,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                int   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
+                bool   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
                 {
                     auto li = lhs.begin ();
                     auto le = lhs.end ();

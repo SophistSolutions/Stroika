@@ -919,44 +919,120 @@ namespace   {
             VerifyTestResult (s.empty ());
         }
     }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_2_Contains_ (Sequence<T>& s)
+    {
+        {
+            VerifyTestResult (s.size () == 0);
+            VerifyTestResult (not s.Contains (1));
+            s.Append (1);
+            VerifyTestResult (s.Contains (1));
+            s.RemoveAll ();
+            VerifyTestResult (not s.Contains (1));
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i + 1000);
+            }
+            for (size_t i = 0; i < 1000; ++i) {
+                VerifyTestResult (not s.Contains (i));
+                VerifyTestResult (s.Contains (i + 1000));
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_3_Compare_ (Sequence<T>& s)
+    {
+#if 0
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        {
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            Sequence<T> s2 = s;
+            s2.Append (2);
+            VerifyTestResult (s.Compare (s2) < 0);
+            VerifyTestResult (s2.Compare (s) > 0);
+            s.Append (2);
+            VerifyTestResult (s2.Compare (s) == 0);
+            s.RemoveAll ();
+            VerifyTestResult (s.Compare (s2) < 0);
+            VerifyTestResult (s.empty ());
+        }
+#endif
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_4_Equals_ (Sequence<T>& s)
+    {
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        {
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            Sequence<T> s2 = s;
+            s2.Append (2);
+            VerifyTestResult (not s.Equals (s2));
+            VerifyTestResult (not s2.Equals (s));
+            s.Append (2);
+            VerifyTestResult (s2.Equals (s));
+            s.RemoveAll ();
+            VerifyTestResult (not s.Equals (s2));
+            VerifyTestResult (s.empty ());
+        }
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_4_RemoveAll_ (Sequence<T>& s)
+    {
+        VerifyTestResult (s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+        for (size_t i = 0; i < 1000; ++i) {
+            s.Append (i + 1000);
+        }
+        VerifyTestResult (not s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+        s.RemoveAll ();
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+    }
+
+
 }
 
 
 
 namespace   {
 
+    template <typename SequenceOfT>
+    void    SimpleSequenceTest_All_For_Type ()
+    {
+        SequenceOfT s;
+        SimpleSequenceTest_1_ (s);
+        SimpleSequenceTest_2_Contains_ (s);
+        SimpleSequenceTest_3_Compare_ (s);
+        SimpleSequenceTest_4_Equals_ (s);
+        SimpleSequenceTest_4_RemoveAll_ (s);
+    }
+
     void    DoRegressionTests_ ()
     {
-#if 0
-        {
-            Tally_LinkedList<size_t>    s;
-            SimpleTallyTests (s);
-        }
+        SimpleSequenceTest_All_For_Type<Sequence<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>> ();
 
-        {
-            Tally_LinkedList<SimpleClass>   s;
-            SimpleTallyTests (s);
-        }
-#endif
-
-        {
-            // just proof that they can be constructed
-            Sequence<size_t> t;
-            SimpleSequenceTest_1_ (t);
-            Sequence<SimpleClass>  s1;
-            SimpleSequenceTest_1_ (s1);
-        }
-
-        {
-            Sequence_Array<size_t> s;
-            SimpleSequenceTest_1_ (s);
-        }
-
-        {
-            Sequence_Array<SimpleClass>    s;
-            SimpleSequenceTest_1_ (s);
-        }
+        SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>> ();
     }
+
 }
 
 
