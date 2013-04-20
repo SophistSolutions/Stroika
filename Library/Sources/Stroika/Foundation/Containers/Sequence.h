@@ -31,6 +31,17 @@
  *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
  *                  for T.
  *
+ *      @todo       Assure well documetned that Stroika 1.0 mutators are replaced with modications directly on the container,
+ *                  taking the iterator as argument!
+ *
+ *      @todo       Document and Consider that though iterator compares with CONTAINER.end () work fine with Stroika iterators,
+ *                  other comparisons fail. For example, i < it.end (); and more importantly, constructs like i-s.begin() fail.
+ *
+ *                  Consider  if we can make this work, or document why and that we cannot. Maybe we need a concept of
+ *                  SequenceIterator (like we had in Stroika 1) - which adds operator-?
+ *
+ *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
+ *
  *      @todo       DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
  */
 
