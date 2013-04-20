@@ -1029,11 +1029,6 @@ namespace   {
     }
 
 
-#if 0
-    nonvirtual  size_t  IndexOf (T item) const;
-    nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
-    nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
-#endif
     template <typename T>
     void    SimpleSequenceTest_6_IndexOf_ (Sequence<T>& s)
     {
@@ -1082,6 +1077,51 @@ namespace   {
     }
 
 
+    template <typename T>
+    void    SimpleSequenceTest_6_InsertAppendPrepend_ (Sequence<T>& s)
+    {
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            size_t j = 0;
+            for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (*i == j);
+            }
+            VerifyTestResult (s.size () == 1000);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Prepend (i);
+            }
+            size_t j = 0;
+            for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (*i == 1000 - j - 1);
+            }
+            VerifyTestResult (s.size () == 1000);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+
+        {
+            // primitive, but at least somthing - test of Insert() of sequence (cuz Prepend/Append call Insert internally)
+            Sequence<T> x;
+            x.Append (10);
+            x.Append (11);
+            x.Append (12);
+
+            s.Prepend (x);
+            VerifyTestResult (s.Equals (x));
+            s.Append (x);
+            VerifyTestResult (s[1] == 11);
+            VerifyTestResult (s[2] == 12);
+            VerifyTestResult (s[3] == 10);
+        }
+    }
+
+
 }
 
 
@@ -1099,6 +1139,7 @@ namespace   {
         SimpleSequenceTest_4_RemoveAll_ (s);
         SimpleSequenceTest_5_GetSetAt_ (s);
         SimpleSequenceTest_6_IndexOf_ (s);
+        SimpleSequenceTest_6_InsertAppendPrepend_ (s);
     }
 
     void    DoRegressionTests_ ()
