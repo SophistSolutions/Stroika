@@ -82,7 +82,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************* Sequence_DoublyLinkedList<T>::IteratorRep_ **********************
+                ************** Sequence_DoublyLinkedList<T>::IteratorRep_ **********************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -111,7 +111,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                *************************** Sequence_DoublyLinkedList<T>::Rep_ ****************************
+                ******************* Sequence_DoublyLinkedList<T>::Rep_ *************************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -196,7 +196,6 @@ namespace   Stroika {
                 void    Sequence_DoublyLinkedList<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
                     Require (0 <= at and at <= GetLength ());
-#if 1
                     // quickie poor impl
                     // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                     if (at == 0) {
@@ -223,19 +222,12 @@ namespace   Stroika {
                         }
                         //Assert (not it.Done ());      // cuz that would mean we never added
                     }
-#else
-                    // quickie poor impl
-                    for (auto i = from; i != to; ++i) {
-                        fData_.InsertAt (*i, at++);
-                    }
-#endif
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Remove (size_t from, size_t to)
                 {
                     // quickie poor impl
                     // See Stroika v1 - much better - handling cases of remove near start or end of linked list
-#if 1
                     size_t index = from;
                     size_t amountToRemove = (to - from);
                     T tmphack;
@@ -247,17 +239,12 @@ namespace   Stroika {
                             break;
                         }
                     }
-#else
-                    for (size_t i = from; i < to; ++i) {
-                        fData_.RemoveAt (from);
-                    }
-#endif
                 }
 
 
                 /*
                 ********************************************************************************
-                **************************** Sequence_DoublyLinkedList<T> *********************************
+                ********************* Sequence_DoublyLinkedList<T> *****************************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -269,7 +256,6 @@ namespace   Stroika {
                 Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const Sequence<T>& s)
                     : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    SetCapacity (s.GetLength ());
                     operator+= (s);
                 }
                 template    <typename T>
@@ -278,7 +264,6 @@ namespace   Stroika {
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     if (start != end) {
-                        SetCapacity (end - start);
                         Add (start, end);
                     }
                 }
@@ -292,39 +277,6 @@ namespace   Stroika {
                 {
                     Sequence<T>::operator= (s);
                     return *this;
-                }
-                template    <typename T>
-                inline  const typename Sequence_DoublyLinkedList<T>::Rep_&  Sequence_DoublyLinkedList<T>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
-                }
-                template    <typename T>
-                inline  typename Sequence_DoublyLinkedList<T>::Rep_&    Sequence_DoublyLinkedList<T>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
-                }
-                template    <typename T>
-                inline  void    Sequence_DoublyLinkedList<T>::Compact ()
-                {
-                    GetRep_ ().fData_.Compact ();
-                }
-                template    <typename T>
-                inline  size_t  Sequence_DoublyLinkedList<T>::GetCapacity () const
-                {
-                    return (GetRep_ ().fData_.GetCapacity ());
-                }
-                template    <typename T>
-                inline  void    Sequence_DoublyLinkedList<T>::SetCapacity (size_t slotsAlloced)
-                {
-                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
                 }
 
 

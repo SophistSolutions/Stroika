@@ -39,33 +39,12 @@ namespace   Stroika {
 
                     nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& s);
 
-                public:
-                    /**
-                     *  \brief  Reduce the space used to store the Sequence<T> contents.
-                     *
-                     *  This has no semantics, no observable behavior. But depending on the representation of
-                     *  the concrete sequence, calling this may save memory.
-                     */
-                    nonvirtual  void    Compact ();
-
-
-                public:
-                    /*
-                     * This optional API allows pre-reserving space as an optimizaiton.
-                     */
-                    nonvirtual  size_t  GetCapacity () const;
-                    nonvirtual  void    SetCapacity (size_t slotsAlloced);
-
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
                 public:
 #endif
                     class   Rep_;
                     class   IteratorRep_;
-
-                private:
-                    nonvirtual  const Rep_&  GetRep_ () const;
-                    nonvirtual  Rep_&        GetRep_ ();
                 };
 
 
