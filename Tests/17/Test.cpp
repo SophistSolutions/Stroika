@@ -1,24 +1,22 @@
-﻿/*
+/*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//  TEST    Foundation::DataExchangeFormat::JSON
+//  Foundation::Cryptography
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
-#include    <sstream>
 
-#include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
-#include    "Stroika/Foundation/Configuration/Locale.h"
-#include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
+#if     qPlatform_Windows
+#include    <windows.h>
+#include    <atlenc.h>
+#endif
+
+#include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Cryptography/Base64.h"
+#include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
-#include    "Stroika/Foundation/Math/Common.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -26,17 +24,8 @@
 
 
 using   namespace   Stroika::Foundation;
-
-using   Memory::Byte;
-using   Memory::VariantValue;
-
-using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
-
-
-/*
- * Validating JSON parse results:
- *      http://json.parser.online.fr/
- */
+using   namespace   Stroika::Foundation::Cryptography;
+using   namespace   Stroika::Foundation::Streams;
 
 
 
@@ -44,345 +33,140 @@ using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
 
 
 
+#if     qPlatform_Windows
 namespace   {
-    void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
+    vector<Byte>    DecodeBase64_ATL_ (const string& s)
     {
-        Streams::BasicBinaryOutputStream    out;
-        DataExchangeFormat::JSON::PrettyPrint (v, out);
-        string x = out.As<string> ();
-        for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
-            if (x[i] != expected[i]) {
-                VerifyTestResult (false);
-            }
+        int                     dataSize1   =   ATL::Base64DecodeGetRequiredLength (static_cast<int> (s.length ()));
+        Memory::SmallStackBuffer<Byte>  buf1 (dataSize1);
+        if (ATL::Base64Decode (s.c_str (), static_cast<int> (s.length ()), buf1, &dataSize1)) {
+            return vector<Byte> (buf1.begin (), buf1.begin () + dataSize1);
         }
-        VerifyTestResult (out.As<string> () == expected);
+        return vector<Byte> ();
     }
-
-    void    DoRegressionTests_Writer_ ()
+    string  EncodeBase64_ATL_ (const vector<Byte>& b, LineBreak lb)
     {
-        {
-            VariantValue    v1 = L"hello world";
-            CheckMatchesExpected_WRITER_ (v1, "\"hello world\"");
-        }
-        {
-            VariantValue    v1 =    3;
-            CheckMatchesExpected_WRITER_ (v1, "3");
-        }
-        {
-            VariantValue    v1 =    4.7;
-            CheckMatchesExpected_WRITER_ (v1, "4.7");
-        }
-        {
-            VariantValue    v1 =    L"\"";
-            CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"");
-        }
-        {
-            // array
-            vector<VariantValue>    v;
-            v.push_back (3);
-            v.push_back (7);
-            v.push_back (L"cookie");
-            VariantValue    v1 =    v;
-            CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]");
-        }
-        {
-            // object
-            map<wstring, VariantValue>   v;
-            v[L"Arg1"] = 32;
-            v[L"Arg2"] = L"Cookies";
-            v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
-            VariantValue    v1 =    v;
-            CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}");
-        }
-    }
-}
-
-
-
-
-namespace   {
-    void    CheckMatchesExpected_READER_ (const string& v, const VariantValue& expected)
-    {
-        stringstream    tmp;
-        tmp << v;
-        VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
-        VerifyTestResult (v1.GetType () == expected.GetType ());
-        VerifyTestResult (v1 == expected);
-    }
-
-    void    DoRegressionTests_Reader_ ()
-    {
-        {
-            VariantValue    v1 = L"hello world";
-            CheckMatchesExpected_READER_ ("\"hello world\"", v1);
-        }
-        {
-            VariantValue    v1 =    3;
-            CheckMatchesExpected_READER_ ("3", v1);
-        }
-        {
-            VariantValue    v1 =    L"\uFDD0";
-            CheckMatchesExpected_READER_ ("\"\\uFDD0\"", v1);
-        }
-        {
-            VariantValue    v1 =    4.7;
-            CheckMatchesExpected_READER_ ("4.7", v1);
-        }
-        {
-            // array
-            vector<VariantValue>    v;
-            v.push_back (3);
-            v.push_back (7);
-            v.push_back (L"cookie");
-            VariantValue    v1 =    v;
-            CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
-        }
-        {
-            // object
-            map<wstring, VariantValue>   v;
-            v[L"Arg1"] = 32;
-            v[L"Arg2"] = L"Cookies";
-            v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
-            VariantValue    v1 =    v;
-            CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
-        }
-        {
-            // Bug found in another JSON reader (sent me by Ryan - 2011-07-27)
-            const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
-            stringstream    tmp;
-            tmp << kExample;
-            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
-            VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
-        }
-
-    }
-}
-
-
-namespace   {
-    void    VerifyThisStringFailsToParse_ (const string& s)
-    {
-        stringstream    tmp;
-        tmp << s;
-        try {
-            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
-            VerifyTestResult (false);   // should get exception
-        }
-        catch (const DataExchangeFormat::BadFormatException&) {
-            // GOOD
-        }
-        catch (...) {
-            VerifyTestResult (false);   // should get BadFormatException
-        }
-    }
-    void    CheckCanReadFromSmallBadSrc_ ()
-    {
-        VerifyThisStringFailsToParse_ ("n");
-        VerifyThisStringFailsToParse_ ("'");
-        VerifyThisStringFailsToParse_ ("\"");
-        VerifyThisStringFailsToParse_ ("[");
-        VerifyThisStringFailsToParse_ ("}");
-        VerifyThisStringFailsToParse_ ("]");
-    }
-}
-
-
-
-
-namespace   {
-
-    void    CheckRoundtrip_encode_decode_unchanged (const VariantValue& v)
-    {
-        string  encodedRep;
-        {
-            Streams::BasicBinaryOutputStream    out;
-            DataExchangeFormat::JSON::PrettyPrint (v, out);
-            encodedRep = out.As<string> ();
-        }
-        {
-            stringstream    tmp;
-            tmp << encodedRep;
-            VariantValue    vOut    =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
-            VerifyTestResult (vOut.GetType () == v.GetType ());
-            VerifyTestResult (vOut == v);
-        }
-    }
-
-    void    CheckStringQuoting_ ()
-    {
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9"));  //  ₩
-        CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
-    }
-}
-
-
-
-namespace {
-    void    ParseRegressionTest_1_ ()
-    {
-        {
-            const char  kJSONExample_[] =
-                "{"
-                "    \"Automated Backups\" : {"
-                "        \"From\" : {"
-                "            \"CurrentHRWildcard\" : true,"
-                "            \"PrintName\" : \"{Current HR}\""
-                "        },"
-                "        \"LastRanAt\" : {"
-                "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
-                "        },"
-                "        \"Operation\" : 0,"
-                "        \"Output\" : {"
-                "            \"AttachmentPolicy\" : 2,"
-                "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
-                "            \"MaxFiles\" : 0,"
-                "            \"NamePolicy\" : 1,"
-                "            \"Password\" : \"\""
-                "        },"
-                "        \"PolicyName\" : \"Automated Backups\","
-                "        \"Schedule\" : 2,"
-                "        \"To\" : {"
-                "            \"DefaultBackupDirectory\" : true,"
-                "            \"PrintName\" : \"{Default Backup Directory}\""
-                "        }"
-                "    }"
-                "}"
-                ;
-            Memory::VariantValue v = DataExchangeFormat::JSON::Reader (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
-            map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
-            VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
-            map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
-            outputMap[L"MaxFiles"] = 123456789;
-            mv[L"Output"] = outputMap;
-            v = mv;
-
-            string  jsonExampleWithUpdatedMaxFilesReference;
-            {
-                Streams::BasicBinaryOutputStream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
-            }
-            {
-                // Verify change of locale has no effect on results
-                locale  prevLocale  =   locale::global (locale ("C"));
-                Streams::BasicBinaryOutputStream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
-                locale::global (prevLocale);
-            }
-            {
-                // Verify change of locale has no effect on results
-                locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
-                Streams::BasicBinaryOutputStream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
-                locale::global (prevLocale);
-            }
-
-        }
-    }
-}
-
-namespace {
-    void    ParseRegressionTest_2_ ()
-    {
-        auto f = [] () {
-            map<wstring, VariantValue>  mv;
-            mv[L"MaxFiles"] = Memory::VariantValue (405);
-            Memory::VariantValue    v   =    Memory::VariantValue (mv);
-
-            string  encoded;
-            {
-                stringstream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                encoded = tmpStrm.str ();
-            }
-            stringstream    tnmStrStrm (encoded);
-            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
-            VerifyTestResult (v1 == v);
-        };
-        f ();
-        {
-            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
-            f ();
-            locale::global (prevLocale);
-        }
-    }
-}
-
-namespace {
-    void    Parser_TestReadWriteBasictypes_3_ ()
-    {
-        using   namespace   Time;
-        auto f = [] (VariantValue v) {
-            string  encoded;
-            {
-                stringstream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
-                encoded = tmpStrm.str ();
-            }
-            stringstream    tnmStrStrm (encoded);
-            VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
-            // JSON reader comes back with strings - because date/datetime are not native types
-            if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
-                v1 = VariantValue (v1.As<Time::Date> ());
-            }
-            if (v.GetType () == VariantValue::Type::eDateTime and v1.GetType () == VariantValue::Type::eString) {
-                v1 = VariantValue (v1.As<Time::DateTime> ());
-            }
-            if (v.GetType () == VariantValue::Type::eFloat) {
-                VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
+        size_t  totalSize       =   b.size ();
+        if (totalSize != 0) {
+            Memory::SmallStackBuffer<char>  relBuf (0);
+            int                     relEncodedSize  =   ATL::Base64EncodeGetRequiredLength (static_cast<int> (totalSize));
+            relBuf.GrowToSize (relEncodedSize);
+            VerifyTestResult (ATL::Base64Encode (Containers::Start (b), static_cast<int> (totalSize), relBuf, &relEncodedSize));
+            relBuf[relEncodedSize] = '\0';
+            if (lb == LineBreak::eCRLF_LB) {
+                return (static_cast<const char*> (relBuf));
             }
             else {
-                VerifyTestResult (v1 == v);
+                VerifyTestResult (lb == LineBreak::eLF_LB);
+                string  result;
+                result.reserve (relEncodedSize);
+                for (int i = 0; i < relEncodedSize; ++i) {
+                    if (relBuf[i] == '\r') {
+                        //
+                        result.push_back ('\n');
+                        ++i;    // skip LF
+                    }
+                    else {
+                        result.push_back (relBuf[i]);
+                    }
+                }
+                return result;
             }
-        };
-        auto    doAll = [f] () {
-            f (Memory::VariantValue (405));
-            f (Memory::VariantValue (4405));
-            f (Memory::VariantValue (44905));
-            f (Memory::VariantValue (405.1));
-            f (Memory::VariantValue (4405.2));
-            f (Memory::VariantValue (44905.3));
-            f (Memory::VariantValue (L"'"));
-            f (Memory::VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
-            f (Memory::VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
-
-            {
-                stringstream    tmpStrm;
-                DataExchangeFormat::JSON::PrettyPrint (Memory::VariantValue (44905.3), tmpStrm);
-                string tmp = tmpStrm.str ();
-                VerifyTestResult (tmp.find (",") == string::npos);
-            }
-        };
-        {
-            doAll ();
-            locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
-            doAll ();
-            locale::global (prevLocale);
         }
+        return string ();
     }
 }
+#endif
+
+namespace   {
+    inline  void    VERIFY_ATL_ENCODEBASE64_ (const vector<Byte>& bytes)
+    {
+#if     qPlatform_Windows
+        VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eCRLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eCRLF_LB));
+        VerifyTestResult (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes), LineBreak::eLF_LB) == EncodeBase64_ATL_ (bytes, LineBreak::eLF_LB));
+#endif
+    }
+    inline  void    VERIFY_ATL_DECODE_ ()
+    {
+#if     qPlatform_Windows
+#else
+#endif
+    }
+}
+
+namespace   {
+    void    VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (const vector<Byte>& bytes)
+    {
+        VerifyTestResult (DecodeBase64 (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (bytes))) == bytes);
+    }
+}
+
+namespace   {
+    void    DO_ONE_REGTEST_BASE64_ (const string& base64EncodedString, const vector<Byte>& originalUnEncodedBytes)
+    {
+        Verify (EncodeBase64 (ExternallyOwnedMemoryBinaryInputStream (originalUnEncodedBytes)) == base64EncodedString);
+        Verify (DecodeBase64 (base64EncodedString) == originalUnEncodedBytes);
+        VERIFY_ATL_ENCODEBASE64_ (originalUnEncodedBytes);
+        VERIFY_ENCODE_DECODE_BASE64_IDEMPOTENT_ (originalUnEncodedBytes);
+    }
+}
+
+
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
-        DoRegressionTests_Writer_ ();
-        DoRegressionTests_Reader_ ();
-        CheckCanReadFromSmallBadSrc_ ();
-        CheckStringQuoting_ ();
-        ParseRegressionTest_1_ ();
-        ParseRegressionTest_2_ ();
-        Parser_TestReadWriteBasictypes_3_ ();
+        {
+            const   char    kSrc[] = "This is a very good test of a very good test";
+            const   char    kEncodedVal[] = "08c8888b86d6300ade93a10095a9083a";
+            Verify (ComputeMD5Digest ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == kEncodedVal);
+        }
+
+        {
+            const   char    kSrc[] =
+                "This is a good test\r\n"
+                "We eat wiggly worms.\r\n"
+                "\r\n"
+                "That is a very good thing.****^^^#$#AS\r\n"
+                ;
+            const   char    kEncodedVal[] = "VGhpcyBpcyBhIGdvb2QgdGVzdA0KV2UgZWF0IHdpZ2dseSB3b3Jtcy4NCg0KVGhhdCBpcyBhIHZl\r\ncnkgZ29vZCB0aGluZy4qKioqXl5eIyQjQVMNCg==";
+            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
+        }
+
+        {
+            const   char    kSrc[]  =
+                "{\\rtf1 \\ansi {\\fonttbl {\\f0 \\fnil \\fcharset163 Times New Roman;}}{\\colortbl \\red0\\green0\\blue0;}\r\n"
+                "{\\*\\listtable{\\list \\listtemplateid12382 {\\listlevel \\levelnfc23 \\leveljc0 \\levelfollow0 \\levelstartat1 \\levelindent0 {\\leveltext \\levelnfc23 \\leveltemplateid17421 \\'01\\u8226  ?;}\\f0 \\fi-360 \\li720 \\jclisttab \\tx720 }\\listid292 }}\r\n"
+                "{\\*\\listoverridetable{\\listoverride \\listid292 \\listoverridecount0 \\ls1 }}\r\n"
+                "{\\*\\generator Sophist Solutions, Inc. Led RTF IO Engine - 3.1b2x;}\\pard \\plain \\f0 \\fs24 \\cf0 Had hay fever today. Not terrible, but several times. And I think a bit yesterda\r\n"
+                "y.}"
+                ;
+            const   char    kEncodedVal[] =
+                "e1xydGYxIFxhbnNpIHtcZm9udHRibCB7XGYwIFxmbmlsIFxmY2hhcnNldDE2MyBUaW1lcyBOZXcg\r\n"
+                "Um9tYW47fX17XGNvbG9ydGJsIFxyZWQwXGdyZWVuMFxibHVlMDt9DQp7XCpcbGlzdHRhYmxle1xs\r\n"
+                "aXN0IFxsaXN0dGVtcGxhdGVpZDEyMzgyIHtcbGlzdGxldmVsIFxsZXZlbG5mYzIzIFxsZXZlbGpj\r\n"
+                "MCBcbGV2ZWxmb2xsb3cwIFxsZXZlbHN0YXJ0YXQxIFxsZXZlbGluZGVudDAge1xsZXZlbHRleHQg\r\n"
+                "XGxldmVsbmZjMjMgXGxldmVsdGVtcGxhdGVpZDE3NDIxIFwnMDFcdTgyMjYgID87fVxmMCBcZmkt\r\n"
+                "MzYwIFxsaTcyMCBcamNsaXN0dGFiIFx0eDcyMCB9XGxpc3RpZDI5MiB9fQ0Ke1wqXGxpc3RvdmVy\r\n"
+                "cmlkZXRhYmxle1xsaXN0b3ZlcnJpZGUgXGxpc3RpZDI5MiBcbGlzdG92ZXJyaWRlY291bnQwIFxs\r\n"
+                "czEgfX0NCntcKlxnZW5lcmF0b3IgU29waGlzdCBTb2x1dGlvbnMsIEluYy4gTGVkIFJURiBJTyBF\r\n"
+                "bmdpbmUgLSAzLjFiMng7fVxwYXJkIFxwbGFpbiBcZjAgXGZzMjQgXGNmMCBIYWQgaGF5IGZldmVy\r\n"
+                "IHRvZGF5LiBOb3QgdGVycmlibGUsIGJ1dCBzZXZlcmFsIHRpbWVzLiBBbmQgSSB0aGluayBhIGJp\r\n"
+                "dCB5ZXN0ZXJkYQ0KeS59"
+                ;
+            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
+        }
+
+        {
+            const   char    kSrc[]          =   "()'asdf***Adasdf a";
+            const   char    kEncodedVal[]   =   "KCknYXNkZioqKkFkYXNkZiBh";
+            DO_ONE_REGTEST_BASE64_ (kEncodedVal, vector<Byte> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)));
+        }
+
     }
 }
+
 
 
 
@@ -393,4 +177,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-

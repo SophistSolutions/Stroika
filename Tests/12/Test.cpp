@@ -1,16 +1,16 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//      TEST    Foundation::Containers::Set
+//      TEST    Foundation::Containers::Sequence
 //      STATUS  TOTALLY WRONG - PLACEHOLDER
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
+#include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
+//#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -25,258 +25,400 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-using   Concrete::Tally_Array;
-using   Concrete::Tally_LinkedList;
+using   Concrete::Sequence_Array;
+#if 0
+using   Concrete::Sequence_LinkedList;
+#endif
 
 
 
-namespace   {
+/**
+ *
+ *  @todo   Fix COMPARE (test case 3) support (test cases) once we better support the feautre with traits!
+ *
+ *  @todo   Look at Container tests for Bag/Tally, and see if any of them can be lifted and applied here.
+ *
+ *  @todo   Look at Iterable<T> stuff and write test cases for those APIs. Write in a way so that
+ *          they can be re-applied for other classes that are  Iterable - such as Bag/etc.
+ *
+ *  @todo   Review Stroika v1 regression tests, and see if any of that can usefully be applied here
+ *          as well.
+ *
+ *  @todo   Write PERFORMANCE TESTS - to compare between Stroika and STL containers. This may be better
+ *          as a DEMO, than as a regression test.
+ */
 
-    void    TallyIteratorTests_ (Tally<size_t>& s)
+
+namespace {
+
+    template <typename T>
+    void    SimpleSequenceTest_1_ (Sequence<T>& s)
     {
-        const   size_t  kTestSize   =   6;
-
-        VerifyTestResult (s.GetLength () == 0);
-
-        for (TallyEntry<size_t> i : s) {
-            VerifyTestResult (false);
-        }
-
-        /*
-         * Try removes while iterating forward.
-         */
         {
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            VerifyTestResult (s.size () == 1);
+            VerifyTestResult (s.GetAt (0) == 1);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
             }
+            VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s[100] == 100);
+            s.Remove (0);
+            VerifyTestResult (s.size () == 999);
+            for (size_t i = 0; i < 999; ++i) {
+                VerifyTestResult (s[i] == i + 1);
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+    }
 
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                s.UpdateCount (it, 1);
-            }
 
-            VerifyTestResult (s.GetLength () == kTestSize);
+    template <typename T>
+    void    SimpleSequenceTest_2_Contains_ (Sequence<T>& s)
+    {
+        {
+            VerifyTestResult (s.size () == 0);
+            VerifyTestResult (not s.Contains (1));
+            s.Append (1);
+            VerifyTestResult (s.Contains (1));
+            s.RemoveAll ();
+            VerifyTestResult (not s.Contains (1));
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i + 1000);
+            }
+            for (size_t i = 0; i < 1000; ++i) {
+                VerifyTestResult (not s.Contains (i));
+                VerifyTestResult (s.Contains (i + 1000));
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+    }
 
-            {
-                for (TallyEntry<size_t> it : s) {
-                    for (size_t i = 1; i <= kTestSize; i++) {
-                        VerifyTestResult (s.Contains (i));
-                        VerifyTestResult (s.GetLength () == kTestSize - i + 1);
-                        s.Remove (i);
-                        VerifyTestResult (not s.Contains (i - 1));
-                    }
-                }
-                VerifyTestResult (s.IsEmpty ());
-                VerifyTestResult (s.GetLength () == 0);
-            }
 
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
-            }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            {
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    s.Remove (it);
-                }
-                VerifyTestResult (s.IsEmpty ());
-                VerifyTestResult (s.GetLength () == 0);
-            }
+    template <typename T>
+    void    SimpleSequenceTest_3_Compare_ (Sequence<T>& s)
+    {
+#if 0
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        {
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            Sequence<T> s2 = s;
+            s2.Append (2);
+            VerifyTestResult (s.Compare (s2) < 0);
+            VerifyTestResult (s2.Compare (s) > 0);
+            s.Append (2);
+            VerifyTestResult (s2.Compare (s) == 0);
+            s.RemoveAll ();
+            VerifyTestResult (s.Compare (s2) < 0);
+            VerifyTestResult (s.empty ());
+        }
+#endif
+    }
 
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
+
+    template <typename T>
+    void    SimpleSequenceTest_4_Equals_ (Sequence<T>& s)
+    {
+        // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
+        {
+            VerifyTestResult (s.size () == 0);
+            s.Append (1);
+            Sequence<T> s2 = s;
+            s2.Append (2);
+            VerifyTestResult (not s.Equals (s2));
+            VerifyTestResult (not s2.Equals (s));
+            s.Append (2);
+            VerifyTestResult (s2.Equals (s));
+            s.RemoveAll ();
+            VerifyTestResult (not s.Equals (s2));
+            VerifyTestResult (s.empty ());
+        }
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_4_RemoveAll_ (Sequence<T>& s)
+    {
+        VerifyTestResult (s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+        for (size_t i = 0; i < 1000; ++i) {
+            s.Append (i + 1000);
+        }
+        VerifyTestResult (not s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+        s.RemoveAll ();
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_5_GetSetAt_ (Sequence<T>& s)
+    {
+        VerifyTestResult (s.empty ());
+        for (size_t i = 0; i < 1000; ++i) {
+            s.Append (1);
+            VerifyTestResult (s.GetAt (i) == 1);
+            VerifyTestResult (s[i] == 1);
+        }
+        for (size_t i = 0; i < 1000; ++i) {
+            s.SetAt (i, 5000 + i);
+            VerifyTestResult (s[i] == 5000 + i);
+        }
+        for (size_t i = 0; i < 1000; ++i) {
+            VerifyTestResult (s.GetAt (i) == 5000 + i);
+        }
+        VerifyTestResult (not s.empty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_6_IndexOf_ (Sequence<T>& s)
+    {
+        {
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (21 + i);
             }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                s.Remove (it2.Current ().fItem);
+            VerifyTestResult (s.IndexOf (5) == kBadSequenceIndex);
+            VerifyTestResult (not s.empty ());
+
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
             }
-            VerifyTestResult (s.GetLength () == 0);
+            VerifyTestResult (not s.empty ());
+            VerifyTestResult (s.size () == 1000);
+
+            Sequence<T> s2 = s;
+            VerifyTestResult (s.IndexOf (s2) == 0);
+            VerifyTestResult (s2.IndexOf (s) == 0);
+
+            Sequence<T> s3;
+            s3.Append (3);
+            s3.Append (4);
+            VerifyTestResult (s3.IndexOf (s) == kBadSequenceIndex);
+            VerifyTestResult (s.IndexOf (s3) == 3);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            VerifyTestResult (s.size () == 1000);
+            size_t j = 0;
+            for (Iterator<T> i = s.MakeIterator (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (s.IndexOf (i) == j);
+            }
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+    }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_7_InsertAppendPrepend_ (Sequence<T>& s)
+    {
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Append (i);
+            }
+            size_t j = 0;
+            for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (*i == j);
+            }
+            VerifyTestResult (s.size () == 1000);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+        {
+            for (size_t i = 0; i < 1000; ++i) {
+                s.Prepend (i);
+            }
+            size_t j = 0;
+            for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
+                VerifyTestResult (*i == 1000 - j - 1);
+            }
+            VerifyTestResult (s.size () == 1000);
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
         }
 
-        /*
-         * Try removes multiple iterators present.
-         */
+        {
+            // primitive, but at least somthing - test of Insert() of sequence (cuz Prepend/Append call Insert internally)
+            Sequence<T> x;
+            x.Append (10);
+            x.Append (11);
+            x.Append (12);
+
+            s.Prepend (x);
+            VerifyTestResult (s.Equals (x));
+            s.Append (x);
+            VerifyTestResult (s[1] == 11);
+            VerifyTestResult (s[2] == 12);
+            VerifyTestResult (s[3] == 10);
+        }
+    }
+
+
+
+
+    template <typename T>
+    void    SimpleSequenceTest_8_Update_ (Sequence<T>& s)
+    {
+        {
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                s.Update (i, 5);
+            }
+            for (auto i : s) {
+                VerifyTestResult (i == 5);
+            }
+            s.SetAt (16, 16);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (*i == 16) {
+                    s.Update (i, 17);
+                }
+            }
+            VerifyTestResult (s[16] == 17);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                VerifyTestResult (*i == 5 or s.IndexOf (i) == 16);
+            }
+
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+        }
+    }
+
+
+
+
+    template <typename T>
+    void    SimpleSequenceTest_9_Remove_ (Sequence<T>& s)
+    {
+        {
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            s.Remove (5);
+            VerifyTestResult (s.size () == 99);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (*i == s.IndexOf (i));
+                }
+                else {
+                    VerifyTestResult ((*i) == s.IndexOf (i) + 1);
+                }
+            }
+        }
         {
             s.RemoveAll ();
-            VerifyTestResult (s.GetLength () == 0);
-            for (size_t i = 1; i <= kTestSize; i++) {
-                s.Add (i);
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
             }
-            VerifyTestResult (s.GetLength () == kTestSize);
-            size_t i =  1;
-
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                    for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
-                        if (s.GetLength () != 0) {
-                            s.UpdateCount (it3, 3);
-                            s.Remove (it3);
-                            s.Add (i);
-                            s.Remove (i);
-                        }
-                    }
+            s.Remove (5, 95);
+            VerifyTestResult (s.size () == 10);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (*i == s.IndexOf (i));
+                }
+                else {
+                    VerifyTestResult ((*i) == s.IndexOf (i) + 90);
                 }
             }
         }
-    }
-
-    void    SimpleTallyTests (Tally<size_t>& s)
-
-    {
-        size_t  three = 3;
-
-        Tally<size_t>   s1 (s);
-
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s1 == s);
-        Tally<size_t>   s2 = s1;
-
-        VerifyTestResult (s2 == s);
-        VerifyTestResult (s2 == s1);
-        s2.Add (three);
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s2 != s1);
-
-        TallyIteratorTests_ (s);
-
-        const   size_t  K = 500;
-
-        VerifyTestResult (s.IsEmpty ());
-        s.Add (three);
-        VerifyTestResult (s.GetLength () == 1);
-        s += three;
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 2);
-        s.Remove (three);
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 1);
-        s.Remove (three);
-        VerifyTestResult (s.IsEmpty ());
-        s.RemoveAll ();
-        VerifyTestResult (s.IsEmpty ());
-        for (size_t i = 1; i <= K; i++) {
-            s.Add (i);
-        }
-
-        for (size_t i = 1; i <= s.GetLength (); i++) {
-            VerifyTestResult (s.Contains (i));
-            VerifyTestResult (not s.Contains (0));
-        }
-
-        for (size_t i = 1; i <= s.GetLength (); i++) {
-            for (auto it = s.begin (); it != s.end (); ++it) {
-                if (it.Current ().fItem == i) {
-                    break;
+        {
+            s.RemoveAll ();
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                // remove the 5th element, but note after deletion, all index will be for the 5th elt if we keep deleting the 5th
+                if (s.IndexOf (i) == 5 and s.size () == 100) {
+                    s.Remove (i);
                 }
             }
-        }
-        for (auto it = s.begin (); it != s.end (); ++it) {
-            for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
-                s.RemoveAll ();
+            VerifyTestResult (s.size () == 99);
+            for (auto i = s.begin (); i != s.end (); ++i) {
+                if (s.IndexOf (i) < 5) {
+                    VerifyTestResult (*i == s.IndexOf (i));
+                }
+                else {
+                    VerifyTestResult ((*i) == s.IndexOf (i) + 1);
+                }
             }
+            s.RemoveAll ();
         }
-        VerifyTestResult (s.IsEmpty ());
-        VerifyTestResult (s.GetLength () == 0);
-
-        for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
-            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
-                VerifyTestResult (false);
-            }
-        }
-        VerifyTestResult (s.IsEmpty ());
-
-
-        for (size_t i = 1; i <= K; i++) {
-            s.Add (i);
-            VerifyTestResult (s.Contains (i));
-            VerifyTestResult (s.TallyOf (i) == 1);
-            VerifyTestResult (s.GetLength () == i);
-        }
-        for (size_t i = K; i > 0; i--) {
-            s.Remove (i);
-            VerifyTestResult (not s.Contains (i));
-            VerifyTestResult (s.GetLength () == (i - 1));
-        }
-        VerifyTestResult (s.IsEmpty ());
-
-        for (size_t i = 1; i <= K / 2; i++) {
-            s += 1;
-            VerifyTestResult (s.TallyOf (1) == i);
-        }
-        size_t oldLength = s.GetLength ();
-        size_t oldTotal = s.TotalTally ();
-        s += s;
-        VerifyTestResult (s.GetLength () == oldLength);
-        VerifyTestResult (s.TotalTally () == oldTotal * 2);
-    }
-
-    void    SimpleTallyTests (Tally<SimpleClass>& s)
-    {
-        SimpleClass three = 3;
-
-        Tally<SimpleClass>  s1 (s);
-
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s1 == s);
-        Tally<SimpleClass>  s2 = s1;
-
-        VerifyTestResult (s2 == s);
-        VerifyTestResult (s2 == s1);
-        s2.Add (three);
-        VerifyTestResult (s1 == s);
-        VerifyTestResult (s2 != s1);
-
-        VerifyTestResult (s.IsEmpty ());
-        s.Add (three);
-        VerifyTestResult (s.GetLength () == 1);
-        s += three;
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 2);
-        s.Remove (three);
-        VerifyTestResult (s.GetLength () == 1);
-        VerifyTestResult (s.Contains (three));
-        VerifyTestResult (s.TallyOf (three) == 1);
-        s.Remove (three);
-        VerifyTestResult (s.IsEmpty ());
         s.RemoveAll ();
-        VerifyTestResult (s.IsEmpty ());
+        VerifyTestResult (s.empty ());
     }
+
+
+    template <typename T>
+    void    SimpleSequenceTest_10_STLCompatWrappers_ (Sequence<T>& s)
+    {
+        // NYI -
+        // but just trival wrappers on other things already tested so no biggie
+    }
+
+
 
 }
 
 
+
 namespace   {
+
+    template <typename SequenceOfT>
+    void    SimpleSequenceTest_All_For_Type ()
+    {
+        SequenceOfT s;
+        SimpleSequenceTest_1_ (s);
+        SimpleSequenceTest_2_Contains_ (s);
+        SimpleSequenceTest_3_Compare_ (s);
+        SimpleSequenceTest_4_Equals_ (s);
+        SimpleSequenceTest_4_RemoveAll_ (s);
+        SimpleSequenceTest_5_GetSetAt_ (s);
+        SimpleSequenceTest_6_IndexOf_ (s);
+        SimpleSequenceTest_7_InsertAppendPrepend_ (s);
+        SimpleSequenceTest_8_Update_ (s);
+        SimpleSequenceTest_9_Remove_ (s);
+        SimpleSequenceTest_10_STLCompatWrappers_ (s);
+    }
 
     void    DoRegressionTests_ ()
     {
+        SimpleSequenceTest_All_For_Type<Sequence<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>> ();
 
-        {
-            Tally_LinkedList<size_t>    s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_LinkedList<SimpleClass>   s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_Array<size_t> s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            Tally_Array<SimpleClass>    s;
-            SimpleTallyTests (s);
-        }
-
-        {
-            // just proof that they can be constructed
-            Tally<size_t> t;
-            Tally<SimpleClass>  s1;
-        }
+        SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>> ();
     }
+
 }
 
 
