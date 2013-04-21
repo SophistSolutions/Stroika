@@ -8,10 +8,16 @@
 /*
  *
  * TODO:
+ *		@todo	MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
+ *
+ *		@todo	WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL
+ *
+ *
+ *
  *
  * Notes:
  *
- *			<<< WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL>>>>
+ *          <<< WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL>>>>
  *
  */
 
@@ -186,7 +192,10 @@ namespace   Stroika {
                         nonvirtual  void    RemoveFirst ();
                         nonvirtual  void    RemoveAll ();
 
-                        /*
+                    public:
+						nonvirtual	void    Append (T item);
+
+						/*
                          * Methods to do the patching yourself. Iterate over all the iterators and
                          * perfrom patching.
                          */
@@ -238,6 +247,17 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const DoubleLink<T>* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
+                        // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
+                        // and maybe best (depending on frequency of calls to current index
+                        nonvirtual size_t CurrentIndex () const {
+                            RequireNotNull (fData);
+                            RequireNotNull (this->fCurrent);
+                            size_t i = 0;
+                            for (const DoubleLink<T>* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
+                                AssertNotNull (l);
+                            }
+                            return i;
+                        }
 
                     protected:
                         const DoublyLinkedList_Patch<T>*  fData;

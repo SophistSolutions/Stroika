@@ -8,6 +8,10 @@
 /*
  *
  * TODO:
+ *
+ *		@todo	MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
+ *
+ *
  *          +   Consider adding LinkedListMutator<T> since otherwise we cannot do InsertAt,
  *              / AddAfter() etc without using a LinkedList_Patch.
  *

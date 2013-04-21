@@ -10,7 +10,7 @@
 
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -26,9 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 
 using   Concrete::Sequence_Array;
-#if 0
-using   Concrete::Sequence_LinkedList;
-#endif
+using   Concrete::Sequence_DoublyLinkedList;
 
 
 
@@ -59,6 +57,10 @@ namespace {
             s.Append (1);
             VerifyTestResult (s.size () == 1);
             VerifyTestResult (s.GetAt (0) == 1);
+            s.Append (2);
+            VerifyTestResult (s.size () == 2);
+            VerifyTestResult (s.GetAt (0) == 1);
+            VerifyTestResult (s.GetAt (1) == 2);
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
@@ -67,6 +69,8 @@ namespace {
                 s.Append (i);
             }
             VerifyTestResult (s.size () == 1000);
+            VerifyTestResult (s[0] == 0);
+            VerifyTestResult (s[1] == 1);
             VerifyTestResult (s[100] == 100);
             s.Remove (0);
             VerifyTestResult (s.size () == 999);
@@ -417,6 +421,9 @@ namespace   {
 
         SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>> ();
+
+        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClass>> ();
     }
 
 }
