@@ -390,22 +390,22 @@ namespace   Stroika {
                         Invariant ();
                     }
 
-					//tmphack - must fix for oduble linked list
+                    //tmphack - must fix for oduble linked list
                     template    <typename   T>  inline  void    DoublyLinkedList_Patch<T>::Append (T item)
                     {
-						if (fLength == 0) {
-							Prepend (item);
-						}
-						else {
-							DoubleLink<T>* last = fFirst;
+                        if (this->fLength == 0) {
+                            Prepend (item);
+                        }
+                        else {
+                            DoubleLink<T>* last = this->fFirst;
                             for (; last->fNext != nullptr; last = last->fNext)
-								;
-							Assert (last != nullptr);
-							Assert (last->fNext == nullptr);
-							last->fNext = new DoubleLink<T> (item, nullptr);
-							fLength++;
-							PatchViewsAdd (last->fNext);
-						}
+                                ;
+                            Assert (last != nullptr);
+                            Assert (last->fNext == nullptr);
+                            last->fNext = new DoubleLink<T> (item, nullptr);
+                            this->fLength++;
+                            PatchViewsAdd (last->fNext);
+                        }
                     }
 
                     template    <typename   T>  inline  void    DoublyLinkedList_Patch<T>::RemoveFirst ()

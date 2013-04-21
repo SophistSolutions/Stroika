@@ -195,23 +195,22 @@ namespace   Stroika {
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
-					Require (0 <= at and at <= GetLength ());
+                    Require (0 <= at and at <= GetLength ());
 #if 1
                     // quickie poor impl
                     // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                     if (at == 0) {
-						size_t len = to-from;
-						for (size_t i = (to-from); i > 0; --i) {
-							fData_.Prepend (from[i-1]);
-						}
+                        size_t len = to - from;
+                        for (size_t i = (to - from); i > 0; --i) {
+                            fData_.Prepend (from[i - 1]);
+                        }
                     }
                     else if (at == GetLength ()) {
                         for (const T* p = from; p != to; ++p) {
-							fData_.Append (*p);
+                            fData_.Append (*p);
                         }
                     }
-                    else
-                    {
+                    else {
                         size_t index = at;
                         T tmphack;
                         for (DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {

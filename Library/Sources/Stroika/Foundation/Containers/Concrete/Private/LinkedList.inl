@@ -390,6 +390,24 @@ namespace   Stroika {
                         Invariant ();
                     }
 
+                    //tmphack - must fix to have in  base class and just hook for patch here
+                    template    <typename   T>  inline  void    LinkedList_Patch<T>::Append (T item)
+                    {
+                        if (this->fLength == 0) {
+                            Prepend (item);
+                        }
+                        else {
+                            Link<T>* last = this->fFirst;
+                            for (; last->fNext != nullptr; last = last->fNext)
+                                ;
+                            Assert (last != nullptr);
+                            Assert (last->fNext == nullptr);
+                            last->fNext = new Link<T> (item, nullptr);
+                            this->fLength++;
+                            PatchViewsAdd (last->fNext);
+                        }
+                    }
+
                     template    <typename   T>  inline  void    LinkedList_Patch<T>::RemoveFirst ()
                     {
                         Invariant ();

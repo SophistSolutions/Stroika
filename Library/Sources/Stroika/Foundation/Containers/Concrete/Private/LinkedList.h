@@ -9,7 +9,7 @@
  *
  * TODO:
  *
- *		@todo	MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
+ *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
  *
  *
  *          +   Consider adding LinkedListMutator<T> since otherwise we cannot do InsertAt,
@@ -195,6 +195,7 @@ namespace   Stroika {
                         nonvirtual  void    Remove (T item);
                         nonvirtual  void    RemoveFirst ();
                         nonvirtual  void    RemoveAll ();
+                        nonvirtual  void    Append (T item);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and

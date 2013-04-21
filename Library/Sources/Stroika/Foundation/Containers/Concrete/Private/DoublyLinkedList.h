@@ -8,9 +8,9 @@
 /*
  *
  * TODO:
- *		@todo	MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
+ *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
  *
- *		@todo	WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL
+ *      @todo   WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL
  *
  *
  *
@@ -193,9 +193,9 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAll ();
 
                     public:
-						nonvirtual	void    Append (T item);
+                        nonvirtual  void    Append (T item);
 
-						/*
+                        /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
                          * perfrom patching.
                          */
