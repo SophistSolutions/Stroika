@@ -249,6 +249,17 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const Link<T>* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
+                        // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
+                        // and maybe best (depending on frequency of calls to current index
+                        nonvirtual size_t CurrentIndex () const {
+                            RequireNotNull (fData);
+                            RequireNotNull (this->fCurrent);
+                            size_t i = 0;
+                            for (const Link<T>* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
+                                AssertNotNull (l);
+                            }
+                            return i;
+                        }
 
                     protected:
                         const LinkedList_Patch<T>*  fData;
