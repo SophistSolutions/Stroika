@@ -315,6 +315,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\HRESULTErrorException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.cpp" />
@@ -555,6 +556,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Process.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentMissingException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\RequiredComponentVersionMismatchException.h" />
@@ -569,7 +571,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SilentException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\StringException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SubProcess.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Thread.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadAbortException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\ThreadPool.h" />
@@ -729,6 +730,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\StructuredException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\Windows\WaitSupport.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Process.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\ProcessRunner.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ProgressMonitor.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Accessor.inl" />
