@@ -36,6 +36,10 @@ namespace   Stroika {
                 : BinaryStream ()
             {
             }
+            inline  BinaryOutputStream::BinaryOutputStream (nullptr_t)
+                : BinaryStream ()
+            {
+            }
             inline  BinaryOutputStream::BinaryOutputStream (const _SharedIRep& rep)
                 : BinaryStream (rep)
             {

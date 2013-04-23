@@ -51,13 +51,14 @@ namespace   Stroika {
             public:
                 class   _IRep;
 
-			public:
+            public:
                 /**
-				 *	defaults to null (empty ())
+                 *  defaults to null (empty ())
                  */
-				BinaryOutputStream ();
+                BinaryOutputStream ();
+                BinaryOutputStream (nullptr_t);
 
-			protected:
+            protected:
                 typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:

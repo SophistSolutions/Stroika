@@ -50,11 +50,12 @@ namespace   Stroika {
             protected:
                 class   _IRep;
 
-			public:
+            public:
                 /**
-				 *	defaults to null (empty ())
+                 *  defaults to null (empty ())
                  */
-				BinaryStream ();
+                BinaryStream ();
+                BinaryStream (nullptr_t);
 
             protected:
                 typedef shared_ptr<_IRep>   _SharedIRep;
