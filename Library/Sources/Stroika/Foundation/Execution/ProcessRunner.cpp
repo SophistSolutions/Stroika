@@ -43,6 +43,59 @@ ProcessRunner::ProcessRunner (const TString& executable, const Containers::Seque
 
 
 #if 0
+
+
+namespace   {
+    class   AutoHANDLE {
+    private:
+        AutoHANDLE (const AutoHANDLE&);                     //NOTSUPPORTED
+    public:
+        AutoHANDLE (HANDLE h = INVALID_HANDLE_VALUE):
+            fHandle (h) {
+        }
+        ~AutoHANDLE () {
+            Close ();
+        }
+        const AutoHANDLE& operator= (const AutoHANDLE& rhs) {
+            if (this != &rhs) {
+                Close ();
+                fHandle = rhs.fHandle;
+            }
+            return *this;
+        }
+        operator HANDLE () const {
+            return fHandle;
+        }
+        HANDLE* operator& () {
+            return &fHandle;
+        }
+        void    Close () {
+            if (fHandle != INVALID_HANDLE_VALUE) {
+                Verify (::CloseHandle (fHandle));
+                fHandle = INVALID_HANDLE_VALUE;
+            }
+        }
+        void    ReplaceHandleAsNonInheritable () {
+            HANDLE  result  =   INVALID_HANDLE_VALUE;
+            Verify (::DuplicateHandle (::GetCurrentProcess (), fHandle, ::GetCurrentProcess (), &result , 0, FALSE, DUPLICATE_SAME_ACCESS));
+            Verify (::CloseHandle (fHandle));
+            fHandle = result;
+        }
+    public:
+        HANDLE  fHandle;
+    };
+    inline  void    SAFE_HANDLE_CLOSER (HANDLE* h)
+    {
+        RequireNotNull (h);
+        if (*h != INVALID_HANDLE_VALUE) {
+            Verify (::CloseHandle (*h));
+            *h = INVALID_HANDLE_VALUE;
+        }
+    }
+}
+
+
+
 namespace   {
 // still unsure if needed/useful - I now think the PeekNamedPipe stuff is NOT needed, but
 // I can turn it on if needed -- LGP 2009-05-07
