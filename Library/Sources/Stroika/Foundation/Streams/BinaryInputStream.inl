@@ -17,14 +17,26 @@ namespace   Stroika {
         namespace   Streams {
 
 
-            //  class   BinaryInputStream::_IRep
+			/*
+			 ********************************************************************************
+			 *************************** BinaryInputStream::_IRep ***************************
+			 ********************************************************************************
+			 */
             inline  BinaryInputStream::_IRep::_IRep ()
             {
             }
 
 
 
-            //  class   BinaryInputStream
+			/*
+			 ********************************************************************************
+			 ******************************* BinaryInputStream ******************************
+			 ********************************************************************************
+			 */
+            inline  BinaryInputStream::BinaryInputStream ()
+                : BinaryStream ()
+            {
+            }
             inline  BinaryInputStream::BinaryInputStream (const _SharedIRep& rep)
                 : BinaryStream (rep)
             {

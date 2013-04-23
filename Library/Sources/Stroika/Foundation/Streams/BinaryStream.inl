@@ -16,7 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   BinaryStream::_IRep
+
+			/*
+			 ********************************************************************************
+			 ******************************** BinaryStream::_IRep ***************************
+			 ********************************************************************************
+			 */
             inline  BinaryStream::_IRep::_IRep ()
             {
             }
@@ -24,7 +29,17 @@ namespace   Stroika {
             {
             }
 
-            //  class   BinaryStream
+
+			/*
+			 ********************************************************************************
+			 ************************************ BinaryStream ******************************
+			 ********************************************************************************
+			 */
+            inline  BinaryStream::BinaryStream ()
+                : Seekable (nullptr)
+                , fRep_ ()
+            {
+            }
             inline  BinaryStream::BinaryStream (const _SharedIRep& rep)
                 : Seekable (dynamic_cast<Seekable::_IRep*> (rep.get ()))
                 , fRep_ (rep)
@@ -43,6 +58,7 @@ namespace   Stroika {
                 fRep_.reset ();
                 Seekable::_Clear ();
             }
+
 
         }
     }
