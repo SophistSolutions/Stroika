@@ -9,6 +9,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/String.h"
 #include    "../Containers/Sequence.h"
+#include    "../Memory/BLOB.h"
 #include    "../Memory/Optional.h"
 #include    "../Streams/BinaryInputStream.h"
 #include    "../Streams/BinaryOutputStream.h"

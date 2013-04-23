@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "Thread.h"
+
 #include    "ProcessRunner.h"
 
 
@@ -41,9 +43,79 @@ ProcessRunner::ProcessRunner (const TString& executable, const Containers::Seque
 {
 }
 
+TString ProcessRunner::GetWorkingDirectory ()
+{
+    return fWorkingDirectory_;
+}
+
+void    ProcessRunner::SetWorkingDirectory (const TString& d)
+{
+    fWorkingDirectory_ = d;
+}
+
+Streams::BinaryInputStream  ProcessRunner::GetStdIn () const
+{
+    return fStdIn_;
+}
+
+void      ProcessRunner::SetStdIn (const Streams::BinaryInputStream& in)
+{
+    fStdIn_ = in;
+}
+
+void     ProcessRunner:: SetStdIn (const Memory::BLOB& in)
+{
+    fStdIn_ = in.As<Streams::BinaryInputStream> ();
+}
+
+Streams::BinaryOutputStream ProcessRunner::GetStdOut () const
+{
+    return fStdOut_;
+}
+
+void    ProcessRunner::SetStdOut (const Streams::BinaryOutputStream& out)
+{
+    fStdOut_ = out;
+}
+
+Streams::BinaryOutputStream ProcessRunner::GetStdErr () const
+{
+    return fStdErr_;
+}
+
+void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
+{
+    fStdErr_ = err;
+}
+
+IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior progress)
+{
+    // obviously this needs work...
+    return IRunnablePtr ();
+}
+
+void    ProcessRunner::Run (ProgressMontior progress, Time::DurationSecondsType timeout)
+{
+    // correct, but doesn't work cuz of issues iwth teh design of the progress
+#if 0
+    if (timeout == Time::kInfinite) {
+        CreateRunnable (progress)->Run ();
+    }
+    else {
+        Thread t (CreateRunnable (progress));
+        t.Start ();
+        t.WaitForDone (timeout);
+    }
+#endif
+}
+
+
+
+
+
+
 
 #if 0
-
 
 namespace   {
     class   AutoHANDLE {
