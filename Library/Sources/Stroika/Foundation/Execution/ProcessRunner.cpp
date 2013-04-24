@@ -163,7 +163,18 @@ namespace {
 }
 
 
-
+namespace {
+    TString GetCWD_ ()
+    {
+#if     qPlatform_Windows
+        TCHAR pwd[MAX_PATH];
+        GetCurrentDirectory(MAX_PATH, pwd);
+        return pwd;
+#else
+        return TSTring ();  // NYI
+#endif
+    }
+}
 
 
 
@@ -176,7 +187,7 @@ ProcessRunner::ProcessRunner (const TString& commandLine, Streams::BinaryInputSt
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
-    , fWorkingDirectory_ () /// FIX TO GRAB CWD
+    , fWorkingDirectory_ (GetCWD_ ())
     , fStdIn_ (in)
     , fStdOut_ (out)
     , fStdErr_ (error)
@@ -187,7 +198,7 @@ ProcessRunner::ProcessRunner (const TString& executable, const Containers::Seque
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
-    , fWorkingDirectory_ () /// FIX TO GRAB CWD
+    , fWorkingDirectory_ (GetCWD_ ())
     , fStdIn_ (in)
     , fStdOut_ (out)
     , fStdErr_ (error)
@@ -256,9 +267,9 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
     return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
-        TraceContextBumper  traceCtx (_T ("ProcessRunner::CreateRunnable::{}::Runner..."));
-        DbgTrace (_T ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
-        DbgTrace (_T ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
+        TraceContextBumper  traceCtx (TSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
+        DbgTrace (TSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
+        DbgTrace (TSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
 
 
         // Horrible implementation - just designed to be quickie get started...
@@ -345,8 +356,6 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
 
             stringstream    stdoutResultStream (ios_base::in | ios_base::out | ios_base::binary);
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
-
-//              Time::DurationSecondsType   timeoutAt   =   Time::GetTickCount () + timeout;
 
                 {
                     {
