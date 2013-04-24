@@ -128,14 +128,14 @@ namespace   Stroika {
                  *  Each of these CAN be null, and will if so, that will be interpretted as an empty stream
                  *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
                  */
-                nonvirtual  IRunnablePtr    CreateRunnable (ProgressMontior progress = ProgressMontior ());
+                nonvirtual  IRunnablePtr    CreateRunnable (ProgressMontior* progress = nullptr);
 
             public:
                 /**
                  *  Creates the runnable above, and directly runs it in place (with the given timeout).
                  *  To be able to control cancelation, use CreateRunnable () directly.
                  */
-                nonvirtual  void    Run (ProgressMontior progress = ProgressMontior (), Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  void    Run (ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
                 Memory::Optional<TString>       fCommandLine_;
