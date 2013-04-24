@@ -256,6 +256,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
     if (fCommandLine_.empty ()) {
     }
     else {
+		cmdLine = *fCommandLine_;
     }
     TString currentDir;
     if (fCommandLine_.empty ()) {
@@ -266,14 +267,17 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
 
-	return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
+    return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (TSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
         DbgTrace (TSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
         DbgTrace (TSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
 
 
         // Horrible implementation - just designed to be quickie get started...
-        Memory::BLOB    stdinBLOB   =   in.ReadAll ();
+        Memory::BLOB    stdinBLOB;
+		if (not in.empty ()) {
+			stdinBLOB =   in.ReadAll ();
+		}
 
 #if     qPlatform_Windows
 //      DbgTrace (_T ("timeout: %f"), timeout);
@@ -498,16 +502,16 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                     /*
                      *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                      */
-					if (not out.empty ()) {
-						Byte    buf[kReadBufSize];
-						DWORD   nBytesRead  =   0;
-						while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
-							out.Write (buf, buf + nBytesRead);
-						}
-					}
+                    if (not out.empty ()) {
+                        Byte    buf[kReadBufSize];
+                        DWORD   nBytesRead  =   0;
+                        while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
+                            out.Write (buf, buf + nBytesRead);
+                        }
+                    }
                 }
             }
-			// MAYBE need to copy STDERRR TOO!!!
+            // MAYBE need to copy STDERRR TOO!!!
         }
         catch (...) {
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
