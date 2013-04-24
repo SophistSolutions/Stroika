@@ -256,13 +256,11 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
     if (fCommandLine_.empty ()) {
     }
     else {
-		cmdLine = *fCommandLine_;
+        cmdLine = *fCommandLine_;
     }
-    TString currentDir;
-    if (fCommandLine_.empty ()) {
-    }
-    else {
-    }
+
+    TString currentDir  =   GetWorkingDirectory ();
+
     Streams::BinaryInputStream  in  =   GetStdIn ();
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
@@ -275,9 +273,9 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
 
         // Horrible implementation - just designed to be quickie get started...
         Memory::BLOB    stdinBLOB;
-		if (not in.empty ()) {
-			stdinBLOB =   in.ReadAll ();
-		}
+        if (not in.empty ()) {
+            stdinBLOB =   in.ReadAll ();
+        }
 
 #if     qPlatform_Windows
 //      DbgTrace (_T ("timeout: %f"), timeout);
@@ -339,7 +337,9 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                 bool    bInheritHandles     =   true;
                 TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
                 _tcscpy_s (cmdLineBuf, cmdLine.c_str ());
-                Verify (::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir.c_str (), &startInfo, &processInfo));
+                Execution::Platform::Windows::ThrowIfFalseGetLastError (
+                    ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, currentDir.c_str (), &startInfo, &processInfo)
+                );
             }
 
             {
@@ -358,7 +358,6 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
             AutoHANDLE_& useSTDERR   =   jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-//            stringstream    stdoutResultStream (ios_base::in | ios_base::out | ios_base::binary);
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
 
                 {
@@ -418,7 +417,6 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                             if (p < e) {
                                 ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDOUT, out);
                                 ReadAnyAvailableAndCopy2StreamWithoutBlocking_ (useSTDERR, err);
-                                //ReadAnyAvailableAndDumpMsgToTraceWithoutBlocking_ (useSTDERR);
                             }
                             if (p < e and written == 0) {
                                 // if we have more to write, but that the target process hasn't consumed it yet - don't spin trying to
@@ -473,6 +471,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                         case    WAIT_OBJECT_0: {
                                 DbgTrace (_T ("process finished normally"));
 //                              timeoutAt = -1.0f;  // force out of loop
+                                goto DoneWithProcess;
                             }
                             break;
                         case    WAIT_TIMEOUT: {
@@ -480,15 +479,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                             }
                     }
                 }
-
-#if 0
-                if (timeoutAt > 0.0f) {
-                    DbgTrace (_T ("process timed out - so throwing up!"));
-                    // then we've timed out - kill the process and DONT return the partial result!
-                    (void)::TerminateProcess (processInfo.hProcess, -1);    // if it exceeded the timeout - kill it (could already be done by now - in which case - this will be ignored - fine...
-                    Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_TIMEOUT));
-                }
-#endif
+DoneWithProcess:
 
                 SAFE_HANDLE_CLOSER (&processInfo.hProcess);
                 SAFE_HANDLE_CLOSER (&processInfo.hThread);
@@ -510,8 +501,12 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                         }
                     }
                 }
+
+                // wait some reasonable amount of time for hte process to finish, and then KILL IT
+
             }
-            // MAYBE need to copy STDERRR TOO!!!
+
+            // @todo MAYBE need to copy STDERRR TOO!!!
         }
         catch (...) {
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
