@@ -7,7 +7,9 @@
 
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
+#if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
+#endif
 
 #include    "Sleep.h"
 #include    "Thread.h"
