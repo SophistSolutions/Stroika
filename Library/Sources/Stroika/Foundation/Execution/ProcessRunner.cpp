@@ -171,7 +171,7 @@ namespace {
         GetCurrentDirectory(MAX_PATH, pwd);
         return pwd;
 #else
-        return TSTring ();  // NYI
+        return TString ();  // NYI
 #endif
     }
 }
@@ -262,11 +262,11 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
     }
     else {
     }
-
     Streams::BinaryInputStream  in  =   GetStdIn ();
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
-    return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
+
+	return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (TSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
         DbgTrace (TSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
         DbgTrace (TSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
@@ -354,7 +354,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
             AutoHANDLE_& useSTDERR   =   jStderr[1];
             Assert (jStderr[0] == INVALID_HANDLE_VALUE);
 
-            stringstream    stdoutResultStream (ios_base::in | ios_base::out | ios_base::binary);
+//            stringstream    stdoutResultStream (ios_base::in | ios_base::out | ios_base::binary);
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
 
                 {
@@ -443,7 +443,6 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                  *  fills the OS PIPE buffer.
                  */
                 int     timesWaited =   0;
-                //while (Time::GetTickCount () < timeoutAt) {
                 while (true) {
                     /*
                      *  It would be nice to be able to WAIT on the PIPEs - but that doesn't appear to work when they
@@ -499,24 +498,16 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                     /*
                      *  Read whatever is left...and blocking here is fine, since at this point - the subprocess should be closed/terminated.
                      */
-                    char    buf[kReadBufSize];
-                    DWORD   nBytesRead  =   0;
-                    while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
-                        stdoutResultStream.write (buf, nBytesRead);
-                    }
+					if (not out.empty ()) {
+						Byte    buf[kReadBufSize];
+						DWORD   nBytesRead  =   0;
+						while (::ReadFile (useSTDOUT, buf, sizeof (buf), &nBytesRead, nullptr)) {
+							out.Write (buf, buf + nBytesRead);
+						}
+					}
                 }
             }
-
-            /*
-             * Grab and return the results from STDOUT (and someday maybe STDERR?)
-             */
-            if (not out.empty ()) {
-                if (stdoutResultStream.tellp () != iostream::pos_type (0)) {
-                    DbgTrace ("stdoutResultStream size=%d", stdoutResultStream.tellp ());
-                    Memory::BLOB xxx    =   ReadStreamAsBLOB_ (stdoutResultStream);
-                    out.Write (xxx.begin (), xxx.end ());
-                }
-            }
+			// MAYBE need to copy STDERRR TOO!!!
         }
         catch (...) {
             if (processInfo.hProcess != INVALID_HANDLE_VALUE) {
