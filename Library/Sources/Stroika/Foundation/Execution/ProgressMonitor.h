@@ -16,6 +16,15 @@
 
 /**
  * TODO:
+ *
+ *      @todo   Consider  having ProgressMonitor be as smartptr type, instead of passing ProgressMonitor* all over
+ *              the place. And break into submodules:
+ *              Progress/
+ *                  Monitor
+ *                  Normalizer
+ *                  Updater???
+ *                  Listener???
+ *
  *      @todo   ProgressRangeType SB class with oeprator to convert to/from float, but with assert about range
  *              0..1
  *
