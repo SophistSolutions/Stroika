@@ -20,9 +20,9 @@
 
 /**
  *  TODO:
- *      @todo   Completely UNIMPLEMETNED
- *              (draft implementation for WINDOWS - based on RFLLib code, but that has a way to go, and nothing for
- *              POSIX yet)
+ *      @todo   Windows implementation is weak, but appears fully functional.
+ *
+ *		@todo	POSIX implementaiton is non-existent.
  *
  *      @todo   Redo DWORD   waitResult  =   ::WaitForMultipleObjects()... logic to wait on thread and each read/write socket
  *              with select() AND somehow maybe eventually wait on streams (so we dont have to pre-read it all)
