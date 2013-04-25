@@ -13,6 +13,7 @@ SubDirs	=	\
 	iostream	\
 
 Objs	=	\
+	$(ObjDir)BasicBinaryInputOutputStream.o\
 	$(ObjDir)BasicBinaryInputStream.o\
 	$(ObjDir)BasicBinaryOutputStream.o\
 	$(ObjDir)BinaryStream.o\

@@ -97,6 +97,7 @@ namespace   Stroika {
              */
             class   BinaryInputStream : public BinaryStream {
             protected:
+            public:
                 class   _IRep;
 
             public:

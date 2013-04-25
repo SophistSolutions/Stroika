@@ -2,8 +2,8 @@ This folder contains all the Stroika Library Foundation::Streams source code.
 
 TODO:
 
-	o	Add	BasicBinaryInputOutputStream
-		(NOTE - if/when we implemented Sequence_ChunkedArray, that would be a GREAT implemenation backend for
+	o	BasicBinaryInputOutputStream
+		(if/when we implemented Sequence_ChunkedArray, that would be a GREAT implemenation backend for
 		BasicBinaryOutputStream and BasicBinaryInputOutputStream)
 
 	o	Must add BasicTextInputStream and BasicTextOutputStream (memory-based). MAYBE. Probably helpful, though could just

@@ -7,6 +7,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
@@ -90,6 +91,36 @@ namespace   {
 
 
 
+namespace   {
+    namespace   BasicBinaryInputOutputStream_ {
+
+        void    TestBasicConstruction_ ()
+        {
+            {
+                BasicBinaryInputOutputStream  s;
+                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s.IsSeekable ());
+            }
+            {
+                BasicBinaryInputOutputStream  s;
+                VerifyTestResult (not s.empty ());
+                VerifyTestResult (s.IsSeekable ());
+
+                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
+                s.Write (std::begin (kData_), std::end (kData_));
+                Memory::BLOB    b = s.As<Memory::BLOB> ();
+                VerifyTestResult (b.size () == sizeof (kData_));
+                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+            }
+        }
+
+        void    Tests_ ()
+        {
+            TestBasicConstruction_ ();
+        }
+    }
+}
+
 
 
 
@@ -125,6 +156,7 @@ namespace   {
     {
         BasicBinaryInputStream_::Tests_ ();
         BasicBinaryOutputStream_::Tests_ ();
+        BasicBinaryInputOutputStream_::Tests_ ();
         BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
     }
 }
