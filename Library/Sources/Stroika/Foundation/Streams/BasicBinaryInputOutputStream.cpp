@@ -17,7 +17,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Streams;
 
 
-                 
+
 
 class   BasicBinaryInputOutputStream::IRep_ : public BinaryInputStream::_IRep, public BinaryOutputStream::_IRep, public Seekable::_IRep {
 public:
@@ -35,7 +35,7 @@ public:
         , fCursor_ (fData_.begin ()) {
     }
 
-	virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -44,12 +44,14 @@ public:
         Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
         size_t  nAvail      =   fData_.end () - fCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
-        memcpy (intoStart, &*fCursor_, nCopied);
+        if (nCopied != 0) {
+            memcpy (intoStart, &*fCursor_, nCopied);
+        }
         fCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
-	}
-	
-	virtual void    Write (const Byte* start, const Byte* end) override {
+    }
+
+    virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
@@ -159,7 +161,7 @@ template    <>
 Memory::BLOB   BasicBinaryInputOutputStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-	AssertMember (_GetRep ().get (), IRep_);
+    AssertMember (_GetRep ().get (), IRep_);
     const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsBLOB ();
 }
@@ -168,7 +170,7 @@ template    <>
 vector<Byte>   BasicBinaryInputOutputStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-	AssertMember (_GetRep ().get (), IRep_);
+    AssertMember (_GetRep ().get (), IRep_);
     const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsVector ();
 }
@@ -177,7 +179,7 @@ template    <>
 string   BasicBinaryInputOutputStream::As () const
 {
     RequireNotNull (_GetRep ().get ());
-	AssertMember (_GetRep ().get (), IRep_);
+    AssertMember (_GetRep ().get (), IRep_);
     const IRep_&    rep =   *dynamic_cast<const IRep_*> (_GetRep ().get ());
     return rep.AsString ();
 }

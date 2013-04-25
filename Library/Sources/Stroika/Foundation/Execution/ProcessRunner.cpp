@@ -10,6 +10,9 @@
 #if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
 #endif
+#include    "../Streams/BasicBinaryInputOutputStream.h"
+#include    "../Streams/TextOutputStreamBinaryAdapter.h"
+#include    "../Streams/TextInputStreamBinaryAdapter.h"
 
 #include    "Sleep.h"
 #include    "Thread.h"
@@ -534,3 +537,33 @@ void    ProcessRunner::Run (ProgressMontior* progress, Time::DurationSecondsType
     }
 }
 
+Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMontior* progress, Time::DurationSecondsType timeout)
+{
+    Streams::BinaryInputStream  oldStdIn    =   GetStdIn ();
+    Streams::BinaryOutputStream oldStdOut   =   GetStdOut ();
+    try {
+        Streams::BasicBinaryInputOutputStream   useStdIn;
+        Streams::BasicBinaryInputOutputStream   useStdOut;
+
+        // Prefill stream
+        Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
+        useStdIn.Seek (0);
+
+        SetStdIn (useStdIn);
+        SetStdOut (useStdOut);
+
+        Run (progress, timeout);
+
+        SetStdIn (oldStdIn);
+        SetStdOut (oldStdOut);
+
+        // get from 'useStdOut'
+        useStdOut.Seek (0);
+        return Streams::TextInputStreamBinaryAdapter (useStdOut).ReadAll ();
+    }
+    catch (...) {
+        SetStdIn (oldStdIn);
+        SetStdOut (oldStdOut);
+        Execution::DoReThrow ();
+    }
+}

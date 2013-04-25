@@ -137,8 +137,13 @@ namespace   Stroika {
                 /**
                  *  Creates the runnable above, and directly runs it in place (with the given timeout).
                  *  To be able to control cancelation, use CreateRunnable () directly.
+                 *
+                 *  The Run() overload taking cmdStdInValue replaces the current stdin stream associated with the
+                 *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
+                 *  results as a string.
                  */
-                nonvirtual  void    Run (ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  void                Run (ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
                 Memory::Optional<TString>       fCommandLine_;

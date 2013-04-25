@@ -14,7 +14,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-
+using   Characters::String;
 
 
 
@@ -25,14 +25,21 @@ namespace   {
         Streams::BasicBinaryOutputStream myStdOut;
 #if         qPlatform_Windows
         // quickie about to test..
-        ProcessRunner pr (TSTR ("ls"), nullptr, myStdOut);
+        ProcessRunner pr (TSTR ("echo hi mom"), nullptr, myStdOut);
         pr.Run ();
 #endif
-
-        int a = 3;
+    }
+    void    RegressionTest2_ ()
+    {
+        Streams::BasicBinaryOutputStream myStdOut;
+#if         qPlatform_Windows
+        // quickie about to test..
+        ProcessRunner pr (TSTR ("echo hi mom"));
+        String out = pr.Run (L"");
+        VerifyTestResult (out.Trim () == L"hi mom");
+#endif
     }
 }
-
 
 
 namespace   {
@@ -40,6 +47,7 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         RegressionTest1_ ();
+        RegressionTest2_ ();
     }
 
 }
