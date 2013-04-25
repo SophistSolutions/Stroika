@@ -20,7 +20,17 @@
  *  \file
  *
  *  TODO:
+ *      @todo   Decide how best to deal with Seekability! iostreams has a separate seek offset for get/put
+ *              That in many ways works out best! But that doesn't fit with the inheritance mixin scheme
+ *              we have here.
  *
+ *              The current implementation has a single seek-offset used for BOTH the get/put (read/write)
+ *              offsets.
+ *
+ *              MAYBE this can be made to work with NOT using virtual base classes, so you cast to BinaryInputStream
+ *              and call GetOffset and then cast to BinaryOutputStream and call GetOffset() you get differnt answers.
+ *              And the MIXIN disambiguuates by NOT laetting you directly the get Seekable, but instead you
+ *              must say ('getInSeekable' / 'getOutSeekable' - and SeekG, SeekP () etc..
  */
 
 
