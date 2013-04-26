@@ -44,6 +44,11 @@ namespace   Stroika {
              *
              *  Note that this concept applies to a file, but NOT to a socket (tcp) stream. A TCP/stream
              *  really consists of two related (paired) streams going in opposite directions.
+             *
+             *  Note: @BufferedBinaryInputStream and @BufferedBinaryOutputStream may not work as expected with
+             *  @BinaryInputOutputStream (and subclasses), because the buffering in individual streams may not get
+             *  pushed through to the associated other direction stream. For most predictable buffering results
+             *  use @BufferedBinaryInputOutputStream
              */
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
