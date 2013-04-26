@@ -20,17 +20,7 @@
  *  \file
  *
  *  TODO:
- *      @todo   Decide how best to deal with Seekability! iostreams has a separate seek offset for get/put
- *              That in many ways works out best! But that doesn't fit with the inheritance mixin scheme
- *              we have here.
- *
- *              The current implementation has a single seek-offset used for BOTH the get/put (read/write)
- *              offsets.
- *
- *              MAYBE this can be made to work with NOT using virtual base classes, so you cast to BinaryInputStream
- *              and call GetOffset and then cast to BinaryOutputStream and call GetOffset() you get differnt answers.
- *              And the MIXIN disambiguuates by NOT laetting you directly the get Seekable, but instead you
- *              must say ('getInSeekable' / 'getOutSeekable' - and SeekG, SeekP () etc..
+ *      @todo
  */
 
 
@@ -39,11 +29,11 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
-             *  \brief  BinaryInputOutputStream is a stream that has BOTH a BinaryInputStream and an
-             *          BinaryOutputStream.
+             *  \brief  BinaryInputOutputStream is a stream that acts much as a BinaryInputStream and an BinaryOutputStream.
              *
-             *  BinaryInputOutputStream could have inherited from BinaryInputOutputStream and
+             *  BinaryInputOutputStream might have inherited from BinaryInputStream and
              *  BinaryOutputStream, but then it would have had two copies of the shared_ptr. It seemed
              *  more economical to have just one such base, and make it easy to convert (conversion operator).
              *
@@ -57,42 +47,33 @@ namespace   Stroika {
              */
             class   BinaryInputOutputStream : public Streams::BinaryStream {
             protected:
-                /**
-                 *  BinaryStream::_SharedIRep arg - MUST inherit from BOTH Streams::BinaryInputStream::_IRep AND
-                 *  Streams::BinaryOutputStream::_IRep.
-                 *
-                 *  \pre dynamic_cast(rep.get (), _SharedInputIRep::element_type) != nullptr
-                 *  \pre dynamic_cast(rep.get (), _SharedOutputIRep::element_type) != nullptr
-                 */
-                explicit BinaryInputOutputStream (const BinaryStream::_SharedIRep& rep);
-
-            protected:
-                typedef BinaryInputStream::_SharedIRep      _SharedInputIRep;
-                typedef BinaryOutputStream::_SharedIRep     _SharedOutputIRep;
+                class   _IRep;
+                typedef shared_ptr<_IRep>   _SharedIRep;
 
             protected:
                 /**
+                 *  _SharedIRep must NOT inherit from Seekable. However, the resulting BinaryInputOutputStream is always seekable.
                  *
+                 *  \pre dynamic_cast(rep.get (), Seekable*) == nullptr
                  */
-                nonvirtual  _SharedInputIRep _GetInputRep () const;
+                explicit BinaryInputOutputStream (const _SharedIRep& rep);
+
 
             protected:
                 /**
                  *
                  */
-                nonvirtual  _SharedOutputIRep _GetOutputRep () const;
+                nonvirtual  _SharedIRep _GetRep () const;
 
             public:
                 /**
-                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form binaryinputstream
-                 *  and that was like this but stronger)
+                 * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
                  */
                 nonvirtual  operator BinaryInputStream () const;
 
             public:
                 /**
-                 * (UNCLEAR IF SB operator convretion - but we used to just inherit form BinaryOutputStream
-                 *  and that was like this but stronger)
+                 * Note - this returns a proxy object - you cannot use .get() to see that its the same object as the original object
                  */
                 nonvirtual  operator BinaryOutputStream () const;
 
@@ -117,6 +98,97 @@ namespace   Stroika {
                  *  \pre not empty()
                  */
                 nonvirtual  void    Write (const Byte* start, const Byte* end);
+
+
+            public:
+                /**
+                 *  @see BinaryOutputStream::Flush
+                 */
+                nonvirtual void    Flush ();
+
+            public:
+                /**
+                 *  @see Seekable::GetOffset
+                 */
+                nonvirtual SeekOffsetType      ReadGetOffset () const;
+
+            public:
+                /**
+                 *  @see Seekable:::Seek
+                 */
+                nonvirtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset);
+
+            public:
+                /**
+                 *  @see Seekable::GetOffset
+                 */
+                nonvirtual SeekOffsetType      WriteGetOffset () const;
+
+            public:
+                /**
+                 *  @see Seekable::Seek
+                 */
+                nonvirtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset);
+            };
+
+
+            /**
+             *  This MUST NOT inherit from Seekable. It mimics parts of the interface (EXPLAIN WHY)
+             */
+            class   BinaryInputOutputStream::_IRep : public virtual BinaryStream::_IRep, std::enable_shared_from_this<_IRep> {
+            public:
+                _IRep ();
+                NO_COPY_CONSTRUCTOR(_IRep);
+                NO_ASSIGNMENT_OPERATOR(_IRep);
+
+
+            public:
+                /**
+                 *  @see BinaryInputStream::Read
+                 */
+                virtual size_t  Read (Byte* intoStart, Byte* intoEnd)                                   =   0;
+
+
+            public:
+                /**
+                 *  @see BinaryOutputStream::Write
+                 */
+                virtual void    Write (const Byte* start, const Byte* end)                              =   0;
+
+
+            public:
+                /**
+                 *  @see BinaryOutputStream::Flush
+                 */
+                virtual void    Flush ()                                                                =   0;
+
+
+            public:
+                /**
+                 *  @see Seekable::_IRep::GetOffset
+                 */
+                virtual SeekOffsetType      ReadGetOffset () const                                      =   0;
+
+
+            public:
+                /**
+                 *  @see Seekable::_IRep::Seek
+                 */
+                virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset)       =   0;
+
+
+            public:
+                /**
+                 *  @see Seekable::_IRep::GetOffset
+                 */
+                virtual SeekOffsetType      WriteGetOffset () const                                     =   0;
+
+
+            public:
+                /**
+                 *  @see Seekable::_IRep::Seek
+                 */
+                virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset)      =   0;
             };
 
 

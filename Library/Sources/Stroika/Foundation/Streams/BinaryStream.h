@@ -33,6 +33,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
              *  \brief  BinaryStream is an abstract class defining the interface to a binary source/sink
              *          of data.

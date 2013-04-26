@@ -99,18 +99,33 @@ namespace   {
             {
                 BasicBinaryInputOutputStream  s;
                 VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
+                VerifyTestResult (not s.IsSeekable ());
+                VerifyTestResult (static_cast<BinaryInputStream> (s).IsSeekable ());
+                VerifyTestResult (static_cast<BinaryOutputStream> (s).IsSeekable ());
             }
             {
                 BasicBinaryInputOutputStream  s;
                 VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
 
                 const Byte  kData_[] = { 3, 53, 43, 23, 3 };
                 s.Write (std::begin (kData_), std::end (kData_));
                 Memory::BLOB    b = s.As<Memory::BLOB> ();
                 VerifyTestResult (b.size () == sizeof (kData_));
                 VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
+            }
+            {
+                BasicBinaryInputOutputStream  s;
+                VerifyTestResult (s.ReadGetOffset () == 0);
+                VerifyTestResult (s.WriteGetOffset () == 0);
+                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
+                s.Write (std::begin (kData_), std::end (kData_));
+                VerifyTestResult (s.ReadGetOffset () == 0);
+                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
+                Byte bArr[1024];
+                Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
+                VerifyTestResult (s.ReadGetOffset () == sizeof (kData_));
+                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
+                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.ReadGetOffset ()) == Memory::BLOB (std::begin (kData_), std::end (kData_)));
             }
         }
 

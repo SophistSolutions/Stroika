@@ -547,7 +547,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
 
         // Prefill stream
         Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
-        useStdIn.Seek (0);
+        Assert (useStdIn.ReadGetOffset () == 0);
 
         SetStdIn (useStdIn);
         SetStdOut (useStdOut);
@@ -558,7 +558,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
         SetStdOut (oldStdOut);
 
         // get from 'useStdOut'
-        useStdOut.Seek (0);
+        Assert (useStdOut.ReadGetOffset () == 0);
         return Streams::TextInputStreamBinaryAdapter (useStdOut).ReadAll ();
     }
     catch (...) {

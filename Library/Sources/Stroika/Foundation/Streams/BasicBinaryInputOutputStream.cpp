@@ -19,7 +19,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-class   BasicBinaryInputOutputStream::IRep_ : public BinaryInputStream::_IRep, public BinaryOutputStream::_IRep, public Seekable::_IRep {
+class   BasicBinaryInputOutputStream::IRep_ : public BinaryInputOutputStream::_IRep {
 public:
     NO_COPY_CONSTRUCTOR(IRep_);
     NO_ASSIGNMENT_OPERATOR(IRep_);
@@ -32,7 +32,8 @@ public:
     IRep_ ()
         : fCriticalSection_ ()
         , fData_ ()
-        , fCursor_ (fData_.begin ()) {
+        , fReadCursor_ (fData_.begin ())
+        , fWriteCursor_ (fData_.begin ()) {
     }
 
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
@@ -41,13 +42,13 @@ public:
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
         lock_guard<mutex>  critSec (fCriticalSection_);
-        Assert ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
-        size_t  nAvail      =   fData_.end () - fCursor_;
+        Assert ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
+        size_t  nAvail      =   fData_.end () - fReadCursor_;
         size_t  nCopied     =   min (nAvail, nRequested);
         if (nCopied != 0) {
-            memcpy (intoStart, &*fCursor_, nCopied);
+            memcpy (intoStart, &*fReadCursor_, nCopied);
         }
-        fCursor_ += nCopied;
+        fReadCursor_ += nCopied;
         return nCopied; // this can be zero on EOF
     }
 
@@ -56,18 +57,21 @@ public:
         Require (end != nullptr or start == end);
         if (start != end) {
             lock_guard<mutex>  critSec (fCriticalSection_);
-            size_t  roomLeft        =   fData_.end () - fCursor_;
+            size_t  roomLeft        =   fData_.end () - fWriteCursor_;
             size_t  roomRequired    =   end - start;
             if (roomLeft < roomRequired) {
-                size_t  curOffset = fCursor_ - fData_.begin ();
+                size_t  curReadOffset = fReadCursor_ - fData_.begin ();
+                size_t  curWriteOffset = fWriteCursor_ - fData_.begin ();
                 Containers::ReserveSpeedTweekAddN (fData_, roomRequired - roomLeft);
-                fData_.resize (curOffset + roomRequired);
-                fCursor_ = fData_.begin () + curOffset;
-                Assert (fCursor_ < fData_.end ());
+                fData_.resize (curWriteOffset + roomRequired);
+                fReadCursor_ = fData_.begin () + curReadOffset;
+                fWriteCursor_ = fData_.begin () + curWriteOffset;
+                Assert (fWriteCursor_ < fData_.end ());
             }
-            memcpy (&*fCursor_, start, roomRequired);
-            fCursor_ += roomRequired;
-            Assert (fCursor_ <= fData_.end ());
+            memcpy (&*fWriteCursor_, start, roomRequired);
+            fWriteCursor_ += roomRequired;
+            Assert (fReadCursor_ <= fData_.end ());
+            Assert (fWriteCursor_ <= fData_.end ());
         }
     }
 
@@ -75,12 +79,12 @@ public:
         // nothing todo - write 'writes thru'
     }
 
-    virtual SeekOffsetType  GetOffset () const override {
-        lock_guard<mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
-        return fCursor_ - fData_.begin ();
+    virtual SeekOffsetType      ReadGetOffset () const override {
+        lock_guard<mutex>  critSec (fCriticalSection_);
+        return fReadCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset) override {
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -90,11 +94,11 @@ public:
                     if (offset > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (offset);
+                    fReadCursor_ = fData_.begin () + static_cast<size_t> (offset);
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SeekOffsetType curOffset   =   fReadCursor_ - fData_.begin ();
                     Streams::SeekOffsetType newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
@@ -102,11 +106,11 @@ public:
                     if (static_cast<size_t> (newOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                    fReadCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                 }
                 break;
             case    Whence::eFromEnd: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SeekOffsetType curOffset   =   fReadCursor_ - fData_.begin ();
                     Streams::SeekOffsetType newOffset   =   fData_.size () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
@@ -114,12 +118,59 @@ public:
                     if (static_cast<size_t> (newOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                    fReadCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
                 }
                 break;
         }
-        Ensure ((fData_.begin () <= fCursor_) and (fCursor_ <= fData_.end ()));
-        return fCursor_ - fData_.begin ();
+        Ensure ((fData_.begin () <= fReadCursor_) and (fReadCursor_ <= fData_.end ()));
+        return fReadCursor_ - fData_.begin ();
+    }
+
+    virtual SeekOffsetType      WriteGetOffset () const override {
+        lock_guard<mutex>  critSec (fCriticalSection_);
+        return fWriteCursor_ - fData_.begin ();
+    }
+
+    virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset) override {
+        lock_guard<mutex>  critSec (fCriticalSection_);
+        switch (whence) {
+            case    Whence::eFromStart: {
+                    if (offset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (offset > fData_.size ()) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
+                }
+                break;
+            case    Whence::eFromCurrent: {
+                    Streams::SeekOffsetType curOffset   =   fWriteCursor_ - fData_.begin ();
+                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    if (newOffset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                }
+                break;
+            case    Whence::eFromEnd: {
+                    Streams::SeekOffsetType curOffset   =   fWriteCursor_ - fData_.begin ();
+                    Streams::SeekOffsetType newOffset   =   fData_.size () + offset;
+                    if (newOffset < 0) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                        Execution::DoThrow (std::range_error ("seek"));
+                    }
+                    fWriteCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                }
+                break;
+        }
+        Ensure ((fData_.begin () <= fWriteCursor_) and (fWriteCursor_ <= fData_.end ()));
+        return fWriteCursor_ - fData_.begin ();
     }
 
     Memory::BLOB   AsBLOB () const {
@@ -140,7 +191,8 @@ public:
 private:
     mutable mutex           fCriticalSection_;
     vector<Byte>            fData_;
-    vector<Byte>::iterator  fCursor_;
+    vector<Byte>::iterator  fReadCursor_;
+    vector<Byte>::iterator  fWriteCursor_;
 };
 
 

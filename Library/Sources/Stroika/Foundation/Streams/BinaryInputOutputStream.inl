@@ -16,36 +16,57 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
-            //  class   BinaryInputOutputStream
-            inline  BinaryInputOutputStream::_SharedInputIRep BinaryInputOutputStream::_GetInputRep () const
+
+            /*
+             ********************************************************************************
+             ************************ BinaryInputOutputStream::_IRep ************************
+             ********************************************************************************
+             */
+            inline  BinaryInputOutputStream::_IRep::_IRep ()
             {
-                _SharedInputIRep   result  =   dynamic_pointer_cast<_SharedInputIRep::element_type> (_GetRep ());
-                RequireNotNull (result.get ());
-                return result;
-            }
-            inline  BinaryInputOutputStream::_SharedOutputIRep BinaryInputOutputStream::_GetOutputRep () const
-            {
-                _SharedOutputIRep   result  =   dynamic_pointer_cast<_SharedOutputIRep::element_type> (_GetRep ());
-                RequireNotNull (result.get ());
-                return result;
-            }
-            inline  BinaryInputOutputStream::operator BinaryInputStream () const
-            {
-                return BinaryInputStream (_GetInputRep ());
             }
 
-            inline  BinaryInputOutputStream::operator BinaryOutputStream () const
+
+            /*
+             ********************************************************************************
+             ******************************* BinaryInputOutputStream ************************
+             ********************************************************************************
+             */
+            inline  BinaryInputOutputStream::_SharedIRep BinaryInputOutputStream::_GetRep () const
             {
-                return BinaryOutputStream (_GetOutputRep ());
+                _SharedIRep   result  =   dynamic_pointer_cast<_SharedIRep::element_type> (BinaryStream::_GetRep ());
+                RequireNotNull (result.get ());
+                return result;
             }
             inline  size_t  BinaryInputOutputStream::Read (Byte* intoStart, Byte* intoEnd)
             {
-                _GetInputRep ()->Read (intoStart, intoEnd);
+                return _GetRep ()->Read (intoStart, intoEnd);
             }
             inline  void    BinaryInputOutputStream::Write (const Byte* start, const Byte* end)
             {
-                _GetOutputRep ()->Write (start, end);
+                _GetRep ()->Write (start, end);
             }
+            inline void    BinaryInputOutputStream::Flush ()
+            {
+                _GetRep ()->Flush ();
+            }
+            inline SeekOffsetType      BinaryInputOutputStream::ReadGetOffset () const
+            {
+                return _GetRep ()->ReadGetOffset ();
+            }
+            inline   SeekOffsetType      BinaryInputOutputStream::ReadSeek (Whence whence, SignedSeekOffsetType offset)
+            {
+                return _GetRep ()->ReadSeek (whence, offset);
+            }
+            inline   SeekOffsetType      BinaryInputOutputStream::WriteGetOffset () const
+            {
+                return _GetRep ()->WriteGetOffset ();
+            }
+            inline   SeekOffsetType      BinaryInputOutputStream::WriteSeek (Whence whence, SignedSeekOffsetType offset)
+            {
+                return _GetRep ()->WriteSeek (whence, offset);
+            }
+
 
         }
     }
