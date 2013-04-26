@@ -205,7 +205,7 @@ private:
  ********************************************************************************
  */
 BasicBinaryInputOutputStream::BasicBinaryInputOutputStream ()
-    : BinaryInputOutputStream (shared_ptr<_IRep> (new IRep_ ()))
+    : BinaryInputOutputStream (shared_ptr<IRep_> (new IRep_ ()))
 {
 }
 
