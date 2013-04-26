@@ -21,6 +21,8 @@
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
  *              class (when I implement it) based on Led chunked arrays).
  *
+ *      @todo   explain about read/write at same time / threadsa, nd logic for shared SEEK OFFSET
+ *
  */
 
 
@@ -32,9 +34,9 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Simplest to use BinaryOutputStream; BasicBinaryInputOutputStream can be written to, and then the BLOB of data retrieved.
+             *  \brief  Simplest to use BinaryInputOutputStream; BasicBinaryInputOutputStream can be written to, and then the BLOB of data retrieved.
              *
-             *  BasicBinaryInputOutputStream is threadsafe - meaning Write() can safely be called from
+             *  BinaryInputOutputStream is threadsafe - meaning Read () or Write() can safely be called from
              *  multiple threads at a time freely, and the results are interleaved without corruption. There is no guarantee
              *  of ordering, but one will finish before the next starts writing (so if they are writing structured messages,
              *  those will remain in-tact).
@@ -43,6 +45,8 @@ namespace   Stroika {
              *
              *  Since BasicBinaryInputOutputStream keeps its data all in memory, it has the limitation that attempts to seek
              *  or write more than will fit in RAM will fail (with an exception).
+             *
+             *  NB: This class COULD have been called MemoryStream, or MemoryInputOutputStream.
              */
             class   BasicBinaryInputOutputStream : public BinaryInputOutputStream {
             private:
