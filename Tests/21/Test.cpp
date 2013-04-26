@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Execution/ProcessRunner.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -39,6 +40,27 @@ namespace   {
         VerifyTestResult (out.Trim () == L"hi mom");
 #endif
     }
+    void    RegressionTest3_Pipe_ ()
+    {
+        Streams::BasicBinaryOutputStream myStdOut;
+#if         qPlatform_Windows
+        ProcessRunner pr1 (TSTR ("echo hi mom"));
+        Streams::BasicBinaryInputOutputStream pipe;
+        ProcessRunner pr2 (TSTR ("cat"));
+        pr1.SetStdOut (pipe);
+        pr2.SetStdIn (pipe);
+
+        Streams::BasicBinaryOutputStream pr2Out;
+        pr2.SetStdOut (pr2Out);
+
+        pr1.Run ();
+        pr2.Run ();
+
+        String out = String::FromUTF8 (pr2Out.As<string> ());
+
+        VerifyTestResult (out.Trim () == L"hi mom");
+#endif
+    }
 }
 
 
@@ -48,6 +70,7 @@ namespace   {
     {
         RegressionTest1_ ();
         RegressionTest2_ ();
+        RegressionTest3_Pipe_ ();
     }
 
 }
