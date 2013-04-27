@@ -25,8 +25,7 @@ public:
     NO_ASSIGNMENT_OPERATOR(IRep_);
 
 public:
-// re-enable when I fix BlockAllocation / private bug... -- LGP 2013-03-04
-//    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
+    DECLARE_USE_BLOCK_ALLOCATION(IRep_);
 
 public:
     IRep_ ()

@@ -46,6 +46,9 @@ namespace   Stroika {
              */
             class   BasicBinaryOutputStream : public BinaryOutputStream {
             private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
                 class   IRep_;
             public:
                 BasicBinaryOutputStream ();

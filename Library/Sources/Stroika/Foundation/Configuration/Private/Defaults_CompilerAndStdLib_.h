@@ -312,10 +312,29 @@
 // Anyhow - based on experimentationw with gcc, and 'common sense' - this should be defined to work - I will
 // assume its either a bug with the VS implementaiton of the compiler or the template itself.
 //
+// Example compiler output for error from vc++12 (so if you see this sort of thing - apply this ifdef/fix):
+//      1>c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(713): error C2248: 'Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_' : cannot access private class declared in class 'Stroika::Foundation::Streams::BasicBinaryOutputStream'
+//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.cpp(22) : see declaration of 'Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_'
+//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.h(47) : see declaration of 'Stroika::Foundation::Streams::BasicBinaryOutputStream'
+//      1>          c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(487) : see reference to function template instantiation 'void std::shared_ptr<_Ty>::_Resetp<_Ux>(_Ux *)' being compiled
+//      1>          with
+//      1>          [
+//      1>              _Ty=Stroika::Foundation::Streams::BinaryOutputStream::_IRep,
+//      1>              _Ux=Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_
+//      1>          ]
+//      1>          c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(487) : see reference to function template instantiation 'void std::shared_ptr<_Ty>::_Resetp<_Ux>(_Ux *)' being compiled
+//      1>          with
+//      1>          [
+//      1>              _Ty=Stroika::Foundation::Streams::BinaryOutputStream::_IRep,
+//      1>              _Ux=Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_
+//      1>          ]
+//      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.cpp(139) : see reference to function template instantiation
+//
+//
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 0
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
 #endif
