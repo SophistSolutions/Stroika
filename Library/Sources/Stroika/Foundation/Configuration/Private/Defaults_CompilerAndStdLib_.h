@@ -746,7 +746,7 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-#if     defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
@@ -778,7 +778,7 @@
 @DESCRIPTION:   22.3.3.2.2  string conversions  N
 */
 #ifndef qCompilerAndStdLib_Supports_string_conversions
-#if     defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_string_conversions              ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Supports_string_conversions              1
