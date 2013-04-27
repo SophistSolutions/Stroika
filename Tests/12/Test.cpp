@@ -395,14 +395,39 @@ namespace {
                 s.Append (i);
             }
             {
-                vector<T>   vs = s.As<vector<T>> ();
+                vector<T>   vs;
+                s.As (&vs);
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
                     VerifyTestResult ((i - vs.begin ()) == *i);
                 }
             }
             {
+#if     qCompilerAndStdLib_TemplateMembeFunctionOfTemplateAllowsExplicitTypeSpec
+                vector<T>   vs = s.As<vector<T>> ();
+#else
+                vector<T>   vs = s.As ();
+#endif
+                VerifyTestResult (vs.size () == 100);
+                for (auto i = vs.begin (); i != vs.end (); ++i) {
+                    VerifyTestResult ((i - vs.begin ()) == *i);
+                }
+            }
+            {
+                list<T> vs;
+                s.As (&vs);
+                VerifyTestResult (vs.size () == 100);
+                int idx = 0;
+                for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
+                    VerifyTestResult ((idx) == *i);
+                }
+            }
+            {
+#if     qCompilerAndStdLib_TemplateMembeFunctionOfTemplateAllowsExplicitTypeSpec
                 list<T> vs = s.As<list<T>> ();
+#else
+                list<T> vs = s.As ();
+#endif
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
