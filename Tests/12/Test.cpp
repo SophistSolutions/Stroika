@@ -403,11 +403,7 @@ namespace {
                 }
             }
             {
-#if     qCompilerAndStdLib_TemplateMembeFunctionOfTemplateAllowsExplicitTypeSpec
-                vector<T>   vs = s.As<vector<T>> ();
-#else
-                vector<T>   vs = s.As ();
-#endif
+                vector<T>   vs = s.template As<vector<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
                     VerifyTestResult ((i - vs.begin ()) == *i);
@@ -423,11 +419,7 @@ namespace {
                 }
             }
             {
-#if     qCompilerAndStdLib_TemplateMembeFunctionOfTemplateAllowsExplicitTypeSpec
-                list<T> vs = s.As<list<T>> ();
-#else
-                list<T> vs = s.As ();
-#endif
+                list<T> vs = s.template As<list<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
