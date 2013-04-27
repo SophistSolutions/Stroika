@@ -8,12 +8,16 @@
  *
  *  \file
  *
- *  @todo   Consider having Iterator<T> have begin(), end() methods that to magic so
+ *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
  *              }
  *          I think easy and useful, and biggest concern is the potential for subtle
  *          overload confusion generation.
+ *
+ *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Containers::mkIterable(Iterator<T>) - and
+ *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
+ *          all iteration calls to that iterator!
  *
  *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
  *          constructed in the wrong state and requiring an initial ++.
@@ -22,8 +26,6 @@
  *          to assure right behavior when not constructed. Be careful about MOVE semantics...
  *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
  *          {{{{{{{{{{IMPORTANT - DO VERY SOON}}}}}}}}}}}}}}}}
- *
- *
  *
  *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
@@ -42,6 +44,41 @@
  *  @todo   CONSIDER using enabled_shared_from_this on ireps? Document why we chose to or not to
  *          (maybe test space). From preliminary testing (VC++2012) - it appears to just make things
  *          bigger, not smaller. Must test other compilers too, and maybe disassemble.
+ *
+ *  @todo   Speed tweeks
+ *
+ *          The Major Design limitaiton of this approach to iterators is that it requires a non-inlinable
+ *          function call per iteration (roughly). Basically - if you pass a callback into an iterator rep
+ *          then to APPLY that function on each iteration requires a non-inlinable (indirect through pointer)
+ *          function call, or if you do the reverse, and directly use the iteraotr so no you can inline
+ *          apply the function, you must call a virtual function for each iteration to bump the next pointer.
+ *
+ *          Fundementally - you have multiple polypmorphism (on representation of container and thing to apply
+ *          at each iteration).
+ *
+ *          Two tricks:
+ *              (1)     Read a bunch at a time. This is tricky to implement and doesn't affect overall computational
+ *                      complexity (because it reduces number of virtual calls by a constant factor). But if that
+ *                      constant factor is big enough - 10-100-1000? - that still could be relevant pragmatically.
+ *
+ *                      The biggest challenge is preserving the existing stafety and patch semantics generically,
+ *                      in light of update during iteration, and making sure for uses where that doesnt help its
+ *                      not allowed to hurt.
+ *
+ *              (2)     special case common combinations. For example - at the point in the code where you have:
+ *                      Iterator<T> i;
+ *                      for (; i != e.end (); ++i) {
+ *                          do_this();
+ *                      }
+ *
+ *                      One could put in special purpose code for the Iterator<T>::operator++ that said:
+ *                      if (dynamic_cast<Sequence_Array::_IRep*> (myIRep) != nullptr) {
+ *                          then peek and cheat...
+ *                      }
+ *                      Maybe when the iterator is constructed - it checks for a couple importnat types
+ *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
+ *                      And the benefit in teh more common case is you avoid the virtual function call! so the it++ can be
+ *                      inlined (a big win oftne times).
  */
 
 
