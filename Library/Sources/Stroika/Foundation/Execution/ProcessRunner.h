@@ -50,6 +50,28 @@
  *              Can be used to reset signals, and/or close file descriptors. Maybe have optional
  *              flag to auto-do this stuff and or have a preset value hook proc do do most standard things.
  *
+ *  Design Goals:
+ *      o   Be able to run simple processes and capture output with little overhead, and very easy to do
+ *
+ *      o   Be able to support pipes between processes
+ *
+ *      o   Support large data and blocking issues properly - automating avoidance of pipe full bugs
+ *          which block processes
+ *
+ *      o   Efficient/Low performance overhead
+ *
+ *      o   For POSIX - simple to cleanly cleanup open sockets/resources (not needed on windows)
+ *
+ *      o   Separate threading implementation from API, so easy to externally specify the thread
+ *          stuff  runs on (e.g. so you can use threadpools to run the processes).
+ *
+ *      o   Work with stroika streams so its easy to have user-defined producers and comsumers, and
+ *          easy to hook together TextStreams (wrappers) - for format conversion/piping.
+ *
+ *
+ *  Design Overview:
+ *      o
+ *
  */
 
 
