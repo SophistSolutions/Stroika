@@ -164,6 +164,18 @@ namespace   Stroika {
             {
                 Append (item);
             }
+            template    <typename   T>
+            template    <typename   CONTAINER_OF_T>
+            inline  CONTAINER_OF_T  Sequence<T>:: As () const
+            {
+                return CONTAINER_OF_T (begin (), end ());
+            }
+            template    <typename   T>
+            template    <typename   CONTAINER_OF_T>
+            inline  void    Sequence<T>::As (CONTAINER_OF_T* into) const
+            {
+                return CONTAINER_OF_T (begin (), end ());
+            }
             template    <typename T>
             inline  T    Sequence<T>::back () const
             {

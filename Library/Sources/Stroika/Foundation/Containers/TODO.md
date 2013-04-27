@@ -44,4 +44,3 @@ TODO (Foundation::Containers)
 			somehow the ideas of STM (see http://en.wikipedia.org/wiki/Software_transactional_memory).
 
 			This is especailly important here, but also useful to explore through the rest of Stroika
-

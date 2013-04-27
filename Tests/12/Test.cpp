@@ -7,6 +7,8 @@
 
 #include    <iostream>
 #include    <sstream>
+#include    <vector>
+#include    <list>
 
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
@@ -387,8 +389,31 @@ namespace {
     template <typename T>
     void    SimpleSequenceTest_10_STLCompatWrappers_ (Sequence<T>& s)
     {
-        // NYI -
-        // but just trival wrappers on other things already tested so no biggie
+        {
+            VerifyTestResult (s.empty ());
+            for (size_t i = 0; i < 100; ++i) {
+                s.Append (i);
+            }
+            {
+                vector<T>   vs = s.As<vector<T>> ();
+                VerifyTestResult (vs.size () == 100);
+                for (auto i = vs.begin (); i != vs.end (); ++i) {
+                    VerifyTestResult ((i - vs.begin ()) == *i);
+                }
+            }
+            {
+                list<T> vs = s.As<list<T>> ();
+                VerifyTestResult (vs.size () == 100);
+                int idx = 0;
+                for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
+                    VerifyTestResult ((idx) == *i);
+                }
+            }
+        }
+
+        // still todo - CONSTRUCT sequence from stl vector etc
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
     }
 
 

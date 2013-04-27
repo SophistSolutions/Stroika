@@ -20,6 +20,11 @@
  *      (o)         Need CTOR that works with iterators. Ideally, dynamically check with C++11 traits if operator- supported
  *                  and use that to allocate if we can, and otherwise just iterate and append.
  *
+ *      @todo       CTOR must work with STL containers - like vector, and list so
+ *                      Sequence<T> (vector<T> ()) must work, as must
+ *                      Sequence<T> (list<T> ()) - and in the former case we should be
+ *                      able to figure out size and pre-allocate using new template typetraits stuff.
+ *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
@@ -43,6 +48,14 @@
  *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
  *
  *      @todo       DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
+ *
+ *      @todo       Add Sequence_SparseArray<T> - using btree implementation
+ *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
+ *                  (implement using redback tree or using stl map<>)
+ *
+ *      @todo       Add backend implementaiton of Sequence<T> using stl types - like
+ *                  Sequence_stdvector, and Sequence_stdlist<>
+ *
  */
 
 
@@ -258,6 +271,19 @@ namespace   Stroika {
                 nonvirtual  void    Remove (size_t i);
                 nonvirtual  void    Remove (size_t start, size_t end);
                 nonvirtual  void    Remove (const Iterator<T>& i);
+
+            public:
+                /*
+                 *  Convert Sequence<T> losslessly into a standard supproted C++ type.
+                 *  Supported types include:
+                 *      o   vector<T>
+                 *      o   list<T>
+                 *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
+                 */
+                template    <typename   CONTAINER_OF_T>
+                nonvirtual  CONTAINER_OF_T   As () const;
+                template    <typename   CONTAINER_OF_T>
+                nonvirtual  void    As (CONTAINER_OF_T* into) const;
 
             public:
                 /**
