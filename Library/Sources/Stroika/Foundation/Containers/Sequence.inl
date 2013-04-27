@@ -174,7 +174,8 @@ namespace   Stroika {
             template    <typename   CONTAINER_OF_T>
             inline  void    Sequence<T>::As (CONTAINER_OF_T* into) const
             {
-                return CONTAINER_OF_T (this->begin (), this->end ());
+                RequireNotNull (into);
+                *into = CONTAINER_OF_T (this->begin (), this->end ());
             }
             template    <typename T>
             inline  T    Sequence<T>::back () const
