@@ -140,7 +140,7 @@ namespace   Stroika {
             /**
              *  This MUST NOT inherit from Seekable. It mimics parts of the interface (EXPLAIN WHY)
              */
-            class   BinaryInputOutputStream::_IRep : public virtual BinaryStream::_IRep, std::enable_shared_from_this<BinaryInputOutputStream::_IRep> {
+            class   BinaryInputOutputStream::_IRep : public virtual BinaryStream::_IRep, public std::enable_shared_from_this<BinaryInputOutputStream::_IRep> {
             public:
                 _IRep ();
                 NO_COPY_CONSTRUCTOR(_IRep);
