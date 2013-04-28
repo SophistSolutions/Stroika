@@ -17,7 +17,11 @@ namespace   Stroika {
         namespace   DataExchangeFormat {
 
 
-            //  class   InternetMediaType
+            /*
+             ********************************************************************************
+             ********************************** InternetMediaType ***************************
+             ********************************************************************************
+             */
             inline  InternetMediaType::InternetMediaType (const String& ct)
                 : fType_ (ct)
             {
@@ -46,7 +50,6 @@ namespace   Stroika {
             {
                 return fType_ != rhs.fType_;
             }
-
             template    <>
             inline  String  InternetMediaType::As () const
             {
@@ -59,6 +62,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ********************************** TypeMatchesAny ******************************
+             ********************************************************************************
+             */
             template    <typename CONTAINER>
             bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny)
             {
@@ -69,6 +77,7 @@ namespace   Stroika {
                 }
                 return false;
             }
+
 
         }
     }
@@ -148,5 +157,4 @@ namespace   Stroika {
         }
     }
 }
-
 #endif  /*_Stroika_Foundation_DataExchangeFormat_InternetMediaType_inl_*/

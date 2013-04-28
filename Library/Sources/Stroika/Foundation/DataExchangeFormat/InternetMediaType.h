@@ -8,7 +8,7 @@
 
 #include    "../Characters/String.h"
 
-/*
+/**
  * TODO:
  *      o   Need some registration mechanism so IsTextFormat() results can be extended.
  *          For exmaple, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
@@ -18,9 +18,13 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
 
+
             using   Characters::String;
 
-            // MIME content-types are also sometimes referred to as 'Internet media type'
+
+            /**
+             *  MIME content-types are also sometimes referred to as 'Internet media type'
+             */
             class   InternetMediaType {
             public:
                 explicit InternetMediaType (const String& ct = String ());
@@ -58,22 +62,21 @@ namespace   Stroika {
             bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny);
 
 
+            /**
+             *  NB: these are basically constants, but declaring them as
+             *      const   InternetMediaType   kHealthBookURL_CT                   =   ContentType (L"application/x-healthbook-url");
+             *  causes the string CTOR for ContentType to be evaluated multiple times - once for each module this CPP file is loaded
+             *  into (way overkill - esp if not used).
+             *
+             *  I tried declaring these as extern const ContentType& kImage_CT;
+             *  but that produced problems accessing them at application startup (deadly embrace of startup module issues).
+             *
+             *  This appears the best compromise. They get initialized once (using the ModuleInit<> code) - and effectively
+             *  referenced (after inlining) through an extra pointer, but that should be the limit of the overhead - if the
+             *  compilers do a decent job.
+             *      -- LGP 2009-05-29
+             */
             namespace   PredefinedInternetMediaType {
-                /*
-                 *  NB: these are basically constants, but declaring them as
-                 *      const   InternetMediaType   kHealthBookURL_CT                   =   ContentType (L"application/x-healthbook-url");
-                 *  causes the string CTOR for ContentType to be evaluated multiple times - once for each module this CPP file is loaded
-                 *  into (way overkill - esp if not used).
-                 *
-                 *  I tried declaring these as extern const ContentType& kImage_CT;
-                 *  but that produced problems accessing them at application startup (deadly embrace of startup module issues).
-                 *
-                 *  This appears the best compromise. They get initialized once (using the ModuleInit<> code) - and effectively
-                 *  referenced (after inlining) through an extra pointer, but that should be the limit of the overhead - if the
-                 *  compilers do a decent job.
-                 *      -- LGP 2009-05-29
-                 */
-
                 const   InternetMediaType&  OctetStream_CT ();
 
                 const   InternetMediaType&  Image_CT ();
@@ -101,6 +104,8 @@ namespace   Stroika {
 
                 const   InternetMediaType&  Application_RTF_CT ();          // Microsoft RTF - Rich Text Format
             }
+
+
         }
     }
 }

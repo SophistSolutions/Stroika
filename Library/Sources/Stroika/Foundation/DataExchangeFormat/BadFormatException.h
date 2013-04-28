@@ -13,7 +13,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
 
-            // Use when reading from a structured stream the data is ill-formed
+
+            /**
+             * Use when reading from a structured stream the data is ill-formed
+             */
             class   BadFormatException : public Execution::StringException {
             public:
                 BadFormatException ();
@@ -33,6 +36,7 @@ namespace   Stroika {
             private:
                 wstring fDetails_;
             };
+
 
         }
     }

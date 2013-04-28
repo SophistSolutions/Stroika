@@ -53,7 +53,7 @@ namespace   Stroika {
              *  unpredictable costs for an Add operation. DoubleLinkList is usually
              *  slower, but has very predictable costs.
              *
-            */
+             */
             template    <typename T>
             class   Deque : public Iterable<T> {
             protected:

@@ -117,6 +117,8 @@ namespace   Stroika {
              */
             AssertionHandlerType    GetAssertionHandler ();
 
+            /**
+             */
             AssertionHandlerType    GetDefaultAssertionHandler ();
 
             /**
