@@ -215,7 +215,9 @@
             more obvious of type mismatches with As<> etc templates.</p>
 */
 #ifndef qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 2)))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
 #else
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
@@ -455,7 +457,9 @@
                 of errno_t (gcc for example just assumes its int)</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_errno_t)
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_Supports_errno_t ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_Supports_errno_t (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_errno_t 1
@@ -638,7 +642,9 @@
 
 
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
-#if     defined (_MSC_VER)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
+#elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k12_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   qCompilerAndStdLib_Supports_lambda_default_argument
