@@ -9,10 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
-#include    "Private/LinkedList.h"
-
 #include    "../../Memory/BlockAllocated.h"
+
+#include    "../Private/DataStructures/LinkedList.h"
 
 
 

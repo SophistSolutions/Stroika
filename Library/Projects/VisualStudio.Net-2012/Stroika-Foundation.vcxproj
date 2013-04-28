@@ -469,9 +469,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\DoublyLinkedList.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h" />
@@ -484,6 +481,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
@@ -671,9 +671,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\DoublyLinkedList.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.inl" />
@@ -688,6 +685,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md" />

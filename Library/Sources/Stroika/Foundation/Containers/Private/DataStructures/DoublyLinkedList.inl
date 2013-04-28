@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Private_DoublyLinkedList_inl_
-#define _Stroika_Foundation_Containers_Concrete_Private_DoublyLinkedList_inl_  1
+#ifndef _Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_inl_
+#define _Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_inl_  1
 
 
 #include    "../../../Debug/Assertions.h"
@@ -12,8 +12,8 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   Concrete {
-                namespace   Private {
+            namespace   Private {
+                namespace   DataStructures {
 
                     // class DoubleLink<T>
                     template    <class T>   inline  DoubleLink<T>::DoubleLink (T item, DoubleLink<T>* next) :
@@ -761,6 +761,4 @@ namespace   Stroika {
         }
     }
 }
-
-
-#endif /* _Stroika_Foundation_Containers_Concrete_Private_DoublyLinkedList_inl_ */
+#endif /* _Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_inl_ */

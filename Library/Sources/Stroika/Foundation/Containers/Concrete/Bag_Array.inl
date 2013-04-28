@@ -9,10 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "Private/Array.h"
+#include    "../Private/DataStructures/Array.h"
 
 
 
@@ -22,6 +21,11 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ***************************** Bag_Array<T>::Rep_ *******************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Bag_Array<T>::Rep_ : public Bag<T>::_IRep {
                 public:
@@ -55,6 +59,11 @@ namespace   Stroika {
                 };
 
 
+                /*
+                 ********************************************************************************
+                 ********************* Bag_Array<T>::IteratorRep_ *******************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class  Bag_Array<T>::IteratorRep_ : public Iterator<T>::IRep {
                 public:

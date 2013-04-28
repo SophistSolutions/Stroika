@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "Private/Array.h"
+#include    "../Private/DataStructures//Array.h"
 
 
 
@@ -51,7 +51,7 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Array_Patch<T>  fData_;
+                    Private::DataStructures::Array_Patch<T>  fData_;
                     friend  class Sequence_Array<T>::IteratorRep_;
                 };
 
@@ -71,7 +71,7 @@ namespace   Stroika {
                     virtual bool                            StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-                    mutable ForwardArrayMutator_Patch<T>    fIterator_;
+                    mutable Private::DataStructures::ForwardArrayMutator_Patch<T>    fIterator_;
 
                 private:
                     friend  class   Rep_;

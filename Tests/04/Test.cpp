@@ -8,7 +8,7 @@
 #include    <sstream>
 
 
-#include    "Stroika/Foundation/Containers/Concrete/Private/LinkedList.h"
+#include    "Stroika/Foundation/Containers/Private/DataStructures/LinkedList.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"

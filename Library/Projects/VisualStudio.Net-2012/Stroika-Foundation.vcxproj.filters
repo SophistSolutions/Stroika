@@ -100,9 +100,6 @@
     <Filter Include="Sources\Containers\Concrete">
       <UniqueIdentifier>{3bb34cbe-2bf5-4022-b9a1-35ab90dd9979}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sources\Containers\Concrete\Private">
-      <UniqueIdentifier>{4efb2a46-73e0-4d5f-a760-ed730600bacc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Sources\Containers\STL">
       <UniqueIdentifier>{cca08cd0-c7a1-47fd-80fd-3540cc2c48ac}</UniqueIdentifier>
     </Filter>
@@ -117,6 +114,9 @@
     </Filter>
     <Filter Include="Sources\Containers\Private">
       <UniqueIdentifier>{8cade5f7-1717-47f7-8d77-7c3cde56a2ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Containers\Private\DataStructures">
+      <UniqueIdentifier>{8724e535-91f9-4ba0-ac61-4ad4a9e1fa89}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -927,12 +927,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.h">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.h">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1065,9 +1059,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\DoublyLinkedList.h">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1079,6 +1070,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h">
       <Filter>Sources\Streams</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.h">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.h">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.h">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1358,12 +1358,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\Array.inl">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\LinkedList.inl">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -1545,9 +1539,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Private\DoublyLinkedList.inl">
-      <Filter>Sources\Containers\Concrete\Private</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -1559,6 +1550,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl">
       <Filter>Sources\Streams</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.inl">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.inl">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.inl">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
     </None>
   </ItemGroup>
 </Project>

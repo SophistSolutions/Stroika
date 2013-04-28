@@ -1,9 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-
-#ifndef _Stroika_Foundation_Containers_Concrete_Private_LinkedList_h_
-#define _Stroika_Foundation_Containers_Concrete_Private_LinkedList_h_
+#ifndef _Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_
+#define _Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_
 
 /*
  *
@@ -37,8 +36,8 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   Concrete {
-                namespace Private {
+            namespace Private {
+                namespace   DataStructures {
 
                     template    <typename   T>  class   LinkedListIterator;
                     template    <typename   T>  class   LinkedListIterator_Patch;
@@ -304,7 +303,7 @@ namespace   Stroika {
 
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Private_LinkedList_h_ */
+#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_ */
 
 
 /*

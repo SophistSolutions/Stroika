@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "Private/DoublyLinkedList.h"
+#include    "../Private/DataStructures/DoublyLinkedList.h"
 
 
 

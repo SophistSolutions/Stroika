@@ -9,10 +9,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
-#include    "Private/Array.h"
-
 #include    "../../Memory/BlockAllocated.h"
+
+#include    "../Private/DataStructures/Array.h"
 
 
 namespace   Stroika {

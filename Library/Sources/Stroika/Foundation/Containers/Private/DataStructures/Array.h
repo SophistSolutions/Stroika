@@ -2,8 +2,8 @@
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_Private_Array_h_
-#define _Stroika_Foundation_Containers_Concrete_Private_Array_h_
+#ifndef _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
+#define _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
 
 /*
  *
@@ -83,8 +83,8 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-            namespace   Concrete {
-                namespace Private {
+            namespace Private {
+                namespace   DataStructures {
 
                     /*
                      *      We use this class ArrayNode as a hack to work around bugs in many
@@ -510,7 +510,7 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Private_Array_h_ */
+#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_Array_h_ */
 
 
 /*
