@@ -116,17 +116,6 @@ namespace   Stroika {
                 return _GetRep ().Insert (index, &item, &item + 1);
             }
             template    <typename T>
-            void    Sequence<T>::InsertAll (size_t i, const Iterable<T>& items)
-            {
-                /*
-                 *  Inefficient implementation, but cannot use array insert because sequnece<T> might not be Sequence_Array<T>.
-                 *  @todo IMPROVE
-                 */
-                for (T it : items) {
-                    Insert (i++, it);
-                }
-            }
-            template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {

@@ -14,12 +14,6 @@
  *
  *  TODO:
  *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sequence.hh
- *
- *      (o)         Need CTOR that works with iterators. Ideally, dynamically check with C++11 traits if operator- supported
- *                  and use that to allocate if we can, and otherwise just iterate and append.
- *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
@@ -31,7 +25,7 @@
  *                  so no virtual references to operator== - so can always create Sequence<T> even if no operator== defined
  *                  for T.
  *
- *      @todo       Assure well documetned that Stroika 1.0 mutators are replaced with modications directly on the container,
+ *      @todo       Assure well documetned that Stroika 1.0 mutators are replaced with modifocations directly on the container,
  *                  taking the iterator as argument!
  *
  *      @todo       Document and Consider that though iterator compares with CONTAINER.end () work fine with Stroika iterators,
@@ -52,7 +46,9 @@
  *                  Sequence_stdvector, and Sequence_stdlist<>
  *
  *      @todo       Make sure that Sequence<T> (vector<T>) CTOR reserves the appropriate size before appending,
- *                  by using type_traits logic to figure out of legal to compare - and see length
+ *                  by using type_traits logic to figure out of legal to compare - and see length. Same for
+ *                  Sequence<T> (ITER iFrom, ITER iTo) - do re-allocate size if appropriate - can do diff
+ *                  iTo-iFrom.
  *
  */
 
@@ -190,21 +186,25 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \ens size () == 0
                  */
                 nonvirtual  void    RemoveAll ();
 
             public:
                 /**
+                 *  \req i < size ()
                  */
                 nonvirtual  T       GetAt (size_t i) const;
 
             public:
                 /**
+                 *  \req i < size ()
                  */
                 nonvirtual  void    SetAt (size_t i, T item);
 
             public:
                 /**
+                 *  \req i < size ()
                  */
                 nonvirtual  T       operator[] (size_t i) const;
 
@@ -236,6 +236,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \brief Insert all the given items into this sequence, starting at offset 'i'.
                  */
                 nonvirtual  void    InsertAll (size_t i, const Iterable<T>& items);
                 template    <typename COPY_FROM_ITERATOR>
