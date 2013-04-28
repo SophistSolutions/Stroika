@@ -146,7 +146,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  For the CTOR overload with ContainerOfT, its anything that supports c.begin(), c.end () to find
+                 *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  */
                 Sequence ();
