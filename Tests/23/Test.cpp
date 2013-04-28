@@ -195,7 +195,7 @@ namespace   {
         }
         void    TEST_TIMEOUT_EXECPETIONS_ ()
         {
-            Debug::TraceContextBumper traceCtx (TSTR ("event wiat timeouts"));
+            Debug::TraceContextBumper traceCtx (TSTR ("Event wait timeouts"));
             bool    passed  =   false;
             sRegTest3Event_T1_.Reset ();
             try {
@@ -210,7 +210,7 @@ namespace   {
         }
         void    TEST_DEADLOCK_BLOCK_WAIT_AND_ABORT_THREAD_WAITING ()
         {
-            Debug::TraceContextBumper traceCtx (TSTR ("deadlock block on waitable event and abort thread (thread cancelation)"));
+            Debug::TraceContextBumper traceCtx (TSTR ("Deadlock block on waitable event and abort thread (thread cancelation)"));
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
                 static  void    DoIt (void* ignored) {
@@ -242,10 +242,11 @@ namespace   {
 
             // Now ABORT and WAITFORDONE - that should kill it nearly immediately
             {
-                const   Time::DurationSecondsType   kMargingOfError  =   .5;
 #if     qEVENT_GCCTHREADS_LINUX_WAITBUG
+                const   Time::DurationSecondsType   kMargingOfError  =   .9;
                 const   Time::DurationSecondsType   kWaitOnAbortFor  =   5.0;   // because of BWA we used
 #else
+                const   Time::DurationSecondsType   kMargingOfError  =   .5;
                 const   Time::DurationSecondsType   kWaitOnAbortFor  =   1.0;
 #endif
                 Time::DurationSecondsType   startTestAt     =   Time::GetTickCount ();
