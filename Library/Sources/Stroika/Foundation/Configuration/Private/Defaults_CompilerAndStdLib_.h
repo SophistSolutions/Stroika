@@ -758,7 +758,9 @@
 @DESCRIPTION:   22.3.3.2.2  string conversions  N
 */
 #ifndef qCompilerAndStdLib_Supports_string_conversions
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     defined (__clang__)
+#define qCompilerAndStdLib_Supports_string_conversions              ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#elif   defined (__GNUC__)
 #define qCompilerAndStdLib_Supports_string_conversions              ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Supports_string_conversions              1
