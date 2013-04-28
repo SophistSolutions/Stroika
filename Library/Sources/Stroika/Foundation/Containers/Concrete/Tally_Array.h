@@ -23,6 +23,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
                 /**
                  *
                  */
@@ -56,6 +57,7 @@ namespace   Stroika {
                     nonvirtual  const Rep_& GetRep_ () const;
                     nonvirtual  Rep_&       GetRep_ ();
                 };
+
 
             }
         }

@@ -24,6 +24,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
                 /**
                  *
                  */
@@ -48,6 +49,7 @@ namespace   Stroika {
                     class   Rep_;
                     class   IteratorRep_;
                 };
+
 
             }
         }

@@ -21,6 +21,11 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ************************** Tally_LinkedList<T>::Rep_ ***************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Tally_LinkedList<T>::Rep_ : public Tally<T>::_IRep {
                 private:
@@ -67,6 +72,11 @@ namespace   Stroika {
                 };
 
 
+                /*
+                 ********************************************************************************
+                 *********************** Tally_LinkedList<T>::IteratorRep_ **********************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Tally_LinkedList<T>::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:

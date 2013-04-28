@@ -24,6 +24,11 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ******************************* Bag_LinkedList<T>::Rep_ ************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
                 public:
@@ -58,6 +63,11 @@ namespace   Stroika {
                 };
 
 
+                /*
+                 ********************************************************************************
+                 ************************* Bag_LinkedList<T>::IteratorRep_ **********************
+                 ********************************************************************************
+                 */
                 // One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
                 class  Bag_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {

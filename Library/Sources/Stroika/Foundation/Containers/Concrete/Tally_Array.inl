@@ -24,6 +24,11 @@ namespace   Stroika {
                 using namespace Private;
 
 
+                /*
+                 ********************************************************************************
+                 ******************************* Tally_Array<T>::Rep_ ***************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class   Tally_Array<T>::Rep_ : public Tally<T>::_IRep {
                 private:
@@ -77,6 +82,11 @@ namespace   Stroika {
                 };
 
 
+                /*
+                 ********************************************************************************
+                 *********************** Tally_Array<T>::IteratorRep_ ***************************
+                 ********************************************************************************
+                 */
                 template    <typename T>
                 class  Tally_Array<T>::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:

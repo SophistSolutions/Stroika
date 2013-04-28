@@ -21,6 +21,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   Concrete {
 
+
                 /**
                  * \brief Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
                  */
@@ -44,6 +45,7 @@ namespace   Stroika {
                     class   Rep_;
                     class   IteratorRep_;
                 };
+
 
             }
         }
