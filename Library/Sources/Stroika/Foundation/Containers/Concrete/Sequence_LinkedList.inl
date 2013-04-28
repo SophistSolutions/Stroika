@@ -110,7 +110,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******************* Sequence_LinkedList<T>::Rep_ *************************
+                ************************* Sequence_LinkedList<T>::Rep_ *************************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -243,7 +243,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************* Sequence_LinkedList<T> *****************************
+                *************************** Sequence_LinkedList<T> *****************************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -252,19 +252,18 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence<T>& s)
+                template    <typename CONTAINER_OF_T>
+                inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& s)
                     : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    operator+= (s);
+                    InsertAll (0, s);
                 }
                 template    <typename T>
-                Sequence_LinkedList<T>::Sequence_LinkedList (const T* start, const T* end)
+                template    <typename COPY_FROM_ITERATOR>
+                inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                     : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    Require ((start == end) or (start != nullptr and end != nullptr));
-                    if (start != end) {
-                        Add (start, end);
-                    }
+                    Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)

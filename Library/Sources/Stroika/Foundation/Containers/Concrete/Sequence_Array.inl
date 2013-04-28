@@ -219,26 +219,23 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                Sequence_Array<T>::Sequence_Array (const Sequence<T>& s)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
-                {
-                    SetCapacity (s.GetLength ());
-                    operator+= (s);
-                }
-                template    <typename T>
-                Sequence_Array<T>::Sequence_Array (const T* start, const T* end)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
-                {
-                    Require ((start == end) or (start != nullptr and end != nullptr));
-                    if (start != end) {
-                        SetCapacity (end - start);
-                        Add (start, end);
-                    }
-                }
-                template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& s)
                     : Sequence<T> (s)
                 {
+                }
+                template    <typename T>
+                template    <typename CONTAINER_OF_T>
+                inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& s)
+                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    InsertAll (0, s);
+                }
+                template    <typename T>
+                template    <typename COPY_FROM_ITERATOR>
+                inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>&   Sequence_Array<T>::operator= (const Sequence_Array<T>& s)

@@ -33,9 +33,11 @@ namespace   Stroika {
 
                 public:
                     Sequence_Array ();
-                    Sequence_Array (const Sequence<T>& s);
                     Sequence_Array (const Sequence_Array<T>& s);
-                    Sequence_Array (const T* start, const T* end);
+                    template <typename CONTAINER_OF_T>
+                    explicit Sequence_Array (const CONTAINER_OF_T& s);
+                    template <typename COPY_FROM_ITERATOR>
+                    explicit Sequence_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
                     nonvirtual  Sequence_Array<T>& operator= (const Sequence_Array<T>& s);
 
