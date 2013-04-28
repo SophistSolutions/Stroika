@@ -55,7 +55,7 @@ namespace   Stroika {
                     virtual void                        RemoveAll () override;
 
                 private:
-                    LinkedList_Patch<T> fData_;
+                    Private::DataStructures::LinkedList_Patch<T> fData_;
 
                 private:
                     friend  class   Bag_LinkedList<T>::IteratorRep_;
@@ -84,7 +84,7 @@ namespace   Stroika {
                     virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-                    mutable LinkedListMutator_Patch<T>  fIterator_;
+                    mutable Private::DataStructures::LinkedListMutator_Patch<T>  fIterator_;
                 private:
                     friend  class   Bag_LinkedList<T>::Rep_;
                 };

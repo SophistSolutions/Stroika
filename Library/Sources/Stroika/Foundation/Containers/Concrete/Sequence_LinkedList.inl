@@ -51,7 +51,7 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    LinkedList_Patch<T>  fData_;
+                    Private::DataStructures::LinkedList_Patch<T>  fData_;
                     friend  class Sequence_LinkedList<T>::IteratorRep_;
                 };
 
@@ -71,9 +71,8 @@ namespace   Stroika {
                     virtual bool                            StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-
                     //mutable ForwardLinkedListMutator_Patch<T>    fIterator_;
-                    mutable LinkedListMutator_Patch<T>    fIterator_;
+                    mutable Private::DataStructures::LinkedListMutator_Patch<T>    fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -212,7 +211,7 @@ namespace   Stroika {
                     else {
                         size_t index = at;
                         T tmphack;
-                        for (LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                        for (Private::DataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                             if (--index == 0) {
                                 for (const T* p = from; p != to; ++p) {
                                     it.AddBefore (*p);
@@ -231,7 +230,7 @@ namespace   Stroika {
                     size_t index = from;
                     size_t amountToRemove = (to - from);
                     T tmphack;
-                    for (LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                    for (Private::DataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                         if (index-- == 0) {
                             while (amountToRemove-- != 0) {
                                 it.RemoveCurrent ();

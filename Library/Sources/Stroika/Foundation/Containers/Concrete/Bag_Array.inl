@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual void                        RemoveAll () override;
 
                 private:
-                    Array_Patch<T>  fData_;
+                    Private::DataStructures::Array_Patch<T>  fData_;
                     friend  class Bag_Array<T>::IteratorRep_;
                 };
 
@@ -79,7 +79,7 @@ namespace   Stroika {
                     virtual bool                            StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-                    mutable ForwardArrayMutator_Patch<T>    fIterator_;
+                    mutable Private::DataStructures::ForwardArrayMutator_Patch<T>    fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -187,7 +187,7 @@ namespace   Stroika {
                     /*
                      *  Iterate backwards since removing from the end of an array will be faster.
                      */
-                    for (BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
+                    for (Private::DataStructures::BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
                         if (it.Current () == item) {
                             fData_.RemoveAt (it.CurrentIndex ());
                             return;

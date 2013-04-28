@@ -7,7 +7,6 @@
 #include    <iostream>
 #include    <sstream>
 
-
 #include    "Stroika/Foundation/Containers/Private/DataStructures/LinkedList.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -22,7 +21,7 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
-using   namespace   Stroika::Foundation::Containers::Concrete::Private;
+using   namespace   Stroika::Foundation::Containers::Private::DataStructures;
 
 
 

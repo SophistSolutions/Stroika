@@ -71,7 +71,7 @@ namespace   Stroika {
                     nonvirtual  void    RemoveAt_ (size_t index);
 
                 private:
-                    Array_Patch<TallyEntry<T>> fData_;
+                    Private::DataStructures::Array_Patch<TallyEntry<T>> fData_;
 
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
 
@@ -103,7 +103,7 @@ namespace   Stroika {
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
 
                 private:
-                    mutable ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator_;
+                    mutable Private::DataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 

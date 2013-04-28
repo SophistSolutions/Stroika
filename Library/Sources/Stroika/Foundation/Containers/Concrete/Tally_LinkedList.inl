@@ -65,7 +65,7 @@ namespace   Stroika {
                     virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
-                    LinkedList_Patch<TallyEntry<T>>    fData_;
+                    Private::DataStructures::LinkedList_Patch<TallyEntry<T>>    fData_;
 
                     friend  class Tally_LinkedList<T>::IteratorRep_;
                 };
@@ -92,7 +92,7 @@ namespace   Stroika {
                     virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>  Clone () const override;
 
                 private:
-                    mutable LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
+                    mutable Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
 
                     friend class Tally_LinkedList<T>::Rep_;
                 };
@@ -174,7 +174,7 @@ namespace   Stroika {
                 bool   Tally_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T>   c;
-                    for (LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
+                    for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                         if (c.fItem == item) {
                             Assert (c.fCount != 0);
                             return (true);
@@ -198,7 +198,7 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
+                        for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                             if (current.fItem == item) {
                                 current.fCount += count;
                                 it.UpdateCurrent (current);
@@ -213,7 +213,7 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        for (LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
+                        for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
 
                             if (current.fItem == item) {
                                 if (current.fCount > count) {
@@ -265,7 +265,7 @@ namespace   Stroika {
                 size_t Tally_LinkedList<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T>   c;
-                    for (LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
+                    for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                         if (c.fItem == item) {
                             Ensure (c.fCount != 0);
                             return (c.fCount);
