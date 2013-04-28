@@ -125,8 +125,8 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline  void    Sequence<T>::InsertAll (size_t i, const COPY_FROM_ITERATOR& s)
+            template    <typename CONTAINER_OF_T>
+            inline  void    Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_T& s)
             {
                 InsertAll (i, s.begin (), s.end ());
             }
@@ -136,8 +136,8 @@ namespace   Stroika {
                 Insert (0, item);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline  void    Sequence<T>::PrependAll (const COPY_FROM_ITERATOR& s)
+            template    <typename CONTAINER_OF_T>
+            inline  void    Sequence<T>::PrependAll (const CONTAINER_OF_T& s)
             {
                 InsertAll (0, s);
             }
@@ -147,8 +147,8 @@ namespace   Stroika {
                 Insert (this->GetLength (), item);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline  void    Sequence<T>::AppendAll (const COPY_FROM_ITERATOR& s)
+            template    <typename CONTAINER_OF_T>
+            inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
                 InsertAll (this->GetLength (), s);
             }

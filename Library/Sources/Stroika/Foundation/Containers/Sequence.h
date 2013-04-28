@@ -241,8 +241,8 @@ namespace   Stroika {
                 nonvirtual  void    InsertAll (size_t i, const Iterable<T>& items);
                 template    <typename COPY_FROM_ITERATOR>
                 nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    InsertAll (size_t i, const COPY_FROM_ITERATOR& s);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    InsertAll (size_t i, const CONTAINER_OF_T& s);
 
             public:
                 /**
@@ -252,8 +252,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    PrependAll (const COPY_FROM_ITERATOR& s);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    PrependAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
@@ -263,8 +263,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    AppendAll (const COPY_FROM_ITERATOR& s);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
