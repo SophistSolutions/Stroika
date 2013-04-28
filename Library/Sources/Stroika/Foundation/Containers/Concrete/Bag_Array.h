@@ -37,6 +37,7 @@ namespace   Stroika {
                     Bag_Array (const Bag_Array<T>& bag);
                     Bag_Array (const T* start, const T* end);
 
+                public:
                     nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
 
                 public:

@@ -15,11 +15,10 @@
 #include    "CodePage.h"
 
 
-
-
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Platform::Windows;
+
 
 
 

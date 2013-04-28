@@ -22,7 +22,7 @@
 
 
 
-/*
+/**
  * TODO:
  *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
@@ -121,6 +121,8 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 */
                 static  TimeOfDay   Parse (const String& rep, ParseFormat pf);
                 static  TimeOfDay   Parse (const String& rep, const locale& l);
 #if     qPlatform_Windows
@@ -141,11 +143,19 @@ namespace   Stroika {
                 class   FormatException;
 
             public:
-                // In specail case of empty - this also returns 0
+                /**
+                 * In specail case of empty - this also returns 0
+                 */
                 nonvirtual  uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
+
+            public:
+                /**
+                 */
                 nonvirtual  bool        empty () const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    ClearSecondsField ();
 
             public:
@@ -191,19 +201,19 @@ namespace   Stroika {
                 };
 
             public:
+                /**
+                 */
                 nonvirtual  String  Format (PrintFormat pf = PrintFormat::eDEFAULT) const;
-
-            public:
                 nonvirtual  String  Format (const locale& l) const;
-
 #if     qPlatform_Windows
-            public:
                 nonvirtual  String  Format (LCID lcid) const;
 #endif
 
             public:
-                // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-                // this comparison function - see the notes about 'empty' in the class description.
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+                 *  this comparison function - see the notes about 'empty' in the class description.
+                 */
                 nonvirtual  int Compare (const TimeOfDay& rhs) const;
 
             private:

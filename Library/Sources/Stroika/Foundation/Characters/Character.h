@@ -11,25 +11,24 @@
 
 
 
-//// KEY ISSUES TO DECIDE:
-//
-//      o   Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
-//
-//      o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
-//          handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING
-//          class internally stores stuff as utf8
-//
 /*
  * TODO:
  *
  *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DONT DO until I have a STRING class
  *              implementation based on UTF-8, to minimize the performance costs...
  *
- *      (1)     Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
+ *      @todo       KEY ISSUES TO DECIDE:
+ *          o   Can we use a class with no loss of performacne (or must we use typdef wchar_t Character)
+ *
+ *          o   How do we handle char16_t versus char32_t - Windows uses 16bit, UNIX 32-bit. UNCLEAR how to
+ *              handle here. (LEANING TOWARDS FORCING USE OF 16bit char??) - maybe irrlevelnt if our STRING
+ *              class internally stores stuff as utf8
+ *
+ *      @todo   Biggest thing todo is to work out 'surrogates' - and whether or not they are needed
  *              (depending on the size of wchar_t - which right now - we PRESUME is the same as the size
  *              of Character.
  *
- *      (o)     ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
+ *      @todo   ToLower ('GERMAN ES-ZETT' or 'SHARP S') returns two esses ('ss') - and we return a single chararcter.
  *              We COULD change return value, or simply document that issue here and define ToLower() of STRING todo
  *              the right thing for queer cases like this, and use this API for hte most common cases.
  */
@@ -59,6 +58,8 @@ namespace   Stroika {
         namespace   Characters {
 
 
+            /**
+             */
             enum    class   CompareOptions : uint8_t {
                 eWithCase,
                 eCaseInsensitive,
@@ -67,6 +68,8 @@ namespace   Stroika {
             };
 
 
+            /**
+             */
             class   Character   {
             public:
                 Character ();
@@ -75,13 +78,19 @@ namespace   Stroika {
                 //Character (char32_t c);   // not for now til we decide how to handle surrogates
                 Character (wchar_t wc);
 
+            public:
                 // Asserts the given characer is ascii
                 nonvirtual  char    GetAsciiCode () const;
 
-
+            public:
                 nonvirtual  wchar_t GetCharacterCode () const;
 
-
+            public:
+                /*
+                 * @todo    NOT SURE WE WANT THIS FOR wchar_t etc - maybe just get rid of this!!! TRICKYYY;
+                 *          IF we go with design based on char32_t - then thats all we can ever safely return.
+                 *          We need diff API to return up to 2 wchar_t's!!!
+                 */
                 template    <typename T>
                 nonvirtual  T   As () const;
 
@@ -102,7 +111,7 @@ namespace   Stroika {
                 nonvirtual  bool    IsControl () const;
 
             public:
-                /*
+                /**
                  *      Note that this does NOT modify the character in place but returns the new desired
                  * character.
                  *
@@ -111,7 +120,9 @@ namespace   Stroika {
                  * original character if there is no sensible conversion.
                  */
                 nonvirtual  Character   ToLowerCase () const;
-                /*
+
+            public:
+                /**
                  *      Note that this does NOT modify the character in place but returns the new desired
                  * character.
                  *

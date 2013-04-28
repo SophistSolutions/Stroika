@@ -66,7 +66,8 @@ namespace   Stroika {
 
 
 
-
+            /**
+             */
             template    <typename   T>
             class   BlockAllocationSupport  {
             public:

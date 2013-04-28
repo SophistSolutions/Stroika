@@ -20,6 +20,12 @@ namespace   Stroika {
             namespace   Platform {
                 namespace   Windows {
 
+
+                    /*
+                     ********************************************************************************
+                     ********************************* WideStringToNarrow ***************************
+                     ********************************************************************************
+                     */
                     inline  void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult)
                     {
                         RequireNotNull (intoResult);
@@ -32,6 +38,12 @@ namespace   Stroika {
                         }
                     }
 
+
+                    /*
+                     ********************************************************************************
+                     ********************************* NarrowStringToWide ***************************
+                     ********************************************************************************
+                     */
                     inline  void    NarrowStringToWide (const char* sStart, const char* sEnd, int codePage, wstring* intoResult)
                     {
                         RequireNotNull (intoResult);
@@ -45,6 +57,11 @@ namespace   Stroika {
                     }
 
 
+                    /*
+                     ********************************************************************************
+                     ********************************* BSTR2wstring *********************************
+                     ********************************************************************************
+                     */
                     inline  wstring BSTR2wstring (BSTR b)
                     {
                         if (b == nullptr) {
@@ -55,6 +72,12 @@ namespace   Stroika {
                         }
                     }
 
+
+                    /*
+                     ********************************************************************************
+                     ****************************** Win32CharSetToCodePage **************************
+                     ********************************************************************************
+                     */
                     inline  CodePage    Win32CharSetToCodePage (unsigned char lfCharSet)
                     {
                         // See MSFT info article Q165478. No routine to map from these charset values - just this table... Sigh...
@@ -208,6 +231,12 @@ namespace   Stroika {
                         }
                     }
 
+
+                    /*
+                     ********************************************************************************
+                     ************************ Win32PrimaryLangIDToCodePage **************************
+                     ********************************************************************************
+                     */
                     inline  CodePage    Win32PrimaryLangIDToCodePage (USHORT languageIdenifier)
                     {
                         /*
@@ -258,14 +287,15 @@ namespace   Stroika {
                     }
 
 
-
-                    //  class   PlatformCodePageConverter
+                    /*
+                     ********************************************************************************
+                     ************************ PlatformCodePageConverter *****************************
+                     ********************************************************************************
+                     */
                     inline  PlatformCodePageConverter::PlatformCodePageConverter (int codePage)
                         : fCodePage (codePage)
                     {
                     }
-
-
 
 
                 }

@@ -39,6 +39,7 @@ namespace   Stroika {
                     template <typename COPY_FROM_ITERATOR>
                     explicit Sequence_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
+                public:
                     nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s);
 
                 private:

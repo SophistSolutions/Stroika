@@ -18,6 +18,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
+            /*
+             ********************************************************************************
+             *********************************** Character **********************************
+             ********************************************************************************
+             */
             inline  Character::Character ()
                 : fCharacterCode_ ('\0')
             {
@@ -115,10 +121,6 @@ namespace   Stroika {
             }
 
 
-
-
-
-
             inline  bool    operator== (Character lhs, Character rhs)
             {
                 // not sure what do do if characer sets differ?
@@ -149,6 +151,7 @@ namespace   Stroika {
                 // not sure what do do if characer sets differ?
                 return (lhs.GetCharacterCode () < rhs.GetCharacterCode ());
             }
+
 
         }
     }

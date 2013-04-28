@@ -9,20 +9,12 @@
 #include    <cstring>
 #include    <string>
 
-
 #include    "../../Configuration/Common.h"
 
 
-
-
-/*
- * TODO:
+/**
+ *  \file
  */
-
-
-
-
-
 
 
 namespace   Stroika {
@@ -88,6 +80,7 @@ namespace   Stroika {
                 void    Cat (char* dest, size_t nEltsInDest, const char* src2Append);
                 template    <>
                 void    Cat (wchar_t* dest, size_t nEltsInDest, const wchar_t* src2Append);
+
 
             }
         }

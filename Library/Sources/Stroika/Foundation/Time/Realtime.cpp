@@ -29,6 +29,11 @@ using   namespace   Stroika::Foundation::Time;
 
 
 
+/*
+ ********************************************************************************
+ ************************* Time::GetTickCount ***********************************
+ ********************************************************************************
+ */
 DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
 {
 #if     qPlatform_MacOS

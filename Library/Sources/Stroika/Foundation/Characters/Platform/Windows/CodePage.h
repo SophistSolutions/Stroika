@@ -23,11 +23,13 @@ namespace   Stroika {
             namespace   Platform {
                 namespace   Windows {
 
+
                     using   std::string;
                     using   std::wstring;
                     using   std::basic_string;
 
                     using   Characters::CodePage;
+
 
                     void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
                     void    NarrowStringToWide (const char* sStart, const char* sEnd, CodePage codePage, wstring* intoResult);
@@ -64,6 +66,7 @@ namespace   Stroika {
                     private:
                         CodePage    fCodePage;
                     };
+
 
                 }
             }

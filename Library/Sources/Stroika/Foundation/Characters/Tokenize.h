@@ -23,6 +23,8 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+            /**
+             */
             template    <typename STRING>
             vector<STRING> Tokenize (const STRING& str, const STRING& delimiters);
 

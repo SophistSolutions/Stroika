@@ -23,8 +23,8 @@ namespace   Stroika {
 
             /**
              *  Default traits object for type T (for use in Optional<T>). This can generally be ignored.
-             *  It requires operator== and operator< are defined for type T (if they are not, you must provide your own traits
-             *  to use Optional<T>).
+             *  It requires operator== and operator< are defined for type T (if they are not, you must
+             *  provide your own traits to use Optional<T>).
              */
             template    <typename T>
             struct   Optional_DefaultTraits {

@@ -9,7 +9,6 @@
  *
  * Description:
  *
- *
  *      This family of classes using something akin to the Letter/Envelope paradigm
  *      described in Copliens "Advanced C++ Programming Styles and Idioms").
  *
@@ -50,6 +49,11 @@
 
 /**
  * TODO:
+ *
+ *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
+ *              functions returning a new string. Has performance implications, but also usability.
+ *              Not sure what way to go (probably do it), but clearly document!!! And docment reasons.
+ *              Maybe can be done transparently with envelope (maybe already done?)
  *
  *      @todo   FromTString() overload like FromUTF8(), and docs for BOTH
  *
@@ -134,6 +138,13 @@
  *
  *              (OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
  *
+ *              (OR - perhaps BEST - make STRING a readonly class, and have it able to
+ *                  Sequence<Character> AsCharacters() const;
+ *                  and CTOR
+ *                  String (Sequence<Character>);
+ *              THEN the class can be fully readonly and use sequence stuff to modify?
+ *              UNSURE - maybe just too conveinet to be able to modify (but still do sequnce converters?)
+ *
  *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
  *
  *      @todo   Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally.
@@ -216,6 +227,11 @@ namespace   Stroika {
                 nonvirtual  String& operator+= (const String& appendage);
 
             public:
+                /**
+                 *  Returns the number of characters in the String. Note that this may not be the same as bytes,
+                 *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
+                 *  a nul-character is allowed in a Stroika string.
+                 */
                 nonvirtual  size_t  GetLength () const;
 
             public:
@@ -257,6 +273,14 @@ namespace   Stroika {
                 nonvirtual  void        RemoveAt (size_t index, size_t nCharsToRemove = 1);
 
             public:
+                /**
+                 *  Remove the first occurence of Character 'c' from the string. Not an error if none
+                 *  found.
+                 *
+                 *      @todo   CRAPPY API - probably delete or redo. See if ever used!!! RemoveAll or RemoveFirst() would be
+                 *              better names (thogh all woudl be a change in functionality) - and maybe return a bool so
+                 *              you can tell if it did anyhting?
+                 */
                 nonvirtual  void        Remove (Character c);
 
             public:
@@ -546,12 +570,17 @@ namespace   Stroika {
                 // be modified)
                 nonvirtual  const wchar_t*  data () const;
 
-                // This will always return a value which is NUL-terminated. Note that Stroika generally
-                // does NOT keep strings in NUL-terminated form, so this could be a costly function,
-                // requiring a copy of the data.
-                //
-                // The lifetime of the pointer returned is gauranteed until the next call to this String
-                // envelope class (that is if other reps change, or are acceessed this data will not be modified)
+                /**
+                 * This will always return a value which is NUL-terminated. Note that Stroika generally
+                 *  does NOT keep strings in NUL-terminated form, so this could be a costly function,
+                 * requiring a copy of the data.
+                 *
+                 * The lifetime of the pointer returned is gauranteed until the next call to this String
+                 * envelope class (that is if other reps change, or are acceessed this data will not be modified)
+                 * Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
+                 * class NUL-terminates, it does noting to prevent already existng NUL bytes from causing
+                 * confusion elsewhere.
+                 */
                 nonvirtual  const wchar_t*  c_str () const;
 
                 // need more overloads
@@ -716,7 +745,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              *  String_BufferedArray is a kind of string which maintains extra buffer space, and
              *  is more efficient if you are going to resize your string.
              */
@@ -754,7 +783,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly is a subtype of string you can
              * use to construct a String object, so long as the memory pointed to in the argument has a
              *      o   FULL APPLICATION LIFETIME,
@@ -796,7 +825,7 @@ namespace   Stroika {
             };
 
 
-            /*
+            /**
              *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
              * with a minimum of cost.
              */
@@ -806,7 +835,7 @@ namespace   Stroika {
 
 
 
-            /*
+            /**
              *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite is a subtype of string you can
              * use to construct a String object, so long as the memory pointed to in the argument has a
              *      o   FULL APPLICATION LIFETIME,
@@ -980,15 +1009,18 @@ namespace   Stroika {
 
 
 
-            /*
-             *  String_ExternalMemoryOwnership_StackLifetime_ReadWrite is a subtype of string you can use to construct a String object, so long as the memory pointed to
-             * in the argument has a
+            /**
+             *  String_ExternalMemoryOwnership_StackLifetime_ReadWrite is a subtype of string you can use to
+             *  construct a String object, so long as the memory pointed to min the argument has a
              *      o   Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime_ReadWrite envelope class
-             *      o   and buffer data never changes value externally to this String represenation (but maybe changed by the String_ExternalMemoryOwnership_StackLifetime_ReadWrite implementation)
+             *      o   and buffer data never changes value externally to this String represenation (but maybe changed by
+             *          the String_ExternalMemoryOwnership_StackLifetime_ReadWrite implementation)
              *
-             *  Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime_ReadWrite ()!
+             *  Note that the memory passed in must be READ/WRITE - and may be modified by the
+             *  String_ExternalMemoryOwnership_StackLifetime_ReadWrite ()!
              *
-             *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadWrite maybe treated like normal strings - passed anywhere, and even modified via the
+             *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadWrite maybe treated
+             *  like normal strings - passed anywhere, and even modified via the
              *  String APIs. However, the underlying implemenation may cache the argument 'wchar_t* cString' for as long as the lifetime of the envelope class,
              *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
              *
@@ -1030,7 +1062,7 @@ namespace   Stroika {
 
 
 #if     0
-            /*
+            /**
              *
              *  NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
              *
@@ -1052,8 +1084,7 @@ namespace   Stroika {
 
 
 #if     0
-            /*
-             *
+            /**
              *  NOT YET IMPLEMETNED
              *
              *  String_stdwstring is completely compatible with any other String implementation, except that it represents things
@@ -1079,10 +1110,8 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 #endif  /*_Stroika_Foundation_Characters_String_h_*/
+
 
 
 /*

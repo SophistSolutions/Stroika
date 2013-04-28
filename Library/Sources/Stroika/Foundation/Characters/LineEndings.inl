@@ -20,7 +20,11 @@ namespace   Stroika {
         namespace   Characters {
 
 
-
+            /*
+             ********************************************************************************
+             ********************************** GetEOL **************************************
+             ********************************************************************************
+             */
 #if     qCompilerAndStdLib_Supports_constexpr
             template    <>
             inline  constexpr const char*       GetEOL ()
@@ -70,7 +74,11 @@ namespace   Stroika {
 #endif
 
 
-
+            /*
+             ********************************************************************************
+             ************************ AssureHasLineTermination ******************************
+             ********************************************************************************
+             */
             template    <typename CHAR>
             void    AssureHasLineTermination (basic_string<CHAR>* text)
             {
@@ -88,7 +96,11 @@ namespace   Stroika {
             }
 
 
-
+            /*
+             ********************************************************************************
+             *********************************** CRLFToNL ***********************************
+             ********************************************************************************
+             */
             template    <typename TCHAR>
             size_t  CRLFToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
             {
@@ -130,6 +142,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             *********************************** NLToCRLF ***********************************
+             ********************************************************************************
+             */
             template    <typename TCHAR>
             size_t  NLToCRLF (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
             {
@@ -161,6 +178,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ********************************* NLToNative ***********************************
+             ********************************************************************************
+             */
             template    <typename TCHAR>
             size_t  NLToNative (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
             {
@@ -199,6 +221,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ************************** NormalizeTextToNL ***********************************
+             ********************************************************************************
+             */
             template    <typename TCHAR>
             size_t  NormalizeTextToNL (const TCHAR* srcText, size_t srcTextBytes, TCHAR* outBuf, size_t outBufSize)
             {
@@ -242,6 +269,7 @@ namespace   Stroika {
                 NormalizeTextToNL (&r);
                 return r;
             }
+
 
         }
     }

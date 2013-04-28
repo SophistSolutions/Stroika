@@ -14,7 +14,6 @@
 #include    "../Time/DateTime.h"
 
 
-
 /**
  *  TODO:
  *
@@ -33,6 +32,7 @@ namespace   Stroika {
 
             using   Time::Date;
             using   Time::DateTime;
+
 
             /**
              * \brief   Simple variant-value object, with basic (variant) types.
@@ -147,23 +147,24 @@ namespace   Stroika {
 
 
             template    <>
-            nonvirtual bool VariantValue::As () const;
+            bool VariantValue::As () const;
             template    <>
-            nonvirtual int VariantValue::As () const;
+            int VariantValue::As () const;
             template    <>
-            nonvirtual float VariantValue::As () const;
+            float VariantValue::As () const;
             template    <>
-            nonvirtual double VariantValue::As () const;
+            double VariantValue::As () const;
             template    <>
-            nonvirtual Date VariantValue::As () const;
+            Date VariantValue::As () const;
             template    <>
-            nonvirtual DateTime VariantValue::As () const;
+            DateTime VariantValue::As () const;
             template    <>
-            nonvirtual wstring VariantValue::As () const;
+            wstring VariantValue::As () const;
             template    <>
-            nonvirtual map<wstring, VariantValue> VariantValue::As () const;
+            map<wstring, VariantValue> VariantValue::As () const;
             template    <>
-            nonvirtual vector<VariantValue> VariantValue::As () const;
+            vector<VariantValue> VariantValue::As () const;
+
 
         }
     }
