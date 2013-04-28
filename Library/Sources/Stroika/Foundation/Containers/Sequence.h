@@ -151,11 +151,15 @@ namespace   Stroika {
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
-                /*
+                /**
+                 *  For the CTOR overload with ContainerOfT, its anything that supports c.begin(), c.end () to find
+                 *  all the elements.
                  */
                 Sequence ();
                 Sequence (const Sequence<T>& s);
                 explicit Sequence (const T* start, const T* end);
+                template <typename ContainerOfT>
+                explicit Sequence (const ContainerOfT& s);
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);
@@ -232,6 +236,10 @@ namespace   Stroika {
                 nonvirtual  void    Insert (size_t i, T item);
                 nonvirtual  void    Insert (size_t i, const Iterable<T>& items);
 
+            protected:
+                template    <typename ContainerOfT>
+                nonvirtual  void    _InsertSTLHelper (size_t i, const ContainerOfT& s);
+
             public:
                 /**
                  */
@@ -243,7 +251,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Append (T item);
                 nonvirtual  void    Append (const Iterable<T>& items);
-
 
             public:
                 /**

@@ -31,6 +31,13 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+            template    <typename ContainerOfT>
+            inline  Sequence<T>::Sequence (const ContainerOfT& s)
+                : Iterable<T> (Concrete::Sequence_Array<T> ())
+            {
+                _InsertSTLHelper (0, s);
+            }
+            template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
                 : Iterable<T> (typename Iterable<T>::_SharedByValueRepType (rep))
             {
@@ -107,14 +114,22 @@ namespace   Stroika {
                 return _GetRep ().Insert (index, &item, &item + 1);
             }
             template    <typename T>
-            void    Sequence<T>::Insert (size_t index, const Iterable<T>& items)
+            void    Sequence<T>::Insert (size_t i, const Iterable<T>& items)
             {
                 /*
                  *  Inefficient implementation, but cannot use array insert because sequnece<T> might not be Sequence_Array<T>.
                  *  @todo IMPROVE
                  */
-                for (T i : items) {
-                    Insert (index++, i);
+                for (T it : items) {
+                    Insert (i++, it);
+                }
+            }
+            template    <typename T>
+            template    <typename ContainerOfT>
+            void    Sequence<T>::_InsertSTLHelper (size_t i, const ContainerOfT& s)
+            {
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    Insert (i++, *it);
                 }
             }
             template    <typename T>

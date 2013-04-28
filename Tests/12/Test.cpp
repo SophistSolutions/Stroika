@@ -427,6 +427,18 @@ namespace {
                 }
             }
         }
+        {
+            vector<T>   vs = s.template As<vector<T>> ();
+            Sequence<T> tmp = Sequence<T> (vs);
+            VerifyTestResult (tmp.size () == vs.size ());
+            VerifyTestResult (tmp.template As<vector<T>> () == vs);
+        }
+        {
+            list<T>     ls = s.template As<list<T>> ();
+            Sequence<T> tmp = Sequence<T> (ls);
+            VerifyTestResult (tmp.size () == ls.size ());
+            VerifyTestResult (tmp.template As<list<T>> () == ls);
+        }
 
         // still todo - CONSTRUCT sequence from stl vector etc
         s.RemoveAll ();
