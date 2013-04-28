@@ -31,11 +31,11 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            template    <typename ContainerOfT>
-            inline  Sequence<T>::Sequence (const ContainerOfT& s)
+            template    <typename CONTAINER_OF_T>
+            inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
                 : Iterable<T> (Concrete::Sequence_Array<T> ())
             {
-                _InsertSTLHelper (0, s);
+                InsertAll (0, s);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
@@ -44,9 +44,11 @@ namespace   Stroika {
                 RequireNotNull (rep);
             }
             template    <typename T>
-            Sequence<T>::Sequence (const T* start, const T* end)
-                : Iterable<T> (Concrete::Sequence_Array<T> (start, end))
+            template    <typename COPY_FROM_ITERATOR>
+            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                : Iterable<T> (Concrete::Sequence_Array<T> ())
             {
+                Append (start, end);
             }
             template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
@@ -114,7 +116,7 @@ namespace   Stroika {
                 return _GetRep ().Insert (index, &item, &item + 1);
             }
             template    <typename T>
-            void    Sequence<T>::Insert (size_t i, const Iterable<T>& items)
+            void    Sequence<T>::InsertAll (size_t i, const Iterable<T>& items)
             {
                 /*
                  *  Inefficient implementation, but cannot use array insert because sequnece<T> might not be Sequence_Array<T>.
@@ -125,12 +127,19 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            template    <typename ContainerOfT>
-            void    Sequence<T>::_InsertSTLHelper (size_t i, const ContainerOfT& s)
+            template    <typename COPY_FROM_ITERATOR>
+            void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {
-                for (auto it = s.begin (); it != s.end (); ++it) {
-                    Insert (i++, *it);
+                size_t  insertAt = i;
+                for (auto i = start; i != end; ++i) {
+                    Insert (insertAt++, *i);
                 }
+            }
+            template    <typename T>
+            template    <typename COPY_FROM_ITERATOR>
+            inline  void    Sequence<T>::InsertAll (size_t i, const COPY_FROM_ITERATOR& s)
+            {
+                InsertAll (i, s.begin (), s.end ());
             }
             template    <typename T>
             inline  void    Sequence<T>::Prepend (T item)
@@ -138,9 +147,10 @@ namespace   Stroika {
                 Insert (0, item);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Prepend (const Iterable<T>& items)
+            template    <typename COPY_FROM_ITERATOR>
+            inline  void    Sequence<T>::PrependAll (const COPY_FROM_ITERATOR& s)
             {
-                Insert (0, items);
+                InsertAll (0, s);
             }
             template    <typename T>
             inline  void    Sequence<T>::Append (T item)
@@ -148,9 +158,10 @@ namespace   Stroika {
                 Insert (this->GetLength (), item);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Append (const Iterable<T>& items)
+            template    <typename COPY_FROM_ITERATOR>
+            inline  void    Sequence<T>::AppendAll (const COPY_FROM_ITERATOR& s)
             {
-                Insert (this->GetLength (), items);
+                InsertAll (this->GetLength (), s);
             }
             template    <typename T>
             inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)

@@ -6,9 +6,9 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <list>
 #include    <sstream>
 #include    <vector>
-#include    <list>
 
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
@@ -16,7 +16,6 @@
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -278,9 +277,9 @@ namespace {
             x.Append (11);
             x.Append (12);
 
-            s.Prepend (x);
+            s.PrependAll (x);
             VerifyTestResult (s.Equals (x));
-            s.Append (x);
+            s.AppendAll (x);
             VerifyTestResult (s[1] == 11);
             VerifyTestResult (s[2] == 12);
             VerifyTestResult (s[3] == 10);
@@ -440,7 +439,6 @@ namespace {
             VerifyTestResult (tmp.template As<list<T>> () == ls);
         }
 
-        // still todo - CONSTRUCT sequence from stl vector etc
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }

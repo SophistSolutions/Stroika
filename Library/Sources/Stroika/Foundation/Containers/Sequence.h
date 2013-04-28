@@ -20,11 +20,6 @@
  *      (o)         Need CTOR that works with iterators. Ideally, dynamically check with C++11 traits if operator- supported
  *                  and use that to allocate if we can, and otherwise just iterate and append.
  *
- *      @todo       CTOR must work with STL containers - like vector, and list so
- *                      Sequence<T> (vector<T> ()) must work, as must
- *                      Sequence<T> (list<T> ()) - and in the former case we should be
- *                      able to figure out size and pre-allocate using new template typetraits stuff.
- *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)
@@ -55,6 +50,9 @@
  *
  *      @todo       Add backend implementaiton of Sequence<T> using stl types - like
  *                  Sequence_stdvector, and Sequence_stdlist<>
+ *
+ *      @todo       Make sure that Sequence<T> (vector<T>) CTOR reserves the appropriate size before appending,
+ *                  by using type_traits logic to figure out of legal to compare - and see length
  *
  */
 
@@ -157,9 +155,10 @@ namespace   Stroika {
                  */
                 Sequence ();
                 Sequence (const Sequence<T>& s);
-                explicit Sequence (const T* start, const T* end);
-                template <typename ContainerOfT>
-                explicit Sequence (const ContainerOfT& s);
+                template <typename CONTAINER_OF_T>
+                explicit Sequence (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);
@@ -234,23 +233,37 @@ namespace   Stroika {
                  *  what the iterator says is the current item.
                  */
                 nonvirtual  void    Insert (size_t i, T item);
-                nonvirtual  void    Insert (size_t i, const Iterable<T>& items);
 
-            protected:
-                template    <typename ContainerOfT>
-                nonvirtual  void    _InsertSTLHelper (size_t i, const ContainerOfT& s);
+            public:
+                /**
+                 */
+                nonvirtual  void    InsertAll (size_t i, const Iterable<T>& items);
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    InsertAll (size_t i, const COPY_FROM_ITERATOR& s);
 
             public:
                 /**
                  */
                 nonvirtual  void    Prepend (T item);
-                nonvirtual  void    Prepend (const Iterable<T>& items);
+
+            public:
+                /**
+                 */
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    PrependAll (const COPY_FROM_ITERATOR& s);
 
             public:
                 /**
                  */
                 nonvirtual  void    Append (T item);
-                nonvirtual  void    Append (const Iterable<T>& items);
+
+            public:
+                /**
+                 */
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    AppendAll (const COPY_FROM_ITERATOR& s);
 
             public:
                 /**
