@@ -231,36 +231,16 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_regex_search
-@DESCRIPTION:   <p>Defined true if the compiler supports regex_search</p>
-*/
-#ifndef qCompilerAndStdLib_Supports_regex_search
-
-#if     defined (__GNUC__) && !defined (__clang__) &&  (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#define qCompilerAndStdLib_Supports_regex_search            0
-#else
-#define qCompilerAndStdLib_Supports_regex_search            1
-#endif
-
-#endif
-
-
-
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_regex_replace
+@CONFIGVAR:     qCompilerAndStdLib_Supports_regex
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
 */
-#ifndef qCompilerAndStdLib_Supports_regex_replace
+#ifndef qCompilerAndStdLib_Supports_regex
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_regex_replace       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+// Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
+#define qCompilerAndStdLib_Supports_regex       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
-#define qCompilerAndStdLib_Supports_regex_replace       1
+#define qCompilerAndStdLib_Supports_regex       1
 #endif
 
 #endif

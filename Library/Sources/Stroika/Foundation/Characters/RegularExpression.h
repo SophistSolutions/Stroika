@@ -9,6 +9,7 @@
  *
  * Description:
  *
+ *      o   See http://cpprocks.com/wp-content/uploads/c++11-regex-cheatsheet.pdf for examples
  *
  * TODO:
  *

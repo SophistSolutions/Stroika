@@ -659,7 +659,7 @@ namespace   {
     }
     void    Test17_RegExp_Search_ ()
     {
-#if     qCompilerAndStdLib_Supports_regex_replace
+#if     qCompilerAndStdLib_Supports_regex
         {
             RegularExpression   regExp (L"abc");
             String              testStr2Search  =   String (L"abc");
@@ -687,7 +687,7 @@ namespace   {
     {
         Test17_Find_ ();
         Test17_RegExp_Search_ ();
-#if     qCompilerAndStdLib_Supports_regex_replace
+#if     qCompilerAndStdLib_Supports_regex
         VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));
         vector<String>  r   =   String (L"<h2>Egg prices</h2>").FindEachString (RegularExpression (L"<h(.)>([^<]+)", RegularExpression::SyntaxType::eECMAScript));
         VerifyTestResult (r.size () == 3 and r[1] == L"2" and r[2] == L"Egg prices");

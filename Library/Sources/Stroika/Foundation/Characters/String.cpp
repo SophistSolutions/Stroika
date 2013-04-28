@@ -787,7 +787,7 @@ vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions
 vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) const
 {
     vector<pair<size_t, size_t>>  result;
-#if     qCompilerAndStdLib_Supports_regex_replace
+#if     qCompilerAndStdLib_Supports_regex
     wstring         tmp     =   As<wstring> ();
     std::wsmatch    res;
     regex_search (tmp, res, regEx.GetCompiled ());
@@ -887,7 +887,7 @@ bool    String::Match (const RegularExpression& regEx) const
 
 String  String::ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co) const
 {
-#if     qCompilerAndStdLib_Supports_regex_replace
+#if     qCompilerAndStdLib_Supports_regex
     return String (regex_replace (As<wstring> (), regEx.GetCompiled (), with.As<wstring> ()));
 #else
     AssertNotImplemented ();
