@@ -46,12 +46,12 @@ namespace   Stroika {
 
                 struct  ContainerRepLockDataSupport_ {
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-					// NB: using std::mutex instead of std::recursive_mutex for performance reasons and because our use is
-					// simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
-					// if its helpful for some containers
+                    // NB: using std::mutex instead of std::recursive_mutex for performance reasons and because our use is
+                    // simple enough we can probbaly get away with it, but condier a (templated) option to use recursive mutexs
+                    // if its helpful for some containers
                     mutable std::mutex  fMutex_;
 #endif
-#if		qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
+#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                     ContainerRepLockDataSupport_ () = default;
 #else
                     ContainerRepLockDataSupport_ () {}

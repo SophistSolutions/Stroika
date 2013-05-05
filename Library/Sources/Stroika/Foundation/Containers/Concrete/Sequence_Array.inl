@@ -131,7 +131,7 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
                         fData_ = from.fData_;
                     });
                 }
