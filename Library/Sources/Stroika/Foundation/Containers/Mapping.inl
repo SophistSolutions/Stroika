@@ -47,19 +47,19 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
-            template    <typename T>
+            template    <typename Key, typename T>
             inline  const typename  Mapping<Key, T>::_IRep&    Mapping<Key, T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), Mapping<Key, T>::_IRep);
-                return *static_cast<const Mapping<Key, T>::_IRep*> (&inherited::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  typename    Mapping<Key, T>::_IRep&  Mapping<Key, T>::_GetRep ()
+            template    <typename Key, typename T>
+            inline  typename    Mapping<Key, T>::_IRep&		Mapping<Key, T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), Mapping<Key, T>::_IRep);
-                return *static_cast<Mapping<Key, T>::_IRep*> (&inherited::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename Key, typename T>
             inline  void    Mapping<Key, T>::RemoveAll ()
@@ -77,7 +77,7 @@ namespace   Stroika {
                 return _GetRep ().Lookup (key, item);
             }
             template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::Add (Key key, T newElt) const
+            inline  void    Mapping<Key, T>::Add (Key key, T newElt)
             {
                 _GetRep ().Add (key, item);
             }
@@ -106,7 +106,7 @@ namespace   Stroika {
                 }
             }
             template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::Remove (Key key) const
+            inline  void    Mapping<Key, T>::Remove (Key key)
             {
                 _GetRep ().Remove (key);
             }
@@ -119,7 +119,7 @@ namespace   Stroika {
                 }
             }
             template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::Remove (Iterator<pair<Key, T>> i) const
+            inline  void    Mapping<Key, T>::Remove (Iterator<pair<Key, T>> i)
             {
                 _GetRep ().Remove (i);
             }
