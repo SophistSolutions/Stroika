@@ -163,12 +163,16 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength ());
+                    });
                 }
                 template    <typename T>
                 bool  Tally_Array<T>::Rep_::IsEmpty () const
                 {
-                    return (fData_.GetLength () == 0);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength () == 0);
+                    });
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_Array<T>::Rep_::MakeIterator () const
@@ -193,12 +197,16 @@ namespace   Stroika {
                 bool    Tally_Array<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    return (bool (Find_ (tmp) != kNotFound_));
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (bool (Find_ (tmp) != kNotFound_));
+                    });
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Compact ()
                 {
-                    fData_.Compact ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Compact ();
+                    });
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
@@ -212,31 +220,35 @@ namespace   Stroika {
                 void    Tally_Array<T>::Rep_::Add (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item, count);
-                    size_t index = Find_ (tmp);
-                    if (index == kNotFound_) {
-                        fData_.InsertAt (tmp, GetLength ());
-                    }
-                    else {
-                        tmp.fCount += count;
-                        fData_.SetAt (tmp, index);
-                    }
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        size_t index = Find_ (tmp);
+                        if (index == kNotFound_) {
+                            fData_.InsertAt (tmp, GetLength ());
+                        }
+                        else {
+                            tmp.fCount += count;
+                            fData_.SetAt (tmp, index);
+                        }
+                    });
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Remove (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item);
-                    size_t index = Find_ (tmp);
-                    if (index != kNotFound_) {
-                        Assert (index < GetLength ());
-                        Assert (tmp.fCount >= count);
-                        tmp.fCount -= count;
-                        if (tmp.fCount == 0) {
-                            RemoveAt_ (index);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        size_t index = Find_ (tmp);
+                        if (index != kNotFound_) {
+                            Assert (index < GetLength ());
+                            Assert (tmp.fCount >= count);
+                            tmp.fCount -= count;
+                            if (tmp.fCount == 0) {
+                                RemoveAt_ (index);
+                            }
+                            else {
+                                fData_.SetAt (tmp, index);
+                            }
                         }
-                        else {
-                            fData_.SetAt (tmp, index);
-                        }
-                    }
+                    });
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
@@ -244,12 +256,16 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.RemoveCurrent ();
+                    });
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAll ()
                 {
-                    fData_.RemoveAll ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.RemoveAll ();
+                    });
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
@@ -257,26 +273,30 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
-                    if (newCount == 0) {
-                        mir.fIterator_.RemoveCurrent ();
-                    }
-                    else {
-                        TallyEntry<T>   c   =   mir.fIterator_.Current ();
-                        c.fCount = newCount;
-                        mir.fIterator_.UpdateCurrent (c);
-                    }
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        if (newCount == 0) {
+                            mir.fIterator_.RemoveCurrent ();
+                        }
+                        else {
+                            TallyEntry<T>   c   =   mir.fIterator_.Current ();
+                            c.fCount = newCount;
+                            mir.fIterator_.UpdateCurrent (c);
+                        }
+                    });
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    size_t index = Find_ (tmp);
-                    if (index == kNotFound_) {
-                        return 0;
-                    }
-                    Assert (index >= 0);
-                    Assert (index < GetLength ());
-                    return (tmp.fCount);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        size_t index = Find_ (tmp);
+                        if (index == kNotFound_) {
+                            return 0;
+                        }
+                        Assert (index >= 0);
+                        Assert (index < GetLength ());
+                        return (tmp.fCount);
+                    });
                 }
                 template    <typename T>
                 Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
@@ -289,7 +309,9 @@ namespace   Stroika {
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAt_ (size_t index)
                 {
-                    fData_.RemoveAt (index);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.RemoveAt (index);
+                    });
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::Find_ (TallyEntry<T>& item) const

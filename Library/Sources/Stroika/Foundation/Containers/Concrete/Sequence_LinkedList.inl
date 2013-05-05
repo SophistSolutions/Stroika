@@ -153,12 +153,16 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Sequence_LinkedList<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {return (fData_.GetLength ());});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength ());
+                    });
                 }
                 template    <typename T>
                 bool  Sequence_LinkedList<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {return (fData_.GetLength () == 0);});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength () == 0);
+                    });
                 }
                 template    <typename T>
                 void      Sequence_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const

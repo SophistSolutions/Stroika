@@ -170,12 +170,16 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 size_t  Mapping_Array<Key, T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength ());
+                    });
                 }
                 template    <typename Key, typename T>
                 bool  Mapping_Array<Key, T>::Rep_::IsEmpty () const
                 {
-                    return (fData_.GetLength () == 0);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength () == 0);
+                    });
                 }
                 template    <typename Key, typename T>
                 void      Mapping_Array<Key, T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -190,7 +194,9 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 void    Mapping_Array<Key, T>::Rep_::RemoveAll ()
                 {
-                    fData_.RemoveAll ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.RemoveAll ();
+                    });
                 }
                 template    <typename Key, typename T>
                 Iterable<Key>    Mapping_Array<Key, T>::Rep_::Keys () const
@@ -201,36 +207,42 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 bool    Mapping_Array<Key, T>::Rep_::Lookup (Key key, T* item) const
                 {
-                    for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
-                        if (it.Current ().first == key) {
-                            if (item != nullptr) {
-                                *item = it.Current ().second;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
+                            if (it.Current ().first == key) {
+                                if (item != nullptr) {
+                                    *item = it.Current ().second;
+                                }
+                                return true;
                             }
-                            return true;
                         }
-                    }
+                    });
                     return false;
                 }
                 template    <typename Key, typename T>
                 void    Mapping_Array<Key, T>::Rep_::Add (Key key, T newElt)
                 {
-                    for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
-                        if (it.Current ().first == key) {
-                            fData_[it.CurrentIndex ()].second = newElt;
-                            return;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
+                            if (it.Current ().first == key) {
+                                fData_[it.CurrentIndex ()].second = newElt;
+                                return;
+                            }
                         }
-                    }
-                    fData_.InsertAt (pair<Key, T> (key, newElt), fData_.GetLength ());
+                        fData_.InsertAt (pair<Key, T> (key, newElt), fData_.GetLength ());
+                    });
                 }
                 template    <typename Key, typename T>
                 void    Mapping_Array<Key, T>::Rep_::Remove (Key key)
                 {
-                    for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
-                        if (it.Current ().first == key) {
-                            fData_.RemoveAt (it.CurrentIndex ());
-                            return;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (Private::DataStructures::ForwardArrayIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
+                            if (it.Current ().first == key) {
+                                fData_.RemoveAt (it.CurrentIndex ());
+                                return;
+                            }
                         }
-                    }
+                    });
                 }
                 template    <typename Key, typename T>
                 void    Mapping_Array<Key, T>::Rep_::Remove (Iterator<pair<Key, T>> i)
@@ -238,7 +250,9 @@ namespace   Stroika {
                     const typename Iterator<pair<Key, T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_Array<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_Array<Key, T>::IteratorRep_&> (ir);
-                    mir.fIterator_.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.RemoveCurrent ();
+                    });
                 }
 
 
