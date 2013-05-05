@@ -109,7 +109,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  shared_ptr<typename Iterable<T>::_IRep>  Iterable<T>::Clone_ (const typename Iterable<T>::_IRep& rep)
+            inline  typename Iterable<T>::_SharedPtrIRep  Iterable<T>::Clone_ (const typename Iterable<T>::_IRep& rep)
             {
                 return (rep.Clone ());
             }
