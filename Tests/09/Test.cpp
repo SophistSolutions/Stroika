@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
 //      TEST    Foundation::Containers::Mapping
-//      STATUS  TOTALLY WRONG - PLACEHOLDER
+//      STATUS  very minimal/incomplete
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -39,6 +39,24 @@ namespace {
 }
 
 
+namespace {
+    template <typename MappingOfKeyT>
+    void    SimpleTest_2_ (MappingOfKeyT m)
+    {
+        m.Add (1, 2);
+		VerifyTestResult (m.size () == 1);
+		Verify (m.Lookup (1));
+		Verify (not m.Lookup (2));
+        m.Add (1, 2);
+		VerifyTestResult (m.size () == 1);
+		m.Remove (1);
+		VerifyTestResult (m.size () == 0);
+		m.RemoveAll ();
+		VerifyTestResult (m.size () == 0);
+    }
+}
+
+
 
 namespace {
     template <typename MappingOfKeyT>
@@ -46,6 +64,7 @@ namespace {
     {
         MappingOfKeyT m;
         SimpleTest_1_ (m);
+        SimpleTest_2_ (m);
     }
 }
 
@@ -53,13 +72,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-#if 0
 		SimpleMappingTest_All_For_Type<Mapping<size_t,size_t>> ();
         SimpleMappingTest_All_For_Type<Mapping<size_t,size_t>> ();
         
 		SimpleMappingTest_All_For_Type<Mapping_Array<size_t,size_t>> ();
         SimpleMappingTest_All_For_Type<Mapping_Array<size_t,size_t>> ();
-#endif
     }
 }
 

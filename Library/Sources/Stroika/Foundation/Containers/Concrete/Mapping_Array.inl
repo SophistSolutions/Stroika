@@ -21,6 +21,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+#ifndef CLONE_MSVC_BUG
+#define CLONE_MSVC_BUG		defined (_MSC_VER)
+#endif
+
                 /*
                  ********************************************************************************
                  ********************* Mapping_Array<Key, T>::Rep_ ******************************
@@ -28,7 +32,10 @@ namespace   Stroika {
                  */
 	            template    <typename Key, typename T>
                 class   Mapping_Array<Key, T>::Rep_ : public Mapping<Key, T>::_IRep {
-                public:
+				private:
+					typedef	Mapping<Key, T>::_IRep	inherited;
+
+				public:
                     Rep_ ();
                     ~Rep_ ();
 
@@ -37,7 +44,14 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
+#if CLONE_MSVC_BUG
+                    virtual typename Iterable<pair<Key,T>>::_SharedPtrIRep	Clone () const override
+					{
+						return Iterable<pair<Key,T>>::_SharedPtrIRep (new Rep_ (*this));
+					}
+#else
                     virtual typename Iterable<pair<Key,T>>::_SharedPtrIRep	Clone () const override;
+#endif
                     virtual Iterator<pair<Key,T>>							MakeIterator () const override;
                     virtual size_t											GetLength () const override;
                     virtual bool											IsEmpty () const override;
@@ -132,12 +146,13 @@ namespace   Stroika {
                 Mapping_Array<Key, T>::Rep_::~Rep_ ()
                 {
                 }
-#if 0
+#if !CLONE_MSVC_BUG
+
 	            template    <typename Key, typename T>
-                typename Iterable<pair<Key,T>>::_SharedPtrIRep  Mapping_Array<Key, T>::Rep_::Clone () const
-                {
-                    return Iterable<pair<Key,T>>::_SharedPtrIRep (new Rep_ (*this));
-                }
+                    typename Iterable<pair<Key,T>>::_SharedPtrIRep	Mapping_Array<Key, T>::Rep_::Clone () const
+					{
+						return Iterable<pair<Key,T>>::_SharedPtrIRep (new Rep_ (*this));
+					}
 #endif
 	            template    <typename Key, typename T>
                 Iterator<pair<Key,T>>  Mapping_Array<Key, T>::Rep_::MakeIterator () const
@@ -167,11 +182,57 @@ namespace   Stroika {
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
+
+
+#if 0
+									virtual void            RemoveAll () override;
+					virtual  Iterable<Key>  Keys () const override;
+					virtual  bool           Lookup (Key key, T* item) const override;
+					virtual  void           Add (Key key, T newElt) override;
+					virtual  void           Remove (Key key) override;
+					virtual  void           Remove (Iterator<pair<Key,T>> i) override;
+#endif
+
 	            template    <typename Key, typename T>
-                void    Mapping_Array<Key, T>::Rep_::Remove (Key item)
+                void    Mapping_Array<Key, T>::Rep_::RemoveAll ()
+                {
+                    fData_.RemoveAll ();
+                }
+	            template    <typename Key, typename T>
+                Iterable<Key>    Mapping_Array<Key, T>::Rep_::Keys () const
+                {
+					AssertNotImplemented ();
+					return *(Iterable<Key>*)nullptr;
+                }
+	            template    <typename Key, typename T>
+                bool    Mapping_Array<Key, T>::Rep_::Lookup (Key key, T* item) const
                 {
                     for (Private::DataStructures::ForwardArrayIterator<pair<Key,T>> it (fData_); it.More (nullptr, true);) {
-                        if (it.Current ().first == item) {
+                        if (it.Current ().first == key) {
+                            if (item != nullptr) {
+								*item = it.Current ().second;
+							}
+                            return true;
+                        }
+                    }
+					return false;
+                }
+	            template    <typename Key, typename T>
+                void    Mapping_Array<Key, T>::Rep_::Add (Key key, T newElt)
+                {
+                    for (Private::DataStructures::ForwardArrayIterator<pair<Key,T>> it (fData_); it.More (nullptr, true);) {
+                        if (it.Current ().first == key) {
+							fData_[it.CurrentIndex ()].second = newElt;
+                            return;
+                        }
+                    }
+					fData_.InsertAt (pair<Key,T> (key, newElt), fData_.GetLength ());
+                }
+	            template    <typename Key, typename T>
+                void    Mapping_Array<Key, T>::Rep_::Remove (Key key)
+                {
+                    for (Private::DataStructures::ForwardArrayIterator<pair<Key,T>> it (fData_); it.More (nullptr, true);) {
+                        if (it.Current ().first == key) {
                             fData_.RemoveAt (it.CurrentIndex ());
                             return;
                         }
@@ -185,11 +246,6 @@ namespace   Stroika {
                     const typename Mapping_Array<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_Array<Key, T>::IteratorRep_&> (ir);
                     mir.fIterator_.RemoveCurrent ();
                 }
-	            template    <typename Key, typename T>
-                void    Mapping_Array<Key, T>::Rep_::RemoveAll ()
-                {
-                    fData_.RemoveAll ();
-                }
 
 
                 /*
@@ -199,35 +255,14 @@ namespace   Stroika {
                 */
 	            template    <typename Key, typename T>
                 Mapping_Array<Key, T>::Mapping_Array ()
-                    : Mapping<Key, T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                }
-#if 0
-	            template    <typename Key, typename T>
-                Mapping_Array<Key, T>::Mapping_Array (const Mapping<Key,T>& m)
-                    : Mapping<Key, T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
-                {
-                    SetCapacity (m.GetLength ());
-                    operator+= (bag);
-                }
-#endif
-#if 0
-	            template    <typename Key, typename T>
-                Mapping_Array<Key, T>::Mapping_Array (const T* start, const T* end)
-                    : Mapping<Key, T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
-                {
-                    Require ((start == end) or (start != nullptr and end != nullptr));
-                    if (start != end) {
-                        SetCapacity (end - start);
-                        Add (start, end);
-                    }
                 }
 	            template    <typename Key, typename T>
-                inline  Mapping_Array<Key, T>::Mapping_Array (const Mapping_Array<Key, T>& bag)
-                    : Mapping<Key, T> (bag)
+                inline	Mapping_Array<Key, T>::Mapping_Array (const Mapping_Array<Key, T>& m)
+                    : inherited (m)
                 {
                 }
-#endif
 	            template    <typename Key, typename T>
                 inline  Mapping_Array<Key, T>&   Mapping_Array<Key, T>::operator= (const Mapping_Array<Key, T>& bag)
                 {

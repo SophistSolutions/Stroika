@@ -5,19 +5,8 @@
 #define _Stroika_Foundation_Containers_Mapping_h_  1
 
 /*
- *
- *
- *  STATUS:
- *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
- *
- *
- *
  *  TODO:
- *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Mapping.hh
- *
- *      (o)         Should inherit from Iterable<T>
+ *		@todo	Support thread safety
  *
  *
  */
@@ -66,23 +55,19 @@ namespace   Stroika {
             public:
                 nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src);
 
-            public:
-                /**
-                 */
-                nonvirtual  void    RemoveAll ();
 
             public:
                 /**
-                 * Note this method may not return a collection which is sorted. Note also, the
-                 *returned value is a copy of the keys (by value) - at least logically (implementations
-                 * maybe smart enough to use lazy copying)
+                 *	Note this method may not return a collection which is sorted. Note also, the
+                 *	returned value is a copy of the keys (by value) - at least logically (implementations
+                 *	maybe smart enough to use lazy copying)
                  */
                 nonvirtual  Iterable<Key>   Keys () const;
 
             public:
                 /**
                  */
-                nonvirtual  bool Lookup (Key key, T* item) const;
+                nonvirtual  bool Lookup (Key key, T* item = nullptr) const;
 
             public:
                 /**
@@ -90,30 +75,48 @@ namespace   Stroika {
                  *  else, the association is silently updated, and the size of the iterable does not change.
                  */
                 nonvirtual  void    Add (Key key, T newElt);
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    Add (const CONTAINER_OF_PAIR_KEY_T& items);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual  void    Add (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
-
-            public:
+            
+			public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    Remove (const CONTAINER_OF_PAIR_KEY_T& items);
-                nonvirtual  void    Remove (Key key);
+                nonvirtual  void    AddAll (const CONTAINER_OF_PAIR_KEY_T& items);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual  void    Remove (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
-                nonvirtual  void    Remove (Iterator<pair<Key, T>> i);
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-            public:
+
+			public:
+                /**
+                 */
+                nonvirtual  void    Remove (Key key);
+                nonvirtual  void    Remove (Iterator<pair<Key, T>> i);
+            
+			
+			public:
+                /**
+                 */
+                nonvirtual  void    RemoveAll ();
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  void    RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
+                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+
+            
+			public:
+                /**
+                 */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            public:
+            
+			public:
+                /**
+                 */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            protected:
+
+			protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };

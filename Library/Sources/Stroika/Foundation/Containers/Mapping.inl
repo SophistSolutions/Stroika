@@ -32,14 +32,14 @@ namespace   Stroika {
             inline  Mapping<Key, T>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
                 : inherited (Concrete::Mapping_Array<Key, T> ())
             {
-                Add (cp);
+                AddAll (cp);
             }
             template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<Key, T>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (Concrete::Mapping_Array<Key, T> ())
             {
-                Add (start, end);
+                AddAll (start, end);
             }
             template    <typename Key, typename T>
             inline  Mapping<Key, T>::Mapping (const _SharedPtrIRep& rep)
@@ -62,11 +62,6 @@ namespace   Stroika {
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::RemoveAll ()
-            {
-                _GetRep ().RemoveAll ();
-            }
-            template    <typename Key, typename T>
             inline  Iterable<Key>    Mapping<Key, T>::Keys () const
             {
                 return _GetRep ().Keys ();
@@ -79,11 +74,11 @@ namespace   Stroika {
             template    <typename Key, typename T>
             inline  void    Mapping<Key, T>::Add (Key key, T newElt)
             {
-                _GetRep ().Add (key, item);
+                _GetRep ().Add (key, newElt);
             }
             template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Mapping<Key, T>::Add (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            void    Mapping<Key, T>::AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (i->first, i->second);
@@ -91,18 +86,10 @@ namespace   Stroika {
             }
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Mapping<Key, T>::Add (const CONTAINER_OF_PAIR_KEY_T& items)
+            void    Mapping<Key, T>::AddAll (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 for (auto i : items) {
                     Add (i.first, i.second);
-                }
-            }
-            template    <typename Key, typename T>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Mapping<Key, T>::Remove (const CONTAINER_OF_PAIR_KEY_T& items)
-            {
-                for (auto i : items) {
-                    Remove (i.first);
                 }
             }
             template    <typename Key, typename T>
@@ -111,17 +98,30 @@ namespace   Stroika {
                 _GetRep ().Remove (key);
             }
             template    <typename Key, typename T>
+            inline  void    Mapping<Key, T>::Remove (Iterator<pair<Key, T>> i)
+            {
+                _GetRep ().Remove (i);
+            }
+            template    <typename Key, typename T>
+            inline  void    Mapping<Key, T>::RemoveAll ()
+            {
+                _GetRep ().RemoveAll ();
+            }
+            template    <typename Key, typename T>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            void    Mapping<Key, T>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            {
+                for (auto i : items) {
+                    Remove (i.first);
+                }
+            }
+            template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Mapping<Key, T>::Remove (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            void    Mapping<Key, T>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);
                 }
-            }
-            template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::Remove (Iterator<pair<Key, T>> i)
-            {
-                _GetRep ().Remove (i);
             }
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
