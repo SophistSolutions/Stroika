@@ -12,6 +12,7 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
@@ -33,6 +34,7 @@ namespace   Stroika {
                 public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -65,6 +67,7 @@ namespace   Stroika {
                     virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
+                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
                     Private::DataStructures::LinkedList_Patch<TallyEntry<T>>    fData_;
 
                     friend  class Tally_LinkedList<T>::IteratorRep_;
@@ -133,13 +136,18 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 inline  Tally_LinkedList<T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
                 inline  Tally_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
-                    : fData_ (from.fData_)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 size_t  Tally_LinkedList<T>::Rep_::GetLength () const

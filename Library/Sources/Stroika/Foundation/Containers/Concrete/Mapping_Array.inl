@@ -12,7 +12,7 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/Array.h"
-
+#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
@@ -33,7 +33,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
-                    ~Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -63,6 +64,7 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
+                    Private::ContainerRepLockDataSupport_               fLockSupport_;
                     Private::DataStructures::Array_Patch<pair<Key, T>>  fData_;
                     friend  class Mapping_Array<Key, T>::IteratorRep_;
                 };
@@ -134,12 +136,18 @@ namespace   Stroika {
                 */
                 template    <typename Key, typename T>
                 inline  Mapping_Array<Key, T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename Key, typename T>
-                Mapping_Array<Key, T>::Rep_::~Rep_ ()
+                inline  Mapping_Array<Key, T>::Rep_::Rep_ (const Rep_& from)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename Key, typename T>

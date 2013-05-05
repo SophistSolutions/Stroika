@@ -12,7 +12,7 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/Array.h"
-
+#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
@@ -28,9 +28,13 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 class   Bag_Array<T>::Rep_ : public Bag<T>::_IRep {
+                private:
+                    typedef Bag<T>::_IRep   inherited;
+
                 public:
                     Rep_ ();
-                    ~Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -54,7 +58,8 @@ namespace   Stroika {
                     virtual void                        RemoveAll () override;
 
                 private:
-                    Private::DataStructures::Array_Patch<T>  fData_;
+                    Private::ContainerRepLockDataSupport_       fLockSupport_;
+                    Private::DataStructures::Array_Patch<T>     fData_;
                     friend  class Bag_Array<T>::IteratorRep_;
                 };
 
@@ -122,12 +127,17 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 inline  Bag_Array<T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
-                Bag_Array<T>::Rep_::~Rep_ ()
+                inline  Bag_Array<T>::Rep_::Rep_ (const Rep_& from)
+                    : fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Bag_Array<T>::Rep_::Clone () const

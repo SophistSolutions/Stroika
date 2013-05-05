@@ -13,6 +13,7 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/SynchronizationUtils.h"
 
 
 
@@ -24,9 +25,13 @@ namespace   Stroika {
 
                 template    <typename T>
                 class   Sequence_LinkedList<T>::Rep_ : public Sequence<T>::_IRep {
+                private:
+                    typedef Sequence<T>::_IRep  inherited;
+
                 public:
                     Rep_ ();
-                    ~Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -51,7 +56,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::DataStructures::LinkedList_Patch<T>  fData_;
+                    Private::ContainerRepLockDataSupport_           fLockSupport_;
+                    Private::DataStructures::LinkedList_Patch<T>    fData_;
                     friend  class Sequence_LinkedList<T>::IteratorRep_;
                 };
 
@@ -81,7 +87,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************** Sequence_LinkedList<T>::IteratorRep_ **********************
+                ******************** Sequence_LinkedList<T>::IteratorRep_ **********************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -115,12 +121,18 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 inline  Sequence_LinkedList<T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
-                Sequence_LinkedList<T>::Rep_::~Rep_ ()
+                inline  Sequence_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Sequence_LinkedList<T>::Rep_::Clone () const

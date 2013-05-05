@@ -12,7 +12,8 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures//Array.h"
+#include    "../Private/DataStructures/Array.h"
+#include    "../Private/SynchronizationUtils.h"
 
 
 
@@ -24,21 +25,25 @@ namespace   Stroika {
 
                 template    <typename T>
                 class   Sequence_Array<T>::Rep_ : public Sequence<T>::_IRep {
+                private:
+                    typedef Sequence<T>::_IRep  inherited;
+
                 public:
                     Rep_ ();
-                    ~Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
-                    virtual Iterator<T>                     MakeIterator () const override;
-                    virtual size_t                          GetLength () const override;
-                    virtual bool                            IsEmpty () const override;
-                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
+                    virtual Iterator<T>                             MakeIterator () const override;
+                    virtual size_t                                  GetLength () const override;
+                    virtual bool                                    IsEmpty () const override;
+                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Sequence<T>::_IRep overrides
                 public:
@@ -51,7 +56,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::DataStructures::Array_Patch<T>  fData_;
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    Private::DataStructures::Array_Patch<T> fData_;
                     friend  class Sequence_Array<T>::IteratorRep_;
                 };
 
@@ -114,12 +120,18 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 inline  Sequence_Array<T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
-                Sequence_Array<T>::Rep_::~Rep_ ()
+                inline  Sequence_Array<T>::Rep_::Rep_ (const Rep_& from)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Sequence_Array<T>::Rep_::Clone () const

@@ -12,15 +12,13 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/Array.h"
+#include    "../Private/SynchronizationUtils.h"
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
             namespace   Concrete {
-
-
-                using namespace Private;
 
 
                 /*
@@ -35,6 +33,8 @@ namespace   Stroika {
 
                 public:
                     Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -71,6 +71,7 @@ namespace   Stroika {
                     nonvirtual  void    RemoveAt_ (size_t index);
 
                 private:
+                    Private::ContainerRepLockDataSupport_               fLockSupport_;
                     Private::DataStructures::Array_Patch<TallyEntry<T>> fData_;
 
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
@@ -145,8 +146,17 @@ namespace   Stroika {
                 template    <typename T>
                 inline  Tally_Array<T>::Rep_::Rep_ ()
                     : inherited ()
+                    , fLockSupport_ ()
                     , fData_ ()
                 {
+                }
+                template    <typename T>
+                inline  Tally_Array<T>::Rep_::Rep_ (const Rep_& from)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
+                {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::GetLength () const

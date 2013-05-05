@@ -1106,7 +1106,7 @@ namespace   Stroika {
                          *  but must be sure we are big enuf. Do this before we store any pointers
                          *  cuz it could invalidate them.
                          */
-                        SetCapacity (Max (GetCapacity (), newLength));
+                        SetCapacity (max (GetCapacity (), newLength));
 
                         /*
                          * Copy array elements where both sides where constructed.

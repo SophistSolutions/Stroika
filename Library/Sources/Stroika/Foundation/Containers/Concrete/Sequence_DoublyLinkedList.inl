@@ -13,6 +13,7 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/DataStructures/DoublyLinkedList.h"
+#include    "../Private/SynchronizationUtils.h"
 
 
 
@@ -24,9 +25,13 @@ namespace   Stroika {
 
                 template    <typename T>
                 class   Sequence_DoublyLinkedList<T>::Rep_ : public Sequence<T>::_IRep {
+                private:
+                    typedef Sequence<T>::_IRep  inherited;
+
                 public:
                     Rep_ ();
-                    ~Rep_ ();
+                    Rep_ (const Rep_& from);
+                    NO_ASSIGNMENT_OPERATOR(Rep_);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
@@ -51,6 +56,7 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
+                    Private::ContainerRepLockDataSupport_               fLockSupport_;
                     Private::DataStructures::DoublyLinkedList_Patch<T>  fData_;
                     friend  class Sequence_DoublyLinkedList<T>::IteratorRep_;
                 };
@@ -115,12 +121,18 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>::Rep_::Rep_ ()
-                    : fData_ ()
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
                 }
                 template    <typename T>
-                Sequence_DoublyLinkedList<T>::Rep_::~Rep_ ()
+                inline  Sequence_DoublyLinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                    : inherited ()
+                    , fLockSupport_ ()
+                    , fData_ ()
                 {
+                    fData_ = from.fData_;
                 }
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Sequence_DoublyLinkedList<T>::Rep_::Clone () const
