@@ -40,7 +40,7 @@ namespace   Stroika {
 
                 
 				public:
-                    nonvirtual  Mapping_Array<Key, T>& operator= (const Mapping_Array<Key, T>& bag);
+                    nonvirtual  Mapping_Array<Key, T>& operator= (const Mapping_Array<Key, T>& m);
 
 
 				public:

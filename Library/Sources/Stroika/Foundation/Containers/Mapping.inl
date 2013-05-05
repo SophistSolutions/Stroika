@@ -6,6 +6,8 @@
 
 #include    "../Debug/Assertions.h"
 
+#include    "Concrete/Mapping_Array.h"
+
 
 namespace   Stroika {
     namespace   Foundation {

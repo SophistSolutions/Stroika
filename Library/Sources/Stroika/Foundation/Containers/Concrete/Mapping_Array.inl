@@ -33,7 +33,7 @@ namespace   Stroika {
 	            template    <typename Key, typename T>
                 class   Mapping_Array<Key, T>::Rep_ : public Mapping<Key, T>::_IRep {
 				private:
-					typedef	Mapping<Key, T>::_IRep	inherited;
+                    typedef	typename    Mapping<Key, T>::_IRep	inherited;
 
 				public:
                     Rep_ ();
@@ -151,7 +151,7 @@ namespace   Stroika {
 	            template    <typename Key, typename T>
                     typename Iterable<pair<Key,T>>::_SharedPtrIRep	Mapping_Array<Key, T>::Rep_::Clone () const
 					{
-						return Iterable<pair<Key,T>>::_SharedPtrIRep (new Rep_ (*this));
+                        return typename Iterable<pair<Key,T>>::_SharedPtrIRep (new Rep_ (*this));
 					}
 #endif
 	            template    <typename Key, typename T>
@@ -264,9 +264,9 @@ namespace   Stroika {
                 {
                 }
 	            template    <typename Key, typename T>
-                inline  Mapping_Array<Key, T>&   Mapping_Array<Key, T>::operator= (const Mapping_Array<Key, T>& bag)
+                inline  Mapping_Array<Key, T>&   Mapping_Array<Key, T>::operator= (const Mapping_Array<Key, T>& m)
                 {
-                    Mapping<T>::operator= (bag);
+                    Mapping<Key,T>::operator= (m);
                     return *this;
                 }
 	            template    <typename Key, typename T>
@@ -276,7 +276,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
                 }
 	            template    <typename Key, typename T>
                 inline  typename Mapping_Array<Key, T>::Rep_&    Mapping_Array<Key, T>::GetRep_ ()
@@ -285,7 +285,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
                 }
 	            template    <typename Key, typename T>
                 inline  void    Mapping_Array<Key, T>::Compact ()

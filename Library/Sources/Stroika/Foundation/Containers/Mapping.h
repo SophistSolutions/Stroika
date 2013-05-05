@@ -17,6 +17,8 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
+#include    "Iterable.h"
+#include    "Iterator.h"
 
 
 namespace   Stroika {
