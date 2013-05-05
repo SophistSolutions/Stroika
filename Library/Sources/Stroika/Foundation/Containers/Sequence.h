@@ -8,7 +8,7 @@
  *
  *
  *  STATUS:
- *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
+ *      First draft API complete, and implementation usable (not threadsafe yet).
  *
  *
  *

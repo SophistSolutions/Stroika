@@ -51,6 +51,20 @@ namespace   Stroika {
                 Append (start, end);
             }
             template    <typename T>
+            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
+            {
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<const Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
+            }
+            template    <typename T>
+            inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
+            {
+                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
+                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
+            }
+            template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
             {
                 return Private::Contains_ (*this, item);
@@ -321,20 +335,6 @@ namespace   Stroika {
             template    <typename T>
             inline  Sequence<T>::_IRep::~_IRep ()
             {
-            }
-            template    <typename T>
-            inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
-            {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
-                return *static_cast<const Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
-            }
-            template    <typename T>
-            inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
-            {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
-                return *static_cast<Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
             }
 
 
