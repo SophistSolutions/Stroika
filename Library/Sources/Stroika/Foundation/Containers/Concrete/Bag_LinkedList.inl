@@ -42,12 +42,12 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual shared_ptr<typename Iterable<T>::_IRep>    Clone () const override;
-                    virtual Iterator<T>                     MakeIterator () const override;
-                    virtual size_t                          GetLength () const override;
-                    virtual bool                            IsEmpty () const override;
-                    virtual void                            Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                     ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
+                    virtual Iterator<T>                             MakeIterator () const override;
+                    virtual size_t                                  GetLength () const override;
+                    virtual bool                                    IsEmpty () const override;
+                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Bag<T>::_IRep overrides
                 public:
@@ -116,9 +116,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
                 }
                 template    <typename T>
-                shared_ptr<typename Iterable<T>::_IRep>  Bag_LinkedList<T>::Rep_::Clone () const
+                typename Iterable<T>::_SharedPtrIRep  Bag_LinkedList<T>::Rep_::Clone () const
                 {
-                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
+                    return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T>
                 Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const

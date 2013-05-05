@@ -134,9 +134,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
                 }
                 template    <typename T>
-                shared_ptr<typename Iterable<T>::_IRep>  Sequence_Array<T>::Rep_::Clone () const
+                typename Iterable<T>::_SharedPtrIRep  Sequence_Array<T>::Rep_::Clone () const
                 {
-                    return shared_ptr<typename Iterable<T>::_IRep> (new Rep_ (*this));
+                    return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T>
                 Iterator<T>  Sequence_Array<T>::Rep_::MakeIterator () const
