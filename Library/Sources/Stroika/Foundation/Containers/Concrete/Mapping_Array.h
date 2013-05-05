@@ -25,25 +25,25 @@ namespace   Stroika {
                 /**
                  * \brief   Mapping_Array<Key, T> is an Array-based concrete implementation of the Mapping<Key,T> container pattern.
                  */
-	            template    <typename Key, typename T>
-                class   Mapping_Array : public Mapping<Key,T> {
+                template    <typename Key, typename T>
+                class   Mapping_Array : public Mapping<Key, T> {
                 private:
-                    typedef     Mapping<Key,T>  inherited;
+                    typedef     Mapping<Key, T>  inherited;
 
                 public:
-					Mapping_Array ();
-					Mapping_Array (const Mapping_Array<Key, T>& m);
-					template    <typename CONTAINER_OF_PAIR_KEY_T>
-					explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
-					template    <typename COPY_FROM_ITERATOR_KEY_T>
-					explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    Mapping_Array ();
+                    Mapping_Array (const Mapping_Array<Key, T>& m);
+                    template    <typename CONTAINER_OF_PAIR_KEY_T>
+                    explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    template    <typename COPY_FROM_ITERATOR_KEY_T>
+                    explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-                
-				public:
+
+                public:
                     nonvirtual  Mapping_Array<Key, T>& operator= (const Mapping_Array<Key, T>& m);
 
 
-				public:
+                public:
                     /**
                      *  \brief  Reduce the space used to store the Mapping_Array<Key, T> contents.
                      *
@@ -61,7 +61,7 @@ namespace   Stroika {
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
 
-				private:
+                private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
                 public:
 #endif

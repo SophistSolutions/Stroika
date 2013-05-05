@@ -57,7 +57,7 @@ namespace   Stroika {
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
             template    <typename Key, typename T>
-            inline  typename    Mapping<Key, T>::_IRep&		Mapping<Key, T>::_GetRep ()
+            inline  typename    Mapping<Key, T>::_IRep&     Mapping<Key, T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
                 EnsureMember (&inherited::_GetRep (), _IRep);

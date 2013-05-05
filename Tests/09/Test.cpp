@@ -44,15 +44,15 @@ namespace {
     void    SimpleTest_2_ (MappingOfKeyT m)
     {
         m.Add (1, 2);
-		VerifyTestResult (m.size () == 1);
-		Verify (m.Lookup (1));
-		Verify (not m.Lookup (2));
+        VerifyTestResult (m.size () == 1);
+        Verify (m.Lookup (1));
+        Verify (not m.Lookup (2));
         m.Add (1, 2);
-		VerifyTestResult (m.size () == 1);
-		m.Remove (1);
-		VerifyTestResult (m.size () == 0);
-		m.RemoveAll ();
-		VerifyTestResult (m.size () == 0);
+        VerifyTestResult (m.size () == 1);
+        m.Remove (1);
+        VerifyTestResult (m.size () == 0);
+        m.RemoveAll ();
+        VerifyTestResult (m.size () == 0);
     }
 }
 
@@ -72,11 +72,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-		SimpleMappingTest_All_For_Type<Mapping<size_t,size_t>> ();
-        SimpleMappingTest_All_For_Type<Mapping<size_t,size_t>> ();
-        
-		SimpleMappingTest_All_For_Type<Mapping_Array<size_t,size_t>> ();
-        SimpleMappingTest_All_For_Type<Mapping_Array<size_t,size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping<size_t, size_t>> ();
+
+        SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
     }
 }
 

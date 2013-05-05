@@ -6,7 +6,7 @@
 
 /*
  *  TODO:
- *		@todo	Support thread safety
+ *      @todo   Support thread safety
  *
  *
  */
@@ -60,9 +60,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *	Note this method may not return a collection which is sorted. Note also, the
-                 *	returned value is a copy of the keys (by value) - at least logically (implementations
-                 *	maybe smart enough to use lazy copying)
+                 *  Note this method may not return a collection which is sorted. Note also, the
+                 *  returned value is a copy of the keys (by value) - at least logically (implementations
+                 *  maybe smart enough to use lazy copying)
                  */
                 nonvirtual  Iterable<Key>   Keys () const;
 
@@ -77,8 +77,8 @@ namespace   Stroika {
                  *  else, the association is silently updated, and the size of the iterable does not change.
                  */
                 nonvirtual  void    Add (Key key, T newElt);
-            
-			public:
+
+            public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
@@ -87,14 +87,14 @@ namespace   Stroika {
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
 
-			public:
+            public:
                 /**
                  */
                 nonvirtual  void    Remove (Key key);
                 nonvirtual  void    Remove (Iterator<pair<Key, T>> i);
-            
-			
-			public:
+
+
+            public:
                 /**
                  */
                 nonvirtual  void    RemoveAll ();
@@ -103,22 +103,22 @@ namespace   Stroika {
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-            
-			public:
+
+            public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-            
-			public:
+
+            public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
 
-			protected:
+            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
@@ -144,7 +144,7 @@ namespace   Stroika {
                 virtual  bool           Lookup (Key key, T* item) const     =   0;
                 virtual  void           Add (Key key, T newElt)             =   0;
                 virtual  void           Remove (Key key)                    =   0;
-                virtual  void           Remove (Iterator<pair<Key,T>> i)    =   0;
+                virtual  void           Remove (Iterator<pair<Key, T>> i)    =   0;
             };
 
 
