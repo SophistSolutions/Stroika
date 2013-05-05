@@ -8,11 +8,11 @@
  *  TODO:
  *      @todo   Support thread safety
  *
- *		@todo	Support more backends
- *				Especially HashTable, RedBlackTree, and stlmap, and stlhashmap
- *				And of course change default here
+ *      @todo   Support more backends
+ *              Especially HashTable, RedBlackTree, and stlmap, and stlhashmap
+ *              And of course change default here
  *
- *		@todo	
+ *      @todo
  *
  *
  */
