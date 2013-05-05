@@ -8,6 +8,12 @@
 
 #include    <cstdint>
 
+/**
+ * TODO:
+ *      @todo   PROBABLY OBSOLETE / DESTROY THIS MODULE!!! MAYBE?
+ *              See if I can just use <atomics> the way they were designed to avoid the need for htese methods!
+ */
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
