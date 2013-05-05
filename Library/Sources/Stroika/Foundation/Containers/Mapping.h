@@ -41,8 +41,11 @@ namespace   Stroika {
              *
              *  @see    Dictionary<Key,T>
              */
-            template    <class Key, class T>
+            template    <typename Key, typename T>
             class   Mapping : public Iterable<pair<Key, T>> {
+            private:
+                typedef Iterable<pair<Key, T>>  inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -51,8 +54,11 @@ namespace   Stroika {
                 /**
                  */
                 Mapping ();
-                Mapping (const Mapping<TKey, T>& s);
-                explicit Mapping (const pair<Key, T>* start, const pair<Key, T>* end);
+                Mapping (const Mapping<Key, T>& m);
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
+                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                explicit Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             protected:
                 explicit Mapping (const _SharedPtrIRep& rep);
@@ -80,20 +86,32 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Add the association between key and newElt. If key was already associated with something
+                 *  else, the association is silently updated, and the size of the iterable does not change.
                  */
-                nonvirtual  void    Enter (Key key, T newElt);
-                nonvirtual  void    Enter (const Mapping<Key, T>& items);
+                nonvirtual  void    Add (Key key, T newElt);
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  void    Add (const CONTAINER_OF_PAIR_KEY_T& items);
+                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                nonvirtual  void    Add (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             public:
                 /**
                  */
-                nonvirtual  void    Remove (const Mapping<Key, T>& items);
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  void    Remove (const CONTAINER_OF_PAIR_KEY_T& items);
                 nonvirtual  void    Remove (Key key);
-                nonvirtual  void    Remove (Iterator<T> i);
+                template    <typename COPY_FROM_ITERATOR_KEY_T>
+                nonvirtual  void    Remove (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                nonvirtual  void    Remove (Iterator<pair<Key, T>> i);
 
             public:
-                nonvirtual  Mapping<Key, T>& operator+= (const Mapping<Key, T>& items);
-                nonvirtual  Mapping<Key, T>& operator-= (const Mapping<Key, T>& items);
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+
+            public:
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                nonvirtual  Mapping<Key, T>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -107,8 +125,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Mapping<T> container API.
              */
-            template    <typename T>
-            class   Mapping<T>::_IRep : public Iterable<pair<Key, T>>::_IRep {
+            template    <typename Key, typename T>
+            class   Mapping<Key, T>::_IRep : public Iterable<pair<Key, T>>::_IRep {
             protected:
                 _IRep ();
 
@@ -119,7 +137,7 @@ namespace   Stroika {
                 virtual void            RemoveAll ()                        =   0;
                 virtual  Iterable<Key>  Keys () const                       =   0;
                 virtual  bool           Lookup (Key key, T* item) const     =   0;
-                virtual  void           Enter (Key key, T newElt)           =   0;
+                virtual  void           Add (Key key, T newElt)             =   0;
                 virtual  void           Remove (Key key)                    =   0;
                 virtual  void           Remove (Iterator<T> i)              =   0;
             };
