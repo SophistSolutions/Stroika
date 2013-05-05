@@ -156,7 +156,9 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_ = from.fData_;
+                    });
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::GetLength () const
@@ -202,6 +204,7 @@ namespace   Stroika {
                 template    <typename T>
                 typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Tally_Array<T>::Rep_::Clone () const
                 {
+                    // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
                 }
 #endif

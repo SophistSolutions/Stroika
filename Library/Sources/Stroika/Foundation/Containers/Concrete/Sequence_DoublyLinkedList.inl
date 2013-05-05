@@ -132,11 +132,14 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_ = from.fData_;
+                    });
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Sequence_DoublyLinkedList<T>::Rep_::Clone () const
                 {
+                    // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T>
@@ -150,12 +153,16 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Sequence_DoublyLinkedList<T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength ());
+                    });
                 }
                 template    <typename T>
                 bool  Sequence_DoublyLinkedList<T>::Rep_::IsEmpty () const
                 {
-                    return (fData_.GetLength () == 0);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength () == 0);
+                    });
                 }
                 template    <typename T>
                 void      Sequence_DoublyLinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -170,14 +177,22 @@ namespace   Stroika {
                 template    <typename T>
                 T    Sequence_DoublyLinkedList<T>::Rep_::GetAt (size_t i) const
                 {
-                    Require (i < GetLength ());
-                    return fData_.GetAt (i);
+                    Require (not IsEmpty ());
+                    Require (i == kBadSequenceIndex or i < GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        if (i == kBadSequenceIndex) {
+                            i = GetLength () - 1;
+                        }
+                        return fData_.GetAt (i);
+                    });
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::SetAt (size_t i, const T& item)
                 {
                     Require (i < GetLength ());
-                    fData_.SetAt (item, i);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.SetAt (item, i);
+                    });
                 }
                 template    <typename T>
                 size_t    Sequence_DoublyLinkedList<T>::Rep_::IndexOf (const Iterator<T>& i) const
@@ -185,7 +200,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_DoublyLinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_DoublyLinkedList<T>::IteratorRep_&> (ir);
-                    return mir.fIterator_.CurrentIndex ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return mir.fIterator_.CurrentIndex ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Remove (const Iterator<T>& i)
@@ -193,7 +210,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_DoublyLinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_DoublyLinkedList<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.RemoveCurrent ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -201,38 +220,45 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_DoublyLinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_DoublyLinkedList<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.UpdateCurrent (newValue);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.UpdateCurrent (newValue);
+                    });
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
-                    Require (0 <= at and at <= GetLength ());
-                    // quickie poor impl
-                    // See Stroika v1 - much better - handling cases of remove near start or end of linked list
-                    if (at == 0) {
-                        size_t len = to - from;
-                        for (size_t i = (to - from); i > 0; --i) {
-                            fData_.Prepend (from[i - 1]);
+                    Require (at == kBadSequenceIndex or at <= GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        if (at == kBadSequenceIndex) {
+                            at = GetLength ();
                         }
-                    }
-                    else if (at == GetLength ()) {
-                        for (const T* p = from; p != to; ++p) {
-                            fData_.Append (*p);
-                        }
-                    }
-                    else {
-                        size_t index = at;
-                        T tmphack;
-                        for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
-                            if (--index == 0) {
-                                for (const T* p = from; p != to; ++p) {
-                                    it.AddBefore (*p);
-                                }
-                                break;
+                        // quickie poor impl
+                        // See Stroika v1 - much better - handling cases of remove near start or end of linked list
+                        if (at == 0) {
+                            size_t len = to - from;
+                            for (size_t i = (to - from); i > 0; --i) {
+                                fData_.Prepend (from[i - 1]);
                             }
                         }
-                        //Assert (not it.Done ());      // cuz that would mean we never added
-                    }
+                        else if (at == GetLength ()) {
+                            for (const T* p = from; p != to; ++p) {
+                                fData_.Append (*p);
+                            }
+                        }
+                        else {
+                            size_t index = at;
+                            T tmphack;
+                            for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                                if (--index == 0) {
+                                    for (const T* p = from; p != to; ++p) {
+                                        it.AddBefore (*p);
+                                    }
+                                    break;
+                                }
+                            }
+                            //Assert (not it.Done ());      // cuz that would mean we never added
+                        }
+                    });
                 }
                 template    <typename T>
                 void    Sequence_DoublyLinkedList<T>::Rep_::Remove (size_t from, size_t to)
@@ -242,14 +268,16 @@ namespace   Stroika {
                     size_t index = from;
                     size_t amountToRemove = (to - from);
                     T tmphack;
-                    for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
-                        if (index-- == 0) {
-                            while (amountToRemove-- != 0) {
-                                it.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                            if (index-- == 0) {
+                                while (amountToRemove-- != 0) {
+                                    it.RemoveCurrent ();
+                                }
+                                break;
                             }
-                            break;
                         }
-                    }
+                    });
                 }
 
 

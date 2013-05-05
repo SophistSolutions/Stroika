@@ -131,11 +131,14 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_ = from.fData_;
+                    });
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Sequence_Array<T>::Rep_::Clone () const
                 {
+                    // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T>
@@ -149,12 +152,16 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Sequence_Array<T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength ());
+                    });
                 }
                 template    <typename T>
                 bool  Sequence_Array<T>::Rep_::IsEmpty () const
                 {
-                    return (fData_.GetLength () == 0);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLength () == 0);
+                    });
                 }
                 template    <typename T>
                 void      Sequence_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -169,14 +176,22 @@ namespace   Stroika {
                 template    <typename T>
                 T    Sequence_Array<T>::Rep_::GetAt (size_t i) const
                 {
-                    Require (i < GetLength ());
-                    return fData_.GetAt (i);
+                    Require (not IsEmpty ());
+                    Require (i == kBadSequenceIndex or i < GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        if (i == kBadSequenceIndex) {
+                            i = GetLength () - 1;
+                        }
+                        return fData_.GetAt (i);
+                    });
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::SetAt (size_t i, const T& item)
                 {
                     Require (i < GetLength ());
-                    fData_.SetAt (item, i);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.SetAt (item, i);
+                    });
                 }
                 template    <typename T>
                 size_t    Sequence_Array<T>::Rep_::IndexOf (const Iterator<T>& i) const
@@ -184,7 +199,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    return mir.fIterator_.CurrentIndex ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return mir.fIterator_.CurrentIndex ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Remove (const Iterator<T>& i)
@@ -192,7 +209,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.RemoveCurrent ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -200,23 +219,33 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.UpdateCurrent (newValue);
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.UpdateCurrent (newValue);
+                    });
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
-                    // quickie poor impl
-                    for (auto i = from; i != to; ++i) {
-                        fData_.InsertAt (*i, at++);
-                    }
+                    Require (at == kBadSequenceIndex or at <= GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        if (at == kBadSequenceIndex) {
+                            at = GetLength ();
+                        }
+                        // quickie poor impl
+                        for (auto i = from; i != to; ++i) {
+                            fData_.InsertAt (*i, at++);
+                        }
+                    });
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Remove (size_t from, size_t to)
                 {
                     // quickie poor impl
-                    for (size_t i = from; i < to; ++i) {
-                        fData_.RemoveAt (from);
-                    }
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (size_t i = from; i < to; ++i) {
+                            fData_.RemoveAt (from);
+                        }
+                    });
                 }
 
 

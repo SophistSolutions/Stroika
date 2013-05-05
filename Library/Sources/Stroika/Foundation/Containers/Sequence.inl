@@ -87,16 +87,19 @@ namespace   Stroika {
             template    <typename T>
             inline  T    Sequence<T>::GetAt (size_t i) const
             {
+                Require (i < GetLength ());
                 return _GetRep ().GetAt (i);
             }
             template    <typename T>
             inline  void    Sequence<T>::SetAt (size_t i, T item)
             {
+                Require (i < GetLength ());
                 _GetRep ().SetAt (i, item);
             }
             template    <typename T>
             inline  T    Sequence<T>::operator[] (size_t i) const
             {
+                Require (i < GetLength ());
                 return _GetRep ().GetAt (i);
             }
             template    <typename T>
@@ -125,14 +128,16 @@ namespace   Stroika {
                 return _GetRep ().IndexOf (i);
             }
             template    <typename T>
-            inline  void    Sequence<T>::Insert (size_t index, T item)
+            inline  void    Sequence<T>::Insert (size_t i, T item)
             {
-                return _GetRep ().Insert (index, &item, &item + 1);
+                Require (i <= GetLength ());
+                return _GetRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {
+                Require (i <= GetLength ());
                 size_t  insertAt = i;
                 for (auto i = start; i != end; ++i) {
                     Insert (insertAt++, *i);
@@ -142,6 +147,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Sequence<T>::InsertAll (size_t i, const CONTAINER_OF_T& s)
             {
+                Require (i <= GetLength ());
                 InsertAll (i, s.begin (), s.end ());
             }
             template    <typename T>
@@ -158,13 +164,15 @@ namespace   Stroika {
             template    <typename T>
             inline  void    Sequence<T>::Append (T item)
             {
-                Insert (this->GetLength (), item);
+                _GetRep ().Insert (kBadSequenceIndex, &item, &item + 1);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
-                InsertAll (this->GetLength (), s);
+                for (auto i : s) {
+                    Insert (kBadSequenceIndex, i);
+                }
             }
             template    <typename T>
             inline  void    Sequence<T>::Update (const Iterator<T>& i, T newValue)
@@ -210,7 +218,7 @@ namespace   Stroika {
             inline  T    Sequence<T>::back () const
             {
                 Require (not this->IsEmpty ());
-                return GetAt (this->GetLength () - 1);
+                return _GetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
             inline  T    Sequence<T>::front () const

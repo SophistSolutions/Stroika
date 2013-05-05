@@ -147,12 +147,15 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_ = from.fData_;
+                    });
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename Key, typename T>
                 typename Iterable<pair<Key, T>>::_SharedPtrIRep  Mapping_Array<Key, T>::Rep_::Clone () const
                 {
+                    // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<pair<Key, T>>::_SharedPtrIRep (new Rep_ (*this));
                 }
 #endif

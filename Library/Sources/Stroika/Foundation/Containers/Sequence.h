@@ -215,7 +215,7 @@ namespace   Stroika {
                  *  operator== (if its defined). - require concept T::operator==)
                  *  for first two overloads - third taking iterator always works)
                  */
-                nonvirtual  size_t  IndexOf (T item) const;
+                nonvirtual  size_t  IndexOf (T i) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
                 nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
 
@@ -257,11 +257,15 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This is roughly Insert (GetLength(), item), except that there is a race after you call GetLength, and before
+                 *  Insert, which calling Append () avoids.
                  */
                 nonvirtual  void    Append (T item);
 
             public:
                 /**
+                 *  This is roughly AppendAll (GetLength(), s), except that there is a race after you call GetLength, and before
+                 *  Insert, which calling Append () avoids.
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
@@ -356,11 +360,13 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
+                // 'i' argument to GetAt MAYBE kBadSequenceIndex - indictating last element
                 virtual T       GetAt (size_t i) const                              =   0;
                 virtual void    SetAt (size_t i, const T& item)                     =   0;
                 virtual size_t  IndexOf (const Iterator<T>& i) const                =   0;
                 virtual void    Remove (const Iterator<T>& i)                       =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)           =   0;
+                // 'at' argument to Insert MAYBE kBadSequenceIndex - indictating append
                 virtual void    Insert (size_t at, const T* from, const T* to)      =   0;
                 virtual void    Remove (size_t from, size_t to)                     =   0;
             };
