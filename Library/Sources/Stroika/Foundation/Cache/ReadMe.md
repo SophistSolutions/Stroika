@@ -26,3 +26,7 @@ TODO:
 	>	Add some sort of 'memoize' module
 		Think about memcached. To some extent, however, LRUCache and TimedCache
 		already replicate this functionality.
+
+	>	Maybe just document a pattern for memoizing using these cache techniques?
+
+	>	PROBABLY add a front-end to memcached!!! Maybe it look like a stroika cache object!
