@@ -451,16 +451,17 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_errno_t
-@DESCRIPTION:   <p>Controls whether or not the compiler provides an implementation
-                of errno_t (gcc for example just assumes its int)</p>
-*/
+/**
+ *  qCompilerAndStdLib_Supports_errno_t controls whether or not the compiler provides an implementation
+ *  of errno_t (gcc for example just assumes its int).
+ *
+ *  NB: POSIX and C99 just say to assume its an int and doesn't define errno_t.
+ */
 #if     !defined (qCompilerAndStdLib_Supports_errno_t)
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_errno_t ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#define qCompilerAndStdLib_Supports_errno_t 0
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_errno_t (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_Supports_errno_t 0
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_errno_t 1
 #else
@@ -562,8 +563,8 @@
 @DESCRIPTION:   <p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
 */
 #if     !defined (qCompilerAndStdLib_Supports_override)
-#if     defined (__GNUC__) && !defined (__clang__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7)))
-#define qCompilerAndStdLib_Supports_override    0
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_override     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_override    (_MSC_VER > _MS_VS_2k10_VER_)
 #else
