@@ -31,6 +31,13 @@
  *          is sent to the given (argument with register) thread. If we do this - we will want to write cooperating code with the thread start/end
  *          stuff so these get cleared out appropriately.
  *          Consider how this might be useful for stuff like SIGPIPE handling?
+ *		@todo	DOCUMENT that its UNSAFE to call malloc during signal handlers.
+ *				See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
+ *
+ *		@todo	Consider adding some automatic mechansim in signal handler callback (wrappers) - to WRAP cals to malloc/operator new,
+ *				to assert out (just int eh context of a sginal handler - just to aid in debugging this issue)
+ *
+ *		@todo	CERTAINLY make sure none of our sginal handler stuff violates that principle.
  *
  */
 
