@@ -68,9 +68,6 @@ namespace   Stroika {
                     virtual Iterator<T>                             MakeBagIterator () const override;
 
                 private:
-                    nonvirtual  void    RemoveAt_ (size_t index);
-
-                private:
                     Private::ContainerRepLockDataSupport_               fLockSupport_;
                     Private::DataStructures::Array_Patch<TallyEntry<T>> fData_;
 
@@ -223,7 +220,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         size_t index = Find_ (tmp);
                         if (index == kNotFound_) {
-                            fData_.InsertAt (tmp, GetLength ());
+                            fData_.InsertAt (tmp, fData_.GetLength ());
                         }
                         else {
                             tmp.fCount += count;
@@ -238,11 +235,11 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         size_t index = Find_ (tmp);
                         if (index != kNotFound_) {
-                            Assert (index < GetLength ());
+                            Assert (index < fData_.GetLength ());
                             Assert (tmp.fCount >= count);
                             tmp.fCount -= count;
                             if (tmp.fCount == 0) {
-                                RemoveAt_ (index);
+                                fData_.RemoveAt (index);
                             }
                             else {
                                 fData_.SetAt (tmp, index);
@@ -294,7 +291,7 @@ namespace   Stroika {
                             return 0;
                         }
                         Assert (index >= 0);
-                        Assert (index < GetLength ());
+                        Assert (index < fData_.GetLength ());
                         return (tmp.fCount);
                     });
                 }
@@ -305,13 +302,6 @@ namespace   Stroika {
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;
-                }
-                template    <typename T>
-                void    Tally_Array<T>::Rep_::RemoveAt_ (size_t index)
-                {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        fData_.RemoveAt (index);
-                    });
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::Find_ (TallyEntry<T>& item) const
