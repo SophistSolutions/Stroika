@@ -132,7 +132,7 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    fData_ = from.fData_;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
                 }
                 template    <typename T>
                 shared_ptr<typename Iterable<T>::_IRep>  Sequence_LinkedList<T>::Rep_::Clone () const

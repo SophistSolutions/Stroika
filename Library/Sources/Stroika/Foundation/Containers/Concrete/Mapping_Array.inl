@@ -147,7 +147,7 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    fData_ = from.fData_;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename Key, typename T>

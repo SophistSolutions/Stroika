@@ -147,12 +147,12 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    fData_ = from.fData_;
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_ = from.fData_;});
                 }
                 template    <typename T>
                 size_t  Tally_LinkedList<T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {return (fData_.GetLength ());});
                 }
                 template    <typename T>
                 bool  Tally_LinkedList<T>::Rep_::IsEmpty () const

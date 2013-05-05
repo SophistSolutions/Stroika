@@ -46,12 +46,32 @@ namespace   Stroika {
 
                 struct  ContainerRepLockDataSupport_ {
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-                    std::mutex  fMutex_;
+                    mutable std::mutex  fMutex_;
 #endif
                     ContainerRepLockDataSupport_ () {}
                     NO_COPY_CONSTRUCTOR(ContainerRepLockDataSupport_);
                     NO_ASSIGNMENT_OPERATOR(ContainerRepLockDataSupport_);
                 };
+
+
+
+#if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
+#define CONTAINER_LOCK_HELPER_(CRLDS,CODEBLOCK)\
+    {\
+        std::lock_guard<std::mutex> lg (CRLDS.fMutex_);\
+        {\
+            CODEBLOCK;\
+        }\
+    }
+#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_
+#define CONTAINER_LOCK_HELPER_(CRLDS,CODEBLOCK)\
+    {\
+        synchronized_\
+        {\
+            CODEBLOCK;\
+        }\
+    }
+#endif
 
 
             }

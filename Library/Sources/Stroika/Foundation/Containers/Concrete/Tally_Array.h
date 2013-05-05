@@ -15,6 +15,9 @@
  *
  *      @todo   Implementation currently stores list of T's rather than a list of
  *              TallyEntry<T>, and as a result computes tally's less efficiently
+ *
+ *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
+ *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
 
