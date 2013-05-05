@@ -180,7 +180,7 @@ namespace   Stroika {
                     Require (i == kBadSequenceIndex or i < GetLength ());
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         if (i == kBadSequenceIndex) {
-                            i = GetLength () - 1;
+                            i = fData_.GetLength () - 1;
                         }
                         return fData_.GetAt (i);
                     });
@@ -229,7 +229,7 @@ namespace   Stroika {
                     Require (at == kBadSequenceIndex or at <= GetLength ());
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         if (at == kBadSequenceIndex) {
-                            at = GetLength ();
+                            at = fData_.GetLength ();
                         }
                         // quickie poor impl
                         for (auto i = from; i != to; ++i) {

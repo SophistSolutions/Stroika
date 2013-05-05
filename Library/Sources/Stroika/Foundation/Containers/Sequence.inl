@@ -171,7 +171,7 @@ namespace   Stroika {
             inline  void    Sequence<T>::AppendAll (const CONTAINER_OF_T& s)
             {
                 for (auto i : s) {
-                    Insert (kBadSequenceIndex, i);
+                    _GetRep ().Insert (kBadSequenceIndex, &i, &i + 1);
                 }
             }
             template    <typename T>

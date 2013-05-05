@@ -230,7 +230,7 @@ namespace   Stroika {
                     Require (at == kBadSequenceIndex or at <= GetLength ());
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         if (at == kBadSequenceIndex) {
-                            at = GetLength ();
+                            at = fData_.GetLength ();
                         }
                         // quickie poor impl
                         // See Stroika v1 - much better - handling cases of remove near start or end of linked list
@@ -240,7 +240,7 @@ namespace   Stroika {
                                 fData_.Prepend (from[i - 1]);
                             }
                         }
-                        else if (at == GetLength ()) {
+                        else if (at == fData_.GetLength ()) {
                             for (const T* p = from; p != to; ++p) {
                                 fData_.Append (*p);
                             }

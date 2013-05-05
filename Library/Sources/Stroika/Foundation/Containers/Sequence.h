@@ -265,7 +265,8 @@ namespace   Stroika {
             public:
                 /**
                  *  This is roughly AppendAll (GetLength(), s), except that there is a race after you call GetLength, and before
-                 *  Insert, which calling Append () avoids.
+                 *  Insert, which calling Append () avoids. Also note - if used in a multithreaded enivonment, the appended items
+                 *  wont necesarily all get appended at once, since other threads could make changes in between.
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
