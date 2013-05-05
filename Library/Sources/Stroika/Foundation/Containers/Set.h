@@ -17,16 +17,16 @@
  *      @todo   Implement first draft of code based on
  *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Set.hh
  *
- *		@todo	Implement more backends
- *				>	Set_BitString
- *				>	Set_Array
- *				>	Set_LinkedList
- *				>	Set_HashTable
- *				>	Set_RedBlackTree
- *				>	Set_stlset
- *				>	Set_stlunordered_set (really is hashset)
+ *      @todo   Implement more backends
+ *              >   Set_BitString
+ *              >   Set_Array
+ *              >   Set_LinkedList
+ *              >   Set_HashTable
+ *              >   Set_RedBlackTree
+ *              >   Set_stlset
+ *              >   Set_stlunordered_set (really is hashset)
  *
- *		@todo	Thread safety (/locking)
+ *      @todo   Thread safety (/locking)
  *
  */
 
@@ -78,15 +78,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
-
-            public:
-                /**
-                 */
                 nonvirtual  void    Add (T item);
 
-			
-			public:
+
+            public:
                 /**
                  */
                 nonvirtual  void    AddAll (Set<T> items); // note passed by value to avoid s.Add(s) problems (makes little sense so see if we can undo this - but think through carefully)
@@ -97,8 +92,9 @@ namespace   Stroika {
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (Iterator<T> item);
 
-			public:
+            public:
                 nonvirtual  void    RemoveAll (const Set<T>& items);
+                nonvirtual  void    RemoveAll ();
 
             public:
                 nonvirtual  Set<T>& operator+= (T item);
