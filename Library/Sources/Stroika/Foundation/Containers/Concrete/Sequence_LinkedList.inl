@@ -26,7 +26,7 @@ namespace   Stroika {
                 template    <typename T>
                 class   Sequence_LinkedList<T>::Rep_ : public Sequence<T>::_IRep {
                 private:
-                    typedef Sequence<T>::_IRep  inherited;
+                    typedef typename    Sequence<T>::_IRep  inherited;
 
                 public:
                     Rep_ ();
