@@ -14,6 +14,15 @@
 
 /**
  * TODO:
+ *		@todo	Safety improvements - lose operator-> overloads, and non const operator*, so that
+ *				we NEVER return a non-const internal pointer! If you want to assign - use the 
+ *				Optional<T>::Optional (T) CTOR (non-explicit).
+ *
+ *		@todo	add value() method - which ASSERTS if empty, and one which takes default-value argument,
+ *				which returns that default if empty. OR - defaults to = T() - so always safe to call?
+ *				Maybe the altter is bette,r and then document to use operator* to force assert-style
+ *				'value' behavior'.
+ *
  */
 
 namespace   Stroika {
