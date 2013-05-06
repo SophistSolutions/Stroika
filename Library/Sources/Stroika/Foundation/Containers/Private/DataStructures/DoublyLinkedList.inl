@@ -6,7 +6,6 @@
 
 
 #include    "../../../Debug/Assertions.h"
-#include    "../../../Memory/BlockAllocated.h"
 
 
 namespace   Stroika {
@@ -20,16 +19,6 @@ namespace   Stroika {
                         fItem (item),
                         fNext (next)
                     {
-                    }
-
-                    template    <typename   T>  inline  void*   DoubleLink<T>::operator new (size_t size)
-                    {
-                        return (Memory::BlockAllocated<DoubleLink<T> >::operator new (size));
-                    }
-
-                    template    <typename   T>  inline  void    DoubleLink<T>::operator delete (void* p)
-                    {
-                        Memory::BlockAllocated<DoubleLink<T> >::operator delete (p);
                     }
 
 

@@ -24,6 +24,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BlockAllocated.h"
 
 #include    "../../Common.h"
 
@@ -39,16 +40,16 @@ namespace   Stroika {
                     template    <typename   T>  class   DoublyLinkedListIterator_Patch;
                     template    <typename   T>  class   DoublyLinkedListMutator_Patch;
 
-                    template    <typename   T>  class   DoubleLink {
+                    template    <typename   T>  
+					class   DoubleLink {
+					public:
+						DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
                     public:
                         DoubleLink (T item, DoubleLink<T>* next);
 
-                        static  void*   operator new (size_t size);
-                        static  void    operator delete (void* p);
-
                     public:
-                        T           fItem;
-                        DoubleLink<T>*    fNext;
+                        T				fItem;
+                        DoubleLink<T>*  fNext;
                     };
 
 

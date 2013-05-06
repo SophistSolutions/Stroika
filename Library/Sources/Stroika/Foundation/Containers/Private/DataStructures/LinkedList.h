@@ -28,6 +28,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BlockAllocated.h"
 
 #include    "../../Common.h"
 
@@ -43,12 +44,12 @@ namespace   Stroika {
                     template    <typename   T>  class   LinkedListIterator_Patch;
                     template    <typename   T>  class   LinkedListMutator_Patch;
 
-                    template    <typename   T>  class   Link {
+                    template    <typename   T>  
+					class   Link {
+					public:
+						DECLARE_USE_BLOCK_ALLOCATION (Link);
                     public:
                         Link (T item, Link<T>* next);
-
-                        static  void*   operator new (size_t size);
-                        static  void    operator delete (void* p);
 
                     public:
                         T           fItem;
