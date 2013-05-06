@@ -38,6 +38,8 @@ using   namespace   Execution;
 
 
 
+
+
 /*
  * TODO:
  *
@@ -93,7 +95,14 @@ namespace   {
     ofstream*   sTraceFile  =   nullptr;
 #endif
 #if     qDefaultTracingOn
-    map<Thread::IDType, unsigned int>*   sCounts;
+    /**
+     *  Design Note:
+     *
+     *      This module uses stl:map<> instead of a Stroika map, since this could be used to debug
+     *      Stroika code, and that could cause confusion/interrelationships which are undesirable.
+     *      As we can presume map<> is bug free, just use it directly.
+     */
+    map<Thread::IDType, unsigned int>*   sCounts_;
 #endif
 
     // Declared HERE instead of the template so they get shared across TYPE values for CHARTYPE
@@ -120,8 +129,8 @@ TraceModuleData_::TraceModuleData_ ()
     Assert (sEmitTraceCritSec_ == nullptr);
     sEmitTraceCritSec_ = DEBUG_NEW recursive_mutex ();
 #if     qDefaultTracingOn
-    Assert (sCounts == nullptr);
-    sCounts = DEBUG_NEW map<Thread::IDType, unsigned int> ();
+    Assert (sCounts_ == nullptr);
+    sCounts_ = DEBUG_NEW map<Thread::IDType, unsigned int> ();
 #endif
 #if     qTraceToFile
     Assert (sTraceFile == nullptr);
@@ -140,7 +149,7 @@ TraceModuleData_::~TraceModuleData_ ()
     delete sTraceFile;
 #endif
 #if     qDefaultTracingOn
-    delete sCounts;
+    delete sCounts_;
 #endif
 }
 
@@ -502,23 +511,23 @@ namespace   {
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         lock_guard<recursive_mutex> critSec (GetCritSection_ ());
-        map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts->find (threadID);
-        if (i == sCounts->end ()) {
+        map<Thread::IDType, unsigned int>::const_iterator    i   =   sCounts_->find (threadID);
+        if (i == sCounts_->end ()) {
             return 0;
         }
-        Assert (i != sCounts->end ());
+        Assert (i != sCounts_->end ());
         return i->second;
     }
     inline  void    IncCount_ ()
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         lock_guard<recursive_mutex> critSec (GetCritSection_ ());
-        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
-        if (i == sCounts->end ()) {
-            (void)sCounts->insert (map<Thread::IDType, unsigned int>::value_type (threadID, 1)).first;
+        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
+        if (i == sCounts_->end ()) {
+            (void)sCounts_->insert (map<Thread::IDType, unsigned int>::value_type (threadID, 1)).first;
         }
         else {
-            Assert (i != sCounts->end ());
+            Assert (i != sCounts_->end ());
             i->second++;
         }
     }
@@ -526,11 +535,11 @@ namespace   {
     {
         Thread::IDType  threadID    =   Execution::GetCurrentThreadID ();
         lock_guard<recursive_mutex> critSec (GetCritSection_ ());
-        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts->find (threadID);
-        Assert (i != sCounts->end ());
+        map<Thread::IDType, unsigned int>::iterator  i   =   sCounts_->find (threadID);
+        Assert (i != sCounts_->end ());
         i->second--;
         if (i->second == 0) {
-            sCounts->erase (i);
+            sCounts_->erase (i);
         }
     }
 }
