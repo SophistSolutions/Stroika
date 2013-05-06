@@ -5,6 +5,21 @@
 #ifndef _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
 #define _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
 
+
+/*
+ *  TODO:
+ *
+ *		@todo	LOSE ENTIRE MODULE!!! - std::vector<> is almost certianly BETTER, and this has
+ *				too many bugs/issues (realloc/internal pointers) to be worth Saving!!!! OBSOLETE
+ *
+ *
+ *          (o) Lose obsolete ArrayNode<>
+ */
+
+
+
+
+
 /*
  *
  *  Description:
@@ -68,15 +83,6 @@
 #include    "../../../Configuration/Common.h"
 
 #include    "../../Common.h"
-
-
-
-/*
- *  TODO:
- *
- *          (o) Lose obsolete ArrayNode<>
- */
-
 
 
 
