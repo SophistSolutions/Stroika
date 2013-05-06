@@ -6,11 +6,11 @@
 
 #include    "../../../StroikaPreComp.h"
 
-#include    <map>
 #include    <string>
 
-#include    "../../../Configuration/Common.h"
 #include    "../../../Characters/String.h"
+#include    "../../../Configuration/Common.h"
+#include    "../../../Containers/Mapping.h"
 #include    "../../../DataExchangeFormat/InternetMediaType.h"
 #include    "../../../Memory/Optional.h"
 #include    "../URL.h"
@@ -59,6 +59,7 @@ namespace   Stroika {
                 namespace   Transfer {
 
                     using   Characters::String;
+                    using   Containers::Mapping;
                     using   DataExchangeFormat::InternetMediaType;
                     using   Memory::Byte;
                     using   Time::DurationSecondsType;
@@ -67,9 +68,9 @@ namespace   Stroika {
                     struct  Request {
                         Request ();
 
-                        String              fMethod;
-                        map<String, String> fOverrideHeaders;
-                        vector<Byte>        fData;  // usually empty, but provided for some methods like POST
+                        String                  fMethod;
+                        Mapping<String, String> fOverrideHeaders;
+                        vector<Byte>            fData;  // usually empty, but provided for some methods like POST
 
                         // scans fOverrideHeaders
                         nonvirtual  InternetMediaType   GetContentType () const;
@@ -91,7 +92,7 @@ namespace   Stroika {
                         Response ();
 
                         vector<Byte>                    fData;  // usually empty, but provided for some methods like POST
-                        map<String, String>             fHeaders;
+                        Mapping<String, String>         fHeaders;
                         HTTP::Status                    fStatus;
                         Memory::Optional<SSLResultInfo> fServerEndpointSSLInfo;
 
@@ -169,11 +170,11 @@ namespace   Stroika {
 
                         // Simple wrappers, with hardwired methods
                     public:
-                        nonvirtual  Response    Get (const map<String, String>& extraHeaders = map<String, String> ());
-                        nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders = map<String, String> ());
-                        nonvirtual  Response    Delete (const map<String, String>& extraHeaders = map<String, String> ());
-                        nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders = map<String, String> ());
-                        nonvirtual  Response    Options (const map<String, String>& extraHeaders = map<String, String> ());
+                        nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+                        nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
 
                     private:
                         shared_ptr<_IRep>    fRep_;

@@ -24,8 +24,6 @@
  *
  *      @todo   Fix Result object to return other interesting fields
  *
- *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
- *
  *      @todo   Consider some synchonous API, so it sends a certian number of times, and
  *              then returns all the answers.
  *

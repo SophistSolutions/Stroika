@@ -7,8 +7,8 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    <functional>
-#include    <map>
 
+#include    "../../../../Foundation/Containers/Mapping.h"
 #include    "../../../../Foundation/Memory/Optional.h"
 
 #include    "../../Device.h"
@@ -16,8 +16,6 @@
 /**
  * TODO:
  *      @todo   Consider adding OnError callback?
- *
- *      @todo   Switch to new Stroika containers (e.g. for map<>) when ready.
  *
  *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.
  *
@@ -91,8 +89,8 @@ namespace   Stroika {
                      */
                     class Listener::Result : public Device {
                     public:
-                        map<String, String>         fRawHeaders;
-                        Memory::Optional<bool>      fAlive; // else Bye notification, or empty if neither
+                        Containers::Mapping<String, String>     fRawHeaders;
+                        Memory::Optional<bool>                  fAlive; // else Bye notification, or empty if neither
                     };
 
 

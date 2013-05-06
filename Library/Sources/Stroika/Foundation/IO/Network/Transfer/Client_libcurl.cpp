@@ -67,11 +67,11 @@ private:
     nonvirtual  size_t  ResponseHeaderWriteHandler_ (const Byte* ptr, size_t nBytes);
 
 private:
-    void*               fCurlHandle_;
-    string              fCURLCache_URL_;    // cuz of quirky memory management policies of libcurl
-    vector<Byte>        fResponseData_;
-    map<String, String> fResponseHeaders_;
-    curl_slist*         fSavedHeaders_;
+    void*                   fCurlHandle_;
+    string                  fCURLCache_URL_;    // cuz of quirky memory management policies of libcurl
+    vector<Byte>            fResponseData_;
+    Mapping<String, String> fResponseHeaders_;
+    curl_slist*             fSavedHeaders_;
 };
 #endif
 
@@ -199,7 +199,7 @@ size_t  Connection_LibCurl::Rep_::ResponseHeaderWriteHandler_ (const Byte* ptr, 
     }
     from = from.Trim ();
     to = to.Trim ();
-    fResponseHeaders_[from] = to;
+    fResponseHeaders_.Add (from, to);
     return nBytes;
 }
 

@@ -220,23 +220,15 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
      *
      */
     String      userAgent = String_Constant (L"Stroika/2.0");
-    map<String, String>  useHeadersMap   =   request.fOverrideHeaders;
+    Mapping<String, String>  useHeadersMap   =   request.fOverrideHeaders;
     {
-        // We must have an empty 'accept-encoding' to prvent being sent stuff in gzip/deflate format, which WinHTTP
+        // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP
         // appears to not decode (and neither do I).
-        map<String, String>::iterator i  =   useHeadersMap.find (HeaderName::kAcceptEncoding);
-        if (i == useHeadersMap.end ()) {
-            useHeadersMap.insert (map<String, String>::value_type (HeaderName::kAcceptEncoding, wstring ()));
-        }
-        else {
-            i->second = wstring ();
-        }
+        useHeadersMap.Add (HeaderName::kAcceptEncoding, wstring ());
     }
     {
-        map<String, String>::iterator i  =   useHeadersMap.find (HeaderName::kUserAgent);
-        if (i != useHeadersMap.end ()) {
-            userAgent = i->second;
-            useHeadersMap.erase (i);
+        if (useHeadersMap.Lookup (HeaderName::kUserAgent, &userAgent)) {
+            useHeadersMap.Remove (HeaderName::kUserAgent);
         }
     }
     String  useHeaderStrBuf;
@@ -463,7 +455,7 @@ RetryWithNoCERTCheck:
                     wstring key =   Characters::Trim (thisLine.substr (0, colonI));
                     wstring val =   Characters::Trim (thisLine.substr (colonI + 1));
                     if (not key.empty ()) {
-                        response.fHeaders.insert (map<wstring, wstring>::value_type (key, val));
+                        response.fHeaders.Add (key, val);
                     }
                 }
             }

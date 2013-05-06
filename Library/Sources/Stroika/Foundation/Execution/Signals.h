@@ -24,13 +24,19 @@
 
 /*
  * TODO:
- *      o   THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
- *      o   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow these to be (more or less) interchangable with
- *          regular SignalHandlerType.
- *      o   Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers that ONLY apply when the signal
- *          is sent to the given (argument with register) thread. If we do this - we will want to write cooperating code with the thread start/end
- *          stuff so these get cleared out appropriately.
- *          Consider how this might be useful for stuff like SIGPIPE handling?
+ *      @todo   Becaues Stroika Mapping class is so safe, I may not need the critical section
+ *              protecting sHandlers_ any longer.
+ *
+ *      @todo   THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
+ *
+ *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow these to be (more or less) interchangable with
+ *              regular SignalHandlerType.
+ *
+ *      @todo   Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers that ONLY apply when the signal
+ *              is sent to the given (argument with register) thread. If we do this - we will want to write cooperating code with the thread start/end
+ *              stuff so these get cleared out appropriately.
+ *              Consider how this might be useful for stuff like SIGPIPE handling?
+ *
  *      @todo   DOCUMENT that its UNSAFE to call malloc during signal handlers.
  *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
  *

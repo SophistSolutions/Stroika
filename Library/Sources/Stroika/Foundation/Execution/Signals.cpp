@@ -7,6 +7,7 @@
 #include    <mutex>
 
 #include    "../Characters/Format.h"
+#include    "../Containers/Mapping.h"
 #include    "../Debug/Trace.h"
 
 #include    "Signals.h"
@@ -15,13 +16,15 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
+using   namespace   Stroika::Foundation::Memory;
 
+using   Containers::Mapping;
 
 
 namespace   {
     mutex sCritSection_;
 
-    map<SignalIDType, set<SignalHandlerType>>    sHandlers_;
+    Mapping<SignalIDType, set<SignalHandlerType>>    sHandlers_;
 
     bool    IsSigIgnore_ (const set<SignalHandlerType>& sigSet)
     {
@@ -35,13 +38,11 @@ namespace   {
         set<SignalHandlerType>  handlers;
         {
             lock_guard<mutex> critSec (sCritSection_);
-            map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.find (signal);
-            Assert (i != sHandlers_.end ());
-            handlers = i->second;
+            handlers = *sHandlers_.Lookup (signal);
         }
-        for (auto i = handlers.begin (); i != handlers.end (); ++i) {
-            if (*i != SignalHandlerRegistry::kIGNORED) {
-                (*i) (signal);
+        for (auto i : handlers) {
+            if (i != SignalHandlerRegistry::kIGNORED) {
+                (i) (signal);
             }
         }
     }
@@ -84,13 +85,8 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
 set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
 {
     lock_guard<mutex> critSec (sCritSection_);
-    map<SignalIDType, set<SignalHandlerType>>::const_iterator i = sHandlers_.find (signal);
-    if (i == sHandlers_.end ()) {
-        return set<SignalHandlerType> ();
-    }
-    else {
-        return i->second;
-    }
+    Optional<set<SignalHandlerType>>    i   =   sHandlers_.Lookup (signal);
+    return i.empty () ? set<SignalHandlerType> () : *i;
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
@@ -108,14 +104,12 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set
     Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
     lock_guard<mutex> critSec (sCritSection_);
-    map<SignalIDType, set<SignalHandlerType>>::iterator i = sHandlers_.find (signal);
-    if (i == sHandlers_.end ()) {
-        if (not handlers.empty ()) {
-            sHandlers_.insert (map<SignalIDType, set<SignalHandlerType>>::value_type (signal, handlers));
-        }
+    if (handlers.empty ()) {
+        // save memory and remove empty items from list
+        sHandlers_.Remove (signal);
     }
     else {
-        i->second = handlers;
+        sHandlers_.Add (signal, handlers);
     }
     if (handlers.empty ()) {
         // nothing todo - empty list treated as not in sHandlers_ list

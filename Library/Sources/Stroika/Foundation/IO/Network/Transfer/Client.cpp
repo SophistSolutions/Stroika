@@ -24,6 +24,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 using   namespace   Stroika::Foundation::IO::Network::Transfer;
+using   namespace   Stroika::Foundation::Memory;
 
 
 
@@ -60,16 +61,16 @@ Request::Request ()
 
 InternetMediaType   Request::GetContentType () const
 {
-    map<String, String>::const_iterator i   =   fOverrideHeaders.find (HTTP::HeaderName::kContentType);
-    if (i != fOverrideHeaders.end ()) {
-        return InternetMediaType (i->second);
+    Optional<String> i   =   fOverrideHeaders.Lookup (HTTP::HeaderName::kContentType);
+    if (i.get () != nullptr) {
+        return InternetMediaType (*i);
     }
     return InternetMediaType ();
 }
 
 void    Request::SetContentType (const InternetMediaType& ct)
 {
-    fOverrideHeaders[HTTP::HeaderName::kContentType] = ct.As<String> ();
+    fOverrideHeaders.Add (HTTP::HeaderName::kContentType, ct.As<String> ());
 }
 
 
@@ -116,9 +117,9 @@ Response::Response ()
 
 InternetMediaType   Response::GetContentType () const
 {
-    map<String, String>::const_iterator i   =   fHeaders.find (HTTP::HeaderName::kContentType);
-    if (i != fHeaders.end ()) {
-        return InternetMediaType (i->second);
+    Optional<String> i   =   fHeaders.Lookup (HTTP::HeaderName::kContentType);
+    if (i.get () != nullptr) {
+        return InternetMediaType (*i);
     }
     return InternetMediaType ();
 }
@@ -133,7 +134,7 @@ InternetMediaType   Response::GetContentType () const
  **************************** Transfer::Connection ******************************
  ********************************************************************************
  */
-Response    Connection::Get (const map<String, String>& extraHeaders)
+Response    Connection::Get (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kGet;
@@ -141,7 +142,7 @@ Response    Connection::Get (const map<String, String>& extraHeaders)
     return SendAndRequest (r);
 }
 
-Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders)
+Response    Connection::Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPost;
@@ -151,7 +152,7 @@ Response    Connection::Post (const vector<Byte>& data, const InternetMediaType&
     return SendAndRequest (r);
 }
 
-Response    Connection::Delete (const map<String, String>& extraHeaders)
+Response    Connection::Delete (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kDelete;
@@ -159,7 +160,7 @@ Response    Connection::Delete (const map<String, String>& extraHeaders)
     return SendAndRequest (r);
 }
 
-Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const map<String, String>& extraHeaders)
+Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kPut;
@@ -169,7 +170,7 @@ Response    Connection::Put (const vector<Byte>& data, const InternetMediaType& 
     return SendAndRequest (r);
 }
 
-Response    Connection::Options (const map<String, String>& extraHeaders)
+Response    Connection::Options (const Mapping<String, String>& extraHeaders)
 {
     Request r;
     r.fMethod = HTTP::Methods::kOptions;

@@ -10,7 +10,7 @@
 
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -26,7 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 
 using   Concrete::Mapping_Array;
-//using   Concrete::Tally_LinkedList;
+using   Concrete::Mapping_LinkedList;
 
 
 
@@ -45,8 +45,8 @@ namespace {
     {
         m.Add (1, 2);
         VerifyTestResult (m.size () == 1);
-        Verify (m.Lookup (1));
-        Verify (not m.Lookup (2));
+        Verify (m.Lookup (1, nullptr));
+        Verify (not m.Lookup (2, nullptr));
         m.Add (1, 2);
         VerifyTestResult (m.size () == 1);
         m.Remove (1);
@@ -77,6 +77,9 @@ namespace   {
 
         SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
         SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
+
+        SimpleMappingTest_All_For_Type<Mapping_LinkedList<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping_LinkedList<size_t, size_t>> ();
     }
 }
 

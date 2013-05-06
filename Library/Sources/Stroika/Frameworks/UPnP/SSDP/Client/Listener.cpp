@@ -111,7 +111,7 @@ public:
                     }
                 }
                 if (not label.empty ()) {
-                    d.fRawHeaders.insert (map<String, String>::value_type (label, value));
+                    d.fRawHeaders.Add (label, value);
                 }
                 if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
                     d.fLocation = value;
