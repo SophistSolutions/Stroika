@@ -6,7 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Mapping_Array.h"
+#include    "Concrete/Mapping_LinkedList.h"
 
 
 namespace   Stroika {
@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename Key, typename T>
             Mapping<Key, T>::Mapping ()
-                : inherited (Concrete::Mapping_Array<Key, T> ())
+                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
             {
             }
             template    <typename Key, typename T>
@@ -32,14 +32,14 @@ namespace   Stroika {
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<Key, T>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Mapping_Array<Key, T> ())
+                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
             {
                 AddAll (cp);
             }
             template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<Key, T>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Mapping_Array<Key, T> ())
+                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
             {
                 AddAll (start, end);
             }
@@ -49,6 +49,14 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
+#if     !qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
+            template    <typename Key, typename T>
+            inline  Mapping<Key, T>& Mapping<Key, T>::operator= (const Mapping<Key, T>& src)
+            {
+                inherited::operator= (src);
+                return *this;
+            }
+#endif
             template    <typename Key, typename T>
             inline  const typename  Mapping<Key, T>::_IRep&    Mapping<Key, T>::_GetRep () const
             {
@@ -72,6 +80,31 @@ namespace   Stroika {
             inline  bool    Mapping<Key, T>::Lookup (Key key, T* item) const
             {
                 return _GetRep ().Lookup (key, item);
+            }
+            template    <typename Key, typename T>
+            inline  Memory::Optional<T>    Mapping<Key, T>::Lookup (Key key) const
+            {
+                // @todo change virutal API so this trick not needed
+                T   r;  // find way so we dont require a default CTOR - probably change virtual AP
+                if (_GetRep ().Lookup (key, &r)) {
+                    return r;
+                }
+                return Memory::Optional<T> ();
+            }
+            template    <typename Key, typename T>
+            inline  bool    Mapping<Key, T>::ContainsKey (Key key) const
+            {
+                return _GetRep ().Lookup (key, nullptr);
+            }
+            template    <typename Key, typename T>
+            inline  bool    Mapping<Key, T>::ContainsValue (T v) const
+            {
+                for (T t : *this) {
+                    if (t.second == v) {
+                        return true;
+                    }
+                }
+                return false;
             }
             template    <typename Key, typename T>
             inline  void    Mapping<Key, T>::Add (Key key, T newElt)
@@ -100,7 +133,7 @@ namespace   Stroika {
                 _GetRep ().Remove (key);
             }
             template    <typename Key, typename T>
-            inline  void    Mapping<Key, T>::Remove (Iterator<pair<Key, T>> i)
+            inline  void    Mapping<Key, T>::Remove (const Iterator<pair<Key, T>>& i)
             {
                 _GetRep ().Remove (i);
             }

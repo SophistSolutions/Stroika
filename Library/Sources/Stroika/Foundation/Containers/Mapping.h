@@ -21,7 +21,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include    "../Memory/Optional.h"
 
 #include    "Iterable.h"
 #include    "Iterator.h"
@@ -61,8 +61,11 @@ namespace   Stroika {
                 explicit Mapping (const _SharedPtrIRep& rep);
 
             public:
+#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
+                nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src) =   default;
+#else
                 nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src);
-
+#endif
 
             public:
                 /**
@@ -75,7 +78,24 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool Lookup (Key key, T* item = nullptr) const;
+                nonvirtual  Memory::Optional<T> Lookup (Key key) const;
+                nonvirtual  bool                Lookup (Key key, T* item) const;
+
+            public:
+                /**
+                 *  Synonym for Lookup (key).get () != nullptr
+                 */
+                nonvirtual  bool ContainsKey (Key key) const;
+
+            public:
+                /**
+                 *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
+                 *  and applies operator== on each value, and returns true if contained. Perhpas not
+                 *  very useful but symetric to ContainsKey().
+                 *
+                 *  NOTE: ONLY defined if T supports operator==
+                 */
+                nonvirtual  bool ContainsValue (T v) const;
 
             public:
                 /**
@@ -97,7 +117,7 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  void    Remove (Key key);
-                nonvirtual  void    Remove (Iterator<pair<Key, T>> i);
+                nonvirtual  void    Remove (const Iterator<pair<Key, T>>& i);
 
 
             public:
@@ -157,7 +177,6 @@ namespace   Stroika {
         }
     }
 }
-
 #endif  /*_Stroika_Foundation_Containers_Mapping_h_ */
 
 
