@@ -251,37 +251,37 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                **************************** Sequence_Array<T> *********************************
+                ****************************** Sequence_Array<T> *******************************
                 ********************************************************************************
                 */
                 template    <typename T>
                 Sequence_Array<T>::Sequence_Array ()
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>::Sequence_Array (const Sequence_Array<T>& s)
-                    : Sequence<T> (s)
+                    : inherited (s)
                 {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_Array<T>::Sequence_Array (const CONTAINER_OF_T& s)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     InsertAll (0, s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR>
                 inline Sequence_Array<T>::Sequence_Array (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>&   Sequence_Array<T>::operator= (const Sequence_Array<T>& s)
                 {
-                    Sequence<T>::operator= (s);
+                    inherited::operator= (s);
                     return *this;
                 }
                 template    <typename T>
@@ -291,7 +291,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  typename Sequence_Array<T>::Rep_&    Sequence_Array<T>::GetRep_ ()
@@ -300,7 +300,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Sequence_Array<T>::Compact ()

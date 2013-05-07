@@ -64,6 +64,9 @@ namespace   Stroika {
 
                 template    <typename T>
                 class  Sequence_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
+                private:
+                    typedef typename    Iterator<T>::IRep   inherited;
+
                 public:
                     explicit IteratorRep_ (typename Sequence_LinkedList<T>::Rep_& owner);
 
@@ -77,7 +80,6 @@ namespace   Stroika {
                     virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-                    //mutable ForwardLinkedListMutator_Patch<T>    fIterator_;
                     mutable Private::DataStructures::LinkedListMutator_Patch<T>    fIterator_;
 
                 private:
@@ -92,7 +94,7 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Sequence_LinkedList<T>::Rep_& owner)
-                    : Iterator<T>::IRep ()
+                    : inherited ()
                     , fIterator_ (owner.fData_)
                 {
                 }
@@ -190,7 +192,9 @@ namespace   Stroika {
                 void    Sequence_LinkedList<T>::Rep_::SetAt (size_t i, const T& item)
                 {
                     Require (i < GetLength ());
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {fData_.SetAt (item, i);});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.SetAt (item, i);
+                    });
                 }
                 template    <typename T>
                 size_t    Sequence_LinkedList<T>::Rep_::IndexOf (const Iterator<T>& i) const
@@ -198,7 +202,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {return mir.fIterator_.CurrentIndex ();});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return mir.fIterator_.CurrentIndex ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
@@ -206,7 +212,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {mir.fIterator_.RemoveCurrent ();});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.RemoveCurrent ();
+                    });
                 }
                 template    <typename T>
                 void    Sequence_LinkedList<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -214,7 +222,9 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {mir.fIterator_.UpdateCurrent (newValue);});
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        mir.fIterator_.UpdateCurrent (newValue);
+                    });
                 }
                 template    <typename T>
                 void    Sequence_LinkedList<T>::Rep_::Insert (size_t at, const T* from, const T* to)
@@ -280,32 +290,32 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_LinkedList<T>::Sequence_LinkedList ()
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const CONTAINER_OF_T& s)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     InsertAll (0, s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR>
                 inline Sequence_LinkedList<T>::Sequence_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>::Sequence_LinkedList (const Sequence_LinkedList<T>& s)
-                    : Sequence<T> (s)
+                    : inherited (s)
                 {
                 }
                 template    <typename T>
                 inline  Sequence_LinkedList<T>&   Sequence_LinkedList<T>::operator= (const Sequence_LinkedList<T>& s)
                 {
-                    Sequence<T>::operator= (s);
+                    inherited::operator= (s);
                     return *this;
                 }
 
