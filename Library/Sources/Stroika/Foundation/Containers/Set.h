@@ -25,6 +25,7 @@
  *              >   Set_RedBlackTree
  *              >   Set_stlset
  *              >   Set_stlunordered_set (really is hashset)
+ *				>	Set_Treap
  *
  *      @todo   Thread safety (/locking)
  *
@@ -35,6 +36,8 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
+
+#include	"Iterable.h"
 
 
 
@@ -51,8 +54,11 @@ namespace   Stroika {
              *      thing into the set.
              *
              */
-            template    <template   T>
-            class Set : public Iterable<T> {
+            template    <typename   T>
+            class	Set : public Iterable<T> {
+			private:
+				typedef	Iterable<T>	inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -62,7 +68,10 @@ namespace   Stroika {
                  */
                 Set ();
                 Set (const Set<T>& s);
-                explicit Set (const T* start, const T* end);
+                template <typename CONTAINER_OF_T>
+                explicit Set (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Set (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit Set (const _SharedPtrIRep& rep);
@@ -80,27 +89,47 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Add (T item);
 
-
             public:
                 /**
                  */
-                nonvirtual  void    AddAll (Set<T> items); // note passed by value to avoid s.Add(s) problems (makes little sense so see if we can undo this - but think through carefully)
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
 
             public:
                 /**
                  */
                 nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (Iterator<T> item);
+                nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
-                nonvirtual  void    RemoveAll (const Set<T>& items);
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    RemoveAll (const CONTAINER_OF_T& s);
                 nonvirtual  void    RemoveAll ();
 
             public:
-                nonvirtual  Set<T>& operator+= (T item);
-                nonvirtual  Set<T>& operator+= (const Set<T>& items);
-                nonvirtual  Set<T>& operator-= (T item);
-                nonvirtual  Set<T>& operator-= (const Set<T>& items);
+                /**
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
+			public:
+                /*
+                 *  Convert Set<T> losslessly into a standard supported C++ type.
+                 *  Supported types include:
+                 *      o   set<T>
+                 *      o   vector<T>
+                 *      o   list<T>
+                 *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
+                 */
+                template    <typename   CONTAINER_OF_T>
+                nonvirtual  CONTAINER_OF_T   As () const;
+                template    <typename   CONTAINER_OF_T>
+                nonvirtual  void    As (CONTAINER_OF_T* into) const;
+
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -134,9 +163,7 @@ namespace   Stroika {
         }
     }
 }
-
 #endif  /*_Stroika_Foundation_Containers_Set_h_ */
-
 
 
 /*
@@ -144,5 +171,4 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-
 #include    "Set.inl"
