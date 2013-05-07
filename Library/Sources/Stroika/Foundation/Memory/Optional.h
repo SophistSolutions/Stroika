@@ -13,16 +13,10 @@
 
 
 /**
- * TODO:
- *		@todo	Safety improvements - lose operator-> overloads, and non const operator*, so that
- *				we NEVER return a non-const internal pointer! If you want to assign - use the 
- *				Optional<T>::Optional (T) CTOR (non-explicit).
+ *  \file
  *
- *		@todo	add value() method - which ASSERTS if empty, and one which takes default-value argument,
- *				which returns that default if empty. OR - defaults to = T() - so always safe to call?
- *				Maybe the altter is bette,r and then document to use operator* to force assert-style
- *				'value' behavior'.
- *
+ *  TODO:
+ *      @todo   Cleanup ifdefed out code
  */
 
 namespace   Stroika {
@@ -77,6 +71,11 @@ namespace   Stroika {
              *
              *      Plus, one must carefully check each use of variable o of type T, being converted to type
              *      Optional<T>, so being forced to say "*" first isn't totally unreasonable.
+             *
+             *
+             *
+             *  @todo   DOCUMENT FACT THAT WE NEVER RETURN INTERNAL POINTER EXCEPT CONST, and THEN ONLY VALID TEXT NEXT METHOD
+             *          CALL ON OPTIONAL.
              */
             template    <typename T, typename TRAITS = Optional_DefaultTraits<T> >
             class   Optional {
@@ -109,6 +108,14 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    empty () const; // means no value (it is optional!)
 
+
+            public:
+                /**
+                 *  Always safe to call. If empty, returns argument 'default' or sentinal value.
+                 */
+                nonvirtual  T   Value (T defaultValue = T ()) const;
+
+
             public:
                 /*
                  * Unclear if we want a non-const version too?
@@ -121,6 +128,7 @@ namespace   Stroika {
                 nonvirtual  const T*    get () const;
 
             public:
+#if 0
                 /**
                  *  \pre (not empty ())
                  *
@@ -138,6 +146,7 @@ namespace   Stroika {
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T* operator-> ();
+#endif
 
                 /**
                  *  \pre (not empty ())
@@ -148,6 +157,7 @@ namespace   Stroika {
                  */
                 nonvirtual  const T& operator* () const;
 
+#if 0
                 /**
                  *  \pre (not empty ())
                  *
@@ -156,6 +166,7 @@ namespace   Stroika {
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T& operator* ();
+#endif
 
             public:
                 /**

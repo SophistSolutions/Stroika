@@ -129,6 +129,12 @@ namespace   Stroika {
                 return fValue_ == nullptr;
             }
             template    <typename T, typename TRAITS>
+            inline  T Optional<T, TRAITS>::Value (T defaultValue) const
+            {
+                return empty () ? defaultValue : *fValue_->get ();
+            }
+#if 0
+            template    <typename T, typename TRAITS>
             inline  const T* Optional<T, TRAITS>::operator-> () const
             {
                 Require (not empty ())
@@ -144,6 +150,7 @@ namespace   Stroika {
                 EnsureNotNull (fValue_->get ());
                 return fValue_->get ();
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  const T& Optional<T, TRAITS>::operator* () const
             {
@@ -152,6 +159,7 @@ namespace   Stroika {
                 EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
             }
+#if 0
             template    <typename T, typename TRAITS>
             inline  T& Optional<T, TRAITS>::operator* ()
             {
@@ -160,6 +168,7 @@ namespace   Stroika {
                 EnsureNotNull (fValue_->get ());
                 return *fValue_->get ();
             }
+#endif
             template    <typename T, typename TRAITS>
             inline  int Optional<T, TRAITS>::Compare (const Optional<T>& rhs) const
             {
