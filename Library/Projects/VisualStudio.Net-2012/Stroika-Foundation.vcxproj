@@ -486,6 +486,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
@@ -693,6 +694,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\DoublyLinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
