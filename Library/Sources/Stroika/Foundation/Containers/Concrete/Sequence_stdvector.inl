@@ -264,32 +264,32 @@ namespace   Stroika {
                 */
                 template    <typename T>
                 Sequence_stdvector<T>::Sequence_stdvector ()
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& s)
-                    : Sequence<T> (s)
+                    : inherited (s)
                 {
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& s)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     InsertAll (0, s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR>
                 inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                    : Sequence<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& s)
                 {
-                    Sequence<T>::operator= (s);
+                    inherited::operator= (s);
                     return *this;
                 }
                 template    <typename T>
@@ -299,7 +299,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  typename Sequence_stdvector<T>::Rep_&    Sequence_stdvector<T>::GetRep_ ()
@@ -308,22 +308,28 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Sequence<T>::_GetRep ()));
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::Compact ()
                 {
-                    GetRep_ ().fData_.Compact ();
+                    CONTAINER_LOCK_HELPER_ (GetRep_ ().fLockSupport_, {
+                        GetRep_ ().fData_.reserve (GetRep_ ().fData_.size ());
+                    });
                 }
                 template    <typename T>
                 inline  size_t  Sequence_stdvector<T>::GetCapacity () const
                 {
-                    return (GetRep_ ().fData_.GetCapacity ());
+                    CONTAINER_LOCK_HELPER_ (GetRep_ ().fLockSupport_, {
+                        return (GetRep_ ().fData_.capacity ());
+                    });
                 }
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    CONTAINER_LOCK_HELPER_ (GetRep_ ().fLockSupport_, {
+                        GetRep_ ().fData_.reserve (slotsAlloced);
+                    });
                 }
 
 
