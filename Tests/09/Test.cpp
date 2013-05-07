@@ -59,6 +59,52 @@ namespace {
 }
 
 
+namespace {
+    template <typename MappingOfKeyT>
+    void    SimpleTest_3_Iteration_ (MappingOfKeyT m)
+    {
+        m.Add (1, 2);
+        VerifyTestResult (m.size () == 1);
+        for (auto i : m) {
+            VerifyTestResult (i.first == 1);
+            VerifyTestResult (i.second == 2);
+        }
+        m.Add (1, 2);
+        VerifyTestResult (m.size () == 1);
+        for (auto i : m) {
+            VerifyTestResult (i.first == 1);
+            VerifyTestResult (i.second == 2);
+        }
+        m.Remove (1);
+        VerifyTestResult (m.size () == 0);
+        for (auto i : m) {
+            VerifyTestResult (false);
+        }
+        m.Add (1, 2);
+        m.Add (2, 3);
+        m.Add (3, 4);
+        unsigned int cnt = 0;
+        for (auto i : m) {
+            cnt++;
+            if (cnt == 1) {
+                VerifyTestResult (i.first == 1);
+                VerifyTestResult (i.second == 2);
+            }
+            if (cnt == 2) {
+                VerifyTestResult (i.first == 2);
+                VerifyTestResult (i.second == 3);
+            }
+            if (cnt == 3) {
+                VerifyTestResult (i.first == 3);
+                VerifyTestResult (i.second == 4);
+            }
+        }
+        VerifyTestResult (cnt == 3);
+        m.RemoveAll ();
+        VerifyTestResult (m.size () == 0);
+    }
+}
+
 
 namespace {
     template <typename MappingOfKeyT>
@@ -67,6 +113,7 @@ namespace {
         MappingOfKeyT m;
         SimpleTest_1_ (m);
         SimpleTest_2_ (m);
+        SimpleTest_3_Iteration_ (m);
     }
 }
 

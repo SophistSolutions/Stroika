@@ -6,7 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Mapping_LinkedList.h"
+#include    "Concrete/Mapping_stdmap.h"
 
 
 namespace   Stroika {
@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename Key, typename T>
             Mapping<Key, T>::Mapping ()
-                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
+                : inherited (Concrete::Mapping_stdmap<Key, T> ())
             {
             }
             template    <typename Key, typename T>
@@ -32,14 +32,14 @@ namespace   Stroika {
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<Key, T>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
+                : inherited (Concrete::Mapping_stdmap<Key, T> ())
             {
                 AddAll (cp);
             }
             template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<Key, T>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Mapping_LinkedList<Key, T> ())
+                : inherited (Concrete::Mapping_stdmap<Key, T> ())
             {
                 AddAll (start, end);
             }

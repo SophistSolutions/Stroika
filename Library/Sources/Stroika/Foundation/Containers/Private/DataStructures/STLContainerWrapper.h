@@ -19,6 +19,8 @@
  *
  *  Description:
  *
+ *      NOTE FOR USES OF THIS CLASS
+ *          o            OK to use non-patchable API inside lock - like directly calling map<>::find()
  *
  */
 
@@ -44,9 +46,11 @@ namespace   Stroika {
                     template    <typename T, typename CONTAINER_OF_T>
                     class   STLContainerWrapper : public CONTAINER_OF_T {
                     public:
-                        STLContainerWrapper () {
+                        STLContainerWrapper ()
+                            : CONTAINER_OF_T () {
                         }
-                        STLContainerWrapper (const STLContainerWrapper<T, CONTAINER_OF_T>& from) {
+                        STLContainerWrapper (const STLContainerWrapper<T, CONTAINER_OF_T>& from)
+                            : CONTAINER_OF_T (from) {
                         }
                     public:
                         ~STLContainerWrapper () {
@@ -54,6 +58,7 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  STLContainerWrapper<T, CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, CONTAINER_OF_T>& rhs) {
+                            CONTAINER_OF_T::operator= (rhs);
                             return *this;
                         }
 
@@ -62,24 +67,30 @@ namespace   Stroika {
                          * perform patching.
                          */
                     public:
-                        // called AFTER a clear() operation
-                        nonvirtual  void    PatchClear () {
-                        }
-
                         //  are there any iterators to be patched?
                         nonvirtual  bool    HasActiveIterators () const;
-                        //  call after add
-                        nonvirtual  void    PatchViewsAdd (typename CONTAINER_OF_T::iterator i) const;
-                        //  call before remove
-                        nonvirtual  void    PatchViewsRemove (typename CONTAINER_OF_T::iterator i) const;
-                        //  call after removeall
-                        nonvirtual  void    PatchViewsRemoveAll () const;
-                        //  call after realloc could have happened
-                        nonvirtual  void    PatchViewsRealloc () const;
-
 
                     public:
-                        typename CONTAINER_OF_T::iterator _fCurrent;
+                        //  call after add
+                        nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const {
+                        }
+
+                    public:
+                        //  call before remove
+                        nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const {
+                        }
+
+                    public:
+                        //  call after removeall
+                        nonvirtual  void    PatchAfter_clear () const {
+                        }
+
+                    public:
+                        //  call after realloc could have happened (such as reserve)
+                        nonvirtual  void    PatchAfterRealloc () const {
+                        }
+
+
                     public:
                         class IteratorPatchHelper;
                     private:
@@ -95,9 +106,17 @@ namespace   Stroika {
                     template    <typename T, typename CONTAINER_OF_T>
                     class   STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper {
                     public:
-                        IteratorPatchHelper (const STLContainerWrapper<T, CONTAINER_OF_T>& data) {
+                        IteratorPatchHelper (STLContainerWrapper<T, CONTAINER_OF_T>* data)
+                            : fData (data)
+                            , fStdIterator (data->begin ())
+                            , fNext (nullptr)
+                            ,  fSuppressMore (true) {
                         }
-                        IteratorPatchHelper (const IteratorPatchHelper& from) {
+                        IteratorPatchHelper (const IteratorPatchHelper& from)
+                            : fData (from.fData)
+                            , fStdIterator (from.fStdIterator)
+                            , fNext (nullptr)       // must fix to add link
+                            ,  fSuppressMore (from.fSuppressMore) {
                         }
                     public:
                         ~IteratorPatchHelper () {
@@ -105,8 +124,28 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  IteratorPatchHelper& operator= (const IteratorPatchHelper& rhs) {
+                            AssertNotImplemented ();
+                            return *this;
                         }
 
+                    public:
+                        inline  bool    Done () const {
+                            return fStdIterator == fData->end ();
+                        }
+                        inline  bool    More (T* current, bool advance) {
+                            bool    done    =   Done ();
+                            if (advance) {
+                                if (not this->fSuppressMore and not done) {
+                                    this->fStdIterator++;
+                                }
+                                this->fSuppressMore = false;
+                                done = Done ();
+                                if ((current != nullptr) and (not done)) {
+                                    *current = *fStdIterator;
+                                }
+                            }
+                            return (not done);
+                        }
                     public:
                         //  call after add
                         nonvirtual  void    PatchAdd (typename CONTAINER_OF_T::iterator i);
@@ -117,9 +156,11 @@ namespace   Stroika {
                         //  call after realloc could have happened
                         nonvirtual  void    PatchRealloc ();
 
-                    protected:
-                        const STLContainerWrapper<T, CONTAINER_OF_T>*    fData;
+                    public:
+                        const STLContainerWrapper<T, CONTAINER_OF_T>*   fData;
+                        typename CONTAINER_OF_T::iterator               fStdIterator;
                         IteratorPatchHelper*                            fNext;
+                        bool                                            fSuppressMore;  // for removealls
                     };
 
 

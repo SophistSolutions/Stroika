@@ -85,16 +85,26 @@ namespace   Stroika {
                     typedef typename Iterator<pair<Key, T>>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Mapping_stdmap<Key, T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Mapping_stdmap<Key, T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (&owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual shared_ptr<typename Iterator<pair<Key, T>>::IRep>     Clone () const override;
-                    virtual bool                            More (pair<Key, T>* current, bool advance) override;
-                    virtual bool                            StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override;
+                    virtual typename Iterator<pair<Key, T>>::SharedIRepPtr     Clone () const override {
+                        return typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*this));
+                    }
+                    virtual bool   More (pair<Key, T>* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool   StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
 
                 private:
                     mutable typename Private::DataStructures::STLContainerWrapper<pair<Key, T>, map<Key, T>>::IteratorPatchHelper   fIterator_;
@@ -104,34 +114,6 @@ namespace   Stroika {
                 };
 
 
-                /*
-                ********************************************************************************
-                ******************** Mapping_stdmap<Key, T>::IteratorRep_ **********************
-                ********************************************************************************
-                */
-                template    <typename Key, typename T>
-                Mapping_stdmap<Key, T>::IteratorRep_::IteratorRep_ (typename Mapping_stdmap<Key, T>::Rep_& owner)
-                    : Iterator<pair<Key, T>>::IRep ()
-                                          , fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename Key, typename T>
-                bool    Mapping_stdmap<Key, T>::IteratorRep_::More (pair<Key, T>* current, bool advance)
-                {
-                    return false;
-//                    return (fIterator_.More (current, advance));
-                }
-                template    <typename Key, typename T>
-                bool    Mapping_stdmap<Key, T>::IteratorRep_::StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename Key, typename T>
-                shared_ptr<typename Iterator<pair<Key, T>>::IRep>  Mapping_stdmap<Key, T>::IteratorRep_::Clone () const
-                {
-                    return shared_ptr<typename Iterator<pair<Key, T>>::IRep> (new IteratorRep_ (*this));
-                }
 
 
                 /*
@@ -201,7 +183,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         fData_.clear ();
-                        fData_.PatchClear ();
+                        fData_.PatchAfter_clear ();
                     });
                 }
                 template    <typename Key, typename T>
@@ -233,8 +215,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
-                            fData_.insert (pair<Key, T> (key, newElt));
-                            // NEED TO PATCH
+                            i = fData_.insert (pair<Key, T> (key, newElt)).first;
+                            fData_.PatchAfter_insert (i);
                         }
                         else {
                             i->second = newElt;
@@ -247,7 +229,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         auto i = fData_.find (key);
                         if (i != fData_.end ()) {
-                            // NEED TO PATCH
+                            fData_.PatchBefore_erase (i);
                             fData_.erase (i);
                         }
                     });
@@ -259,8 +241,9 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_stdmap<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_stdmap<Key, T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        AssertNotImplemented ();
-//                        mir.fIterator_.RemoveCurrent ();
+                        auto i = mir.fIterator_.fStdIterator;
+                        fData_.PatchBefore_erase (i);
+                        fData_.erase (i);
                     });
                 }
 
