@@ -14,6 +14,7 @@
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -30,6 +31,7 @@ using   namespace   Stroika::Foundation::Containers;
 using   Concrete::Sequence_Array;
 using   Concrete::Sequence_DoublyLinkedList;
 using   Concrete::Sequence_LinkedList;
+using   Concrete::Sequence_stdvector;
 
 
 
@@ -481,6 +483,12 @@ namespace   {
 
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClass>> ();
+
+#if 0
+        // NOT WORKING YET - LGP 2013-05-07
+        SimpleSequenceTest_All_For_Type<Sequence_stdvector<size_t>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClass>> ();
+#endif
     }
 
 }

@@ -1095,6 +1095,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1588,6 +1591,9 @@
       <Filter>Sources\Containers\Private\DataStructures</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>

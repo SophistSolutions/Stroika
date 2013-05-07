@@ -201,6 +201,20 @@ namespace   Stroika {
                         return (not done);
                     }
                     template    <typename T, typename CONTAINER_OF_T>
+                    inline  size_t    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::CurrentIndex () const
+                    {
+                        return fStdIterator - fData->begin ();
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
+                    inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::RemoveCurrent ()
+                    {
+                        fData->Invariant ();
+                        auto i = fStdIterator;
+                        fData->PatchBefore_erase (i);
+                        fData->erase (i);
+                        fData->Invariant ();
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
                     void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const
                     {
                     }

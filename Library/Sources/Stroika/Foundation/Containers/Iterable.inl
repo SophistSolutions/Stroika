@@ -228,8 +228,4 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 #endif /* _Stroika_Foundation_Containers_Iterable_inl_ */
-

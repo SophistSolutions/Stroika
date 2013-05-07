@@ -114,8 +114,6 @@ namespace   Stroika {
                 };
 
 
-
-
                 /*
                 ********************************************************************************
                 ************************* Mapping_stdmap<Key, T>::Rep_ *************************
@@ -252,11 +250,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_stdmap<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_stdmap<Key, T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        fData_.Invariant ();
-                        auto i = mir.fIterator_.fStdIterator;
-                        fData_.PatchBefore_erase (i);
-                        fData_.erase (i);
-                        fData_.Invariant ();
+                        mir.fIterator_.RemoveCurrent ();
                     });
                 }
 
@@ -273,13 +267,14 @@ namespace   Stroika {
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_stdmap<Key, T>::Mapping_stdmap (const Mapping_stdmap<Key, T>& m)
+                // static_cast<> so we pick the right base class CTOR that doesn't copy
                     : inherited (static_cast<const Mapping<Key, T>&> (m))
                 {
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_stdmap<Key, T>&   Mapping_stdmap<Key, T>::operator= (const Mapping_stdmap<Key, T>& m)
                 {
-                    Mapping<Key, T>::operator= (m);
+                    inherited::operator= (m);
                     return *this;
                 }
                 template    <typename Key, typename T>

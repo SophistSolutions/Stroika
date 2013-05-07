@@ -22,31 +22,31 @@ namespace   Stroika {
              */
             template    <typename T>
             Sequence<T>::Sequence ()
-                : Iterable<T> (Concrete::Sequence_Array<T> ())
+                : inherited (Concrete::Sequence_Array<T> ())
             {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& s)
-                : Iterable<T> (s)
+                : inherited (s)
             {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
-                : Iterable<T> (Concrete::Sequence_Array<T> ())
+                : inherited (Concrete::Sequence_Array<T> ())
             {
                 InsertAll (0, s);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
-                : Iterable<T> (typename Iterable<T>::_SharedByValueRepType (rep))
+                : inherited (typename Iterable<T>::_SharedByValueRepType (rep))
             {
                 RequireNotNull (rep);
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                : Iterable<T> (Concrete::Sequence_Array<T> ())
+                : inherited (Concrete::Sequence_Array<T> ())
             {
                 Append (start, end);
             }
@@ -54,15 +54,15 @@ namespace   Stroika {
             inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
-                return *static_cast<const Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<const Sequence<T>::_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  typename    Sequence<T>::_IRep&  Sequence<T>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Sequence<T>::_IRep);
-                return *static_cast<Sequence<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), Sequence<T>::_IRep);
+                return *static_cast<Sequence<T>::_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
@@ -203,7 +203,7 @@ namespace   Stroika {
             }
             template    <typename   T>
             template    <typename   CONTAINER_OF_T>
-            inline  CONTAINER_OF_T  Sequence<T>:: As () const
+            inline  CONTAINER_OF_T  Sequence<T>::As () const
             {
                 return CONTAINER_OF_T (this->begin (), this->end ());
             }
@@ -218,6 +218,7 @@ namespace   Stroika {
             inline  T    Sequence<T>::back () const
             {
                 Require (not this->IsEmpty ());
+                // IRep::GetAt() defined to allow special kBadSequenceIndex
                 return _GetRep ().GetAt (kBadSequenceIndex);
             }
             template    <typename T>
@@ -330,7 +331,6 @@ namespace   Stroika {
 #endif
 
 
-
             /*
              ********************************************************************************
              *************************** Sequence<T>::_IRep *********************************
@@ -346,11 +346,7 @@ namespace   Stroika {
             }
 
 
-
         }
     }
 }
-
-
-
 #endif /* _Stroika_Foundation_Containers_Sequence_inl_ */

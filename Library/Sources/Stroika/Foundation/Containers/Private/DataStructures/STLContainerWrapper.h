@@ -127,6 +127,20 @@ namespace   Stroika {
                         inline  bool    Done () const;
                     public:
                         inline  bool    More (T* current, bool advance);
+
+
+                    public:
+                        /**
+                         * Only legal to call if underlying iterator is random_access
+                         */
+                        nonvirtual  size_t  CurrentIndex () const;
+
+                    public:
+                        /**
+                         */
+                        nonvirtual  void    RemoveCurrent ();
+
+
                     public:
                         //  call after add
                         nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const;

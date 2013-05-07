@@ -197,7 +197,4 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */

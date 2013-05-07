@@ -8,8 +8,7 @@
  *
  *
  *  STATUS:
- *      First draft API complete, and implementation usable (not threadsafe yet).
- *
+ *      Early Beta
  *
  *
  *  TODO:
@@ -140,6 +139,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Sequence : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -376,9 +378,7 @@ namespace   Stroika {
         }
     }
 }
-
 #endif  /*_Stroika_Foundation_Containers_Sequence_h_ */
-
 
 
 /*
@@ -386,5 +386,4 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-
 #include    "Sequence.inl"
