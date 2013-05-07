@@ -293,7 +293,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename Key, typename T>
                 inline  typename Mapping_stdmap<Key, T>::Rep_&    Mapping_stdmap<Key, T>::GetRep_ ()
@@ -302,7 +303,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
 
 
