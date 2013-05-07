@@ -6,6 +6,8 @@
 
 /*
  *
+ *      <<< PERHAPS RENAME DICTIONARY --> "SortedMapping" >>>
+ *
  *
  *  STATUS:
  *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
