@@ -35,9 +35,9 @@ namespace   Stroika {
             public:
                 _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo);
 
-                virtual bool                                    More (T* current, bool advance) override;
-                virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
-                virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                virtual bool                                More (T* current, bool advance) override;
+                virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
+                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;
@@ -289,9 +289,9 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            inline shared_ptr<typename Iterator<T>::IRep>  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::Clone () const
+            inline typename Iterator<T>::SharedIRepPtr  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::Clone () const
             {
-                return shared_ptr<typename Iterator<T>::IRep> (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
+                return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
             }
             template    <typename T>
             inline  bool    Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::StrongEquals (const typename Iterator<T>::IRep* rhs) const

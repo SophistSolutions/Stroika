@@ -187,7 +187,7 @@ namespace   Stroika {
                 return not operator== (rhs);
             }
             template    <typename T>
-            inline  shared_ptr<typename Iterator<T>::IRep>   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
+            inline  typename Iterator<T>::SharedIRepPtr   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
             {
                 return rep.Clone ();
             }

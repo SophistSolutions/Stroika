@@ -84,9 +84,9 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual shared_ptr<typename Iterator<T>::IRep>  Clone () const override;
-                    virtual bool                                    More (T* current, bool advance) override;
-                    virtual bool                                    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
+                    virtual bool                                More (T* current, bool advance) override;
+                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
                     mutable Private::DataStructures::LinkedListMutator_Patch<T>  fIterator_;
@@ -233,9 +233,9 @@ namespace   Stroika {
                     return false;
                 }
                 template    <typename T>
-                shared_ptr<typename Iterator<T>::IRep>  Bag_LinkedList<T>::IteratorRep_::Clone () const
+                typename Iterator<T>::SharedIRepPtr  Bag_LinkedList<T>::IteratorRep_::Clone () const
                 {
-                    return shared_ptr<typename Iterator<T>::IRep> (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
+                    return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
                 }
 
 
