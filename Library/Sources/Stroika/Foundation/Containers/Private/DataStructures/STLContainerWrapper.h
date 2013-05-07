@@ -109,17 +109,33 @@ namespace   Stroika {
                         IteratorPatchHelper (STLContainerWrapper<T, CONTAINER_OF_T>* data)
                             : fData (data)
                             , fStdIterator (data->begin ())
-                            , fNext (nullptr)
+                            , fNext (data->fIterators)
                             ,  fSuppressMore (true) {
+                            fData->fIterators = this;
                         }
                         IteratorPatchHelper (const IteratorPatchHelper& from)
                             : fData (from.fData)
                             , fStdIterator (from.fStdIterator)
-                            , fNext (nullptr)       // must fix to add link
+                            , fNext (from.fData->fIterators)
                             ,  fSuppressMore (from.fSuppressMore) {
+                            fData->fIterators = this;
                         }
                     public:
                         ~IteratorPatchHelper () {
+                            AssertNotNull (fData);
+                            if (fData->fIterators == this) {
+                                fData->fIterators = fNext;
+                            }
+                            else {
+                                auto v = fData->fIterators;
+                                for (; v->fNext != this; v = v->fNext) {
+                                    AssertNotNull (v);
+                                    AssertNotNull (v->fNext);
+                                }
+                                AssertNotNull (v);
+                                Assert (v->fNext == this);
+                                v->fNext = fNext;
+                            }
                         }
 
                     public:
@@ -157,7 +173,7 @@ namespace   Stroika {
                         nonvirtual  void    PatchRealloc ();
 
                     public:
-                        const STLContainerWrapper<T, CONTAINER_OF_T>*   fData;
+                        STLContainerWrapper<T, CONTAINER_OF_T>*   fData;
                         typename CONTAINER_OF_T::iterator               fStdIterator;
                         IteratorPatchHelper*                            fNext;
                         bool                                            fSuppressMore;  // for removealls

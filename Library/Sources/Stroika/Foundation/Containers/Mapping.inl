@@ -159,6 +159,11 @@ namespace   Stroika {
                 }
             }
             template    <typename Key, typename T>
+            inline  void    Mapping<Key, T>::clear ()
+            {
+                _GetRep ().RemoveAll ();
+            }
+            template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<Key, T>&    Mapping<Key, T>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {

@@ -132,6 +132,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
+            public:
+                /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
