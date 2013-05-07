@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Containers/Concrete/Mapping_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Mapping_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Mapping_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -27,6 +28,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 using   Concrete::Mapping_Array;
 using   Concrete::Mapping_LinkedList;
+using   Concrete::Mapping_stdmap;
 
 
 
@@ -73,13 +75,16 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         SimpleMappingTest_All_For_Type<Mapping<size_t, size_t>> ();
-        SimpleMappingTest_All_For_Type<Mapping<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping<SimpleClass, SimpleClass>> ();
 
         SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
-        SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping_Array<SimpleClass, SimpleClass>> ();
 
         SimpleMappingTest_All_For_Type<Mapping_LinkedList<size_t, size_t>> ();
-        SimpleMappingTest_All_For_Type<Mapping_LinkedList<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
+
+        SimpleMappingTest_All_For_Type<Mapping_stdmap<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<Mapping_stdmap<SimpleClass, SimpleClass>> ();
     }
 }
 

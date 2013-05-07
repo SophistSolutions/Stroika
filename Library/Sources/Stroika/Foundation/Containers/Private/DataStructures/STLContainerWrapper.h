@@ -44,19 +44,28 @@ namespace   Stroika {
                     template    <typename T, typename CONTAINER_OF_T>
                     class   STLContainerWrapper : public CONTAINER_OF_T {
                     public:
-                        STLContainerWrapper ();
-                        STLContainerWrapper (const STLContainerWrapper<T, CONTAINER_OF_T>& from);
+                        STLContainerWrapper () {
+                        }
+                        STLContainerWrapper (const STLContainerWrapper<T, CONTAINER_OF_T>& from) {
+                        }
                     public:
-                        ~STLContainerWrapper ();
+                        ~STLContainerWrapper () {
+                        }
 
                     public:
-                        nonvirtual  STLContainerWrapper<T>& operator= (const STLContainerWrapper<T, CONTAINER_OF_T>& rhs);
+                        nonvirtual  STLContainerWrapper<T, CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, CONTAINER_OF_T>& rhs) {
+                            return *this;
+                        }
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
                          * perform patching.
                          */
                     public:
+                        // called AFTER a clear() operation
+                        nonvirtual  void    PatchClear () {
+                        }
+
                         //  are there any iterators to be patched?
                         nonvirtual  bool    HasActiveIterators () const;
                         //  call after add
@@ -70,9 +79,11 @@ namespace   Stroika {
 
 
                     public:
+                        typename CONTAINER_OF_T::iterator _fCurrent;
+                    public:
                         class IteratorPatchHelper;
                     private:
-                        IteratorPatchHelper* fIterators;
+                        IteratorPatchHelper* fIterators;        // head of linked list of active iterators
                         friend  class   IteratorPatchHelper;
                     };
 
@@ -82,15 +93,19 @@ namespace   Stroika {
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template    <typename T, typename CONTAINER_OF_T>
-                    class   STLContainerWrapper::IteratorPatchHelper {
+                    class   STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper {
                     public:
-                        IteratorPatchHelper (const STLContainerWrapper<T, CONTAINER_OF_T>& data);
-                        IteratorPatchHelper (const IteratorPatchHelper<T, CONTAINER_OF_T>& from);
+                        IteratorPatchHelper (const STLContainerWrapper<T, CONTAINER_OF_T>& data) {
+                        }
+                        IteratorPatchHelper (const IteratorPatchHelper& from) {
+                        }
                     public:
-                        ~IteratorPatchHelper ();
+                        ~IteratorPatchHelper () {
+                        }
 
                     public:
-                        nonvirtual  IteratorPatchHelper<T, CONTAINER_OF_T>& operator= (const IteratorPatchHelper<T, CONTAINER_OF_T>& rhs);
+                        nonvirtual  IteratorPatchHelper& operator= (const IteratorPatchHelper& rhs) {
+                        }
 
                     public:
                         //  call after add
