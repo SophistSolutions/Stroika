@@ -40,15 +40,15 @@ namespace   Stroika {
                     template    <typename   T>  class   DoublyLinkedListIterator_Patch;
                     template    <typename   T>  class   DoublyLinkedListMutator_Patch;
 
-                    template    <typename   T>  
-					class   DoubleLink {
-					public:
-						DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
+                    template    <typename   T>
+                    class   DoubleLink {
+                    public:
+                        DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
                     public:
                         DoubleLink (T item, DoubleLink<T>* next);
 
                     public:
-                        T				fItem;
+                        T               fItem;
                         DoubleLink<T>*  fNext;
                     };
 

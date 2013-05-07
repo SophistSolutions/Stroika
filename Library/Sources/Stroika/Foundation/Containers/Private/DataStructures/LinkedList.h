@@ -44,10 +44,10 @@ namespace   Stroika {
                     template    <typename   T>  class   LinkedListIterator_Patch;
                     template    <typename   T>  class   LinkedListMutator_Patch;
 
-                    template    <typename   T>  
-					class   Link {
-					public:
-						DECLARE_USE_BLOCK_ALLOCATION (Link);
+                    template    <typename   T>
+                    class   Link {
+                    public:
+                        DECLARE_USE_BLOCK_ALLOCATION (Link);
                     public:
                         Link (T item, Link<T>* next);
 

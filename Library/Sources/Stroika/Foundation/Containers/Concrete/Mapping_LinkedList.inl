@@ -225,11 +225,11 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
-								it.UpdateCurrent (pair<Key, T> (key, newElt));
+                                it.UpdateCurrent (pair<Key, T> (key, newElt));
                                 return;
                             }
                         }
-						fData_.Append (pair<Key, T> (key, newElt));
+                        fData_.Append (pair<Key, T> (key, newElt));
                     });
                 }
                 template    <typename Key, typename T>
@@ -238,7 +238,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
-								it.RemoveCurrent ();
+                                it.RemoveCurrent ();
                                 return;
                             }
                         }
