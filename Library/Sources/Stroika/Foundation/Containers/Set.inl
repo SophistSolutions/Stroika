@@ -66,10 +66,10 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Set<T>::Contains (T item) const
             {
-				return _GetRep ().Contains (item);
+                return _GetRep ().Contains (item);
             }
 #if 0
-			template    <typename T>
+            template    <typename T>
             inline  bool    Set<T>::Equals (const Iterable<T>& rhs) const
             {
                 return Private::Equals_ (*this, rhs);
@@ -80,7 +80,7 @@ namespace   Stroika {
             {
                 _GetRep ().Add (item);
             }
-		    template    <typename T>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             void    Set<T>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {
@@ -104,7 +104,7 @@ namespace   Stroika {
             {
                 _GetRep ().Remove (i);
             }
-		    template    <typename T>
+            template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             void    Set<T>::RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
             {
@@ -118,7 +118,7 @@ namespace   Stroika {
             {
                 RemoveAll (s.begin (), s.end ());
             }
-			template    <typename T>
+            template    <typename T>
             inline  void    Set<T>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();

@@ -41,26 +41,26 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual typename Iterable<T>::_SharedPtrIRep				Clone () const override;
-                    virtual Iterator<T>											MakeIterator () const override;
-                    virtual size_t                                              GetLength () const override;
-                    virtual bool                                                IsEmpty () const override;
-                    virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>											ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
+                    virtual Iterator<T>                             MakeIterator () const override;
+                    virtual size_t                                  GetLength () const override;
+                    virtual bool                                    IsEmpty () const override;
+                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Set<T>::_IRep overrides
                 public:
-					virtual bool    Contains (T item) const override;
-					virtual void    RemoveAll () override;
-					virtual void    Add (T item) override;
-					virtual void    Remove (T item) override;
-					virtual void    Remove (const Iterator<T>& i) override;
+                    virtual bool    Contains (T item) const override;
+                    virtual void    RemoveAll () override;
+                    virtual void    Add (T item) override;
+                    virtual void    Remove (T item) override;
+                    virtual void    Remove (const Iterator<T>& i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_			fLockSupport_;
-                    Private::DataStructures::LinkedList_Patch<T>	fData_;
-                
-				private:
+                    Private::ContainerRepLockDataSupport_           fLockSupport_;
+                    Private::DataStructures::LinkedList_Patch<T>    fData_;
+
+                private:
                     friend  class Set_LinkedList<T>::IteratorRep_;
                 };
 
@@ -97,13 +97,13 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******************** Set_LinkedList<T>::IteratorRep_ ******************
+                ******************** Set_LinkedList<T>::IteratorRep_ ***************************
                 ********************************************************************************
                 */
                 template    <typename T>
                 Set_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Set_LinkedList<T>::Rep_& owner)
-                    : Iterator<T>::IRep ()
-                                          , fIterator_ (owner.fData_)
+                    : inherited ()
+                    , fIterator_ (owner.fData_)
                 {
                 }
                 template    <typename T>
@@ -126,7 +126,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************* Set_LinkedList<T>::Rep_ *************************
+                ************************** Set_LinkedList<T>::Rep_ *****************************
                 ********************************************************************************
                 */
                 template    <typename T>
@@ -193,7 +193,7 @@ namespace   Stroika {
                                 return true;
                             }
                         }
-						return false;
+                        return false;
                     });
                 }
                 template    <typename T>

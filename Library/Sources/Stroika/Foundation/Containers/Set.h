@@ -25,7 +25,7 @@
  *              >   Set_RedBlackTree
  *              >   Set_stlset
  *              >   Set_stlunordered_set (really is hashset)
- *				>	Set_Treap
+ *              >   Set_Treap
  *
  *      @todo   Thread safety (/locking)
  *
@@ -37,7 +37,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
-#include	"Iterable.h"
+#include    "Iterable.h"
 
 
 
@@ -55,9 +55,9 @@ namespace   Stroika {
              *
              */
             template    <typename   T>
-            class	Set : public Iterable<T> {
-			private:
-				typedef	Iterable<T>	inherited;
+            class   Set : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
 
             protected:
                 class   _IRep;
@@ -116,7 +116,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
-			public:
+            public:
                 /*
                  *  Convert Set<T> losslessly into a standard supported C++ type.
                  *  Supported types include:

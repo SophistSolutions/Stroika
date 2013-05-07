@@ -2,7 +2,7 @@
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
 //      TEST    Foundation::Containers::Set
-//      STATUS  TOTALLY WRONG - PLACEHOLDER
+//      STATUS  PRELIMINARY
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -42,11 +42,11 @@ namespace {
     template <typename SetOfT>
     void    SimpleTest_2_ (SetOfT s)
     {
-		s.Add (1);
+        s.Add (1);
         VerifyTestResult (s.size () == 1);
         VerifyTestResult (s.Contains (1));
-		VerifyTestResult (not s.Contains (2));
-		s.Add (1);
+        VerifyTestResult (not s.Contains (2));
+        s.Add (1);
         VerifyTestResult (s.size () == 1);
         s.Remove (1);
         VerifyTestResult (s.size () == 0);
