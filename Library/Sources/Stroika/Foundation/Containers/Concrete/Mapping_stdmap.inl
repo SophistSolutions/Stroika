@@ -127,6 +127,7 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
+                    fData_.Invariant ();
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_stdmap<Key, T>::Rep_::Rep_ (const Rep_& from)
@@ -135,7 +136,9 @@ namespace   Stroika {
                     , fData_ ()
                 {
                     CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                        fData_.Invariant ();
                         fData_ = from.fData_;
+                        fData_.Invariant ();
                     });
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
@@ -158,6 +161,7 @@ namespace   Stroika {
                 size_t  Mapping_stdmap<Key, T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         return (fData_.size ());
                     });
                 }
@@ -165,6 +169,7 @@ namespace   Stroika {
                 bool  Mapping_stdmap<Key, T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         return (fData_.empty () == 0);
                     });
                 }
@@ -182,8 +187,10 @@ namespace   Stroika {
                 void    Mapping_stdmap<Key, T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         fData_.clear ();
                         fData_.PatchAfter_clear ();
+                        fData_.Invariant ();
                     });
                 }
                 template    <typename Key, typename T>
@@ -213,6 +220,7 @@ namespace   Stroika {
                 void    Mapping_stdmap<Key, T>::Rep_::Add (Key key, T newElt)
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
                             i = fData_.insert (pair<Key, T> (key, newElt)).first;
@@ -221,16 +229,19 @@ namespace   Stroika {
                         else {
                             i->second = newElt;
                         }
+                        fData_.Invariant ();
                     });
                 }
                 template    <typename Key, typename T>
                 void    Mapping_stdmap<Key, T>::Rep_::Remove (Key key)
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i != fData_.end ()) {
                             fData_.PatchBefore_erase (i);
                             fData_.erase (i);
+                            fData_.Invariant ();
                         }
                     });
                 }
@@ -241,9 +252,11 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_stdmap<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_stdmap<Key, T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Invariant ();
                         auto i = mir.fIterator_.fStdIterator;
                         fData_.PatchBefore_erase (i);
                         fData_.erase (i);
+                        fData_.Invariant ();
                     });
                 }
 
