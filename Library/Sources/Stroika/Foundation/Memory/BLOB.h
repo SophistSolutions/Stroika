@@ -32,17 +32,7 @@
  *
  *      @todo   BLOB::As<BinaryInputStream>() should be seekable
  *
- *      @todo   Fix qWierdPrivateBLOBBug
- *
- *
  */
-
-
-
-//TODO - fix this - this is a temporary hack to get stuff compiling
-#ifndef qWierdPrivateBLOBBug
-#define qWierdPrivateBLOBBug 1
-#endif
 
 
 namespace   Stroika {
@@ -152,7 +142,7 @@ namespace   Stroika {
                 struct  _IRep;
 
             private:
-#if qWierdPrivateBLOBBug
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
                 struct  BasicRep_;
