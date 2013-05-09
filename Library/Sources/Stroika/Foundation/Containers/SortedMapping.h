@@ -4,11 +4,10 @@
 #ifndef _Stroika_Foundation_Containers_SortedMapping_h_
 #define _Stroika_Foundation_Containers_SortedMapping_h_  1
 
-/*
+/**
  *
  *  STATUS:
- *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
- *
+ *      BETA Quality
  *
  *
  *  TODO:
