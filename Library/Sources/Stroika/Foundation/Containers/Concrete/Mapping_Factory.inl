@@ -18,11 +18,11 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-				template    <typename Key, typename T>
-				inline	Mapping<Key,T>	mkMapping_Default ()
-				{
-					return SortedMapping_stdmap<Key,T> ();
-				}
+                template    <typename Key, typename T>
+                inline  Mapping<Key, T>  mkMapping_Default ()
+                {
+                    return SortedMapping_stdmap<Key, T> ();
+                }
 
 
             }

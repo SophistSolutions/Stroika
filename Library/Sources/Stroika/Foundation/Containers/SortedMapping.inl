@@ -60,8 +60,8 @@ namespace   Stroika {
             }
 #endif
 
-			
-		}
+
+        }
     }
 }
 

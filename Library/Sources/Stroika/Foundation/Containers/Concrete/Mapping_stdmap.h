@@ -30,9 +30,9 @@ namespace   Stroika {
                 /**
                  * \brief   Mapping_stdmap<Key, T> is an std::map-based concrete implementation of the Mapping<Key,T> container pattern.
                  */
-#if		qCompilerAndStdLib_Supports_TempalteAlias_n2258
+#if     qCompilerAndStdLib_Supports_TempalteAlias_n2258
                 template    <typename Key, typename T>
-                using	Mapping_stdmap = SortedMapping_stdmap<Key,T>;
+                using   Mapping_stdmap = SortedMapping_stdmap<Key, T>;
 #else
                 template    <typename Key, typename T>
                 class   Mapping_stdmap : public Mapping<Key, T> {
@@ -41,11 +41,10 @@ namespace   Stroika {
 
                 public:
                     Mapping_stdmap ()
-						: inherited (SortedMapping_stdmap<Key,T> ())
-					{
-					}
+                        : inherited (SortedMapping_stdmap<Key, T> ()) {
+                    }
 #if 0
-					// support/enabel these as needed - all SB there
+                    // support/enabel these as needed - all SB there
                     Mapping_stdmap (const Mapping_stdmap<Key, T>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& cp);

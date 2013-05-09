@@ -30,31 +30,31 @@ namespace   Stroika {
             /**
              *      A SortedMapping is a Mapping<Key,T> which remains sorted (iterator) by the Key.
              *
-             *	Note - this class might have been called "Dictionary".
-			 *
+             *  Note - this class might have been called "Dictionary".
+             *
              *  @see    Mapping<Key,T>
              */
             template    <typename Key, typename T>
             class   SortedMapping : public Mapping<Key, T> {
-			private:
-				typedef		Mapping<Key, T>	inherited;
+            private:
+                typedef     Mapping<Key, T> inherited;
 
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
-			public:
+            public:
                 SortedMapping ();
 
             public:
                 nonvirtual  SortedMapping<Key, T>& operator= (const SortedMapping<Key, T>& src);
 
-			protected:
+            protected:
                 explicit SortedMapping (const _SharedPtrIRep& rep);
             };
 
 
-			/**
+            /**
              *  \brief  Implementation detail for SortedMapping<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
@@ -65,7 +65,7 @@ namespace   Stroika {
             };
 
 
-		}
+        }
     }
 }
 #endif  /*_Stroika_Foundation_Containers_SortedMapping_h_ */
