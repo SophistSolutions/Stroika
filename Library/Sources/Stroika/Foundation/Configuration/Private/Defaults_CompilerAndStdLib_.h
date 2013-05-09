@@ -419,6 +419,16 @@
 
 
 
+#ifndef qCompilerAndStdLib_Supports_TempalteAlias_n2258
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#endif
+#endif
+
+
+
 // Dangerous with newer compilers - defaulting this to on.
 // Hard to detect if it doesn't work...
 #ifndef qCompilerAndStdLib_thread_local_initializersSupported
