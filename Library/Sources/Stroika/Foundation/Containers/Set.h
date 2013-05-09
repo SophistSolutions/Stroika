@@ -8,8 +8,7 @@
  *
  *
  *  STATUS:
- *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
- *
+ *      Minimally functional (alpha)
  *
  *
  *  TODO:
@@ -48,10 +47,10 @@ namespace   Stroika {
 
             /**
              *      The Set class is based on SmallTalk-80, The Language & Its Implementation,
-             *      page 148.  Also, see documentation for Collection<T>.
+             *      page 148.
              *
-             *      The basic idea here is that you cannot have multiple entries of the same
-             *      thing into the set.
+             *      The basic idea here is that you cannot have multiple copies of the same
+             *      thing into the set (like a mathemactical set).
              *
              */
             template    <typename   T>

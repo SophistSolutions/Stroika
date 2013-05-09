@@ -33,9 +33,9 @@ namespace   Stroika {
             /**
              * Description:
              *
-             *      A Deque is a queue that allows additions and removals at either end.
+             *      A Deque is a Queue that allows additions and removals at either end.
              *
-             *      Deques always iterate from Head to Tail.
+             *      Deques - like Queues - iterate from Head to Tail.
              *
              *      We currently default to the circular array implementation, as it is
              *  fastest under most circumstances. One drawback to it is that it has

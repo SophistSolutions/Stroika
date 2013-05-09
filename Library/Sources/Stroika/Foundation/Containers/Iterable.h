@@ -26,7 +26,11 @@
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
  *              this API works fully with lambdas - even bound...
  *
+ *      @todo   See below - do we want to add Equals() - similar issue to Contains()
  *
+ *      @todo   Perhaps add Contains:
+ *                  Contains () is true iff an iteration over the Collection<T,TTRAITS> would return at least one element such that (*it == item).
+ *                  Just note method MAY not be defined if no way todo == (or not in traits)
  */
 
 
@@ -184,6 +188,25 @@ namespace   Stroika {
             public:
                 /**
                  * \brief Support for ranged for, and STL syntax in general
+                 *
+                 *  begin ()/end() are similar to MakeIterator(), except that they allow for iterators to be
+                 *  used in an STL-style, which is critical for using C++ ranged iteration.
+                 *
+                 *  For example:
+                 *
+                 *      for (Iterator<T> i = c.begin (); i != c.end (); ++i) {
+                 *          if (*i = T ()) {
+                 *              break;
+                 *          }
+                 *      }
+                 *
+                 * OR
+                 *      for (T& i : c) {
+                 *          if (*i = T ()) {
+                 *              break;
+                 *          }
+                 *      }
+                 *
                  */
                 nonvirtual  Iterator<T> begin () const;
 
@@ -278,7 +301,6 @@ namespace   Stroika {
             private:
                 _SharedByValueRepType    fRep_;
             };
-
 
 
             /**

@@ -47,3 +47,101 @@ TODO (Foundation::Containers)
 
 	(o)		Maybe implement Treaps for Set<>, Mapping<>, Dictionary<>, Sorting<>?? using Treaps:
 			http://www.cs.cornell.edu/Courses/cs312/2003sp/lectures/lec26.html
+
+
+
+Notes from obsolete Collection.h
+	TRAITS:
+		Consider using
+				typename TTRAITS = TWithCompareEquals<T>
+			as in
+					template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
+					class   Collection {
+					protected:
+						class   IRep;
+
+
+	COLLECTION DOCS:
+        /*
+            * Description:
+            *      A Collection<T,TTRAITS> is a container class representing a bunch of objects of type T. Here the word 'bunch' is chosen to mean
+            *  almost nothing. The details of meaning for what happens when something is put into a Collection<T,TTRAITS> (like if duplicates are retained or not)
+            *  depends on subtypes of Collection<T,TTRAITS>.
+            *
+            *      Note also that this code uses a Letter-Envelope paradigm - mostly in order to achieve greater performance with less effort. The actual
+            *  subclassing is done with the Reps, and the subclassing relationships presented with the envelopes or mostly for documentation purposes.
+            *
+            *      Note that Collections and Iterators are INTIMATELY related. The definition of most of the Collection methods is in terms of what would happen
+            *  when you iterate.
+            *
+            *      CONCEPT (I HAVENT READ ABOUT THIS - SO I DONT KNOW THE RIGHT SYNTAX - IM FAKING IT)
+            *          Concept<T>  =   TWithCompareEquals<T>, or pass default TTRAITS param with operator==
+            */
+
+	MUTABLE<T>:
+	    LIKE we have with ITERABLE, cosndier adding MUTABLE<T>.
+
+
+	AddAll/RemoveAll
+		Review each container. I think I did a DECENT job of this with Sequence::AppendAll() versus Sequence::Append(). Do
+		as appropriate for each container type, and documetn the 'addallish' semantics of each appropriate CTOR.
+
+	RetainAll
+            public:
+                /*
+                 *  This calls Remove (item) for each element of the this collection not found in the argument 'items' collection.
+                 *  {NOTE - from Java collection::retainAll() - not sure this is a good idea - hard todo fast if items not a 'set' type}
+                 *  {NOTE- I THINK THIS AMOUTNS TO INSERSECT-WITH  - and that maybe a better name. But also - CNA be done effecitaly
+                 *      even for collection using conerter Set<T> on items - as impl - so if already a set - fast - and if not - not too bad to constrct
+                 *      tmp set.
+                 */
+                nonvirtual  void    RetainAll (const Collection<T, TTRAITS>& items);
+
+	RemoveIfPresent:
+                /*
+                 *  This function is logically equivilent to
+                 *      if (Contains (item)) {
+                 *          Remove (item);
+                 *      }
+                 *
+                 *      You might want to use it in threading scenariors to safely remove something someone else might be trying to remove at the same time. If using
+                 *  a 'safe' container, this will always be atomic.
+                 */
+                nonvirtual  void    RemoveIfPresent (T item);
+                /*
+                 *  This calls RemoveIfPresent (item) for each element of the Items collection.
+                 */
+                nonvirtual  void    RemoveIfPresent (const Collection<T, TTRAITS>& items);
+
+
+                /*
+                 *      +=/-= are equivilent Add() and Remove(). They
+                 *  are just syntactic sugar.
+                 */
+            public:
+                nonvirtual  Collection<T, TTRAITS>&  operator+= (T item);
+                nonvirtual  Collection<T, TTRAITS>&  operator+= (const Collection<T, TTRAITS>& items);
+                nonvirtual  Collection<T, TTRAITS>&  operator-= (T item);
+                nonvirtual  Collection<T, TTRAITS>&  operator-= (const Collection<T, TTRAITS>& items);
+
+	Global EQUALS and PLUS and MINUS operators:
+            /*
+             *  Two collections are Equal, if iterating over each would produce the same results (in the same order)
+             */
+            template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
+            bool    operator== (const Collection<T, TTRAITS>& lhs, const Collection<T, TTRAITS>& rhs);
+            template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
+            bool    operator!= (const Collection<T, TTRAITS>& lhs, const Collection<T, TTRAITS>& rhs);
+
+            /*
+             *  Here operator+ is defined in the obvious way, using the Collection<T,TTRAITS>::Add () method
+             */
+            template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
+            Collection<T, TTRAITS>   operator+ (const Collection<T, TTRAITS>& lhs, const Collection<T, TTRAITS>& rhs);
+
+            /*
+             *  Here operator+ is defined in the obvious way, using the Collection<T,TTRAITS>::Remove () method
+             */
+            template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
+            Collection<T, TTRAITS>   operator- (const Collection<T, TTRAITS>& lhs, const Collection<T, TTRAITS>& rhs);
+		(unclear if these should be done per container type - eg for mapping<> etc - or globally?)
