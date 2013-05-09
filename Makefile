@@ -14,3 +14,7 @@ clobber:
 tests:
 	./buildall.pl build+
 
+
+run-tests:
+	./buildall.pl build+
+
