@@ -5,7 +5,7 @@
 //      STATUS  very minimal/incomplete
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#define	WORKING	0
+#define WORKING 0
 #if WORKING
 #include    "Stroika/Foundation/Containers/SortedMapping.h"
 #include    "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
