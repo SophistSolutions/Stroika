@@ -176,7 +176,7 @@ namespace   Stroika {
                 virtual  bool           Lookup (Key key, T* item) const     =   0;
                 virtual  void           Add (Key key, T newElt)             =   0;
                 virtual  void           Remove (Key key)                    =   0;
-                virtual  void           Remove (Iterator<pair<Key, T>> i)    =   0;
+                virtual  void           Remove (Iterator<pair<Key, T>> i)   =   0;
             };
 
 
