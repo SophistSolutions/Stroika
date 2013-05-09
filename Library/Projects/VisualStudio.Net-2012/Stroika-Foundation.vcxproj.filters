@@ -750,9 +750,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Collection.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.h">
       <Filter>Sources\IO\Network\Transfer</Filter>
     </ClInclude>
@@ -1284,9 +1281,6 @@
       <Filter>Sources\IO\Network</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Collection.inl">
       <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Transfer\Client.inl">

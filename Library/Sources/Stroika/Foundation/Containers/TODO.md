@@ -13,8 +13,6 @@ TODO (Foundation::Containers)
 	(o)		Fix (already documented in Iterator.h todo) T fCurrent stuff - so no default CTOR required,
 			and then fix the crazy extra operator++ funky stuff needed in the MakeIterator calls.
 
-	(o)		Probably ready todo Sequence<> next.
-
 	(o)		Seriously consider implementing all of Container code using
 			http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
 			STM
