@@ -23,8 +23,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             template    <typename Key, typename T>
-            class   Mapping;
+            class   SortedMapping;
+
 
             namespace   Concrete {
 
@@ -40,7 +42,7 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_ */
+#endif  /*_Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_ */
 
 
 /*
