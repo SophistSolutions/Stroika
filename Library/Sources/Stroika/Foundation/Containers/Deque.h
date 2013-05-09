@@ -21,8 +21,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include    "Queue.h"
 
 
 
@@ -55,7 +54,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class   Deque : public Iterable<T> {
+            class   Deque : public Queue<T> {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -80,27 +79,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    RemoveAll ();
-
-            public:
-                /**
-                 */
                 nonvirtual  void    AddHead (T item);
-
-            public:
-                /**
-                 */
-                nonvirtual  T       RemoveHead ();
-
-            public:
-                /**
-                 */
-                nonvirtual  T       Head () const;
-
-            public:
-                /**
-                 */
-                nonvirtual  void    AddTail (T item);
 
             public:
                 /**
@@ -125,7 +104,7 @@ namespace   Stroika {
              *  the Deque<T> container API.
              */
             template    <typename T>
-            class   Deque<T>::_IRep : public Iterable<T>::_IRep {
+            class   Deque<T>::_IRep : public Queue<T>::_IRep {
             protected:
                 _IRep ();
 
@@ -134,12 +113,8 @@ namespace   Stroika {
 
             public:
                 virtual void        AddHead (T item) const                  =   0;
-                virtual T           RemoveHead ()                           =   0;
-                virtual T           Head () const                           =   0;
-                virtual void        AddTail(T item) const                   =   0;
                 virtual T           RemoveTail ()                           =   0;
                 virtual T           Tail () const                           =   0;
-                virtual void        RemoveAll ()                            =   0;
             };
 
 

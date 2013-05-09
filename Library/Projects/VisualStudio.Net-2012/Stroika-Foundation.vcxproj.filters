@@ -1047,9 +1047,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\RC4.h">
       <Filter>Sources\Cryptography</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h">
       <Filter>Sources\Containers\Private</Filter>
     </ClInclude>
@@ -1106,6 +1103,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1554,9 +1557,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.inl">
       <Filter>Sources\Cryptography</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl">
       <Filter>Sources\Containers\Private</Filter>
     </None>
@@ -1609,6 +1609,12 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl">
       <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>

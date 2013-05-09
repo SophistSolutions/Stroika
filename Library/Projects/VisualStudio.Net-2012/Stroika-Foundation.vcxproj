@@ -496,8 +496,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Set.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
@@ -709,8 +710,9 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Set.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Sorting.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />

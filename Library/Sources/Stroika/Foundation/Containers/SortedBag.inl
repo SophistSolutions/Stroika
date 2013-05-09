@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Sorting_inl_
-#define _Stroika_Foundation_Containers_Sorting_inl_
+#ifndef _Stroika_Foundation_Containers_SortedBag_inl_
+#define _Stroika_Foundation_Containers_SortedBag_inl_
 
 #include    "../Debug/Assertions.h"
 
@@ -18,4 +18,4 @@ namespace   Stroika {
 
 
 
-#endif /* _Stroika_Foundation_Containers_Sorting_inl_ */
+#endif /* _Stroika_Foundation_Containers_SortedBag_inl_ */

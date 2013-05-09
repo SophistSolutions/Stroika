@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Sorting_h_
-#define _Stroika_Foundation_Containers_Sorting_h_  1
+#ifndef _Stroika_Foundation_Containers_SortedBag_h_
+#define _Stroika_Foundation_Containers_SortedBag_h_  1
 
 /*
  *
@@ -28,8 +28,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include    "Bag.h"
+
 
 
 
@@ -39,7 +39,7 @@ namespace   Stroika {
 
 
             /**
-             *      A Sorting is a collection whose elements are ordered by an external
+             *      A SortedBag is a collection whose elements are ordered by an external
              *  comparison function (operator <). The src to can be added to, removed
              *  from, and iterated over. Adding and removing specify only the item -
              *  where it is added is implied by its value, and the operator < function.
@@ -49,13 +49,13 @@ namespace   Stroika {
              *      We also require an operator== too be able to remove a given item
              *  from a src, and to check whether or not an item is contained in the src.
              *
-             *      Sortings do allow redundencies - that is the same element may be
+             *      SortedBags do allow redundencies - that is the same element may be
              *  inserted more than once, and still increase the length of the src.
              *
              *
              */
             template    <class T>
-            class   Sorting : public Iterable<T> {
+            class   SortedBag : public Bag<T> {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -63,12 +63,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                Sorting ();
-                Sorting (const Set<T>& s);
-                explicit Sorting (const T* start, const T* end);
+                SortedBag ();
+                SortedBag (const Set<T>& s);
+                explicit SortedBag (const T* start, const T* end);
 
             protected:
-                explicit Sorting (const _SharedPtrIRep& rep);
+                explicit SortedBag (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Set<T>& operator= (const Set<T>& src);
@@ -88,10 +88,10 @@ namespace   Stroika {
                 nonvirtual  void    Remove (const Iterator<T>& itemsIterator);
 
             public:
-                nonvirtual  Sorting<T>& operator+= (T item);
-                nonvirtual  Sorting<T>& operator+= (const Iterator<T>& itemsIterator);
-                nonvirtual  Sorting<T>& operator-= (T item);
-                nonvirtual  Sorting<T>& operator-= (const Iterator<T>& itemsIterator);
+                nonvirtual  SortedBag<T>& operator+= (T item);
+                nonvirtual  SortedBag<T>& operator+= (const Iterator<T>& itemsIterator);
+                nonvirtual  SortedBag<T>& operator-= (T item);
+                nonvirtual  SortedBag<T>& operator-= (const Iterator<T>& itemsIterator);
             };
 
 
@@ -99,7 +99,7 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Sorting_h_ */
+#endif  /*_Stroika_Foundation_Containers_SortedBag_h_ */
 
 
 
@@ -109,4 +109,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "Sorting.inl"
+#include    "SortedBag.inl"

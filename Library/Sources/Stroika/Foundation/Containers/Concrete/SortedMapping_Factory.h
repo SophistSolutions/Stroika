@@ -30,7 +30,7 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Create the default backend implementaiton of a SortedMapping<> template
+                 * \brief   Create the default backend implementaiton of a SortedMapping<> container
                  */
                 template    <typename Key, typename T>
                 SortedMapping<Key, T>    mkSortedMapping_Default ();

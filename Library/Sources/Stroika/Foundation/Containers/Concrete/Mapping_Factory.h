@@ -30,7 +30,7 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Create the default backend implementaiton of a Mapping<> template
+                 * \brief   Create the default backend implementaiton of a Mapping<> container
                  */
                 template    <typename Key, typename T>
                 Mapping<Key, T>  mkMapping_Default ();
