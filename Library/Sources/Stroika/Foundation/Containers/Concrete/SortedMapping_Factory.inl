@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_
 
 /*
  ********************************************************************************
@@ -19,7 +19,7 @@ namespace   Stroika {
 
 
 				template    <typename Key, typename T>
-				inline	Mapping<Key,T>	mkMapping_Default ()
+				inline	SortedMapping<Key,T>	mkSortedMapping_Default ()
 				{
 					return SortedMapping_stdmap<Key,T> ();
 				}
@@ -29,4 +29,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_inl_ */

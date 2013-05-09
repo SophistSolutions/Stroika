@@ -15,3 +15,8 @@ TODO (Foundation::Containers::Concrete)
 
 	o	Perhaps add STL-concrete variations - like Sequence_vector<>
 
+	o	Probably add (using template aliases) 
+		stuff like Mapping_stdmap (we just deleted it) - but clearly as just an alias to the 
+		SortedMapping_stdmap code. Do for each sensible combo, so someone COULD hardwire (and not use
+		factory) they wanted a mapping used stdmap!!!
+

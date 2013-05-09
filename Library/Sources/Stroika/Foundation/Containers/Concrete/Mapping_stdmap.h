@@ -8,6 +8,8 @@
 
 #include    "../Mapping.h"
 
+#include    "SortedMapping_stdmap.h"
+
 
 /**
  *  \file
@@ -28,13 +30,22 @@ namespace   Stroika {
                 /**
                  * \brief   Mapping_stdmap<Key, T> is an std::map-based concrete implementation of the Mapping<Key,T> container pattern.
                  */
+#if		qCompilerAndStdLib_Supports_TempalteAlias_n2258
+                template    <typename Key, typename T>
+                using	Mapping_stdmap = SortedMapping_stdmap<Key,T>;
+#else
                 template    <typename Key, typename T>
                 class   Mapping_stdmap : public Mapping<Key, T> {
                 private:
                     typedef     Mapping<Key, T>  inherited;
 
                 public:
-                    Mapping_stdmap ();
+                    Mapping_stdmap ()
+						: inherited (SortedMapping_stdmap<Key,T> ())
+					{
+					}
+#if 0
+					// support/enabel these as needed - all SB there
                     Mapping_stdmap (const Mapping_stdmap<Key, T>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Mapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& cp);
@@ -44,20 +55,11 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  Mapping_stdmap<Key, T>& operator= (const Mapping_stdmap<Key, T>& m);
-
-
-                private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-                public:
 #endif
-                    class   Rep_;
-                    class   IteratorRep_;
 
-                private:
-                    nonvirtual  const Rep_&  GetRep_ () const;
-                    nonvirtual  Rep_&        GetRep_ ();
+
                 };
-
+#endif
 
             }
         }
@@ -71,5 +73,3 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-
-#include    "Mapping_stdmap.inl"
