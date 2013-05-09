@@ -1,7 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//      TEST    Foundation::Containers::Tally
+//      TEST    Foundation::Containers::SortedMapping
+//      STATUS  TOTALLY WRONG - PLACEHOLDER
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

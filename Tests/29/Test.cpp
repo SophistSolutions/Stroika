@@ -1,90 +1,53 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//  TEST    Foundation::Streams
+//  TEST    Foundation::IO::Network::Transfer
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <sstream>
+#include    <iostream>
 
-#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
+#if     qHasFeature_libcurl
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
+#endif
+#if     qHasFeature_WinHTTP
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
+#endif
 
 #include    "../TestHarness/TestHarness.h"
 
 
+
+
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Streams::iostream;
+using   namespace   Stroika::Foundation::IO;
+using   namespace   Stroika::Foundation::IO::Network;
+using   namespace   Stroika::Foundation::IO::Network::Transfer;
 
 
 
 
-namespace   {
-    namespace   BasicBinaryInputStream_ {
 
-        void    TestBasicConstruction_ ()
+namespace {
+    void    TestURLParsing_ ()
+    {
         {
-            {
-                BasicBinaryInputStream  s (nullptr, nullptr);
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                const char  kData[] =   "1";
-                BasicBinaryInputStream  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-                Byte    result[100] = { 0 };
-                VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
-                VerifyTestResult (result[0] == '1');
-                VerifyTestResult (result[1] == '\0');
-            }
+            URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.fQuery == L"ThemeName=Cupertino");
+            VerifyTestResult (url.fHost.empty ());
+            VerifyTestResult (url.fRelPath == L"StyleSheet.css");
+            VerifyTestResult (url.fFragment.empty ());
+            VerifyTestResult (url.fProtocol == L"http");
         }
-
-
-        void    Tests_ ()
         {
-            TestBasicConstruction_ ();
-        }
-    }
-}
-
-
-
-
-
-namespace   {
-    namespace   BasicBinaryOutputStream_ {
-
-        void    TestBasicConstruction_ ()
-        {
-            {
-                BasicBinaryOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                BasicBinaryOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
+            URL url (L"http://www.recordsforliving.com/");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.fQuery.empty ());
+            VerifyTestResult (url.fFragment.empty ());
+            VerifyTestResult (url.fRelPath.empty ());
+            VerifyTestResult (url.fHost == L"www.recordsforliving.com");
+            VerifyTestResult (url.fProtocol == L"http");
         }
     }
 }
@@ -92,87 +55,69 @@ namespace   {
 
 
 namespace   {
-    namespace   BasicBinaryInputOutputStream_ {
-
-        void    TestBasicConstruction_ ()
-        {
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (not s.IsSeekable ());
-                VerifyTestResult (static_cast<BinaryInputStream> (s).IsSeekable ());
-                VerifyTestResult (static_cast<BinaryOutputStream> (s).IsSeekable ());
-            }
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (not s.empty ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (s.ReadGetOffset () == 0);
-                VerifyTestResult (s.WriteGetOffset () == 0);
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                VerifyTestResult (s.ReadGetOffset () == 0);
-                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
-                Byte bArr[1024];
-                Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
-                VerifyTestResult (s.ReadGetOffset () == sizeof (kData_));
-                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
-                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.ReadGetOffset ()) == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
+    void    Test_1_SimpleFetch_Google_C_ (Connection c)
+    {
+        c.SetURL (URL (L"http://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
+    }
+    void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
+    {
+        c.SetURL (URL (L"https://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
     }
 }
 
 
 
 
+//// CREATE TEMPLATE THAT ITERATES OVER ALL USEFUL CONNECTION TYPES (default one, and special chosen depending on available defines - so eventually
+// on windows, we test BTOH win32 and curl (if avaialble).
+
 namespace   {
-    namespace   BinaryOutputStreamFromOStreamAdapter_ {
-
-        void    T1_ ()
-        {
-            {
-                stringstream s;
-                BinaryOutputStreamFromOStreamAdapter  so (s);
-                const char kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
-                VerifyTestResult (s.str () == kData_);
-            }
-        }
-
-        void    Tests_ ()
-        {
-            T1_ ();
-        }
+    void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+    {
+        Test_1_SimpleFetch_Google_C_ ((factory) ());
+        Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
     }
-}
 
-
-
-
-
-
-
-namespace   {
+#if     !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     qHasFeature_WinHTTP
+    Connection  mk_WinHTTP_ ()
+    {
+        return Connection_WinHTTP ();
+    }
+#endif
+#if     qHasFeature_libcurl
+    Connection  mk_LIBCURL_ ()
+    {
+        return Connection_LibCurl ();
+    }
+#endif
+#endif
     void    DoRegressionTests_ ()
     {
-        BasicBinaryInputStream_::Tests_ ();
-        BasicBinaryOutputStream_::Tests_ ();
-        BasicBinaryInputOutputStream_::Tests_ ();
-        BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
+        TestURLParsing_ ();
+
+        DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
+
+#if     qHasFeature_libcurl
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_LIBCURL_);
+#endif
+#endif
+#if     qHasFeature_WinHTTP
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
+#endif
+#endif
     }
 }
 

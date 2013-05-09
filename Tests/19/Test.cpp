@@ -1,257 +1,282 @@
 /*
- * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::DataExchangeFormat::XML::SaxParser
+//      TEST    Foundation::Containers::Tally
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Common.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
+#include    "Stroika/Foundation/Containers/Tally.h"
+#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
-#include    "Stroika/Foundation/Time/Realtime.h"
 
+
+#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
+
+using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
-
-using   Stroika::Foundation::Debug::TraceContextBumper;
+using   namespace   Stroika::Foundation::Containers;
 
 
-
-
-namespace   {
-
-
-    //
-    // PUT THIS OR SOMETHING LIKE IT TO STROIKA EVENTUALLY
-    //  void    StreamUtils::WriteTextStream (const wstring& w, ostream& out)
-    void    WriteTextStream_ (const wstring& w, ostream& out)
-    {
-        CodePageConverter   cpc (kCodePage_UTF8, CodePageConverter::eHandleBOM);
-        size_t              sz  =       cpc.MapFromUNICODE_QuickComputeOutBufSize (w.c_str (), w.length ());
-        Memory::SmallStackBuffer<char>  buf (sz + 1);
-        size_t  charCnt =   sz;
-        cpc.MapFromUNICODE (w.c_str (), w.length (), buf, &charCnt);
-        Assert (charCnt <= sz);
-        out.write (buf, charCnt);
-    }
-
-
-}
-
-
-namespace   {
-    void    Test_1_SAXParser_ ()
-    {
-        TraceContextBumper ctx (TSTR ("Test_1_SAXParser_"));
-        const wstring   kNSTest =   L"Test-NAMESPACE";
-        //NYI
-        //Schema    gSchema     =   Schema (kNSTest);
-        wstring newDocXML   =
-            L"<PHRModel xmlns=\"" + wstring (kNSTest) + L"\">\n"
-            L"	<BasicInformation id=\"id=101\">\n"
-            L"		<ContactInfo>\n"
-            L"			<PersonName/>\n"
-            L"			<Locations>\n"
-            ;
-        newDocXML +=
-            L"				<Location id=\"id=102\">\n"
-            L"					<Name>Primary Residence</Name>\n"
-            L"					<Address/>\n"
-            L"				</Location>\n"
-            ;
-        newDocXML +=
-            L"				<Location id=\"id=103\">\n"
-            L"					<Name>Residence2</Name>\n"
-            L"					<Address/>\n"
-            L"				</Location>\n"
-            ;
-        newDocXML +=
-            L"			</Locations>\n"
-            L"		</ContactInfo>\n";
-        newDocXML +=
-            L"		<AdvanceDirectives id=\"id=104\"/>\n"
-            L"		<BirthInfo id=\"id=105\"/>\n"
-            ;
-        newDocXML +=
-            L"	</BasicInformation>\n"
-            L"	<Calendar/>\n"
-            L"	<FamilyMembers/>\n"
-            L"	<ProviderOrganizations/>\n"
-            L"	<Providers/>\n"
-            L"	<Activities/>\n"
-            L"	<Allergies/>\n"
-            L"	<Attachments/>\n"
-            L"	<Communications/>\n"
-            L"	<Conditions/>\n"
-            L"	<Devices/>\n"
-            L"	<Expenses/>\n"
-            L"	<InsurancePolicies/>\n"
-            L"	<Journals/>\n"
-            L"	<JournalEntries/>\n"
-            L"	<Links/>\n"
-            L"	<Medications/>\n"
-            L"	<Tests/>\n"
-            L"	<Treatments/>\n"
-            L"	<Immunizations/>\n"
-            L"	<Visits/>\n"
-            L"	<PageCustomizations/>\n"
-            L"</PHRModel>\n"
-            ;
-
-        class   MyCallback : public SAXCallbackInterface {
-        public:
-            virtual void    StartDocument () override {
-                fEltDepthCount = 0;
-            }
-            virtual void    EndDocument () override {
-                Assert (fEltDepthCount == 0);
-            }
-            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
-                fEltDepthCount++;
-                fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
-            }
-            virtual void    EndElement (const String& uri, const String& localName, const String& qname) override {
-                Assert (fEltStack.back () == uri + L"/" + localName + L"/" + qname);
-                fEltStack.pop_back ();
-                fEltDepthCount--;
-            }
-            virtual void    CharactersInsideElement (const String& text) override {
-            }
-            unsigned int    fEltDepthCount;
-            vector<String>  fEltStack;
-        };
-        stringstream tmpStrm;
-        WriteTextStream_ (newDocXML, tmpStrm);
-        MyCallback  myCallback;
-        XML::SAXParse (tmpStrm, myCallback);
-        //SAX::Parse (tmpStrm, gSchema, myCallback);
-    }
-}
-
-
-
+using   Concrete::Tally_Array;
+using   Concrete::Tally_LinkedList;
 
 
 
 namespace   {
-    struct  Person_ {
-        String firstName;
-        String lastName;
-        Memory::Optional<String> middleName;
-    };
-    struct PersonReader_ : public ComplexObjectReader<Person_> {
-        PersonReader_ (Person_* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ()):
-            ComplexObjectReader<Person_> (v) {
-        }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
-            RequireNotNull (fValuePtr);
-            if (localName == L"FirstName") {
-                _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
-            }
-            else if (localName == L"LastName") {
-                _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->lastName));
-            }
-            else if (localName == L"MiddleName") {
-                _PushNewObjPtr (r, new OptionalTypesReader<String> (&fValuePtr->middleName));
-            }
-            else {
-                ThrowUnRecognizedStartElt (uri, localName);
-            }
-        }
-    };
-    struct  Appointment_ {
-        Time::DateTime  when;
-        Person_         withWhom;
-    };
-    struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-        AppointmentReader_ (Appointment_* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ()):
-            ComplexObjectReader<Appointment_> (v, attrs) {
-        }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
-            if (localName == L"When") {
-                _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
-            }
-            else if (localName == L"WithWhom") {
-                _PushNewObjPtr (r, new PersonReader_ (&fValuePtr->withWhom));
-            }
-            else {
-                ThrowUnRecognizedStartElt (uri, localName);
-            }
-        }
-    };
-    typedef vector<Appointment_>    CalendarType_;
-    struct  CalendarReaderTraits_ {
-        typedef Appointment_        ElementType;
-        typedef AppointmentReader_  ReaderType;
-        static  const wchar_t       ElementName[];
-    };
-    const wchar_t   CalendarReaderTraits_::ElementName[]        =   L"Appointment";
-    typedef ListOfObjectReader<CalendarReaderTraits_>       CalendarReader_;
 
-    void    Test_2_SAXObjectReader_ ()
+    void    TallyIteratorTests_ (Tally<size_t>& s)
     {
-        TraceContextBumper ctx (TSTR ("Test_2_SAXObjectReader_"));
-        const wstring   kNSTest =   L"Test-NAMESPACE";
-        wstring newDocXML   =
-            L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-06-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Jim</FirstName>"
-            L"		  <LastName>Smith</LastName>"
-            L"		  <MiddleName>Up</MiddleName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"  <Appointment>\n"
-            L"	  <When>2005-08-01T13:00:00-05:00</When>"
-            L"	  <WithWhom>\n"
-            L"		  <FirstName>Fred</FirstName>"
-            L"		  <LastName>Down</LastName>"
-            L"	  </WithWhom>\n"
-            L"  </Appointment>\n"
-            L"</Calendar>\n"
-            ;
-        stringstream tmpStrm;
-        WriteTextStream_ (newDocXML, tmpStrm);
+        const   size_t  kTestSize   =   6;
 
-        SAXObjectReader reader;
-#if     qDefaultTracingOn
-        reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
-#endif
-        CalendarType_       calendar;
-        reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
-        VerifyTestResult (calendar.size () == 2);
-        VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
-        VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
-        VerifyTestResult (*calendar[0].withWhom.middleName == L"Up");
-        VerifyTestResult (calendar[0].when.GetDate () == Time::Date (Time::Year (2005), Time::MonthOfYear::eJune, Time::DayOfMonth (1)));
-        VerifyTestResult (calendar[1].withWhom.firstName == L"Fred");
-        VerifyTestResult (calendar[1].withWhom.lastName == L"Down");
+        VerifyTestResult (s.GetLength () == 0);
+
+        for (TallyEntry<size_t> i : s) {
+            VerifyTestResult (false);
+        }
+
+        /*
+         * Try removes while iterating forward.
+         */
+        {
+            for (size_t i = 1; i <= kTestSize; i++) {
+                s.Add (i);
+            }
+
+            for (auto it = s.begin (); it != s.end (); ++it) {
+                s.UpdateCount (it, 1);
+            }
+
+            VerifyTestResult (s.GetLength () == kTestSize);
+
+            {
+                for (TallyEntry<size_t> it : s) {
+                    for (size_t i = 1; i <= kTestSize; i++) {
+                        VerifyTestResult (s.Contains (i));
+                        VerifyTestResult (s.GetLength () == kTestSize - i + 1);
+                        s.Remove (i);
+                        VerifyTestResult (not s.Contains (i - 1));
+                    }
+                }
+                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.GetLength () == 0);
+            }
+
+            for (size_t i = 1; i <= kTestSize; i++) {
+                s.Add (i);
+            }
+            VerifyTestResult (s.GetLength () == kTestSize);
+            {
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    s.Remove (it);
+                }
+                VerifyTestResult (s.IsEmpty ());
+                VerifyTestResult (s.GetLength () == 0);
+            }
+
+            for (size_t i = 1; i <= kTestSize; i++) {
+                s.Add (i);
+            }
+            VerifyTestResult (s.GetLength () == kTestSize);
+            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
+                s.Remove (it2.Current ().fItem);
+            }
+            VerifyTestResult (s.GetLength () == 0);
+        }
+
+        /*
+         * Try removes multiple iterators present.
+         */
+        {
+            s.RemoveAll ();
+            VerifyTestResult (s.GetLength () == 0);
+            for (size_t i = 1; i <= kTestSize; i++) {
+                s.Add (i);
+            }
+            VerifyTestResult (s.GetLength () == kTestSize);
+            size_t i =  1;
+
+            for (auto it = s.begin (); it != s.end (); ++it) {
+                for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
+                    for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
+                        if (s.GetLength () != 0) {
+                            s.UpdateCount (it3, 3);
+                            s.Remove (it3);
+                            s.Add (i);
+                            s.Remove (i);
+                        }
+                    }
+                }
+            }
+        }
     }
-}
 
+    void    SimpleTallyTests (Tally<size_t>& s)
+
+    {
+        size_t  three = 3;
+
+        Tally<size_t>   s1 (s);
+
+        VerifyTestResult (s1 == s);
+        VerifyTestResult (s1 == s);
+        Tally<size_t>   s2 = s1;
+
+        VerifyTestResult (s2 == s);
+        VerifyTestResult (s2 == s1);
+        s2.Add (three);
+        VerifyTestResult (s1 == s);
+        VerifyTestResult (s2 != s1);
+
+        TallyIteratorTests_ (s);
+
+        const   size_t  K = 500;
+
+        VerifyTestResult (s.IsEmpty ());
+        s.Add (three);
+        VerifyTestResult (s.GetLength () == 1);
+        s += three;
+        VerifyTestResult (s.GetLength () == 1);
+        VerifyTestResult (s.Contains (three));
+        VerifyTestResult (s.TallyOf (three) == 2);
+        s.Remove (three);
+        VerifyTestResult (s.GetLength () == 1);
+        VerifyTestResult (s.Contains (three));
+        VerifyTestResult (s.TallyOf (three) == 1);
+        s.Remove (three);
+        VerifyTestResult (s.IsEmpty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.IsEmpty ());
+        for (size_t i = 1; i <= K; i++) {
+            s.Add (i);
+        }
+
+        for (size_t i = 1; i <= s.GetLength (); i++) {
+            VerifyTestResult (s.Contains (i));
+            VerifyTestResult (not s.Contains (0));
+        }
+
+        for (size_t i = 1; i <= s.GetLength (); i++) {
+            for (auto it = s.begin (); it != s.end (); ++it) {
+                if (it.Current ().fItem == i) {
+                    break;
+                }
+            }
+        }
+        for (auto it = s.begin (); it != s.end (); ++it) {
+            for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
+                s.RemoveAll ();
+            }
+        }
+        VerifyTestResult (s.IsEmpty ());
+        VerifyTestResult (s.GetLength () == 0);
+
+        for (auto it1 = s.begin (); it1 != s.end (); ++it1) {
+            for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
+                VerifyTestResult (false);
+            }
+        }
+        VerifyTestResult (s.IsEmpty ());
+
+
+        for (size_t i = 1; i <= K; i++) {
+            s.Add (i);
+            VerifyTestResult (s.Contains (i));
+            VerifyTestResult (s.TallyOf (i) == 1);
+            VerifyTestResult (s.GetLength () == i);
+        }
+        for (size_t i = K; i > 0; i--) {
+            s.Remove (i);
+            VerifyTestResult (not s.Contains (i));
+            VerifyTestResult (s.GetLength () == (i - 1));
+        }
+        VerifyTestResult (s.IsEmpty ());
+
+        for (size_t i = 1; i <= K / 2; i++) {
+            s += 1;
+            VerifyTestResult (s.TallyOf (1) == i);
+        }
+        size_t oldLength = s.GetLength ();
+        size_t oldTotal = s.TotalTally ();
+        s += s;
+        VerifyTestResult (s.GetLength () == oldLength);
+        VerifyTestResult (s.TotalTally () == oldTotal * 2);
+    }
+
+    void    SimpleTallyTests (Tally<SimpleClass>& s)
+    {
+        SimpleClass three = 3;
+
+        Tally<SimpleClass>  s1 (s);
+
+        VerifyTestResult (s1 == s);
+        VerifyTestResult (s1 == s);
+        Tally<SimpleClass>  s2 = s1;
+
+        VerifyTestResult (s2 == s);
+        VerifyTestResult (s2 == s1);
+        s2.Add (three);
+        VerifyTestResult (s1 == s);
+        VerifyTestResult (s2 != s1);
+
+        VerifyTestResult (s.IsEmpty ());
+        s.Add (three);
+        VerifyTestResult (s.GetLength () == 1);
+        s += three;
+        VerifyTestResult (s.GetLength () == 1);
+        VerifyTestResult (s.Contains (three));
+        VerifyTestResult (s.TallyOf (three) == 2);
+        s.Remove (three);
+        VerifyTestResult (s.GetLength () == 1);
+        VerifyTestResult (s.Contains (three));
+        VerifyTestResult (s.TallyOf (three) == 1);
+        s.Remove (three);
+        VerifyTestResult (s.IsEmpty ());
+        s.RemoveAll ();
+        VerifyTestResult (s.IsEmpty ());
+    }
+
+}
 
 
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test_1_SAXParser_ ();
-        Test_2_SAXObjectReader_ ();
+
+        {
+            Tally_LinkedList<size_t>    s;
+            SimpleTallyTests (s);
+        }
+
+        {
+            Tally_LinkedList<SimpleClass>   s;
+            SimpleTallyTests (s);
+        }
+
+        {
+            Tally_Array<size_t> s;
+            SimpleTallyTests (s);
+        }
+
+        {
+            Tally_Array<SimpleClass>    s;
+            SimpleTallyTests (s);
+        }
+
+        {
+            // just proof that they can be constructed
+            Tally<size_t> t;
+            Tally<SimpleClass>  s1;
+        }
     }
 }
-
-
 
 
 int     main (int argc, const char* argv[])

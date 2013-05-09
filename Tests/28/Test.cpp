@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::Memory
+//  TEST    Foundation::IO::Network::HTTP
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -15,39 +15,12 @@
 #include    "../TestHarness/TestHarness.h"
 
 
-
-
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
 
 
-//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
-
 namespace   {
-    void    Test1_Optional ()
-    {
-        {
-            Optional<int>   x;
-            VerifyTestResult (x.empty ());
-            x = 1;
-            VerifyTestResult (not x.empty ());
-            VerifyTestResult (*x == 1);
-        }
-        {
-            // Careful about self-assignment
-            Optional<int>   x;
-            x = 3;
-            x = max (*x, 1);
-            VerifyTestResult (x == 3);
-        }
-    }
-    void    Test1_SharedByValue ()
-    {
-    }
-    void    Test1_VariantValue ()
-    {
-    }
 }
 
 
@@ -55,9 +28,6 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test1_Optional ();
-        Test1_SharedByValue ();
-        Test1_VariantValue ();
     }
 }
 
