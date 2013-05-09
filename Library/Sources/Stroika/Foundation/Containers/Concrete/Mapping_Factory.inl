@@ -19,7 +19,7 @@ namespace   Stroika {
 
 
 				template    <typename Key, typename T>
-				inline	Mapping<Key,T>	mkMapping_Default<Key,T> ()
+				inline	Mapping<Key,T>	mkMapping_Default ()
 				{
 					return Mapping_stdmap<Key,T> ();
 				}
