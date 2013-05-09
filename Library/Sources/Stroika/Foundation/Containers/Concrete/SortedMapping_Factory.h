@@ -12,7 +12,9 @@
  *  \file
  *
  *  TODO:
- *		@todo	Extend this metaphor to have different kinds of factories, like mkMapping_Fasted, _Smallest, etc...
+ *		@todo	Extend this metaphor to have different kinds of factories, like mkMapping_Fasted, 
+ *				mkMapping_Smallest, mkMappingWithHash_Fastest etc...
+ *				Possibly extend to policy objects, and have properties for this stuff?
  *
  */
 
@@ -28,7 +30,7 @@ namespace   Stroika {
 
 
 				/**
-                 * \brief   Create the default backend implementaiton of a Mapping<> template
+                 * \brief   Create the default backend implementaiton of a SortedMapping<> template
                  */
                 template    <typename Key, typename T>
 				SortedMapping<Key,T>	mkSortedMapping_Default ();
