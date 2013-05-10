@@ -16,6 +16,8 @@
  *              mkMapping_Smallest, mkMappingWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
  *
+ *      @todo   Consider something like RegisterFactory_SortedMapping below
+ *
  */
 
 
@@ -36,6 +38,12 @@ namespace   Stroika {
                  */
                 template    <typename Key, typename T>
                 SortedMapping<Key, T>    mkSortedMapping_Default ();
+
+                // PROTO-IDEA - NOT IMPLEMENTED
+#if     0
+                template    <typename Key, typename T>
+                void    RegisterFactory_SortedMapping (SortedMapping<Key, T> (*factory) () = nullptr);
+#endif
 
 
             }
