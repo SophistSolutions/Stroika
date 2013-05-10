@@ -41,7 +41,8 @@ namespace   Stroika {
 
                 public:
                     Mapping_stdmap ()
-                        : inherited (SortedMapping_stdmap<Key, T> ()) {
+						// static cast to select right base class CTOR (that wont copy)
+                        : inherited (static_cast<Mapping<Key,T>&> (SortedMapping_stdmap<Key, T> ())) {
                     }
 #if 0
                     // support/enabel these as needed - all SB there
