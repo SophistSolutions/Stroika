@@ -143,3 +143,24 @@ Notes from obsolete Collection.h
             template    <typename T, typename TTRAITS = TWithCompareEquals<T>>
             Collection<T, TTRAITS>   operator- (const Collection<T, TTRAITS>& lhs, const Collection<T, TTRAITS>& rhs);
 		(unclear if these should be done per container type - eg for mapping<> etc - or globally?)
+
+	Container-Factories:
+		>	We want SOME way to 'factory' controll construction of container backend for each container type.
+			This COULD be done via TRAITs, or some sort of registry.
+		>	Because of how we currently handle 'factories' for containers - see if I can find a way that
+			avoids the deadly embrace, and allows Mapping_stdmap<> to SortedMapping_stdmap<> directly, instead
+			of duplicating implementation.
+		>	TRIED:
+			#define DEAULT_MAPPING_FACTORY()\
+                template    <typename Key, typename T>
+                inline  Mapping<Key, T>  mkMapping_Default ()
+                {
+                    return SortedMapping_stdmap<Key, T> ();
+                }
+		>	OR
+                template    <typename Key, typename T>
+                Mapping<Key, T>  mkMapping_Default ();
+                template    <typename Key, typename T>
+                void    RegisterFactory_Mapping (Mapping<Key, T> (*factory) () = nullptr);
+
+
