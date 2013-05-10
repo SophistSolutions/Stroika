@@ -18,6 +18,10 @@
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
+ *
+ *      @todo   Defining Mapping_stdmap this way makes sense, but runs into deadly
+ *              embrace of #include problems. Maybe easier to just implement it
+ *              a second time (duplicate the SortedMapping_stdmap<> code).
  */
 
 
@@ -41,8 +45,8 @@ namespace   Stroika {
 
                 public:
                     Mapping_stdmap ()
-						// static cast to select right base class CTOR (that wont copy)
-                        : inherited (static_cast<Mapping<Key,T>&> (SortedMapping_stdmap<Key, T> ())) {
+                    // static cast to select right base class CTOR (that wont copy)
+                        : inherited (static_cast<Mapping<Key, T>&> (SortedMapping_stdmap<Key, T> ())) {
                     }
 #if 0
                     // support/enabel these as needed - all SB there
