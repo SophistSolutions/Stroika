@@ -1,8 +1,6 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 
 /*
  ********************************************************************************
@@ -16,6 +14,8 @@
 #include    "../Private/DataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 
 namespace   Stroika {
     namespace   Foundation {
@@ -303,4 +303,5 @@ namespace   Stroika {
         }
     }
 }
+
 #endif /* _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_ */
