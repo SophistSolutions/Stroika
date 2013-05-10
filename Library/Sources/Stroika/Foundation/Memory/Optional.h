@@ -16,7 +16,24 @@
  *  \file
  *
  *  TODO:
- *      @todo   Cleanup ifdefed out code
+ *      @todo   Better document why we allow internal pointers to be returned from
+ *              get (), operator-> (), and operator* ().
+ *
+ *              GIST is this class is intrinsically not thread safe anyhow. Main reason
+ *              to not allow that stuff is to assure thread safety and controlled update.
+ *
+ *              Allowing returning const ptrs is just as unsafe and returning non-const pointers
+ *              cuz another thread could still modify that data.
+ *
+ *              And returning non-const pointers very confenenti when doing optional of a struct,
+ *              and allowing people to modify parts of the struct.
+ *
+ *              Optional<some_object> o;
+ *              ...
+ *              o->x = 1;   // assert fails if o not set first
+ *              o->y = 2;
+ *              return o->z;
+ *
  */
 
 namespace   Stroika {
@@ -128,13 +145,15 @@ namespace   Stroika {
                 nonvirtual  const T*    get () const;
 
             public:
-#if 0
                 /**
                  *  \pre (not empty ())
                  *
                  *  \note   \em Warning
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
+                 *
+                 *      This is really just syntactic sugar equivilent to get () - but more convenient since
+                 *      it allows the use of an optional to syntactically mirror dereferencing a pointer.
                  */
                 nonvirtual  const T* operator-> () const;
 
@@ -146,7 +165,6 @@ namespace   Stroika {
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T* operator-> ();
-#endif
 
                 /**
                  *  \pre (not empty ())
@@ -157,7 +175,6 @@ namespace   Stroika {
                  */
                 nonvirtual  const T& operator* () const;
 
-#if 0
                 /**
                  *  \pre (not empty ())
                  *
@@ -166,7 +183,6 @@ namespace   Stroika {
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T& operator* ();
-#endif
 
             public:
                 /**
