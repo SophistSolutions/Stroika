@@ -46,7 +46,7 @@ namespace   Stroika {
                 SortedMapping ();
 
             public:
-                nonvirtual  SortedMapping<Key, T>& operator= (const SortedMapping<Key, T>& src);
+                nonvirtual  SortedMapping<Key, T>&  operator= (const SortedMapping<Key, T>& src);
 
             protected:
                 explicit SortedMapping (const _SharedPtrIRep& rep);

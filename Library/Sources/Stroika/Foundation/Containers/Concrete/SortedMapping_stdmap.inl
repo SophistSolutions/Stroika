@@ -274,7 +274,7 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 inline  SortedMapping_stdmap<Key, T>&   SortedMapping_stdmap<Key, T>::operator= (const SortedMapping_stdmap<Key, T>& m)
                 {
-                    inherited::operator= (m);
+                    inherited::operator= (static_cast<const inherited&> (m));
                     return *this;
                 }
                 template    <typename Key, typename T>
@@ -295,7 +295,7 @@ namespace   Stroika {
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
                     AssertMember (&inherited::_GetRep (), Rep_);
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
+                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
 
 

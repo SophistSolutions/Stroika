@@ -16,12 +16,12 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** SortedMapping<Key,T> **************************
+             ****************************** SortedMapping<Key,T> ****************************
              ********************************************************************************
              */
             template    <typename Key, typename T>
             SortedMapping<Key, T>::SortedMapping ()
-                : inherited (Concrete::mkSortedMapping_Default<Key, T> ())
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedMapping_Default<Key, T> ()))
             {
             }
 #if 0
@@ -51,14 +51,12 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
-#if     !qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
             template    <typename Key, typename T>
             inline  SortedMapping<Key, T>& SortedMapping<Key, T>::operator= (const SortedMapping<Key, T>& src)
             {
-                inherited::operator= (src);
+                inherited::operator= (static_cast<const inherited&> (src));
                 return *this;
             }
-#endif
 
 
         }
