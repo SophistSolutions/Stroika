@@ -23,6 +23,7 @@ namespace   Stroika {
             SortedMapping<Key, T>::SortedMapping ()
                 : inherited (static_cast<const inherited&> (Concrete::mkSortedMapping_Default<Key, T> ()))
             {
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
 #if 0
             template    <typename Key, typename T>
@@ -55,6 +56,7 @@ namespace   Stroika {
             inline  SortedMapping<Key, T>& SortedMapping<Key, T>::operator= (const SortedMapping<Key, T>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
+                EnsureMember (&inherited::_GetRep (), _IRep);
                 return *this;
             }
 

@@ -12,9 +12,6 @@
  *              Especially HashTable, RedBlackTree, and stlmap, and stlhashmap
  *              And of course change default here
  *
- *      @todo
- *
- *
  */
 
 
