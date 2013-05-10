@@ -3,7 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <map>
 #include    <mutex>
 
 #include    "../Characters/Format.h"
