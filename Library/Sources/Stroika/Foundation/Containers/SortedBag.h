@@ -6,12 +6,6 @@
 
 /*
  *
- *      <<< SORTING SHOULD PROBABLY BE RENAMED "SortedBag">>>
- *
- *      <<< PERHAPS RENAME DICTIONARY --> "SortedMapping" >>>
- *
- *      <<< PERHAPS ADD  "SortedSet" >>>
- *
  *  STATUS:
  *      CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika
  *
@@ -71,27 +65,7 @@ namespace   Stroika {
                 explicit SortedBag (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Set<T>& operator= (const Set<T>& src);
-
-            public:
-                nonvirtual  Boolean     Contains (T item) const;
-
-            public:
-                nonvirtual  void        RemoveAll ();
-
-            public:
-                nonvirtual  void    Add (T item);
-                nonvirtual  void    Add (const Iterator<T>& itemsIterator);
-
-            public:
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (const Iterator<T>& itemsIterator);
-
-            public:
-                nonvirtual  SortedBag<T>& operator+= (T item);
-                nonvirtual  SortedBag<T>& operator+= (const Iterator<T>& itemsIterator);
-                nonvirtual  SortedBag<T>& operator-= (T item);
-                nonvirtual  SortedBag<T>& operator-= (const Iterator<T>& itemsIterator);
+                nonvirtual  SortedBag<T>& operator= (const SortedBag<T>& src);
             };
 
 
