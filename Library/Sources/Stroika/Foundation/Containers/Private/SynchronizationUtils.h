@@ -85,7 +85,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Private_SynchronizationUtils_h_ */
 
 
 /*
@@ -94,3 +93,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SynchronizationUtils.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Private_SynchronizationUtils_h_ */

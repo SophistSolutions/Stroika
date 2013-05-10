@@ -138,10 +138,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_*/
-
-
-
 
 
 
@@ -151,3 +147,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "OpenSSLCryptoStream.inl"
+
+#endif  /*_Stroika_Foundation_Cryptography_OpenSSLCryptoStream_h_*/

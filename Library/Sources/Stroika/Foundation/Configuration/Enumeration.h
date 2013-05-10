@@ -74,7 +74,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Configuration_Enumeration_h_*/
 
 
 
@@ -87,3 +86,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Enumeration.inl"
+
+#endif  /*_Stroika_Foundation_Configuration_Enumeration_h_*/

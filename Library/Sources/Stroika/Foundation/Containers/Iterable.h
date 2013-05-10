@@ -351,7 +351,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Iterable_h_ */
 
 
 /*
@@ -360,3 +359,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Iterable.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Iterable_h_ */

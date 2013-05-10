@@ -516,9 +516,6 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_Array_h_ */
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -526,3 +523,6 @@ namespace   Stroika {
  */
 #include    "Array.inl"
 
+
+
+#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_Array_h_ */

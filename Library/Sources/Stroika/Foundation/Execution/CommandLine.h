@@ -48,8 +48,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_CommandLine_h_*/
-
 
 
 
@@ -60,3 +58,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Execution_CommandLine_h_*/
+

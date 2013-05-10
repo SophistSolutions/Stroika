@@ -29,7 +29,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Configuration_Common_h_*/
 
 
 
@@ -41,3 +40,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Common.inl"
+
+#endif  /*_Stroika_Foundation_Configuration_Common_h_*/

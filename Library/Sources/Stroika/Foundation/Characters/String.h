@@ -1110,7 +1110,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_String_h_*/
 
 
 
@@ -1122,3 +1121,4 @@ namespace   Stroika {
 #include    "String.inl"
 
 
+#endif  /*_Stroika_Foundation_Characters_String_h_*/

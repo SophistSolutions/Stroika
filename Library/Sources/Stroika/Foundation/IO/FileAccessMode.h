@@ -41,7 +41,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileAccessMode_h_*/
 
 
 
@@ -51,3 +50,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_IO_FileAccessMode_h_*/

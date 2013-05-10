@@ -97,7 +97,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Search_h_*/
 
 
 
@@ -108,3 +107,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Search.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Search_h_*/

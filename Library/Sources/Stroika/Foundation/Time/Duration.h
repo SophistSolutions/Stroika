@@ -189,7 +189,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Time_Duration_h_*/
 
 
 
@@ -201,3 +200,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Duration.inl"
+
+#endif  /*_Stroika_Foundation_Time_Duration_h_*/

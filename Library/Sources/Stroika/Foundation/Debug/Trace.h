@@ -166,7 +166,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Debug_Trace_h_*/
 
 
 
@@ -178,3 +177,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Trace.inl"
+
+#endif  /*_Stroika_Foundation_Debug_Trace_h_*/

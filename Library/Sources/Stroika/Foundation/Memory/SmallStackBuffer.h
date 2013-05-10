@@ -81,7 +81,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_SmallStackBuffer_h_*/
 
 
 
@@ -93,3 +92,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SmallStackBuffer.inl"
+
+#endif  /*_Stroika_Foundation_Memory_SmallStackBuffer_h_*/

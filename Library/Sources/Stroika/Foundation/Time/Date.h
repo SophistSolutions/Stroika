@@ -346,7 +346,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Time_Date_h_*/
 
 
 
@@ -358,3 +357,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Date.inl"
+
+#endif  /*_Stroika_Foundation_Time_Date_h_*/

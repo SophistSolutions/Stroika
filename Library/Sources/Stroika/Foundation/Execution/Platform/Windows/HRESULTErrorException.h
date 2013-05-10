@@ -76,7 +76,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Platform_Windows_HRESULTErrorException_h_*/
 
 
 
@@ -89,3 +88,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "HRESULTErrorException.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Platform_Windows_HRESULTErrorException_h_*/

@@ -76,7 +76,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileSystem_Directory_h_*/
 
 
 
@@ -87,3 +86,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Directory.inl"
+
+#endif  /*_Stroika_Foundation_IO_FileSystem_Directory_h_*/

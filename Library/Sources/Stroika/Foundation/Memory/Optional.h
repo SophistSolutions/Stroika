@@ -212,7 +212,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_Optional_h_*/
 
 
 
@@ -224,3 +223,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Optional.inl"
+
+#endif  /*_Stroika_Foundation_Memory_Optional_h_*/

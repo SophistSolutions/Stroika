@@ -37,7 +37,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_iostream_CommonInsertersAndExtractors_h_*/
 
 
 
@@ -47,3 +46,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "CommonInsertersAndExtractors.inl"
+
+#endif  /*_Stroika_Foundation_Streams_iostream_CommonInsertersAndExtractors_h_*/

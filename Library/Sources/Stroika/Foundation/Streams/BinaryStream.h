@@ -112,7 +112,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_BinaryStream_h_*/
 
 
 
@@ -124,3 +123,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BinaryStream.inl"
+
+#endif  /*_Stroika_Foundation_Streams_BinaryStream_h_*/

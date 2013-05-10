@@ -95,7 +95,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Writer_h_*/
 
 
 
@@ -107,3 +106,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Writer.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Writer_h_*/

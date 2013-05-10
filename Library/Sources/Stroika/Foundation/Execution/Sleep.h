@@ -36,7 +36,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Sleep_h_*/
 
 
 
@@ -49,3 +48,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Sleep.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Sleep_h_*/

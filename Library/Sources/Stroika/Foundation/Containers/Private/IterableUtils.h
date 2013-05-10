@@ -56,7 +56,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Private_IterableUtils_h_ */
 
 
 /*
@@ -65,3 +64,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "IterableUtils.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Private_IterableUtils_h_ */

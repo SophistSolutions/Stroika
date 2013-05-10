@@ -63,7 +63,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_STL_SetUtils_h_*/
 
 
 
@@ -74,3 +73,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SetUtils.inl"
+
+#endif  /*_Stroika_Foundation_Containers_STL_SetUtils_h_*/

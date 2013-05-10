@@ -69,8 +69,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_BinaryTiedStreams_h_*/
-
 
 
 
@@ -81,3 +79,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BinaryTiedStreams.inl"
+
+#endif  /*_Stroika_Foundation_Streams_BinaryTiedStreams_h_*/
+

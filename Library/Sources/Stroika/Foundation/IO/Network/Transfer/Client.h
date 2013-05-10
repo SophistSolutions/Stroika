@@ -192,7 +192,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_h_*/
 
 
 
@@ -204,3 +203,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Client.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_h_*/

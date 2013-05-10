@@ -53,7 +53,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_AtomicOperations_h_*/
 
 
 
@@ -66,3 +65,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "AtomicOperations.inl"
+
+#endif  /*_Stroika_Foundation_Execution_AtomicOperations_h_*/

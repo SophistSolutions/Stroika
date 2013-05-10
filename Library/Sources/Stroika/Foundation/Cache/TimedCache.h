@@ -177,7 +177,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cache_TimedCache_h_*/
 
 
 
@@ -188,3 +187,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "TimedCache.inl"
+
+#endif  /*_Stroika_Foundation_Cache_TimedCache_h_*/

@@ -378,7 +378,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Sequence_h_ */
 
 
 /*
@@ -387,3 +386,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Sequence.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Sequence_h_ */

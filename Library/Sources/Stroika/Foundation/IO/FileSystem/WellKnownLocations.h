@@ -54,7 +54,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_*/
 
 
 
@@ -64,3 +63,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_IO_FileSystem_WellKnownLocations_h_*/

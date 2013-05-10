@@ -48,7 +48,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_JSON_Writer_h_*/
 
 
 
@@ -59,3 +58,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_JSON_Writer_h_*/

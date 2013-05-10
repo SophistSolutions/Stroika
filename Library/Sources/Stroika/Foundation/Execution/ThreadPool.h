@@ -161,7 +161,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ThreadPool_h_*/
 
 
 
@@ -174,3 +173,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ThreadPool.inl"
+
+#endif  /*_Stroika_Foundation_Execution_ThreadPool_h_*/

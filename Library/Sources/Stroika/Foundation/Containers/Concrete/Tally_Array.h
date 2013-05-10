@@ -67,8 +67,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
-
 
 
 
@@ -78,3 +76,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include "Tally_Array.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
+

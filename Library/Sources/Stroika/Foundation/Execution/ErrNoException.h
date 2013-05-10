@@ -93,7 +93,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroia_Foundation_Execution_ErrNoException_h_*/
 
 
 
@@ -105,3 +104,4 @@ namespace   Stroika {
  */
 #include    "ErrNoException.inl"
 
+#endif  /*_Stroia_Foundation_Execution_ErrNoException_h_*/

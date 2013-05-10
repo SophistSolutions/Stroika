@@ -57,9 +57,6 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Bag_LinkedList_h_ */
-
-
 
 /*
  ********************************************************************************
@@ -68,4 +65,4 @@ namespace   Stroika {
  */
 #include    "Bag_LinkedList.inl"
 
-
+#endif  /*_Stroika_Foundation_Containers_Concrete_Bag_LinkedList_h_ */

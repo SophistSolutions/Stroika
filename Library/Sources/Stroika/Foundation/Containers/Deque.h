@@ -122,7 +122,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Deque_h_ */
 
 
 
@@ -133,3 +132,5 @@ namespace   Stroika {
  */
 
 #include    "Deque.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Deque_h_ */

@@ -163,7 +163,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*__Character__*/
 
 
 
@@ -174,3 +173,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Character.inl"
+
+#endif  /*__Character__*/

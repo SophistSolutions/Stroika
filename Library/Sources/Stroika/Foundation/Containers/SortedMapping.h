@@ -67,7 +67,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_SortedMapping_h_ */
 
 
 
@@ -77,3 +76,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SortedMapping.inl"
+
+#endif  /*_Stroika_Foundation_Containers_SortedMapping_h_ */

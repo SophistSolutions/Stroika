@@ -77,7 +77,6 @@ namespace   std {
 }
 #endif
 
-#endif  /*_Stroika_Foundation_Math_Common_h_*/
 
 
 
@@ -89,3 +88,5 @@ namespace   std {
  ********************************************************************************
  */
 #include    "Common.inl"
+
+#endif  /*_Stroika_Foundation_Math_Common_h_*/

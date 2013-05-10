@@ -69,7 +69,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_stdmap_h_ */
 
 
 /*
@@ -77,3 +76,5 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_stdmap_h_ */

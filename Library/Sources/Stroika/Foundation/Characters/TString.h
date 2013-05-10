@@ -46,7 +46,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_TString_h_*/
 
 
 
@@ -59,4 +58,4 @@ namespace   Stroika {
 #include    "TString.inl"
 
 
-
+#endif  /*_Stroika_Foundation_Characters_TString_h_*/

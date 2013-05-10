@@ -68,4 +68,4 @@ namespace   Stroika {
 #endif /* _Stroika_Foundation_Containers_SortedMapping_inl_ */
 
 //     See note at the end of Concrete/SortedMapping_Factory.h about why this is here
-//#include    "Concrete/SortedMapping_Factory.inl"
+#include    "Concrete/SortedMapping_Factory.inl"

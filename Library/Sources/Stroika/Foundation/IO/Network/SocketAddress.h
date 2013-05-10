@@ -105,7 +105,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_SocketAddress_h_*/
 
 
 
@@ -116,3 +115,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SocketAddress.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_SocketAddress_h_*/

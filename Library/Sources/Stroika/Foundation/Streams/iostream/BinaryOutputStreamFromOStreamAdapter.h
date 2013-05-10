@@ -60,8 +60,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Streams_iostream_BinaryOutputStreamFromOStreamAdapter_h_*/
-
 
 
 
@@ -71,3 +69,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Streams_iostream_BinaryOutputStreamFromOStreamAdapter_h_*/

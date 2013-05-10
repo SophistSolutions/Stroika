@@ -65,8 +65,6 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Math_Angle_h_*/
-
 
 
 
@@ -76,3 +74,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Angle.inl"
+
+#endif  /*_Stroika_Foundation_Math_Angle_h_*/

@@ -91,7 +91,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_TextOutputStream_h_*/
 
 
 
@@ -103,3 +102,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "TextOutputStream.inl"
+
+#endif  /*_Stroika_Foundation_Streams_TextOutputStream_h_*/

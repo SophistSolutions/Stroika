@@ -221,7 +221,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_BlockAllocated_h_*/
 
 
 
@@ -235,3 +234,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BlockAllocated.inl"
+
+#endif  /*_Stroika_Foundation_Memory_BlockAllocated_h_*/

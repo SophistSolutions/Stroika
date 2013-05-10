@@ -53,7 +53,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Linguistics_Words_h_*/
 
 
 
@@ -65,3 +64,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 
+
+#endif  /*_Stroika_Foundation_Linguistics_Words_h_*/

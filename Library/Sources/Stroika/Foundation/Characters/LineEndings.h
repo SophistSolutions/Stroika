@@ -87,7 +87,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_LineEndings_h_*/
 
 
 
@@ -100,3 +99,4 @@ namespace   Stroika {
  */
 #include    "LineEndings.inl"
 
+#endif  /*_Stroika_Foundation_Characters_LineEndings_h_*/

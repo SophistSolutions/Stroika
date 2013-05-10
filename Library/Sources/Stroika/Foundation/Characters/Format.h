@@ -191,7 +191,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_Format_h_*/
 
 
 
@@ -204,3 +203,4 @@ namespace   Stroika {
  */
 #include    "Format.inl"
 
+#endif  /*_Stroika_Foundation_Characters_Format_h_*/

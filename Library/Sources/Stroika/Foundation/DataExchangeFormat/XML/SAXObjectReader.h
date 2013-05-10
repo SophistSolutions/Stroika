@@ -207,7 +207,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SAXObjectReader_h_*/
 
 
 
@@ -219,3 +218,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SAXObjectReader.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SAXObjectReader_h_*/

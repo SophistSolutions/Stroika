@@ -59,7 +59,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Namespace_h_*/
 
 
 
@@ -71,3 +70,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Namespace.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Namespace_h_*/

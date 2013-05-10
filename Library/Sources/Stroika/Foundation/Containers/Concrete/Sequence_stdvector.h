@@ -79,7 +79,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_ */
 
 
 /*
@@ -88,3 +87,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Sequence_stdvector.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_stdvector_h_ */

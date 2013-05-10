@@ -31,9 +31,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_Tokenize_h_*/
-
-
 
 
 
@@ -43,4 +40,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Tokenize.inl"
+
+#endif  /*_Stroika_Foundation_Characters_Tokenize_h_*/
 

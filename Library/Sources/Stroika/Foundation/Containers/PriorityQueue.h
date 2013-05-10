@@ -141,8 +141,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_PriorityQueue_h_ */
-
 
 
 /*
@@ -152,3 +150,6 @@ namespace   Stroika {
  */
 
 #include    "PriorityQueue.inl"
+
+#endif  /*_Stroika_Foundation_Containers_PriorityQueue_h_ */
+

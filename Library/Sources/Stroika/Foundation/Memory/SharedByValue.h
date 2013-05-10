@@ -166,7 +166,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_SharedByValue_h_*/
 
 
 
@@ -180,3 +179,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SharedByValue.inl"
+
+#endif  /*_Stroika_Foundation_Memory_SharedByValue_h_*/

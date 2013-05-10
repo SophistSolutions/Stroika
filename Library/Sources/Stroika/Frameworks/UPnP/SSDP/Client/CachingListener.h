@@ -38,7 +38,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_CachingListener_h_*/
 
 
 
@@ -49,3 +48,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "CachingListener.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_CachingListener_h_*/

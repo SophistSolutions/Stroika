@@ -50,9 +50,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Accessor_h_*/
-
-
 
 
 
@@ -64,3 +61,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Accessor.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Accessor_h_*/

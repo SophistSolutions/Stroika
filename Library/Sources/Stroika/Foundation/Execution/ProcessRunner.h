@@ -181,7 +181,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ProcessRunner_h_*/
 
 
 
@@ -194,3 +193,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ProcessRunner.inl"
+
+#endif  /*_Stroika_Foundation_Execution_ProcessRunner_h_*/

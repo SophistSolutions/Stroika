@@ -41,7 +41,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_BadFormatException_h_*/
 
 
 
@@ -53,3 +52,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BadFormatException.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_BadFormatException_h_*/

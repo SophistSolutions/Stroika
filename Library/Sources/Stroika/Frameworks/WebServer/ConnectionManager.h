@@ -102,7 +102,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Framework_WebServer_ConnectionManager_h_*/
 
 
 
@@ -113,3 +112,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ConnectionManager.inl"
+
+#endif  /*_Stroika_Framework_WebServer_ConnectionManager_h_*/

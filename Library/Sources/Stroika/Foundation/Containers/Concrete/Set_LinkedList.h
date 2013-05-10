@@ -63,7 +63,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Concrete_Set_LinkedList_h_ */
 
 
 /*
@@ -73,3 +72,5 @@ namespace   Stroika {
  */
 
 #include    "Set_LinkedList.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Set_LinkedList_h_ */

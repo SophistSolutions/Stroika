@@ -5,11 +5,8 @@
 //      STATUS  very minimal/incomplete
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#define WORKING 0
-#if WORKING
 #include    "Stroika/Foundation/Containers/SortedMapping.h"
 #include    "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
-#endif
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -24,9 +21,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-#if WORKING
 using   Concrete::SortedMapping_stdmap;
-#endif
 
 
 namespace {
@@ -118,13 +113,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-#if WORKING
         SimpleMappingTest_All_For_Type<SortedMapping<size_t, size_t>> ();
         SimpleMappingTest_All_For_Type<SortedMapping<SimpleClass, SimpleClass>> ();
 
         SimpleMappingTest_All_For_Type<SortedMapping_stdmap<size_t, size_t>> ();
         SimpleMappingTest_All_For_Type<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
-#endif
     }
 }
 
@@ -135,4 +128,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-

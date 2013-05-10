@@ -57,7 +57,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_STL_VectorUtils_h_*/
 
 
 
@@ -68,3 +67,4 @@ namespace   Stroika {
  */
 #include    "VectorUtils.inl"
 
+#endif  /*_Stroika_Foundation_Containers_STL_VectorUtils_h_*/

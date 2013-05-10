@@ -264,9 +264,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cache_LRUCache_h_*/
-
-
 
 
 
@@ -278,3 +275,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "LRUCache.inl"
+
+#endif  /*_Stroika_Foundation_Cache_LRUCache_h_*/

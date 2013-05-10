@@ -429,9 +429,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Thread_h_*/
-
-
 
 
 
@@ -442,3 +439,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Thread.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Thread_h_*/

@@ -61,9 +61,6 @@ namespace   Stroika {
 
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_DoublyLinkedList_h_ */
-
-
 /*
  ********************************************************************************
  ******************************* Implementation Details *************************
@@ -73,4 +70,4 @@ namespace   Stroika {
 #include    "Sequence_DoublyLinkedList.inl"
 
 
-
+#endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_DoublyLinkedList_h_ */

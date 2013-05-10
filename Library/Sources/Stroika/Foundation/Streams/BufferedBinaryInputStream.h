@@ -47,7 +47,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_BufferedBinaryInputStream_h_*/
 
 
 
@@ -59,3 +58,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BufferedBinaryInputStream.inl"
+
+#endif  /*_Stroika_Foundation_Streams_BufferedBinaryInputStream_h_*/

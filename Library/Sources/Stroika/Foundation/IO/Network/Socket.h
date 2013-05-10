@@ -302,7 +302,6 @@ namespace Stroika {
 #endif
 
 
-#endif  /*_Stroika_Foundation_IO_Network_Socket_h_*/
 
 
 
@@ -314,3 +313,5 @@ namespace Stroika {
  ********************************************************************************
  */
 #include    "Socket.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_Socket_h_*/

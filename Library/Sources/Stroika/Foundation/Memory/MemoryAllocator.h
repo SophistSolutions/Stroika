@@ -215,7 +215,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_MemoryAllocator_h_*/
 
 
 
@@ -227,3 +226,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "MemoryAllocator.inl"
+
+#endif  /*_Stroika_Foundation_Memory_MemoryAllocator_h_*/

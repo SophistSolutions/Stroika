@@ -97,9 +97,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_BlockingQueue_h_*/
-
-
 
 
 
@@ -110,3 +107,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BlockingQueue.inl"
+
+#endif  /*_Stroika_Foundation_Execution_BlockingQueue_h_*/

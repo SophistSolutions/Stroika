@@ -100,7 +100,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Event_h_*/
 
 
 
@@ -113,3 +112,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Event.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Event_h_*/

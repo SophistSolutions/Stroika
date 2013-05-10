@@ -121,8 +121,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Stack_h_ */
-
 
 
 /*
@@ -132,3 +130,5 @@ namespace   Stroika {
  */
 
 #include    "Stack.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Stack_h_ */

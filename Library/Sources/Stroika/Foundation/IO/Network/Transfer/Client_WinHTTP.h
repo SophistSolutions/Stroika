@@ -44,7 +44,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_*/
 
 
 
@@ -56,3 +55,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Client_WinHTTP.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_WinHTTP_h_*/

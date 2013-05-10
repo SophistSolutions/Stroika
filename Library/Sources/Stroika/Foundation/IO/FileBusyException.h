@@ -35,7 +35,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileBusyException_h_*/
 
 
 
@@ -47,3 +46,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "FileBusyException.inl"
+
+#endif  /*_Stroika_Foundation_IO_FileBusyException_h_*/

@@ -56,7 +56,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Manager_h_*/
 
 
 
@@ -69,3 +68,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Manager.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Manager_h_*/

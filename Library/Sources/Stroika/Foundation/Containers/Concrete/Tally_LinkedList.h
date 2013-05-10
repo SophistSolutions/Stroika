@@ -60,8 +60,7 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_ */
-
-
 #include    "Tally_LinkedList.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_ */
 

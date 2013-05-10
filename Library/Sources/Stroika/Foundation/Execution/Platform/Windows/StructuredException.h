@@ -15,6 +15,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../Exceptions.h"
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -47,7 +48,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_*/
 
 
 
@@ -59,3 +59,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "StructuredException.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Platform_Windows_StructuredException_h_*/

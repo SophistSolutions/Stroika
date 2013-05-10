@@ -37,7 +37,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Server_Server_h_*/
 
 
 
@@ -48,3 +47,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Server.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_SSDP_Server_Server_h_*/

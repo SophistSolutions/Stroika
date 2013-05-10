@@ -48,9 +48,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Time_Realtime_h_*/
-
-
 
 
 
@@ -61,3 +58,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Realtime.inl"
+
+#endif  /*_Stroika_Foundation_Time_Realtime_h_*/

@@ -69,7 +69,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Framework_WebServer_HTTPConnection_h_*/
 
 
 
@@ -80,3 +79,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "HTTPConnection.inl"
+
+#endif  /*_Stroika_Framework_WebServer_HTTPConnection_h_*/

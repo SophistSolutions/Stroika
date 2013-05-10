@@ -56,7 +56,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_*/
 
 
 
@@ -70,3 +69,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "CompiledResourceManager.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_CompiledResourceManager_h_*/

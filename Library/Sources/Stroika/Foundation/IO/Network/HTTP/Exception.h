@@ -71,7 +71,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_HTTP_Exception_h_*/
 
 
 
@@ -83,3 +82,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Exception.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_HTTP_Exception_h_*/

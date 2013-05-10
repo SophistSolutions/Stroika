@@ -43,7 +43,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cryptography_SSL_Common_h_*/
 
 
 
@@ -53,3 +52,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Cryptography_SSL_Common_h_*/

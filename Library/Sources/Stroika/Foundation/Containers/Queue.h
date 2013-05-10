@@ -149,8 +149,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Queue_h_ */
-
 
 
 /*
@@ -160,3 +158,6 @@ namespace   Stroika {
  */
 
 #include    "Queue.inl"
+
+
+#endif  /*_Stroika_Foundation_Containers_Queue_h_ */

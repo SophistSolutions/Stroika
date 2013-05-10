@@ -43,7 +43,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Process_h_*/
 
 
 
@@ -55,3 +54,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Process.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Process_h_*/

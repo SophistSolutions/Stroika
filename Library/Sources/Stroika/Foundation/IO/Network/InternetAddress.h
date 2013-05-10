@@ -167,7 +167,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_InternetAddress_h_*/
 
 
 
@@ -179,3 +178,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "InternetAddress.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_InternetAddress_h_*/

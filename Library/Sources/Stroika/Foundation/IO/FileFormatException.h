@@ -39,7 +39,6 @@ namespace   Stroika {
 
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileFormatException_h_*/
 
 
 
@@ -51,3 +50,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "FileFormatException.inl"
+
+#endif  /*_Stroika_Foundation_IO_FileFormatException_h_*/

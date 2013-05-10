@@ -232,7 +232,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Bag_h_ */
 
 
 
@@ -242,3 +241,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Bag.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Bag_h_ */

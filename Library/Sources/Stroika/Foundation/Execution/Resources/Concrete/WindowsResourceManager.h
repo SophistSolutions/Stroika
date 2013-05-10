@@ -38,11 +38,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_*/
-
-
-
-
 
 
 
@@ -52,3 +47,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "WindowsResourceManager.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_WindowsResourceManager_h_*/

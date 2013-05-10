@@ -24,7 +24,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ThreadAbortException_h_*/
 
 
 
@@ -37,3 +36,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ThreadAbortException.inl"
+
+#endif  /*_Stroika_Foundation_Execution_ThreadAbortException_h_*/

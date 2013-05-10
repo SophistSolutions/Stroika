@@ -43,7 +43,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_OS_Win32_Handle_h_*/
 
 
 
@@ -54,3 +53,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Handle.inl"
+
+#endif  /*_Stroika_Foundation_Memory_OS_Win32_Handle_h_*/

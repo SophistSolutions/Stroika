@@ -39,7 +39,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Common_h_*/
 
 
 
@@ -50,3 +49,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Common.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_SSDP_Common_h_*/

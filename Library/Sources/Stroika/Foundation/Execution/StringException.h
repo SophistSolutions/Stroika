@@ -39,7 +39,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroia_Foundation_Execution_StringException_h_*/
 
 
 
@@ -50,3 +49,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "StringException.inl"
+
+#endif  /*_Stroia_Foundation_Execution_StringException_h_*/

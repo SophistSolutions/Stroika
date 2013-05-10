@@ -83,7 +83,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_IRunnable_h_*/
 
 
 
@@ -96,3 +95,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "IRunnable.inl"
+
+#endif  /*_Stroika_Foundation_Execution_IRunnable_h_*/

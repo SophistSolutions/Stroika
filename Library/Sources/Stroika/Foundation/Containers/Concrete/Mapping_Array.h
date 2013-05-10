@@ -85,8 +85,6 @@ namespace   Stroika {
 
 
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Array_h_ */
-
 
 /*
  ********************************************************************************
@@ -95,3 +93,6 @@ namespace   Stroika {
  */
 
 #include    "Mapping_Array.inl"
+
+
+#endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Array_h_ */

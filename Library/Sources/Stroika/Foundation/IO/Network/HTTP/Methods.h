@@ -39,7 +39,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_HTTP_Methods_h_*/
 
 
 
@@ -51,3 +50,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Methods.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_HTTP_Methods_h_*/

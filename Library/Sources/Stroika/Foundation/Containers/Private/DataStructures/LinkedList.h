@@ -304,12 +304,13 @@ namespace   Stroika {
 
 
 
-#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_ */
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
 #include    "LinkedList.inl"
+
+
+
+#endif  /*_Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_ */

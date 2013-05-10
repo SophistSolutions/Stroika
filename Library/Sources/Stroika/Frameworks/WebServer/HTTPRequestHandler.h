@@ -73,7 +73,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Framework_WebServer_HTTPRequestHandler_h_*/
 
 
 
@@ -84,3 +83,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "HTTPRequest.inl"
+
+#endif  /*_Stroika_Framework_WebServer_HTTPRequestHandler_h_*/

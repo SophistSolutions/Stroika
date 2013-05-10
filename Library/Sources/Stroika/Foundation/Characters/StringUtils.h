@@ -123,7 +123,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_StringUtils_h_*/
 
 
 
@@ -136,3 +135,4 @@ namespace   Stroika {
  */
 #include    "StringUtils.inl"
 
+#endif  /*_Stroika_Foundation_Characters_StringUtils_h_*/

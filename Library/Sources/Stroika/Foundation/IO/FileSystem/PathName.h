@@ -90,7 +90,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_FileSystem_PathName_h_*/
 
 
 
@@ -101,3 +100,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "PathName.inl"
+
+#endif  /*_Stroika_Foundation_IO_FileSystem_PathName_h_*/

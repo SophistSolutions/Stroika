@@ -83,9 +83,6 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_ElementTraits_h_ */
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -93,3 +90,6 @@ namespace   Stroika {
  */
 #include    "ElementTraits.inl"
 
+
+
+#endif  /*_Stroika_Foundation_Containers_ElementTraits_h_ */

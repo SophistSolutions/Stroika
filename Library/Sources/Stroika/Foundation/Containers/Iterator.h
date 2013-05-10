@@ -564,8 +564,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_Iterator_h_ */
-
 
 
 /*
@@ -575,3 +573,6 @@ namespace   Stroika {
  */
 
 #include "Iterator.inl"
+
+
+#endif  /*_Stroika_Foundation_Containers_Iterator_h_ */

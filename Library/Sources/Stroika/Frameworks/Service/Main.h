@@ -272,7 +272,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_Service_Main_h_*/
 
 
 
@@ -283,3 +282,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Main.inl"
+
+#endif  /*_Stroika_Frameworks_Service_Main_h_*/

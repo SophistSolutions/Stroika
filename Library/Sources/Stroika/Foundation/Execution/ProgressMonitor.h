@@ -185,7 +185,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ProgressMonitor_h_*/
 
 
 
@@ -198,3 +197,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ProgressMonitor.inl"
+
+#endif  /*_Stroika_Foundation_Execution_ProgressMonitor_h_*/

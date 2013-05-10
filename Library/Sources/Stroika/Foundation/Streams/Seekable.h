@@ -150,7 +150,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Streams_Seekable_h_*/
 
 
 
@@ -161,3 +160,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Seekable.inl"
+
+#endif  /*_Stroika_Foundation_Streams_Seekable_h_*/

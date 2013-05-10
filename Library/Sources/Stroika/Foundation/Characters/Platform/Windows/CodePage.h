@@ -73,8 +73,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_Platform_Windows_CodePage_h_*/
-
 
 
 
@@ -85,4 +83,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "CodePage.inl"
+
+#endif  /*_Stroika_Foundation_Characters_Platform_Windows_CodePage_h_*/
 

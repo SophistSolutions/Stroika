@@ -212,7 +212,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Framework_WebServer_HTTPResponse_h_*/
 
 
 
@@ -223,3 +222,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "HTTPResponse.inl"
+
+#endif  /*_Stroika_Framework_WebServer_HTTPResponse_h_*/

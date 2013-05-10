@@ -190,8 +190,6 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Containers_Tally_h_ */
-
 
 /*
  ********************************************************************************
@@ -200,7 +198,4 @@ namespace   Stroika {
  */
 #include    "Tally.inl"
 
-
-
-
-
+#endif  /*_Stroika_Foundation_Containers_Tally_h_ */

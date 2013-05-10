@@ -27,7 +27,6 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            //using   namespace   Configuration;
             using   Memory::Byte;
 
 
@@ -210,7 +209,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_ModuleInit_h_*/
 
 
 
@@ -221,3 +219,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ModuleInit.inl"
+
+#endif  /*_Stroika_Foundation_Execution_ModuleInit_h_*/

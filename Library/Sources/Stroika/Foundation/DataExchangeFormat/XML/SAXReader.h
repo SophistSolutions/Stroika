@@ -61,7 +61,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SAXReader_h_*/
 
 
 
@@ -73,3 +72,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SAXReader.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SAXReader_h_*/

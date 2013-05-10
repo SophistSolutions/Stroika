@@ -40,7 +40,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_Device_h_*/
 
 
 
@@ -51,3 +50,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Device.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_Device_h_*/

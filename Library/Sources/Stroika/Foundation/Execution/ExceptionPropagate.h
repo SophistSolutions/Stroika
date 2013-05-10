@@ -96,7 +96,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroia_Foundation_Execution_Propagate_h_*/
 
 
 
@@ -108,3 +107,5 @@ namespace   Stroika {
  */
 #include    "ExceptionPropagate.inl"
 
+
+#endif  /*_Stroia_Foundation_Execution_Propagate_h_*/

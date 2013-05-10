@@ -42,7 +42,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_*/
 
 
 
@@ -56,3 +55,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ElfResourceManager.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Concrete_ElfResourceManager_h_*/

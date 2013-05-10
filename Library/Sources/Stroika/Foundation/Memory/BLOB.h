@@ -179,7 +179,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_BLOB_h_*/
 
 
 
@@ -190,3 +189,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "BLOB.inl"
+
+#endif  /*_Stroika_Foundation_Memory_BLOB_h_*/

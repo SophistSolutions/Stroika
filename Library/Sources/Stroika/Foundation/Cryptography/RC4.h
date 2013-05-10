@@ -56,7 +56,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Cryptography_RC4_h_*/
 
 
 
@@ -66,3 +65,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Cryptography_RC4_h_*/

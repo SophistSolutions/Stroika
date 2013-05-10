@@ -91,7 +91,6 @@ namespace   Stroika {
 
     }
 }
-#endif  /*_Stroika_Foundation_Memory_LeakChecker_h_*/
 
 
 
@@ -102,3 +101,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "LeakChecker.inl"
+
+#endif  /*_Stroika_Foundation_Memory_LeakChecker_h_*/

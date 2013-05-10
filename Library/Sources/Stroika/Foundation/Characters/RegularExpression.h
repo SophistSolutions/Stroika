@@ -70,7 +70,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Characters_RegularExpression_h_*/
 
 
 
@@ -82,3 +81,4 @@ namespace   Stroika {
 #include    "RegularExpression.inl"
 
 
+#endif  /*_Stroika_Foundation_Characters_RegularExpression_h_*/

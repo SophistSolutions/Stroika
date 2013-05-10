@@ -74,7 +74,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_*/
 
 
 
@@ -86,3 +85,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Client_libcurl.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_Transfer_Client_libcurl_h_*/

@@ -49,7 +49,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Lockable_h_*/
 
 
 
@@ -62,3 +61,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Lockable.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Lockable_h_*/

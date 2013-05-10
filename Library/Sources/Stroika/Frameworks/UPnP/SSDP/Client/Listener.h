@@ -99,7 +99,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_*/
 
 
 
@@ -110,3 +109,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Listener.inl"
+
+#endif  /*_Stroika_Frameworks_UPnP_SSDP_Client_Listener_h_*/

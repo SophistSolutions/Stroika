@@ -155,7 +155,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Logger_h_*/
 
 
 
@@ -166,3 +165,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Logger.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Logger_h_*/

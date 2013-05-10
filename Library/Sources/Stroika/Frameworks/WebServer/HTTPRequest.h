@@ -55,7 +55,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Framework_WebServer_HTTPRequest_h_*/
 
 
 
@@ -66,3 +65,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "HTTPRequest.inl"
+
+#endif  /*_Stroika_Framework_WebServer_HTTPRequest_h_*/

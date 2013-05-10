@@ -86,7 +86,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_CString_Utilities_h_*/
 
 
 
@@ -99,3 +98,4 @@ namespace   Stroika {
  */
 #include    "Utilities.inl"
 
+#endif  /*_Stroika_Foundation_Characters_CString_Utilities_h_*/

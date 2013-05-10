@@ -46,7 +46,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Execution_Resources_Name_h_*/
 
 
 
@@ -60,3 +59,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Name.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Resources_Name_h_*/

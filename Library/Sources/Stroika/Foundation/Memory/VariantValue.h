@@ -169,7 +169,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Memory_VariantValue_h_*/
 
 
 
@@ -181,3 +180,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "VariantValue.inl"
+
+#endif  /*_Stroika_Foundation_Memory_VariantValue_h_*/

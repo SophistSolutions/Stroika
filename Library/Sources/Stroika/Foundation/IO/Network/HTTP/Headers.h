@@ -42,7 +42,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_HTTP_Headers_h_*/
 
 
 
@@ -54,3 +53,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Headers.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_HTTP_Headers_h_*/

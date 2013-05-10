@@ -47,7 +47,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Math_Overlap_h_*/
 
 
 
@@ -58,3 +57,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Overlap.inl"
+
+#endif  /*_Stroika_Foundation_Math_Overlap_h_*/

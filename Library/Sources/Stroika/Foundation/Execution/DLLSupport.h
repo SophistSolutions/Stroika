@@ -62,7 +62,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroia_Foundation_Execution_DLLSupport_h_*/
 
 
 
@@ -74,3 +73,4 @@ namespace   Stroika {
  */
 #include    "DLLSupport.inl"
 
+#endif  /*_Stroia_Foundation_Execution_DLLSupport_h_*/

@@ -47,7 +47,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_SocketStream_h_*/
 
 
 
@@ -59,3 +58,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "SocketStream.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_SocketStream_h_*/

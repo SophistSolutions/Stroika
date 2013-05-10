@@ -92,7 +92,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Configuration_Locale_h_*/
 
 
 
@@ -105,3 +104,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Locale.inl"
+
+#endif  /*_Stroika_Foundation_Configuration_Locale_h_*/

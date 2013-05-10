@@ -39,8 +39,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_*/
-
 
 
 /*
@@ -49,3 +47,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "WaitSupport.inl"
+
+#endif  /*_Stroika_Foundation_Execution_Platform_Windows_WaitSupport_h_*/

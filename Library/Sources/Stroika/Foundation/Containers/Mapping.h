@@ -183,7 +183,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Containers_Mapping_h_ */
 
 
 /*
@@ -192,3 +191,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Mapping.inl"
+
+#endif  /*_Stroika_Foundation_Containers_Mapping_h_ */

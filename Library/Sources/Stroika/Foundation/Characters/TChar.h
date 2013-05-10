@@ -54,7 +54,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_Characters_TChar_h_*/
 
 
 
@@ -66,3 +65,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+#endif  /*_Stroika_Foundation_Characters_TChar_h_*/

@@ -109,7 +109,6 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_InternetMediaType_h_*/
 
 
 
@@ -121,3 +120,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "InternetMediaType.inl"
+
+#endif  /*_Stroika_Foundation_DataExchangeFormat_InternetMediaType_h_*/

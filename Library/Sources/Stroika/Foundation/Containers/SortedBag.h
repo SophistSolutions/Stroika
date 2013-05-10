@@ -73,7 +73,6 @@ namespace   Stroika {
     }
 }
 
-#endif  /*_Stroika_Foundation_Containers_SortedBag_h_ */
 
 
 
@@ -84,3 +83,5 @@ namespace   Stroika {
  */
 
 #include    "SortedBag.inl"
+
+#endif  /*_Stroika_Foundation_Containers_SortedBag_h_ */
