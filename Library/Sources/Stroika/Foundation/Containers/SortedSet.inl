@@ -6,7 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 
-//#include    "Concrete/SortedSet_Factory.h"
+#include    "Concrete/SortedSet_Factory.h"
 
 
 namespace   Stroika {
@@ -16,53 +16,28 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** SortedSet<Key,T> **************************
+             ************************************ SortedSet<T> ******************************
              ********************************************************************************
              */
-#if 0
-            template    <typename Key, typename T>
-            SortedMapping<Key, T>::SortedMapping ()
-                : inherited (Concrete::mkSortedMapping_Default<Key, T> ())
+            template    <typename typename T>
+            inline	SortedSet<T>::SortedSet ()
+                : inherited (Concrete::mkSortedSet_Default<T> ())
             {
             }
-#endif
-#if 0
-            template    <typename Key, typename T>
-            inline  Mapping<Key, T>::Mapping (const Mapping<Key, T>& m)
-                : inherited (m)
-            {
-            }
-            template    <typename Key, typename T>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<Key, T>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Mapping_stdmap<Key, T> ())
-            {
-                AddAll (cp);
-            }
-            template    <typename Key, typename T>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Mapping<Key, T>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Mapping_stdmap<Key, T> ())
-            {
-                AddAll (start, end);
-            }
-#endif
-#if 0
-            template    <typename Key, typename T>
-            inline  SortedMapping<Key, T>::SortedMapping (const _SharedPtrIRep& rep)
+            template    <typename typename T>
+            inline  SortedSet<T>::SortedSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
-#if     !qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-            template    <typename Key, typename T>
-            inline  SortedMapping<Key, T>& SortedMapping<Key, T>::operator= (const SortedMapping<Key, T>& src)
+            template    <typename typename T>
+            inline  SortedSet<T>&	SortedSet<T>::operator= (const SortedSet<T>& src)
             {
-                inherited::operator= (src);
+                inherited::operator= (static_cast<const inherited&> (src));
+                EnsureMember (&inherited::_GetRep (), _IRep);
                 return *this;
             }
-#endif
-#endif
 
 
         }

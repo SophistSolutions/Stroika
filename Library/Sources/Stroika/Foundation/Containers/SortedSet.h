@@ -29,11 +29,7 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedSet is a Mapping<Key,T> which remains sorted (iterator) by the Key.
-             *
-             *  Note - this class might have been called "Dictionary".
-             *
-             *  @see    Mapping<Key,T>
+             *      A SortedSet is a Set<T> which remains sorted (iterator).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
