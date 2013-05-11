@@ -20,7 +20,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename typename T>
-            inline	SortedSet<T>::SortedSet ()
+            inline  SortedSet<T>::SortedSet ()
                 : inherited (Concrete::mkSortedSet_Default<T> ())
             {
             }
@@ -32,7 +32,7 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename typename T>
-            inline  SortedSet<T>&	SortedSet<T>::operator= (const SortedSet<T>& src)
+            inline  SortedSet<T>&   SortedSet<T>::operator= (const SortedSet<T>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
                 EnsureMember (&inherited::_GetRep (), _IRep);

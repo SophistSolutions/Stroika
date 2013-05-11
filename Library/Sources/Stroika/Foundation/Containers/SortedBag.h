@@ -10,19 +10,16 @@
 
 
 
-/*
+/**
+ *  \file
  *
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- not even taht yet...
- *
- *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *                  (one bad implemnation that doesnt even do sorting yet, and regtests so bad they dont notice)
  *
  *
  *  TODO:
- *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Sorting.hh
- *
+ *      @todo   Fixup construcotrs (templated by value and iterator ctors)
  *
  */
 
@@ -34,25 +31,20 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedBag is a collection whose elements are ordered by an external
-             *  comparison function (operator <). The src to can be added to, removed
-             *  from, and iterated over. Adding and removing specify only the item -
-             *  where it is added is implied by its value, and the operator < function.
-             *  Iteration is defined to go forwards from lesser to greater values -
-             *  again, as defined by the ordering function (operator <).
+             *      A SortedBag is a Bag<T> which remains sorted (iterator) as you add  and remove entries.
              *
-             *      We also require an operator== too be able to remove a given item
-             *  from a src, and to check whether or not an item is contained in the src.
-             *
-             *      SortedBags do allow redundencies - that is the same element may be
-             *  inserted more than once, and still increase the length of the src.
-             *
+             *  @see Bag<T>
+             *  @see SortedMapping<Key,T>
+             *  @see SortedSet<T>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
             template    <class T>
             class   SortedBag : public Bag<T> {
+            private:
+                typedef Bag<T>  inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -61,14 +53,27 @@ namespace   Stroika {
                 /**
                  */
                 SortedBag ();
-                SortedBag (const Set<T>& s);
+                SortedBag (const SortedBag<T>& sb);
                 explicit SortedBag (const T* start, const T* end);
 
             protected:
                 explicit SortedBag (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  SortedBag<T>& operator= (const SortedBag<T>& src);
+                /**
+                 */
+                nonvirtual  SortedBag<T>& operator= (const SortedBag<T>& rhs);
+            };
+
+
+            /**
+             *  \brief  Implementation detail for SortedBag<T> implementors.
+             *
+             *  Protected abstract interface to support concrete implementations of
+             *  the SortedBag<T> container API.
+             */
+            template    <typename T>
+            class   SortedBag<T>::_IRep : public Bag<T>::_IRep {
             };
 
 

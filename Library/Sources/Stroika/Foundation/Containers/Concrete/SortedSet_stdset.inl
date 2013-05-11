@@ -181,7 +181,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         fData_.clear ();
- 						// must patch!!!
+                        // must patch!!!
                     });
                 }
                 template    <typename T>
@@ -189,7 +189,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         fData_.insert (item);
-						// must patch!!!
+                        // must patch!!!
                     });
                 }
                 template    <typename T>
