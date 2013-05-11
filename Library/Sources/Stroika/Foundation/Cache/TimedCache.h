@@ -120,8 +120,9 @@ namespace   Stroika {
              *
              *  EXAMPLE - USE DNS CACHE... - or current use for LDAP lookups
              *
-             *  \note   \em Thread-Safety
-             *       This class should be fully threadsafe. It is safe to update and read from separate threads.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename   KEY, typename RESULT, typename TRAITS = TimedCacheSupport::DefaultTraits<KEY, RESULT>>
             class   TimedCache {

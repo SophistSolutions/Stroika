@@ -53,6 +53,8 @@ namespace   Stroika {
              *      The basic idea here is that you cannot have multiple copies of the same
              *      thing into the set (like a mathemactical set).
              *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename   T>
             class   Set : public Iterable<T> {

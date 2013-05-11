@@ -190,6 +190,9 @@ namespace   Stroika {
              *
              *      Also note that some subclasses of String (e.g. future String_stdwstring) may not support
              *      internal NUL-characters, if their underling implementation doesn't allow for that.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             class   String {
             public:

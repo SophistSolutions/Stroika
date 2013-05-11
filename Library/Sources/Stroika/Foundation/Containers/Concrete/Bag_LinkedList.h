@@ -30,7 +30,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
+                 *  \brief Bag_LinkedList<T> is an LinkedList-based concrete implementation of the Bag<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <typename T>
                 class  Bag_LinkedList : public Bag<T> {

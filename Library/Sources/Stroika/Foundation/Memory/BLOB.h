@@ -15,9 +15,11 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  * TODO:
- *
- *
  *      @todo   Redo API - so its all based on SeekOffsetType - not size_t. Document that if you exceed
  *              available in-RAM storage, no biggie - you just throw bad_alloc. But at least you can
  *              construct and operate on large BLOBs (as streams).

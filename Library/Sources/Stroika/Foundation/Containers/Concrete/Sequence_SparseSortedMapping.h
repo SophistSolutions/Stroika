@@ -33,7 +33,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
+                 *  \brief   Sequence_SparseSortedMapping<T> is a sparse-Array-based concrete implementation of the Sequence<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <class T>
                 class   Sequence_SparseSortedMapping : public Sequence<T> {

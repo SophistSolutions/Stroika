@@ -9,6 +9,16 @@
 #include    <ctime>
 
 
+
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html">Alpha-Late</a>
+ *
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {

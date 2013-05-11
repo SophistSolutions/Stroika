@@ -29,7 +29,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Sequence_stdvector<T> is an std::vector-based concrete implementation of the Sequence<T> container pattern.
+                 *  \brief   Sequence_stdvector<T> is an std::vector-based concrete implementation of the Sequence<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <class T>
                 class   Sequence_stdvector : public Sequence<T> {

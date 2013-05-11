@@ -54,6 +54,9 @@ namespace   Stroika {
              *  Insert              add(e)              offer(e)            put(e)              offer(e, time, unit)
              *  Remove              remove()            poll()              take()              poll(time, unit)
              *  Examine             Front()             peek()              not applicable      not applicable
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class   BlockingQueue {

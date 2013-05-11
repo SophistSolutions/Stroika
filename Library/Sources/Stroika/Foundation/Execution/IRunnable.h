@@ -46,6 +46,9 @@ namespace   Stroika {
              *  semantics exactly keep all the results and code etc alive until the last reference.
              *
              *  @see mkIRunnablePtr
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             class   IRunnable {
             private:

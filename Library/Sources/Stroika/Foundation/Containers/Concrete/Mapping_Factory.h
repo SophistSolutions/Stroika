@@ -35,7 +35,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Create the default backend implementaiton of a Mapping<> container
+                 *  \brief   Create the default backend implementaiton of a Mapping<> container
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <typename Key, typename T>
                 Mapping<Key, T>  mkMapping_Default ();

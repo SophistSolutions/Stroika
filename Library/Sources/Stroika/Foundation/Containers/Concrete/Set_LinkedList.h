@@ -28,7 +28,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
+                 *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <typename T>
                 class   Set_LinkedList : public Set<T> {

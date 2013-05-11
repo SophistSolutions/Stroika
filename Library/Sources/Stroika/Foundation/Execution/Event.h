@@ -50,6 +50,9 @@ namespace   Stroika {
              *
              *  Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm,
              *  and simpler to assume always in unset state by default.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             class   Event {
 #if     qTrack_ThreadUtils_HandleCounts

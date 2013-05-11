@@ -34,7 +34,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Mapping_stdmap<Key, T> is an std::map-based concrete implementation of the Mapping<Key,T> container pattern.
+                 *  \brief   Mapping_stdmap<Key, T> is an std::map-based concrete implementation of the Mapping<Key,T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
 #if     qCompilerAndStdLib_Supports_TempalteAlias_n2258
                 template    <typename Key, typename T>

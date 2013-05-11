@@ -69,6 +69,9 @@ namespace   Stroika {
              *  unique elements (though we make it easy to get that iterator too with MakeBagIterator()).
              *
              *  A Tally<T> makes no promises about ordering of elements in iteration.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class  Tally : public Iterable<TallyEntry<T>> {

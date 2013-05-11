@@ -29,7 +29,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Sequence_Array<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
+                 *  \brief   Sequence_Array<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <class T>
                 class   Sequence_Array : public Sequence<T> {

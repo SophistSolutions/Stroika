@@ -52,6 +52,8 @@ namespace   Stroika {
              *  unpredictable costs for an Add operation. DoubleLinkList is usually
              *  slower, but has very predictable costs.
              *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class   Deque : public Queue<T> {

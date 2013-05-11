@@ -22,6 +22,7 @@
 /**
  *  \file
  *
+ *  TODO:
  *      @todo   Very preliminary draft - not tested.
  *
  *      @todo   Generate exceptions on errors
@@ -35,6 +36,9 @@
  *              DONE for AES - BUt do the others - just like that - and maybe cleanup Base64/MD5 APIs to
  *              be done like for AES...
  *              ...
+ *
+ *
+ *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
  *
  */
 

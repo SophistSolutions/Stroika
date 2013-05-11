@@ -14,6 +14,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  *  TODO:
  *
  */
@@ -51,11 +53,6 @@ namespace   Stroika {
              *  Optional<T> as an Assertion Erorr.
              *
              *  However, see @ref Value()
-             *
-             *  \note   \em Thread-Safety
-             *      -   Different instances of Optional<T> can be freely used  in different threads,
-             *          but a given instance can only be safely used (read + write, or write + write)
-             *          from a single thread at a time.
              *
              *  \note   \em Design-Note - why not SharedByValue<T>
              *      -   We considered using the SharedByValue<T> template which would be more efficient
@@ -96,8 +93,10 @@ namespace   Stroika {
              *      -   Plus, one must carefully check each use of a variable of type T, being converted
              *          to type Optional<T>, so being forced to say "*" first isn't totally unreasonable.
              *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
+             *
              */
-            template    <typename T, typename TRAITS = Optional_DefaultTraits<T> >
+            template    <typename T, typename TRAITS = Optional_DefaultTraits<T>>
             class   Optional {
             public:
                 /**
@@ -107,6 +106,7 @@ namespace   Stroika {
                 Optional (T && from);
                 Optional (const Optional<T, TRAITS>& from);
                 Optional (Optional<T, TRAITS> && from);
+
             public:
                 ~Optional ();
 
@@ -127,8 +127,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Returns true iff the Optional<T> has no valid value. Attempts to access the value of
-                 * an Optional<T> (eg. through operator T ()) will result in an error.
+                 *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
+                 *  an Optional<T> (eg. through operator T ()) will result in an error.
                  */
                 nonvirtual  bool    empty () const; // means no value (it is optional!)
 

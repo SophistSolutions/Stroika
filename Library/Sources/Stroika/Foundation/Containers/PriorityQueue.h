@@ -67,6 +67,9 @@ namespace   Stroika {
              *
              *
              *  PriorityQueues always iterate from highest to lowest priority.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class   PriorityQueue : public Iterable<pair<T, Priority>> {

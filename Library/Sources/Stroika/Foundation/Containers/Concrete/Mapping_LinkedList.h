@@ -28,7 +28,10 @@ namespace   Stroika {
 
 
                 /**
-                 * \brief   Mapping_LinkedList<Key, T> is an LinkedList-based concrete implementation of the Mapping<Key,T> container pattern.
+                 *  \brief   Mapping_LinkedList<Key, T> is an LinkedList-based concrete implementation of the Mapping<Key,T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <typename Key, typename T>
                 class   Mapping_LinkedList : public Mapping<Key, T> {

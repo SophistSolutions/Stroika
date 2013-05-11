@@ -56,7 +56,7 @@ namespace   Stroika {
             typedef void    (*SignalHandlerType) (SignalIDType);
 
 
-            /*
+            /**
              *  Description:
              *      SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers for each supported signal.
              *
@@ -66,7 +66,9 @@ namespace   Stroika {
              *      When an platform signal-handler is installed (via 'sigaction' for example) - and then later UNINSTALLED (due to
              *      changes in GetHandledSignals) - this code resets the signal handler to SIG_DFL (not the previous value).
              *
-             *      This object is thread-safe.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             class   SignalHandlerRegistry {
             public:

@@ -31,6 +31,9 @@ namespace   Stroika {
              *  qPlatform_POSIX:
              *      Sleep can be interupted by receipt of a signal (see POSIX nanosleep()). But the second form can
              *      be used to easily continue the sleep.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             void    Sleep (Time::DurationSecondsType seconds2Wait);
             void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);

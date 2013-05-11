@@ -91,6 +91,8 @@ namespace   Stroika {
              *
              *  As syntactic sugar, using either functional (Add, Remove) or
              *  operator (+,-) is allowed.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T>
             class   Bag : public Iterable<T> {

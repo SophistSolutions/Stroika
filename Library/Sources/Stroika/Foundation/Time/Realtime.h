@@ -12,9 +12,21 @@
 #include    <cfloat>
 #endif
 
+
+
+/**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
+
 
             typedef double  DurationSecondsType;
 

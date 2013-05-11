@@ -23,6 +23,10 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html">Alpha-Late</a>
+ *
  * TODO:
  *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate

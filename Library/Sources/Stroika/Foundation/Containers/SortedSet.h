@@ -34,6 +34,9 @@ namespace   Stroika {
              *  Note - this class might have been called "Dictionary".
              *
              *  @see    Mapping<Key,T>
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename   T>
             class   SortedSet : public Set<T> {

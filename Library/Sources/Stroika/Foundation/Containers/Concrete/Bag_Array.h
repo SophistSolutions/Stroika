@@ -29,6 +29,9 @@ namespace   Stroika {
 
                 /**
                  * \brief   Bag_Array<T> is an Array-based concrete implementation of the Bag<T> container pattern.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *
                  */
                 template    <class T>
                 class   Bag_Array : public Bag<T> {

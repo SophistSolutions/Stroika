@@ -47,6 +47,8 @@ namespace   Stroika {
              *  inserted more than once, and still increase the length of the src.
              *
              *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <class T>
             class   SortedBag : public Bag<T> {

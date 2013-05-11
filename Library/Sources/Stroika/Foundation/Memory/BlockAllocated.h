@@ -18,6 +18,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  *  @todo   Document how you can use USE_BLOCK_ALLOCATION style usage, or explicit BlockAllocated<T>
  *          usage (as in Memory::Optional).
  *

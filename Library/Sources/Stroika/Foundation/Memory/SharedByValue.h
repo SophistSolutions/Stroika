@@ -13,6 +13,10 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  *  @todo   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
  *          saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
  *          See if this is optimized away in release builds and if not, see if we can find some

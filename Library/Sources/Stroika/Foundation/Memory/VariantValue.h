@@ -16,8 +16,11 @@
 
 
 /**
- *  TODO:
+ *  \file
  *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
+ *  TODO:
  *      @todo   Consider moving this class to DataExcahngeFormat module.
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?

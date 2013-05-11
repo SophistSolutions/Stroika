@@ -22,8 +22,11 @@
 
 
 /**
- * TODO:
+ *  \file
  *
+ *  \version    <a href="code_status.html">Alpha-Late</a>
+ *
+ * TODO:
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *

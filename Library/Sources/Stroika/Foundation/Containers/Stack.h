@@ -44,6 +44,9 @@ namespace   Stroika {
              *  @todo explain why Stack<T> inherits from Iterable<T> - basically cuz handy (for debugging etc) to be able to traverse and not unreasonable
              *      or makes impl harder.
              *
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class   Stack {

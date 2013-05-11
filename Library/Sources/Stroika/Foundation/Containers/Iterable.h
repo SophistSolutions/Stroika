@@ -92,6 +92,9 @@ namespace   Stroika {
              *      Probably important - for performance??? - that all these methods are const,
              *      so ??? think through - what this implies- but probably soemthing about not
              *      threading stuff and ???
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <typename T>
             class  Iterable {

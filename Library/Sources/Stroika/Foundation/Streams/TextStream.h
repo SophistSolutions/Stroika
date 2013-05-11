@@ -14,9 +14,13 @@
 
 
 
+
+
+
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html">Alpha-Late</a>
  *
  *  @todo   explain better why... ease of memory management, while still having virutla hierarchy for
  *          subclassing behavior...
@@ -43,6 +47,8 @@ namespace   Stroika {
              *  Note that TextStream is logically a 'smart pointer' - to an actual stream. This is then true
              *  of all its subclasses (e.g. TextInputStream, etc). This is very important to understand when
              *  assigning/copying TextStream (and subclass) objects.
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             class   TextStream  : public Seekable {
             protected:

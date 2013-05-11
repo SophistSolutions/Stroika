@@ -54,6 +54,9 @@ namespace   Stroika {
              *
              *  TODO:   Draw a picture of q Q of people waiting in line.
              *
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             template    <class T>
             class   Queue : public Iterable<T> {

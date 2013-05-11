@@ -46,6 +46,9 @@ namespace   Stroika {
              *  [if we choose to allow that we must use ModuleInit, but since this requires a call to setup a
              *  logger, that seems unlikely]
              *
+             *
+             *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
              */
             class   Logger {
             public:
