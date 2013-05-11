@@ -17,9 +17,13 @@
 
 
 
-/*
+/**
+ *  \file
+ *
  * TODO:
- *          o   Consider mixing in Seekable here. Would be easy
+ *      @todo   Consider mixing in Seekable here. Would be easy
+ *
+ *      @todo   Consider thread-safety. For now, a non-standard choice?
  */
 
 

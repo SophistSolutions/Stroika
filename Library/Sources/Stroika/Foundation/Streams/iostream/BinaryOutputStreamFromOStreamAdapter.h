@@ -18,8 +18,12 @@
 
 
 /**
+ *  \file
+ *
  * TODO:
- *          o   Consider mixing in Seekable here. Would be easy
+ *      @todo   Consider mixing in Seekable here. Would be easy.
+ *
+ *      @todo   Consider thread-safety. For now, a non-standard choice?
  */
 
 
@@ -37,7 +41,7 @@ namespace   Stroika {
                  *  is longer than the lifetiem of this created BinaryOutputStream (smart pointer).
                  *
                  *  It is also up to the caller to assure no references to or calls to that ostream
-                 *  be made from another thread. However, no date is cached in this class - it just
+                 *  be made from another thread. However, no data is cached in this class - it just
                  *  delegates, so calls CAN be made the the underlying ostream - so long as not
                  *  concurrently.
                  *
