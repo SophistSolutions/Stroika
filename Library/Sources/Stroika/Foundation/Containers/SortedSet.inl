@@ -19,19 +19,19 @@ namespace   Stroika {
              ************************************ SortedSet<T> ******************************
              ********************************************************************************
              */
-            template    <typename typename T>
+            template    <typename T>
             inline  SortedSet<T>::SortedSet ()
                 : inherited (Concrete::mkSortedSet_Default<T> ())
             {
             }
-            template    <typename typename T>
+            template    <typename T>
             inline  SortedSet<T>::SortedSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename typename T>
+            template    <typename T>
             inline  SortedSet<T>&   SortedSet<T>::operator= (const SortedSet<T>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));

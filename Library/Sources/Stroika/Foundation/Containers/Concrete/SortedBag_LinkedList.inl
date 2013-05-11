@@ -264,7 +264,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 SortedBag_LinkedList<T>::SortedBag_LinkedList (const SortedBag_LinkedList<T>& src)
-                    : inherited (static_cast<const inherited&> (rhs))
+                    : inherited (static_cast<const inherited&> (src))
                 {
                 }
                 template    <typename T>
