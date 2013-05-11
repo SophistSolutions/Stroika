@@ -14,6 +14,14 @@
  *  \file
  *
  *  TODO:
+ *      @todo   Most of the implementation is simple - use SortedMapping_stdmap as a backend. Map from idx
+ *              to value. On any update, remove values if they are the special 'sparse' value. On iteration,
+ *              count the gap between index values and return the 'sparse' value.
+ *
+ *              Lookup by index is a key lookup.
+ *
+ *              The only tricky part is that inserts involve renumbering keys past a certain point in the
+ *              container.
  */
 
 
@@ -33,21 +41,24 @@ namespace   Stroika {
                     typedef     Sequence<T>  inherited;
 
                 public:
-                    Sequence_SparseSortedMapping ();
+                    /**
+                     *  The only non-obvious parameter is 'sparseValue'. This is the special value used internally to
+                     *  make for the 'sparse' array. These particular values dont require storage.
+                     *
+                     *  Note - this has no externally visible semantics: it just affects the storage usage, and perhaps
+                     *  performance.
+                     */
+                    Sequence_SparseSortedMapping (T sparseValue);
                     Sequence_SparseSortedMapping (const Sequence_SparseSortedMapping<T>& s);
                     template <typename CONTAINER_OF_T>
-                    explicit Sequence_SparseSortedMapping (const CONTAINER_OF_T& s);
+                    explicit Sequence_SparseSortedMapping (T sparseValue, const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR>
-                    explicit Sequence_SparseSortedMapping (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    explicit Sequence_SparseSortedMapping (T sparseValue, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
                 public:
-                    nonvirtual  Sequence_SparseSortedMapping<T>& operator= (const Sequence_SparseSortedMapping<T>& s);
-
+                    nonvirtual  Sequence_SparseSortedMapping<T>&    operator= (const Sequence_SparseSortedMapping<T>& s);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-                public:
-#endif
                     class   Rep_;
                     class   IteratorRep_;
 
