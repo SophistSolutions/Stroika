@@ -1107,6 +1107,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

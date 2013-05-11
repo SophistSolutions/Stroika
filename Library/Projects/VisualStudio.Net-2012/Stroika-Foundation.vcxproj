@@ -474,6 +474,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_stdvector.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_Factory.h" />
