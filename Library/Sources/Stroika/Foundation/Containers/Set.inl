@@ -23,23 +23,27 @@ namespace   Stroika {
             Set<T>::Set ()
                 : inherited (Concrete::Set_LinkedList<T> ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             inline  Set<T>::Set (const Set<T>& s)
                 : inherited (s)
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Set<T>::Set (const CONTAINER_OF_T& s)
                 : inherited (Concrete::Set_LinkedList<T> ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (s);
             }
             template    <typename T>
             inline  Set<T>::Set (const _SharedPtrIRep& rep)
                 : inherited (typename Iterable<T>::_SharedByValueRepType (rep))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
                 RequireNotNull (rep);
             }
             template    <typename T>
@@ -47,20 +51,19 @@ namespace   Stroika {
             inline Set<T>::Set (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                 : inherited (Concrete::Set_LinkedList<T> ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
             }
             template    <typename T>
             inline  const typename  Set<T>::_IRep&    Set<T>::_GetRep () const
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  typename    Set<T>::_IRep&  Set<T>::_GetRep ()
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), _IRep);
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>

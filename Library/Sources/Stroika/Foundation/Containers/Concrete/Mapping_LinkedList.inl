@@ -265,35 +265,20 @@ namespace   Stroika {
                 Mapping_LinkedList<Key, T>::Mapping_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_LinkedList<Key, T>::Mapping_LinkedList (const Mapping_LinkedList<Key, T>& m)
                     : inherited (m)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_LinkedList<Key, T>&   Mapping_LinkedList<Key, T>::operator= (const Mapping_LinkedList<Key, T>& m)
                 {
-                    Mapping<Key, T>::operator= (m);
+                    inherited::operator= (m);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
-                }
-                template    <typename Key, typename T>
-                inline  const typename Mapping_LinkedList<Key, T>::Rep_&  Mapping_LinkedList<Key, T>::GetRep_ () const
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
-                }
-                template    <typename Key, typename T>
-                inline  typename Mapping_LinkedList<Key, T>::Rep_&    Mapping_LinkedList<Key, T>::GetRep_ ()
-                {
-                    /*
-                     * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
-                     * the type of rep our CTOR bases to Iterable<T>.
-                     */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
                 }
 
 

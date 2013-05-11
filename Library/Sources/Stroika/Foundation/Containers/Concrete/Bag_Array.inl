@@ -234,14 +234,14 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 Bag_Array<T>::Bag_Array (const Bag<T>& bag)
-                    : Bag<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (bag.GetLength ());
                     operator+= (bag);
                 }
                 template    <typename T>
                 Bag_Array<T>::Bag_Array (const T* start, const T* end)
-                    : Bag<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     if (start != end) {
@@ -251,13 +251,13 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  Bag_Array<T>::Bag_Array (const Bag_Array<T>& bag)
-                    : Bag<T> (bag)
+                    : inherited (static_cast<const inherited&> (bag))
                 {
                 }
                 template    <typename T>
                 inline  Bag_Array<T>&   Bag_Array<T>::operator= (const Bag_Array<T>& bag)
                 {
-                    Bag<T>::operator= (bag);
+                    inherited::operator= (static_cast<const inherited&> (bag));
                     return *this;
                 }
                 template    <typename T>
@@ -267,7 +267,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  typename Bag_Array<T>::Rep_&    Bag_Array<T>::GetRep_ ()
@@ -276,7 +277,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Bag<T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Bag_Array<T>::Compact ()

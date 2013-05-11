@@ -51,6 +51,7 @@ namespace   Stroika {
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename Key, typename T>
             inline  SortedMapping<Key, T>& SortedMapping<Key, T>::operator= (const SortedMapping<Key, T>& src)

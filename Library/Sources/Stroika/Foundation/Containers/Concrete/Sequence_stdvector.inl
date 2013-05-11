@@ -266,17 +266,20 @@ namespace   Stroika {
                 Sequence_stdvector<T>::Sequence_stdvector ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const Sequence_stdvector<T>& s)
                     : inherited (s)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_stdvector<T>::Sequence_stdvector (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     InsertAll (0, s);
                 }
                 template    <typename T>
@@ -284,11 +287,13 @@ namespace   Stroika {
                 inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     Append (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_stdvector<T>&   Sequence_stdvector<T>::operator= (const Sequence_stdvector<T>& s)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     inherited::operator= (s);
                     return *this;
                 }
@@ -299,6 +304,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
@@ -308,7 +314,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
                 inline  void    Sequence_stdvector<T>::Compact ()

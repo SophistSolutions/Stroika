@@ -57,6 +57,9 @@ namespace   Stroika {
              */
             template    <class T>
             class   Queue : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;

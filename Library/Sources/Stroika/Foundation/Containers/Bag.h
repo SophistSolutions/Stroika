@@ -94,6 +94,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Bag : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;

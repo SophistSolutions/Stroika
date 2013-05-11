@@ -248,16 +248,19 @@ namespace   Stroika {
                 Set_LinkedList<T>::Set_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Set_LinkedList<T>::Set_LinkedList (const Set_LinkedList<T>& m)
                     : inherited (m)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Set_LinkedList<T>&   Set_LinkedList<T>::operator= (const Set_LinkedList<T>& m)
                 {
                     inherited::operator= (m);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T>
@@ -267,6 +270,7 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename T>
@@ -276,7 +280,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
 
 

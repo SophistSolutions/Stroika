@@ -264,17 +264,20 @@ namespace   Stroika {
                 SortedMapping_stdmap<Key, T>::SortedMapping_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  SortedMapping_stdmap<Key, T>::SortedMapping_stdmap (const SortedMapping_stdmap<Key, T>& m)
                 // static_cast<> so we pick the right base class CTOR that doesn't copy
                     : inherited (static_cast<const SortedMapping<Key, T>&> (m))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  SortedMapping_stdmap<Key, T>&   SortedMapping_stdmap<Key, T>::operator= (const SortedMapping_stdmap<Key, T>& m)
                 {
                     inherited::operator= (static_cast<const inherited&> (m));
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
                 template    <typename Key, typename T>

@@ -218,16 +218,14 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
-                return *static_cast<const Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&Iterable<T>::_GetRep (), Bag<T>::_IRep);
-                return *static_cast<Bag<T>::_IRep*> (&Iterable<T>::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
 
 

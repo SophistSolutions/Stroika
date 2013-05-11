@@ -93,26 +93,31 @@ namespace   Stroika {
             Tally<T>::Tally ()
                 : inherited (Concrete::Tally_Array<T> ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             inline  Tally<T>::Tally (const Tally<T>& src)
                 : inherited (src)
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             inline  Tally<T>::Tally (const _SharedPtrIRep& rep)
                 : inherited (typename Iterable<TallyEntry<T>>::_SharedByValueRepType (rep))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             Tally<T>::Tally (const T* start, const T* end)
                 : inherited (Concrete::Tally_Array<T> (start, end))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             Tally<T>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
                 : inherited (Concrete::Tally_Array<T> (start, end))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             void   Tally<T>::RemoveAll (T item)
@@ -229,16 +234,14 @@ namespace   Stroika {
             template    <typename T>
             inline  const typename Tally<T>::_IRep&  Tally<T>::_GetRep () const
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), Tally<T>::_IRep);
-                return *static_cast<const Tally<T>::_IRep*> (&inherited::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             inline  typename Tally<T>::_IRep&        Tally<T>::_GetRep ()
             {
-                // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
-                EnsureMember (&inherited::_GetRep (), Tally<T>::_IRep);
-                return *static_cast<Tally<T>::_IRep*> (&inherited::_GetRep ());
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T>
             bool   Tally<T>::operator== (const Tally<T>& rhs) const

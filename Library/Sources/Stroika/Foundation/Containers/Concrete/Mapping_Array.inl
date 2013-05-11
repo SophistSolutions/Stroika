@@ -265,16 +265,19 @@ namespace   Stroika {
                 Mapping_Array<Key, T>::Mapping_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_Array<Key, T>::Mapping_Array (const Mapping_Array<Key, T>& m)
                     : inherited (m)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_Array<Key, T>&   Mapping_Array<Key, T>::operator= (const Mapping_Array<Key, T>& m)
                 {
-                    Mapping<Key, T>::operator= (m);
+                    inherited::operator= (m);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
                 template    <typename Key, typename T>
@@ -284,7 +287,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename Key, typename T>
                 inline  typename Mapping_Array<Key, T>::Rep_&    Mapping_Array<Key, T>::GetRep_ ()
@@ -293,7 +297,8 @@ namespace   Stroika {
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
                      * the type of rep our CTOR bases to Iterable<T>.
                      */
-                    return (static_cast<const Rep_&> (Mapping<Key, T>::_GetRep ()));
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
                 template    <typename Key, typename T>
                 inline  void    Mapping_Array<Key, T>::Compact ()
