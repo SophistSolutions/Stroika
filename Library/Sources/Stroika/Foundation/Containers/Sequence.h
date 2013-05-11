@@ -19,8 +19,7 @@
 /*
  *
  *
- *  STATUS:
- *      Early Beta
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *
  *  TODO:

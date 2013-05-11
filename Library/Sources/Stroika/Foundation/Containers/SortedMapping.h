@@ -12,8 +12,8 @@
 
 /**
  *
- *  STATUS:
- *      BETA Quality
+ *
+ *  \version    <a href="code_status.html#Alpha-Beta">Alpha-Beta</a>
  *
  *
  *  TODO:

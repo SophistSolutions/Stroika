@@ -16,8 +16,7 @@
 /**
  *
  *
- *  STATUS:
- *      Minimally functional (alpha)
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *
  *  TODO:
