@@ -13,6 +13,7 @@
 #include    "Common.h"
 
 
+
 /**
  *  \file
  *
@@ -34,6 +35,7 @@
  *              and mapping to locale names, on windows platform (or better strategy if I can find it).
  *
  */
+
 
 
 namespace   Stroika {

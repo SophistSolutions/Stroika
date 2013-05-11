@@ -20,6 +20,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {

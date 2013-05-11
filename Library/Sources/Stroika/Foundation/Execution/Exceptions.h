@@ -6,24 +6,14 @@
 
 #include    "../StroikaPreComp.h"
 
+// Unclear if/why we should include <exception>/string/stdexcept here? -- LGP 2011-11-29
 #include    <exception>
 #include    <memory>
 #include    <stdexcept>
 #include    <system_error>
 
-
-
-
-// Unclear if/why we should include <exception>/string/stdexcept here? -- LGP 2011-11-29
-#if 0
-#include    <exception>
-#include    <string>
-#include    <stdexcept>
-#endif
-
 #include    "../Configuration/Common.h"
 #include    "../Debug/Trace.h"
-
 
 
 
@@ -64,7 +54,6 @@ namespace   Stroika {
             void    _NoReturn_  DoThrow (const T& e2Throw, const wchar_t* traceMsg);
 
 
-
             /**
              *  Just a regular C++ rethrow, but with a DbgTrace message...
              */
@@ -82,7 +71,6 @@ namespace   Stroika {
             void    ThrowIfNull (const shared_ptr<T>& p);
 
 
-
             /**
              */
 #define IgnoreExceptionsForCall(theCode)        try {theCode;} catch (...) {}
@@ -97,8 +85,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

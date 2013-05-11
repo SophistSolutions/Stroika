@@ -15,6 +15,7 @@
 #include    "../Time/Realtime.h"
 
 
+
 /**
  *      \file
  *
@@ -43,14 +44,13 @@
  *      @todo   add bool option to TRAITS for 'accessDoesBookkeeping' - if false, then this ASSUMES/REQUIRES
  *              caller respponsability to arragen for periodic call of bookkeeping task.
  *
- */
-/**
  *  Implementation Note:
  *
  *      This module uses stl:map<> instead of a Stroika Mapping since we are comfortable with
  *      the current implementation using btree's, and to avoid any dependencies between
  *      Caching and Containers. We may want to re-think that, and just  use Mapping here.
  */
+
 
 
 namespace   Stroika {
@@ -104,10 +104,6 @@ namespace   Stroika {
 
 
             }
-
-
-
-
 
 
             /**

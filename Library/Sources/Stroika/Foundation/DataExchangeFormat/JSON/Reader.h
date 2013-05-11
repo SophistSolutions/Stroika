@@ -11,6 +11,8 @@
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
+
+
 /**
  *  \file
  *
@@ -23,20 +25,21 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
             namespace   JSON {
 
+
                 Memory::VariantValue    Reader (const Streams::BinaryInputStream& in);
                 Memory::VariantValue    Reader (const Streams::TextInputStream& in);
+
 
             }
         }
     }
 }
-
-
 
 
 

@@ -13,6 +13,8 @@
 #include    "Iterator.h"
 #include    "Iterable.h"
 
+
+
 /*
  *
  *  TODO:
@@ -24,9 +26,12 @@
  *
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
 
             template    <typename T>
             class   TallyEntry {
@@ -52,6 +57,7 @@ namespace   Stroika {
             template    <typename T>
             bool    operator== (const Tally<T>& lhs, const Tally<T>& rhs);
 #endif
+
 
             /**
              *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally
@@ -155,7 +161,6 @@ namespace   Stroika {
                 nonvirtual  bool    operator== (const Tally<T>& rhs) const;
                 nonvirtual  bool    operator!= (const Tally<T>& rhs) const;
             };
-
 
 
             /**

@@ -14,7 +14,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -32,6 +31,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
+
 
             /**
              *  \brief  TextStream is an abstract class defining the interface to a text source/sink of data.
@@ -104,8 +104,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

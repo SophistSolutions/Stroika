@@ -4,6 +4,17 @@
 #ifndef _Stroika_Foundation_Containers_Iterable_h_
 #define _Stroika_Foundation_Containers_Iterable_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    <functional>
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+#include    "Iterator.h"
+
+
+
 /**
  *  \file
  *
@@ -32,16 +43,6 @@
  *                  Contains () is true iff an iteration over the Collection<T,TTRAITS> would return at least one element such that (*it == item).
  *                  Just note method MAY not be defined if no way todo == (or not in traits)
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    <functional>
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-#include    "Iterator.h"
 
 
 /**
@@ -351,6 +352,7 @@ namespace   Stroika {
         }
     }
 }
+
 
 
 /*

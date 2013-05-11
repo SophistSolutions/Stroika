@@ -9,6 +9,7 @@
 #include    "../Mapping.h"
 
 
+
 /**
  *  \file
  *
@@ -17,6 +18,7 @@
  *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
+
 
 
 namespace   Stroika {
@@ -74,6 +76,5 @@ namespace   Stroika {
  */
 
 #include    "Mapping_LinkedList.inl"
-
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_LinkedList_h_ */

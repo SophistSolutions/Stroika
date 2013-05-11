@@ -5,6 +5,14 @@
 #ifndef _Stroika_Foundation_Containers_Private_SynchronizationUtils_h_
 #define _Stroika_Foundation_Containers_Private_SynchronizationUtils_h_
 
+#include    "../../StroikaPreComp.h"
+
+#include    "../../Configuration/Common.h"
+
+#include    "../Common.h"
+
+
+
 /**
  *  Private utilities to support building subtypes of Containers::Iterable<T>
  *
@@ -14,12 +22,6 @@
  *
  */
 
-
-#include    "../../StroikaPreComp.h"
-
-#include    "../../Configuration/Common.h"
-
-#include    "../Common.h"
 
 
 #define qContainersPrivateSyncrhonizationPolicy_StdMutex_   1
@@ -36,6 +38,7 @@
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
 #include    <mutex>
 #endif
+
 
 
 namespace   Stroika {

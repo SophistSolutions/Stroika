@@ -15,6 +15,7 @@
 #include    "Common.h"
 
 
+
 /*
 * TODO:
 *
@@ -35,7 +36,9 @@ namespace   Stroika {
         namespace   DataExchangeFormat {
             namespace   XML {
 
+
                 using   Characters::String;
+
 
                 /*
                  */
@@ -44,9 +47,11 @@ namespace   Stroika {
                 string  QuoteForXMLAttribute (const String& s);
                 string  QuoteForXMLAttribute (const Memory::Optional<String>& s);
 
+
                 /*
                  */
                 wstring QuoteForXMLAttributeW (const wstring& s);
+
 
                 /*
                  * This function only emits ascii characters (so makes no assumptions about the codepage used for writing xml). It
@@ -57,10 +62,10 @@ namespace   Stroika {
                 string  QuoteForXML (const String& s);
                 string  QuoteForXML (const Memory::Optional<String>& s);
 
+
                 /*
                  */
                 wstring QuoteForXMLW (const wstring& s);
-
 
 
                 class   Indenter {
@@ -77,8 +82,6 @@ namespace   Stroika {
                 };
 
 
-
-
                 /*
                  * Format values for XML output.
                  *      PROBABLY should map QuoteForXML to this overloaded name?
@@ -91,12 +94,11 @@ namespace   Stroika {
                 //string    Format4XML (Time::Date v);      NYI
                 //string    Format4XML (Time::DateTime v);
 
+
             }
         }
     }
 }
-
-
 
 
 

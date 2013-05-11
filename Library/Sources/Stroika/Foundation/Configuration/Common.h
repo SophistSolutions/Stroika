@@ -8,11 +8,14 @@
 #include    <cstdint>
 #include    <ciso646>
 
+
 namespace   Stroika {
     namespace   Foundation {
         using   namespace   std;
     }
 }
+
+
 
 namespace   Stroika {
     namespace   Foundation {

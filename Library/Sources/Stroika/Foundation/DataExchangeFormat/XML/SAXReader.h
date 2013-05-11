@@ -16,6 +16,7 @@
 #include    "Common.h"
 
 
+
 /*
  * TODO:
  *
@@ -27,12 +28,15 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
             namespace   XML {
 
+
                 using   Characters::String;
+
 
                 // Override any of these methods you want to recieve notification of the given event. There is no need to call the
                 // inherited version.
@@ -47,6 +51,7 @@ namespace   Stroika {
                     virtual void    CharactersInsideElement (const String& text);
                 };
 
+
 #if     qHasLibrary_Xerces
                 /*
                  * Parse will throw an exception if it encouters any errors parsing.
@@ -56,6 +61,7 @@ namespace   Stroika {
                 //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
                 //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
 #endif
+
 
             }
         }

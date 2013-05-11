@@ -13,6 +13,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
 
+
             void    DropIntoDebuggerIfPresent ();
 
         }

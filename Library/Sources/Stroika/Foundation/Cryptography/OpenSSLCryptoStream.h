@@ -38,6 +38,8 @@
  *
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {

@@ -14,6 +14,7 @@
 #include    "../Execution/ModuleInit.h"
 
 
+
 /**
  *  \file
  *
@@ -36,25 +37,22 @@
  */
 
 
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Memory {
 
 
 
-            /**
-             *  \def qAllowBlockAllocation
-             *
-             *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
-             *
-             *  Allow use of block-allocation. The main reason to disable it indescriminantly
-             *  is for debugging purposes (looking for memory leaks). But others may have other
-             *  reasons.
-             *
-             *      Defaults to 1
-             *
-             *  \hideinitializer
-             */
+/**
+ *  \def qAllowBlockAllocation
+ *
+ *  \brief  Allow use of block-allocation im classes which uses DECLARE_USE_BLOCK_ALLOCATION()
+ *
+ *  Allow use of block-allocation. The main reason to disable it indescriminantly
+ *  is for debugging purposes (looking for memory leaks). But others may have other
+ *  reasons.
+ *
+ *      Defaults to 1
+ *
+ *  \hideinitializer
+ */
 #if     defined (__Doxygen__)
 #define qAllowBlockAllocation
 #endif
@@ -64,6 +62,11 @@ namespace   Stroika {
 #error "qAllowBlockAllocation should normally be defined indirectly by StroikaConfig.h"
 #endif
 
+
+
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Memory {
 
 
             /**
@@ -85,9 +88,6 @@ namespace   Stroika {
                 static  void    SetNextLink_ (void* nextLink);
 #endif
             };
-
-
-
 
 
 
@@ -221,9 +221,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

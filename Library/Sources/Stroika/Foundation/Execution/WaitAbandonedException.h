@@ -15,12 +15,17 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             class   WaitAbandonedException : public StringException {
             public:
                 WaitAbandonedException ();
             };
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_WaitAbandonedException_h_*/

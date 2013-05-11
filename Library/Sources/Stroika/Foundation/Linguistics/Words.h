@@ -11,16 +11,19 @@
 #include    "../Configuration/Common.h"
 
 
-/*
+
+/**
  * TODO:
  *      (o)     Very VERY primitive linguistic support, but this could easily evolve over time. Led has a bunch of
  *              lingusitic code I could move here, and I'm sure I could dig up more...
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Linguistics {
+
 
             using   std::string;
             using   std::wstring;
@@ -38,23 +41,30 @@ namespace   Stroika {
             string  PluralizeNoun (const string& s, const string& sPlural, int count = 1000);
             wstring PluralizeNoun (const wstring& s, const wstring& sPlural, int count = 1000);
 
+
             wstring MungeStringSoSingular (const wstring& s);
             string  MungeStringSoSingular (const string& s);
 
+
             string  CapitalizeEachWord (const string& s);   // e.g. 'joe smith' becomes 'Joe Smith'
             wstring CapitalizeEachWord (const wstring& s);
+
+
             string  CapitalizeEachSentence (const string& s);   // e.g. 'joe smith' becomes 'Joe smith'
             wstring CapitalizeEachSentence (const wstring& s);
+
+
             string  UnCapitalizeFirstWord (const string& s);    // e.g. 'Joe Smith' becomes 'joe Smith', but 'IBM eats' stays 'IBM eats'
             wstring UnCapitalizeFirstWord (const wstring& s);
+
+
             bool    IsAllCaps (const string& s);
             bool    IsAllCaps (const wstring& s);
+
 
         }
     }
 }
-
-
 
 
 
@@ -63,6 +73,5 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 
 #endif  /*_Stroika_Foundation_Linguistics_Words_h_*/

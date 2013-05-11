@@ -9,16 +9,22 @@
 #include    "StringException.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
             class   WaitTimedOutException : public StringException {
             public:
                 WaitTimedOutException ();
             };
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_WaitTimedOutException_h_*/

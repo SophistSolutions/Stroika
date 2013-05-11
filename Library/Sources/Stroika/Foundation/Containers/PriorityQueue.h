@@ -4,6 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_PriorityQueue_h_
 #define _Stroika_Foundation_Containers_PriorityQueue_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+
+
 /*
  *
  *
@@ -23,12 +30,6 @@
  */
 
 
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-
 
 namespace   Stroika {
     namespace   Foundation {
@@ -38,6 +39,8 @@ namespace   Stroika {
             typedef uint16_t    Priority;
             const   Priority    kMinPriority    =   kMinUInt16;
             const   Priority    kMaxPriority    =   kMaxUInt16;
+
+
             // Someday this should be renamed ...
             template    <typename T>
             class   PQEntry {
@@ -47,7 +50,8 @@ namespace   Stroika {
                 T           fItem;
                 Priority    fPriority;
             };
-            template    <class T> Boolean   operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
+            template    <class T>
+            Boolean   operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
 
 
             /*
@@ -152,4 +156,3 @@ namespace   Stroika {
 #include    "PriorityQueue.inl"
 
 #endif  /*_Stroika_Foundation_Containers_PriorityQueue_h_ */
-

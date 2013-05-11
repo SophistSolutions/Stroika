@@ -18,6 +18,7 @@ namespace   Stroika {
 
             typedef double  DurationSecondsType;
 
+
             /**
              *  Get the number of seconds since some constant, system-specified reference time. This is used
              *  to tell how much time has elapsed since a particular event.
@@ -36,6 +37,7 @@ namespace   Stroika {
              */
             DurationSecondsType GetTickCount ();
 
+
             /**
             */
 #if     qCompilerAndStdLib_Supports_constexpr
@@ -48,7 +50,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

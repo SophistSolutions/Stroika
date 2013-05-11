@@ -12,6 +12,7 @@
 #include    "../Configuration/Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -42,7 +43,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

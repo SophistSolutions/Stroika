@@ -11,6 +11,7 @@
 #include    <memory>
 
 
+
 /**
  *  @todo   SharedByValue - even when given an effectively ZERO-SIZED arg for COPIER - since it
  *          saves it as a data member and has min-size 1 byte it wastes space in SharedByValue<T>.
@@ -19,6 +20,8 @@
  *          msvc vector<T> template does so presumably it IS optimized.
  *
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -69,7 +72,6 @@ namespace   Stroika {
                 typedef COPIER          copier_type;
                 typedef SHARED_IMLP     shared_ptr_type;
             };
-
 
 
             /**
@@ -163,13 +165,10 @@ namespace   Stroika {
                 nonvirtual  void    BreakReferences_ ();
             };
 
+
         }
     }
 }
-
-
-
-
 
 
 

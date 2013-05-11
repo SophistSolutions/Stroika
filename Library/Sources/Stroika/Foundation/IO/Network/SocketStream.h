@@ -12,7 +12,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -20,10 +19,13 @@
  *
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
+
 
                 /**
                  *  A SocketStream wraps a a socket as a BinaryTiedStreams - two separate by related streams.
@@ -43,12 +45,11 @@ namespace   Stroika {
                     explicit SocketStream (Socket sd);
                 };
 
+
             }
         }
     }
 }
-
-
 
 
 

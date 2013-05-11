@@ -11,11 +11,13 @@
 #include    "../../Characters/TString.h"
 
 
-/*
+
+/**
  * TODO:
  *      o   While we have a lot of code that is iostream based, and before the Stroika stream stuff matures, many of these
  *          utiltiies maybe handy. I'm not sure we will want them long-term however.
  */
+
 
 
 namespace   Stroika {
@@ -31,11 +33,6 @@ namespace   Stroika {
                 wstring ReadTextStream (istream& in);
                 wstring ReadTextStream (wistream& in);
 
-#if 0
-                void    WriteString (ostream& out, const wstring& s);
-                wstring ReadString (istream& in);
-#endif
-
                 vector<Byte>    ReadBytes (istream& in);
                 void            WriteBytes (ostream& out, const vector<Byte>& s);
 
@@ -44,4 +41,7 @@ namespace   Stroika {
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Streams_iostream_Utilities_h_*/

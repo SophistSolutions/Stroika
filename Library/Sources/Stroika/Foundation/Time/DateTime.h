@@ -25,7 +25,6 @@
 
 
 
-
 /**
  * TODO:
  *
@@ -95,6 +94,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
+
             using   Characters::String;
 
 
@@ -114,7 +114,6 @@ namespace   Stroika {
              *          This is a bit like the floating point concept of negative infinity.
              */
             class   DateTime {
-
             public:
                 /**
                  *  Most of the time applications will utilize localtime. But occasionally its useful to use
@@ -360,11 +359,10 @@ namespace   Stroika {
 
             Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
+
         }
     }
 }
-
-
 
 
 

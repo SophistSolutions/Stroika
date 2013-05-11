@@ -8,6 +8,8 @@
 
 #include    "../Bag.h"
 
+
+
 /**
  *  \file
  *
@@ -18,6 +20,7 @@
  *              THEN - MAYBE - try todo better, but at least do this as starter
  *
  */
+
 
 
 namespace   Stroika {

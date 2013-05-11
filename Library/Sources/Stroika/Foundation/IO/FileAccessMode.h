@@ -6,10 +6,12 @@
 
 #include    "../StroikaPreComp.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
-
         namespace   IO {
+
 
             // First draft of access-mode support. Much better stuff in PHRDB permissions security logic.
             // But this will do for now...
@@ -25,11 +27,24 @@ namespace   Stroika {
             FileAccessMode operator| (FileAccessMode l, FileAccessMode r);
 
 
+        }
+    }
+}
 
 
-            /**
-             * @todo add .inl file
-             */
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+
+/**
+* @todo add .inl file
+*/
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   IO {
             inline FileAccessMode operator& (FileAccessMode l, FileAccessMode r)
             {
                 return FileAccessMode (static_cast<int> (l) & static_cast<int> (r));
@@ -43,12 +58,5 @@ namespace   Stroika {
 }
 
 
-
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
 
 #endif  /*_Stroika_Foundation_IO_FileAccessMode_h_*/

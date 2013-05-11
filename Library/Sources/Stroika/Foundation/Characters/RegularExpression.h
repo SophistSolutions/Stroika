@@ -4,6 +4,14 @@
 #ifndef _Stroika_Foundation_Characters_RegularExpression_h_
 #define _Stroika_Foundation_Characters_RegularExpression_h_    1
 
+#include    "../StroikaPreComp.h"
+
+#include    <regex>
+
+#include    "String.h"
+
+
+
 /**
  *  \file
  *
@@ -15,13 +23,6 @@
  *
  *      o   ...
  */
-
-#include    "../StroikaPreComp.h"
-
-#include    <regex>
-
-#include    "String.h"
-
 
 
 
@@ -79,6 +80,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "RegularExpression.inl"
-
 
 #endif  /*_Stroika_Foundation_Characters_RegularExpression_h_*/

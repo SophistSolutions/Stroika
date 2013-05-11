@@ -11,6 +11,8 @@
 
 #include    "../../Configuration/Common.h"
 
+
+
 /*
  * TODO:
  *      o   MAYBE impleemnt SSLStream class- using 'memory-based' BIO. Supposedly that possible. Not totally clear.
@@ -22,6 +24,9 @@
  *
  */
 
+
+
+
 /*
 @CONFIGVAR:     qHas_OpenSSL
 @DESCRIPTION:   <p>0 or 1</p>
@@ -31,6 +36,7 @@
 #endif
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
@@ -38,6 +44,7 @@ namespace   Stroika {
 
 
                 // common defines - like if we are using OPENSSL
+
 
             }
         }

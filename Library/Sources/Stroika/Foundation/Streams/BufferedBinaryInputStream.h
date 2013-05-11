@@ -13,7 +13,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -32,6 +31,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             /**
              *  @brief  BufferedBinaryInputStream is a BinaryInputStream which provides buffered access.
              *          This is useful if calls to the underling stream source can be expensive. This class
@@ -44,11 +44,10 @@ namespace   Stroika {
                 BufferedBinaryInputStream (const BinaryInputStream& realIn);
             };
 
+
         }
     }
 }
-
-
 
 
 

@@ -14,6 +14,7 @@
 #include    "Event.h"
 
 
+
 /**
  *  \file
  *
@@ -33,9 +34,11 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
             /**
              *  This simple class is the basis of Stroika deferred run-task support (and threading etc).
@@ -61,6 +64,7 @@ namespace   Stroika {
                 virtual void    Run () = 0;
             };
 
+
             /**
              */
             typedef shared_ptr<IRunnable>   IRunnablePtr;
@@ -83,9 +87,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

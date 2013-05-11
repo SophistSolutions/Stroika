@@ -18,6 +18,7 @@
 #include    "ProgressMonitor.h"
 
 
+
 /**
  *  TODO:
  *      @todo   Windows implementation is weak, but appears fully functional.
@@ -73,6 +74,7 @@
  *      o
  *
  */
+
 
 
 namespace   Stroika {
@@ -181,9 +183,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

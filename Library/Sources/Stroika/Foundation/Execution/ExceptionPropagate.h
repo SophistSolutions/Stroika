@@ -19,7 +19,8 @@
 #include    "Exceptions.h"
 
 
-/*
+
+/**
  * TODO:
  *      (o) Re-implement using new C++11 feature:
             Copying and rethrowing exceptions
@@ -75,9 +76,6 @@ namespace   Stroika {
             };
 
 
-
-
-
             /*
             @METHOD:        CATCH_AND_CAPTURE_CATCH_BLOCK(CE)
             @DESCRIPTION:   <p>Is given an argument isntance of ExceptionPropagateHelper - and any throws done in the above this use try block will be caught
@@ -91,12 +89,9 @@ namespace   Stroika {
             //..
 
 
-
-
         }
     }
 }
-
 
 
 
@@ -106,6 +101,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ExceptionPropagate.inl"
-
 
 #endif  /*_Stroia_Foundation_Execution_Propagate_h_*/

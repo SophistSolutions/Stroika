@@ -16,6 +16,7 @@
 #include    "InternetAddress.h"
 
 
+
 /**
  * TODO:
  *
@@ -23,10 +24,12 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
+
 
                 /**
                  */
@@ -92,6 +95,7 @@ namespace   Stroika {
                     sockaddr    fSocketAddress_;
                 };
 
+
                 // Supported specializations
                 template    <>
                 sockaddr        SocketAddress::As<sockaddr> () const;
@@ -105,7 +109,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

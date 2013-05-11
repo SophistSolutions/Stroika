@@ -17,11 +17,14 @@
 
 #include    "../Manager.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
                 namespace   Concrete {
+
 
                     /**
                      * Provide ResourceManager access to a Windows resource section of a Windows executable.
@@ -32,6 +35,7 @@ namespace   Stroika {
                     private:
                         class   IRep_;
                     };
+
 
                 }
             }

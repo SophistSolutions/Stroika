@@ -33,11 +33,11 @@
  *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-
-
 
 
             /**
@@ -146,7 +146,6 @@ namespace   Stroika {
             };
 
 
-
             /*
              * Helper used to continue reporting progress, but breaking the progress into subtasks, and doing the artithmatic of integrating the total into an overall progress total.
              */
@@ -182,12 +181,10 @@ namespace   Stroika {
                 float               fToProg;
             };
 
+
         }
     }
 }
-
-
-
 
 
 

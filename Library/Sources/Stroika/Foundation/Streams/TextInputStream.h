@@ -22,12 +22,15 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             using   Characters::Character;
             using   Characters::String;
+
 
             /**
              * Design Overview:
@@ -129,6 +132,7 @@ namespace   Stroika {
                 nonvirtual  String ReadAll () const;
             };
 
+
             /**
              *
              */
@@ -148,11 +152,10 @@ namespace   Stroika {
                 virtual size_t  _Read (Character* intoStart, Character* intoEnd)            =   0;
             };
 
+
         }
     }
 }
-
-
 
 
 

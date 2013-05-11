@@ -9,6 +9,7 @@
 #include    "Common.h"
 
 
+
 /**
  *  \file
  *
@@ -16,6 +17,7 @@
  *      @todo - maybe stuff like Add(ENUM, ENUM), and DIFF (ENum,ENUM) to workouarnd
  *              issues with too-strong typing with enum class?? (avoid so many casts)
  */
+
 
 
 namespace   Stroika {

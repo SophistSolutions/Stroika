@@ -12,6 +12,7 @@
 #include    "Name.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -52,13 +53,11 @@ namespace   Stroika {
                     nonvirtual  Accessor    CheckedReadResource (const Name& name) const noexcept;
                 };
 
+
             }
         }
     }
 }
-
-
-
 
 
 

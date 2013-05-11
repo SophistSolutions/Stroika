@@ -17,6 +17,7 @@
 #include    "../../CodePage.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {

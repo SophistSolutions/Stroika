@@ -24,6 +24,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -125,11 +126,10 @@ namespace   Stroika {
                 virtual void    Flush ()         =   0;
             };
 
+
         }
     }
 }
-
-
 
 
 

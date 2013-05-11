@@ -4,13 +4,6 @@
 #ifndef _Stroika_Foundation_Characters_TChar_h_
 #define _Stroika_Foundation_Characters_TChar_h_ 1
 
-/*
-@MODULE:    CodePage
-@DESCRIPTION:
-        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
-    and UNICODE encodings.</p>
- */
-
 #include    "../StroikaPreComp.h"
 
 #include    <cstdlib>
@@ -20,6 +13,15 @@
 #endif
 
 #include    "../Configuration/Common.h"
+
+
+
+/*
+@MODULE:    CodePage
+@DESCRIPTION:
+        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
+    and UNICODE encodings.</p>
+ */
 
 
 
@@ -50,6 +52,7 @@ namespace   Stroika {
 #else
 #define TSTR(x)    x
 #endif
+
 
         }
     }

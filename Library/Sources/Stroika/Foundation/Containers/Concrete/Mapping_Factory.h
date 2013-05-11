@@ -21,12 +21,15 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             template    <typename Key, typename T>
             class   Mapping;
+
 
             namespace   Concrete {
 

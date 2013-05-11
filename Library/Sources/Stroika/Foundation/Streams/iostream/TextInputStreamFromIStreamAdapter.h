@@ -17,10 +17,11 @@
 
 
 
-/*
+/**
  * TODO:
  *          o   Consider mixing in Seekable here. Would be easy
  */
+
 
 
 namespace   Stroika {
@@ -47,13 +48,10 @@ namespace   Stroika {
 
 
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-
 
 #endif  /*_Stroika_Foundation_Streams_iostream_TextInputStreamFromIStreamAdapter_h_*/

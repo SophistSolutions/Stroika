@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 
 
+
 /**
  *      \file
  *
@@ -70,7 +71,6 @@
  *              cached elements – so persist mechanism must parameterize that).
  *
  */
-
 
 
 
@@ -264,8 +264,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

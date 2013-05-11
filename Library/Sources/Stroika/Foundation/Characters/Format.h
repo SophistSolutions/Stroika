@@ -15,7 +15,7 @@
 
 
 
-/*
+/**
  * TODO:
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
@@ -27,11 +27,7 @@
 
 
 
-
-
-
-
-/*
+/**
 @CONFIGVAR:     qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
 @DESCRIPTION:   Very surprising difference between Microsoft of Linux interpretations of sprintf(). It appears the Linux/gcc approach was
                 blessed by ISO - and so is now 'correct'. But no matter, because its so fundementally different, they will have a difficult
@@ -84,15 +80,17 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
             using   std::string;
             using   std::wstring;
 
+
             using   Characters::CodePage;
+
 
             /*
              * Format is the Stroika wrapper on sprintf().
@@ -166,7 +164,7 @@ namespace   Stroika {
             wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 
 
-            /*
+            /**
              *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
              *  characters (like trailing CRLF, or trailing '.').
              */

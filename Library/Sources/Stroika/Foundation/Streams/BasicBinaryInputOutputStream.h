@@ -16,6 +16,7 @@
 #include    "Seekable.h"
 
 
+
 /*
  *  \file
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
@@ -24,7 +25,6 @@
  *      @todo   explain about read/write at same time / threadsa, nd logic for shared SEEK OFFSET
  *
  */
-
 
 
 
@@ -84,14 +84,11 @@ namespace   Stroika {
 
 
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
 #include    "BasicBinaryInputOutputStream.inl"
-
 
 #endif  /*_Stroika_Foundation_Streams_BasicBinaryInputOutputStream_h_*/

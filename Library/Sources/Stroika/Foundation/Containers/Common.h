@@ -9,6 +9,7 @@
 #include    <cstddef>
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {

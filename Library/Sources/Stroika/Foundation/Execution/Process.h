@@ -20,6 +20,7 @@
 #include    "Exceptions.h"
 
 
+
 #if     !defined (qHas_pid_t)
 #error  "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif
@@ -30,6 +31,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
 #if     !qHas_pid_t
 #if     qPlatform_Windows
             typedef DWORD   pid_t;
@@ -38,13 +40,13 @@ namespace   Stroika {
 #endif
 #endif
 
+
             pid_t   GetCurrentProcessID ();
+
 
         }
     }
 }
-
-
 
 
 

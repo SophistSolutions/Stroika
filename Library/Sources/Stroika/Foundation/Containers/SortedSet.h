@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_SortedSet_h_
 #define _Stroika_Foundation_Containers_SortedSet_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "Set.h"
+
+
+
 /*
  *
  *  STATUS:
@@ -14,11 +20,6 @@
  *  TODO:
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "Set.h"
 
 
 

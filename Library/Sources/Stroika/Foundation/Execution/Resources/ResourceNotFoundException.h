@@ -11,18 +11,25 @@
 #include    "../StringException.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::String;
+
 
             class   ResourceNotFoundException : public StringException {
             public:
                 ResourceNotFoundException ();
             };
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_Resources_ResourceNotFoundException_h_*/

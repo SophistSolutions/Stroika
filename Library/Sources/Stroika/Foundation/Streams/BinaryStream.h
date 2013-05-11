@@ -14,7 +14,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -109,11 +108,10 @@ namespace   Stroika {
                 virtual ~_IRep ();
             };
 
+
         }
     }
 }
-
-
 
 
 

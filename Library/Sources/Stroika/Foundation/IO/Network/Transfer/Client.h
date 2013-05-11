@@ -19,11 +19,10 @@
 
 
 
-// *        (o)     Draft API
-
-
-
-/*
+/**
+ *
+ * STATUS:     Draft API
+ *
  * TODO:
  *
  *
@@ -52,11 +51,13 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
                 namespace   Transfer {
+
 
                     using   Characters::String;
                     using   Containers::Mapping;
@@ -85,8 +86,6 @@ namespace   Stroika {
                     };
 
 
-
-
                     struct  Response {
                         struct  SSLResultInfo;
                         Response ();
@@ -99,6 +98,7 @@ namespace   Stroika {
                         nonvirtual  bool                GetSucceeded () const;
                         nonvirtual  InternetMediaType   GetContentType () const;    // scans headers
                     };
+
 
                     // This info is returned only for secure connections - and is an indicator of whether or
                     // not the SSL connection was valid
@@ -122,7 +122,6 @@ namespace   Stroika {
                         };
                         ValidationStatus    fValidationStatus;
                     };
-
 
 
                     // TODO:
@@ -181,19 +180,18 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      * Simple connection factory object. If you don't care what backend to use for remote connections, use this API
                      * to construct an unconnected object.
                      */
                     Connection  CreateConnection ();
+
+
                 }
             }
         }
     }
 }
-
-
 
 
 

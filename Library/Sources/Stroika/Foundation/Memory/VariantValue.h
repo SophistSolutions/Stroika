@@ -14,6 +14,7 @@
 #include    "../Time/DateTime.h"
 
 
+
 /**
  *  TODO:
  *
@@ -26,9 +27,12 @@
  *              types than we do.
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
+
 
             using   Time::Date;
             using   Time::DateTime;
@@ -169,8 +173,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

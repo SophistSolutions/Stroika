@@ -35,13 +35,19 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
+
+
             class   BinaryInputStream;
+
+
         }
     }
 }
+
 
 namespace   Stroika {
     namespace   Foundation {

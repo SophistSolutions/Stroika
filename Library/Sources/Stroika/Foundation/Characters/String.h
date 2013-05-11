@@ -4,6 +4,17 @@
 #ifndef _Stroika_Foundation_Characters_String_h_
 #define _Stroika_Foundation_Characters_String_h_    1
 
+#include    "../StroikaPreComp.h"
+
+#include    <string>
+
+#include    "../Execution/ModuleInit.h"
+#include    "../Memory/SharedByValue.h"
+#include    "TString.h"
+
+#include    "Character.h"
+
+
 /**
  *  \file
  *
@@ -33,21 +44,7 @@
  *              o   String_ExternalMemoryOwnership_StackLifetime_ReadOnly
  *              o   String_ExternalMemoryOwnership_StackLifetime_ReadWrite
  *              o   String_Common
- */
-
-#include    "../StroikaPreComp.h"
-
-#include    <string>
-
-#include    "../Execution/ModuleInit.h"
-#include    "../Memory/SharedByValue.h"
-#include    "TString.h"
-
-#include    "Character.h"
-
-
-
-/**
+ *
  * TODO:
  *
  *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
@@ -163,16 +160,16 @@
 
 
 
-
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
             constexpr size_t    kBadStringIndex   = wstring::npos;
 
+
             class   RegularExpression;
+
 
             /**
              *  The Stroika String class is an alternatve for the std::wstring class, which should be largely
@@ -641,6 +638,7 @@ namespace   Stroika {
                 friend  String  operator+ (const String& lhs, const String& rhs);
             };
 
+
             template    <>
             void    String::As (wstring* into) const;
             template    <>
@@ -659,7 +657,6 @@ namespace   Stroika {
             void    String::AsASCII (string* into) const;
             template    <>
             string  String::AsASCII () const;
-
 
 
             /**
@@ -734,15 +731,11 @@ namespace   Stroika {
             bool    operator>= (const String& lhs, const wchar_t* rhs);
 
 
-
             /**
              * @brief   Return true of the two argument strings are equal. This is equivilent to
              *              lhs.compare (rhs, co);
              */
             bool Equals (const String& lhs, const String& rhs, CompareOptions co = CompareOptions::eWithCase);
-
-
-
 
 
             /**
@@ -776,11 +769,6 @@ namespace   Stroika {
                 // A value of n < GetLength () will be ignored.
                 nonvirtual  void    reserve (size_t n);
             };
-
-
-
-
-
 
 
             /**
@@ -832,9 +820,6 @@ namespace   Stroika {
             typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
 
 
-
-
-
             /**
              *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite is a subtype of string you can
              * use to construct a String object, so long as the memory pointed to in the argument has a
@@ -882,10 +867,7 @@ namespace   Stroika {
             };
 
 
-
-
-
-            /*
+            /**
             *
             *   Design Overview:
             *
@@ -919,7 +901,7 @@ namespace   Stroika {
             *
             *       THATS THE PLAN ANYHOW....
             *
-
+            *
             **
             ** SERIOUS - NOT sure what todo about stuff like c_str() - as doc says below - no obvious limitation on lifetime! I GUESS we must simply
             ** force such APIs to 'breakreferences' - as the note below says. THAT does appear to fix the problem - but at a cost - maybe too huge cost?
@@ -1005,8 +987,6 @@ namespace   Stroika {
 // DOCUMENT THESE NEW EXTRA CTORS!!! NYI
                 explicit String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* start, const wchar_t* end);
             };
-
-
 
 
             /**
@@ -1107,6 +1087,7 @@ namespace   Stroika {
              */
             Execution::ModuleDependency MakeModuleDependency_String ();
 
+
         }
     }
 }
@@ -1119,6 +1100,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "String.inl"
-
 
 #endif  /*_Stroika_Foundation_Characters_String_h_*/

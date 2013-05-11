@@ -30,20 +30,18 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   FileSystem {
+
 
                 using   Characters::TChar;
                 using   Characters::TString;
                 using   Time::DateTime;
 
 
-
-
-                /*
+                /**
                  * A 'Directory' here refers to a "Directory Name". The methods of Directory operate on the actual filesystem (like Create), but
                  * this objects lifetime is not connected to the lifetime of any objects with similar names on the filesystem.
                  */
@@ -60,8 +58,6 @@ namespace   Stroika {
                     void    Delete () const;    // fails if exists after teh operaotion - Fails if doest exist
                     void    AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
-
-
                     // only works (For now) with type wstring
                     template    <typename T>
                     wstring As () const;
@@ -72,11 +68,11 @@ namespace   Stroika {
                     TString fFileFullPath_;
                 };
 
+
             }
         }
     }
 }
-
 
 
 

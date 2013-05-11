@@ -21,10 +21,13 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::TString;
+
 
             namespace   Platform {
                 namespace   Windows {
+
 
                     class   HRESULTErrorException {
                     public:
@@ -45,6 +48,7 @@ namespace   Stroika {
 
                 }
             }
+
 
             template    <>
             void    _NoReturn_  DoThrow (const Platform::Windows::HRESULTErrorException& e2Throw);
@@ -76,9 +80,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

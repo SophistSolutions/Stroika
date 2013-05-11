@@ -11,6 +11,8 @@
 
 #include    "../Manager.h"
 
+
+
 /**
  *  \file
  *
@@ -35,11 +37,13 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
                 namespace   Concrete {
+
 
                     /**
                      * NYI, but this class will be paired with a compiler which takes an arbitrary file and converts it to
@@ -51,15 +55,12 @@ namespace   Stroika {
                         CompiledResourceManager ();
                     };
 
+
                 }
             }
         }
     }
 }
-
-
-
-
 
 
 

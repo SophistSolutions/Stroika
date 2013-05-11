@@ -15,11 +15,13 @@
 #include    "../../../Configuration/Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
             namespace   Platform {
                 namespace   Windows {
+
 
                     class   StackBasedHandleLocker {
                     public:
@@ -38,12 +40,12 @@ namespace   Stroika {
                         Byte*   fPointer;
                     };
 
+
                 }
             }
         }
     }
 }
-
 
 
 

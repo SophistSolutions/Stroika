@@ -12,9 +12,11 @@
 #include    "Exceptions.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
             enum class  UserNameFormat : uint8_t {
                 ePrettyName,
@@ -22,7 +24,11 @@ namespace   Stroika {
             };
             Characters::String  GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_Users_h_*/

@@ -37,6 +37,8 @@
  *              non-seekable sources).
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {

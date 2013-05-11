@@ -9,12 +9,16 @@
 #include    "../Characters/TChar.h"
 #include    "../Configuration/Common.h"
 
+
+
 /*
  * TODO:
  *      @todo   Consider adding in here the Windows Structured Erorr handling stuff here.
  *              I think we already have hooks to translate that into exceptions.
  *              Maybe thats better? Dunno.
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {

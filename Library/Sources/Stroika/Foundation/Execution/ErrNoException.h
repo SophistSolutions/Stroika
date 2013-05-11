@@ -12,6 +12,7 @@
 #include    "StringException.h"
 
 
+
 /**
  *  TODO:
  *
@@ -25,6 +26,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -36,6 +38,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_Supports_errno_t
             typedef int errno_t;
 #endif
+
 
             class   errno_ErrorException : public StringException {
             public:
@@ -66,7 +69,6 @@ namespace   Stroika {
             void    ThrowErrNoIfNegative (INT_TYPE returnCode);
 
 
-
 #ifndef qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction
 #define qCanGetAutoDeclTypeStuffWorkingForTemplatedFunction 0
 #endif
@@ -85,15 +87,16 @@ namespace   Stroika {
             template    <>
             void    _NoReturn_  DoThrow (const errno_ErrorException& e2Throw);
 
+
             /*
              * Throw if errno is non-zero. Not an error - silently ignored - if errno is 0 (NOERROR)
              */
             void    ThrowIfError_errno_t (errno_t e = errno);
 
+
         }
     }
 }
-
 
 
 

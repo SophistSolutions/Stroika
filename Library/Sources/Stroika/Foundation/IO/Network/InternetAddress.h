@@ -39,10 +39,12 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
+
 
                 using   Characters::String;
 
@@ -167,8 +169,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

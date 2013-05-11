@@ -17,13 +17,17 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
+
+
             /*
              * Legacy "C_String" string utilities.
              */
             namespace   CString {
+
 
                 using   std::string;
                 using   std::wstring;

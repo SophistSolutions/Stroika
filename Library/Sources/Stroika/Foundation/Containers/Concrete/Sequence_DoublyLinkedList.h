@@ -9,6 +9,7 @@
 #include    "../Sequence.h"
 
 
+
 /**
  *  \file
  *
@@ -18,6 +19,7 @@
  *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
+
 
 
 namespace   Stroika {
@@ -68,6 +70,5 @@ namespace   Stroika {
  */
 
 #include    "Sequence_DoublyLinkedList.inl"
-
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_Sequence_DoublyLinkedList_h_ */

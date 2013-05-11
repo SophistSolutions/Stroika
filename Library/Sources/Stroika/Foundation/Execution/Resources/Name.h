@@ -10,13 +10,16 @@
 #include    "../../Configuration/Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
 
+
                 using   namespace   Stroika::Foundation::Characters;
                 using   namespace   Stroika::Foundation::Configuration;
+
 
 #if     qPlatform_Windows
                 // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
@@ -25,9 +28,11 @@ namespace   Stroika {
                 typedef int     ResourceType;
 #endif
 
+
                 namespace PredefinedTypes {
                     extern const ResourceType   kRES;       // 'RES' - or default type
                 }
+
 
                 class   Name {
                 public:
@@ -42,14 +47,11 @@ namespace   Stroika {
                     ResourceType    fType_;
                 };
 
+
             }
         }
     }
 }
-
-
-
-
 
 
 

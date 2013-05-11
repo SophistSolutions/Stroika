@@ -16,14 +16,18 @@
 #include    "../../../Characters/TString.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::TString;
+
 
             namespace   Platform {
                 namespace   Windows {
+
 
                     class   Exception {
                     public:
@@ -63,14 +67,12 @@ namespace   Stroika {
                     // logging)
                     void    RegisterDefaultHandler_invalid_parameter ();
 
+
                 }
             }
         }
     }
 }
-
-
-
 
 
 

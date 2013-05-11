@@ -16,14 +16,14 @@
 #include    "Seekable.h"
 
 
-/*
+
+/**
  *  \file
  *
  *      @todo   Re-implement using atomics to avoid critical section (cheaper).
  *
  *      @todo   #if qCompilerAndStdLib_Supports_ConstructorDelegation && 0 -- see why not working on gcc 4.7.2
  */
-
 
 
 
@@ -66,9 +66,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

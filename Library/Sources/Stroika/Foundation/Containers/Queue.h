@@ -4,6 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_Queue_h_
 #define _Stroika_Foundation_Containers_Queue_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+
+
 /*
  *
  *
@@ -20,12 +27,6 @@
  *      (o)         Should inherit from Iterable<T>
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
 
 
 
@@ -158,6 +159,5 @@ namespace   Stroika {
  */
 
 #include    "Queue.inl"
-
 
 #endif  /*_Stroika_Foundation_Containers_Queue_h_ */

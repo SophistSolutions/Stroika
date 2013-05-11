@@ -11,6 +11,7 @@
 #include    "SortedMapping_stdmap.h"
 
 
+
 /**
  *  \file
  *
@@ -23,6 +24,7 @@
  *              embrace of #include problems. Maybe easier to just implement it
  *              a second time (duplicate the SortedMapping_stdmap<> code).
  */
+
 
 
 namespace   Stroika {
@@ -64,6 +66,7 @@ namespace   Stroika {
 
                 };
 #endif
+
 
             }
         }

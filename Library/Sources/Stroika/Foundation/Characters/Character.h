@@ -10,8 +10,7 @@
 
 
 
-
-/*
+/**
  * TODO:
  *
  *      @todo   REDO THIS SO ALWAYS USES char32_t - NOT wchar_t!!!! But DONT DO until I have a STRING class
@@ -35,9 +34,6 @@
 
 
 
-
-
-
 /*
 @CONFIGVAR:     qNBytesPerWCharT
 @DESCRIPTION:   <p>2 or 4</p>
@@ -48,8 +44,6 @@
 #if     qNBytesPerWCharT != 2 && qNBytesPerWCharT != 4
 #error "qNBytesPerWCharT invalid value"
 #endif
-
-
 
 
 

@@ -9,6 +9,8 @@
 #include    "../Memory/Optional.h"
 #include    "../Execution/StringException.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
@@ -41,8 +43,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

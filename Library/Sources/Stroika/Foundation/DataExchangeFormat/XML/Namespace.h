@@ -14,6 +14,7 @@
 #include    "Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
@@ -55,12 +56,11 @@ namespace   Stroika {
                 bool    operator< (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
                 bool    operator== (const NamespaceDefinitionsList& lhs, const NamespaceDefinitionsList& rhs);
 
+
             }
         }
     }
 }
-
-
 
 
 

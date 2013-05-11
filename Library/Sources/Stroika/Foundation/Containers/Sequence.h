@@ -4,6 +4,18 @@
 #ifndef _Stroika_Foundation_Containers_Sequence_h_
 #define _Stroika_Foundation_Containers_Sequence_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    <limits>
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+#include    "Iterable.h"
+#include    "Iterator.h"
+
+
+
 /*
  *
  *
@@ -51,16 +63,6 @@
  *
  */
 
-
-#include    "../StroikaPreComp.h"
-
-#include    <limits>
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
 
 
 namespace   Stroika {
@@ -378,6 +380,7 @@ namespace   Stroika {
         }
     }
 }
+
 
 
 /*

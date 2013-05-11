@@ -10,6 +10,8 @@
 #include    "../Configuration/Common.h"
 #include    "TextStream.h"
 
+
+
 /**
  *  \file
  *
@@ -17,13 +19,16 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             using   Characters::Character;
 
-            /*
+
+            /**
              * Design Overview:
              *
              *      o   TextOutputStream represents a sink for Characters. It may or may not be Seekable, and can be
@@ -71,6 +76,7 @@ namespace   Stroika {
                 nonvirtual  void    Write (const wchar_t* cStr) const;
             };
 
+
             /**
              *
              */
@@ -88,11 +94,10 @@ namespace   Stroika {
                 virtual void    Write (const Character* start, const Character* end)           =   0;
             };
 
+
         }
     }
 }
-
-
 
 
 

@@ -4,6 +4,11 @@
 #ifndef _Stroika_Foundation_Containers_ElementTraits_h_
 #define _Stroika_Foundation_Containers_ElementTraits_h_   1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+
+
 
 /*
  *
@@ -27,13 +32,6 @@
  *
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-
-
 
 
 
@@ -89,7 +87,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "ElementTraits.inl"
-
-
 
 #endif  /*_Stroika_Foundation_Containers_ElementTraits_h_ */

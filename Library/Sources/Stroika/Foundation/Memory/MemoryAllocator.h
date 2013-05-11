@@ -13,10 +13,12 @@
 #include    "Common.h"
 
 
+
 /**
  *  \file
  *
  */
+
 
 
 namespace   Stroika {
@@ -54,7 +56,6 @@ namespace   Stroika {
             };
 
 
-
             /**
              * SimpleAllocator_CallLIBCNewDelete implements the AbstractGeneralPurposeAllocator just using stdC++ new/delete.
              */
@@ -63,7 +64,6 @@ namespace   Stroika {
                 virtual     void*   Allocate (size_t size) override;
                 virtual     void    Deallocate (void* p) override;
             };
-
 
 
             /**
@@ -144,8 +144,6 @@ namespace   Stroika {
             };
 
 
-
-
             /**
              * The SimpleSizeCountingGeneralPurposeAllocator is a Stroika-style AbstractGeneralPurposeAllocator which keeps statistics, and delegates to
              * some real allocator (constructor argument).
@@ -168,7 +166,6 @@ namespace   Stroika {
                 uint32_t                            fNetAllocationCount_;
                 size_t                              fNetAllocatedByteCount_;
             };
-
 
 
             /**
@@ -212,11 +209,10 @@ namespace   Stroika {
                 PTRMAP                              fAllocations_;
             };
 
+
         }
     }
 }
-
-
 
 
 

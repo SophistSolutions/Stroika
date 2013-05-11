@@ -12,17 +12,15 @@
 #include    "../Configuration/Common.h"
 #include    "Thread.h"
 
-/*
+
+
+/**
  * Description:
  *
  *      This module defines support for POSIX (and std c++ defined) Signals (not to be confused with the 'Signals and slots'
  *  design pattern which is largely unrelated).
  *
  *
- */
-
-
-/*
  * TODO:
  *      @todo   Becaues Stroika Mapping class is so safe, I may not need the critical section
  *              protecting sHandlers_ any longer.
@@ -47,6 +45,8 @@
  *
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -54,6 +54,7 @@ namespace   Stroika {
 
             typedef int     SignalIDType;
             typedef void    (*SignalHandlerType) (SignalIDType);
+
 
             /*
              *  Description:
@@ -155,7 +156,9 @@ namespace   Stroika {
                 nonvirtual  void                    SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
             };
 
+
             wstring SignalToName (SignalIDType signal);
+
 
             /*
              * Send the given signal to a specific thread (within this process)
@@ -181,9 +184,12 @@ namespace   Stroika {
                 sigset_t        fRestoreMask_;
             };
 #endif
+
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_Signals_h_*/
-
-

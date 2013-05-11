@@ -36,6 +36,9 @@
  *              attribute of the Q?
  *
  */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -97,7 +100,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

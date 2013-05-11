@@ -12,6 +12,7 @@
 #include    "BinaryOutputStream.h"
 
 
+
 /**
  *  \file
  *
@@ -25,6 +26,7 @@
  *              is seekable, we must override seek methods, and forward them, and adjust buffer as appropriate.
  *
  */
+
 
 
 namespace   Stroika {
@@ -66,12 +68,9 @@ namespace   Stroika {
             };
 
 
-
         }
     }
 }
-
-
 
 
 

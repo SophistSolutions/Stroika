@@ -20,8 +20,6 @@
 
 
 
-
-
 /*
 @CONFIGVAR:     qUseThreads_StdCPlusPlus
 @DESCRIPTION:   <p>qUseThreads_StdCPlusPlus is true iff Stroika is built to use portable standard C++ implementation of threads</p>
@@ -37,9 +35,6 @@
 #if     !defined (qUseThreads_WindowsNative)
 #error "qUseThreads_WindowsNative should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-
-
 
 
 
@@ -112,6 +107,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -122,7 +118,6 @@ namespace   Stroika {
             // mutual references
             typedef int     SignalIDType;
 #endif
-
 
 
             /**
@@ -429,7 +424,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

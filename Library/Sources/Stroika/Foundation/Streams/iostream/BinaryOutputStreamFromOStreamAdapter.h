@@ -17,11 +17,10 @@
 
 
 
-/*
+/**
  * TODO:
  *          o   Consider mixing in Seekable here. Would be easy
  */
-
 
 
 
@@ -59,8 +58,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

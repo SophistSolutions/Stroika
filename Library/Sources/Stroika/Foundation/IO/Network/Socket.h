@@ -23,6 +23,7 @@ namespace   Stroika {
                 using   Characters::String;
                 using   Memory::Byte;
 
+
                 /**
                  * TODO:
                  *
@@ -272,7 +273,6 @@ namespace   Stroika {
                 };
 
 
-
 #if qPlatform_Windows
                 /**
                  * This must be called before any Sockets are created, otherwise its
@@ -300,10 +300,6 @@ namespace Stroika {
     }
 }
 #endif
-
-
-
-
 
 
 

@@ -4,6 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_Bag_h_
 #define _Stroika_Foundation_Containers_Bag_h_   1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+#include    "Iterable.h"
+#include    "Iterator.h"
+
+
 
 /**
  *  \file
@@ -38,17 +47,6 @@
  *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
  *
  */
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
-
-
-
 
 
 
@@ -231,7 +229,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

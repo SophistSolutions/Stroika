@@ -4,7 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_
 #define _Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_
 
-/*
+#include    "../../../StroikaPreComp.h"
+
+#include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BlockAllocated.h"
+
+#include    "../../Common.h"
+
+
+/**
  *
  * TODO:
  *
@@ -25,14 +33,6 @@
  */
 
 
-#include    "../../../StroikaPreComp.h"
-
-#include    "../../../Configuration/Common.h"
-#include    "../../../Memory/BlockAllocated.h"
-
-#include    "../../Common.h"
-
-
 
 namespace   Stroika {
     namespace   Foundation {
@@ -40,9 +40,14 @@ namespace   Stroika {
             namespace Private {
                 namespace   DataStructures {
 
-                    template    <typename   T>  class   LinkedListIterator;
-                    template    <typename   T>  class   LinkedListIterator_Patch;
-                    template    <typename   T>  class   LinkedListMutator_Patch;
+
+                    template    <typename   T>
+                    class   LinkedListIterator;
+                    template    <typename   T>
+                    class   LinkedListIterator_Patch;
+                    template    <typename   T>
+                    class   LinkedListMutator_Patch;
+
 
                     template    <typename   T>
                     class   Link {
@@ -57,7 +62,6 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      LinkedList<T> is a generic link (non-intrusive) list implementation.
                      *  It keeps a length count so access to its length is rapid. We provide
@@ -67,7 +71,8 @@ namespace   Stroika {
                      *  used - more likely you want to use LinkedList_Patch<T>. Use this if you
                      *  will manage all patching, or know that none is necessary.
                      */
-                    template    <typename   T>  class   LinkedList {
+                    template    <typename   T>
+                    class   LinkedList {
                     public:
                         LinkedList ();
                         LinkedList (const LinkedList<T>& from);
@@ -125,14 +130,14 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      LinkedListIterator<T> allows you to iterate over a LinkedList<T>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                      *  for that.
                      */
-                    template    <class T>   class   LinkedListIterator {
+                    template    <class T>
+                    class   LinkedListIterator {
                     public:
                         LinkedListIterator (const LinkedListIterator<T>& from);
                         LinkedListIterator (const LinkedList<T>& data);
@@ -166,18 +171,16 @@ namespace   Stroika {
                      *
                      *      Here we provide Patching Versions of each iterator, and for convienience
                      *  versions of LinkedList that maintain a list of all Patching iterators.
-                     */
-
-
-
-                    /*
+                     *
                      *      LinkedList_Patch<T> is a LinkedList<T> with the ability to keep track of
                      *  owned patching iterators. These patching iterators will automatically be
                      *  adjusted when the link list is adjusted. This is the class of LinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <class T>   class   LinkedListIterator_Patch;
-                    template    <typename   T>  class   LinkedList_Patch : public LinkedList<T> {
+                    template    <class T>
+                    class   LinkedListIterator_Patch;
+                    template    <typename   T>
+                    class   LinkedList_Patch : public LinkedList<T> {
                     public:
                         LinkedList_Patch ();
                         LinkedList_Patch (const LinkedList_Patch<T>& from);
@@ -224,15 +227,14 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      LinkedListIterator_Patch<T> is a LinkedListIterator_Patch<T> that allows
                      *  for updates to the LinkedList<T> to be dealt with properly. It maintains a
                      *  link list of iterators headed by the LinkedList_Patch<T>, and takes care
                      *  of all patching details.
                      */
-                    template    <class T>   class   LinkedListIterator_Patch : public LinkedListIterator<T> {
+                    template    <class T>
+                    class   LinkedListIterator_Patch : public LinkedListIterator<T> {
                     public:
                         LinkedListIterator_Patch (const LinkedList_Patch<T>& data);
                         LinkedListIterator_Patch (const LinkedListIterator_Patch<T>& from);
@@ -275,15 +277,14 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      LinkedListMutator_Patch<T> is a LinkedListIterator_Patch<T> that allows
                      *  for changes to the LinkedList<T> relative to the position we are at
                      *  currently in the iteration. This is be used most commonly in
                      *  implementing concrete iterators for Stroika containers.
                      */
-                    template    <class T>   class   LinkedListMutator_Patch : public LinkedListIterator_Patch<T> {
+                    template    <class T>
+                    class   LinkedListMutator_Patch : public LinkedListIterator_Patch<T> {
                     public:
                         LinkedListMutator_Patch (LinkedList_Patch<T>& data);
                         LinkedListMutator_Patch (const LinkedListMutator_Patch<T>& from);
@@ -295,6 +296,7 @@ namespace   Stroika {
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);
                     };
+
 
                 }
             }
@@ -310,7 +312,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "LinkedList.inl"
-
-
 
 #endif  /*_Stroika_Foundation_Containers_Private_DataStructures_LinkedList_h_ */

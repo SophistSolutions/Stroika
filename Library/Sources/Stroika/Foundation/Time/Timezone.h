@@ -13,12 +13,15 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
+
             class   DateTime;
+
 
             /**
              * Checks if it is NOW DaylightSavingsTime
              */
             bool    IsDaylightSavingsTime ();
+
 
             /**
              * Checks if the given date is daylight savings time
@@ -31,7 +34,11 @@ namespace   Stroika {
              */
             time_t  GetLocaltimeToGMTOffset (bool applyDST = IsDaylightSavingsTime ());
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Time_Timezone_h_*/

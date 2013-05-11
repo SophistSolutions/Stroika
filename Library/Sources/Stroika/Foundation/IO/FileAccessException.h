@@ -12,12 +12,14 @@
 #include    "FileAccessMode.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
-
         namespace   IO {
 
+
             using   Characters::TString;
+
 
             // This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
             // file (or directory) access permissions. It nearly always is the result of an operation (attempted and failed)
@@ -53,11 +55,10 @@ namespace   Stroika {
         Execution::DoReThrow ();\
     }\
      
+
         }
     }
 }
-
-
 
 
 

@@ -24,14 +24,15 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   FileSystem {
 
+
                 using   Characters::TChar;
                 using   Characters::TString;
+
 
 #if     qCompilerAndStdLib_Supports_constexpr
 #if     qPlatform_Windows
@@ -43,6 +44,7 @@ namespace   Stroika {
                 extern  const   TChar   kPathComponentSeperator;
 #endif
 
+
                 /*
                  * This funciton presumes its argument is a directory, and makes sure it has a kPathComponentSeperator character
                  * at the end. Use this when given a directory from some source that isn't so careful, so code can generally
@@ -50,6 +52,7 @@ namespace   Stroika {
                  * pathanmes.
                  */
                 TString AssureDirectoryPathSlashTerminated (const TString& dirPath);
+
 
                 // map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
                 TString SafeFilenameChars (const TString& s);
@@ -71,26 +74,29 @@ namespace   Stroika {
                  */
                 TString GetFileSuffix (const TString& fileName);
 
+
                 /*
                  *  get the base name (strippping path and suffix)
                  */
                 TString GetFileBaseName (const TString& pathName);
+
 
                 /*
                  *  // get the full path WITHOUT the file suffix at the end
                  */
                 TString StripFileSuffix (const TString& pathName);
 
+
                 /*
                  *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
                  */
                 TString GetFileDirectory (const TString& pathName);
 
+
             }
         }
     }
 }
-
 
 
 

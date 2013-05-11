@@ -23,6 +23,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
 
+
             using   Characters::TString;
             using   Characters::TChar;
 
@@ -34,7 +35,6 @@ namespace   Stroika {
 #if     !defined (qTraceToFile)
 #error "qTraceToFile should normally be defined indirectly by StroikaConfig.h"
 #endif
-
 
 
             /*
@@ -121,7 +121,6 @@ namespace   Stroika {
             };
 
 
-
             class   TraceContextBumper {
             public:
                 TraceContextBumper ();
@@ -166,8 +165,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

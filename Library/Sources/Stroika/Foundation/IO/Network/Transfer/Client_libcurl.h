@@ -12,8 +12,6 @@
 
 
 
-
-
 /*
  * TODO:
  *      (o)     Very rough draft. This code is completely untested, and really only about 1/2 written. Even the high level
@@ -30,11 +28,13 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
                 namespace   Transfer {
+
 
 #if     qHasFeature_libcurl
                     class   LibCurlException : public Execution::StringException {
@@ -69,13 +69,12 @@ namespace   Stroika {
                     };
 #endif
 
+
                 }
             }
         }
     }
 }
-
-
 
 
 

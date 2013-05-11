@@ -4,13 +4,6 @@
 #ifndef _Stroika_Foundation_Characters_CodePage_h_
 #define _Stroika_Foundation_Characters_CodePage_h_  1
 
-/*
-@MODULE:    CodePage
-@DESCRIPTION:
-        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
-    and UNICODE encodings.</p>
- */
-
 #include    "../StroikaPreComp.h"
 
 #if     qCompilerAndStdLib_Supports_string_conversions
@@ -27,7 +20,13 @@
 
 
 
-/*
+/**
+@MODULE:    CodePage
+@DESCRIPTION:
+        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
+    and UNICODE encodings.</p>
+ *
+ *
  *  TODO:
  *
  *  @todo      Consdier LOSING THIS FILE - and use <codecvt>
@@ -46,9 +45,11 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
+
 
             using   std::string;
             using   std::wstring;
@@ -97,6 +98,7 @@ namespace   Stroika {
                         kCodePage_SYMBOL    =   42,
 #endif
             };
+
 
             /*
             @CLASS:         CodePage
@@ -222,12 +224,6 @@ namespace   Stroika {
             };
 
 
-
-
-
-
-
-
             /*
             @CLASS:         UTF8Converter
             @DESCRIPTION:
@@ -249,11 +245,6 @@ namespace   Stroika {
                 nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const char32_t* inChars, size_t inCharCnt) const;
                 nonvirtual  size_t  MapFromUNICODE_QuickComputeOutBufSize (const wchar_t* inChars, size_t inCharCnt) const;
             };
-
-
-
-
-
 
 
             /*
@@ -283,10 +274,6 @@ namespace   Stroika {
             };
 
 
-
-
-
-
             /*
             @CLASS:         CodePagesGuesser
             @DESCRIPTION:   <p>Guess the code page of the given argument text.</p>
@@ -308,8 +295,6 @@ namespace   Stroika {
                 */
                 nonvirtual  CodePage    Guess (const void* input, size_t nBytes, Confidence* confidence = nullptr, size_t* bytesFromFrontToStrip = nullptr);
             };
-
-
 
 
             /*
@@ -357,7 +342,6 @@ namespace   Stroika {
             };
 
 
-
             void    WideStringToNarrow (const wchar_t* wsStart, const wchar_t* wsEnd, CodePage codePage, string* intoResult);
             void    WideStringToNarrow (const wstring& ws, CodePage codePage, string* intoResult);
             string  WideStringToNarrow (const wstring& ws, CodePage codePage);
@@ -383,9 +367,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

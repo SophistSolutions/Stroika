@@ -13,7 +13,8 @@
 #include    "../../Configuration/Common.h"
 
 
-/*
+
+/**
  * TODO:
  *      o   Redo using Stroika String class
  *      o   Add overload for URL with map<> for query.
@@ -32,9 +33,12 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
+
                 const   int kDefaultPort    =   -1;
 
+
                 using   Characters::String;
+
 
                 // probably should define standard protos here - with named constnats - like http/ftp/https etc
                 int     GetDefaultPortForProtocol (const String& proto);
@@ -80,6 +84,7 @@ namespace   Stroika {
                 // This doesn't encode an entire URL, just a particular field
                 string  EncodeURLQueryStringField (const String& s);
 
+
                 class   URLQueryDecoder {
                 public:
                     URLQueryDecoder (const string& query);
@@ -109,7 +114,6 @@ namespace   Stroika {
                 };
 
 
-
                 class   LabeledURL {
                 public:
                     LabeledURL (const String& url, const String& label = String ());
@@ -119,13 +123,11 @@ namespace   Stroika {
                     String fLabel;
                 };
 
+
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_IO_Network_URL_h_*/
-
-
 
 
 
@@ -135,3 +137,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "URL.inl"
+
+#endif  /*_Stroika_Foundation_IO_Network_URL_h_*/

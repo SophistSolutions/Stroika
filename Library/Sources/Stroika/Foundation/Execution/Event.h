@@ -20,12 +20,7 @@
 
 
 
-
-
-
-
-
-/*
+/**
  * TODO:
  *      @todo   Consider if there is a need for timed mutexes.
  *
@@ -37,9 +32,13 @@
  *
  *
  */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
 #ifndef qTrack_ThreadUtils_HandleCounts
 #define qTrack_ThreadUtils_HandleCounts     qDebug
@@ -100,9 +99,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

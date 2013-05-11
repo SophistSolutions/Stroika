@@ -52,4 +52,7 @@ namespace   Stroika {
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Streams_iostream_FStreamSupport_h_*/

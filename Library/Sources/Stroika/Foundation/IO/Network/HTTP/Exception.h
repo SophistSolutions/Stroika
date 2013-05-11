@@ -12,13 +12,15 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Execution/StringException.h"
 
-
 #include    "Status.h"
+
+
 
 /*
  * TODO:
  *      (o)
  */
+
 
 
 namespace   Stroika {
@@ -27,7 +29,9 @@ namespace   Stroika {
             namespace   Network {
                 namespace   HTTP {
 
+
                     using   Foundation::Execution::StringException;
+
 
                     // See http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6.1.1
                     class   Exception : public StringException {
@@ -71,8 +75,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

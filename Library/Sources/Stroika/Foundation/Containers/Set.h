@@ -4,7 +4,16 @@
 #ifndef _Stroika_Foundation_Containers_Set_h_
 #define _Stroika_Foundation_Containers_Set_h_  1
 
-/*
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+#include    "Iterable.h"
+
+
+
+/**
  *
  *
  *  STATUS:
@@ -29,14 +38,6 @@
  *      @todo   Thread safety (/locking)
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
-#include    "Iterable.h"
 
 
 

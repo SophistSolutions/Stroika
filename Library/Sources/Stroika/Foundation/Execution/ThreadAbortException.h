@@ -11,9 +11,11 @@
 #include    "Exceptions.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
             // Generally should not be reported. It's just to help force a thread to shut itself down
             class   ThreadAbortException {
@@ -21,12 +23,10 @@ namespace   Stroika {
                 ThreadAbortException ();
             };
 
+
         }
     }
 }
-
-
-
 
 
 

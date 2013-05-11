@@ -5,22 +5,15 @@
 #ifndef _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
 #define _Stroika_Foundation_Containers_Private_DataStructures_Array_h_
 
+#include    "../../../StroikaPreComp.h"
 
-/*
- *  TODO:
- *
- *      @todo   LOSE ENTIRE MODULE!!! - std::vector<> is almost certianly BETTER, and this has
- *              too many bugs/issues (realloc/internal pointers) to be worth Saving!!!! OBSOLETE
- *
- *
- *          (o) Lose obsolete ArrayNode<>
- */
+#include    "../../../Configuration/Common.h"
+
+#include    "../../Common.h"
 
 
 
-
-
-/*
+/**
  *
  *  Description:
  *
@@ -76,13 +69,16 @@
  *
  *
  *
+ *  TODO:
+ *
+ *      @todo   LOSE ENTIRE MODULE!!! - std::vector<> is almost certianly BETTER, and this has
+ *              too many bugs/issues (realloc/internal pointers) to be worth Saving!!!! OBSOLETE
+ *
+ *
+ *          (o) Lose obsolete ArrayNode<>
+ *
+ *
  */
-
-#include    "../../../StroikaPreComp.h"
-
-#include    "../../../Configuration/Common.h"
-
-#include    "../../Common.h"
 
 
 
@@ -91,6 +87,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace Private {
                 namespace   DataStructures {
+
 
                     /*
                      *      We use this class ArrayNode as a hack to work around bugs in many
@@ -174,7 +171,6 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      ArrayIteratorBase<T> is an un-advertised implementation
                      *  detail designed to help in source-code sharing among various
@@ -209,7 +205,6 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      Use this iterator to iterate forwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
@@ -227,8 +222,6 @@ namespace   Stroika {
                     private:
                         typedef ArrayIteratorBase<T>    inherited;
                     };
-
-
 
 
                     /*
@@ -251,8 +244,6 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      Use this iterator to iterate backwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
@@ -270,8 +261,6 @@ namespace   Stroika {
                     private:
                         typedef ArrayIteratorBase<T>    inherited;
                     };
-
-
 
 
                     /*
@@ -294,7 +283,6 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *  Patching Support:
                      *
@@ -302,9 +290,8 @@ namespace   Stroika {
                      *  versions of array that maintain a list of all Patching iterators of a given
                      *  type.
                      */
-
-
-                    template    <typename T>    class   ArrayIterator_PatchBase;
+                    template    <typename T>
+                    class   ArrayIterator_PatchBase;
 
 
                     /*
@@ -312,7 +299,8 @@ namespace   Stroika {
                      *  iterators, and handles the patching automatically for you. Use this if
                      *  you ever plan to use patchable iterators.
                      */
-                    template    <typename T>    class   Array_Patch : public Array<T> {
+                    template    <typename T>
+                    class   Array_Patch : public Array<T> {
                     public:
                         Array_Patch ();
                         Array_Patch (const Array_Patch<T>& from);
@@ -363,13 +351,12 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      ArrayIterator_PatchBase<T> is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template    <typename T>    class   ArrayIterator_PatchBase : public ArrayIteratorBase<T> {
+                    template    <typename T>
+                    class   ArrayIterator_PatchBase : public ArrayIteratorBase<T> {
                     public:
                         ArrayIterator_PatchBase (const Array_Patch<T>& data);
                         ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from);
@@ -403,8 +390,6 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      ForwardArrayIterator_Patch<T> is forwards iterator that can be used
                      *  while modifing its owned array. It can only be used with Array_Patch<T>
@@ -412,7 +397,8 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template    <typename T> class  ForwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
+                    template    <typename T>
+                    class  ForwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
                     public:
                         ForwardArrayIterator_Patch (const Array_Patch<T>& data);
 
@@ -430,13 +416,12 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      ForwardArrayMutator_Patch<T> is the same as ForwardArrayIterator_Patch<T> but
                      *  adds the ability to update the contents of the array as you go along.
                      */
-                    template    <typename T> class  ForwardArrayMutator_Patch : public ForwardArrayIterator_Patch<T> {
+                    template    <typename T>
+                    class  ForwardArrayMutator_Patch : public ForwardArrayIterator_Patch<T> {
                     public:
                         ForwardArrayMutator_Patch (Array_Patch<T>& data);
 
@@ -457,8 +442,6 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      BackwardArrayIterator_Patch<T> is backwards iterator that can be used
                      *  while modifing its owned array. It can only be used with Array_Patch<T>
@@ -466,7 +449,8 @@ namespace   Stroika {
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template    <typename T> class  BackwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
+                    template    <typename T>
+                    class  BackwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
                     public:
                         BackwardArrayIterator_Patch (const Array_Patch<T>& data);
 
@@ -485,13 +469,12 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      BackwardArrayMutator_Patch<T> is the same as BackwardArrayIterator_Patch<T> but
                      *  adds the ability to update the contents of the array as you go along.
                      */
-                    template    <typename T> class  BackwardArrayMutator_Patch : public BackwardArrayIterator_Patch<T> {
+                    template    <typename T>
+                    class  BackwardArrayMutator_Patch : public BackwardArrayIterator_Patch<T> {
                     public:
                         BackwardArrayMutator_Patch (Array_Patch<T>& data);
 
@@ -509,6 +492,7 @@ namespace   Stroika {
                         typedef BackwardArrayIterator_Patch<T>    inherited;
                     };
 
+
                 }
             }
         }
@@ -522,7 +506,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "Array.inl"
-
-
 
 #endif  /*_Stroika_Foundation_Containers_Private_DataStructures_Array_h_ */

@@ -35,12 +35,11 @@
  */
 
 
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   FileSystem {
+
 
                 using   Characters::TChar;
                 using   Characters::TString;
@@ -48,7 +47,6 @@ namespace   Stroika {
                 using   Time::DateTime;
 
                 typedef int64_t FileOffset_t;
-
 
 
                 // doesn't actually open the file. It's purely advisory. But its helpful to assure
@@ -83,23 +81,28 @@ namespace   Stroika {
                 void    CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded = true);
 
 
-
-
                 void    CreateDirectoryForFile (const TString& filePath);
+
 
                 TString GetVolumeName (const TString& driveLetterAbsPath);
 
+
                 bool    FileExists (const TChar* filePath);
                 bool    FileExists (const TString& filePath);
+
 
                 // returns true iff given path exists, is accessible, and is a directory
                 bool    DirectoryExists (const TChar* filePath);
                 bool    DirectoryExists (const TString& filePath);
 
                 vector<TString> FindFiles (const TString& path, const TString& fileNameToMatch = TSTR ("*.*"));
+
+
                 vector<TString> FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch = TSTR ("*.*"));
 
+
                 void    DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors = true);
+
 
                 void    CopyFile (const TString& srcFile, const TString& destPath);
 
@@ -131,7 +134,6 @@ namespace   Stroika {
 #endif
 
 
-
                 namespace   Private {
                     class   FileUtilsModuleData_;
                 }
@@ -155,7 +157,6 @@ namespace   Stroika {
                 private:
                     friend  class   Private::FileUtilsModuleData_;
                 };
-
 
 
                 class   TempFileLibrarian {
@@ -205,8 +206,6 @@ namespace   Stroika {
                 };
 
 
-
-
                 /*
                  * Specify the name of a file to write, and an optional file suffix for a tempfile, and
                  * support writing through the tempfile, and then atomicly renaming the file when done.
@@ -241,7 +240,6 @@ namespace   Stroika {
                     TString fRealFilePath;
                     TString fTmpFilePath;
                 };
-
 
 
                 /**
@@ -304,6 +302,7 @@ namespace   Stroika {
 #endif
                 };
 
+
                 class   DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const TString& pathExpr);        // can include wildcards - see ::FindFirstFile docs
@@ -336,6 +335,8 @@ namespace   Stroika {
                     UINT    fSavedErrorMode;
                 };
 #endif
+
+
             }
         }
     }

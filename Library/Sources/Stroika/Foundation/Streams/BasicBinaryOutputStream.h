@@ -16,13 +16,13 @@
 #include    "Seekable.h"
 
 
+
 /*
  *  \file
  *      @todo   This would be a good candidate class to rewrite using new Sequence_ChunkedArray
  *              class (when I implement it) based on Led chunked arrays).
  *
  */
-
 
 
 
@@ -80,8 +80,6 @@ namespace   Stroika {
 
 
 
-
-
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
@@ -90,4 +88,3 @@ namespace   Stroika {
 #include    "BasicBinaryOutputStream.inl"
 
 #endif  /*_Stroika_Foundation_Streams_BasicBinaryOutputStream_h_*/
-

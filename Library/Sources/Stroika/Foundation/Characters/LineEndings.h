@@ -16,6 +16,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
             using   std::string;
             using   std::wstring;
             using   std::basic_string;
@@ -38,6 +39,7 @@ namespace   Stroika {
             template    <>
             const wchar_t*  GetEOL ();
 #endif
+
 
             /**
              */

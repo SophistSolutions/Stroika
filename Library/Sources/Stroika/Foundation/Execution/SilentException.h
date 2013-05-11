@@ -23,7 +23,11 @@ namespace   Stroika {
             template    <>
             void    _NoReturn_  DoThrow (const SilentException& e2Throw);
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroia_Foundation_Execution_SilentException_h_*/

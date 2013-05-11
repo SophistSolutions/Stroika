@@ -15,6 +15,7 @@
 #include    "Seekable.h"
 
 
+
 /**
  *  \file
  *
@@ -27,6 +28,7 @@
  *      @todo   qCompilerAndStdLib_Supports_ConstructorDelegation - do like BasicBinaryInputStream constructors
  *              and replace vector<Byte> ctor
  */
+
 
 
 namespace   Stroika {
@@ -65,8 +67,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

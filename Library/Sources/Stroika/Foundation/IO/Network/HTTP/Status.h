@@ -12,10 +12,12 @@
 #include    "../../../Configuration/Common.h"
 
 
-/*
+
+/**
  * TODO:
  *      (o)
  */
+
 
 
 namespace   Stroika {
@@ -23,7 +25,6 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
                 namespace   HTTP {
-
 
 
                     typedef unsigned int    Status;
@@ -53,10 +54,12 @@ namespace   Stroika {
                     }
 
 
-
                 }
             }
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_IO_Network_HTTP_Status_h_*/

@@ -23,7 +23,11 @@ namespace   Stroika {
             template    <>
             void    _NoReturn_  DoThrow (const UserCanceledException& e2Throw);
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroia_Foundation_Execution_UserCanceledException_h_*/

@@ -12,6 +12,7 @@
 #include    "BlockAllocated.h"
 
 
+
 /**
  *  \file
  *
@@ -35,6 +36,8 @@
  *              return o->z;
  *
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -212,8 +215,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

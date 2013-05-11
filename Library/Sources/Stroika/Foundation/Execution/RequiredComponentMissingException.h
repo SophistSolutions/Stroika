@@ -11,11 +11,14 @@
 #include    "StringException.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::String;
+
 
             class   RequiredComponentMissingException : public StringException {
             public:
@@ -29,7 +32,11 @@ namespace   Stroika {
                 wstring fComponent;
             };
 
+
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_RequiredComponentMissingException_h_*/

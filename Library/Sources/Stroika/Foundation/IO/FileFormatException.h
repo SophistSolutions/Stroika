@@ -9,12 +9,15 @@
 #include    "../Characters/TString.h"
 #include    "../Execution/StringException.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
-
         namespace   IO {
 
+
             using   Characters::TString;
+
 
             class   FileFormatException : public Execution::StringException {
             public:
@@ -27,20 +30,21 @@ namespace   Stroika {
                 TString fFileName_;
             };
 
-        }
 
+        }
         namespace   Execution {
+
+
             // Just pre-declare DoThrow><> template here so we can specailize
             template    <typename T>
             void     _NoReturn_ DoThrow (const T& e2Throw);
             template    <>
             void    _NoReturn_  DoThrow (const IO::FileFormatException& e2Throw);
-        }
 
+
+        }
     }
 }
-
-
 
 
 

@@ -10,11 +10,14 @@
 #include    <limits>
 
 
-/*
+
+/**
  *  TODO:
  *      @todo   This rounding code doesn't work for floating point numbers. That should either be fixed
  *              or documented better why.
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -69,6 +72,7 @@ namespace   Stroika {
     }
 }
 
+
 #if     !qCompilerAndStdLib_Supports_isnan
 namespace   std {
     // Must be in std namespace
@@ -76,9 +80,6 @@ namespace   std {
     bool    isnan (double d);
 }
 #endif
-
-
-
 
 
 

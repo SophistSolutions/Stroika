@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_SortedBag_h_
 #define _Stroika_Foundation_Containers_SortedBag_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "Bag.h"
+
+
+
 /*
  *
  *  STATUS:
@@ -18,12 +24,6 @@
  *
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "Bag.h"
-
 
 
 
@@ -72,8 +72,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 /*

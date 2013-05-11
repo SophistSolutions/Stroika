@@ -14,15 +14,17 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::String;
+
 
             vector<String>  ParseCommandLine (int argc, const char* argv[]);
             vector<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
+
 
             //
             // This utility function takes a given 'matchesArgPattern' - which is basically what you declare your parameter to be, and returns
@@ -45,11 +47,10 @@ namespace   Stroika {
             bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
             bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern, String* associatedArgResult);
 
+
         }
     }
 }
-
-
 
 
 

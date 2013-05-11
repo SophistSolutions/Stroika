@@ -13,6 +13,7 @@
 #include    "Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
@@ -22,6 +23,7 @@ namespace   Stroika {
                 // Certs, policies, options etc - for a client trying to open an SSL conneciton
                 class   ServerContext {
                 };
+
 
             }
         }

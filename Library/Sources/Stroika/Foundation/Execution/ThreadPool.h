@@ -14,7 +14,8 @@
 #include    "Thread.h"
 
 
-/*
+
+/**
  *  TODO:
  *
  *      @todo   Current approach to aborting a running task is to abort the thread. But the current
@@ -36,10 +37,11 @@
  *              the threadpool lets the 5 groups run 'at the same time' on only 3 threads.
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-
 
 
             /**
@@ -158,12 +160,10 @@ namespace   Stroika {
                 friend  class   MyRunnable_;                // So MyRunnable_ can call WaitForNextTask_()
             };
 
+
         }
     }
 }
-
-
-
 
 
 

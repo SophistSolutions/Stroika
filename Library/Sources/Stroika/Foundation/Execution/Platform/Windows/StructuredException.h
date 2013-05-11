@@ -16,14 +16,18 @@
 #include    "../../Exceptions.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::TString;
+
 
             namespace   Platform {
                 namespace   Windows {
+
 
                     class   StructuredException {
                     private:
@@ -43,13 +47,12 @@ namespace   Stroika {
                         static  void    trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp);
                     };
 
+
                 }
             }
         }
     }
 }
-
-
 
 
 

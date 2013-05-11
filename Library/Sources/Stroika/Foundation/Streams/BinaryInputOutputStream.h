@@ -15,7 +15,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -200,8 +199,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

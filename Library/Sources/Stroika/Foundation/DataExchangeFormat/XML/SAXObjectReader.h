@@ -15,14 +15,13 @@
 
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
             namespace   XML {
 
 
-                /*
+                /**
                  *      The basic idea of the SAXObjectReader is to make it easier to write C++ code to deserialize an XML source (via SAX), into
                  *  a C++ data structure. This tends to be MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing the DOM
                  *  with XPath. So why would you do it? This way is dramatically more efficeint. For one thing - there is no need to have the entire source in memory at
@@ -64,7 +63,6 @@ namespace   Stroika {
                 };
 
 
-
                 class   SAXObjectReader::ObjectBase {
                 public:
                     virtual ~ObjectBase ();
@@ -72,7 +70,6 @@ namespace   Stroika {
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) = 0;
                     virtual void    HandleEndTag (SAXObjectReader& r) = 0;
                 };
-
 
 
                 /*
@@ -94,7 +91,6 @@ namespace   Stroika {
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
-
                 template    <>
                 class   BuiltinReader<String>;
                 template    <>
@@ -109,7 +105,6 @@ namespace   Stroika {
                 class   BuiltinReader<double>;
                 template    <>
                 class   BuiltinReader<Time::DateTime>;
-
 
 
                 /*
@@ -136,8 +131,6 @@ namespace   Stroika {
                 };
 
 
-
-
                 /*
                  * Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read. This is necessary to balance out
                  * the Start Tag / End Tag combinations.
@@ -152,7 +145,6 @@ namespace   Stroika {
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
-
 
 
                 /*
@@ -172,8 +164,6 @@ namespace   Stroika {
                 protected:
                     nonvirtual  void    _PushNewObjPtr (SAXObjectReader& r, ObjectBase* newlyAllocatedObject2Push);
                 };
-
-
 
 
                 /*
@@ -200,15 +190,13 @@ namespace   Stroika {
                 };
 
 
-
                 void    ThrowUnRecognizedStartElt (const String& uri, const String& localName);
+
 
             }
         }
     }
 }
-
-
 
 
 

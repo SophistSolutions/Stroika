@@ -15,7 +15,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -44,6 +43,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace Memory {
@@ -51,11 +51,15 @@ namespace   Stroika {
         }
     }
 }
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
 
+
             using   Memory::Byte;
+
 
             class   BinaryInputOutputStream;
 
@@ -166,8 +170,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

@@ -54,6 +54,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
@@ -186,11 +187,10 @@ namespace   Stroika {
                 FormatException ();
             };
 
+
         }
     }
 }
-
-
 
 
 

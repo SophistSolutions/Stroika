@@ -17,7 +17,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
             typedef std::basic_string<TChar>    TString;
+
 
             /*
              * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
@@ -26,12 +28,14 @@ namespace   Stroika {
              */
             string  WideStringToNarrowSDKString (const wstring& ws);
 
+
             /*
              * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). NarrowSDKStringToWide will
              * perform that mapping.
              */
             wstring NarrowSDKStringToWide (const string& s);
+
 
             string  TString2NarrowSDK (const TString& s);
             TString NarrowSDK2TString (const string& s);
@@ -42,6 +46,7 @@ namespace   Stroika {
 
             TString ToTString (const string& s);
             TString ToTString (const wstring& s);
+
 
         }
     }
@@ -56,6 +61,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "TString.inl"
-
 
 #endif  /*_Stroika_Foundation_Characters_TString_h_*/

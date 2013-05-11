@@ -4,6 +4,16 @@
 #ifndef _Stroika_Foundation_Containers_Iterator_h_
 #define _Stroika_Foundation_Containers_Iterator_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    <iterator>
+
+#include    "../Configuration/Common.h"
+
+#include    "../Memory/SharedByValue.h"
+
+
+
 /**
  *
  *  \file
@@ -82,20 +92,9 @@
  */
 
 
-#include    "../StroikaPreComp.h"
-
-#include    <iterator>
-
-#include    "../Configuration/Common.h"
-
-#include    "../Memory/SharedByValue.h"
-
-
 
 // SSW 9/19/2011: remove this restriction for more efficiency and flexibility
 #define qIteratorsRequireNoArgContructorForT    1
-
-
 
 
 
@@ -573,6 +572,5 @@ namespace   Stroika {
  */
 
 #include "Iterator.inl"
-
 
 #endif  /*_Stroika_Foundation_Containers_Iterator_h_ */

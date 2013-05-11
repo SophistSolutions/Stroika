@@ -11,6 +11,7 @@
 #include    "StringException.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -32,4 +33,7 @@ namespace   Stroika {
         }
     }
 }
+
+
+
 #endif  /*_Stroika_Foundation_Execution_OperationNotSupportedException_h_*/

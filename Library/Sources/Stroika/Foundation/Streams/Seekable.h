@@ -26,6 +26,9 @@
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
  */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
@@ -147,10 +150,10 @@ namespace   Stroika {
                 virtual SeekOffsetType      Seek (Whence whence, SignedSeekOffsetType offset)      =   0;
             };
 
+
         }
     }
 }
-
 
 
 

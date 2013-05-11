@@ -4,6 +4,16 @@
 #ifndef _Stroika_Foundation_Containers_Mapping_h_
 #define _Stroika_Foundation_Containers_Mapping_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/Optional.h"
+
+#include    "Iterable.h"
+#include    "Iterator.h"
+
+
+
 /*
  *  TODO:
  *      @todo   Support thread safety
@@ -14,14 +24,6 @@
  *
  */
 
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/Optional.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
 
 
 namespace   Stroika {

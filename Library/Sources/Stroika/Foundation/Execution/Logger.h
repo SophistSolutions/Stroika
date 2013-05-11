@@ -18,7 +18,9 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   namespace   Configuration;
+
 
             using   Characters::String;
 
@@ -155,7 +157,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

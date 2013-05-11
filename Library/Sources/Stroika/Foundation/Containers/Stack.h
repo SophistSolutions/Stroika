@@ -4,6 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_Stack_h_
 #define _Stroika_Foundation_Containers_Stack_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+
+
 /*
  *
  *  STATUS:
@@ -21,12 +28,6 @@
  *                  (but tally probably Iterable<TallyEntry<T>>.
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
 
 
 

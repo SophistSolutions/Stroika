@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_SortedMapping_h_
 #define _Stroika_Foundation_Containers_SortedMapping_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "Mapping.h"
+
+
+
 /**
  *
  *  STATUS:
@@ -13,11 +19,6 @@
  *  TODO:
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "Mapping.h"
 
 
 

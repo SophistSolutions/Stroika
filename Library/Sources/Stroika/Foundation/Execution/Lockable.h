@@ -9,6 +9,7 @@
 #include    <mutex>
 
 
+
 /**
  *  \file
  *
@@ -49,9 +50,6 @@ namespace   Stroika {
         }
     }
 }
-
-
-
 
 
 

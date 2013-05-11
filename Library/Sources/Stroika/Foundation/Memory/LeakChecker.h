@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 
 
+
 /**
  * TODO:
  *
@@ -23,7 +24,6 @@
  *              SERIOUSLY consider losing DEBUG_NEW anyhow - because it really interacts badly with overloaded
  *              operator new - such as with block allocation.
  */
-
 
 
 
@@ -41,9 +41,6 @@
 #if     !defined (qMSVisualStudioCRTMemoryDebug)
 #error  "qMSVisualStudioCRTMemoryDebug should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-
-
 
 
 
@@ -68,27 +65,20 @@
 
 
 
-
-
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
-
-
-
             namespace   LeakChecker {
+
+
                 // Note - this functionality is just for debugging, and may be disabled inside the Memory leakchecker module, in which
                 // case it will link but do nothing...
                 void    ForceCheckpoint ();
                 void    DumpLeaksSinceLastCheckpoint ();
+
+
             }
-
-
-
         }
-
-
     }
 }
 

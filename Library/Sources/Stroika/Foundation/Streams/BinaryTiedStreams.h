@@ -15,7 +15,6 @@
 
 
 
-
 /**
  *  \file
  *
@@ -31,6 +30,7 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Streams {
+
 
             /**
              *  \brief  BinaryTiedStreams are logically two closely related streams - one input and one output
@@ -66,10 +66,10 @@ namespace   Stroika {
                 BinaryTiedStreams (const BinaryInputStream& in, const BinaryOutputStream& out);
             };
 
+
         }
     }
 }
-
 
 
 

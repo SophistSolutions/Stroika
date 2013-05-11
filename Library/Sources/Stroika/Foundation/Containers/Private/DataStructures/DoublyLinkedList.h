@@ -4,6 +4,15 @@
 #ifndef _Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_h_
 #define _Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_h_
 
+#include    "../../../StroikaPreComp.h"
+
+#include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BlockAllocated.h"
+
+#include    "../../Common.h"
+
+
+
 /*
  *
  * TODO:
@@ -21,14 +30,6 @@
  */
 
 
-#include    "../../../StroikaPreComp.h"
-
-#include    "../../../Configuration/Common.h"
-#include    "../../../Memory/BlockAllocated.h"
-
-#include    "../../Common.h"
-
-
 
 namespace   Stroika {
     namespace   Foundation {
@@ -36,9 +37,14 @@ namespace   Stroika {
             namespace Private {
                 namespace   DataStructures {
 
-                    template    <typename   T>  class   DoublyLinkedListIterator;
-                    template    <typename   T>  class   DoublyLinkedListIterator_Patch;
-                    template    <typename   T>  class   DoublyLinkedListMutator_Patch;
+
+                    template    <typename   T>
+                    class   DoublyLinkedListIterator;
+                    template    <typename   T>
+                    class   DoublyLinkedListIterator_Patch;
+                    template    <typename   T>
+                    class   DoublyLinkedListMutator_Patch;
+
 
                     template    <typename   T>
                     class   DoubleLink {
@@ -53,7 +59,6 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      DoublyLinkedList<T> is a generic link (non-intrusive) list implementation.
                      *  It keeps a length count so access to its length is rapid. We provide
@@ -63,7 +68,8 @@ namespace   Stroika {
                      *  used - more likely you want to use DoublyLinkedList_Patch<T>. Use this if you
                      *  will manage all patching, or know that none is necessary.
                      */
-                    template    <typename   T>  class   DoublyLinkedList {
+                    template    <typename   T>
+                    class   DoublyLinkedList {
                     public:
                         DoublyLinkedList ();
                         DoublyLinkedList (const DoublyLinkedList<T>& from);
@@ -121,14 +127,14 @@ namespace   Stroika {
                     };
 
 
-
                     /*
                      *      DoublyLinkedListIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListMutator_Patch<T>
                      *  for that.
                      */
-                    template    <class T>   class   DoublyLinkedListIterator {
+                    template    <class T>
+                    class   DoublyLinkedListIterator {
                     public:
                         DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from);
                         DoublyLinkedListIterator (const DoublyLinkedList<T>& data);
@@ -153,27 +159,21 @@ namespace   Stroika {
                     };
 
 
-
-
-
-
                     /*
                      *  Patching Support:
                      *
                      *      Here we provide Patching Versions of each iterator, and for convienience
                      *  versions of DoublyLinkedList that maintain a list of all Patching iterators.
-                     */
-
-
-
-                    /*
+                     *
                      *      DoublyLinkedList_Patch<T> is a DoublyLinkedList<T> with the ability to keep track of
                      *  owned patching iterators. These patching iterators will automatically be
                      *  adjusted when the link list is adjusted. This is the class of DoublyLinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <class T>   class   DoublyLinkedListIterator_Patch;
-                    template    <typename   T>  class   DoublyLinkedList_Patch : public DoublyLinkedList<T> {
+                    template    <class T>
+                    class   DoublyLinkedListIterator_Patch;
+                    template    <typename   T>
+                    class   DoublyLinkedList_Patch : public DoublyLinkedList<T> {
                     public:
                         DoublyLinkedList_Patch ();
                         DoublyLinkedList_Patch (const DoublyLinkedList_Patch<T>& from);
@@ -222,15 +222,14 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      DoublyLinkedListIterator_Patch<T> is a DoublyLinkedListIterator_Patch<T> that allows
                      *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
                      *  link list of iterators headed by the DoublyLinkedList_Patch<T>, and takes care
                      *  of all patching details.
                      */
-                    template    <class T>   class   DoublyLinkedListIterator_Patch : public DoublyLinkedListIterator<T> {
+                    template    <class T>
+                    class   DoublyLinkedListIterator_Patch : public DoublyLinkedListIterator<T> {
                     public:
                         DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data);
                         DoublyLinkedListIterator_Patch (const DoublyLinkedListIterator_Patch<T>& from);
@@ -273,15 +272,14 @@ namespace   Stroika {
                     };
 
 
-
-
                     /*
                      *      DoublyLinkedListMutator_Patch<T> is a DoublyLinkedListIterator_Patch<T> that allows
                      *  for changes to the DoublyLinkedList<T> relative to the position we are at
                      *  currently in the iteration. This is be used most commonly in
                      *  implementing concrete iterators for Stroika containers.
                      */
-                    template    <class T>   class   DoublyLinkedListMutator_Patch : public DoublyLinkedListIterator_Patch<T> {
+                    template    <class T>
+                    class   DoublyLinkedListMutator_Patch : public DoublyLinkedListIterator_Patch<T> {
                     public:
                         DoublyLinkedListMutator_Patch (DoublyLinkedList_Patch<T>& data);
                         DoublyLinkedListMutator_Patch (const DoublyLinkedListMutator_Patch<T>& from);
@@ -293,6 +291,7 @@ namespace   Stroika {
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);
                     };
+
 
                 }
             }
@@ -309,6 +308,5 @@ namespace   Stroika {
  ********************************************************************************
  */
 #include    "DoublyLinkedList.inl"
-
 
 #endif  /*_Stroika_Foundation_Containers_Private_DataStructures_DoublyLinkedList_h_ */

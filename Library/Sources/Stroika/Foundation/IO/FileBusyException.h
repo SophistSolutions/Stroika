@@ -9,12 +9,15 @@
 #include    "../Characters/TString.h"
 #include    "../Execution/StringException.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
-
         namespace   IO {
 
+
             using   Characters::TString;
+
 
             class   FileBusyException : public Execution::StringException {
             public:
@@ -27,16 +30,20 @@ namespace   Stroika {
                 TString fFileName_;
             };
 
+
         }
 
+
         namespace   Execution {
+
+
             template    <>
             inline  void    _NoReturn_  DoThrow (const IO::FileBusyException& e2Throw);
+
+
         }
     }
 }
-
-
 
 
 

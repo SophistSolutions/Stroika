@@ -9,17 +9,22 @@
 #include    "../../Characters/TString.h"
 
 
+
 /*
  * Note - most of the LINUX/POSIX pathnames come from
  *      http://www.pathname.com/fhs/pub/fhs-2.3.html
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   FileSystem {
 
+
                 using   Characters::TString;
+
 
                 // These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
                 // it always ends in a '\\'
@@ -29,7 +34,9 @@ namespace   Stroika {
                 //
                 namespace   WellKnownLocations {
 
+
                     TString GetMyDocuments (bool createIfNotPresent = true);
+
 
                     /*
                      * Return directory which contains top-level application data - which should be persistent. Store long-term applicaiton
@@ -37,24 +44,25 @@ namespace   Stroika {
                      */
                     TString GetApplicationData (bool createIfNotPresent = true);
 
+
                     /*
                      * This returns the directory where an appliation may write temporary files - files which should not
                      * be preserved across reboots (though the OS may not enforce this). This directory may or may not be current-user-specific.
                      */
                     TString GetTemporary ();
 
+
 #if         qPlatform_Windows
                     // empty string if doesn't exist
                     TString GetWinSxS ();
 #endif
 
-                }
 
+                }
             }
         }
     }
 }
-
 
 
 

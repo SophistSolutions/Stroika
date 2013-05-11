@@ -15,12 +15,16 @@
 #include    "../Characters/TString.h"
 #include    "../Execution/StringException.h"
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             using   Characters::TString;
             using   Characters::TChar;
+
 
 #if     qPlatform_Windows
             typedef HMODULE DLLHandle;
@@ -29,6 +33,7 @@ namespace   Stroika {
             typedef void*   DLLHandle;
             typedef void*   ProcAddress;
 #endif
+
 
 #if     !qPlatform_Windows
             class   DLLException : public StringException {
@@ -59,10 +64,10 @@ namespace   Stroika {
                 DLLHandle   fModule;
             };
 
+
         }
     }
 }
-
 
 
 

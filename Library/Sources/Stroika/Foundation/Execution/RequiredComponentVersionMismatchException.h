@@ -11,9 +11,11 @@
 #include    "StringException.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
 
             using   Characters::String;
 
@@ -22,6 +24,7 @@ namespace   Stroika {
             public:
                 RequiredComponentVersionMismatchException (const wstring& component, const wstring& requiredVersion = wstring ());
             };
+
 
         }
     }

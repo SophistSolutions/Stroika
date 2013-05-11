@@ -4,6 +4,12 @@
 #ifndef _Stroika_Foundation_Containers_Deque_h_
 #define _Stroika_Foundation_Containers_Deque_h_  1
 
+#include    "../StroikaPreComp.h"
+
+#include    "Queue.h"
+
+
+
 /*
  *
  *  STATUS:
@@ -17,12 +23,6 @@
  *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "Queue.h"
-
 
 
 namespace   Stroika {

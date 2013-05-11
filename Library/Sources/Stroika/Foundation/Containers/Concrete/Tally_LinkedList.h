@@ -4,7 +4,6 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_
 #define _Stroika_Foundation_Containers_Concrete_Tally_LinkedList_h_  1
 
-
 #include    "../../StroikaPreComp.h"
 
 #include    "../Tally.h"
@@ -58,6 +57,7 @@ namespace   Stroika {
         }
     }
 }
+
 
 
 #include    "Tally_LinkedList.inl"

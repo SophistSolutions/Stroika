@@ -19,9 +19,11 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Debug {
+
 
 #if     qDebug || defined (__Doxygen__)
             /**
@@ -117,9 +119,11 @@ namespace   Stroika {
              */
             AssertionHandlerType    GetAssertionHandler ();
 
+
             /**
              */
             AssertionHandlerType    GetDefaultAssertionHandler ();
+
 
             /**
              *  See @'GetAssertionHandler'. If SetAssertionHandler() is called with nullptr,
@@ -144,6 +148,7 @@ namespace   Stroika {
 #define ASSERT_PRIVATE_ENCLOSING_FUNCTION_NAME_ ""
 #endif
 #endif
+
 
             /**
              *  \def Assert(c)
@@ -297,6 +302,7 @@ namespace   Stroika {
 #else
 #define Verify(c)       (c)
 #endif
+
 
         }
     }

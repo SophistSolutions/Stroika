@@ -33,9 +33,12 @@
  *
  */
 
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
+
 
             Memory::BLOB    DecodeBase64 (const string& s);
             void            DecodeBase64 (const string& s, Streams::BinaryOutputStream out);
@@ -43,10 +46,10 @@ namespace   Stroika {
             enum class  LineBreak : uint8_t { eLF_LB, eCRLF_LB, eAuto_LB = eCRLF_LB };
             string          EncodeBase64 (const Streams::BinaryInputStream& from, LineBreak lb = LineBreak::eAuto_LB);
 
+
         }
     }
 }
-
 
 
 

@@ -8,11 +8,15 @@
 
 #include    "../Characters/String.h"
 
+
+
 /**
  * TODO:
  *      o   Need some registration mechanism so IsTextFormat() results can be extended.
  *          For exmaple, with HealthFrame, we need to return YES for IsTextFormat() for certiain application/x-... formats.
  */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -57,6 +61,7 @@ namespace   Stroika {
 
             bool        IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
             bool        IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType);
+
 
             template    <typename CONTAINER>
             bool    TypeMatchesAny (const CONTAINER& types, const InternetMediaType& type2SeeIfMatchesAny);
@@ -109,8 +114,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

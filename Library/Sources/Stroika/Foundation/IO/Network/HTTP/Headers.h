@@ -12,10 +12,12 @@
 #include    "../../../Configuration/Common.h"
 
 
+
 /*
  * TODO:
  *      (o)     When we have a good C++ 'static string' class - maybe use that here. Maybe ONLY can do once we have compiler constexpr support?
  */
+
 
 
 namespace   Stroika {
@@ -24,8 +26,10 @@ namespace   Stroika {
             namespace   Network {
                 namespace   HTTP {
 
+
                     // standard HTTP headers one might want to access/retrieve
                     namespace   HeaderName {
+
 
                         extern  const   wchar_t kContentType[];
                         extern  const   wchar_t kContentLength[];
@@ -35,15 +39,16 @@ namespace   Stroika {
                         extern  const   wchar_t kUserAgent[];
                         extern  const   wchar_t kSOAPAction[];
                         extern  const   wchar_t kAcceptEncoding[];
+
+
                     }
+
 
                 }
             }
         }
     }
 }
-
-
 
 
 

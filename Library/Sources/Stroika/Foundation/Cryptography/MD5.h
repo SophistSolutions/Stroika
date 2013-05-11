@@ -13,6 +13,7 @@
 #include    "../Memory/Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {

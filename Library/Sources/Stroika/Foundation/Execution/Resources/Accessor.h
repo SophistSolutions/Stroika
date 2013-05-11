@@ -10,12 +10,15 @@
 #include    "../../Configuration/Common.h"
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
             namespace   Resources {
 
+
                 class   Manager;
+
 
                 /**
                  * This object provides access to the application-lifetime data/pointers associated with a resource
@@ -46,12 +49,11 @@ namespace   Stroika {
                     friend  class Manager;
                 };
 
+
             }
         }
     }
 }
-
-
 
 
 

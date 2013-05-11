@@ -10,6 +10,7 @@
 #include    "String.h"
 
 
+
 /**
  * TODO:
  *
@@ -19,14 +20,17 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
+
 
             /**
              */
             template    <typename STRING>
             vector<STRING> Tokenize (const STRING& str, const STRING& delimiters);
+
 
         }
     }
@@ -42,4 +46,3 @@ namespace   Stroika {
 #include    "Tokenize.inl"
 
 #endif  /*_Stroika_Foundation_Characters_Tokenize_h_*/
-

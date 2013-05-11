@@ -4,12 +4,11 @@
 #ifndef _Stroika_Foundation_Cache_BloomFilter_h_
 #define _Stroika_Foundation_Cache_BloomFilter_h_   1
 
-
 /**
  *
  * Description:
  *      http://en.wikipedia.org/wiki/Bloom_filter
-
+ *
  * TODO:
  *      @todo   Biggest question is whether this is just a single implemeentaiton or virtual
  *              abstraction with differnt backend implementations (probably the latter).
@@ -18,7 +17,6 @@
  *              over something in the filter? But probably NOT since its not clear what you could
  *              return (due to nature of bloom filter you dont store the stuff, but the hashes)
  *
- *
  */
 
 
@@ -26,8 +24,6 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
-
-
 
 
 
@@ -60,13 +56,11 @@ namespace   Stroika {
 }
 
 
-#endif  /*_Stroika_Foundation_Cache_BloomFilter_h_ */
-
 
 /*
  ********************************************************************************
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-//#include    "Bag.inl"
 
+#endif  /*_Stroika_Foundation_Cache_BloomFilter_h_ */

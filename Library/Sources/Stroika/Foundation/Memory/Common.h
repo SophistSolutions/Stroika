@@ -11,11 +11,10 @@
 #include    "../Configuration/Common.h"
 
 
+
 /**
  * TODO:
  */
-
-
 
 
 
@@ -28,8 +27,6 @@
 #if     !defined (qSupportValgrindQuirks)
 #error  "qSupportValgrindQuirks should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-
 
 
 
@@ -113,11 +110,8 @@ namespace   Stroika {
 
 
         }
-
-
     }
 }
-
 
 
 

@@ -10,10 +10,7 @@
 
 
 
-
-
-
-/*
+/**
  * TODO:
  *      (o)     Very rough draft. This code is completely untested, and really only about 1/2 written. Even the high level
  *              usage (container) pattern is just a draft. Its based on HTTPSupport.cpp code in R4LLib (2012-05-08)
@@ -22,11 +19,13 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   IO {
             namespace   Network {
                 namespace   Transfer {
+
 
 #if     qHasFeature_WinHTTP
                     // Just object-slice the smart pointer to get a regular connection object - this is just a factory for
@@ -39,13 +38,13 @@ namespace   Stroika {
                         class   Rep_;
                     };
 #endif
+
+
                 }
             }
         }
     }
 }
-
-
 
 
 
