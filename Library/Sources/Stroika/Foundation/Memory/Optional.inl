@@ -119,6 +119,11 @@ namespace   Stroika {
                 fValue_ = nullptr;
             }
             template    <typename T, typename TRAITS>
+            inline  T*    Optional<T, TRAITS>::get ()
+            {
+                return fValue_ == nullptr ? nullptr : fValue_->get ();
+            }
+            template    <typename T, typename TRAITS>
             inline  const T*    Optional<T, TRAITS>::get () const
             {
                 return fValue_ == nullptr ? nullptr : fValue_->get ();

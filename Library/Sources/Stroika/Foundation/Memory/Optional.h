@@ -6,8 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <memory>
-
 #include    "../Configuration/Common.h"
 #include    "BlockAllocated.h"
 
@@ -68,6 +66,8 @@ namespace   Stroika {
              *  Because the 'default value' isn't always well defined, and because throwing bad_alloc
              *  runs the risk of producing surprising exceptions, we treat dereferencing an empty
              *  Optional<T> as an Assertion Erorr.
+             *
+             *  However, see @Optional<T>::Value()
              *
              *  \note   \em Thread-Safety
              *      Different instances of Optional<T> can be freely used  in different threads,
@@ -145,6 +145,7 @@ namespace   Stroika {
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
+                nonvirtual  T*          get ();
                 nonvirtual  const T*    get () const;
 
             public:
@@ -158,26 +159,10 @@ namespace   Stroika {
                  *      This is really just syntactic sugar equivilent to get () - but more convenient since
                  *      it allows the use of an optional to syntactically mirror dereferencing a pointer.
                  */
+                nonvirtual  T* operator-> ();
                 nonvirtual  const T* operator-> () const;
 
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  T* operator-> ();
-
-                /**
-                 *  \pre (not empty ())
-                 *
-                 *  \note   \em Warning
-                 *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
-                 *      is only guaranteed until the next method call on this Optional<T> instance.
-                 */
-                nonvirtual  const T& operator* () const;
-
+            public:
                 /**
                  *  \pre (not empty ())
                  *
@@ -186,6 +171,7 @@ namespace   Stroika {
                  *      is only guaranteed until the next method call on this Optional<T> instance.
                  */
                 nonvirtual  T& operator* ();
+                nonvirtual  const T& operator* () const;
 
             public:
                 /**
