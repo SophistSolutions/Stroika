@@ -13,7 +13,7 @@
 #include    "../Debug/Assertions.h"
 #include    "Tally.h"
 
-#include    "Concrete/Tally_Array.h"  // needed for default constructor
+#include    "Concrete/Tally_Factory.h"
 
 
 namespace   Stroika {
@@ -91,7 +91,7 @@ namespace   Stroika {
              */
             template    <typename T>
             Tally<T>::Tally ()
-                : inherited (Concrete::Tally_Array<T> ())
+                : inherited (Concrete::mkTally_Default<T> ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -109,13 +109,13 @@ namespace   Stroika {
             }
             template    <typename T>
             Tally<T>::Tally (const T* start, const T* end)
-                : inherited (Concrete::Tally_Array<T> (start, end))
+                : inherited (Concrete::mkTally_Default<T> (start, end))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             Tally<T>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
-                : inherited (Concrete::Tally_Array<T> (start, end))
+                : inherited (Concrete::mkTally_Default<T> (start, end))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }

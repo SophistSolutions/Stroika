@@ -35,7 +35,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementaiton of a SortedMapping<> container
+                 *  \brief   Create the default backend implementation of a SortedMapping<> container
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *

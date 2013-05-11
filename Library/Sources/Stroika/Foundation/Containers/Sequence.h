@@ -53,7 +53,7 @@
  *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
  *                  (implement using redback tree or using stl map<>)
  *
- *      @todo       Add backend implementaiton of Sequence<T> using stl types - like
+ *      @todo       Add backend implementation of Sequence<T> using stl types - like
  *                  Sequence_stdvector, and Sequence_stdlist<>
  *
  *      @todo       Make sure that Sequence<T> (vector<T>) CTOR reserves the appropriate size before appending,

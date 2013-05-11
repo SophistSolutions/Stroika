@@ -140,7 +140,7 @@ namespace   Stroika {
             /**
              *  A basic LRU (least recently used) cache mechanism. You provide a class type argument 'ELEMENT' defined roughly as follows:
              *
-             *  TODO: THIS DOC IS OBSOLETE - PRE TRAITS IMPLEMENTAITON!!!
+             *  TODO: THIS DOC IS OBSOLETE - PRE TRAITS implementation!!!
              *
              *
              *

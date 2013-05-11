@@ -21,7 +21,7 @@
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *
- *      @todo   Need Tally_Tree<T> implementaiton - where we use btree to keep tally's sorted,
+ *      @todo   Need Tally_Tree<T> implementation - where we use btree to keep tally's sorted,
  *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
  *
  */

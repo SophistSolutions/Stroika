@@ -292,7 +292,7 @@
 // maybe using FRIENDS will work?
 //
 // Anyhow - based on experimentationw with gcc, and 'common sense' - this should be defined to work - I will
-// assume its either a bug with the VS implementaiton of the compiler or the template itself.
+// assume its either a bug with the VS implementation of the compiler or the template itself.
 //
 // Example compiler output for error from vc++12 (so if you see this sort of thing - apply this ifdef/fix):
 //      1>c:\program files (x86)\microsoft visual studio 11.0\vc\include\memory(713): error C2248: 'Stroika::Foundation::Streams::BasicBinaryOutputStream::IRep_' : cannot access private class declared in class 'Stroika::Foundation::Streams::BasicBinaryOutputStream'

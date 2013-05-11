@@ -6,7 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Set_LinkedList.h"  // needed for default constructor
+#include    "Concrete/Set_Factory.h"
 
 
 namespace   Stroika {
@@ -20,8 +20,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            Set<T>::Set ()
-                : inherited (Concrete::Set_LinkedList<T> ())
+            inline  Set<T>::Set ()
+                : inherited (Concrete::mkSet_Default<T> ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -34,7 +34,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Set<T>::Set (const CONTAINER_OF_T& s)
-                : inherited (Concrete::Set_LinkedList<T> ())
+                : inherited (Concrete::mkSet_Default<T> ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (s);
@@ -49,7 +49,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             inline Set<T>::Set (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                : inherited (Concrete::Set_LinkedList<T> ())
+                : inherited (Concrete::mkSet_Default<T> ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);

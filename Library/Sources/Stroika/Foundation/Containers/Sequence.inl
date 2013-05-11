@@ -6,7 +6,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Sequence_Array.h"  // needed for default constructor
+#include    "Concrete/Sequence_Factory.h"
 #include    "Private/IterableUtils.h"
 
 
@@ -21,8 +21,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            Sequence<T>::Sequence ()
-                : inherited (Concrete::Sequence_Array<T> ())
+            inline  Sequence<T>::Sequence ()
+                : inherited (Concrete::mkSequence_Default<T> ())
             {
             }
             template    <typename T>
@@ -33,7 +33,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
-                : inherited (Concrete::Sequence_Array<T> ())
+                : inherited (Concrete::mkSequence_Default<T> ())
             {
                 InsertAll (0, s);
             }
@@ -46,7 +46,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR>
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
-                : inherited (Concrete::Sequence_Array<T> ())
+                : inherited (Concrete::mkSequence_Default<T> ())
             {
                 Append (start, end);
             }

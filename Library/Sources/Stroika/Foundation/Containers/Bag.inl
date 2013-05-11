@@ -12,7 +12,7 @@
 
 #include    "../Debug/Assertions.h"
 
-#include    "Concrete/Bag_Array.h"  // needed for default constructor
+#include    "Concrete/Bag_Factory.h"
 
 
 
@@ -27,8 +27,8 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            Bag<T>::Bag ()
-                : Iterable<T> (Concrete::Bag_Array<T> ())
+            inline  Bag<T>::Bag ()
+                : Iterable<T> (Concrete::mkBag_Default<T> ())
             {
             }
             template    <typename T>
@@ -44,7 +44,7 @@ namespace   Stroika {
             }
             template    <typename T>
             Bag<T>::Bag (const T* start, const T* end)
-                : Iterable<T> (Concrete::Bag_Array<T> (start, end))
+                : Iterable<T> (Concrete::mkBag_Default<T> (start, end))
             {
             }
             template    <typename T>

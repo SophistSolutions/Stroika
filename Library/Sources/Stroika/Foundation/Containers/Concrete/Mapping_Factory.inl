@@ -30,9 +30,9 @@ namespace   Stroika {
 
 
                 template    <typename Key, typename T>
-                inline  Mapping<Key, T>  mkMapping_Default ()
+                Mapping<Key, T>  mkMapping_Default ()
                 {
-#if COMPILE_FACTORY_MAPPING_USING_LINKEDLIST_
+#if     COMPILE_FACTORY_MAPPING_USING_LINKEDLIST_
                     return Mapping_LinkedList<Key, T> ();
 #else
                     return Mapping_stdmap<Key, T> ();

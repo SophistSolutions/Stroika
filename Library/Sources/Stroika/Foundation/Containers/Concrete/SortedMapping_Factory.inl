@@ -24,7 +24,7 @@ namespace   Stroika {
 
 
                 template    <typename Key, typename T>
-                inline  SortedMapping<Key, T>    mkSortedMapping_Default ()
+                SortedMapping<Key, T>    mkSortedMapping_Default ()
                 {
                     return SortedMapping_stdmap<Key, T> ();
                 }
