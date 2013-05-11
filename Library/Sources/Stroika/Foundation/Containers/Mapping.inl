@@ -204,6 +204,3 @@ namespace   Stroika {
     }
 }
 #endif /* _Stroika_Foundation_Containers_Mapping_inl_ */
-
-//     See note at the end of Concrete/Mapping_Factory.h about why this is here
-#include    "Concrete/Mapping_Factory.inl"

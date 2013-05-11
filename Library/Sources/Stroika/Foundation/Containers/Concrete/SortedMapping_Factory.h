@@ -58,8 +58,6 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-//  Any module #including the Mapping_Factory.h must explicit include the SortedMapping_Factory.inl
-//  someplace (often a different place to avoid nested includes)
-//#include    "SortedMapping_Factory.inl"
+#include    "SortedMapping_Factory.inl"
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_SortedMapping_Factory_h_ */

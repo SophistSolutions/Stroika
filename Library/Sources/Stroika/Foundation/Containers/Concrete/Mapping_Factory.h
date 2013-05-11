@@ -59,8 +59,6 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-//  Any module #including the Mapping_Factory.h must explicit include the Mapping_Factory.inl
-//  someplace (often a different place to avoid nested includes)
-//#include    "Mapping_Factory.inl"
+#include    "Mapping_Factory.inl"
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_Mapping_Factory_h_ */
