@@ -269,7 +269,8 @@ namespace   Stroika {
                 }
                 template    <typename Key, typename T>
                 inline  Mapping_Array<Key, T>::Mapping_Array (const Mapping_Array<Key, T>& m)
-                    : inherited (m)
+                // static_cast<> so matches proper base class CTOR
+                    : inherited (static_cast<const inherited&> (m))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
