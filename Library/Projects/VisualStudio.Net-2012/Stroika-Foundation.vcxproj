@@ -472,6 +472,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.h" />
@@ -694,6 +696,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Array.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_DoublyLinkedList.inl" />

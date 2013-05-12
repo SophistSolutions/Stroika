@@ -6,25 +6,23 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
+#include    "Iterable.h"
 
 
 
 /**
+ *  \file
  *
- *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
- *
- *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *
  *  TODO:
  *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Queue.hh
+ *      @todo   Review
+ *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Queue.hh
+ *              for any important lackings
  *
- *      (o)         Should inherit from Iterable<T>
+ *      @todo   Draw a picture of q Q of people waiting in line (in docs below)
  *
  */
 
@@ -38,21 +36,21 @@ namespace   Stroika {
             /**
              *      Standard LIFO (Last in first out) queue. See Sedgewick, 30-31.(CHECK REFERNECE)
              *
-             *      Queues always iterate from Head to last, same order as removals.
+             *      Queues always iterate from Head to Tail: the same order as removals would encounter items.
              *
              *      Related classes include Deques, which allow addition and removal at
              *  either end, and PriorityQueues, which allow removal based on the priority
              *  assigned to an item.
              *
+             *  @see Deque<T> - which allow addition and removal at either end
+             *  @see PriorityQueues<T> - which allow removal based on the priority
+             *          assigned to an item.
              *
              * Notes:
              *      We currently default to the circular array implementation, as it is
              *  fastest under most circumstances. One drawback to it is that it has
              *  unpredictable costs for an Enqueue operation. DoubleLinkList is usually
              *  slower, but has very predictable costs.
-             *
-             *
-             *  TODO:   Draw a picture of q Q of people waiting in line.
              *
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
@@ -68,22 +66,21 @@ namespace   Stroika {
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
-                /*
+                /**
+                 *  Document carefully Queue(start,end) iter order - so copy works well!
                  */
                 Queue ();
-                Queue (const Queue<T>& s);
-                explicit Queue (const T* start, const T* end);
+                Queue (const Queue<T>& q);
+                template <typename CONTAINER_OF_T>
+                explicit Queue (const CONTAINER_OF_T& q);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Queue (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit Queue (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Queue<T>& operator= (const Queue<T>& src);
-
-            public:
-                /**
-                 */
-                nonvirtual  void    RemoveAll ();
 
             public:
                 /**
@@ -103,7 +100,6 @@ namespace   Stroika {
                  */
                 nonvirtual  T       RemoveHead ();
 
-
             public:
                 /**
                 old DOCS.
@@ -112,7 +108,6 @@ namespace   Stroika {
                  * elements of the Q have been removed (DeQueued).
                  */
                 nonvirtual  void    Enqueue (T item);       // AddTail
-
 
             public:
                 /**
@@ -123,6 +118,10 @@ namespace   Stroika {
                  */
                 nonvirtual  T       Dequeue ();             //RemoveHead
 
+            public:
+                /**
+                 */
+                nonvirtual  void    RemoveAll ();
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -145,8 +144,8 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void        Enqueue (T item)                        =   0;
-                virtual T           Dequeue ()                              =   0;
+                virtual void        AddTail (T item)                        =   0;
+                virtual T           RemoveHead ()                           =   0;
                 virtual T           Head () const                           =   0;
                 virtual void        RemoveAll ()                            =   0;
             };
