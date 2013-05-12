@@ -18,6 +18,8 @@
  *
  *  TODO:
  *
+ *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
+ *
  *      @todo   Review
  *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Queue.hh
  *              for any important lackings
@@ -80,7 +82,7 @@ namespace   Stroika {
                 explicit Queue (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Queue<T>& operator= (const Queue<T>& src);
+                nonvirtual  Queue<T>& operator= (const Queue<T>& rhs);
 
             public:
                 /**
