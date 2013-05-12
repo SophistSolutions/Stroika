@@ -104,8 +104,10 @@ namespace   Stroika {
             template    <typename TRAITS>
             inline  SharedByValue<TRAITS>& SharedByValue<TRAITS>::operator= (const SharedByValue<TRAITS>& src)
             {
-                fCopier_ = src.fCopier_;
-                fSharedImpl_ = src.fSharedImpl_;
+                if (this != &src) {
+                    fCopier_ = src.fCopier_;
+                    fSharedImpl_ = src.fSharedImpl_;
+                }
                 return *this;
             }
             template    <typename TRAITS>

@@ -102,10 +102,8 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterable<T>&    Iterable<T>::operator= (const Iterable<T>& rhs)
             {
-                if (this != &rhs) {
-                    RequireNotNull (rhs.fRep_.get ());
-                    fRep_ = rhs.fRep_;
-                }
+                RequireNotNull (rhs.fRep_.get ());
+                fRep_ = rhs.fRep_;
                 return *this;
             }
             template    <typename T>
