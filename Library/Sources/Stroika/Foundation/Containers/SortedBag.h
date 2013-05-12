@@ -21,6 +21,13 @@
  *  TODO:
  *      @todo   Fixup construcotrs (templated by value and iterator ctors)
  *
+ *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.
+ *
+ *      @todo   Implement using redblback trees.
+ *
+ *      @todo   See if there is a good STL backend to use to implement this? Multimap<T,void> is the closest
+ *              I can see.
+ *
  */
 
 
@@ -31,7 +38,7 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedBag is a Bag<T> which remains sorted (iterator) as you add  and remove entries.
+             *      A SortedBag is a Bag<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
              *
              *  @see Bag<T>
              *  @see SortedMapping<Key,T>
@@ -71,6 +78,9 @@ namespace   Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedBag<T> container API.
+             *
+             *  Note that this doesn't add any methods, but still serves the purpose of allowing
+             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T>
             class   SortedBag<T>::_IRep : public Bag<T>::_IRep {

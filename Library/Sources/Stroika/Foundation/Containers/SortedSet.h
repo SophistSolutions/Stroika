@@ -59,6 +59,9 @@ namespace   Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedSet<T> container API.
+             *
+             *  Note that this doesn't add any methods, but still serves the purpose of allowing
+             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename   T>
             class   SortedSet<T>::_IRep : public Set<T>::_IRep {

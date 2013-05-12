@@ -67,7 +67,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Document carefully Queue(start,end) iter order - so copy works well!
+                 *  @todo Document carefully Queue(start,end) iter order - so copy works well!
                  */
                 Queue ();
                 Queue (const Queue<T>& q);

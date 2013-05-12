@@ -17,6 +17,7 @@
  *
  *
  *  TODO:
+ *      @todo   Fix constructors to work better/more flexibly like other containers (copy from iterator etc)
  *
  */
 
@@ -62,6 +63,9 @@ namespace   Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedMapping<T> container API.
+             *
+             *  Note that this doesn't add any methods, but still serves the purpose of allowing
+             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename Key, typename T>
             class   SortedMapping<Key, T>::_IRep : public Mapping<Key, T>::_IRep {
