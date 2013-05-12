@@ -6,9 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
-
+#include    "Iterable.h"
 
 
 /*
@@ -41,15 +39,20 @@ namespace   Stroika {
              *      Iteration proceeds from the top to the bottom of the stack. Top
              *      is the FIRST IN.
              *
-             *  @todo explain why Stack<T> inherits from Iterable<T> - basically cuz handy (for debugging etc) to be able to traverse and not unreasonable
-             *      or makes impl harder.
-             *
+             *  *Design Note*:
+             *      We considered NOT having Stack<T> inherit from Iterable<T>, but that made copying of
+             *      a stack intrinsically more costly, as you had to copy, and then pop items to see them,
+             *      and put them into a new stack. A specail copy API (private to stack) would have limited
+             *      the ease of interoperating the Stack<T> container with other sorts of containers.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
             template    <typename T>
-            class   Stack {
+            class   Stack : public Iterable<T> {
+            private:
+                typedef Iterable<T> inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -59,18 +62,16 @@ namespace   Stroika {
                  */
                 Stack ();
                 Stack (const Stack<T>& s);
-                explicit Stack (const T* start, const T* end);
+                template <typename CONTAINER_OF_T>
+                explicit Stack (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Stack (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit Stack (const _SharedPtrIRep& rep);
 
             public:
                 nonvirtual  Stack<T>& operator= (const Stack<T>& src);
-
-            public:
-                /**
-                 */
-                nonvirtual  void    RemoveAll ();
 
             public:
                 /**
@@ -90,12 +91,21 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Iterable<T>   Elements () const;
+                nonvirtual  void    RemoveAll ();
+
+
+            public:
+                /**
+                 * \brief STL-ish alias for RemoveAll ().
+                 */
+                nonvirtual  void    clear ();
+
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
+
 
 
             /**
@@ -113,11 +123,10 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void        Push (T item) const                     =   0;
-                virtual T           Pop ()                                  =   0;
-                virtual T           Top () const                            =   0;
-                virtual void        RemoveAll ()                            =   0;
-                virtual Iterable<T> Elements () const                       =   0;
+                virtual void                Push (T item)                           =   0;
+                virtual T                   Pop ()                                  =   0;
+                virtual T                   Top () const                            =   0;
+                virtual void                RemoveAll ()                            =   0;
             };
 
 
