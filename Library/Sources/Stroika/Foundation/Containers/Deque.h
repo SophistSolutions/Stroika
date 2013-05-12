@@ -25,6 +25,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
@@ -37,16 +38,12 @@ namespace   Stroika {
              *
              *      Deques - like Queues - iterate from Head to Tail.
              *
-             *      We currently default to the circular array implementation, as it is
-             *  fastest under most circumstances. One drawback to it is that it has
-             *  unpredictable costs for an Add operation. DoubleLinkList is usually
-             *  slower, but has very predictable costs.
-             *
              * TODO:
              *      +   Add CTOR(Iterator<T>) after next release....
              *
              * Notes:
              *
+             *  <<NOTE - FUTURE WORK - AND DONT DOCUMENT DEFAULTIMPL HERE>>> - SEE FACTORY CODE
              *      We currently default to the circular array implementation, as it is
              *  fastest under most circumstances. One drawback to it is that it has
              *  unpredictable costs for an Add operation. DoubleLinkList is usually
@@ -57,6 +54,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Deque : public Queue<T> {
+            private:
+                typedef Queue<T>    inherited;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
@@ -107,12 +107,6 @@ namespace   Stroika {
              */
             template    <typename T>
             class   Deque<T>::_IRep : public Queue<T>::_IRep {
-            protected:
-                _IRep ();
-
-            public:
-                virtual ~_IRep ();
-
             public:
                 virtual void        AddHead (T item) const                  =   0;
                 virtual T           RemoveTail ()                           =   0;
@@ -123,7 +117,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 

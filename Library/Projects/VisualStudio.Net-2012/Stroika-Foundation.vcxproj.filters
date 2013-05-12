@@ -1146,6 +1146,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_Factory.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1687,6 +1693,12 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_DoublyLinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_Factory.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Deque_DoublyLinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
