@@ -8,11 +8,8 @@
 #include    <iostream>
 #include    <sstream>
 
-#define WORKING 0
-#if WORKING
 #include    "Stroika/Foundation/Containers/Deque.h"
 #include    "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
-#endif
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -26,9 +23,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
-#if WORKING
 using   Concrete::Deque_DoublyLinkedList;
-#endif
 
 
 namespace {
@@ -121,13 +116,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-#if WORKING
         SimpleMappingTest_All_For_Type<Deque<size_t>> ();
         SimpleMappingTest_All_For_Type<Deque<SimpleClass>> ();
 
         SimpleMappingTest_All_For_Type<Deque_DoublyLinkedList<size_t>> ();
         SimpleMappingTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>> ();
-#endif
     }
 }
 

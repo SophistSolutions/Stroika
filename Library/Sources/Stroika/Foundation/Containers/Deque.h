@@ -65,8 +65,11 @@ namespace   Stroika {
                 /**
                  */
                 Deque ();
-                Deque (const Deque<T>& s);
-                explicit Deque (const T* start, const T* end);
+                Deque (const Deque<T>& d);
+                template <typename CONTAINER_OF_T>
+                explicit Deque (const CONTAINER_OF_T& d);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Deque (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 /**
@@ -108,7 +111,7 @@ namespace   Stroika {
             template    <typename T>
             class   Deque<T>::_IRep : public Queue<T>::_IRep {
             public:
-                virtual void        AddHead (T item) const                  =   0;
+                virtual void        AddHead (T item)                        =   0;
                 virtual T           RemoveTail ()                           =   0;
                 virtual T           Tail () const                           =   0;
             };

@@ -45,12 +45,18 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Deque<T>::_IRep overrides
+                    // Queue<T>::_IRep overrides
                 public:
                     virtual void        AddTail (T item) override;
                     virtual T           RemoveHead () override;
                     virtual T           Head () const override;
                     virtual void        RemoveAll () override;
+
+                    // Deque<T>::_IRep overrides
+                public:
+                    virtual void        AddHead (T item) override;
+                    virtual T           RemoveTail () override;
+                    virtual T           Tail () const override;
 
                 private:
                     Private::ContainerRepLockDataSupport_               fLockSupport_;
@@ -199,6 +205,29 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         fData_.RemoveAll ();
+                    });
+                }
+                template    <typename T>
+                void    Deque_DoublyLinkedList<T>::Rep_::AddHead (T item)
+                {
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        fData_.Append (item);
+                    });
+                }
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::RemoveTail ()
+                {
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        T   item =  fData_.GetFirst ();
+                        fData_.RemoveLast ();
+                        return (item);
+                    });
+                }
+                template    <typename T>
+                T    Deque_DoublyLinkedList<T>::Rep_::Tail () const
+                {
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        return (fData_.GetLast ());
                     });
                 }
 

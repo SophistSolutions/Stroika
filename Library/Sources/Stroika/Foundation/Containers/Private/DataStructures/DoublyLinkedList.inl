@@ -90,6 +90,14 @@ namespace   Stroika {
                         return (fFirst->fItem);
                     }
 
+                    template    <class T>   inline  T   DoublyLinkedList<T>::GetLast () const
+                    {
+                        // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
+                        // maybe irrelevant if we swtich to usting STL list class
+                        Require (fLength > 0);
+                        return GetAt (fLength - 1);
+                    }
+
                     template    <class T>   inline  void    DoublyLinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
@@ -105,6 +113,28 @@ namespace   Stroika {
 
                         DoubleLink<T>* victim = fFirst;
                         fFirst = victim->fNext;
+                        delete (victim);
+                        fLength--;
+
+                        Invariant ();
+                    }
+
+                    template    <class T>   inline  void    DoublyLinkedList<T>::RemoveLast ()
+                    {
+                        RequireNotNull (fFirst);
+                        Invariant ();
+
+                        // HACK - SEE OLD 1992 Stroika code - or abandom this impl - and use STL?
+                        DoubleLink<T>* i = fFirst;
+                        AssertNotNull (i);
+                        for (; i->fNext != nullptr; i = i->fNext)
+                            ;
+                        AssertNotNull (i);
+                        DoubleLink<T>* victim = i;
+                        if (victim == fFirst) {
+                            fFirst = nullptr;
+                        }
+                        Assert (victim->fNext == nullptr);
                         delete (victim);
                         fLength--;
 

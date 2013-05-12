@@ -16,6 +16,10 @@
 /*
  *
  * TODO:
+ *
+ *      @todo   Somheow when this got ported from old code - we lost fLast??? Maybe irrelevant if we switch to
+ *              using STL list??? But ..??
+ *
  *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
  *
  *      @todo   WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL
@@ -87,8 +91,11 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  T       GetFirst () const;
+                        nonvirtual  T       GetLast () const;
+
                         nonvirtual  void    Prepend (T item);
                         nonvirtual  void    RemoveFirst ();
+                        nonvirtual  void    RemoveLast ();
 
                         /*
                          *  Utility to search the list for the given item using operator==
