@@ -12,8 +12,7 @@
 /*
  *
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
- *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *
  *  TODO:
@@ -37,7 +36,7 @@ namespace   Stroika {
             /**
              *      Standard FIFO (first in - first out) Stack. See Sedgewick, 30-31.
              *      Iteration proceeds from the top to the bottom of the stack. Top
-             *      is the FIRST IN.
+             *      is the FIRST IN (also first out).
              *
              *  *Design Note*:
              *      We considered NOT having Stack<T> inherit from Iterable<T>, but that made copying of
@@ -59,6 +58,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naieve interpreation of above
+                 *          rules owuld lead to having a copy reverse the stack
                  */
                 Stack ();
                 Stack (const Stack<T>& s);
@@ -93,19 +94,16 @@ namespace   Stroika {
                  */
                 nonvirtual  void    RemoveAll ();
 
-
             public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();
 
-
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
-
 
 
             /**
