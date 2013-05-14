@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::IO::Network::HTTP
+//  TEST    Foundation::IO::Network
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -17,7 +17,6 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Memory;
 
 
 namespace   {

@@ -1,12 +1,22 @@
 /*
  * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//  TEST    Foundation::Execution::ProcessRunner
+//  TEST    Foundation::Execution::Exceptions
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Execution/ProcessRunner.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    <iostream>
+#include    <sstream>
+
+#if     qPlatform_Windows
+#include    <Windows.h>
+#include    <winerror.h>
+#include    <wininet.h>     // for error codes
+#endif
+
+#include    "Stroika/Foundation/Execution/Exceptions.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -15,7 +25,7 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
-using   Characters::String;
+
 
 
 
@@ -23,45 +33,17 @@ using   Characters::String;
 namespace   {
     void    RegressionTest1_ ()
     {
-        Streams::BasicBinaryOutputStream myStdOut;
 #if         qPlatform_Windows
-        // quickie about to test..
-        ProcessRunner pr (TSTR ("echo hi mom"), nullptr, myStdOut);
-        pr.Run ();
-#endif
-    }
-    void    RegressionTest2_ ()
-    {
-        Streams::BasicBinaryOutputStream myStdOut;
-#if         qPlatform_Windows
-        // quickie about to test..
-        ProcessRunner pr (TSTR ("echo hi mom"));
-        String out = pr.Run (L"");
-        VerifyTestResult (out.Trim () == L"hi mom");
-#endif
-    }
-    void    RegressionTest3_Pipe_ ()
-    {
-        Streams::BasicBinaryOutputStream myStdOut;
-#if         qPlatform_Windows
-        ProcessRunner pr1 (TSTR ("echo hi mom"));
-        Streams::BasicBinaryInputOutputStream pipe;
-        ProcessRunner pr2 (TSTR ("cat"));
-        pr1.SetStdOut (pipe);
-        pr2.SetStdIn (pipe);
-
-        Streams::BasicBinaryOutputStream pr2Out;
-        pr2.SetStdOut (pr2Out);
-
-        pr1.Run ();
-        pr2.Run ();
-
-        String out = String::FromUTF8 (pr2Out.As<string> ());
-
-        VerifyTestResult (out.Trim () == L"hi mom");
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_TIMEOUT == ERROR_INTERNET_TIMEOUT);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_INVALID_URL == ERROR_INTERNET_INVALID_URL);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_UNRECOGNIZED_SCHEME == ERROR_INTERNET_UNRECOGNIZED_SCHEME);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_NAME_NOT_RESOLVED == ERROR_INTERNET_NAME_NOT_RESOLVED);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_PROTOCOL_NOT_FOUND == ERROR_INTERNET_PROTOCOL_NOT_FOUND);
+        VerifyTestResult (Platform::Windows::Exception::kERROR_INTERNET_CANNOT_CONNECT == ERROR_INTERNET_CANNOT_CONNECT);
 #endif
     }
 }
+
 
 
 namespace   {
@@ -69,8 +51,6 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         RegressionTest1_ ();
-        RegressionTest2_ ();
-        RegressionTest3_Pipe_ ();
     }
 
 }

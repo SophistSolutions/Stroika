@@ -1,15 +1,12 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//      TEST    Foundation::Containers::Stack
-//      STATUS  PRELIMINARY
+//      TEST    Foundation::Containers::SortedTally
+//      STATUS  very minimal/incomplete
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <iostream>
-#include    <sstream>
-
-#include    "Stroika/Foundation/Containers/Stack.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
+#include    "Stroika/Foundation/Containers/SortedMapping.h"
+#include    "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -24,41 +21,40 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-//using   Concrete::Set_LinkedList;
-
+using   Concrete::SortedMapping_stdmap;
 
 
 namespace {
-    template <typename StackOfT>
-    void    SimpleTest_1_ (StackOfT s)
+    template <typename MappingOfKeyT>
+    void    SimpleTest_1_ (MappingOfKeyT m)
     {
-        StackOfT s2;
-        StackOfT s3 = s;
+        MappingOfKeyT s;
     }
 }
 
 
 namespace {
-    template <typename StackOfT>
-    void    SimpleTest_2_ (StackOfT s)
+    template <typename MappingOfKeyT>
+    void    SimpleTest_2_ (MappingOfKeyT m)
     {
-        s.Push (1);
-        VerifyTestResult (s.size () == 1);
-        s.Push (1);
-        VerifyTestResult (s.size () == 2);
-        s.Pop ();
-        VerifyTestResult (s.size () == 1);
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
+        m.Add (1, 2);
+        VerifyTestResult (m.size () == 1);
+        Verify (m.Lookup (1, nullptr));
+        Verify (not m.Lookup (2, nullptr));
+        m.Add (1, 2);
+        VerifyTestResult (m.size () == 1);
+        m.Remove (1);
+        VerifyTestResult (m.size () == 0);
+        m.RemoveAll ();
+        VerifyTestResult (m.size () == 0);
     }
 }
 
 
 namespace {
-    template <typename StackOfT>
-    void    SimpleTest_3_Iteration_ (StackOfT s)
+    template <typename MappingOfKeyT>
+    void    SimpleTest_3_Iteration_ (MappingOfKeyT m)
     {
-#if 0
         m.Add (1, 2);
         VerifyTestResult (m.size () == 1);
         for (auto i : m) {
@@ -76,8 +72,8 @@ namespace {
         for (auto i : m) {
             VerifyTestResult (false);
         }
-        m.Add (1, 2);
         m.Add (2, 3);
+        m.Add (1, 2);
         m.Add (3, 4);
         unsigned int cnt = 0;
         for (auto i : m) {
@@ -96,21 +92,20 @@ namespace {
             }
         }
         VerifyTestResult (cnt == 3);
-#endif
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
+        m.RemoveAll ();
+        VerifyTestResult (m.size () == 0);
     }
 }
 
 
 namespace {
-    template <typename StackOfT>
+    template <typename MappingOfKeyT>
     void    SimpleMappingTest_All_For_Type ()
     {
-        StackOfT s;
-        SimpleTest_1_ (s);
-        SimpleTest_2_ (s);
-        SimpleTest_3_Iteration_ (s);
+        MappingOfKeyT m;
+        SimpleTest_1_ (m);
+        SimpleTest_2_ (m);
+        SimpleTest_3_Iteration_ (m);
     }
 }
 
@@ -118,11 +113,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        SimpleMappingTest_All_For_Type<Stack<size_t>> ();
-        SimpleMappingTest_All_For_Type<Stack<SimpleClass>> ();
+        SimpleMappingTest_All_For_Type<SortedMapping<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<SortedMapping<SimpleClass, SimpleClass>> ();
 
-        //      SimpleMappingTest_All_For_Type<Set_LinkedList<size_t>> ();
-        //      SimpleMappingTest_All_For_Type<Set_LinkedList<SimpleClass>> ();
+        SimpleMappingTest_All_For_Type<SortedMapping_stdmap<size_t, size_t>> ();
+        SimpleMappingTest_All_For_Type<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
     }
 }
 
@@ -133,4 +128,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-

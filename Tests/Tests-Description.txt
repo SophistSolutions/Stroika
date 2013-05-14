@@ -15,19 +15,20 @@
 [15]	Foundation::Containers::SortedBag
 [16]	Foundation::Containers::SortedMapping
 [17]	Foundation::Containers::SortedSet
-[18]	Foundation::Containers::Stack
-[19]	Foundation::Containers::Tally
-[20]	Foundation::Cryptography
-[21]	Foundation::DataExchangeFormat::JSON
-[22]	Foundation::DataExchangeFormat::XML::SaxParser
-[23]	Foundation::Execution::Exceptions
-[24]	Foundation::Execution::ProcessRunner
-[25]	Foundation::Execution::Signals
-[26]	Foundation::Execution::Threads		[Note - includes atomics]
-[27]	Foundation::IO::Network
-[28]	Foundation::IO::Network::HTTP
-[29]	Foundation::IO::Network::Transfer
-[30]	Foundation::Math
-[31]	Foundation::Memory
-[32]	Foundation::Streams
-[33]	Foundation::Time
+[18]	Foundation::Containers::SortedTally
+[19]	Foundation::Containers::Stack
+[20]	Foundation::Containers::Tally
+[21]	Foundation::Cryptography
+[22]	Foundation::DataExchangeFormat::JSON
+[23]	Foundation::DataExchangeFormat::XML::SaxParser
+[24]	Foundation::Execution::Exceptions
+[25]	Foundation::Execution::ProcessRunner
+[26]	Foundation::Execution::Signals
+[27]	Foundation::Execution::Threads		[Note - includes atomics]
+[28]	Foundation::IO::Network
+[29]	Foundation::IO::Network::HTTP
+[30]	Foundation::IO::Network::Transfer
+[31]	Foundation::Math
+[32]	Foundation::Memory
+[33]	Foundation::Streams
+[34]	Foundation::Time
