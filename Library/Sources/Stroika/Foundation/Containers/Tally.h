@@ -81,6 +81,13 @@ namespace   Stroika {
             private:
                 typedef Iterable<TallyEntry<T>> inherited;
 
+            public:
+                /**
+                 *      \brief  TallyOfElementType is just a handly copy of the *T* template type which this
+                 *              Tally<T> parameterizes counting.
+                 */
+                typedef T   TallyOfElementType;
+
             protected:
                 class _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;

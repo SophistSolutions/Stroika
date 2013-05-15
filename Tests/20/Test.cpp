@@ -33,14 +33,14 @@ namespace   {
     {
         using namespace CommonTests::TallyTests;
 
-        SimpleTallyTest_All_For_Type<size_t, Tally_LinkedList<size_t>> ();
-        SimpleTallyTest_All_For_Type<SimpleClass, Tally_LinkedList<SimpleClass>> ();
+        SimpleTallyTest_All_For_Type<Tally_LinkedList<size_t>> ();
+        SimpleTallyTest_All_For_Type<Tally_LinkedList<SimpleClass>> ();
 
-        SimpleTallyTest_All_For_Type<size_t, Tally_Array<size_t>> ();
-        SimpleTallyTest_All_For_Type<SimpleClass, Tally_Array<SimpleClass>> ();
+        SimpleTallyTest_All_For_Type<Tally_Array<size_t>> ();
+        SimpleTallyTest_All_For_Type<Tally_Array<SimpleClass>> ();
 
-        SimpleTallyTest_All_For_Type<size_t, Tally<size_t>> ();
-        SimpleTallyTest_All_For_Type<SimpleClass, Tally<SimpleClass>> ();
+        SimpleTallyTest_All_For_Type<Tally<size_t>> ();
+        SimpleTallyTest_All_For_Type<Tally<SimpleClass>> ();
     }
 
 }
