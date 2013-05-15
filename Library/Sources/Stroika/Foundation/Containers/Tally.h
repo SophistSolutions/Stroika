@@ -79,7 +79,7 @@ namespace   Stroika {
             template    <typename T>
             class  Tally : public Iterable<TallyEntry<T>> {
             private:
-                typedef Iterable<TallyEntry<T>> inherited;
+                typedef typename    Iterable<TallyEntry<T>> inherited;
 
             public:
                 /**
