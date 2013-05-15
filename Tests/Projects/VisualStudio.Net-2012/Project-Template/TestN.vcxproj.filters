@@ -16,6 +16,9 @@
     <Filter Include="TestHarness">
       <UniqueIdentifier>{f12db992-8ca3-475f-b6b5-f3040e0ee6d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TestCommon">
+      <UniqueIdentifier>{0D1AA45A-FADE-45EA-8C75-01A5A4F40F78}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\NNN\Test.cpp">
@@ -34,6 +37,26 @@
     </ClInclude>
     <ClInclude Include="..\..\..\TestHarness\TestHarness.h">
       <Filter>TestHarness</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Bag.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Mapping.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Set.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Tally.h">
+      <Filter>TestCommon</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
