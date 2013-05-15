@@ -6,6 +6,8 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Containers/Tally.h"
+
 #include    "../TestHarness/TestHarness.h"
 
 
