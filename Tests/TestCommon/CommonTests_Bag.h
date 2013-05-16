@@ -34,6 +34,7 @@ namespace CommonTests {
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add(i);
                         VerifyTestResult(s.Contains(i));
+                        applyToContainer (s);
                     }
 
                     VerifyTestResult(s.GetLength() == kTestSize);
@@ -42,12 +43,15 @@ namespace CommonTests {
                         VerifyTestResult(s.Contains(i));
                         VerifyTestResult(s.Contains(s.GetLength ()));
                         s.Remove (s.GetLength ());
+                        applyToContainer (s);
                         VerifyTestResult(s.GetLength () == oldLength - 1);
                     }
 
                     s.RemoveAll ();
+                    applyToContainer (s);
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T(i));
+                        applyToContainer (s);
                     }
 
                     {
@@ -56,6 +60,7 @@ namespace CommonTests {
                                 VerifyTestResult(s.Contains(i));
                                 VerifyTestResult(s.GetLength() == kTestSize - i + 1);
                                 s.Remove(i);
+                                applyToContainer (s);
                                 VerifyTestResult(not s.Contains(i - 1));
                                 VerifyTestResult(s.GetLength() == kTestSize - i);
                             }
@@ -66,11 +71,14 @@ namespace CommonTests {
 
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
+                        applyToContainer (s);
                     }
+                    applyToContainer (s);
                     VerifyTestResult(s.GetLength() == kTestSize);
                     {
                         for (T i : s) {
                             s.Remove(i);
+                            applyToContainer (s);
                         }
                         VerifyTestResult(s.IsEmpty());
                         VerifyTestResult(s.GetLength() == 0);
@@ -78,11 +86,13 @@ namespace CommonTests {
 
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add (T (i));
+                        applyToContainer (s);
                     }
                     VerifyTestResult(s.GetLength() == kTestSize);
 
                     for (T i : s) {
                         s.Remove(i);
+                        applyToContainer (s);
                     }
                     VerifyTestResult(s.GetLength() == 0);
                 }
@@ -91,9 +101,11 @@ namespace CommonTests {
                 */
                 {
                     s.RemoveAll();
+                    applyToContainer (s);
                     VerifyTestResult(s.GetLength() == 0);
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add(i);
+                        applyToContainer (s);
                     }
                     VerifyTestResult(s.GetLength() == kTestSize);
 
@@ -102,9 +114,13 @@ namespace CommonTests {
                         for (T it2 : s) {
                             for (Iterator<T> it3 = s.begin (); it3 != s.end (); ++it3) {
                                 s.Update (it3, i);
+                                applyToContainer (s);
                                 s.Remove(it3);
+                                applyToContainer (s);
                                 s.Add(i);
+                                applyToContainer (s);
                                 s.Remove(i);
+                                applyToContainer (s);
                                 i++;
                             }
                         }
@@ -161,21 +177,28 @@ namespace CommonTests {
                 typedef typename USING_BAG_CONTAINER::ElementType   T;
                 size_t  three = 3;
 
+                applyToContainer (s);
                 Bag<T> s1(s);
+                applyToContainer (s1);
 
                 VerifyTestResult(s1 == s);
                 VerifyTestResult(s1 == s);
 
                 Bag<T> s2 = s1;
+                applyToContainer (s2);
 
                 VerifyTestResult(s2 == s);
                 VerifyTestResult(s2 == s1);
 
                 s2.Add(three);
+                applyToContainer (s);
+                applyToContainer (s1);
+                applyToContainer (s2);
                 VerifyTestResult(s1 == s);
                 VerifyTestResult(s2 != s1);
 
                 IteratorTests_ (s, applyToContainer);
+                applyToContainer (s);
 
 #if     qDebug
                 const   size_t  K = 200;
@@ -199,8 +222,11 @@ namespace CommonTests {
 
                 for(i = 1; i <= K; i++) {
                     s.Add(i);
+                    applyToContainer (s);
                 }
+                applyToContainer (s);
                 BagTimings_(s, applyToContainer);
+                applyToContainer (s);
                 VerifyTestResult(s.IsEmpty());
 
 #if     qPrintTimings
@@ -223,12 +249,15 @@ namespace CommonTests {
 
                 for(i = 1; i <= K / 2; i++) {
                     s += 1;
+                    applyToContainer (s);
                     VerifyTestResult(s.TallyOf(1) == i);
                 }
                 size_t oldLength = s.GetLength();
                 s += s;
+                applyToContainer (s);
                 VerifyTestResult(s.GetLength() == oldLength * 2);
                 s -= s;
+                applyToContainer (s);
                 VerifyTestResult(s.GetLength() == 0);
 
 #if     qPrintTimings
@@ -261,6 +290,7 @@ namespace CommonTests {
                 VerifyTestResult (bag.IsEmpty());
                 bag.Add (t1);
                 bag.Add (t1);
+                applyToContainer (bag);
                 VerifyTestResult (not bag.IsEmpty());
                 VerifyTestResult (bag.TallyOf (t3) == 0);
                 VerifyTestResult (bag.TallyOf (t1) == 2);
@@ -269,6 +299,7 @@ namespace CommonTests {
                     VerifyTestResult (bag2.TallyOf (t3) == 0);
                     VerifyTestResult (bag2.TallyOf (t1) == 2);
                     bag.Add (t1);
+                    applyToContainer (bag);
                     VerifyTestResult (bag2.TallyOf (t1) == 2);
                     VerifyTestResult (bag.TallyOf (t1) == 3);
                 }
@@ -297,11 +328,13 @@ namespace CommonTests {
                 VerifyTestResult (bag.IsEmpty());
                 bag.Add (t1);
                 bag.Add (t1);
+                applyToContainer (bag);
                 {
                     USING_BAG_CONTAINER   bag2    =   bag;
                     VerifyTestResult (bag2 == bag);
                     VerifyTestResult (not (bag2 != bag));
                     bag.Add (t1);
+                    applyToContainer (bag);
                     VerifyTestResult (not (bag2 == bag));
                     VerifyTestResult (bag2 != bag);
                 }
@@ -311,6 +344,7 @@ namespace CommonTests {
                 bag.Add (t1);
                 bag.Add (t1);
                 bag.Add (t3);
+                applyToContainer (bag);
                 {
                     USING_BAG_CONTAINER   bag2    =   bag;
                     VerifyTestResult (bag2 == bag);
@@ -319,6 +353,7 @@ namespace CommonTests {
                     VerifyTestResult (not (bag2 == bag));
                     VerifyTestResult (bag2 != bag);
                     bag.Remove (t1);
+                    applyToContainer (bag);
                     VerifyTestResult (bag2 == bag);
                     VerifyTestResult (not (bag2 != bag));
                 }
@@ -330,6 +365,7 @@ namespace CommonTests {
             {
                 SimpleOpEqualsTest_<USING_BAG_CONTAINER> (applyToContainer);
             }
+
         }
 
 
@@ -350,6 +386,7 @@ namespace CommonTests {
                 VerifyTestResult (bag.IsEmpty());
                 bag.Add (t1);
                 bag.Add (t1);
+                applyToContainer (bag);
                 {
                     USING_BAG_CONTAINER   bb  =   bag;
                     VerifyTestResult (bb.MakeIterator () != bag.MakeIterator ());
@@ -393,46 +430,44 @@ namespace CommonTests {
 
 
 
-        namespace   {
-            namespace   Test5_Apply_ {
+        namespace   Test5_Apply_ {
 
-                template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
-                void    DoIt_ (TEST_FUNCTION applyToContainer)
-                {
-                    typedef typename USING_BAG_CONTAINER::ElementType T;
-                    USING_BAG_CONTAINER   b;
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    DoIt_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename USING_BAG_CONTAINER::ElementType T;
+                USING_BAG_CONTAINER   b;
 
-                    constexpr int FIRST = 0;
-                    constexpr int LAST = 100;
-                    for (int i = FIRST; i < LAST; ++i) {
-                        b.Add (i);
-                    }
-
-                    {
-                        static size_t count;
-                        static T sum;
-                        count = 0;
-                        sum = 0;
-                        b.ApplyStatic ([] (const T & i) {
-                            count++;
-                            sum = sum + i;
-                        });
-                        VerifyTestResult (count == LAST - FIRST);
-                        VerifyTestResult (sum == ((FIRST + (LAST - 1))) * (LAST - FIRST) / 2);
-                    }
+                constexpr int FIRST = 0;
+                constexpr int LAST = 100;
+                for (int i = FIRST; i < LAST; ++i) {
+                    b.Add (i);
+                    applyToContainer (b);
                 }
 
-
-                template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
-                void    DoAllTests_ (TEST_FUNCTION applyToContainer)
                 {
-                    DoIt_<USING_BAG_CONTAINER> (applyToContainer);
+                    static size_t count;
+                    static T sum;
+                    count = 0;
+                    sum = 0;
+                    b.ApplyStatic ([] (const T & i) {
+                        count++;
+                        sum = sum + i;
+                    });
+                    VerifyTestResult (count == LAST - FIRST);
+                    VerifyTestResult (sum == ((FIRST + (LAST - 1))) * (LAST - FIRST) / 2);
+                    applyToContainer (b);
                 }
-
-
             }
-        }
 
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                DoIt_<USING_BAG_CONTAINER> (applyToContainer);
+            }
+
+        }
 
 
         template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
