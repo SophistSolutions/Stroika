@@ -257,6 +257,13 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
+                template    <typename CONTAINER_OF_T>
+                inline  Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AddAll (s);
+                }
+                template    <typename T>
                 inline  Set_LinkedList<T>&   Set_LinkedList<T>::operator= (const Set_LinkedList<T>& m)
                 {
                     inherited::operator= (m);

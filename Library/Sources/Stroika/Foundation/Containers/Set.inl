@@ -95,7 +95,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Set<T>::AddAll (const CONTAINER_OF_T& s)
             {
-                AddAll (s.begin (), s.end ());
+                AddAll (std::begin (s), std::end (s));
             }
             template    <typename T>
             inline  void    Set<T>::Remove (T item)
@@ -119,7 +119,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Set<T>::RemoveAll (const CONTAINER_OF_T& s)
             {
-                RemoveAll (s.begin (), s.end ());
+                RemoveAll (std::begin (s), std::end (s));
             }
             template    <typename T>
             inline  void    Set<T>::RemoveAll ()

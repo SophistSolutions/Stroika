@@ -17,24 +17,60 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
-        template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
-        void    SetIteratorTests_ (USING_SET_CONTAINER& s, TEST_FUNCTION applyToContainer)
-        {
+        namespace Test1_BasicConstruction {
+            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename USING_SET_CONTAINER::ElementType ELEMENT_TYPE;
+                USING_SET_CONTAINER   s;
+                applyToContainer (s);
+                USING_SET_CONTAINER   s1 = s;
+                applyToContainer (s1);
+                Set<ELEMENT_TYPE>   s2 = s;
+                applyToContainer (s2);
+                ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
+                Set<ELEMENT_TYPE> s3 = USING_SET_CONTAINER (kVec_);
+                VerifyTestResult (s3.GetLength () == 4);
+                VerifyTestResult (s3.Contains (1));
+                VerifyTestResult (s3.Contains (2));
+                VerifyTestResult (s3.Contains (3));
+                VerifyTestResult (s3.Contains (4));
+                VerifyTestResult (not s3.Contains (5));
+            }
         }
 
 
-        template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleSetTests (USING_SET_CONTAINER& s, TEST_FUNCTION applyToContainer)
-        {
+        namespace Test2_AddRemove {
+            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_SET_CONTAINER s;
+                s.Add (1);
+                applyToContainer (s);
+                VerifyTestResult (s.size () == 1);
+                VerifyTestResult (s.Contains (1));
+                VerifyTestResult (not s.Contains (2));
+                applyToContainer (s);
+                s.Add (1);
+                applyToContainer (s);
+                VerifyTestResult (s.size () == 1);
+                applyToContainer (s);
+                s.Remove (1);
+                applyToContainer (s);
+                VerifyTestResult (s.size () == 0);
+                applyToContainer (s);
+                s.RemoveAll ();
+                applyToContainer (s);
+                VerifyTestResult (s.size () == 0);
+            }
         }
-
 
 
         template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
         void    SimpleSetTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            USING_SET_CONTAINER s;
-            SimpleSetTests<USING_SET_CONTAINER> (s, applyToContainer);
+            Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
+            Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
         }
 
 
