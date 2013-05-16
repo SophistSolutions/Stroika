@@ -14,6 +14,9 @@
 namespace CommonTests {
     namespace TallyTests {
 
+        using   namespace   Stroika::Foundation;
+        using   namespace   Stroika::Foundation::Containers;
+
         template <typename USING_TALLY_CONTAINER>
         void    TallyIteratorTests_ (USING_TALLY_CONTAINER& s)
         {
