@@ -17,7 +17,7 @@ namespace CommonTests {
         template <typename USING_TALLY_CONTAINER>
         void    TallyIteratorTests_ (USING_TALLY_CONTAINER& s)
         {
-            typedef USING_TALLY_CONTAINER::TallyOfElementType   T;
+            typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
             const   size_t  kTestSize   =   6;
 
             VerifyTestResult (s.GetLength () == 0);
@@ -108,7 +108,7 @@ namespace CommonTests {
         template <typename USING_TALLY_CONTAINER>
         void    SimpleTallyTests (USING_TALLY_CONTAINER& s)
         {
-            typedef USING_TALLY_CONTAINER::TallyOfElementType   T;
+            typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
             size_t  three = 3;
 
             Tally<T>   s1 (s);
