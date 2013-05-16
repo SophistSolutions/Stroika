@@ -235,6 +235,13 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
+                template    <typename CONTAINER_OF_T>
+                inline  SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AddAll (s);
+                }
+                template    <typename T>
                 inline  SortedSet_stdset<T>&   SortedSet_stdset<T>::operator= (const SortedSet_stdset<T>& m)
                 {
                     inherited::operator= (m);
