@@ -17,13 +17,14 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
-        template <typename USING_TALLY_CONTAINER>
-        void    TallyIteratorTests_ (USING_TALLY_CONTAINER& s)
+        template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
+        void    TallyIteratorTests_ (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
         {
             typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
             const   size_t  kTestSize   =   6;
 
             VerifyTestResult (s.GetLength () == 0);
+            //applyToContainer (s);
 
             for (TallyEntry<T> i : s) {
                 VerifyTestResult (false);
@@ -108,8 +109,8 @@ namespace CommonTests {
 
 
 
-        template <typename USING_TALLY_CONTAINER>
-        void    SimpleTallyTests (USING_TALLY_CONTAINER& s)
+        template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
+        void    SimpleTallyTests (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
         {
             typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
             size_t  three = 3;
@@ -126,8 +127,7 @@ namespace CommonTests {
             VerifyTestResult (s1 == s);
             VerifyTestResult (s2 != s1);
 
-            //TallyIteratorTests_ (s);
-            CommonTests:: TallyTests::TallyIteratorTests_<USING_TALLY_CONTAINER> (s);
+            CommonTests:: TallyTests::TallyIteratorTests_<USING_TALLY_CONTAINER> (s, applyToContainer);
 
 
             const   size_t  K = 500;
@@ -206,11 +206,11 @@ namespace CommonTests {
 
 
 
-        template <typename USING_TALLY_CONTAINER>
-        void    SimpleTallyTest_All_For_Type ()
+        template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
+        void    SimpleTallyTest_All_For_Type (typename TEST_FUNCTION applyToContainer)
         {
             USING_TALLY_CONTAINER s;
-            SimpleTallyTests<USING_TALLY_CONTAINER> (s);
+            SimpleTallyTests<USING_TALLY_CONTAINER> (s, applyToContainer);
         }
 
 
