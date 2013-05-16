@@ -24,7 +24,7 @@ namespace CommonTests {
             const   size_t  kTestSize   =   6;
 
             VerifyTestResult (s.GetLength () == 0);
-            //applyToContainer (s);
+            applyToContainer (s);
 
             for (TallyEntry<T> i : s) {
                 VerifyTestResult (false);
@@ -37,10 +37,12 @@ namespace CommonTests {
                 for (int i = 1; i <= kTestSize; i++) {
                     s.Add (T (i));
                 }
+                applyToContainer (s);
 
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     s.UpdateCount (it, 1);
                 }
+                applyToContainer (s);
 
                 VerifyTestResult (s.GetLength () == kTestSize);
 
@@ -59,11 +61,14 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= kTestSize; i++) {
                     s.Add (i);
+                    applyToContainer (s);
                 }
+                applyToContainer (s);
                 VerifyTestResult (s.GetLength () == kTestSize);
                 {
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         s.Remove (it);
+                        applyToContainer (s);
                     }
                     VerifyTestResult (s.IsEmpty ());
                     VerifyTestResult (s.GetLength () == 0);
@@ -71,6 +76,7 @@ namespace CommonTests {
 
                 for (size_t i = 1; i <= kTestSize; i++) {
                     s.Add (i);
+                    applyToContainer (s);
                 }
                 VerifyTestResult (s.GetLength () == kTestSize);
                 for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
@@ -84,9 +90,11 @@ namespace CommonTests {
              */
             {
                 s.RemoveAll ();
+                applyToContainer (s);
                 VerifyTestResult (s.GetLength () == 0);
                 for (size_t i = 1; i <= kTestSize; i++) {
                     s.Add (i);
+                    applyToContainer (s);
                 }
                 VerifyTestResult (s.GetLength () == kTestSize);
                 size_t i =  1;
@@ -95,10 +103,15 @@ namespace CommonTests {
                     for (auto it2 = s.begin (); it2 != s.end (); ++it2) {
                         for (auto it3 = s.begin (); it3 != s.end (); ++it3) {
                             if (s.GetLength () != 0) {
+                                applyToContainer (s);
                                 s.UpdateCount (it3, 3);
+                                applyToContainer (s);
                                 s.Remove (it3);
+                                applyToContainer (s);
                                 s.Add (i);
+                                applyToContainer (s);
                                 s.Remove (i);
+                                applyToContainer (s);
                             }
                         }
                     }
@@ -120,10 +133,13 @@ namespace CommonTests {
             VerifyTestResult (s1 == s);
             VerifyTestResult (s1 == s);
             Tally<T>   s2 = s1;
+            applyToContainer (s1);
+            applyToContainer (s2);
 
             VerifyTestResult (s2 == s);
             VerifyTestResult (s2 == s1);
             s2.Add (three);
+            applyToContainer (s2);
             VerifyTestResult (s1 == s);
             VerifyTestResult (s2 != s1);
 
@@ -140,6 +156,7 @@ namespace CommonTests {
             VerifyTestResult (s.Contains (three));
             VerifyTestResult (s.TallyOf (three) == 2);
             s.Remove (three);
+            applyToContainer (s);
             VerifyTestResult (s.GetLength () == 1);
             VerifyTestResult (s.Contains (three));
             VerifyTestResult (s.TallyOf (three) == 1);
@@ -149,6 +166,7 @@ namespace CommonTests {
             VerifyTestResult (s.IsEmpty ());
             for (size_t i = 1; i <= K; i++) {
                 s.Add (i);
+                applyToContainer (s);
             }
 
             for (size_t i = 1; i <= s.GetLength (); i++) {
@@ -166,6 +184,7 @@ namespace CommonTests {
             for (auto it = s.begin (); it != s.end (); ++it) {
                 for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
                     s.RemoveAll ();
+                    applyToContainer (s);
                 }
             }
             VerifyTestResult (s.IsEmpty ());
@@ -198,7 +217,9 @@ namespace CommonTests {
             }
             size_t oldLength = s.GetLength ();
             size_t oldTotal = s.TotalTally ();
+            applyToContainer (s);
             s += s;
+            applyToContainer (s);
             VerifyTestResult (s.GetLength () == oldLength);
             VerifyTestResult (s.TotalTally () == oldTotal * 2);
         }

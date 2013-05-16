@@ -38,16 +38,21 @@ namespace   {
     {
         using namespace CommonTests::TallyTests;
 
-        auto testFunc = [] (Tally<size_t> s) {};///FIX TO DO SORT CHEKCING
+        auto testFunc1 = [] (const Tally<size_t>& s) {
+            ///FIX TO DO SORT CHEKCING
+        };
+        auto testFunc2 = [] (const Tally<SimpleClass>& s) {
+            ///FIX TO DO SORT CHEKCING
+        };
 
-        SimpleTallyTest_All_For_Type<Tally_LinkedList<size_t>> (testFunc);
-        SimpleTallyTest_All_For_Type<Tally_LinkedList<SimpleClass>> (testFunc);
+        SimpleTallyTest_All_For_Type<Tally_LinkedList<size_t>> (testFunc1);
+        SimpleTallyTest_All_For_Type<Tally_LinkedList<SimpleClass>> (testFunc2);
 
-        SimpleTallyTest_All_For_Type<Tally_Array<size_t>> (testFunc);
-        SimpleTallyTest_All_For_Type<Tally_Array<SimpleClass>> (testFunc);
+        SimpleTallyTest_All_For_Type<Tally_Array<size_t>> (testFunc1);
+        SimpleTallyTest_All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
 
-        SimpleTallyTest_All_For_Type<Tally<size_t>> (testFunc);
-        SimpleTallyTest_All_For_Type<Tally<SimpleClass>> (testFunc);
+        SimpleTallyTest_All_For_Type<Tally<size_t>> (testFunc1);
+        SimpleTallyTest_All_For_Type<Tally<SimpleClass>> (testFunc2);
     }
 
 }
