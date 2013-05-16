@@ -24,6 +24,10 @@ namespace   Stroika {
         nonvirtual  size_t  GetValue () const;
         static      size_t  GetTotalLiveCount ();
 
+        SimpleClass operator+ (const SimpleClass& rhs) const {
+            return SimpleClass (fValue + rhs.fValue);
+        }
+
     private:
         size_t  fValue;
         int     fConstructed;

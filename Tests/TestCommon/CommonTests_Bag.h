@@ -248,11 +248,201 @@ namespace CommonTests {
         }
 
 
+        namespace   Test2_TallyOf_ {
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    SimpleTallyTest_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename USING_BAG_CONTAINER::ElementType ELEMENT_TYPE;
+                USING_BAG_CONTAINER   bag;
+                ELEMENT_TYPE    t1  =   1;
+                ELEMENT_TYPE    t2  =   2;
+                ELEMENT_TYPE    t3  =   3;
+                VerifyTestResult (bag.IsEmpty());
+                bag.Add (t1);
+                bag.Add (t1);
+                VerifyTestResult (not bag.IsEmpty());
+                VerifyTestResult (bag.TallyOf (t3) == 0);
+                VerifyTestResult (bag.TallyOf (t1) == 2);
+                {
+                    USING_BAG_CONTAINER   bag2    =   bag;
+                    VerifyTestResult (bag2.TallyOf (t3) == 0);
+                    VerifyTestResult (bag2.TallyOf (t1) == 2);
+                    bag.Add (t1);
+                    VerifyTestResult (bag2.TallyOf (t1) == 2);
+                    VerifyTestResult (bag.TallyOf (t1) == 3);
+                }
+            }
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                SimpleTallyTest_<USING_BAG_CONTAINER> (applyToContainer);
+            }
+        }
+
+
+
+
+        namespace   Test3_Equals_ {
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    SimpleOpEqualsTest_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename USING_BAG_CONTAINER::ElementType ELEMENT_TYPE;
+                USING_BAG_CONTAINER   bag;
+                ELEMENT_TYPE    t1  =   1;
+                ELEMENT_TYPE    t2  =   2;
+                ELEMENT_TYPE    t3  =   3;
+                VerifyTestResult (bag.IsEmpty());
+                bag.Add (t1);
+                bag.Add (t1);
+                {
+                    USING_BAG_CONTAINER   bag2    =   bag;
+                    VerifyTestResult (bag2 == bag);
+                    VerifyTestResult (not (bag2 != bag));
+                    bag.Add (t1);
+                    VerifyTestResult (not (bag2 == bag));
+                    VerifyTestResult (bag2 != bag);
+                }
+
+                VerifyTestResult (bag.GetLength () == 3);
+                bag.Add (t3);
+                bag.Add (t1);
+                bag.Add (t1);
+                bag.Add (t3);
+                {
+                    USING_BAG_CONTAINER   bag2    =   bag;
+                    VerifyTestResult (bag2 == bag);
+                    VerifyTestResult (not (bag2 != bag));
+                    bag.Add (t1);
+                    VerifyTestResult (not (bag2 == bag));
+                    VerifyTestResult (bag2 != bag);
+                    bag.Remove (t1);
+                    VerifyTestResult (bag2 == bag);
+                    VerifyTestResult (not (bag2 != bag));
+                }
+
+            }
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                SimpleOpEqualsTest_<USING_BAG_CONTAINER> (applyToContainer);
+            }
+        }
+
+
+
+
+
+
+
+        namespace   Test4_IteratorsBasics_ {
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    BasicIteratorTest_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_BAG_CONTAINER   bag;
+                typename USING_BAG_CONTAINER::ElementType t1  =   1;
+                typename USING_BAG_CONTAINER::ElementType t2  =   2;
+                typename USING_BAG_CONTAINER::ElementType t3  =   3;
+                VerifyTestResult (bag.IsEmpty());
+                bag.Add (t1);
+                bag.Add (t1);
+                {
+                    USING_BAG_CONTAINER   bb  =   bag;
+                    VerifyTestResult (bb.MakeIterator () != bag.MakeIterator ());
+                    VerifyTestResult (bb.MakeIterator () != bb.MakeIterator ());        // WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
+                }
+                {
+                    Iterator<typename USING_BAG_CONTAINER::ElementType>   i   =   bag.begin ();
+                    Iterator<typename USING_BAG_CONTAINER::ElementType>   ii  =   i;
+                    VerifyTestResult (i == ii);
+                    VerifyTestResult (i != bag.end ()); // because bag wasn't empty
+                    ++i;
+                    ++ii;
+                    VerifyTestResult (i != ii);     // because bag wasn't empty and because of quirky (efficient) definition of Iterator<T>::operator== - may want to change this -- LGP 2012-07-30
+                }
+                {
+                    VerifyTestResult (bag.size () == 2);    // cuz we said so above
+                    Iterator<typename USING_BAG_CONTAINER::ElementType>   i   =   bag.begin ();
+                    VerifyTestResult (not i.Done ());
+                    VerifyTestResult (i != bag.end ());
+                    ++i;
+                    VerifyTestResult (not i.Done ());
+                    VerifyTestResult (i != bag.end ());
+                    ++i;
+                    VerifyTestResult (i.Done ());
+                    VerifyTestResult (i == bag.end ());
+                }
+            }
+
+
+            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                BasicIteratorTest_<USING_BAG_CONTAINER> (applyToContainer);
+            }
+
+        }
+
+
+
+
+
+
+
+        namespace   {
+            namespace   Test5_Apply_ {
+
+                template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+                void    DoIt_ (TEST_FUNCTION applyToContainer)
+                {
+                    typedef typename USING_BAG_CONTAINER::ElementType T;
+                    USING_BAG_CONTAINER   b;
+
+                    constexpr int FIRST = 0;
+                    constexpr int LAST = 100;
+                    for (int i = FIRST; i < LAST; ++i) {
+                        b.Add (i);
+                    }
+
+                    {
+                        static size_t count;
+                        static T sum;
+                        count = 0;
+                        sum = 0;
+                        b.ApplyStatic ([] (const T & i) {
+                            count++;
+                            sum = sum + i;
+                        });
+                        VerifyTestResult (count == LAST - FIRST);
+                        VerifyTestResult (sum == ((FIRST + (LAST - 1))) * (LAST - FIRST) / 2);
+                    }
+                }
+
+
+                template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+                void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+                {
+                    DoIt_<USING_BAG_CONTAINER> (applyToContainer);
+                }
+
+
+            }
+        }
+
+
 
         template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
         void    SimpleBagTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
+            Test2_TallyOf_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
+            Test3_Equals_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
+            Test4_IteratorsBasics_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
+            Test5_Apply_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
         }
 
 
