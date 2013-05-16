@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
+#include    "../TestCommon/CommonTests_Bag.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
@@ -29,275 +30,10 @@ using   Concrete::Bag_LinkedList;
 
 
 
-namespace   {
-    namespace   Test1_ {
-        void    Test1_BagIteratorTests_ (Bag<size_t>& s)
-        {
-            const   size_t  kTestSize   = 100;
-
-            VerifyTestResult(s.GetLength() == 0);
-            /*
-            * Try removes while iterating forward.
-            */
-            {
-                for(size_t i = 1; i <= kTestSize; i++) {
-                    s.Add(i);
-                    VerifyTestResult(s.Contains(i));
-                }
-
-                VerifyTestResult(s.GetLength() == kTestSize);
-                for (size_t i : s) {
-                    size_t  oldLength = s.GetLength ();
-                    VerifyTestResult(s.Contains(i));
-                    VerifyTestResult(s.Contains(s.GetLength ()));
-                    s.Remove (s.GetLength ());
-                    VerifyTestResult(s.GetLength () == oldLength - 1);
-                }
-
-                s.RemoveAll ();
-                for(size_t i = 1; i <= kTestSize; i++) {
-                    s.Add(i);
-                }
-
-                {
-                    for (size_t it : s) {
-                        for(size_t i = 1; i <= kTestSize; i++) {
-                            VerifyTestResult(s.Contains(i));
-                            VerifyTestResult(s.GetLength() == kTestSize - i + 1);
-                            s.Remove(i);
-                            VerifyTestResult(not s.Contains(i - 1));
-                            VerifyTestResult(s.GetLength() == kTestSize - i);
-                        }
-                    }
-                    VerifyTestResult(s.IsEmpty());
-                    VerifyTestResult(s.GetLength() == 0);
-                }
-
-                for(size_t i = 1; i <= kTestSize; i++) {
-                    s.Add(i);
-                }
-                VerifyTestResult(s.GetLength() == kTestSize);
-                {
-                    for (size_t i : s) {
-                        s.Remove(i);
-                    }
-                    VerifyTestResult(s.IsEmpty());
-                    VerifyTestResult(s.GetLength() == 0);
-                }
-
-                for(size_t i = 1; i <= kTestSize; i++) {
-                    s.Add(i);
-                }
-                VerifyTestResult(s.GetLength() == kTestSize);
-
-                for (size_t i : s) {
-                    s.Remove(i);
-                }
-                VerifyTestResult(s.GetLength() == 0);
-            }
-            /*
-            * Try removes multiple iterators present.
-            */
-            {
-                s.RemoveAll();
-                VerifyTestResult(s.GetLength() == 0);
-                for(size_t i = 1; i <= kTestSize; i++) {
-                    s.Add(i);
-                }
-                VerifyTestResult(s.GetLength() == kTestSize);
-
-                size_t i =  1;
-                for (size_t it : s) {
-                    for (size_t it2 : s) {
-                        for (Iterator<size_t> it3 = s.begin (); it3 != s.end (); ++it3) {
-                            s.Update (it3, i);
-                            s.Remove(it3);
-                            s.Add(i);
-                            s.Remove(i);
-                            i++;
-                        }
-                    }
-                }
-            }
-
-            s.RemoveAll ();
-        }
-
-        void    Test1_BagTimings_ (Bag<size_t>& s)
-        {
-#if     qPrintTimings
-            Time t = GetCurrentTime();
-            cout << tab << "testing Bag<size_t> of length " << s.GetLength() << endl;
-#endif
-
-            for(size_t i = 1; i <= s.GetLength(); i++) {
-                VerifyTestResult(s.Contains(i));
-                VerifyTestResult(not s.Contains(0));
-            }
-
-            for(size_t i = 1; i <= s.GetLength(); i++) {
-                for (size_t it : s) {
-                    if(it == i) {
-                        break;
-                    }
-                }
-            }
-            for (size_t it : s) {
-                for (size_t it1 : s) {
-                    s.RemoveAll();
-                }
-            }
-            VerifyTestResult(s.IsEmpty());
-            VerifyTestResult(s.GetLength() == 0);
-
-            for (size_t it1 : s) {
-                for (size_t it2 : s) {
-                    VerifyTestResult(false);
-                }
-            }
-
-#if     qPrintTimings
-            t = GetCurrentTime() - t;
-            cout << tab << "finished testing Bag<size_t>; time elapsed = " << t << endl;
-#endif
-        }
-
-        void    Test1_On_Container_ (Bag<size_t>& s)
-        {
-            size_t  three = 3;
-
-            Bag<size_t> s1(s);
-
-            VerifyTestResult(s1 == s);
-            VerifyTestResult(s1 == s);
-
-            Bag<size_t> s2 = s1;
-
-            VerifyTestResult(s2 == s);
-            VerifyTestResult(s2 == s1);
-
-            s2.Add(three);
-            VerifyTestResult(s1 == s);
-            VerifyTestResult(s2 != s1);
-
-            Test1_BagIteratorTests_ (s);
-
-#if     qDebug
-            const   size_t  K = 200;
-#else
-            const   size_t  K = 500;
-#endif
-            size_t i;
-
-            VerifyTestResult(s.IsEmpty());
-            s.Add(three);
-            VerifyTestResult(s.GetLength() == 1);
-            s += three;
-            VerifyTestResult(s.GetLength() == 2);
-            VerifyTestResult(s.Contains(three));
-            s.Remove(three);
-            VerifyTestResult(s.GetLength() == 1);
-            s -= three;
-            VerifyTestResult(s.IsEmpty());
-            s.RemoveAll();
-            VerifyTestResult(s.IsEmpty());
-
-            for(i = 1; i <= K; i++) {
-                s.Add(i);
-            }
-            Test1_BagTimings_(s);
-            VerifyTestResult(s.IsEmpty());
-
-#if     qPrintTimings
-            Time t = GetCurrentTime();
-            cout << tab << "testing Bag<size_t>..." << endl;
-#endif
-
-            for(i = 1; i <= K; i++) {
-                s.Add(i);
-                VerifyTestResult(s.Contains(i));
-                VerifyTestResult(s.TallyOf(i) == 1);
-                VerifyTestResult(s.GetLength() == i);
-            }
-            for(i = K; i > 0; i--) {
-                s -= i;
-                VerifyTestResult(not s.Contains(i));
-                VerifyTestResult(s.GetLength() == (i - 1));
-            }
-            VerifyTestResult(s.IsEmpty());
-
-            for(i = 1; i <= K / 2; i++) {
-                s += 1;
-                VerifyTestResult(s.TallyOf(1) == i);
-            }
-            size_t oldLength = s.GetLength();
-            s += s;
-            VerifyTestResult(s.GetLength() == oldLength * 2);
-            s -= s;
-            VerifyTestResult(s.GetLength() == 0);
-
-#if     qPrintTimings
-            t = GetCurrentTime() - t;
-            cout << tab << "finished testing Bag<size_t>; time elapsed = " << t << endl;
-#endif
-        }
-
-        void    Test1_On_Container_ (Bag<SimpleClass>& s)
-        {
-            SimpleClass three = 3;
-
-            Bag<SimpleClass>    s1(s);
-
-            VerifyTestResult(s1 == s);
-            VerifyTestResult(s1 == s);
-
-            Bag<SimpleClass>    s2 = s1;
-
-            VerifyTestResult(s2 == s);
-            VerifyTestResult(s2 == s1);
-            s2.Add(three);
-            VerifyTestResult(s1 == s);
-            VerifyTestResult(s2 != s1);
-
-            VerifyTestResult(s.IsEmpty());
-            s.Add(three);
-            VerifyTestResult(s.GetLength() == 1);
-            s.Add(three);
-            VerifyTestResult(s.GetLength() >= 1);
-            VerifyTestResult(s.Contains(three));
-            s.Remove(three);
-            VerifyTestResult(s.GetLength() <= 1);
-            s.RemoveAll();
-            VerifyTestResult(s.IsEmpty());
-        }
-
-        template    <typename   CONCRETE_TYPE>
-        void    RunBasicBagTestsOnEachConcreteType_ ()
-        {
-            CONCRETE_TYPE   s;
-            Test1_On_Container_ (s);
-        }
-
-        void    RunBasicBagTestsOnEachConcreteType_ ()
-        {
-            RunBasicBagTestsOnEachConcreteType_<Bag<size_t>> ();
-            RunBasicBagTestsOnEachConcreteType_<Bag<SimpleClass>> ();
-            RunBasicBagTestsOnEachConcreteType_<Bag_LinkedList<size_t>> ();
-            RunBasicBagTestsOnEachConcreteType_<Bag_LinkedList<SimpleClass>> ();
-            RunBasicBagTestsOnEachConcreteType_<Bag_Array<size_t>> ();
-            RunBasicBagTestsOnEachConcreteType_<Bag_Array<SimpleClass>> ();
-        }
-
-    }
-}
-
-
-
 
 
 namespace   {
     namespace   Test2_TallyOf_ {
-
 
         template    <typename   CONCRETE_TYPE>
         void    SimpleTallyTest_ ()
@@ -492,15 +228,36 @@ namespace   {
 }
 
 
+namespace {
+    template    <typename CONCRETE_CONTAINER>
+    void     RunTests_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::ElementType T;
+        auto testFunc = [] (const Bag<T>& s) {
+        };
+
+        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
+    }
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test1_::RunBasicBagTestsOnEachConcreteType_ ();
         Test2_TallyOf_::RunBasicBagTestsOnEachConcreteType_ ();
         Test3_Equals_::RunBasicBagTestsOnEachConcreteType_ ();
         Test4_IteratorsBasics_::RunBasicBagTestsOnEachConcreteType_ ();
         Test5_Apply_::DoIt_ ();
+
+
+        RunTests_<Bag<size_t>> ();
+        RunTests_<Bag<SimpleClass>> ();
+        RunTests_<Bag_LinkedList<size_t>> ();
+        RunTests_<Bag_LinkedList<SimpleClass>> ();
+        RunTests_<Bag_Array<size_t>> ();
+        RunTests_<Bag_Array<SimpleClass>> ();
+
     }
 
 }
