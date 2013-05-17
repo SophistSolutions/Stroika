@@ -261,7 +261,7 @@ namespace   Stroika {
                 inline  Set_LinkedList<T>::Set_LinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AddAll (s);
+                    this->AddAll (s);
                 }
                 template    <typename T>
                 inline  Set_LinkedList<T>&   Set_LinkedList<T>::operator= (const Set_LinkedList<T>& m)

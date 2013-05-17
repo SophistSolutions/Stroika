@@ -239,7 +239,7 @@ namespace   Stroika {
                 inline  SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AddAll (s);
+                    this->AddAll (s);
                 }
                 template    <typename T>
                 inline  SortedSet_stdset<T>&   SortedSet_stdset<T>::operator= (const SortedSet_stdset<T>& m)
