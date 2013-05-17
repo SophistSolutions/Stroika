@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Containers/Set.h"
 
 #include    "../TestHarness/TestHarness.h"
+#include    "CommonTests_Iterable.h"
 
 
 namespace CommonTests {
@@ -28,6 +29,7 @@ namespace CommonTests {
                 applyToContainer (s1);
                 Set<ELEMENT_TYPE>   s2 = s;
                 applyToContainer (s2);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2, applyToContainer);
                 ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
                 Set<ELEMENT_TYPE> s3 = USING_SET_CONTAINER (kVec_);
                 VerifyTestResult (s3.GetLength () == 4);
@@ -55,6 +57,7 @@ namespace CommonTests {
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 1);
                 applyToContainer (s);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s, applyToContainer);
                 s.Remove (1);
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 0);

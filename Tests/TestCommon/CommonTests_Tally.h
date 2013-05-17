@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Containers/Tally.h"
 
 #include    "../TestHarness/TestHarness.h"
+#include    "CommonTests_Iterable.h"
 
 
 namespace CommonTests {
@@ -29,6 +30,7 @@ namespace CommonTests {
             for (TallyEntry<T> i : s) {
                 VerifyTestResult (false);
             }
+            IterableTests::SimpleIterableTest_All_For_Type<USING_TALLY_CONTAINER> (s, applyToContainer);
 
             /*
              * Try removes while iterating forward.
@@ -38,6 +40,7 @@ namespace CommonTests {
                     s.Add (T (i));
                 }
                 applyToContainer (s);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_TALLY_CONTAINER> (s, applyToContainer);
 
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     s.UpdateCount (it, 1);

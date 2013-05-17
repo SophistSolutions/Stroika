@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 
 #include    "../TestHarness/TestHarness.h"
+#include    "CommonTests_Iterable.h"
 
 
 namespace CommonTests {
@@ -53,6 +54,7 @@ namespace CommonTests {
                 Verify (not m.Lookup (2, nullptr));
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_MAPPING_CONTAINER> (m, applyToContainer);
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
                 m.RemoveAll ();

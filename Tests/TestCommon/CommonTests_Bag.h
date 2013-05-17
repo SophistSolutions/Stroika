@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Containers/Bag.h"
 
 #include    "../TestHarness/TestHarness.h"
+#include    "CommonTests_Iterable.h"
 
 
 namespace CommonTests {
@@ -36,6 +37,8 @@ namespace CommonTests {
                         VerifyTestResult(s.Contains(i));
                         applyToContainer (s);
                     }
+
+                    IterableTests::SimpleIterableTest_All_For_Type<USING_BAG_CONTAINER> (s, applyToContainer);
 
                     VerifyTestResult(s.GetLength() == kTestSize);
                     for (T i : s) {

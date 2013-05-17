@@ -18,23 +18,23 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation::Containers;
 
         template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    IterableIteratorTests_ (USING_ITERABLE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+        void    SimpleIterableTests (const USING_ITERABLE_CONTAINER& container, TEST_FUNCTION applyToContainer)
         {
+            {
+                size_t  l   =   container.GetLength ();
+                size_t  cnt =   0;
+                for (auto i : container) {
+                    cnt++;
+                }
+                VerifyTestResult (cnt == l);
+            }
         }
 
 
         template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleIterableTests (USING_ITERABLE_CONTAINER& s, TEST_FUNCTION applyToContainer)
+        void    SimpleIterableTest_All_For_Type (const USING_ITERABLE_CONTAINER& container, TEST_FUNCTION applyToContainer)
         {
-        }
-
-
-
-        template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleIterableTest_All_For_Type (TEST_FUNCTION applyToContainer)
-        {
-            USING_ITERABLE_CONTAINER s;
-            SimpleIterableTests<USING_ITERABLE_CONTAINER> (s, applyToContainer);
+            SimpleIterableTests<USING_ITERABLE_CONTAINER> (container, applyToContainer);
         }
 
 
