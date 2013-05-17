@@ -29,6 +29,7 @@ namespace CommonTests {
                 applyToContainer (s1);
                 Set<ELEMENT_TYPE>   s2 = s;
                 applyToContainer (s2);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s, applyToContainer);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2, applyToContainer);
                 ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
                 Set<ELEMENT_TYPE> s3 = USING_SET_CONTAINER (kVec_);
