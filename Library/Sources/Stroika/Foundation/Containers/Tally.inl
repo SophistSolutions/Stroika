@@ -103,7 +103,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Tally<T>::Tally (const _SharedPtrIRep& rep)
-                : inherited (typename Iterable<TallyEntry<T>>::_SharedByValueRepType (rep))
+                : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }

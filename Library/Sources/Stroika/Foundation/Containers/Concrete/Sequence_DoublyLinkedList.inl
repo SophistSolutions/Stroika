@@ -146,7 +146,7 @@ namespace   Stroika {
                 Iterator<T>  Sequence_DoublyLinkedList<T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    Iterator<T> tmp = Iterator<T> (typename Iterator<T>::SharedByValueRepType (new IteratorRep_ (*NON_CONST_THIS)));
+                    Iterator<T> tmp = Iterator<T> (typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS)));
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }

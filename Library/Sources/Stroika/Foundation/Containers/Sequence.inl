@@ -39,7 +39,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
-                : inherited (typename Iterable<T>::_SharedByValueRepType (rep))
+                : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }

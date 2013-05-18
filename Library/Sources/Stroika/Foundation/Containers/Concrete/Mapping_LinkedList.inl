@@ -163,7 +163,7 @@ namespace   Stroika {
                 Iterator<pair<Key, T>>  Mapping_LinkedList<Key, T>::Rep_::MakeIterator () const
                 {
                     Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    Iterator<pair<Key, T>> tmp = Iterator<pair<Key, T>> (typename Iterator<pair<Key, T>>::SharedByValueRepType (new IteratorRep_ (*NON_CONST_THIS)));
+                    Iterator<pair<Key, T>> tmp = Iterator<pair<Key, T>> (typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS)));
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }

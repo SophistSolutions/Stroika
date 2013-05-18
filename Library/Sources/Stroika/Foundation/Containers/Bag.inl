@@ -38,7 +38,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Bag<T>::Bag (const _SharedPtrIRep& rep)
-                : Iterable<T> (typename Iterable<T>::_SharedByValueRepType (rep))
+                : Iterable<T> (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }

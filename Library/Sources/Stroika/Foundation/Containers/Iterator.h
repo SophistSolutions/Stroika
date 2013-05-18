@@ -238,7 +238,7 @@ namespace   Stroika {
                  *      This overload is usually not called directly. Instead, iterators are
                  *      usually created from a container (eg. Bag<T>::begin()).
                  */
-                explicit Iterator (const SharedByValueRepType& rep);
+                explicit Iterator (const SharedIRepPtr& rep);
 
             public:
                 /**

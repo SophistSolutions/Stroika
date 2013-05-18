@@ -51,7 +51,7 @@ namespace   Stroika {
             }
             template    <typename Key, typename T>
             inline  Mapping<Key, T>::Mapping (const _SharedPtrIRep& rep)
-                : inherited (typename inherited::_SharedByValueRepType (rep))
+                : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }

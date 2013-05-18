@@ -80,7 +80,7 @@ namespace   Stroika {
              *  *Important Design Note*:
              *
              *      We have no:
-             *          nonvirtual  void    _SetRep (_SharedByValueRepType rep);
+             *          nonvirtual  void    _SetRep (SharedIRepPtr rep);
              *
              *      because allowing a _SetRep() method would complicate the efforts of subclasses of Iterable<T>
              *      to assure that the underlying type is of the appropriate subtype.
@@ -118,11 +118,11 @@ namespace   Stroika {
                     }
                 };
 
-            protected:
+            private:
                 /**
                  *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
                  */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   _SharedByValueRepType;
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   SharedByValueRepType_;
 
             public:
                 /**
@@ -134,7 +134,7 @@ namespace   Stroika {
                 /**
                  *  \brief  Iterable's are typically constructed as concrete subtype objects, whose CTOR passed in a shared copyable rep.
                  */
-                explicit Iterable (const _SharedByValueRepType& rep);
+                explicit Iterable (const _SharedPtrIRep& rep);
 
             public:
                 ~Iterable ();
@@ -303,7 +303,7 @@ namespace   Stroika {
                 static  _SharedPtrIRep  Clone_ (const _IRep& rep);
 
             private:
-                _SharedByValueRepType    fRep_;
+                SharedByValueRepType_    fRep_;
             };
 
 

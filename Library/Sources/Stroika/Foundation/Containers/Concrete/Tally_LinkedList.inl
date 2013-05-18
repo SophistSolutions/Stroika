@@ -170,7 +170,7 @@ namespace   Stroika {
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
-                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedByValueRepType (shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*const_cast<Rep_*> (this)))));
+                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*const_cast<Rep_*> (this))));
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
@@ -304,7 +304,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>    Tally_LinkedList<T>::Rep_::MakeBagIterator () const
                 {
-                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedByValueRepType (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ()))));
+                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ())));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
                     return tmp;

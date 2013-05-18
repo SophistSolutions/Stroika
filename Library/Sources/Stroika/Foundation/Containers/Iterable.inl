@@ -84,7 +84,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T>
-            inline  Iterable<T>::Iterable (const _SharedByValueRepType& rep)
+            inline  Iterable<T>::Iterable (const _SharedPtrIRep& rep)
                 : fRep_ (rep)
             {
                 RequireNotNull (fRep_.get ());
