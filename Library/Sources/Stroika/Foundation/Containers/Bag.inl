@@ -28,23 +28,23 @@ namespace   Stroika {
              */
             template    <typename T>
             inline  Bag<T>::Bag ()
-                : Iterable<T> (Concrete::mkBag_Default<T> ())
+                : inherited (Concrete::mkBag_Default<T> ())
             {
             }
             template    <typename T>
             inline  Bag<T>::Bag (const Bag<T>& bag)
-                : Iterable<T> (bag)
+                : inherited (bag)
             {
             }
             template    <typename T>
             inline  Bag<T>::Bag (const _SharedPtrIRep& rep)
-                : Iterable<T> (typename inherited::_SharedPtrIRep (rep))
+                : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }
             template    <typename T>
             Bag<T>::Bag (const T* start, const T* end)
-                : Iterable<T> (Concrete::mkBag_Default<T> (start, end))
+                : inherited (Concrete::mkBag_Default<T> (start, end))
             {
             }
             template    <typename T>
