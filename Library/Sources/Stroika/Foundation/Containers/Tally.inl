@@ -96,8 +96,8 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Tally<T>::Tally (const Tally<T>& src)
-                : inherited (src)
+            inline  Tally<T>::Tally (const Tally<T>& t)
+                : inherited (static_cast<const inherited&> (t))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }

@@ -48,6 +48,26 @@
  *      @todo   Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
  *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
  *
+ *      @todo   Old addallcode had:
+                template    <typename T>
+                void  Bag<T>::Add (const Bag<T>& items)
+                {
+                    if (&_GetRep () == &items._GetRep ()) {
+                        // Copy - so we don't update this while we are copying from it...
+                        Bag<T>  copiedItems =   items;
+                        for (T i : copiedItems) {
+                            _GetRep ().Add (i);
+                        }
+                    }
+                    else {
+                        for (T i : items) {
+                            _GetRep ().Add (i);
+                        }
+                    }
+                }
+                But unclear how exactly todo that. COULD comapre &c != this? But doesnt appear good enuf. Depends on what bag iterators do...
+ *
+ *
  */
 
 
@@ -107,8 +127,11 @@ namespace   Stroika {
 
             public:
                 Bag ();
-                Bag (const Bag<T>& bag);
-                explicit Bag (const T* start, const T* end);
+                Bag (const Bag<T>& b);
+                template <typename CONTAINER_OF_T>
+                explicit Bag (const CONTAINER_OF_T& b);
+                template <typename COPY_FROM_ITERATOR>
+                explicit Bag (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit Bag (const _SharedPtrIRep& rep);
@@ -141,8 +164,14 @@ namespace   Stroika {
                  * copy will be added.
                  */
                 nonvirtual  void    Add (T item);
-                nonvirtual  void    Add (const Bag<T>& items);
-                nonvirtual  void    Add (const T* begin, const T* end);
+
+            public:
+                /**
+                 */
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
 
             public:
                 /**

@@ -26,18 +26,18 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Queue<T>::Queue (const Queue<T>& s)
-                : inherited (static_cast<const inherited&> (s))
+            inline  Queue<T>::Queue (const Queue<T>& q)
+                : inherited (static_cast<const inherited&> (q))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Queue<T>::Queue (const CONTAINER_OF_T& s)
+            inline  Queue<T>::Queue (const CONTAINER_OF_T& q)
                 : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-//                AddAll (s);
+//                AddAll (q);
             }
             template    <typename T>
             inline  Queue<T>::Queue (const _SharedPtrIRep& rep)

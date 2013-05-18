@@ -32,8 +32,8 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  Bag<T>::Bag (const Bag<T>& bag)
-                : inherited (bag)
+            inline  Bag<T>::Bag (const Bag<T>& b)
+                : inherited (static_cast<const inherited&> (b))
             {
             }
             template    <typename T>
@@ -41,11 +41,15 @@ namespace   Stroika {
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            Bag<T>::Bag (const T* start, const T* end)
-                : inherited (Concrete::mkBag_Default<T> (start, end))
+            template    <typename CONTAINER_OF_T>
+            inline  Bag<T>::Bag (const CONTAINER_OF_T& b)
+                : inherited (Concrete::mkBag_Default<T> ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (b);
             }
             template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
@@ -63,6 +67,20 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
+            template    <typename COPY_FROM_ITERATOR>
+            void    Bag<T>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            {
+                for (auto i = start; i != end; ++i) {
+                    Add (*i);
+                }
+            }
+            template    <typename T>
+            template    <typename CONTAINER_OF_T>
+            inline  void    Bag<T>::AddAll (const CONTAINER_OF_T& s)
+            {
+                AddAll (std::begin (s), std::end (s));
+            }
+            template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
             {
                 Add (item);
@@ -71,7 +89,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (const Bag<T>& items)
             {
-                Add (items);
+                AddAll (items);
                 return (*this);
             }
             template    <typename T>
@@ -94,29 +112,6 @@ namespace   Stroika {
                 // I must re-read C++ template docs for clarificaiton...
                 //      -- LGP 2012-07-28
                 Ensure (not this->IsEmpty ());
-            }
-            template    <typename T>
-            void  Bag<T>::Add (const Bag<T>& items)
-            {
-                if (&_GetRep () == &items._GetRep ()) {
-                    // Copy - so we don't update this while we are copying from it...
-                    Bag<T>  copiedItems =   items;
-                    for (T i : copiedItems) {
-                        _GetRep ().Add (i);
-                    }
-                }
-                else {
-                    for (T i : items) {
-                        _GetRep ().Add (i);
-                    }
-                }
-            }
-            template    <typename T>
-            void  Bag<T>::Add (const T* begin, const T* end)
-            {
-                for (const T* i = begin; i != end; i++) {
-                    Add (*i);
-                }
             }
             template    <typename T>
             inline  void    Bag<T>::Update (const Iterator<T>& i, T newValue)

@@ -19,7 +19,7 @@
  *
  *
  *  TODO:
- *      @todo   Fixup construcotrs (templated by value and iterator ctors)
+ *      @todo   Fixup constructors (templated by value and iterator ctors)
  *
  *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.
  *
@@ -61,7 +61,10 @@ namespace   Stroika {
                  */
                 SortedBag ();
                 SortedBag (const SortedBag<T>& sb);
-                explicit SortedBag (const T* start, const T* end);
+                template <typename CONTAINER_OF_T>
+                explicit SortedBag (const CONTAINER_OF_T& s);
+                template <typename COPY_FROM_ITERATOR>
+                explicit SortedBag (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
             protected:
                 explicit SortedBag (const _SharedPtrIRep& rep);

@@ -27,7 +27,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const Sequence<T>& s)
-                : inherited (s)
+                : inherited (static_cast<const inherited&> (s))
             {
             }
             template    <typename T>

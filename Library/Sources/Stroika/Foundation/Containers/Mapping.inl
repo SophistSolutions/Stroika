@@ -32,7 +32,7 @@ namespace   Stroika {
             }
             template    <typename Key, typename T>
             inline  Mapping<Key, T>::Mapping (const Mapping<Key, T>& m)
-                : inherited (m)
+                : inherited (static_cast<const inherited&> (m))
             {
             }
             template    <typename Key, typename T>

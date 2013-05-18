@@ -37,6 +37,14 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
+            template    <typename CONTAINER_OF_T>
+            inline  SortedBag<T>::SortedBag (const CONTAINER_OF_T& s)
+                : inherited (Concrete::mkSortedBag_Default<T> ())
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (s);
+            }
+            template    <typename T>
             inline  SortedBag<T>&   SortedBag<T>::operator= (const SortedBag<T>& rhs)
             {
                 inherited::operator= (static_cast<const inherited&> (rhs));
