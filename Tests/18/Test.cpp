@@ -8,8 +8,7 @@
 
 /// WRONG - we dont have SortedTally Yet - but when we do!!!
 #include    "Stroika/Foundation/Containers/Tally.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+//#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -28,8 +27,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-using   Concrete::Tally_Array;
-using   Concrete::Tally_LinkedList;
+//using   Concrete::Tally_Array;
 
 
 namespace   {
@@ -45,14 +43,11 @@ namespace   {
             ///FIX TO DO SORT CHEKCING
         };
 
-        SimpleTallyTest_All_For_Type<Tally_LinkedList<size_t>> (testFunc1);
-        SimpleTallyTest_All_For_Type<Tally_LinkedList<SimpleClass>> (testFunc2);
+//        All_For_Type<Tally_Array<size_t>> (testFunc1);
+//        All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
 
-        SimpleTallyTest_All_For_Type<Tally_Array<size_t>> (testFunc1);
-        SimpleTallyTest_All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
-
-        SimpleTallyTest_All_For_Type<Tally<size_t>> (testFunc1);
-        SimpleTallyTest_All_For_Type<Tally<SimpleClass>> (testFunc2);
+        All_For_Type<Tally<size_t>> (testFunc1);
+        All_For_Type<Tally<SimpleClass>> (testFunc2);
     }
 
 }

@@ -231,7 +231,7 @@ namespace CommonTests {
 
 
         template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleTallyTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    All_For_Type (TEST_FUNCTION applyToContainer)
         {
             USING_TALLY_CONTAINER s;
             SimpleTallyTests<USING_TALLY_CONTAINER> (s, applyToContainer);
