@@ -152,7 +152,7 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  Set<T>& Set<T>::operator-= (const CONTAINER_OF_T& items)
             {
-                Remove (items);
+                RemoveAll (items);
                 return (*this);
             }
             template    <typename   T>

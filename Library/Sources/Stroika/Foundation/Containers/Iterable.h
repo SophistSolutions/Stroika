@@ -87,6 +87,11 @@ namespace   Stroika {
              *
              *      For example - see Bag_Array<T>::GetRep_().
              *
+             *  *Design Note*:
+             *      Chose NOT to include an Equals(Iterable<T> rhs) const method here, but instead duplicatively in
+             *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
+             *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
+             *      their values were the same.
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,
@@ -110,19 +115,6 @@ namespace   Stroika {
 
             protected:
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
-
-            private:
-                struct  Rep_Cloner_ {
-                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t) {
-                        return Iterable<T>::Clone_ (t);
-                    }
-                };
-
-            private:
-                /**
-                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
-                 */
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   SharedByValueRepType_;
 
             public:
                 /**
@@ -300,7 +292,20 @@ namespace   Stroika {
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
             private:
+                struct  Rep_Cloner_ {
+                    inline  static  shared_ptr<_IRep>  Copy (const _IRep& t) {
+                        return Iterable<T>::Clone_ (t);
+                    }
+                };
+
+            private:
                 static  _SharedPtrIRep  Clone_ (const _IRep& rep);
+
+            private:
+                /**
+                 *  \brief  Lazy-copying smart pointer mostly used by implementors (can generally be ignored by users).
+                 */
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, Rep_Cloner_>>   SharedByValueRepType_;
 
             private:
                 SharedByValueRepType_    fRep_;

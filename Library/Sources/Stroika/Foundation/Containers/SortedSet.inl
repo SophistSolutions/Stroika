@@ -39,7 +39,7 @@ namespace   Stroika {
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  SortedSet<T>::SortedSet (const CONTAINER_OF_T& s)
-                : inherited (Concrete::mkSortedSet_Default<T> ())
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedSet_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);

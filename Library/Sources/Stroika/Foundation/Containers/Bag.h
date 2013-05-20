@@ -48,6 +48,9 @@
  *      @todo   Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
  *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
  *
+ *      @todo   Move Bag<T>::Equals() to REP code so can be done more efficiently. Makes sense since operator==
+ *              on T already required!
+ *
  *      @todo   Old addallcode had:
                 template    <typename T>
                 void  Bag<T>::Add (const Bag<T>& items)
@@ -75,14 +78,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-
-
-#if     qCompilerAndStdLib_TemplateFriendFunctionsRequirePredeclaredTemplateFunction
-            template    <typename T>
-            class   Bag;
-            template    <typename T>
-            bool    operator== (const Bag<T>& lhs, const Bag<T>& rhs);
-#endif
 
 
             /**
@@ -188,7 +183,17 @@ namespace   Stroika {
                  * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  */
                 nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (const Bag<T>& items);
+
+            public:
+                /**
+                 * It is legal to remove something that is not there. This function removes the first instance of item
+                 * (or each item for the 'items' overload), meaning that another instance of item could still be in the
+                 * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 */
+                template    <typename COPY_FROM_ITERATOR>
+                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
 
             public:
                 /**
@@ -207,13 +212,13 @@ namespace   Stroika {
                 nonvirtual  Iterable<T>   UniqueElements () const;
 
             public:
-                /**
-                 *      +=/-= are equivilent Add() and Remove(). They are just syntactic sugar.
+                /*
+                 *  Two Bags are considered equal if they contain the same elements (by comparing them with operator==) with the same count.
+                 *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
+                 *
+                 *  Note - this computation MAYBE very expensive, and not optimized. Since
                  */
-                nonvirtual  Bag<T>& operator+= (T item);
-                nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
-                nonvirtual  Bag<T>& operator-= (T item);
-                nonvirtual  Bag<T>& operator-= (const Bag<T>& items);
+                nonvirtual  bool    Equals (const Bag<T>& rhs) const;
 
             public:
                 /**
@@ -227,15 +232,33 @@ namespace   Stroika {
                 nonvirtual  _IRep&          _GetRep ();
 
             public:
+                /**
+                 *      They are just syntactic sugar.
+                 */
+                nonvirtual  Bag<T>& operator+= (T item);
+                nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
+
+            public:
+                /**
+                 *      They are just syntactic sugar.
+                 */
+                nonvirtual  Bag<T>& operator-= (T item);
+                nonvirtual  Bag<T>& operator-= (const Bag<T>& items);
+
+            public:
+                /**
+                 *      Syntactic sugar on Equals()
+                 */
                 nonvirtual  bool    operator== (const Bag<T>& rhs) const;
+
+            public:
+                /**
+                 *      Syntactic sugar on not Equals()
+                 */
                 nonvirtual  bool    operator!= (const Bag<T>& rhs) const;
             };
 
 
-            template    <typename T>
-            Bag<T>  operator+ (const Bag<T>& lhs, const Bag<T>& rhs);
-            template    <typename T>
-            Bag<T>  operator- (const Bag<T>& lhs, const Bag<T>& rhs);
 
 
             /**
