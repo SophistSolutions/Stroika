@@ -50,7 +50,7 @@ namespace   Stroika {
 
                     // Bag<T>::_IRep overrides
                 public:
-                    virtual bool    Equals (const _IRep& rhs) const override;
+                    virtual bool    Equals (const typename Bag<T>::_IRep& rhs) const override;
                     virtual bool    Contains (T item) const override;
                     virtual size_t  TallyOf (T item) const override;
                     virtual void    Add (T item) override;
