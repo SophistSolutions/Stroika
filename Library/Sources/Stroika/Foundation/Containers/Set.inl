@@ -130,6 +130,21 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T>
+            bool  Set<T>::Equals (const Set<T>& rhs) const
+            {
+                return (_GetRep ().Equals (*rhs._GetRep ()));
+            }
+            template    <typename T>
+            inline  bool  Set<T>::operator== (const Set<T>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    Set<T>::operator!= (const Set<T>& rhs) const
+            {
+                return (not Equals (rhs));
+            }
+            template    <typename T>
             inline  Set<T>& Set<T>::operator+= (T item)
             {
                 Add (item);

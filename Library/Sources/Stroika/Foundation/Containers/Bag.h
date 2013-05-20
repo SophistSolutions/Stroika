@@ -185,6 +185,8 @@ namespace   Stroika {
                  *  Two Bags are considered equal if they contain the same elements (by comparing them with operator==) with the same count.
                  *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
                  *
+                 *  Equals is commutative().
+                 *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
                 nonvirtual  bool    Equals (const Bag<T>& rhs) const;

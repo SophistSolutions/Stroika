@@ -52,6 +52,7 @@ namespace   Stroika {
 
                     // SortedSet<T>::_IRep overrides
                 public:
+                    virtual bool    Equals (const typename Set<T>::_IRep& rhs) const override;
                     virtual bool    Contains (T item) const override;
                     virtual void    RemoveAll () override;
                     virtual void    Add (T item) override;
@@ -168,6 +169,24 @@ namespace   Stroika {
                 Iterator<T>     SortedSet_stdset<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
+                }
+                template    <typename T>
+                bool    SortedSet_stdset<T>::Rep_::Equals (const Set<T>::_IRep& rhs) const
+                {
+                    if (this == &rhs) {
+                        return true;
+                    }
+                    if (this->GetLength () != rhs.GetLength ()) {
+                        return false;
+                    }
+                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        for (auto i : this->fData_) {
+                            if (not rhs.Contains (i)) {
+                                return false;
+                            }
+                        }
+                        return true;
+                    });
                 }
                 template    <typename T>
                 bool    SortedSet_stdset<T>::Rep_::Contains (T item) const

@@ -17,6 +17,7 @@
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
+ *      @todo   Could optimize Equals() test for if both sorted, faster way to compare.
  */
 
 

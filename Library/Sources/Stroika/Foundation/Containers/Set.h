@@ -112,6 +112,16 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
+                /*
+                 *  Two Sets are considered equal if they contain the same elements (by comparing them with operator==).
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  @todo - document computational complexity
+                 */
+                nonvirtual  bool    Equals (const Set<T>& rhs) const;
+
+            public:
                 /**
                  *      +=/-= are equivilent Add(), AddAll(), Remove() and RemoveAll(). They are just syntactic sugar.
                  */
@@ -121,6 +131,18 @@ namespace   Stroika {
                 nonvirtual  Set<T>& operator-= (T item);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  Set<T>& operator-= (const CONTAINER_OF_T& items);
+
+            public:
+                /**
+                 *      Syntactic sugar on Equals()
+                 */
+                nonvirtual  bool    operator== (const Set<T>& rhs) const;
+
+            public:
+                /**
+                 *      Syntactic sugar on not Equals()
+                 */
+                nonvirtual  bool    operator!= (const Set<T>& rhs) const;
 
             public:
                 /**
@@ -164,11 +186,12 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool    Contains (T item) const                     =   0;
-                virtual void    RemoveAll ()                                =   0;
-                virtual void    Add (T item)                                =   0;
-                virtual void    Remove (T item)                             =   0;
-                virtual void    Remove (const Iterator<T>& i)               =   0;
+                virtual bool    Equals (const typename Set<T>::_IRep& rhs) const    =   0;
+                virtual bool    Contains (T item) const                             =   0;
+                virtual void    RemoveAll ()                                        =   0;
+                virtual void    Add (T item)                                        =   0;
+                virtual void    Remove (T item)                                     =   0;
+                virtual void    Remove (const Iterator<T>& i)                       =   0;
             };
 
 
