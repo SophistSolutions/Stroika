@@ -186,7 +186,7 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
-                bool    Set_LinkedList<T>::Rep_::Equals (const Set<T>::_IRep& rhs) const
+                bool    Set_LinkedList<T>::Rep_::Equals (const typename Set<T>::_IRep& rhs) const
                 {
                     if (this == &rhs) {
                         return true;

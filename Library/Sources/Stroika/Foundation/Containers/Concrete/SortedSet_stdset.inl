@@ -171,7 +171,7 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
-                bool    SortedSet_stdset<T>::Rep_::Equals (const Set<T>::_IRep& rhs) const
+                bool    SortedSet_stdset<T>::Rep_::Equals (const typename Set<T>::_IRep& rhs) const
                 {
                     if (this == &rhs) {
                         return true;
