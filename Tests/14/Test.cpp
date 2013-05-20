@@ -37,11 +37,11 @@ namespace   {
         };
         auto testFunc2 = [] (const Set<SimpleClass>& s) {
         };
-        SimpleSetTest_All_For_Type<Set_LinkedList<size_t>> (testFunc1);
-        SimpleSetTest_All_For_Type<Set_LinkedList<SimpleClass>> (testFunc2);
+        Test_All_For_Type<Set_LinkedList<size_t>> (testFunc1);
+        Test_All_For_Type<Set_LinkedList<SimpleClass>> (testFunc2);
 
-        SimpleSetTest_All_For_Type<Set<size_t>> (testFunc1);
-        SimpleSetTest_All_For_Type<Set<SimpleClass>> (testFunc2);
+        Test_All_For_Type<Set<size_t>> (testFunc1);
+        Test_All_For_Type<Set<SimpleClass>> (testFunc2);
     }
 }
 

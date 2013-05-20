@@ -80,11 +80,36 @@ namespace CommonTests {
         }
 
 
+        namespace Test3_Equals {
+            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_SET_CONTAINER s;
+                USING_SET_CONTAINER s2 = s;
+                s.Add (1);
+                s.Add (2);
+                VerifyTestResult (s.size () == 2);
+                USING_SET_CONTAINER s3 = s;
+                applyToContainer (s);
+                applyToContainer (s2);
+                applyToContainer (s3);
+                VerifyTestResult (s == s3);
+                VerifyTestResult (s.Equals (s3));
+                VerifyTestResult (not (s != s3));
+
+                VerifyTestResult (s != s2);
+                VerifyTestResult (not s.Equals (s2));
+                VerifyTestResult (not (s == s2));
+            }
+        }
+
+
         template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleSetTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    Test_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
+            Test3_Equals::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
         }
 
 
