@@ -51,12 +51,14 @@ namespace   Stroika {
 
                     // Bag<T>::_IRep overrides
                 public:
-                    virtual bool                        Contains (T item) const override;
-                    virtual void                        Add (T item) override;
-                    virtual void                        Update (const Iterator<T>& i, T newValue) override;
-                    virtual void                        Remove (T item) override;
-                    virtual void                        Remove (const Iterator<T>& i) override;
-                    virtual void                        RemoveAll () override;
+                    virtual bool    Equals (const _IRep& rhs) const override;
+                    virtual bool    Contains (T item) const override;
+                    virtual size_t  TallyOf (T item) const override;
+                    virtual void    Add (T item) override;
+                    virtual void    Update (const Iterator<T>& i, T newValue) override;
+                    virtual void    Remove (T item) override;
+                    virtual void    Remove (const Iterator<T>& i) override;
+                    virtual void    RemoveAll () override;
 
                 private:
                     Private::ContainerRepLockDataSupport_           fLockSupport_;
@@ -156,12 +158,22 @@ namespace   Stroika {
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
+                template    <typename T>
+                bool    Bag_LinkedList<T>::Rep_::Equals (const typename Bag<T>::_IRep& rhs) const
+                {
+                    return _Equals_Reference_Implementation (rhs);
+                }
                 template    <typename  T>
                 bool    Bag_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         return (fData_.Contains (item));
                     });
+                }
+                template    <typename T>
+                size_t    Bag_LinkedList<T>::Rep_::TallyOf (T item) const
+                {
+                    return _TallyOf_Reference_Implementation (item);
                 }
                 template    <typename T>
                 void    Bag_LinkedList<T>::Rep_::Add (T item)

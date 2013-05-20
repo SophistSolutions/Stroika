@@ -52,6 +52,18 @@ namespace   Stroika {
                 this->AddAll (b);
             }
             template    <typename T>
+            inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
+            {
+                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename T>
+            inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
+            {
+                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename T>
             inline  bool    Bag<T>::Contains (T item) const
             {
                 return (_GetRep ().Contains (item));
@@ -86,31 +98,9 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            bool  Bag<T>::Equals (const Bag<T>& rhs) const
+            inline  bool  Bag<T>::Equals (const Bag<T>& rhs) const
             {
-                if (&this->_GetRep () == &rhs._GetRep ()) {
-                    return true;
-                }
-                if (this->GetLength () != rhs.GetLength ()) {
-                    return false;
-                }
-
-                /*
-                 *  HORRIBLE IMPLEMENTATION. See TODO
-                 */
-
-                // n^2 algorithm!!!
-                for (T i : *this) {
-                    if (this->TallyOf (i) != rhs.TallyOf (i)) {
-                        return (false);
-                    }
-                }
-                for (T i : rhs) {
-                    if (this->TallyOf (i) != rhs.TallyOf (i)) {
-                        return (false);
-                    }
-                }
-                return (true);
+                return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T>
             inline  void    Bag<T>::Add (T item)
@@ -158,15 +148,16 @@ namespace   Stroika {
                 _GetRep ().Remove (i);
             }
             template    <typename T>
-            size_t    Bag<T>::TallyOf (T item) const
+            inline  size_t    Bag<T>::TallyOf (const Iterator<T>& i) const
             {
-                size_t  count = 0;
-                for (T i : *this) {
-                    if (i == item) {
-                        count++;
-                    }
-                }
-                return (count);
+                // @todo - add appropriate virtual method to Rep, and implement more efficiently...
+                Require (not i.Done ());
+                return _GetRep ().TallyOf (*i);
+            }
+            template    <typename T>
+            inline  size_t    Bag<T>::TallyOf (T item) const
+            {
+                return _GetRep ().TallyOf (item);
             }
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
@@ -218,16 +209,38 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            inline  const typename  Bag<T>::_IRep&    Bag<T>::_GetRep () const
+            bool  Bag<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
+                if (this == &rhs) {
+                    return true;
+                }
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+
+                // Needlessly horrible algorithm, but correct, and adequate as a reference
+                for (Iterator<T> i = this->MakeIterator (); not i.Done (); ++i) {
+                    if (this->TallyOf (*i) != rhs.TallyOf (*i)) {
+                        return (false);
+                    }
+                }
+                for (Iterator<T> i = rhs.MakeIterator (); not i.Done (); ++i) {
+                    if (this->TallyOf (*i) != rhs.TallyOf (*i)) {
+                        return (false);
+                    }
+                }
+                return (true);
             }
             template    <typename T>
-            inline  typename    Bag<T>::_IRep&  Bag<T>::_GetRep ()
+            size_t    Bag<T>::_IRep::_TallyOf_Reference_Implementation (T item) const
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
+                size_t  count = 0;
+                for (Iterator<T> i = this->MakeIterator (); not i.Done (); ++i) {
+                    if (*i == item) {
+                        count++;
+                    }
+                }
+                return count;
             }
 
 

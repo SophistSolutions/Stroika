@@ -71,13 +71,6 @@ namespace   Stroika {
             {
                 return _GetRep ().Contains (item);
             }
-#if 0
-            template    <typename T>
-            inline  bool    Set<T>::Equals (const Iterable<T>& rhs) const
-            {
-                return Private::Equals_ (*this, rhs);
-            }
-#endif
             template    <typename T>
             inline  void    Set<T>::Add (T item)
             {
@@ -202,6 +195,23 @@ namespace   Stroika {
             template    <typename T>
             inline  Set<T>::_IRep::~_IRep ()
             {
+            }
+            template    <typename T>
+            bool    Set<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            {
+                if (this == &rhs) {
+                    return true;
+                }
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+                // Note - no need to iterate over rhs because we checked sizes the same
+                for (auto i = MakeIterator (); not i.Done (); ++i) {
+                    if (not rhs.Contains (*i)) {
+                        return false;
+                    }
+                }
+                return true;
             }
 
 

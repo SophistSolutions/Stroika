@@ -173,27 +173,7 @@ namespace   Stroika {
                 template    <typename T>
                 bool    SortedSet_stdset<T>::Rep_::Equals (const typename Set<T>::_IRep& rhs) const
                 {
-                    if (this == &rhs) {
-                        return true;
-                    }
-                    if (this->GetLength () != rhs.GetLength ()) {
-                        return false;
-                    }
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        /*
-                         *  Note - slight deadlock risk, cuz potential for nested locking (here + rhs.Contains), but
-                         *  since Contains() never calls back to anything, this should be safe.
-                         *
-                         *  @todo   above rationale counts on knowing internals of something that shouldnt be known
-                         *          here modularly, so find some other way, like using a regular Iterator<T> here.
-                         */
-                        for (auto i : this->fData_) {
-                            if (not rhs.Contains (i)) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    });
+                    return _Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T>
                 bool    SortedSet_stdset<T>::Rep_::Contains (T item) const

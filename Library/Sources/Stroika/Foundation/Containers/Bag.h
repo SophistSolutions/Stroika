@@ -27,6 +27,8 @@
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
+ *      @todo   implement UniqueElements() and create test cases.
+ *
  *      @todo   Add more efficent-for-tally implementation of bag (like multimap?). Low priority since you can
  *              always use a Tally<T>...
  *
@@ -41,6 +43,11 @@
  *
  *      @todo   Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
  *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
+ *
+ *              NO - Probably not. One - this restricts use to backends capable of this randomizing of order (eg. not hashtables
+ *              or trees), and is incompatible with the idea of subtypes like  SortedBag<T>. Instead - see if I can
+ *              come up with a compromise - maybe a "Shake" method that produces a NEW BAG of a possibly different backend TYPE!
+ *              THAT can work!
  *
  *      @todo   Move Bag<T>::Equals() to REP code so can be done more efficiently. Makes sense since operator==
  *              on T already required! Often can be done quite cheaply
@@ -196,6 +203,7 @@ namespace   Stroika {
                  * Since items can appear more than once, this function traverses the bag and returns the
                  * count of times the given item appears.
                  */
+                nonvirtual  size_t  TallyOf (const Iterator<T>& i) const;
                 nonvirtual  size_t  TallyOf (T item) const;
 
             public:
@@ -257,12 +265,25 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
+                virtual bool    Equals (const _IRep& rhs) const             =   0;
                 virtual bool    Contains (T item) const                     =   0;
+                virtual size_t  TallyOf (T item) const                      =   0;
                 virtual void    Add (T item)                                =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
                 virtual void    Remove (T item)                             =   0;
                 virtual void    Remove (const Iterator<T>& i)               =   0;
                 virtual void    RemoveAll ()                                =   0;
+
+                /*
+                 *  Reference Implementations (often not used except for ensure's, but can be used for
+                 *  quickie backends).
+                 *
+                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
+                 *  the sucblass refers to the method in a subclass virtual override.
+                 */
+            public:
+                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual size_t  _TallyOf_Reference_Implementation (T item) const;
             };
 
 

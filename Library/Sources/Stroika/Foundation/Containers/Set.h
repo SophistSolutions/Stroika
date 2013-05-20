@@ -186,12 +186,22 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool    Equals (const typename Set<T>::_IRep& rhs) const    =   0;
-                virtual bool    Contains (T item) const                             =   0;
-                virtual void    RemoveAll ()                                        =   0;
-                virtual void    Add (T item)                                        =   0;
-                virtual void    Remove (T item)                                     =   0;
-                virtual void    Remove (const Iterator<T>& i)                       =   0;
+                virtual bool    Equals (const _IRep& rhs) const    =   0;
+                virtual bool    Contains (T item) const            =   0;
+                virtual void    RemoveAll ()                       =   0;
+                virtual void    Add (T item)                       =   0;
+                virtual void    Remove (T item)                    =   0;
+                virtual void    Remove (const Iterator<T>& i)      =   0;
+
+                /*
+                 *  Reference Implementations (often not used except for ensure's, but can be used for
+                 *  quickie backends).
+                 *
+                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
+                 *  the sucblass refers to the method in a subclass virtual override.
+                 */
+            public:
+                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
 
 

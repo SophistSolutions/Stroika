@@ -186,7 +186,7 @@ namespace   Stroika {
                 /**
                  * Only supported if T::operator==() defined.
                  */
-                nonvirtual  bool    Equals (const Iterable<T>& rhs) const;
+                nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
 
             public:
                 /**

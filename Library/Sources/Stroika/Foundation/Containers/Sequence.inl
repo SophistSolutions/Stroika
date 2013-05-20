@@ -73,7 +73,7 @@ namespace   Stroika {
                 return Private::Compare_ (*this, rhs);
             }
             template    <typename T>
-            inline  bool    Sequence<T>::Equals (const Iterable<T>& rhs) const
+            inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
                 return Private::Equals_ (*this, rhs);
             }
