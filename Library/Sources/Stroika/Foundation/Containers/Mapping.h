@@ -103,6 +103,8 @@ namespace   Stroika {
                 /**
                  *  Add the association between key and newElt. If key was already associated with something
                  *  else, the association is silently updated, and the size of the iterable does not change.
+                 *  Also - we guarantee that even if the association is different, if the key has not changed,
+                 *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
                 nonvirtual  void    Add (Key key, T newElt);
 
