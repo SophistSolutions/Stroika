@@ -180,7 +180,7 @@ namespace   Stroika {
                 template    <typename T>
                 bool    Bag_Array<T>::Rep_::Equals (const typename Bag<T>::_IRep& rhs) const
                 {
-                    return _Equals_Reference_Implementation (rhs);
+                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T>
                 bool    Bag_Array<T>::Rep_::Contains (T item) const
@@ -190,7 +190,7 @@ namespace   Stroika {
                 template    <typename T>
                 size_t    Bag_Array<T>::Rep_::TallyOf (T item) const
                 {
-                    return _TallyOf_Reference_Implementation (item);
+                    return this->_TallyOf_Reference_Implementation (item);
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Add (T item)

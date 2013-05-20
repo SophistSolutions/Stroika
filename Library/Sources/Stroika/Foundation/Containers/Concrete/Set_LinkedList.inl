@@ -188,7 +188,7 @@ namespace   Stroika {
                 template    <typename T>
                 bool    Set_LinkedList<T>::Rep_::Equals (const typename Set<T>::_IRep& rhs) const
                 {
-                    return _Equals_Reference_Implementation (rhs);
+                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T>
                 bool    Set_LinkedList<T>::Rep_::Contains (T item) const
