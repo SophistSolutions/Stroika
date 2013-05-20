@@ -113,6 +113,17 @@ namespace   Stroika {
 
             public:
                 /**
+                 *      +=/-= are equivilent Add(), AddAll(), Remove() and RemoveAll(). They are just syntactic sugar.
+                 */
+                nonvirtual  Set<T>& operator+= (T item);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  Set<T>& operator+= (const CONTAINER_OF_T& items);
+                nonvirtual  Set<T>& operator-= (T item);
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  Set<T>& operator-= (const CONTAINER_OF_T& items);
+
+            public:
+                /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();

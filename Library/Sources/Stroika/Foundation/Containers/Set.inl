@@ -95,6 +95,9 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Set<T>::AddAll (const CONTAINER_OF_T& s)
             {
+                // Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                // attempt to add items that already exist, it would do nothing, and not lead to
+                // an infinite loop
                 AddAll (std::begin (s), std::end (s));
             }
             template    <typename T>
@@ -125,6 +128,32 @@ namespace   Stroika {
             inline  void    Set<T>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
+            }
+            template    <typename T>
+            inline  Set<T>& Set<T>::operator+= (T item)
+            {
+                Add (item);
+                return (*this);
+            }
+            template    <typename T>
+            template    <typename CONTAINER_OF_T>
+            inline  Set<T>& Set<T>::operator+= (const CONTAINER_OF_T& items)
+            {
+                AddAll (items);
+                return (*this);
+            }
+            template    <typename T>
+            inline  Set<T>& Set<T>::operator-= (T item)
+            {
+                Remove (item);
+                return (*this);
+            }
+            template    <typename T>
+            template    <typename CONTAINER_OF_T>
+            inline  Set<T>& Set<T>::operator-= (const CONTAINER_OF_T& items)
+            {
+                Remove (items);
+                return (*this);
             }
             template    <typename   T>
             template    <typename   CONTAINER_OF_T>

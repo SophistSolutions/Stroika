@@ -57,6 +57,16 @@ namespace CommonTests {
                 IterableTests::SimpleIterableTest_All_For_Type<USING_MAPPING_CONTAINER> (m, applyToContainer);
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
+
+                {
+                    m.Add (1, 2);
+                    m.Add (3, 66);
+                    size_t oldLength = m.GetLength();
+                    m += m;
+                    applyToContainer (m);
+                    VerifyTestResult(m.GetLength() == oldLength);
+                }
+
                 m.RemoveAll ();
                 VerifyTestResult (m.size () == 0);
             }

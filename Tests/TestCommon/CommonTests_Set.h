@@ -63,6 +63,16 @@ namespace CommonTests {
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 0);
                 applyToContainer (s);
+
+                {
+                    s.Add (3);
+                    s.Add (99);
+                    size_t oldLength = s.GetLength();
+                    s += s;
+                    applyToContainer (s);
+                    VerifyTestResult(s.GetLength() == oldLength);
+                }
+
                 s.RemoveAll ();
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 0);

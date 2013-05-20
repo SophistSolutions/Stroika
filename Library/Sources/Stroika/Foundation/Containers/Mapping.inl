@@ -127,11 +127,14 @@ namespace   Stroika {
             }
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Mapping<Key, T>::AddAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            inline  void    Mapping<Key, T>::AddAll (const CONTAINER_OF_PAIR_KEY_T& items)
             {
-                for (auto i : items) {
-                    Add (i.first, i.second);
-                }
+                /*
+                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                 *  attempt to add items that already exist, it would do nothing to our iteration
+                 *  and therefore not lead to an infinite loop.
+                 */
+                AddAll (std::begin (items), std::end (items));
             }
             template    <typename Key, typename T>
             inline  void    Mapping<Key, T>::Remove (Key key)
@@ -173,14 +176,14 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<Key, T>&    Mapping<Key, T>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
-                Add (items);
+                AddAll (items);
                 return *this;
             }
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<Key, T>&    Mapping<Key, T>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
-                Remove (items);
+                RemoveAll (items);
                 return *this;
             }
 

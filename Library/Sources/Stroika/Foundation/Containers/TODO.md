@@ -1,5 +1,16 @@
 TODO (Foundation::Containers)
 
+	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
+			and perhaps others.
+	
+			Question is - nested inside class, or 'global'. Ignoring the issue of namespaces, global seems to
+			probably work best.
+
+			But taking into account namespaces - which we must - it appears - direct members work best.
+
+			Go with Direct memebers for now - and DOCUMENT this SOMEPLACE as an overarching design choice.
+			But reconsider possibly...
+					-- LGP 2013-05-19
 
 	(o)		Maybe enhance API for stuff like PriorityQueue<> and Tally<T> to have method
 			AsIterable<T> () - that returns an Iterable<T> (the undlering thing stuff is ta tallyof or

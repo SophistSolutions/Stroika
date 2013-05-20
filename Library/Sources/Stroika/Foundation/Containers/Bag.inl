@@ -78,7 +78,17 @@ namespace   Stroika {
             template    <typename CONTAINER_OF_T>
             inline  void    Bag<T>::AddAll (const CONTAINER_OF_T& s)
             {
-                AddAll (std::begin (s), std::end (s));
+                /*
+                 * Because adding items to a Bag COULD result in those items appearing in a running iterator,
+                 * for the corner case of s.AddAll(s) - we want to assure we don't infinite loop.
+                 */
+                if (this == &s) {
+                    CONTAINER_OF_T  tmp =   s;
+                    AddAll (std::begin (tmp), std::end (tmp));
+                }
+                else {
+                    AddAll (std::begin (s), std::end (s));
+                }
             }
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator+= (T item)
@@ -108,9 +118,6 @@ namespace   Stroika {
             inline  void    Bag<T>::Add (T item)
             {
                 _GetRep ().Add (item);
-                // this-> required for gcc 4.6.3. I don't THINK this is a bug because I think its cuz its an inherite dmethod.
-                // I must re-read C++ template docs for clarificaiton...
-                //      -- LGP 2012-07-28
                 Ensure (not this->IsEmpty ());
             }
             template    <typename T>
