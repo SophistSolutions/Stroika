@@ -27,12 +27,6 @@
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
- *      @todo   Because of the definition of operator== (Bag,Bag), we have an expensive implemenation.
- *              The underlying IRep should be enhanced to allow if we are talking to two like implementations
- *              we can produce a more efficient comparison.
- *
- *      @todo   Bag<T>::Add (T item) - debug why this->... in assert...
- *
  *      @todo   Add more efficent-for-tally implementation of bag (like multimap?). Low priority since you can
  *              always use a Tally<T>...
  *
@@ -49,27 +43,7 @@
  *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
  *
  *      @todo   Move Bag<T>::Equals() to REP code so can be done more efficiently. Makes sense since operator==
- *              on T already required!
- *
- *      @todo   Old addallcode had:
-                template    <typename T>
-                void  Bag<T>::Add (const Bag<T>& items)
-                {
-                    if (&_GetRep () == &items._GetRep ()) {
-                        // Copy - so we don't update this while we are copying from it...
-                        Bag<T>  copiedItems =   items;
-                        for (T i : copiedItems) {
-                            _GetRep ().Add (i);
-                        }
-                    }
-                    else {
-                        for (T i : items) {
-                            _GetRep ().Add (i);
-                        }
-                    }
-                }
-                But unclear how exactly todo that. COULD comapre &c != this? But doesnt appear good enuf. Depends on what bag iterators do...
- *
+ *              on T already required! Often can be done quite cheaply
  *
  */
 
@@ -142,19 +116,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \brief Produces an empty bag.
-                 */
-                nonvirtual  void    RemoveAll ();
-
-            public:
-                /**
-                 * \brief STL-ish alias for RemoveAll ().
-                 */
-                nonvirtual  void    clear ();
-
-
-            public:
-                /**
                  * Add the given item(s) to this Bag<T>. Note - if the given items are already present, another
                  * copy will be added.
                  */
@@ -181,15 +142,24 @@ namespace   Stroika {
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
                  * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 *
+                 * SECOND OVERLOAD:
+                 * This function requires that the iterator 'i' came from this container.
+                 *
+                 * The value pointed to by 'i' is removed.
                  */
                 nonvirtual  void    Remove (T item);
+                nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
                  * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 *
+                 *  The no-argument verison Produces an empty bag.
                  */
+                nonvirtual  void    RemoveAll ();
                 template    <typename COPY_FROM_ITERATOR>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
                 template    <typename CONTAINER_OF_T>
@@ -197,11 +167,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 * This function requires that the iterator 'i' came from this container.
-                 *
-                 * The value pointed to by 'i' is removed.
+                 * \brief STL-ish alias for RemoveAll ().
                  */
-                nonvirtual  void    Remove (const Iterator<T>& i);
+                nonvirtual  void    clear ();
+
 
             public:
                 /**
@@ -216,7 +185,7 @@ namespace   Stroika {
                  *  Two Bags are considered equal if they contain the same elements (by comparing them with operator==) with the same count.
                  *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
                  *
-                 *  Note - this computation MAYBE very expensive, and not optimized. Since
+                 *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
                 nonvirtual  bool    Equals (const Bag<T>& rhs) const;
 
@@ -227,20 +196,28 @@ namespace   Stroika {
                  */
                 nonvirtual  size_t  TallyOf (T item) const;
 
-            protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
-
             public:
                 /**
-                 *      They are just syntactic sugar.
+                 *  operator+ is syntactic sugar on Add() or AddAll() - depending on the overload.
+                 *
+                 *  *DEVELOPER NOTE*
+                 *      Note - we use an overload
+                 *      of Bag<T> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      to distinguish the two cases. If I can figure that out, this can transparently be
+                 *      replaced with operator+= (X), with appropriate specializations.
                  */
                 nonvirtual  Bag<T>& operator+= (T item);
                 nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
 
             public:
                 /**
-                 *      They are just syntactic sugar.
+                 *  operator- is syntactic sugar on Remove() or RemoveAll() - depending on the overload.
+                 *
+                 *  *DEVELOPER NOTE*
+                 *      Note - we use an overload
+                 *      of Bag<T> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      to distinguish the two cases. If I can figure that out, this can transparently be
+                 *      replaced with operator+= (X), with appropriate specializations.
                  */
                 nonvirtual  Bag<T>& operator-= (T item);
                 nonvirtual  Bag<T>& operator-= (const Bag<T>& items);
@@ -256,9 +233,11 @@ namespace   Stroika {
                  *      Syntactic sugar on not Equals()
                  */
                 nonvirtual  bool    operator!= (const Bag<T>& rhs) const;
+
+            protected:
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
-
-
 
 
             /**
