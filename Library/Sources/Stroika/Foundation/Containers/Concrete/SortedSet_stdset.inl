@@ -180,6 +180,13 @@ namespace   Stroika {
                         return false;
                     }
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        /*
+                         *  Note - slight deadlock risk, cuz potential for nested locking (here + rhs.Contains), but
+                         *  since Contains() never calls back to anything, this should be safe.
+                         *
+                         *  @todo   above rationale counts on knowing internals of something that shouldnt be known
+                         *          here modularly, so find some other way, like using a regular Iterator<T> here.
+                         */
                         for (auto i : this->fData_) {
                             if (not rhs.Contains (i)) {
                                 return false;
