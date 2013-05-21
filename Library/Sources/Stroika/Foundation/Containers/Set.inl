@@ -125,6 +125,7 @@ namespace   Stroika {
             template    <typename T>
             bool  Set<T>::Equals (const Set<T>& rhs) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T>

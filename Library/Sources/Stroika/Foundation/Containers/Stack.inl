@@ -88,10 +88,10 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T>
-            inline  bool    Stack<T>::Equals (const Stack<T>& rhs) const
+            bool    Stack<T>::Equals (const Stack<T>& rhs) const
             {
-                // Because we define ordering as compare for equals
-                return Private::Equals_<T> (*this, rhs);
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                return Private::Equals_<T> (*this, rhs);        // Because we define ordering as compare for equals
             }
             template    <typename T>
             inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const

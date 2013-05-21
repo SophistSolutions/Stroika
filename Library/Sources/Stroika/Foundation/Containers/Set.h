@@ -121,6 +121,8 @@ namespace   Stroika {
                  *
                  *  Equals is commutative().
                  *
+                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 *
                  *  @todo - document computational complexity
                  */
                 nonvirtual  bool    Equals (const Set<T>& rhs) const;

@@ -16,6 +16,9 @@
  *
  *
  *  TODO:
+ *      @todo   Actual implmeentaitons incomplete - especailly cuz CTOR with params arg ambiguious -
+ *              clarify... and implement copy
+ *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
  *      @todo   Review
@@ -99,7 +102,7 @@ namespace   Stroika {
                  *
                  *  Equals is commutative().
                  *
-                 *  Note - this method (UNLIKE THE REST OF SET) requires operator==(T,T) to be defined.
+                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  *
                  *  Computational Complexity: O(N)
                  */
