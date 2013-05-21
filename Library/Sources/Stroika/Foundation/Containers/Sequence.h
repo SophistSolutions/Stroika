@@ -9,9 +9,9 @@
 #include    <limits>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
 
-#include    "ElementTraits.h"
 #include    "Iterable.h"
 #include    "Iterator.h"
 

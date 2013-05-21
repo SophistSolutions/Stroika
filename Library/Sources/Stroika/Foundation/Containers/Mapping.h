@@ -7,9 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
 
-#include    "ElementTraits.h"
 #include    "Iterable.h"
 #include    "Iterator.h"
 
@@ -44,7 +44,7 @@ namespace   Stroika {
             template    <typename Key, typename T>
             class   Mapping : public Iterable<pair<Key, T>> {
             public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T, _MAPPING_REQUIRES_OPEQ_);
+                RequireElementTraitsInClass(RequireOperatorEquals, T);
 
             private:
                 typedef Iterable<pair<Key, T>>  inherited;

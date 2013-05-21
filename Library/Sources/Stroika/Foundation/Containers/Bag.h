@@ -7,9 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
 
-#include    "ElementTraits.h"
 #include    "Iterable.h"
 #include    "Iterator.h"
 
@@ -97,7 +97,7 @@ namespace   Stroika {
             template    <typename T>
             class   Bag : public Iterable<T> {
             public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T, _BAG_REQUIRES_OPEQ_);
+                RequireElementTraitsInClass(RequireOperatorEquals, T);
 
             private:
                 typedef Iterable<T> inherited;
