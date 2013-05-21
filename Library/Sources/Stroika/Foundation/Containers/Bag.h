@@ -286,7 +286,7 @@ namespace   Stroika {
                  *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
-            public:
+            protected:
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
                 nonvirtual size_t  _TallyOf_Reference_Implementation (T item) const;
             };
