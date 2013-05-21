@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "ElementTraits.h"
 #include    "Mapping.h"
 
 
@@ -40,6 +41,9 @@ namespace   Stroika {
              */
             template    <typename Key, typename T>
             class   SortedMapping : public Mapping<Key, T> {
+            public:
+                RequireElementTraitsInClass(RequireOperatorLess, Key, _SORTEDMAPPING_REQUIRES_OPLESS_);
+
             private:
                 typedef     Mapping<Key, T> inherited;
 

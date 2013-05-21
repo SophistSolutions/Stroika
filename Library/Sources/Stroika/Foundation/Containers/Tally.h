@@ -10,6 +10,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
+#include    "ElementTraits.h"
 #include    "Iterator.h"
 #include    "Iterable.h"
 
@@ -78,6 +79,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class  Tally : public Iterable<TallyEntry<T>> {
+            public:
+                RequireElementTraitsInClass(RequireOperatorEquals, T, _TALLY_REQUIRES_OPEQ_);
+
             private:
                 typedef Iterable<TallyEntry<T>> inherited;
 

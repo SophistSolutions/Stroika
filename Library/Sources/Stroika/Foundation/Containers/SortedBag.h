@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "ElementTraits.h"
 #include    "Bag.h"
 
 
@@ -49,6 +50,9 @@ namespace   Stroika {
              */
             template    <class T>
             class   SortedBag : public Bag<T> {
+            public:
+                RequireElementTraitsInClass(RequireOperatorLess, T, _SORTEDBAG_REQUIRES_OPLESS_);
+
             private:
                 typedef Bag<T>  inherited;
 

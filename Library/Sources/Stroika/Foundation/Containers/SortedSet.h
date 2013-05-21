@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "ElementTraits.h"
 #include    "Set.h"
 
 
@@ -36,6 +37,9 @@ namespace   Stroika {
              */
             template    <typename   T>
             class   SortedSet : public Set<T> {
+            public:
+                RequireElementTraitsInClass(RequireOperatorLess, T, _SORTEDSET_REQUIRES_OPLESS_);
+
             private:
                 typedef     Set<T> inherited;
 

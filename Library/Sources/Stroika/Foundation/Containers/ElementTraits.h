@@ -12,6 +12,8 @@
 
 /*
  *
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *
  * Description:
  *
  *      THis code MAY end up being a TRAITs mechanism for defining traits in various templates (like hashing etc). Or
@@ -41,11 +43,58 @@ namespace   Stroika {
 
 
             /*
+             * See /usr/include/c++/4.7/bits/boost_concept_check.h
+             */
+            namespace ConceptRequirements {
+
+                template <typename T>
+                struct RequireOperatorEquals {
+                    static void check () {
+                        if (*static_cast<const T*> (nullptr) == *static_cast<const T*> (nullptr)) {
+                        }
+                    }
+                    RequireOperatorEquals () {
+                        check ();
+                    }
+                };
+
+                template <typename T>
+                struct RequireOperatorNotEquals {
+                    static void check () {
+                        if (*static_cast<const T*> (nullptr) != *static_cast<const T*> (nullptr)) {
+                        }
+                    }
+                    RequireOperatorNotEquals () {
+                        check ();
+                    }
+                };
+
+                template <typename T>
+                struct RequireOperatorLess {
+                    static void check () {
+                        if (*static_cast<const T*> (nullptr) < *static_cast<const T*> (nullptr)) {
+                        }
+                    }
+                    RequireOperatorLess () {
+                        check ();
+                    }
+                };
+
+            }
+#define RequireElementTraitsInClass(TEMPLATE,T,REQUIREMEMENT_NAME)\
+    Stroika::Foundation::Containers::ConceptRequirements::TEMPLATE<T> _IGNORE_##REQUIREMEMENT_NAME;
+#define RequireElementTraitsInMethod(TEMPLATE,T)\
+    Stroika::Foundation::Containers::ConceptRequirements::TEMPLATE<T> ();
+
+
+
+            /*
              * This is the default set of traits for a collection which only requires the operator==
              */
+#if 0
             template    <typename T>
             struct  TWithCompareEquals {
-                bool    opererator == (const T& lhs, const T& rhs);
+                static  bool    operator== (const T& lhs, const T& rhs);
             };
 
 
@@ -63,7 +112,7 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  TWithCompareEqualsAndLess : TWithCompareEquals {
-                bool    opererator < (const T& lhs, const T& rhs);
+                static  bool    operator< (const T& lhs, const T& rhs);
             };
 
 
@@ -72,8 +121,9 @@ namespace   Stroika {
              */
             template    <typename T>
             struct  TWithCompareEqualsAndLessOrEquals : TWithCompareEquals {
-                bool    opererator <= (const T& lhs, const T& rhs);
+                static  bool    operator<= (const T& lhs, const T& rhs);
             };
+#endif
 
 
         }

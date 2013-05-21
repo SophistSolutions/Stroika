@@ -11,6 +11,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
+#include    "ElementTraits.h"
 #include    "Iterable.h"
 #include    "Iterator.h"
 
@@ -170,7 +171,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Only supported if T::operator==()
+                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool Contains (T item) const;
 
@@ -184,7 +185,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Only supported if T::operator==() defined.
+                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
 
@@ -218,6 +219,8 @@ namespace   Stroika {
                  *  it, and return the index of that item. Comparison is done with
                  *  operator== (if its defined). - require concept T::operator==)
                  *  for first two overloads - third taking iterator always works)
+                 *
+                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  */
                 nonvirtual  size_t  IndexOf (T i) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;

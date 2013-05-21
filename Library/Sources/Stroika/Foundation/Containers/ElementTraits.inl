@@ -13,7 +13,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-
+#if 0
             template    <typename T>
             inline  bool    TWithCompareEquals<T>::opererator == (const T& lhs, const T& rhs)
             {
@@ -50,6 +50,8 @@ namespace   Stroika {
             {
                 return lhs <= rhs;
             }
+#endif
+
 
         }
     }

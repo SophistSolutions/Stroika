@@ -65,6 +65,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 return Private::Contains_ (*this, item);
             }
             template    <typename T>
@@ -75,6 +76,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 return Private::Equals_<T> (_GetRep (), rhs._GetRep ());
             }
             template    <typename T>
@@ -103,6 +105,7 @@ namespace   Stroika {
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (T item) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
 #if     qCompilerAndStdLib_Supports_constexpr
                 static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
 #else
@@ -113,6 +116,7 @@ namespace   Stroika {
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
 #if     qCompilerAndStdLib_Supports_constexpr
                 static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
 #else
@@ -123,6 +127,7 @@ namespace   Stroika {
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 return _GetRep ().IndexOf (i);
             }
             template    <typename T>
