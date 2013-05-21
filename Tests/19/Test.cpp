@@ -103,15 +103,15 @@ namespace {
 }
 
 namespace Test4_Equals {
-    template <typename USING_SET_CONTAINER>
+    template <typename USING_STACK_CONTAINER>
     void    DoAllTests_ ()
     {
-        USING_SET_CONTAINER s;
-        USING_SET_CONTAINER s2 = s;
+        USING_STACK_CONTAINER s;
+        USING_STACK_CONTAINER s2 = s;
         s.Push (1);
         s.Push (2);
         VerifyTestResult (s.size () == 2);
-        USING_SET_CONTAINER s3 = s;
+        USING_STACK_CONTAINER s3 = s;
         VerifyTestResult (s == s3);
         VerifyTestResult (s.Equals (s3));
         VerifyTestResult (not (s != s3));

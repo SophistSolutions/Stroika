@@ -4,9 +4,11 @@
 #ifndef _Stroika_Foundation_Containers_Queue_inl_
 #define _Stroika_Foundation_Containers_Queue_inl_
 
+#include    "../Configuration/Concepts.h"
 #include    "../Debug/Assertions.h"
 
 #include    "Concrete/Queue_Factory.h"
+#include    "Private/IterableUtils.h"
 
 
 namespace   Stroika {
@@ -95,6 +97,22 @@ namespace   Stroika {
             inline  void    Queue<T>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
+            }
+            template    <typename T>
+            bool    Queue<T>::Equals (const Queue<T>& rhs) const
+            {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                return Private::Equals_<T> (*this, rhs);        // Because we define ordering as compare for equals
+            }
+            template    <typename T>
+            inline  bool  Queue<T>::operator== (const Queue<T>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    Queue<T>::operator!= (const Queue<T>& rhs) const
+            {
+                return (not Equals (rhs));
             }
 
 

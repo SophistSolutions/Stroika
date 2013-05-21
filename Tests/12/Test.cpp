@@ -103,6 +103,31 @@ namespace {
 }
 
 
+
+
+
+namespace Test4_Equals {
+    template <typename USING_QUEUE_CONTAINER>
+    void    DoAllTests_ ()
+    {
+        USING_QUEUE_CONTAINER s;
+        USING_QUEUE_CONTAINER s2 = s;
+        s.Enqueue (1);
+        s.Enqueue (2);
+        VerifyTestResult (s.size () == 2);
+        USING_QUEUE_CONTAINER s3 = s;
+        VerifyTestResult (s == s3);
+        VerifyTestResult (s.Equals (s3));
+        VerifyTestResult (not (s != s3));
+
+        VerifyTestResult (s != s2);
+        VerifyTestResult (not s.Equals (s2));
+        VerifyTestResult (not (s == s2));
+    }
+}
+
+
+
 namespace {
     template <typename QueueOfT>
     void    SimpleMappingTest_All_For_Type ()
@@ -111,8 +136,13 @@ namespace {
         SimpleTest_1_ (s);
         SimpleTest_2_ (s);
         SimpleTest_3_Iteration_ (s);
+        Test4_Equals::DoAllTests_<QueueOfT> ();
     }
 }
+
+
+
+
 
 
 namespace   {

@@ -125,9 +125,34 @@ namespace   Stroika {
                  */
                 nonvirtual  void    RemoveAll ();
 
+            public:
+                /*
+                 *  Two Queues are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  in exactly the same order (iteration).
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 *
+                 *  Computational Complexity: O(N)
+                 */
+                nonvirtual  bool    Equals (const Queue<T>& rhs) const;
+
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+
+            public:
+                /**
+                 *      Syntactic sugar for Equals()
+                 */
+                nonvirtual  bool    operator== (const Queue<T>& rhs) const;
+
+            public:
+                /**
+                 *      Syntactic sugar for not Equals()
+                 */
+                nonvirtual  bool    operator!= (const Queue<T>& rhs) const;
             };
 
 
