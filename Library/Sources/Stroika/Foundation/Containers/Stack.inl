@@ -91,7 +91,7 @@ namespace   Stroika {
             inline  bool    Stack<T>::Equals (const Stack<T>& rhs) const
             {
                 // Because we define ordering as compare for equals
-                return Private::Equals_<T> (_GetRep (), rhs._GetRep ());
+                return Private::Equals_<T> (*this, rhs);
             }
             template    <typename T>
             inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const

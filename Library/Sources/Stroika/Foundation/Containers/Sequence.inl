@@ -77,7 +77,7 @@ namespace   Stroika {
             inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
                 RequireElementTraitsInMethod(RequireOperatorEquals, T);
-                return Private::Equals_<T> (_GetRep (), rhs._GetRep ());
+                return Private::Equals_<T> (*this, rhs);
             }
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()
@@ -106,23 +106,13 @@ namespace   Stroika {
             inline  size_t    Sequence<T>::IndexOf (T item) const
             {
                 RequireElementTraitsInMethod(RequireOperatorEquals, T);
-#if     qCompilerAndStdLib_Supports_constexpr
-                static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
-#else
-                Assert (Private::kBadIndex == kBadSequenceIndex);
-#endif
-                return Private::IndexOf_ (*this, item);
+                return Private::IndexOf_ (*this, item, kBadSequenceIndex);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
                 RequireElementTraitsInMethod(RequireOperatorEquals, T);
-#if     qCompilerAndStdLib_Supports_constexpr
-                static_assert (Private::kBadIndex == kBadSequenceIndex, "Private::kBadIndex == kBadSequenceIndex");
-#else
-                Assert (Private::kBadIndex == kBadSequenceIndex);
-#endif
-                return Private::IndexOf_ (*this, s);
+                return Private::IndexOf_ (*this, s, kBadSequenceIndex);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const

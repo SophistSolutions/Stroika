@@ -58,7 +58,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                bool    Equals_ (const typename Iterable<T>::_IRep& lhs, const typename Iterable<T>::_IRep& rhs)
+                bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
                 {
                     // Check length, so we dont need to check both iterators for end/done
                     if (&lhs == &rhs) {
@@ -78,7 +78,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                size_t    IndexOf_ (const Iterable<T>& c, T item)
+                size_t    IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound)
                 {
                     size_t  n = 0;
                     for (T i : c) {
@@ -88,12 +88,12 @@ namespace   Stroika {
                         }
                         n++;
                     }
-                    return kBadIndex;
+                    return sentinalValueForNotFound;
                 }
 
 
                 template    <typename T>
-                size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs)
+                size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound)
                 {
                     size_t  n = 0;
                     for (auto i = c.begin (); i != c.end (); ++i, ++n) {
@@ -101,7 +101,7 @@ namespace   Stroika {
                         auto ii = i;
                         for (T r : rhs) {
                             if (ii == c.end ()) {
-                                return kBadIndex;
+                                return sentinalValueForNotFound;
                             }
                             if (not (r == *ii)) {
                                 foundDiff = true;
@@ -113,7 +113,7 @@ namespace   Stroika {
                             return n;
                         }
                     }
-                    return kBadIndex;
+                    return sentinalValueForNotFound;
                 }
 
 

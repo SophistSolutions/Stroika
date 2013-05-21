@@ -30,9 +30,6 @@ namespace   Stroika {
             namespace Private {
 
 
-                constexpr   size_t  kBadIndex   =   numeric_limits<size_t>::max ();
-
-
                 template    <typename T>
                 bool    Contains_ (const Iterable<T>& c, T item);
 
@@ -42,15 +39,15 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                bool    Equals_ (const typename Iterable<T>::_IRep& lhs, const typename Iterable<T>::_IRep& rhs);
+                bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
                 template    <typename T>
-                size_t  IndexOf_ (const Iterable<T>& c, T item);
+                size_t  IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound);
 
 
                 template    <typename T>
-                size_t  IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs);
+                size_t  IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound);
 
 
             }
