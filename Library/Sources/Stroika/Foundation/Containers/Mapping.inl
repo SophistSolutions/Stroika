@@ -105,6 +105,7 @@ namespace   Stroika {
             template    <typename Key, typename T>
             inline  bool    Mapping<Key, T>::ContainsValue (T v) const
             {
+                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 for (T t : *this) {
                     if (t.second == v) {
                         return true;

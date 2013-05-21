@@ -100,7 +100,7 @@ namespace   Stroika {
                  *  and applies operator== on each value, and returns true if contained. Perhpas not
                  *  very useful but symetric to ContainsKey().
                  *
-                 *  NOTE: ONLY defined if T supports operator==
+                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool    ContainsValue (T v) const;
 
