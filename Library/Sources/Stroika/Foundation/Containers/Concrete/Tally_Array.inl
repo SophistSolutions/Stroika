@@ -94,49 +94,30 @@ namespace   Stroika {
                     typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
 
                 public:
-                    IteratorRep_ (typename Tally_Array<T>::Rep_& owner);
+                    IteratorRep_ (typename Tally_Array<T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool            More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
-                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override;
+                    virtual bool            More (TallyEntry<T>* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
+                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override {
+                        return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new IteratorRep_ (*this));
+                    }
 
                 private:
                     mutable Private::DataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
-
-
-                /*
-                 ********************************************************************************
-                 ************************** Tally_Array<T>::IteratorRep_ ************************
-                 ********************************************************************************
-                 */
-                template    <class  T>
-                Tally_Array<T>::IteratorRep_::IteratorRep_ (typename Tally_Array<T>::Rep_& owner)
-                    : inherited ()
-                    , fIterator_ (owner.fData_)
-                {
-                }
-                template    <class  T>
-                bool    Tally_Array<T>::IteratorRep_::More (TallyEntry<T>* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename T>
-                bool    Tally_Array<T>::IteratorRep_::StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename T>
-                shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Tally_Array<T>::IteratorRep_::Clone () const
-                {
-                    return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new IteratorRep_ (*this));
-                }
 
 
                 /*
@@ -333,23 +314,23 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 Tally_Array<T>::Tally_Array ()
-                    : Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T>    Tally_Array<T>::Tally_Array (const T* start, const T* end)
-                    : Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (end - start);
                     Add (start, end);
                 }
                 template    <typename T>
                 inline  Tally_Array<T>::Tally_Array (const Tally_Array<T>& src) :
-                    Tally<T> (src)
+                    inherited (static_cast<const inherited&> (src))
                 {
                 }
                 template    <typename T>
                 Tally_Array<T>::Tally_Array (const Tally<T>& src) :
-                    Tally<T> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                    inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (src.GetLength ());
                     operator+= (src);
@@ -357,8 +338,8 @@ namespace   Stroika {
                 template    <typename T>
                 inline  Tally_Array<T>& Tally_Array<T>::operator= (const Tally_Array<T>& src)
                 {
-                    Tally<T>::operator= (src);
-                    return (*this);
+                    inherited::operator= (static_cast<const inherited&> (src));
+                    return *this;
                 }
                 template    <typename T>
                 inline  const typename Tally_Array<T>::Rep_&    Tally_Array<T>::GetRep_ () const
@@ -371,19 +352,19 @@ namespace   Stroika {
                     return reinterpret_cast<Tally_Array<T>::Rep_&> (this->_GetRep ());
                 }
                 template    <typename T>
-                size_t  Tally_Array<T>::GetCapacity () const
+                inline  size_t  Tally_Array<T>::GetCapacity () const
                 {
-                    return (this->GetRep ().fData_.GetCapacity ());
+                    return (GetRep_ ().fData_.GetCapacity ());
                 }
                 template    <typename T>
-                void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
+                inline  void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    this->GetRep ().fData_.SetCapacity (slotsAlloced);
+                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
                 }
                 template    <typename T>
                 inline  void    Tally_Array<T>::Compact ()
                 {
-                    this->GetRep ().Compact ();
+                    GetRep_ ().Compact ();
                 }
 
 
