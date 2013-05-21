@@ -51,8 +51,7 @@
  *              come up with a compromise - maybe a "Shake" method that produces a NEW BAG of a possibly different backend TYPE!
  *              THAT can work!
  *
- *      @todo   Move Bag<T>::Equals() to REP code so can be done more efficiently. Makes sense since operator==
- *              on T already required! Often can be done quite cheaply
+ *      @todo   Document the performance characteristics of the various Tally<T>::Equals() implementations.
  *
  */
 
@@ -198,8 +197,6 @@ namespace   Stroika {
                  *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
                  *
                  *  Equals is commutative().
-                 *
-                 *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
                 nonvirtual  bool    Equals (const Bag<T>& rhs) const;
 
