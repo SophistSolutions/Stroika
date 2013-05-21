@@ -15,8 +15,10 @@
 namespace CommonTests {
     namespace MappingTests {
 
+
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
+
 
         namespace Test1_BasicConstruction {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
@@ -73,8 +75,6 @@ namespace CommonTests {
         }
 
 
-
-
         namespace Test_3_Iteration {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
@@ -122,19 +122,41 @@ namespace CommonTests {
             }
         }
 
+
+        namespace Test4_Equals {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_MAPPING_CONTAINER m;
+                USING_MAPPING_CONTAINER m2 = m;
+                m.Add (1, 88);
+                m.Add (2, 101);
+                VerifyTestResult (m.size () == 2);
+                USING_MAPPING_CONTAINER m3 = m;
+                applyToContainer (m);
+                applyToContainer (m2);
+                applyToContainer (m3);
+                VerifyTestResult (m == m3);
+                VerifyTestResult (m.Equals (m3));
+                VerifyTestResult (not (m != m3));
+
+                VerifyTestResult (m != m2);
+                VerifyTestResult (not m.Equals (m2));
+                VerifyTestResult (not (m == m2));
+            }
+        }
+
+
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void    SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_BasicConstruction::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+            Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
-
 
 
     }
 }
-
-
-
 #endif  /* _Stroika_Foundation_Tests_TestCommon_CommonTests_Mapping_h_ */

@@ -56,8 +56,9 @@ namespace   Stroika {
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<pair<Key, T>>                              ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // SortedMapping<Key, T>::_IRep overrides
+                    // Mapping<Key, T>::_IRep overrides
                 public:
+                    virtual bool            Equals (const typename Mapping<Key, T>::_IRep& rhs) const override;
                     virtual void            RemoveAll () override;
                     virtual  Iterable<Key>  Keys () const override;
                     virtual  bool           Lookup (Key key, T* item) const override;
@@ -180,6 +181,11 @@ namespace   Stroika {
                 Iterator<pair<Key, T>>     SortedMapping_stdmap<Key, T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
+                }
+                template    <typename Key, typename T>
+                bool    SortedMapping_stdmap<Key, T>::Rep_::Equals (const typename Mapping<Key, T>::_IRep& rhs) const
+                {
+                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename Key, typename T>
                 void    SortedMapping_stdmap<Key, T>::Rep_::RemoveAll ()

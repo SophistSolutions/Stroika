@@ -56,6 +56,7 @@ namespace   Stroika {
 
                     // Mapping<Key, T>::_IRep overrides
                 public:
+                    virtual bool            Equals (const typename Mapping<Key, T>::_IRep& rhs) const override;
                     virtual void            RemoveAll () override;
                     virtual  Iterable<Key>  Keys () const override;
                     virtual  bool           Lookup (Key key, T* item) const override;
@@ -190,6 +191,11 @@ namespace   Stroika {
                 Iterator<pair<Key, T>>     Mapping_LinkedList<Key, T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
+                }
+                template    <typename Key, typename T>
+                bool    Mapping_LinkedList<Key, T>::Rep_::Equals (const typename Mapping<Key, T>::_IRep& rhs) const
+                {
+                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename Key, typename T>
                 void    Mapping_LinkedList<Key, T>::Rep_::RemoveAll ()

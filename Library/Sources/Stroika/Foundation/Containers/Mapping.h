@@ -16,13 +16,15 @@
 
 
 /*
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *
  *  TODO:
- *      @todo   Support thread safety
  *
  *      @todo   Support more backends
- *              Especially HashTable, RedBlackTree, and stlmap, and stlhashmap
+ *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
- *
  */
 
 
@@ -39,12 +41,11 @@ namespace   Stroika {
              *  @see    SortedMapping<Key,T>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-             *
              */
             template    <typename Key, typename T>
             class   Mapping : public Iterable<pair<Key, T>> {
             public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T);
+                RequireElementTraitsInClass(RequireOperatorEquals, Key);
 
             private:
                 typedef Iterable<pair<Key, T>>  inherited;
@@ -89,9 +90,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Synonym for Lookup (key).get () != nullptr
+                 *  Synonym for not (Lookup (key).empty ())
                  */
-                nonvirtual  bool ContainsKey (Key key) const;
+                nonvirtual  bool    ContainsKey (Key key) const;
 
             public:
                 /**
@@ -101,7 +102,7 @@ namespace   Stroika {
                  *
                  *  NOTE: ONLY defined if T supports operator==
                  */
-                nonvirtual  bool ContainsValue (T v) const;
+                nonvirtual  bool    ContainsValue (T v) const;
 
             public:
                 /**
@@ -120,13 +121,11 @@ namespace   Stroika {
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-
             public:
                 /**
                  */
                 nonvirtual  void    Remove (Key key);
                 nonvirtual  void    Remove (const Iterator<pair<Key, T>>& i);
-
 
             public:
                 /**
@@ -137,6 +136,17 @@ namespace   Stroika {
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
+            public:
+                /*
+                 *  Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
+                 *  with the same value. There is no need for the items to appear in the same order for the two Mappings to
+                 *  be equal.
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+                 */
+                nonvirtual  bool    Equals (const Mapping<Key, T>& rhs) const;
 
             public:
                 /**
@@ -150,13 +160,23 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
-
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 nonvirtual  Mapping<Key, T>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
+            public:
+                /**
+                 *      Syntactic sugar on Equals()
+                 */
+                nonvirtual  bool    operator== (const Mapping<Key, T>& rhs) const;
+
+            public:
+                /**
+                 *      Syntactic sugar on not Equals()
+                 */
+                nonvirtual  bool    operator!= (const Mapping<Key, T>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -179,12 +199,23 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
+                virtual bool            Equals (const _IRep& rhs) const     =   0;
                 virtual void            RemoveAll ()                        =   0;
                 virtual  Iterable<Key>  Keys () const                       =   0;
                 virtual  bool           Lookup (Key key, T* item) const     =   0;
                 virtual  void           Add (Key key, T newElt)             =   0;
                 virtual  void           Remove (Key key)                    =   0;
                 virtual  void           Remove (Iterator<pair<Key, T>> i)   =   0;
+
+                /*
+                 *  Reference Implementations (often not used except for ensure's, but can be used for
+                 *  quickie backends).
+                 *
+                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
+                 *  the sucblass refers to the method in a subclass virtual override.
+                 */
+            protected:
+                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
             };
 
 

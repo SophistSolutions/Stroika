@@ -168,6 +168,11 @@ namespace   Stroika {
                 }
             }
             template    <typename Key, typename T>
+            inline  bool  Mapping<Key, T>::Equals (const Mapping<Key, T>& rhs) const
+            {
+                return (_GetRep ().Equals (rhs._GetRep ()));
+            }
+            template    <typename Key, typename T>
             inline  void    Mapping<Key, T>::clear ()
             {
                 _GetRep ().RemoveAll ();
@@ -186,6 +191,16 @@ namespace   Stroika {
                 RemoveAll (items);
                 return *this;
             }
+            template    <typename Key, typename T>
+            inline  bool  Mapping<Key, T>::operator== (const Mapping<Key, T>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename Key, typename T>
+            inline  bool    Mapping<Key, T>::operator!= (const Mapping<Key, T>& rhs) const
+            {
+                return (not Equals (rhs));
+            }
 
 
             /*
@@ -200,6 +215,23 @@ namespace   Stroika {
             template    <typename Key, typename T>
             inline  Mapping<Key, T>::_IRep::~_IRep ()
             {
+            }
+            template    <typename Key, typename T>
+            bool    Mapping<Key, T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            {
+                if (this == &rhs) {
+                    return true;
+                }
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                    T   tmp;    // @todo THIS IS BAD - because of this we must hange the REP::Lookup () API to return OPTIONAL
+                    if (not rhs.Lookup (i->first, &tmp) or not (tmp == i->second)) {
+                        return false;
+                    }
+                }
+                return true;
             }
 
 
