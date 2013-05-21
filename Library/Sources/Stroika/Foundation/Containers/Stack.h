@@ -93,6 +93,19 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
+                /*
+                 *  Two Stacks are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  in exactly the same order.
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  Note - this method (UNLIKE THE REST OF SET) requires operator==(T,T) to be defined.
+                 *
+                 *  Computational Complexity: O(N)
+                 */
+                nonvirtual  bool    Equals (const Stack<T>& rhs) const;
+
+            public:
                 /**
                  * \brief STL-ish alias for RemoveAll ().
                  */
