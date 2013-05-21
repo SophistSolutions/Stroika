@@ -214,8 +214,8 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T>
-                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& s)
-                    : inherited (s)
+                inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& q)
+                    : inherited (static_cast<const inherited&> (q))
                 {
                 }
                 template    <typename T>
@@ -223,7 +223,8 @@ namespace   Stroika {
                 inline  Queue_DoublyLinkedList<T>::Queue_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    InsertAll (0, s);
+                    AssertNotImplemented ();
+                    //InsertAll (0, s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR>

@@ -130,7 +130,7 @@ namespace Test4_Equals {
 
 namespace {
     template <typename QueueOfT>
-    void    SimpleMappingTest_All_For_Type ()
+    void    Test_All_For_Type_ ()
     {
         QueueOfT s;
         SimpleTest_1_ (s);
@@ -148,11 +148,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        SimpleMappingTest_All_For_Type<Queue<size_t>> ();
-        SimpleMappingTest_All_For_Type<Queue<SimpleClass>> ();
+        Test_All_For_Type_<Queue<size_t>> ();
+        Test_All_For_Type_<Queue<SimpleClass>> ();
 
-        SimpleMappingTest_All_For_Type<Queue_DoublyLinkedList<size_t>> ();
-        SimpleMappingTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>> ();
+        Test_All_For_Type_<Queue_DoublyLinkedList<size_t>> ();
+        Test_All_For_Type_<Queue_DoublyLinkedList<SimpleClass>> ();
     }
 }
 
