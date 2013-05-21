@@ -230,11 +230,35 @@ namespace CommonTests {
 
 
 
+        namespace Test2_Equals {
+            template <typename USING_TALLY_CONTAINER>
+            void    DoAllTests_ ()
+            {
+                USING_TALLY_CONTAINER s;
+                USING_TALLY_CONTAINER s2 = s;
+                s.Add (1);
+                s.Add (1);
+                s.Add (2);
+                VerifyTestResult (s.size () == 2);
+                USING_TALLY_CONTAINER s3 = s;
+                VerifyTestResult (s == s3);
+                VerifyTestResult (s.Equals (s3));
+                VerifyTestResult (not (s != s3));
+
+                VerifyTestResult (s != s2);
+                VerifyTestResult (not s.Equals (s2));
+                VerifyTestResult (not (s == s2));
+            }
+        }
+
+
+
         template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
         void    All_For_Type (TEST_FUNCTION applyToContainer)
         {
             USING_TALLY_CONTAINER s;
             SimpleTallyTests<USING_TALLY_CONTAINER> (s, applyToContainer);
+            Test2_Equals::DoAllTests_<USING_TALLY_CONTAINER> ();
         }
 
 

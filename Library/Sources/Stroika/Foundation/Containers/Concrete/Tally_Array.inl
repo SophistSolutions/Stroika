@@ -57,8 +57,8 @@ namespace   Stroika {
 
                     // Tally<T>::_IRep overrides
                 public:
+                    virtual bool                                    Equals (const _IRep& rhs) const override;
                     virtual bool                                    Contains (T item) const override;
-                    virtual void                                    Compact () override;
                     virtual void                                    RemoveAll () override;
                     virtual void                                    Add (T item, size_t count) override;
                     virtual void                                    Remove (T item, size_t count) override;
@@ -66,6 +66,10 @@ namespace   Stroika {
                     virtual void                                    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
                     virtual size_t                                  TallyOf (T item) const override;
                     virtual Iterator<T>                             MakeBagIterator () const override;
+
+                    // Tally_Array<T>::_IRep overrides
+                public:
+                    nonvirtual void                                 Compact ();
 
                 private:
                     Private::ContainerRepLockDataSupport_               fLockSupport_;
@@ -189,6 +193,11 @@ namespace   Stroika {
                 Iterator<TallyEntry<T>>     Tally_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
+                }
+                template    <typename T>
+                bool    Tally_Array<T>::Rep_::Equals (const typename Tally<T>::_IRep& rhs) const
+                {
+                    return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T>
                 bool    Tally_Array<T>::Rep_::Contains (T item) const
@@ -370,6 +379,11 @@ namespace   Stroika {
                 void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
                     this->GetRep ().fData_.SetCapacity (slotsAlloced);
+                }
+                template    <typename T>
+                inline  void    Tally_Array<T>::Compact ()
+                {
+                    this->GetRep ().Compact ();
                 }
 
 

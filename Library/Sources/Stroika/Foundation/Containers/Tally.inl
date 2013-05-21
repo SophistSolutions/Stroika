@@ -82,6 +82,22 @@ namespace   Stroika {
             inline  Tally<T>::_IRep::_IRep ()
             {
             }
+            template    <typename T>
+            bool  Tally<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            {
+                if (this == &rhs) {
+                    return true;
+                }
+                if (this->GetLength () != rhs.GetLength ()) {
+                    return false;
+                }
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                    if (i->fCount != rhs.TallyOf (i->fItem)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
 
 
             /*
@@ -120,6 +136,18 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
+            inline  const typename Tally<T>::_IRep&  Tally<T>::_GetRep () const
+            {
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<const _IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename T>
+            inline  typename Tally<T>::_IRep&        Tally<T>::_GetRep ()
+            {
+                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
+                return *static_cast<_IRep*> (&inherited::_GetRep ());
+            }
+            template    <typename T>
             void   Tally<T>::RemoveAll (T item)
             {
                 Remove (item, TallyOf (item));
@@ -134,12 +162,9 @@ namespace   Stroika {
                 return sum;
             }
             template    <typename T>
-            Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
+            inline  bool  Tally<T>::Equals (const Tally<T>& rhs) const
             {
-                for (auto i = t.begin (); i != t.end (); ++i) {
-                    Add (i->fItem, i->fCount);
-                }
-                return (*this);
+                return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T>
             inline  bool    Tally<T>::Contains (T item) const
@@ -150,11 +175,6 @@ namespace   Stroika {
             inline  void    Tally<T>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
-            }
-            template    <typename T>
-            inline  void    Tally<T>::Compact ()
-            {
-                _GetRep ().Compact ();
             }
             template    <typename T>
             inline  Iterator<T>    Tally<T>::MakeBagIterator () const
@@ -232,37 +252,22 @@ namespace   Stroika {
                 return (*this);
             }
             template    <typename T>
-            inline  const typename Tally<T>::_IRep&  Tally<T>::_GetRep () const
+            inline  bool   Tally<T>::operator== (const Tally<T>& rhs) const
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<const _IRep*> (&inherited::_GetRep ());
+                return Equals (rhs);
             }
             template    <typename T>
-            inline  typename Tally<T>::_IRep&        Tally<T>::_GetRep ()
+            inline  bool    Tally<T>::operator!= (const Tally<T>& rhs) const
             {
-                EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
-                return *static_cast<_IRep*> (&inherited::_GetRep ());
+                return not (Equals (rhs));
             }
             template    <typename T>
-            bool   Tally<T>::operator== (const Tally<T>& rhs) const
+            Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
             {
-                if (&this->_GetRep () == &rhs._GetRep ()) {
-                    return true;
+                for (auto i = t.begin (); i != t.end (); ++i) {
+                    Add (i->fItem, i->fCount);
                 }
-                if (this->GetLength () != rhs.GetLength ()) {
-                    return false;
-                }
-                for (auto i = this->begin (); i != this->end (); ++i) {
-                    if (i->fCount != rhs.TallyOf (i->fItem)) {
-                        return (false);
-                    }
-                }
-                return (true);
-            }
-            template    <typename T>
-            inline bool    Tally<T>::operator!= (const Tally<T>& rhs) const
-            {
-                return (not this->operator== (rhs));
+                return *this;
             }
 
 

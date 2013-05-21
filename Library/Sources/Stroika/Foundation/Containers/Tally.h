@@ -25,6 +25,9 @@
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *
+ *      @todo   Maybe get rid of TallyEntry<T> and instead repalce with pair<T,count>. If not
+ *              then change Mapping to use a named type like  this...
+ *
  *      @todo   Need Tally_Tree<T> implementation - where we use btree to keep tally's sorted,
  *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
  *
@@ -98,8 +101,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  bool    Contains (T item) const;
-                nonvirtual  void    RemoveAll ();
-                nonvirtual  void    Compact ();
 
             public:
                 nonvirtual  void    Add (T item);
@@ -109,18 +110,19 @@ namespace   Stroika {
                 nonvirtual  void    Add (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
             public:
-                nonvirtual  void    Remove (T item);
-                nonvirtual  void    Remove (T item, size_t count);
-
-            public:
                 /**
                  * This function requires that the iterator 'i' came from this container.
                  *
                  * The value pointed to by 'i' is removed.
                  */
+                nonvirtual  void    Remove (T item);
+                nonvirtual  void    Remove (T item, size_t count);
                 nonvirtual  void    Remove (const Iterator<TallyEntry<T>>& i);
 
             public:
+                /**
+                 */
+                nonvirtual  void    RemoveAll ();
                 nonvirtual  void    RemoveAll (T item);
 
             public:
@@ -161,13 +163,24 @@ namespace   Stroika {
                 nonvirtual  Iterator<T> bagbegin () const;
                 nonvirtual  Iterator<T> bagend () const;
 
-            protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
+            public:
+                /*
+                 *  Two Tally are considered equal if they contain the same elements (by comparing them with operator==) with the same count.
+                 *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
+                 *
+                 *  Equals is commutative().
+                 *
+                 *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
+                 */
+                nonvirtual  bool    Equals (const Tally<T>& rhs) const;
 
             public:
                 nonvirtual  bool    operator== (const Tally<T>& rhs) const;
                 nonvirtual  bool    operator!= (const Tally<T>& rhs) const;
+
+            protected:
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 
@@ -182,9 +195,9 @@ namespace   Stroika {
                 _IRep ();
 
             public:
+                virtual bool        Equals (const _IRep& rhs) const                                 =   0;
                 virtual bool        Contains (T item) const                                         =   0;
                 virtual size_t      GetLength () const                                              =   0;
-                virtual void        Compact ()                                                      =   0;
                 virtual void        RemoveAll ()                                                    =   0;
                 virtual void        Add (T item, size_t count)                                      =   0;
                 virtual void        Remove (T item, size_t count)                                   =   0;
@@ -192,6 +205,16 @@ namespace   Stroika {
                 virtual void        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
                 virtual size_t      TallyOf (T item) const                                          =   0;
                 virtual Iterator<T> MakeBagIterator () const                                        =   0;
+
+                /*
+                 *  Reference Implementations (often not used except for ensure's, but can be used for
+                 *  quickie backends).
+                 *
+                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
+                 *  the sucblass refers to the method in a subclass virtual override.
+                 */
+            protected:
+                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
 
             protected:
                 class _TallyEntryToItemIteratorHelperRep;

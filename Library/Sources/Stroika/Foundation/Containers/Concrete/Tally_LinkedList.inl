@@ -56,8 +56,8 @@ namespace   Stroika {
 
                     // Tally<T>::_IRep overrides
                 public:
+                    virtual bool                                Equals (const _IRep& rhs) const override;
                     virtual bool                                Contains (T item) const override;
-                    virtual void                                Compact () override;
                     virtual void                                RemoveAll () override;
                     virtual void                                Add (T item, size_t count) override;
                     virtual void                                Remove (T item, size_t count) override;
@@ -185,6 +185,11 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T>
+                bool    Tally_LinkedList<T>::Rep_::Equals (const typename Tally<T>::_IRep& rhs) const
+                {
+                    return this->_Equals_Reference_Implementation (rhs);
+                }
+                template    <typename T>
                 bool   Tally_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
@@ -197,10 +202,6 @@ namespace   Stroika {
                         }
                         return (false);
                     });
-                }
-                template    <typename T>
-                void   Tally_LinkedList<T>::Rep_::Compact ()
-                {
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>

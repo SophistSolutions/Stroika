@@ -55,6 +55,9 @@ namespace   Stroika {
                     nonvirtual  size_t  GetCapacity () const;
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
+                public:
+                    nonvirtual  void    Compact ();
+
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
                 public:
@@ -80,7 +83,7 @@ namespace   Stroika {
  ******************************* Implementation Details *************************
  ********************************************************************************
  */
-#include "Tally_Array.inl"
+#include    "Tally_Array.inl"
 
 #endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
 
