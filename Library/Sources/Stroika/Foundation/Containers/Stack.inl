@@ -7,6 +7,7 @@
 #include    "../Debug/Assertions.h"
 
 #include    "Concrete/Stack_Factory.h"
+#include    "Private/IterableUtils.h"
 
 
 namespace   Stroika {
@@ -91,6 +92,16 @@ namespace   Stroika {
             {
                 // Because we define ordering as compare for equals
                 return Private::Equals_<T> (_GetRep (), rhs._GetRep ());
+            }
+            template    <typename T>
+            inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename T>
+            inline  bool    Stack<T>::operator!= (const Stack<T>& rhs) const
+            {
+                return (not Equals (rhs));
             }
 
 

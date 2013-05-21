@@ -9,7 +9,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Stack.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Stack_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -24,7 +24,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-//using   Concrete::Set_LinkedList;
+using   Concrete::Stack_LinkedList;
 
 
 
@@ -102,15 +102,36 @@ namespace {
     }
 }
 
+namespace Test4_Equals {
+    template <typename USING_SET_CONTAINER>
+    void    DoAllTests_ ()
+    {
+        USING_SET_CONTAINER s;
+        USING_SET_CONTAINER s2 = s;
+        s.Push (1);
+        s.Push (2);
+        VerifyTestResult (s.size () == 2);
+        USING_SET_CONTAINER s3 = s;
+        VerifyTestResult (s == s3);
+        VerifyTestResult (s.Equals (s3));
+        VerifyTestResult (not (s != s3));
+
+        VerifyTestResult (s != s2);
+        VerifyTestResult (not s.Equals (s2));
+        VerifyTestResult (not (s == s2));
+    }
+}
+
 
 namespace {
     template <typename StackOfT>
-    void    SimpleMappingTest_All_For_Type ()
+    void    Tests_All_For_Type ()
     {
         StackOfT s;
         SimpleTest_1_ (s);
         SimpleTest_2_ (s);
         SimpleTest_3_Iteration_ (s);
+        Test4_Equals::DoAllTests_<StackOfT> ();
     }
 }
 
@@ -118,11 +139,11 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        SimpleMappingTest_All_For_Type<Stack<size_t>> ();
-        SimpleMappingTest_All_For_Type<Stack<SimpleClass>> ();
+        Tests_All_For_Type<Stack<size_t>> ();
+        Tests_All_For_Type<Stack<SimpleClass>> ();
 
-        //      SimpleMappingTest_All_For_Type<Set_LinkedList<size_t>> ();
-        //      SimpleMappingTest_All_For_Type<Set_LinkedList<SimpleClass>> ();
+        Tests_All_For_Type<Stack_LinkedList<size_t>> ();
+        Tests_All_For_Type<Stack_LinkedList<SimpleClass>> ();
     }
 }
 

@@ -111,6 +111,18 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
+            public:
+                /**
+                 *      Syntactic sugar for Equals()
+                 */
+                nonvirtual  bool    operator== (const Stack<T>& rhs) const;
+
+            public:
+                /**
+                 *      Syntactic sugar for not Equals()
+                 */
+                nonvirtual  bool    operator!= (const Stack<T>& rhs) const;
+
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
