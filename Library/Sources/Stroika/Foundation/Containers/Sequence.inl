@@ -75,7 +75,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
-                return Private::Equals_ (*this, rhs);
+                return Private::Equals_<T> (_GetRep (), rhs._GetRep ());
             }
             template    <typename T>
             inline  void    Sequence<T>::RemoveAll ()

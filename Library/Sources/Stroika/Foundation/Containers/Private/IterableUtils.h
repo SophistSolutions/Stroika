@@ -42,7 +42,7 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
+                bool    Equals_ (const typename Iterable<T>::_IRep& lhs, const typename Iterable<T>::_IRep& rhs);
 
 
                 template    <typename T>

@@ -58,17 +58,22 @@ namespace   Stroika {
 
 
                 template    <typename T>
-                bool   Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
+                bool    Equals_ (const typename Iterable<T>::_IRep& lhs, const typename Iterable<T>::_IRep& rhs)
                 {
-                    auto li = lhs.begin ();
-                    auto le = lhs.end ();
-                    auto ri = rhs.begin ();
-                    auto re = rhs.end ();
-                    while (li != le and ri != re and * li == *ri) {
+                    // Check length, so we dont need to check both iterators for end/done
+                    if (&lhs == &rhs) {
+                        return true;
+                    }
+                    if (lhs.GetLength () != rhs.GetLength ()) {
+                        return false;
+                    }
+                    auto li = lhs.MakeIterator ();
+                    auto ri = rhs.MakeIterator ();
+                    while (not li.Done () and * li == *ri) {
                         ++li;
                         ++ri;
                     }
-                    return (li == le) and (ri == re);
+                    return li.Done ();
                 }
 
 
