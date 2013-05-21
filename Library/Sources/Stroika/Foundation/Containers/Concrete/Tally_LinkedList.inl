@@ -56,7 +56,7 @@ namespace   Stroika {
 
                     // Tally<T>::_IRep overrides
                 public:
-                    virtual bool                                Equals (const _IRep& rhs) const override;
+                    virtual bool                                Equals (const typename Tally<T>::_IRep& rhs) const override;
                     virtual bool                                Contains (T item) const override;
                     virtual void                                RemoveAll () override;
                     virtual void                                Add (T item, size_t count) override;
