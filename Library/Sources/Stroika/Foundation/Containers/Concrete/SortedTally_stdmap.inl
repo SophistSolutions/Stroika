@@ -206,7 +206,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
-                            fData_.insert (map<T, size_t>::value_type (item, count));
+                            fData_.insert (typename map<T, size_t>::value_type (item, count));
                         }
                         else {
                             i->second += count;
