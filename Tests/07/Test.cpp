@@ -17,6 +17,7 @@
 
 #include    "Stroika/Foundation/Containers/Concrete/Bag_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Bag_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Bag_stdforward_list.h"
 
 
 using   namespace   Stroika;
@@ -25,6 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 using   Concrete::Bag_Array;
 using   Concrete::Bag_LinkedList;
+using   Concrete::Bag_stdforward_list;
 
 
 
@@ -47,10 +49,18 @@ namespace   {
     {
         RunTests_<Bag<size_t>> ();
         RunTests_<Bag<SimpleClass>> ();
+
         RunTests_<Bag_LinkedList<size_t>> ();
         RunTests_<Bag_LinkedList<SimpleClass>> ();
+
         RunTests_<Bag_Array<size_t>> ();
         RunTests_<Bag_Array<SimpleClass>> ();
+
+#if 0
+        // NOT WORKING YET - 2013-05-22
+        RunTests_<Bag_stdforward_list<size_t>> ();
+        RunTests_<Bag_stdforward_list<SimpleClass>> ();
+#endif
     }
 
 }

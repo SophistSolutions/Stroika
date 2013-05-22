@@ -80,6 +80,12 @@ namespace   Stroika {
 
                     public:
                         /**
+                         *  call after erase
+                         */
+                        nonvirtual  void    PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI) const;
+
+                    public:
+                        /**
                          *  call after removeall/clear
                          */
                         nonvirtual  void    PatchAfter_clear () const;
@@ -150,6 +156,10 @@ namespace   Stroika {
                     public:
                         //  call before remove
                         nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i);
+
+                    public:
+                        //  call after remove
+                        nonvirtual  void    PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI);
 
                     public:
                         //  call after removeall

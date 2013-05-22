@@ -69,6 +69,13 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T, typename CONTAINER_OF_T>
+                    inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI) const
+                    {
+                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
+                            ai->PatchAfter_erase (oldI, newI);
+                        }
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::PatchAfter_clear () const
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
@@ -224,6 +231,14 @@ namespace   Stroika {
                         if (this->fStdIterator == i) {
                             this->fSuppressMore = true;
                             this->fStdIterator++;
+                        }
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI)
+                    {
+                        if (this->fStdIterator == oldI) {
+                            this->fSuppressMore = true;
+                            this->fStdIterator = newI;
                         }
                     }
                     template    <typename T, typename CONTAINER_OF_T>

@@ -37,6 +37,7 @@ namespace CommonTests {
                         VerifyTestResult(s.Contains(i));
                         applyToContainer (s);
                     }
+                    VerifyTestResult(s.GetLength() == kTestSize);
 
                     IterableTests::SimpleIterableTest_All_For_Type<USING_BAG_CONTAINER> (s, applyToContainer);
 
@@ -45,7 +46,9 @@ namespace CommonTests {
                         size_t  oldLength = s.GetLength ();
                         VerifyTestResult(s.Contains(i));
                         VerifyTestResult(s.Contains(s.GetLength ()));
-                        s.Remove (s.GetLength ());
+                        size_t item2Remove = s.GetLength ();
+                        s.Remove (item2Remove);
+                        VerifyTestResult(not s.Contains(item2Remove));
                         applyToContainer (s);
                         VerifyTestResult(s.GetLength () == oldLength - 1);
                     }

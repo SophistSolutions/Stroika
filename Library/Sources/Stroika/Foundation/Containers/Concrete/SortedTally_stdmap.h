@@ -12,6 +12,10 @@
 
 
 /**
+ *  \file
+ *
+ *  STATUS: NOT WORKING YET
+ *
  *  TODO:
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
  *
