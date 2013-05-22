@@ -491,6 +491,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_Factory.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.h" />
@@ -514,6 +516,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
@@ -718,6 +721,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_Factory.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_stdmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.inl" />
@@ -743,6 +748,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />

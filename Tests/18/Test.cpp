@@ -7,7 +7,7 @@
 
 
 /// WRONG - we dont have SortedTally Yet - but when we do!!!
-#include    "Stroika/Foundation/Containers/Tally.h"
+#include    "Stroika/Foundation/Containers/SortedTally.h"
 //#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -46,8 +46,8 @@ namespace   {
 //        All_For_Type<Tally_Array<size_t>> (testFunc1);
 //        All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
 
-        All_For_Type<Tally<size_t>> (testFunc1);
-        All_For_Type<Tally<SimpleClass>> (testFunc2);
+        All_For_Type<SortedTally<size_t>> (testFunc1);
+        All_For_Type<SortedTally<SimpleClass>> (testFunc2);
     }
 
 }

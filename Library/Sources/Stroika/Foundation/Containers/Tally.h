@@ -114,6 +114,8 @@ namespace   Stroika {
                  * This function requires that the iterator 'i' came from this container.
                  *
                  * The value pointed to by 'i' is removed.
+                 *
+                 *  If using the item/count or just item overloads, then Tally<> requires that the removed items are present.
                  */
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (T item, size_t count);

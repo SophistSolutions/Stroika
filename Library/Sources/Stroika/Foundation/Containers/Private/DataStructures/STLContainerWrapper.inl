@@ -215,19 +215,25 @@ namespace   Stroika {
                         fData->Invariant ();
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_insert (typename CONTAINER_OF_T::iterator i)
                     {
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchBefore_erase (typename CONTAINER_OF_T::iterator i)
                     {
+                        if (this->fStdIterator == i) {
+                            this->fSuppressMore = true;
+                            this->fStdIterator++;
+                        }
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_clear () const
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_clear ()
                     {
+                        this->fSuppressMore = false;
+                        this->fStdIterator = fData->end ();
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_Realloc () const
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_Realloc ()
                     {
                     }
                     template    <typename T, typename CONTAINER_OF_T>

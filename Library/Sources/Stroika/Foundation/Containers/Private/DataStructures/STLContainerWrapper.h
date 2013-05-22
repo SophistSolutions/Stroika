@@ -145,19 +145,19 @@ namespace   Stroika {
 
                     public:
                         //  call after add
-                        nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const;
+                        nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i);
 
                     public:
                         //  call before remove
-                        nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const;
+                        nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i);
 
                     public:
                         //  call after removeall
-                        nonvirtual  void    PatchAfter_clear () const;
+                        nonvirtual  void    PatchAfter_clear ();
 
                     public:
                         //  call after realloc could have happened (such as reserve)
-                        nonvirtual  void    PatchAfter_Realloc () const;
+                        nonvirtual  void    PatchAfter_Realloc ();
 
                     public:
                         nonvirtual  void    Invariant () const;
