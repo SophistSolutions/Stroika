@@ -1,0 +1,9 @@
+block allocation of node: big win
+fix srand prob
+worry about memory cleanup in case of value = pointer? or assume a reference count implementation and leave in users hands?
+generate exception in remove if key not found
+maybe check in add for wrong value and throw exception for SHOULDCOUNT
+comparer for  unsigned numbers could be off. Do inefficiently or fix
+is std::string.compare case insensitive? If not, fix Comparer to use _strcmpi
+rewrite test stuff to not require windows
+compile under gcc
