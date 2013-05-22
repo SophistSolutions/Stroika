@@ -12,12 +12,10 @@
 
 
 
-/*
+/**
+ *  \file
  *
- *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
- *
- *
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
  *
@@ -52,9 +50,9 @@ namespace   Stroika {
 
             public:
                 SortedTally ();
-                SortedTally (const SortedTally<T>& s);
+                SortedTally (const SortedTally<T>& st);
                 template <typename CONTAINER_OF_T>
-                explicit SortedTally (const CONTAINER_OF_T& s);
+                explicit SortedTally (const CONTAINER_OF_T& st);
                 template <typename COPY_FROM_ITERATOR>
                 explicit SortedTally (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
 
