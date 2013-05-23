@@ -227,11 +227,9 @@ namespace   Stroika {
                             Require (i->second >= count);
                             i->second -= count;
                             if (i->second == 0) {
-                                fData_.PatchBefore_erase (i);
-                                fData_.erase (i);
+                                fData_.PatchingErase (i);
                             }
                         }
-                        // MUST PATCH (maybe done??)
                     });
                 }
                 template    <typename T>

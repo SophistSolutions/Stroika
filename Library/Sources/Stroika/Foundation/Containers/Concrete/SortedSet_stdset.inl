@@ -205,9 +205,7 @@ namespace   Stroika {
                         fData_.Invariant ();
                         auto i = fData_.find (item);
                         if (i != fData_.end ()) {
-                            fData_.PatchBefore_erase (i);
-                            fData_.erase (i);
-                            fData_.Invariant ();
+                            fData_.PatchingErase (i);
                         }
                     });
                 }

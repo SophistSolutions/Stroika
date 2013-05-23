@@ -26,6 +26,8 @@
  *      NOTE FOR USES OF THIS CLASS
  *          o            OK to use non-patchable API inside lock - like directly calling map<>::find()
  *
+ *  @todo   Add specail subclass of IteratorPatchHelper that tracks PREVPTR - and use to cleanup stuff
+ *          that uses forward_list code...
  *
  *  @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
  *          some methods only called by array impls, and some only by returing iteratore on erase impls, etc,
@@ -76,12 +78,24 @@ namespace   Stroika {
                          */
                         nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const;
 
+
+                    public:
+                        nonvirtual  void    PatchingErase (typename CONTAINER_OF_T::iterator i) {
+                            Invariant ();
+                            Memory::SmallStackBuffer<IteratorPatchHelper*>   items2Patch (0);
+                            TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+                            auto newI = erase (i);
+                            TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+                            Invariant ();
+                        }
+
+#if 0
                     public:
                         /**
                          *  call before remove/erase
                          */
                         nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const;
-
+#endif
                     public:
                         /**
                          */
@@ -154,9 +168,11 @@ namespace   Stroika {
                         //  call after add
                         nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i);
 
+#if 0
                     public:
                         //  call before remove
                         nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i);
+#endif
 
                     public:
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch);

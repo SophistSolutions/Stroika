@@ -61,6 +61,7 @@ namespace   Stroika {
                             ai->PatchAfter_insert (i);
                         }
                     }
+#if 0
                     template    <typename T, typename CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const
                     {
@@ -68,6 +69,7 @@ namespace   Stroika {
                             ai->PatchBefore_erase (i);
                         }
                     }
+#endif
                     template    <typename T, typename CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch) const
                     {
@@ -222,16 +224,13 @@ namespace   Stroika {
                     template    <typename T, typename CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::RemoveCurrent ()
                     {
-                        fData->Invariant ();
-                        auto i = fStdIterator;
-                        fData->PatchBefore_erase (i);
-                        fData->erase (i);
-                        fData->Invariant ();
+                        fData->PatchingErase (fStdIterator);
                     }
                     template    <typename T, typename CONTAINER_OF_T>
                     void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_insert (typename CONTAINER_OF_T::iterator i)
                     {
                     }
+#if 0
                     template    <typename T, typename CONTAINER_OF_T>
                     void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchBefore_erase (typename CONTAINER_OF_T::iterator i)
                     {
@@ -240,6 +239,7 @@ namespace   Stroika {
                             this->fStdIterator++;
                         }
                     }
+#endif
                     template    <typename T, typename CONTAINER_OF_T>
                     void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch)
                     {
