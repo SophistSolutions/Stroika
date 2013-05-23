@@ -84,7 +84,7 @@ namespace   Stroika {
                             Invariant ();
                             Memory::SmallStackBuffer<IteratorPatchHelper*>   items2Patch (0);
                             TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
-                            auto newI = erase (i);
+                            auto newI = this->erase (i);
                             TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
                             Invariant ();
                         }
