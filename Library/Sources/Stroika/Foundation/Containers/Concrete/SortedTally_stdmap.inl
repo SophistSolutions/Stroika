@@ -139,23 +139,26 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t  SortedTally_stdmap<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.size ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  SortedTally_stdmap<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.size () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> SortedTally_stdmap<T>::Rep_::MakeIterator () const
@@ -185,9 +188,10 @@ namespace   Stroika {
                 bool    SortedTally_stdmap<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.find (item) != fData_.end ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
@@ -203,7 +207,7 @@ namespace   Stroika {
                     if (count == 0) {
                         return;
                     }
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
                             fData_.insert (typename map<T, size_t>::value_type (item, count));
@@ -212,7 +216,8 @@ namespace   Stroika {
                             i->second += count;
                         }
                         // MUST PATCH
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedTally_stdmap<T>::Rep_::Remove (T item, size_t count)
@@ -220,7 +225,7 @@ namespace   Stroika {
                     if (count == 0) {
                         return;
                     }
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto i = fData_.find (item);
                         Require (i != fData_.end ());
                         if (i != fData_.end ()) {
@@ -230,7 +235,8 @@ namespace   Stroika {
                                 fData_.PatchingErase (i);
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedTally_stdmap<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
@@ -238,17 +244,19 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename SortedTally_stdmap<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedTally_stdmap<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear ();
                         // must fix / patch
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedTally_stdmap<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
@@ -256,7 +264,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename SortedTally_stdmap<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
                             mir.fIterator_.RemoveCurrent ();
                         }
@@ -264,19 +272,21 @@ namespace   Stroika {
                             mir.fIterator_.fStdIterator->second = newCount;
                         }
                         // TODO - PATCH
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t  SortedTally_stdmap<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto i = fData_.find (item);
                         if (i == fData_.end ()) {
                             return 0;
                         }
                         return i->second;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<T>    SortedTally_stdmap<T>::Rep_::MakeBagIterator () const
