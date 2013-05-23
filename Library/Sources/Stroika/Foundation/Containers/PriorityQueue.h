@@ -13,6 +13,7 @@
 
 /**
  *
+ *  STATUS: NOT EVEN DRAFT IMPL READY YET TO TEST.
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
  *
@@ -26,7 +27,14 @@
  *
  *      (o)         FIX so can remove top prioty itme to return btoih at a time.
  *
+ *      @todo   Add Traits, and part of triats is priority type.
+ *              min/max comes from numeric_limits<T>::min/max, and memmbers of the traits - not global
  *
+ *      @todo   Rename PQEntry to PriorityQueueEntry
+ *              (document why not nested type, and why not using pair<> - and then put docs into Tally code,
+ *              and then redo Mapping to use KeyValuePair<> instead of pair<> - and have .fKey first elt!
+ *
+ *      @todo   redo operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs); as member function
  */
 
 

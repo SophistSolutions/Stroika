@@ -39,6 +39,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::mkStack_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
+                AssertNotImplemented ();
 //                AddAll (s);
             }
             template    <typename T>
@@ -54,6 +55,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::mkStack_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
+                AssertNotImplemented ();
 //                AddAll (start, end);
             }
             template    <typename T>
