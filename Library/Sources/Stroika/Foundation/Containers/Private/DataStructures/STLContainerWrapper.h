@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Memory/SmallStackBuffer.h"
 
 #include    "../../Common.h"
 
@@ -61,6 +62,9 @@ namespace   Stroika {
                         nonvirtual  STLContainerWrapper<T, CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, CONTAINER_OF_T>& rhs);
 
                     public:
+                        class IteratorPatchHelper;
+
+                    public:
                         /**
                          * Are there any iterators to be patched?
                          */
@@ -80,9 +84,9 @@ namespace   Stroika {
 
                     public:
                         /**
-                         *  call after erase
                          */
-                        nonvirtual  void    PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch) const;
+                        static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch, typename CONTAINER_OF_T::iterator newI);
 
                     public:
                         /**
@@ -103,9 +107,6 @@ namespace   Stroika {
                     protected:
                         nonvirtual  void    _Invariant () const;
 #endif
-
-                    public:
-                        class IteratorPatchHelper;
 
                     private:
                         IteratorPatchHelper*    fActiveIteratorsListHead_;
@@ -158,8 +159,8 @@ namespace   Stroika {
                         nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i);
 
                     public:
-                        //  call after remove
-                        nonvirtual  void    PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename CONTAINER_OF_T::iterator newI);
 
                     public:
                         //  call after removeall

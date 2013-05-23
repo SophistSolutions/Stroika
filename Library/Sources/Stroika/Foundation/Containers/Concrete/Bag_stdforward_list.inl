@@ -216,17 +216,20 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Remove (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        auto ei = fData_.before_begin ();
-                        for (auto i = fData_.begin (); i != fData_.end (); ++i) {
-                            if (*i == item) {
-                                auto newI = fData_.erase_after (ei);
-                                fData_.PatchAfter_erase (i, newI);
-                                return;
-                            }
-                            ei = i;
-                        }
-                    });
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+						auto ei = fData_.before_begin ();
+						for (auto i = fData_.begin (); i != fData_.end (); ++i) {
+							if (*i == item) {
+								Memory::SmallStackBuffer<typename Private::DataStructures::STLContainerWrapper<T, forward_list<T>>::IteratorPatchHelper*>   items2Patch (0);
+								fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+								auto newI = fData_.erase_after (ei);
+								fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+								return;
+							}
+							ei = i;
+						}
+					}
+                    CONTAINER_LOCK_HELPER_END (fLockSupport_);
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Remove (const Iterator<T>& i)
@@ -234,17 +237,32 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_stdforward_list<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
-                        //mir.fIterator_.RemoveCurrent ();
-                        //&&&&
-                    });
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+						//mir.fIterator_.RemoveCurrent ();
+
+						// HORRIBLE BUT ADEQUITE IMPL...FOR NOW...
+						{
+							auto ei = fData_.before_begin ();
+							for (auto i = fData_.begin (); i != fData_.end (); ++i) {
+								if (i == mir.fIterator_.fStdIterator) {
+									Memory::SmallStackBuffer<typename Private::DataStructures::STLContainerWrapper<T, forward_list<T>>::IteratorPatchHelper*>   items2Patch (0);
+									fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+									auto newI = fData_.erase_after (ei);
+									fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+									return;
+								}
+								ei = i;
+							}
+						}
+					}
+                    CONTAINER_LOCK_HELPER_END (fLockSupport_);
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_ (fLockSupport_, {
                         fData_.clear ();
-                        // must fix / patch
+                        fData_.PatchAfter_clear ();
                     });
                 }
 

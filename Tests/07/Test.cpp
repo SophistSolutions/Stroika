@@ -56,11 +56,8 @@ namespace   {
         RunTests_<Bag_Array<size_t>> ();
         RunTests_<Bag_Array<SimpleClass>> ();
 
-#if 0
-        // NOT WORKING YET - 2013-05-22
         RunTests_<Bag_stdforward_list<size_t>> ();
         RunTests_<Bag_stdforward_list<SimpleClass>> ();
-#endif
     }
 
 }

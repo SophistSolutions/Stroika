@@ -69,10 +69,17 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI) const
+                    inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch) const
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            ai->PatchAfter_erase (oldI, newI);
+                            ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
+                        }
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
+                    inline  void    STLContainerWrapper<T, CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch, typename CONTAINER_OF_T::iterator newI)
+                    {
+                        for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
+                            (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
                         }
                     }
                     template    <typename T, typename CONTAINER_OF_T>
@@ -234,12 +241,17 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T, typename CONTAINER_OF_T>
-                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_erase (typename CONTAINER_OF_T::iterator oldI, typename CONTAINER_OF_T::iterator newI)
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch)
                     {
                         if (this->fStdIterator == oldI) {
-                            this->fSuppressMore = true;
-                            this->fStdIterator = newI;
+                            items2Patch->push_back (this);
                         }
+                    }
+                    template    <typename T, typename CONTAINER_OF_T>
+                    void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::TwoPhaseIteratorPatcherPass2 (typename CONTAINER_OF_T::iterator newI)
+                    {
+                        this->fSuppressMore = true;
+                        this->fStdIterator = newI;
                     }
                     template    <typename T, typename CONTAINER_OF_T>
                     void    STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper::PatchAfter_clear ()
