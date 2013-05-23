@@ -123,9 +123,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Stack_LinkedList<T>::Rep_::Clone () const
@@ -144,16 +145,18 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Stack_LinkedList<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Stack_LinkedList<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      Stack_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -168,33 +171,37 @@ namespace   Stroika {
                 template    <typename T>
                 void    Stack_LinkedList<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Stack_LinkedList<T>::Rep_::Push (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Append (item);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 T    Stack_LinkedList<T>::Rep_::Pop ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         T   result  =   fData_.GetFirst ();
                         fData_.RemoveFirst ();
                         // FIX/PATCH
                         return result;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 T    Stack_LinkedList<T>::Rep_::Top () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.GetFirst ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

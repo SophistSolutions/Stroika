@@ -143,9 +143,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Set_LinkedList<T>::Rep_::Clone () const
@@ -164,16 +165,18 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Set_LinkedList<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Set_LinkedList<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      Set_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -193,45 +196,49 @@ namespace   Stroika {
                 template    <typename T>
                 bool    Set_LinkedList<T>::Rep_::Contains (T item) const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListIterator_Patch<T> it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
                                 return true;
                             }
                         }
                         return false;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Set_LinkedList<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Set_LinkedList<T>::Rep_::Add (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListIterator_Patch<T> it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
                                 return;
                             }
                         }
                         fData_.Append (item);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Set_LinkedList<T>::Rep_::Remove (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
                                 it.RemoveCurrent ();
                                 return;
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Set_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
@@ -239,9 +246,10 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Set_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Set_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

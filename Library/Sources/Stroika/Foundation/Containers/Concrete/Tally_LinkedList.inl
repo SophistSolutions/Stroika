@@ -147,23 +147,26 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t  Tally_LinkedList<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Tally_LinkedList<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_LinkedList<T>::Rep_::MakeIterator () const
@@ -192,7 +195,7 @@ namespace   Stroika {
                 template    <typename T>
                 bool   Tally_LinkedList<T>::Rep_::Contains (T item) const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         TallyEntry<T>   c;
                         for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                             if (c.fItem == item) {
@@ -201,7 +204,8 @@ namespace   Stroika {
                             }
                         }
                         return (false);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
@@ -216,7 +220,7 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     current.fCount += count;
@@ -225,7 +229,8 @@ namespace   Stroika {
                                 }
                             }
                             fData_.Prepend (TallyEntry<T> (item, count));
-                        });
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
                 }
                 template    <typename T>
@@ -233,7 +238,7 @@ namespace   Stroika {
                 {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
-                        CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     if (current.fCount > count) {
@@ -251,7 +256,8 @@ namespace   Stroika {
                                     break;
                                 }
                             }
-                        });
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
                 }
                 template    <typename T>
@@ -260,16 +266,18 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void   Tally_LinkedList<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_LinkedList<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
@@ -277,7 +285,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
                             mir.fIterator_.RemoveCurrent ();
                         }
@@ -286,20 +294,22 @@ namespace   Stroika {
                             c.fCount = newCount;
                             mir.fIterator_.UpdateCurrent (c);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t Tally_LinkedList<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T>   c;
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
                             if (c.fItem == item) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                     return (0);
                 }
                 template    <typename T>

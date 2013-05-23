@@ -126,9 +126,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  SortedSet_stdset<T>::Rep_::Clone () const
@@ -147,18 +148,20 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  SortedSet_stdset<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
                         return (fData_.size ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  SortedSet_stdset<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
                         return (fData_.empty () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      SortedSet_stdset<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -178,36 +181,40 @@ namespace   Stroika {
                 template    <typename T>
                 bool    SortedSet_stdset<T>::Rep_::Contains (T item) const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.find (item) != fData_.end ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedSet_stdset<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear ();
                         // must patch!!!
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedSet_stdset<T>::Rep_::Add (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.insert (item);
                         // must patch!!!
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedSet_stdset<T>::Rep_::Remove (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
                         auto i = fData_.find (item);
                         if (i != fData_.end ()) {
                             fData_.PatchingErase (i);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    SortedSet_stdset<T>::Rep_::Remove (const Iterator<T>& i)
@@ -215,9 +222,10 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename SortedSet_stdset<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedSet_stdset<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

@@ -139,9 +139,10 @@ namespace   Stroika {
                     : fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Bag_Array<T>::Rep_::Clone () const
@@ -165,7 +166,10 @@ namespace   Stroika {
                 template    <typename T>
                 bool  Bag_Array<T>::Rep_::IsEmpty () const
                 {
-                    return (fData_.GetLength () == 0);
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        return (fData_.GetLength () == 0);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      Bag_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -185,7 +189,10 @@ namespace   Stroika {
                 template    <typename T>
                 bool    Bag_Array<T>::Rep_::Contains (T item) const
                 {
-                    return (fData_.Contains (item));
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        return (fData_.Contains (item));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t    Bag_Array<T>::Rep_::TallyOf (T item) const
@@ -195,8 +202,11 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Add (T item)
                 {
-                    // Appending is fastest
-                    fData_.InsertAt (item, fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        // Appending is fastest
+                        fData_.InsertAt (item, fData_.GetLength ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -204,20 +214,26 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.UpdateCurrent (newValue);
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        mir.fIterator_.UpdateCurrent (newValue);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Remove (T item)
                 {
-                    /*
-                     *  Iterate backwards since removing from the end of an array will be faster.
-                     */
-                    for (Private::DataStructures::BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
-                        if (it.Current () == item) {
-                            fData_.RemoveAt (it.CurrentIndex ());
-                            return;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        /*
+                         *  Iterate backwards since removing from the end of an array will be faster.
+                         */
+                        for (Private::DataStructures::BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
+                            if (it.Current () == item) {
+                                fData_.RemoveAt (it.CurrentIndex ());
+                                return;
+                            }
                         }
                     }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::Remove (const Iterator<T>& i)
@@ -225,12 +241,18 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Bag_Array<T>::IteratorRep_&> (ir);
-                    mir.fIterator_.RemoveCurrent ();
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        mir.fIterator_.RemoveCurrent ();
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_Array<T>::Rep_::RemoveAll ()
                 {
-                    fData_.RemoveAll ();
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        fData_.RemoveAll ();
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 
@@ -295,17 +317,26 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Bag_Array<T>::Compact ()
                 {
-                    GetRep_ ().fData_.Compact ();
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().fData_.Compact ();
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  size_t  Bag_Array<T>::GetCapacity () const
                 {
-                    return (GetRep_ ().fData_.GetCapacity ());
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        return (GetRep_ ().fData_.GetCapacity ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Bag_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

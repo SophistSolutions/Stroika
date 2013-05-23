@@ -66,30 +66,11 @@ namespace   Stroika {
 
 
 #if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
-#define CONTAINER_LOCK_HELPER_(CRLDS,CODEBLOCK)\
-    {\
-        std::lock_guard<std::mutex> lg (CRLDS.fMutex_);\
-        {\
-            CODEBLOCK;\
-        }\
-    }
-#elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_
-#define CONTAINER_LOCK_HELPER_(CRLDS,CODEBLOCK)\
-    {\
-        synchronized_\
-        {\
-            CODEBLOCK;\
-        }\
-    }
-#endif
-
-
-#if     qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdMutex_
 #define CONTAINER_LOCK_HELPER_START(CRLDS)\
     {\
         std::lock_guard<std::mutex> lg (CRLDS.fMutex_);\
         {
-#define CONTAINER_LOCK_HELPER_END(CRLDS)\
+#define CONTAINER_LOCK_HELPER_END()\
 }\
 }
 #elif   qContainersPrivateSyncrhonizationPolicy_ == qContainersPrivateSyncrhonizationPolicy_StdCTMs_N3341_
@@ -97,7 +78,7 @@ namespace   Stroika {
     {\
         synchronized_\
         {
-#define CONTAINER_LOCK_HELPER_END(CRLDS)\
+#define CONTAINER_LOCK_HELPER_END()\
 }\
 }
 #endif

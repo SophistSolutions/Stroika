@@ -17,7 +17,7 @@
  *
  *  TODO:
  *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_() - synchonizaiton support
+ *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  *
  *      @todo   Defining Mapping_stdmap this way makes sense, but runs into deadly

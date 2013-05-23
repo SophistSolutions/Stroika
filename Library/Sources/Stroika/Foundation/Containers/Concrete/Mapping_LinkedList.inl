@@ -148,9 +148,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename Key, typename T>
@@ -171,16 +172,18 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 size_t  Mapping_LinkedList<Key, T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename Key, typename T>
                 bool  Mapping_LinkedList<Key, T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename Key, typename T>
                 void      Mapping_LinkedList<Key, T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -200,9 +203,10 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 void    Mapping_LinkedList<Key, T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename Key, typename T>
                 Iterable<Key>    Mapping_LinkedList<Key, T>::Rep_::Keys () const
@@ -213,7 +217,7 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 bool    Mapping_LinkedList<Key, T>::Rep_::Lookup (Key key, T* item) const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListIterator<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 if (item != nullptr) {
@@ -222,13 +226,14 @@ namespace   Stroika {
                                 return true;
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                     return false;
                 }
                 template    <typename Key, typename T>
                 void    Mapping_LinkedList<Key, T>::Rep_::Add (Key key, T newElt)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 it.UpdateCurrent (pair<Key, T> (key, newElt));
@@ -236,19 +241,21 @@ namespace   Stroika {
                             }
                         }
                         fData_.Append (pair<Key, T> (key, newElt));
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename Key, typename T>
                 void    Mapping_LinkedList<Key, T>::Rep_::Remove (Key key)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 it.RemoveCurrent ();
                                 return;
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename Key, typename T>
                 void    Mapping_LinkedList<Key, T>::Rep_::Remove (Iterator<pair<Key, T>> i)
@@ -256,9 +263,10 @@ namespace   Stroika {
                     const typename Iterator<pair<Key, T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_LinkedList<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_LinkedList<Key, T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

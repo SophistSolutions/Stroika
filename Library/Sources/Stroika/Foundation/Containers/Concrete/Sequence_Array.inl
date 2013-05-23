@@ -131,9 +131,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Sequence_Array<T>::Rep_::Clone () const
@@ -152,16 +153,18 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Sequence_Array<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Sequence_Array<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      Sequence_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -178,20 +181,22 @@ namespace   Stroika {
                 {
                     Require (not IsEmpty ());
                     Require (i == kBadSequenceIndex or i < GetLength ());
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (i == kBadSequenceIndex) {
                             i = fData_.GetLength () - 1;
                         }
                         return fData_.GetAt (i);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::SetAt (size_t i, const T& item)
                 {
                     Require (i < GetLength ());
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.SetAt (item, i);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t    Sequence_Array<T>::Rep_::IndexOf (const Iterator<T>& i) const
@@ -199,9 +204,10 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return mir.fIterator_.CurrentIndex ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Remove (const Iterator<T>& i)
@@ -209,9 +215,10 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -219,15 +226,16 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.UpdateCurrent (newValue);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
                     Require (at == kBadSequenceIndex or at <= GetLength ());
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (at == kBadSequenceIndex) {
                             at = fData_.GetLength ();
                         }
@@ -235,17 +243,19 @@ namespace   Stroika {
                         for (auto i = from; i != to; ++i) {
                             fData_.InsertAt (*i, at++);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Sequence_Array<T>::Rep_::Remove (size_t from, size_t to)
                 {
                     // quickie poor impl
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (size_t i = from; i < to; ++i) {
                             fData_.RemoveAt (from);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 
@@ -312,17 +322,26 @@ namespace   Stroika {
                 template    <typename T>
                 inline  void    Sequence_Array<T>::Compact ()
                 {
-                    GetRep_ ().fData_.Compact ();
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().fData_.Compact ();
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  size_t  Sequence_Array<T>::GetCapacity () const
                 {
-                    return (GetRep_ ().fData_.GetCapacity ());
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        return (GetRep_ ().fData_.GetCapacity ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Sequence_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

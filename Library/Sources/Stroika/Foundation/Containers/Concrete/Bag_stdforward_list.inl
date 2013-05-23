@@ -127,9 +127,10 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 typename Iterable<T>::_SharedPtrIRep  Bag_stdforward_list<T>::Rep_::Clone () const
@@ -149,19 +150,21 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Bag_stdforward_list<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t  cnt = 0;
                         for (auto i = fData_.begin (); i != fData_.end (); ++i, cnt++)
                             ;
                         return cnt;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Bag_stdforward_list<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.empty ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void      Bag_stdforward_list<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
@@ -181,14 +184,15 @@ namespace   Stroika {
                 template    <typename  T>
                 bool    Bag_stdforward_list<T>::Rep_::Contains (T item) const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                             if (*i == item) {
                                 return true;
                             }
                         }
                         return false;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t    Bag_stdforward_list<T>::Rep_::TallyOf (T item) const
@@ -198,9 +202,10 @@ namespace   Stroika {
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Add (T item)
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.push_front (item);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Update (const Iterator<T>& i, T newValue)
@@ -208,10 +213,11 @@ namespace   Stroika {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_stdforward_list<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Assert (not i.Done ());
                         *mir.fIterator_.fStdIterator = newValue;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Remove (T item)
@@ -229,7 +235,7 @@ namespace   Stroika {
                             ei = i;
                         }
                     }
-                    CONTAINER_LOCK_HELPER_END (fLockSupport_);
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::Remove (const Iterator<T>& i)
@@ -255,15 +261,16 @@ namespace   Stroika {
                             }
                         }
                     }
-                    CONTAINER_LOCK_HELPER_END (fLockSupport_);
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Bag_stdforward_list<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear ();
                         fData_.PatchAfter_clear ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

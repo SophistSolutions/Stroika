@@ -138,23 +138,26 @@ namespace   Stroika {
                     , fLockSupport_ ()
                     , fData_ ()
                 {
-                    CONTAINER_LOCK_HELPER_ (from.fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (from.fLockSupport_) {
                         fData_ = from.fData_;
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::GetLength () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Tally_Array<T>::Rep_::IsEmpty () const
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_Array<T>::Rep_::MakeIterator () const
@@ -184,16 +187,18 @@ namespace   Stroika {
                 bool    Tally_Array<T>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (bool (Find_ (tmp) != kNotFound_));
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Compact ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Compact ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename T>
@@ -207,7 +212,7 @@ namespace   Stroika {
                 void    Tally_Array<T>::Rep_::Add (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item, count);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t index = Find_ (tmp);
                         if (index == kNotFound_) {
                             fData_.InsertAt (tmp, fData_.GetLength ());
@@ -216,13 +221,14 @@ namespace   Stroika {
                             tmp.fCount += count;
                             fData_.SetAt (tmp, index);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Remove (T item, size_t count)
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t index = Find_ (tmp);
                         if (index != kNotFound_) {
                             Assert (index < fData_.GetLength ());
@@ -235,7 +241,8 @@ namespace   Stroika {
                                 fData_.SetAt (tmp, index);
                             }
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
@@ -243,16 +250,18 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::RemoveAll ()
                 {
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 void    Tally_Array<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
@@ -260,7 +269,7 @@ namespace   Stroika {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
                             mir.fIterator_.RemoveCurrent ();
                         }
@@ -269,13 +278,14 @@ namespace   Stroika {
                             c.fCount = newCount;
                             mir.fIterator_.UpdateCurrent (c);
                         }
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
-                    CONTAINER_LOCK_HELPER_ (fLockSupport_, {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t index = Find_ (tmp);
                         if (index == kNotFound_) {
                             return 0;
@@ -283,7 +293,8 @@ namespace   Stroika {
                         Assert (index >= 0);
                         Assert (index < fData_.GetLength ());
                         return (tmp.fCount);
-                    });
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
@@ -354,17 +365,26 @@ namespace   Stroika {
                 template    <typename T>
                 inline  size_t  Tally_Array<T>::GetCapacity () const
                 {
-                    return (GetRep_ ().fData_.GetCapacity ());
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        return (GetRep_ ().fData_.GetCapacity ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Tally_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
-                    GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().fData_.SetCapacity (slotsAlloced);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 inline  void    Tally_Array<T>::Compact ()
                 {
-                    GetRep_ ().Compact ();
+                    CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
+                        GetRep_ ().Compact ();
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 
