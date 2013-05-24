@@ -71,8 +71,8 @@ namespace   Stroika {
 
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                                   fLockSupport_;
-                    Private::DataStructures::Patching::STLContainerWrapper<pair<T, size_t>, map<T, size_t>> fData_;
+                    Private::ContainerRepLockDataSupport_                                   fLockSupport_;
+                    Private::DataStructures::Patching::STLContainerWrapper<map<T, size_t>>  fData_;
 
                     friend  class SortedTally_stdmap<T>::IteratorRep_;
                 };
@@ -116,7 +116,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<pair<T, size_t>, map<T, size_t>>::BasicForwardIterator   fIterator_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<map<T, size_t>>::BasicForwardIterator   fIterator_;
                     friend  class   SortedTally_stdmap<T>::Rep_;
                 };
 

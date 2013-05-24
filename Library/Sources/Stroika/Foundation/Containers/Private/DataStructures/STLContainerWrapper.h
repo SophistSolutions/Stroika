@@ -53,17 +53,20 @@ namespace   Stroika {
                      *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
                      */
-                    template    <typename T, typename STL_CONTAINER_OF_T>
+                    template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper : public STL_CONTAINER_OF_T {
                     private:
                         typedef STL_CONTAINER_OF_T  inherited;
 
                     public:
+                        typedef typename STL_CONTAINER_OF_T::value_type value_type;
+
+                    public:
                         class   BasicForwardIterator;
 
                     public:
-                        nonvirtual  bool    Contains (T item) const;
-                        nonvirtual  bool    Contains1 (T item) const;
+                        nonvirtual  bool    Contains (value_type item) const;
+                        nonvirtual  bool    Contains1 (value_type item) const;
                     };
 
 
@@ -71,10 +74,13 @@ namespace   Stroika {
                      *      STLContainerWrapper::BasicForwardIterator is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template    <typename T, typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator {
+                    template    <typename STL_CONTAINER_OF_T>
+                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator {
                     public:
-                        typedef STLContainerWrapper<T, STL_CONTAINER_OF_T>  CONTAINER_TYPE;
+                        typedef STLContainerWrapper<STL_CONTAINER_OF_T>  CONTAINER_TYPE;
+
+                    public:
+                        typedef typename STLContainerWrapper<STL_CONTAINER_OF_T>::value_type value_type;
 
                     public:
                         explicit BasicForwardIterator (CONTAINER_TYPE* data);
@@ -84,7 +90,8 @@ namespace   Stroika {
                         nonvirtual  bool    Done () const;
 
                     public:
-                        nonvirtual  bool    More (T* current, bool advance);
+                        template    <typename VALUE_TYPE>
+                        nonvirtual  bool    More (VALUE_TYPE* current, bool advance);
 
                     public:
                         /**
@@ -112,20 +119,23 @@ namespace   Stroika {
                          *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                          *  DOES provide 'deletion'/update safety.
                          */
-                        template    <typename T, typename STL_CONTAINER_OF_T>
-                        class   STLContainerWrapper : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T> {
+                        template    <typename STL_CONTAINER_OF_T>
+                        class   STLContainerWrapper : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> {
                         private:
-                            typedef Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>  inherited;
+                            typedef Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>  inherited;
+
+                        public:
+                            typedef typename inherited::value_type value_type;
 
                         public:
                             STLContainerWrapper ();
-                            STLContainerWrapper (const STLContainerWrapper<T, STL_CONTAINER_OF_T>& from);
+                            STLContainerWrapper (const STLContainerWrapper<STL_CONTAINER_OF_T>& from);
 
                         public:
                             ~STLContainerWrapper ();
 
                         public:
-                            nonvirtual  STLContainerWrapper<T, STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, STL_CONTAINER_OF_T>& rhs);
+                            nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs);
 
                         public:
                             class   BasicForwardIterator;
@@ -176,12 +186,16 @@ namespace   Stroika {
                          *      STLContainerWrapper::BasicForwardIterator is a private utility class designed
                          *  to promote source code sharing among the patched iterator implementations.
                          */
-                        template    <typename T, typename STL_CONTAINER_OF_T>
-                        class   STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator {
+                        template    <typename STL_CONTAINER_OF_T>
+                        class   STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator {
                         private:
-                            typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator   inherited;
+                            typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator   inherited;
+
                         public:
-                            typedef Foundation::Containers::Private::DataStructures::Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>   CONTAINER_TYPE;
+                            typedef typename inherited::value_type value_type;
+
+                        public:
+                            typedef Foundation::Containers::Private::DataStructures::Patching::STLContainerWrapper<STL_CONTAINER_OF_T>   CONTAINER_TYPE;
 
                         public:
                             BasicForwardIterator (CONTAINER_TYPE* data);
@@ -194,7 +208,8 @@ namespace   Stroika {
                             nonvirtual  BasicForwardIterator& operator= (const BasicForwardIterator& rhs);
 
                         public:
-                            nonvirtual  bool    More (T* current, bool advance);
+                            template    <typename VALUE_TYPE>
+                            nonvirtual  bool    More (VALUE_TYPE* current, bool advance);
 
                         public:
                             /**
@@ -202,10 +217,9 @@ namespace   Stroika {
                             nonvirtual  void    RemoveCurrent ();
 
                         private:
-                            //  call after add
-                            nonvirtual  void    PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i);
-
-                        private:
+                            /*
+                             * OK to be private cuz CONTAINER_TYPE is a friend.
+                             */
                             nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch);
                             nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 

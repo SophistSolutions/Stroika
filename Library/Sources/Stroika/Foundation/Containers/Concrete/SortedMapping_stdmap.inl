@@ -67,8 +67,8 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                               fLockSupport_;
-                    Private::DataStructures::Patching::STLContainerWrapper<pair<Key, T>, map<Key, T>>   fData_;
+                    Private::ContainerRepLockDataSupport_                                 fLockSupport_;
+                    Private::DataStructures::Patching::STLContainerWrapper<map<Key, T>>   fData_;
 
                 private:
                     friend  class SortedMapping_stdmap<Key, T>::IteratorRep_;
@@ -101,6 +101,21 @@ namespace   Stroika {
                     }
                     virtual bool   More (pair<Key, T>* current, bool advance) override {
                         return (fIterator_.More (current, advance));
+#if 0
+                        if (current == nullptr) {
+                            return (fIterator_.More (nullptr, advance));
+                        }
+                        else {
+                            pair<const Key, T> tmp;
+                            if (fIterator_.More (current, advance)) {
+                                *current = tmp;
+                                return true;
+                            }
+                            else {
+                                return true;
+                            }
+                        }
+#endif
                     }
                     virtual bool   StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
@@ -108,7 +123,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<pair<Key, T>, map<Key, T>>::BasicForwardIterator   fIterator_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<map<Key, T>>::BasicForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
