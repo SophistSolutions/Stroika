@@ -44,16 +44,19 @@ namespace   Stroika {
                         : fData (data)
                         , fStdIterator (data->begin ())
                     {
+                        RequireNotNull (data);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::BasicForwardIterator (const BasicForwardIterator& from)
                         : fData (from.fData)
                         , fStdIterator (from.fStdIterator)
                     {
+                        RequireNotNull (fData);
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::Done () const
                     {
+                        AssertNotNull (fData);
                         return fStdIterator == fData->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
@@ -75,6 +78,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     inline  size_t    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::CurrentIndex () const
                     {
+                        AssertNotNull (fData);
                         return fStdIterator - fData->begin ();
                     }
 
@@ -306,6 +310,8 @@ namespace   Stroika {
                     void    Patching::STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::_Invariant () const
                     {
                         AssertNotNull (fData);
+                        // apparently pointless test is just to force triggering any check code in iterator classes for valid iterators
+                        Assert (this->fStdIterator == fData->end () or this->fStdIterator != fData->end ());
                         // Find some way to check iterator traits to see if random access and do this test if possible
                         //Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));   // ANSI C requires this is always TRUE
                     }
