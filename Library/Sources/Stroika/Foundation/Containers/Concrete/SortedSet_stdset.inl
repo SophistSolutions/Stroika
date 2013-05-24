@@ -60,8 +60,8 @@ namespace   Stroika {
                     virtual void    Remove (const Iterator<T>& i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
-                    Private::DataStructures::STLContainerWrapper<T, set<T>> fData_;
+                    Private::ContainerRepLockDataSupport_                               fLockSupport_;
+                    Private::DataStructures::Patching::STLContainerWrapper<T, set<T>>   fData_;
 
                 private:
                     friend  class SortedSet_stdset<T>::IteratorRep_;
@@ -101,7 +101,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    mutable typename Private::DataStructures::STLContainerWrapper<T, set<T>>::IteratorPatchHelper   fIterator_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<T, set<T>>::BasicForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;

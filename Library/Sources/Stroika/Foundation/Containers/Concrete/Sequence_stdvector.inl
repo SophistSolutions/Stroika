@@ -57,8 +57,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
-                    Private::DataStructures::STLContainerWrapper<T, vector<T>>  fData_;
+                    Private::ContainerRepLockDataSupport_                                   fLockSupport_;
+                    Private::DataStructures::Patching::STLContainerWrapper<T, vector<T>>    fData_;
 
                 private:
                     friend  class Sequence_stdvector<T>::IteratorRep_;
@@ -80,7 +80,7 @@ namespace   Stroika {
                     virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
                 private:
-                    mutable typename Private::DataStructures::STLContainerWrapper<T, vector<T>>::IteratorPatchHelper   fIterator_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<T, vector<T>>::BasicForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;

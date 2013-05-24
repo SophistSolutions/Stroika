@@ -6,6 +6,9 @@
 
 #include    "../../../StroikaPreComp.h"
 
+//#include  <vector>
+//#include  <forward_list>
+
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 
@@ -22,11 +25,10 @@
  *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
+ *  @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
+ *          cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
  *
- *      NOTE FOR USES OF THIS CLASS
- *          o            OK to use non-patchable API inside lock - like directly calling map<>::find()
- *
- *  @todo   Add specail subclass of IteratorPatchHelper that tracks PREVPTR - and use to cleanup stuff
+ *  @todo   Add specail subclass of BasicForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *          that uses forward_list code...
  *
  *  @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
@@ -51,106 +53,38 @@ namespace   Stroika {
                      *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
                      *  DOES provide 'deletion'/update safety.
                      */
-                    template    <typename T, typename CONTAINER_OF_T>
-                    class   STLContainerWrapper : public CONTAINER_OF_T {
-                    public:
-                        STLContainerWrapper ();
-                        STLContainerWrapper (const STLContainerWrapper<T, CONTAINER_OF_T>& from);
-
-                    public:
-                        ~STLContainerWrapper ();
-
-                    public:
-                        nonvirtual  STLContainerWrapper<T, CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, CONTAINER_OF_T>& rhs);
-
-                    public:
-                        class IteratorPatchHelper;
-
-                    public:
-                        /**
-                         * Are there any iterators to be patched?
-                         */
-                        nonvirtual  bool    HasActiveIterators () const;
-
-                    public:
-                        /**
-                         *  call after add
-                         */
-                        nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i) const;
-
-
-                    public:
-                        nonvirtual  void    PatchingErase (typename CONTAINER_OF_T::iterator i) {
-                            Invariant ();
-                            Memory::SmallStackBuffer<IteratorPatchHelper*>   items2Patch (0);
-                            TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
-                            auto newI = this->erase (i);
-                            TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
-                            Invariant ();
-                        }
-
-#if 0
-                    public:
-                        /**
-                         *  call before remove/erase
-                         */
-                        nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i) const;
-#endif
-                    public:
-                        /**
-                         */
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch) const;
-                        static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch, typename CONTAINER_OF_T::iterator newI);
-
-                    public:
-                        /**
-                         *  call after removeall/clear
-                         */
-                        nonvirtual  void    PatchAfter_clear () const;
-
-                    public:
-                        /**
-                         *  call after realloc could have happened (such as reserve)
-                         */
-                        nonvirtual  void    PatchAfter_Realloc () const;
-
-
-                    public:
-                        nonvirtual  void    Invariant () const;
-#if     qDebug
-                    protected:
-                        nonvirtual  void    _Invariant () const;
-#endif
-
+                    template    <typename T, typename STL_CONTAINER_OF_T>
+                    class   STLContainerWrapper : public STL_CONTAINER_OF_T {
                     private:
-                        IteratorPatchHelper*    fActiveIteratorsListHead_;
+                        typedef STL_CONTAINER_OF_T  inherited;
 
-                    private:
-                        friend  class   IteratorPatchHelper;
+                    public:
+                        class   BasicForwardIterator;
+
+                    public:
+                        nonvirtual  bool    Contains (T item) const;
+                        nonvirtual  bool    Contains1 (T item) const;
                     };
 
 
                     /**
-                     *      STLContainerWrapper::IteratorPatchHelper is a private utility class designed
+                     *      STLContainerWrapper::BasicForwardIterator is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template    <typename T, typename CONTAINER_OF_T>
-                    class   STLContainerWrapper<T, CONTAINER_OF_T>::IteratorPatchHelper {
+                    template    <typename T, typename STL_CONTAINER_OF_T>
+                    class   STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator {
                     public:
-                        IteratorPatchHelper (STLContainerWrapper<T, CONTAINER_OF_T>* data);
-                        IteratorPatchHelper (const IteratorPatchHelper& from);
+                        typedef STLContainerWrapper<T, STL_CONTAINER_OF_T>  CONTAINER_TYPE;
 
                     public:
-                        ~IteratorPatchHelper ();
+                        explicit BasicForwardIterator (CONTAINER_TYPE* data);
+                        explicit BasicForwardIterator (const BasicForwardIterator& from);
 
                     public:
-                        nonvirtual  IteratorPatchHelper& operator= (const IteratorPatchHelper& rhs);
+                        nonvirtual  bool    Done () const;
 
                     public:
-                        inline  bool    Done () const;
-                    public:
-                        inline  bool    More (T* current, bool advance);
-
+                        nonvirtual  bool    More (T* current, bool advance);
 
                     public:
                         /**
@@ -163,44 +97,159 @@ namespace   Stroika {
                          */
                         nonvirtual  void    RemoveCurrent ();
 
-
                     public:
-                        //  call after add
-                        nonvirtual  void    PatchAfter_insert (typename CONTAINER_OF_T::iterator i);
-
-#if 0
-                    public:
-                        //  call before remove
-                        nonvirtual  void    PatchBefore_erase (typename CONTAINER_OF_T::iterator i);
-#endif
-
-                    public:
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<IteratorPatchHelper*>* items2Patch);
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename CONTAINER_OF_T::iterator newI);
-
-                    public:
-                        //  call after removeall
-                        nonvirtual  void    PatchAfter_clear ();
-
-                    public:
-                        //  call after realloc could have happened (such as reserve)
-                        nonvirtual  void    PatchAfter_Realloc ();
-
-                    public:
-                        nonvirtual  void    Invariant () const;
-#if     qDebug
-                    protected:
-                        nonvirtual  void    _Invariant () const;
-#endif
-
-                    public:
-                        STLContainerWrapper<T, CONTAINER_OF_T>*   fData;
-                        typename CONTAINER_OF_T::iterator         fStdIterator;
-                        IteratorPatchHelper*                      fNextActiveIterator;
-                        bool                                      fSuppressMore;  // for removealls
+                        CONTAINER_TYPE*                     fData;
+                        typename CONTAINER_TYPE::iterator   fStdIterator;
                     };
 
 
+                    namespace Patching {
+
+
+                        /**
+                         *  subclass of Foundation::Containers::STLContainerWrapper to support patching of owned iterators.
+                         *
+                         *  This code is NOT threadsafe. It assumes a wrapper layer provides thread safety, but it
+                         *  DOES provide 'deletion'/update safety.
+                         */
+                        template    <typename T, typename STL_CONTAINER_OF_T>
+                        class   STLContainerWrapper : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T> {
+                        private:
+                            typedef Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>  inherited;
+
+                        public:
+                            STLContainerWrapper ();
+                            STLContainerWrapper (const STLContainerWrapper<T, STL_CONTAINER_OF_T>& from);
+
+                        public:
+                            ~STLContainerWrapper ();
+
+                        public:
+                            nonvirtual  STLContainerWrapper<T, STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<T, STL_CONTAINER_OF_T>& rhs);
+
+                        public:
+                            class   BasicForwardIterator;
+
+                        public:
+                            /**
+                             * Are there any iterators to be patched?
+                             */
+                            nonvirtual  bool    HasActiveIterators () const;
+
+                        public:
+                            /**
+                             *  call after add
+                             */
+                            nonvirtual  void    PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i) const;
+
+
+                        public:
+                            nonvirtual  void    PatchingErase (typename STL_CONTAINER_OF_T::iterator i) {
+                                Invariant ();
+                                Memory::SmallStackBuffer<BasicForwardIterator*>   items2Patch (0);
+                                TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+                                auto newI = this->erase (i);
+                                TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+                                Invariant ();
+                            }
+
+                        public:
+                            /**
+                             */
+                            nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch) const;
+                            static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
+
+                        public:
+                            /**
+                             *  call after removeall/clear
+                             */
+                            nonvirtual  void    PatchAfter_clear () const;
+
+                        public:
+                            /**
+                             *  call after realloc could have happened (such as reserve)
+                             */
+                            nonvirtual  void    PatchAfter_Realloc () const;
+
+
+                        public:
+                            nonvirtual  void    Invariant () const;
+#if     qDebug
+                        protected:
+                            nonvirtual  void    _Invariant () const;
+#endif
+
+                        private:
+                            BasicForwardIterator*   fActiveIteratorsListHead_;
+
+                        private:
+                            friend  class   BasicForwardIterator;
+                        };
+
+
+                        /**
+                         *      STLContainerWrapper::BasicForwardIterator is a private utility class designed
+                         *  to promote source code sharing among the patched iterator implementations.
+                         */
+                        template    <typename T, typename STL_CONTAINER_OF_T>
+                        class   STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator {
+                        private:
+                            typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator   inherited;
+                        public:
+                            typedef Foundation::Containers::Private::DataStructures::Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>   CONTAINER_TYPE;
+
+                        public:
+                            BasicForwardIterator (CONTAINER_TYPE* data);
+                            BasicForwardIterator (const BasicForwardIterator& from);
+
+                        public:
+                            ~BasicForwardIterator ();
+
+                        public:
+                            nonvirtual  BasicForwardIterator& operator= (const BasicForwardIterator& rhs);
+
+                        public:
+                            nonvirtual  bool    More (T* current, bool advance);
+
+                        public:
+                            /**
+                             */
+                            nonvirtual  void    RemoveCurrent ();
+
+                        private:
+                            //  call after add
+                            nonvirtual  void    PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i);
+
+                        private:
+                            nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch);
+                            nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
+
+                        private:
+                            //  call after removeall
+                            nonvirtual  void    PatchAfter_clear ();
+
+                        private:
+                            //  call after realloc could have happened (such as reserve)
+                            nonvirtual  void    PatchAfter_Realloc ();
+
+                        public:
+                            nonvirtual  void    Invariant () const;
+#if     qDebug
+                        protected:
+                            nonvirtual  void    _Invariant () const;
+#endif
+
+                        public:
+                            CONTAINER_TYPE*         fData;
+                            BasicForwardIterator*   fNextActiveIterator;
+                            bool                    fSuppressMore;  // for removealls
+
+                        private:
+                            friend  CONTAINER_TYPE;
+                        };
+
+
+                    }
                 }
             }
         }

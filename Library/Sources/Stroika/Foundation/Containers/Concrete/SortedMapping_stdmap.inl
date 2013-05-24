@@ -67,8 +67,8 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                   fLockSupport_;
-                    Private::DataStructures::STLContainerWrapper<pair<Key, T>, map<Key, T>> fData_;
+                    Private::ContainerRepLockDataSupport_                                               fLockSupport_;
+                    Private::DataStructures::Patching::STLContainerWrapper<pair<Key, T>, map<Key, T>>   fData_;
 
                 private:
                     friend  class SortedMapping_stdmap<Key, T>::IteratorRep_;
@@ -108,7 +108,7 @@ namespace   Stroika {
                     }
 
                 private:
-                    mutable typename Private::DataStructures::STLContainerWrapper<pair<Key, T>, map<Key, T>>::IteratorPatchHelper   fIterator_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<pair<Key, T>, map<Key, T>>::BasicForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
