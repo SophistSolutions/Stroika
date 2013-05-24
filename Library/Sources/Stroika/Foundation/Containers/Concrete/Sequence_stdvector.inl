@@ -246,8 +246,7 @@ namespace   Stroika {
                         }
                         // quickie poor impl
                         for (auto i = from; i != to; ++i) {
-                            fData_.insert (fData_.begin () + at, *i);
-                            fData_.PatchAfter_insert (fData_.begin () + at);
+                            fData_.insert_toVector_WithPatching (fData_.begin () + at, *i);
                             at++;
                         }
                     }

@@ -137,26 +137,25 @@ namespace   Stroika {
                             nonvirtual  bool    HasActiveIterators () const;
 
                         public:
-                            /**
-                             *  call after add
+                            /*
+                             *  ONLY use for VECTOR types!
+                             *
+                             *  This updates ALL iterators based on prior and new offset.
                              */
-                            nonvirtual  void    PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i) const;
-
+                            template    <typename INSERT_VALUE_TYPE>
+                            nonvirtual  void    insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v);
 
                         public:
                             nonvirtual  void    erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i);
+
+                        public:
+                            nonvirtual  void    clear_WithPatching ();
 
                         public:
                             /**
                              */
                             nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch) const;
                             static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
-
-                        public:
-                            /**
-                             *  call after removeall/clear
-                             */
-                            nonvirtual  void    PatchAfter_clear () const;
 
                         public:
                             nonvirtual  void    Invariant () const;
@@ -209,10 +208,6 @@ namespace   Stroika {
                         private:
                             nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch);
                             nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
-
-                        private:
-                            //  call after removeall
-                            nonvirtual  void    PatchAfter_clear ();
 
                         public:
                             nonvirtual  void    Invariant () const;

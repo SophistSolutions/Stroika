@@ -196,10 +196,7 @@ namespace   Stroika {
                 void    SortedMapping_stdmap<Key, T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.Invariant ();
-                        fData_.clear ();
-                        fData_.PatchAfter_clear ();
-                        fData_.Invariant ();
+                        fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -235,7 +232,7 @@ namespace   Stroika {
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
                             i = fData_.insert (pair<Key, T> (key, newElt)).first;
-                            fData_.PatchAfter_insert (i);
+                            // no need to patch map<>
                         }
                         else {
                             i->second = newElt;

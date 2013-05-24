@@ -262,8 +262,7 @@ namespace   Stroika {
                 void    Bag_stdforward_list<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.clear ();
-                        fData_.PatchAfter_clear ();
+                        fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
