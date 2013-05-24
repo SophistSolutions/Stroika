@@ -63,8 +63,8 @@ namespace   Stroika {
                         if (advance) {
                             if (not done) {
                                 fStdIterator++;
+                                done = Done ();
                             }
-                            done = Done ();
                             if ((current != nullptr) and (not done)) {
                                 *current = *fStdIterator;
                             }
@@ -258,9 +258,9 @@ namespace   Stroika {
                         if (advance) {
                             if (not fSuppressMore and not done) {
                                 this->fStdIterator++;
+                                done = this->Done ();
                             }
                             this->fSuppressMore = false;
-                            done = this->Done ();
                             if ((current != nullptr) and (not done)) {
                                 *current = *this->fStdIterator;
                             }
@@ -270,7 +270,7 @@ namespace   Stroika {
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     inline  void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::RemoveCurrent ()
                     {
-                        fData->erase_WithPatching (fStdIterator);
+                        fData->erase_WithPatching (this->fStdIterator);
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i)
