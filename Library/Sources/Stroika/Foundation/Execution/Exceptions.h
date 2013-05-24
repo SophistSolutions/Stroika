@@ -24,6 +24,8 @@
  *
  *              And see how that impacts ExceptionPropagate.h, ErrNoException etc...
  *
+ *      @todo   See about std::make_exception_ptr for copyable exceptions
+ *
  */
 
 
