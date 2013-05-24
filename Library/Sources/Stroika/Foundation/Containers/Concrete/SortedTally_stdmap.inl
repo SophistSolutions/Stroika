@@ -232,7 +232,7 @@ namespace   Stroika {
                             Require (i->second >= count);
                             i->second -= count;
                             if (i->second == 0) {
-                                fData_.PatchingErase (i);
+                                fData_.erase_WithPatching (i);
                             }
                         }
                     }

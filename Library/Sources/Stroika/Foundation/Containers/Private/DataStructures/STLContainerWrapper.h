@@ -144,14 +144,7 @@ namespace   Stroika {
 
 
                         public:
-                            nonvirtual  void    PatchingErase (typename STL_CONTAINER_OF_T::iterator i) {
-                                Invariant ();
-                                Memory::SmallStackBuffer<BasicForwardIterator*>   items2Patch (0);
-                                TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
-                                auto newI = this->erase (i);
-                                TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
-                                Invariant ();
-                            }
+                            nonvirtual  void    erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i);
 
                         public:
                             /**
@@ -164,13 +157,6 @@ namespace   Stroika {
                              *  call after removeall/clear
                              */
                             nonvirtual  void    PatchAfter_clear () const;
-
-                        public:
-                            /**
-                             *  call after realloc could have happened (such as reserve)
-                             */
-                            nonvirtual  void    PatchAfter_Realloc () const;
-
 
                         public:
                             nonvirtual  void    Invariant () const;
@@ -227,10 +213,6 @@ namespace   Stroika {
                         private:
                             //  call after removeall
                             nonvirtual  void    PatchAfter_clear ();
-
-                        private:
-                            //  call after realloc could have happened (such as reserve)
-                            nonvirtual  void    PatchAfter_Realloc ();
 
                         public:
                             nonvirtual  void    Invariant () const;

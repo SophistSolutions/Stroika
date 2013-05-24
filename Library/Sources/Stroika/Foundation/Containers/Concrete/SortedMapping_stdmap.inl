@@ -251,7 +251,7 @@ namespace   Stroika {
                         fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i != fData_.end ()) {
-                            fData_.PatchingErase (i);
+                            fData_.erase_WithPatching (i);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();

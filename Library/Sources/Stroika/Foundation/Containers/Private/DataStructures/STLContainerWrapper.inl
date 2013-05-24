@@ -124,6 +124,16 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
+                    void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
+                    {
+                        Invariant ();
+                        Memory::SmallStackBuffer<BasicForwardIterator*>   items2Patch (0);
+                        TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
+                        auto newI = this->erase (i);
+                        TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
+                        Invariant ();
+                    }
+                    template    <typename T, typename STL_CONTAINER_OF_T>
                     inline  void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch) const
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
@@ -142,13 +152,6 @@ namespace   Stroika {
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
                             ai->PatchAfter_clear ();
-                        }
-                    }
-                    template    <typename T, typename STL_CONTAINER_OF_T>
-                    inline  void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::PatchAfter_Realloc () const
-                    {
-                        for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
-                            ai->PatchAfter_Realloc ();
                         }
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
@@ -251,13 +254,13 @@ namespace   Stroika {
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     inline  bool    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::More (T* current, bool advance)
                     {
-                        bool    done    =   Done ();
+                        bool    done    =   this->Done ();
                         if (advance) {
                             if (not fSuppressMore and not done) {
                                 this->fStdIterator++;
                             }
                             this->fSuppressMore = false;
-                            done = Done ();
+                            done = this->Done ();
                             if ((current != nullptr) and (not done)) {
                                 *current = *this->fStdIterator;
                             }
@@ -267,7 +270,7 @@ namespace   Stroika {
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     inline  void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::RemoveCurrent ()
                     {
-                        fData->PatchingErase (fStdIterator);
+                        fData->erase_WithPatching (fStdIterator);
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::PatchAfter_insert (typename STL_CONTAINER_OF_T::iterator i)
@@ -283,18 +286,14 @@ namespace   Stroika {
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
-                        this->fSuppressMore = true;
+                        fSuppressMore = true;
                         this->fStdIterator = newI;
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::PatchAfter_clear ()
                     {
-                        this->fSuppressMore = false;
+                        fSuppressMore = true;
                         this->fStdIterator = fData->end ();
-                    }
-                    template    <typename T, typename STL_CONTAINER_OF_T>
-                    void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::PatchAfter_Realloc ()
-                    {
                     }
                     template    <typename T, typename STL_CONTAINER_OF_T>
                     inline  void    Patching::STLContainerWrapper<T, STL_CONTAINER_OF_T>::BasicForwardIterator::Invariant () const
