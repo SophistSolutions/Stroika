@@ -189,7 +189,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return fData_.find (item) != fData_.end ();
+                        return fData_.Contains (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

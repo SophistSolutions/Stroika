@@ -73,17 +73,29 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 class  Bag_Array<T>::IteratorRep_ : public Iterator<T>::IRep {
+                private:
+                    typedef typename    Iterator<T>::IRep   inherited;
                 public:
-                    explicit IteratorRep_ (typename Bag_Array<T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Bag_Array<T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                    virtual bool                                More (T* current, bool advance) override;
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
+                        return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
+                    }
+                    virtual bool                                More (T* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
 
                 private:
                     mutable Private::DataStructures::ForwardArrayMutator_Patch<T>    fIterator_;
@@ -91,35 +103,6 @@ namespace   Stroika {
                 private:
                     friend  class   Rep_;
                 };
-
-
-                /*
-                ********************************************************************************
-                ************************* Bag_Array<T>::IteratorRep_ ***************************
-                ********************************************************************************
-                */
-                template    <typename T>
-                Bag_Array<T>::IteratorRep_::IteratorRep_ (typename Bag_Array<T>::Rep_& owner)
-                    : Iterator<T>::IRep ()
-                    , fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename T>
-                bool    Bag_Array<T>::IteratorRep_::More (T* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename T>
-                bool    Bag_Array<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename T>
-                typename Iterator<T>::SharedIRepPtr Bag_Array<T>::IteratorRep_::Clone () const
-                {
-                    return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
-                }
 
 
                 /*

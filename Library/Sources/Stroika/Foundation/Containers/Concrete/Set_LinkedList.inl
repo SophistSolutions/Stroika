@@ -77,16 +77,26 @@ namespace   Stroika {
                     typedef typename Iterator<T>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Set_LinkedList<T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Set_LinkedList<T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                    virtual bool                                More (T* current, bool advance) override;
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
+                        return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
+                    }
+                    virtual bool                                More (T* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
 
                 private:
                     mutable Private::DataStructures::LinkedListMutator_Patch<T>    fIterator_;
@@ -94,35 +104,6 @@ namespace   Stroika {
                 private:
                     friend  class   Rep_;
                 };
-
-
-                /*
-                ********************************************************************************
-                ******************** Set_LinkedList<T>::IteratorRep_ ***************************
-                ********************************************************************************
-                */
-                template    <typename T>
-                Set_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Set_LinkedList<T>::Rep_& owner)
-                    : inherited ()
-                    , fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename T>
-                bool    Set_LinkedList<T>::IteratorRep_::More (T* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename T>
-                bool    Set_LinkedList<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename T>
-                typename Iterator<T>::SharedIRepPtr  Set_LinkedList<T>::IteratorRep_::Clone () const
-                {
-                    return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
-                }
 
 
                 /*
@@ -197,12 +178,7 @@ namespace   Stroika {
                 bool    Set_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::LinkedListIterator_Patch<T> it (fData_); it.More (nullptr, true);) {
-                            if (it.Current () == item) {
-                                return true;
-                            }
-                        }
-                        return false;
+                        return fData_.Contains (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

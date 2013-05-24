@@ -82,16 +82,26 @@ namespace   Stroika {
                     typedef typename Iterator<pair<Key, T>>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Mapping_Array<Key, T>::Rep_& owner);
+                    explicit IteratorRep_ (typename Mapping_Array<Key, T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual shared_ptr<typename Iterator<pair<Key, T>>::IRep>     Clone () const override;
-                    virtual bool                            More (pair<Key, T>* current, bool advance) override;
-                    virtual bool                            StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override;
+                    virtual shared_ptr<typename Iterator<pair<Key, T>>::IRep>     Clone () const override {
+                        return shared_ptr<typename Iterator<pair<Key, T>>::IRep> (new IteratorRep_ (*this));
+                    }
+                    virtual bool                            More (pair<Key, T>* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool                            StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
 
                 private:
                     mutable Private::DataStructures::ForwardArrayMutator_Patch<pair<Key, T>>    fIterator_;
@@ -99,35 +109,6 @@ namespace   Stroika {
                 private:
                     friend  class   Rep_;
                 };
-
-
-                /*
-                ********************************************************************************
-                ******************** Mapping_Array<Key, T>::IteratorRep_ ***********************
-                ********************************************************************************
-                */
-                template    <typename Key, typename T>
-                Mapping_Array<Key, T>::IteratorRep_::IteratorRep_ (typename Mapping_Array<Key, T>::Rep_& owner)
-                    : Iterator<pair<Key, T>>::IRep ()
-                                          , fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename Key, typename T>
-                bool    Mapping_Array<Key, T>::IteratorRep_::More (pair<Key, T>* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename Key, typename T>
-                bool    Mapping_Array<Key, T>::IteratorRep_::StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename Key, typename T>
-                shared_ptr<typename Iterator<pair<Key, T>>::IRep>  Mapping_Array<Key, T>::IteratorRep_::Clone () const
-                {
-                    return shared_ptr<typename Iterator<pair<Key, T>>::IRep> (new IteratorRep_ (*this));
-                }
 
 
                 /*

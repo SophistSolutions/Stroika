@@ -77,21 +77,38 @@ namespace   Stroika {
                 // One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
                 template    <typename T>
                 class  Bag_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
+                private:
+                    typedef typename    Iterator<T>::IRep   inherited;
+
                 public:
-                    explicit IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner);
-                    explicit IteratorRep_ (typename Bag_LinkedList<T>::IteratorRep_& from);
+                    explicit IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
+                    explicit IteratorRep_ (typename Bag_LinkedList<T>::IteratorRep_& from)
+                        : inherited (from)
+                        , fIterator_ (from.fIterator_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                    virtual bool                                More (T* current, bool advance) override;
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
+                        return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
+                    }
+                    virtual bool                                More (T* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
 
                 private:
                     mutable Private::DataStructures::LinkedListMutator_Patch<T>  fIterator_;
+
                 private:
                     friend  class   Bag_LinkedList<T>::Rep_;
                 };
@@ -224,39 +241,6 @@ namespace   Stroika {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                }
-
-
-                /*
-                ********************************************************************************
-                ********************** Bag_LinkedList<T>::IteratorRep_ *************************
-                ********************************************************************************
-                */
-                template    <typename T>
-                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner)
-                    : fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename T>
-                Bag_LinkedList<T>::IteratorRep_::IteratorRep_ (IteratorRep_& from)
-                    : fIterator_ (from.fIterator_)
-                {
-                }
-                template    <typename T>
-                bool    Bag_LinkedList<T>::IteratorRep_::More (T* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename T>
-                bool    Bag_LinkedList<T>::IteratorRep_::StrongEquals (const typename Iterator<T>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename T>
-                typename Iterator<T>::SharedIRepPtr  Bag_LinkedList<T>::IteratorRep_::Clone () const
-                {
-                    return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
                 }
 
 

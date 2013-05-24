@@ -84,49 +84,31 @@ namespace   Stroika {
                 private:
                     typedef typename Iterator<TallyEntry<T>>::IRep  inherited;
                 public:
-                    IteratorRep_ (typename Tally_LinkedList<T>::Rep_& owner);
+                    IteratorRep_ (typename Tally_LinkedList<T>::Rep_& owner)
+                        : inherited ()
+                        , fIterator_ (owner.fData_) {
+                    }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool                                                More (TallyEntry<T>* current, bool advance) override;
-                    virtual bool                                                StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override;
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>  Clone () const override;
+                    virtual bool                                                More (TallyEntry<T>* current, bool advance) override {
+                        return (fIterator_.More (current, advance));
+                    }
+                    virtual bool                                                StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
+                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>  Clone () const override {
+                        return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*this));
+                    }
 
                 private:
                     mutable Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
 
                     friend class Tally_LinkedList<T>::Rep_;
                 };
-
-
-                /*
-                 ********************************************************************************
-                 ********************* Tally_LinkedList<T>::IteratorRep_ ************************
-                 ********************************************************************************
-                 */
-                template    <typename T>
-                Tally_LinkedList<T>::IteratorRep_::IteratorRep_ (Rep_& owner)
-                    : fIterator_ (owner.fData_)
-                {
-                }
-                template    <typename T>
-                bool    Tally_LinkedList<T>::IteratorRep_::More (TallyEntry<T>* current, bool advance)
-                {
-                    return (fIterator_.More (current, advance));
-                }
-                template    <typename T>
-                bool    Tally_LinkedList<T>::IteratorRep_::StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-                template    <typename T>
-                shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Tally_LinkedList<T>::IteratorRep_::Clone () const
-                {
-                    return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*this));
-                }
 
 
                 /*

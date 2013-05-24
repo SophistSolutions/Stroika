@@ -101,21 +101,6 @@ namespace   Stroika {
                     }
                     virtual bool   More (pair<Key, T>* current, bool advance) override {
                         return (fIterator_.More (current, advance));
-#if 0
-                        if (current == nullptr) {
-                            return (fIterator_.More (nullptr, advance));
-                        }
-                        else {
-                            pair<const Key, T> tmp;
-                            if (fIterator_.More (current, advance)) {
-                                *current = tmp;
-                                return true;
-                            }
-                            else {
-                                return true;
-                            }
-                        }
-#endif
                     }
                     virtual bool   StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
