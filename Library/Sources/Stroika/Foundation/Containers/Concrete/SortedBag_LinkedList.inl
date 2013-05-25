@@ -254,7 +254,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    Add (start, end);
+                    AddAll (start, end);
                 }
                 template    <typename T>
                 SortedBag_LinkedList<T>::SortedBag_LinkedList (const SortedBag<T>& src)

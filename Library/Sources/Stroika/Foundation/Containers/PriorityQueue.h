@@ -18,14 +18,12 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
  *
  *
- *
- *
  *  TODO:
  *
- *      (o)         Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/PriorityQueue.hh
+ *      @todo   Implement first draft of code based on
+ *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/PriorityQueue.hh
  *
- *      (o)         FIX so can remove top prioty itme to return btoih at a time.
+ *      @todo   FIX so can remove top prioty itme to return btoih at a time.
  *
  *      @todo   Add Traits, and part of triats is priority type.
  *              min/max comes from numeric_limits<T>::min/max, and memmbers of the traits - not global

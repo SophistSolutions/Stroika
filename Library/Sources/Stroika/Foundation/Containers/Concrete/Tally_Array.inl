@@ -96,6 +96,7 @@ namespace   Stroika {
                 public:
                     IteratorRep_ (typename Tally_Array<T>::Rep_& owner)
                         : inherited ()
+                        , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
                     }
 
@@ -103,19 +104,26 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool            More (TallyEntry<T>* current, bool advance) override {
-                        return (fIterator_.More (current, advance));
+                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return (fIterator_.More (current, advance));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
                     virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override {
-                        return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new IteratorRep_ (*this));
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
 
                 private:
-                    mutable Private::DataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
+                    mutable Private::DataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >  fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 
@@ -164,7 +172,12 @@ namespace   Stroika {
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
-                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*const_cast<Rep_*> (this))));
+                    typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*const_cast<Rep_*> (this)));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (tmpRep);
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
@@ -299,6 +312,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
+					// Note - no locking needed here because this is just a wrapper on the real iterator that does the locking.
                     Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ())));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
@@ -307,6 +321,7 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Tally_Array<T>::Rep_::Find_ (TallyEntry<T>& item) const
                 {
+                    // this code assumes locking done by callers
                     size_t length = fData_.GetLength ();
                     for (size_t i = 0; i < length; i++) {
                         if (fData_.GetAt (i).fItem == item.fItem) {

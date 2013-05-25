@@ -67,6 +67,8 @@ namespace   Stroika {
                 private:
                     Private::ContainerRepLockDataSupport_               fLockSupport_;
                     Private::DataStructures::Array_Patch<pair<Key, T>>  fData_;
+
+                private:
                     friend  class Mapping_Array<Key, T>::IteratorRep_;
                 };
 
