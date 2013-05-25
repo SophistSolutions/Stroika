@@ -36,7 +36,7 @@ namespace   Stroika {
                 typedef typename    Iterator<T>::IRep   inherited;
 
             public:
-                _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo)
+                _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
                     : inherited ()
                     , fDelegateTo_ (delegateTo) {
                 }
