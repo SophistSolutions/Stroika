@@ -32,36 +32,32 @@ namespace   Stroika {
              */
             template    <typename T>
             class  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
-			private:
-				typedef	typename	Iterator<T>::IRep	inherited;
+            private:
+                typedef typename    Iterator<T>::IRep   inherited;
 
             public:
                 _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo)
-						: inherited ()
-						, fDelegateTo_ (delegateTo)
-					{
-					}
-                virtual bool	More (T* current, bool advance) override
-					{
-						bool done = fDelegateTo_.Done ();
-						if (not done and advance) {
-							fDelegateTo_++;
-							done = fDelegateTo_.Done ();
-						}
-						if (current != nullptr and not done) {
-							*current = (*fDelegateTo_).fItem;
-						}
-						return (not done);
-					}
-                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
-					{
-						return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
-					}
-                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
-					{
-						AssertNotImplemented ();
-						return false;
-					}
+                    : inherited ()
+                    , fDelegateTo_ (delegateTo) {
+                }
+                virtual bool    More (T* current, bool advance) override {
+                    bool done = fDelegateTo_.Done ();
+                    if (not done and advance) {
+                        fDelegateTo_++;
+                        done = fDelegateTo_.Done ();
+                    }
+                    if (current != nullptr and not done) {
+                        *current = (*fDelegateTo_).fItem;
+                    }
+                    return (not done);
+                }
+                virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
+                    return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
+                }
+                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                    AssertNotImplemented ();
+                    return false;
+                }
 
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;

@@ -242,8 +242,7 @@ namespace   Stroika {
                     // quickie poor impl
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (size_t i = from; i < to; ++i) {
-                            fData_.PatchBefore_erase (fData_.begin () + from);
-                            fData_.erase (fData_.begin () + from);
+                            fData_.erase_WithPatching (fData_.begin () + from);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();

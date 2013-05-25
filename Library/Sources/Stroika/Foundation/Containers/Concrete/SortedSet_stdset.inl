@@ -190,8 +190,7 @@ namespace   Stroika {
                 void    SortedSet_stdset<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.clear ();
-                        // must patch!!!
+                        fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
