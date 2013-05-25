@@ -69,7 +69,6 @@ namespace   Stroika {
                     virtual size_t                                  TallyOf (T item) const override;
                     virtual Iterator<T>                             MakeBagIterator () const override;
 
-
                 private:
                     Private::ContainerRepLockDataSupport_                                   fLockSupport_;
                     Private::DataStructures::Patching::STLContainerWrapper<map<T, size_t>>  fData_;
@@ -80,7 +79,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **************** SortedTally_stdmap<T>::IteratorRep_ ***************************
+                 ****************** SortedTally_stdmap<T>::IteratorRep_ *************************
                  ********************************************************************************
                  */
                 template    <typename T>
@@ -99,13 +98,18 @@ namespace   Stroika {
 
                 public:
                     virtual bool            More (TallyEntry<T>* current, bool advance) override {
-                        pair<T, size_t> tmp;
-                        bool result = fIterator_.More (&tmp, advance);
-                        if (current != nullptr) {
-                            current->fItem = tmp.first;
-                            current->fCount = tmp.second;
+                        if (current == nullptr) {
+                            return fIterator_.More (static_cast<pair<T, size_t>*> (nullptr), advance);
                         }
-                        return result;
+                        else {
+                            pair<T, size_t> tmp;
+                            bool result = fIterator_.More (&tmp, advance);
+                            if (current != nullptr) {
+                                current->fItem = tmp.first;
+                                current->fCount = tmp.second;
+                            }
+                            return result;
+                        }
                     }
                     virtual bool            StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
                         AssertNotImplemented ();
@@ -117,6 +121,8 @@ namespace   Stroika {
 
                 private:
                     mutable typename Private::DataStructures::Patching::STLContainerWrapper<map<T, size_t>>::BasicForwardIterator   fIterator_;
+
+                private:
                     friend  class   SortedTally_stdmap<T>::Rep_;
                 };
 
@@ -189,7 +195,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return fData_.Contains (item);
+                        return fData_.find (item) != fData_.end ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -253,8 +259,7 @@ namespace   Stroika {
                 void    SortedTally_stdmap<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.clear ();
-                        // must fix / patch
+                        fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -315,7 +320,7 @@ namespace   Stroika {
                 }
                 template    <typename T>
                 inline  SortedTally_stdmap<T>::SortedTally_stdmap (const SortedTally_stdmap<T>& src) :
-                    inherited (src)
+                    inherited (static_cast<const inherited&> (src))
                 {
                 }
                 template    <typename T>
@@ -327,7 +332,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  SortedTally_stdmap<T>& SortedTally_stdmap<T>::operator= (const SortedTally_stdmap<T>& src)
                 {
-                    inherited::operator= (src);
+                    inherited::operator= (static_cast<const inherited&> (src));
                     return *this;
                 }
                 template    <typename T>

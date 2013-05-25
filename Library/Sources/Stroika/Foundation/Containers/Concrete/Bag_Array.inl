@@ -144,7 +144,10 @@ namespace   Stroika {
                 template    <typename T>
                 size_t  Bag_Array<T>::Rep_::GetLength () const
                 {
-                    return (fData_.GetLength ());
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        return (fData_.GetLength ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
                 bool  Bag_Array<T>::Rep_::IsEmpty () const

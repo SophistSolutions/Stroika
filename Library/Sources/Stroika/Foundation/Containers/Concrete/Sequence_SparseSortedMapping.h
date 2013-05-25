@@ -13,6 +13,8 @@
 /**
  *  \file
  *
+ *  \version    NOT IMPLEMENTED
+ *
  *  TODO:
  *      @todo   Most of the implementation is simple - use SortedMapping_stdmap as a backend. Map from idx
  *              to value. On any update, remove values if they are the special 'sparse' value. On iteration,

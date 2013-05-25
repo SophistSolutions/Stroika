@@ -5,10 +5,8 @@
 //      STATUS  very minimal/incomplete
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-
-/// WRONG - we dont have SortedTally Yet - but when we do!!!
 #include    "Stroika/Foundation/Containers/SortedTally.h"
-//#include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/SortedTally_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -27,7 +25,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-//using   Concrete::Tally_Array;
+using   Concrete::SortedTally_stdmap;
 
 
 namespace   {
@@ -43,14 +41,11 @@ namespace   {
             ///FIX TO DO SORT CHEKCING
         };
 
-//        All_For_Type<Tally_Array<size_t>> (testFunc1);
-//        All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
-
-#if 0
-        // NOT WORKING YET - 2013-05-22
         All_For_Type<SortedTally<size_t>> (testFunc1);
         All_For_Type<SortedTally<SimpleClass>> (testFunc2);
-#endif
+
+        All_For_Type<SortedTally_stdmap<size_t>> (testFunc1);
+        All_For_Type<SortedTally_stdmap<SimpleClass>> (testFunc2);
     }
 
 }

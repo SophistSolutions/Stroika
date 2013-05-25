@@ -32,12 +32,36 @@ namespace   Stroika {
              */
             template    <typename T>
             class  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
-            public:
-                _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo);
+			private:
+				typedef	typename	Iterator<T>::IRep	inherited;
 
-                virtual bool                                More (T* current, bool advance) override;
-                virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+            public:
+                _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& fDelegateTo)
+						: inherited ()
+						, fDelegateTo_ (delegateTo)
+					{
+					}
+                virtual bool	More (T* current, bool advance) override
+					{
+						bool done = fDelegateTo_.Done ();
+						if (not done and advance) {
+							fDelegateTo_++;
+							done = fDelegateTo_.Done ();
+						}
+						if (current != nullptr and not done) {
+							*current = (*fDelegateTo_).fItem;
+						}
+						return (not done);
+					}
+                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+					{
+						return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
+					}
+                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+					{
+						AssertNotImplemented ();
+						return false;
+					}
 
             private:
                 Iterator<TallyEntry<T>> fDelegateTo_;
@@ -207,14 +231,14 @@ namespace   Stroika {
                 _GetRep ().Add (item.fItem, item.fCount);
             }
             template    <typename T>
-            void   Tally<T>::Add (const T* begin, const T* end)
+            void   Tally<T>::AddAll (const T* begin, const T* end)
             {
                 for (const T* i = begin; i != end; ++i) {
                     Add (*i);
                 }
             }
             template    <typename T>
-            inline  void    Tally<T>::Add (const TallyEntry<T>* start, const TallyEntry<T>* end)
+            inline  void    Tally<T>::AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end)
             {
                 for (auto i = begin; i != end; ++i) {
                     _GetRep ().Add (i->fItem, i->fEnd);
@@ -271,50 +295,7 @@ namespace   Stroika {
             }
 
 
-            /*
-             ********************************************************************************
-             ************* Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep **************
-             ********************************************************************************
-             */
-            template    <typename T>
-            Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::_TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
-                : fDelegateTo_ (delegateTo)
-            {
-            }
-            template    <typename T>
-            inline bool    Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::More (T* current, bool advance)
-            {
-                if (current == nullptr) {
-                    return not fDelegateTo_.Done ();
-                }
-                else {
-                    fDelegateTo_++;
-                    bool done = fDelegateTo_.Done ();
-                    if (current != nullptr and not done) {
-                        *current = (*fDelegateTo_).fItem;
-                    }
-                    return (not done);
-                }
-            }
-            template    <typename T>
-            inline typename Iterator<T>::SharedIRepPtr  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::Clone () const
-            {
-                return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
-            }
-            template    <typename T>
-            inline  bool    Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep::StrongEquals (const typename Iterator<T>::IRep* rhs) const
-            {
-                AssertNotImplemented ();
-                return false;
-            }
-
-
         }
     }
 }
-
-
-
 #endif /* _Stroika_Foundation_Containers_Tally_inl_ */
-
-

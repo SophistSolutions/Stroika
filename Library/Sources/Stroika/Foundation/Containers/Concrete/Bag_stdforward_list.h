@@ -13,7 +13,7 @@
 /**
  *  \file
  *
- *  STATUS: NOT WORKING YET
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
