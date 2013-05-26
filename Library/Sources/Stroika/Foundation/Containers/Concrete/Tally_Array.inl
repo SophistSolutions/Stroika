@@ -312,7 +312,7 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>    Tally_Array<T>::Rep_::MakeBagIterator () const
                 {
-					// Note - no locking needed here because this is just a wrapper on the real iterator that does the locking.
+                    // Note - no locking needed here because this is just a wrapper on the real iterator that does the locking.
                     Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ())));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
                     tmp++;
