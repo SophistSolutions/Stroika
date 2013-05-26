@@ -49,7 +49,9 @@ namespace   Stroika {
             */
             template    <typename T>
             inline Iterator<T>::Iterator (const Iterator<T>& from)
-                : fIterator_ (from.fIterator_)
+                : inherited ()
+                , fIterator_ (from.fIterator_)
+                , fDoneFlag_ (DoneFlag::eUnknown)
                 , fCurrent_ (from.fCurrent_)
             {
                 RequireNotNull (from.fIterator_.get ());
@@ -57,6 +59,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>::Iterator (const SharedIRepPtr& rep)
                 : fIterator_ (rep)
+                , fDoneFlag_ (DoneFlag::eUnknown)
                 , fCurrent_ ()
             {
             }
@@ -65,6 +68,7 @@ namespace   Stroika {
             {
                 RequireNotNull (rhs.fIterator_.get ());
                 fIterator_ = rhs.fIterator_;
+                fDoneFlag_ = rhs.fDoneFlag_;
                 fCurrent_ = rhs.fCurrent_;
                 return (*this);
             }
@@ -89,11 +93,14 @@ namespace   Stroika {
             template    <typename T>
             inline bool    Iterator<T>::Done () const
             {
-                // must redo to use cached done flag.
-                // Reason for cast stuff is to avoid Clone if unneeded.
-                //
-                IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
-                return not rep->More (nullptr, false);
+                if (fDoneFlag_ == DoneFlag::eUnknown) {
+                    // must redo to use cached done flag.
+                    // Reason for cast stuff is to avoid Clone if unneeded.
+                    //
+                    IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
+                    fDoneFlag_ = rep->More (nullptr, false) ? DoneFlag::eNotDone : DoneFlag::eDone;
+                }
+                return fDoneFlag_ == DoneFlag::eDone;
             }
             template    <typename T>
             inline    T   Iterator<T>::operator* () const
@@ -120,13 +127,13 @@ namespace   Stroika {
             inline   void  Iterator<T>::operator++ ()
             {
                 RequireNotNull (fIterator_);
-                fIterator_->More (&fCurrent_, true);
+                fDoneFlag_ = fIterator_->More (&fCurrent_, true) ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
             inline   void  Iterator<T>::operator++ (int)
             {
                 RequireNotNull (fIterator_);
-                fIterator_->More (&fCurrent_, true);
+                fDoneFlag_ = fIterator_->More (&fCurrent_, true) ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
             bool    Iterator<T>::WeakEquals (const Iterator& rhs) const

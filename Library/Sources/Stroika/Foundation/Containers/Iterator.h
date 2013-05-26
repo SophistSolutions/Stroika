@@ -206,6 +206,9 @@ namespace   Stroika {
              */
             template    <typename T>
             class  Iterator : public std::iterator<input_iterator_tag, T> {
+            private:
+                typedef typename    std::iterator<input_iterator_tag, T>    inherited;
+
             public:
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this
@@ -493,7 +496,9 @@ namespace   Stroika {
                 SharedByValueRepType    fIterator_;
 
             private:
-                T       fCurrent_;   // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                enum class DoneFlag { eUnknown = -1, eNotDone = 1, eDone = 0 };
+                mutable DoneFlag    fDoneFlag_;     // 0 false, 1 true, -1 unknown
+                T                   fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
                 static  SharedIRepPtr    Clone_ (const IRep& rep);
