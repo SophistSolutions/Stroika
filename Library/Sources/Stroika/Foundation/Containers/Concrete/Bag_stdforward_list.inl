@@ -78,12 +78,14 @@ namespace   Stroika {
                  */
                 template    <typename T>
                 class  Bag_stdforward_list<T>::IteratorRep_ : public Iterator<T>::IRep {
+                private:
+                    typedef typename    Iterator<T>::IRep   inherited;
+
                 public:
                     explicit IteratorRep_ (typename Bag_stdforward_list<T>::Rep_& owner)
-                        : fIterator_ (&owner.fData_) {
-                    }
-                    explicit IteratorRep_ (typename Bag_stdforward_list<T>::IteratorRep_& from)
-                        : fIterator_ (from.fIterator_) {
+                        : inherited ()
+                        , fLockSupport_ (owner.fLockSupport_)
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:
@@ -92,18 +94,26 @@ namespace   Stroika {
                     // Iterator<T>::IRep
                 public:
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
-                        return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*const_cast<IteratorRep_*> (this)));
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                                More (T* current, bool advance) override {
-                        return (fIterator_.More (current, advance));
+                    virtual bool   More (T* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return (fIterator_.More (current, advance));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                    virtual bool   StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
 
                 private:
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<forward_list<T>>::BasicForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                                          fLockSupport_;
+                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<forward_list<T>>::BasicForwardIterator  fIterator_;
+
                 private:
                     friend  class   Bag_stdforward_list<T>::Rep_;
                 };
@@ -141,10 +151,14 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>  Bag_stdforward_list<T>::Rep_::MakeIterator () const
                 {
-                    Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    Iterator<T> tmp = Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Bag_stdforward_list<T>::IteratorRep_ (*NON_CONST_THIS)));
-                    //tmphack - fix iteraotr rep class itself
-                    tmp++;
+                    typename Iterator<T>::SharedIRepPtr tmpRep;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    Iterator<T> tmp = Iterator<T> (tmpRep);
+                    tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
                 template    <typename T>

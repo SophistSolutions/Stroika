@@ -73,6 +73,7 @@ namespace   Stroika {
                 public:
                     explicit IteratorRep_ (typename Deque_DoublyLinkedList<T>::Rep_& owner)
                         : inherited ()
+                        , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
                     }
 
@@ -82,19 +83,25 @@ namespace   Stroika {
                     // Iterator<T>::IRep
                 public:
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
-                        return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                                More (T* current, bool advance) override {
-                        return (fIterator_.More (current, advance));
+                    virtual bool    More (T* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return (fIterator_.More (current, advance));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
 
                 private:
-                    //mutable ForwardDoublyLinkedListMutator_Patch<T>    fIterator_;
-                    mutable Private::DataStructures::DoublyLinkedListMutator_Patch<T>    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
+                    mutable Private::DataStructures::DoublyLinkedListMutator_Patch<T>   fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -133,8 +140,13 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<T>  Deque_DoublyLinkedList<T>::Rep_::MakeIterator () const
                 {
-                    Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    Iterator<T> tmp = Iterator<T> (typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS)));
+                    typename Iterator<T>::SharedIRepPtr tmpRep;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    Iterator<T> tmp = Iterator<T> (tmpRep);
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }

@@ -84,6 +84,7 @@ namespace   Stroika {
                 public:
                     explicit IteratorRep_ (typename Mapping_LinkedList<Key, T>::Rep_& owner)
                         : inherited ()
+                        , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
                     }
 
@@ -93,18 +94,25 @@ namespace   Stroika {
                     // Iterator<T>::IRep
                 public:
                     virtual shared_ptr<typename Iterator<pair<Key, T>>::IRep>     Clone () const override {
-                        return shared_ptr<typename Iterator<pair<Key, T>>::IRep> (new IteratorRep_ (*this));
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                            More (pair<Key, T>* current, bool advance) override {
-                        return (fIterator_.More (current, advance));
+                    virtual bool    More (pair<Key, T>* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return (fIterator_.More (current, advance));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                            StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
 
                 private:
-                    mutable Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>>    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
+                    mutable Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>>  fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -145,8 +153,13 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 Iterator<pair<Key, T>>  Mapping_LinkedList<Key, T>::Rep_::MakeIterator () const
                 {
-                    Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                    Iterator<pair<Key, T>> tmp = Iterator<pair<Key, T>> (typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS)));
+                    typename Iterator<pair<Key, T>>::SharedIRepPtr tmpRep;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        tmpRep = typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    Iterator<pair<Key, T>> tmp = Iterator<pair<Key, T>> (tmpRep);
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }

@@ -86,6 +86,7 @@ namespace   Stroika {
                 public:
                     IteratorRep_ (typename Tally_LinkedList<T>::Rep_& owner)
                         : inherited ()
+                        , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
                     }
 
@@ -93,20 +94,28 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool                                                More (TallyEntry<T>* current, bool advance) override {
-                        return (fIterator_.More (current, advance));
+                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return (fIterator_.More (current, advance));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool                                                StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
                     virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep>  Clone () const override {
-                        return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*this));
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
                     }
 
                 private:
+                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
                     mutable Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
 
+                private:
                     friend class Tally_LinkedList<T>::Rep_;
                 };
 
@@ -153,9 +162,13 @@ namespace   Stroika {
                 template    <typename T>
                 Iterator<TallyEntry<T>> Tally_LinkedList<T>::Rep_::MakeIterator () const
                 {
-                    // const cast cuz this mutator won't really be used to change anything - except stuff like
-                    // link list of owned iterators
-                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*const_cast<Rep_*> (this))));
+                    typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (tmpRep);
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
