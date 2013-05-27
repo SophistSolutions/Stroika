@@ -1752,5 +1752,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Jenkins.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md">
+      <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
   </ItemGroup>
 </Project>

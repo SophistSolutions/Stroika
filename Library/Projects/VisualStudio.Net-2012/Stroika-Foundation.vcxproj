@@ -763,6 +763,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Jenkins.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\MD5.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
