@@ -48,6 +48,17 @@ namespace {
             VerifyTestResult (url.GetHostRelativePath ().empty ());
             VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
             VerifyTestResult (url.GetProtocol () == L"http");
+            VerifyTestResult (not url.IsSecure ());
+        }
+        {
+            URL url (L"https://xxx.recordsforliving.com/");
+            VerifyTestResult (url.GetEffectivePortNumber () == 443);
+            VerifyTestResult (url.GetQueryString ().empty ());
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetHostRelativePath ().empty ());
+            VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
+            VerifyTestResult (url.GetProtocol () == L"https");
+            VerifyTestResult (url.IsSecure ());
         }
     }
 }
