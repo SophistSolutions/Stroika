@@ -325,7 +325,7 @@ bool    URL::IsSecure () const
     return fProtocol == L"https" or fProtocol == L"ftps" or fProtocol == L"ldaps";
 }
 
-String URL::GetURL () const
+String URL::GetFullURL () const
 {
     String result;
     //result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
@@ -387,12 +387,12 @@ bool    URL::empty () const
     return fProtocol.empty () and fHost.empty () and fRelPath.empty () and fQuery.empty () and fFragment.empty () and fPort == kDefaultPort;
 }
 
-bool    Network::operator== (const URL& lhs, const URL& rhs)
+bool    URL::Equals (const URL& rhs) const
 {
     // A simpler way to compare - and probably better - is if they both produce the same URL string, they are the
-    // same URL (since GetURL normalizes output)
+    // same URL (since GetFullURL () normalizes output)
     //  -- LGP 2009-01-17
-    return lhs.GetURL () == rhs.GetURL ();
+    return GetFullURL () == rhs.GetFullURL ();
 }
 
 #if 0

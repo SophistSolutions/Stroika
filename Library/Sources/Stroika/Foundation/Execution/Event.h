@@ -46,7 +46,7 @@ namespace   Stroika {
 
 
             /**
-             *  AutoReset Event (like Windwow CreateEvent (false, false).
+             *  AutoReset Event (like Windwow CreateEvent (false, false)).
              *
              *  Easy to fix to NOT be auto-reset, but right now - I thinking this maybe a better paradigm,
              *  and simpler to assume always in unset state by default.

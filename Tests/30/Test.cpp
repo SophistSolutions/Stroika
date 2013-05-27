@@ -34,20 +34,20 @@ namespace {
         {
             URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
             VerifyTestResult (url.GetEffectivePortNumber () == 80);
-            VerifyTestResult (url.fQuery == L"ThemeName=Cupertino");
-            VerifyTestResult (url.fHost.empty ());
-            VerifyTestResult (url.fRelPath == L"StyleSheet.css");
-            VerifyTestResult (url.fFragment.empty ());
-            VerifyTestResult (url.fProtocol == L"http");
+            VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
+            VerifyTestResult (url.GetHost ().empty ());
+            VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetProtocol () == L"http");
         }
         {
             URL url (L"http://www.recordsforliving.com/");
             VerifyTestResult (url.GetEffectivePortNumber () == 80);
-            VerifyTestResult (url.fQuery.empty ());
-            VerifyTestResult (url.fFragment.empty ());
-            VerifyTestResult (url.fRelPath.empty ());
-            VerifyTestResult (url.fHost == L"www.recordsforliving.com");
-            VerifyTestResult (url.fProtocol == L"http");
+            VerifyTestResult (url.GetQueryString ().empty ());
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetHostRelativePath ().empty ());
+            VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
+            VerifyTestResult (url.GetProtocol () == L"http");
         }
     }
 }

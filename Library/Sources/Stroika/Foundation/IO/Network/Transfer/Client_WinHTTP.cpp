@@ -243,10 +243,10 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
     AssureHasConnectionHandle_ ();
     Assert (fConnectionHandle_.get () != nullptr);
 
-    bool    useSecureHTTP   =   fURL_.fProtocol == L"https";
+    bool    useSecureHTTP   =   fURL_.IsSecure ();
 
     AutoWinHINTERNET   hRequest (
-        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.fRelPath.c_str (),
+        ::WinHttpOpenRequest (*fConnectionHandle_, request.fMethod.c_str (), fURL_.GetHostRelativePath ().c_str (),
                               nullptr, WINHTTP_NO_REFERER,
                               WINHTTP_DEFAULT_ACCEPT_TYPES,
                               useSecureHTTP ? WINHTTP_FLAG_SECURE : 0
@@ -413,8 +413,8 @@ RetryWithNoCERTCheck:
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertExpired;
         }
 
-        if (not Equals (fURL_.fHost, resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
-                not Equals (fURL_.fHost, L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
+        if (not Equals (fURL_.GetHost (), resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
+                not Equals (fURL_.GetHost (), L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
            ) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }
@@ -481,7 +481,7 @@ void    Connection_WinHTTP::Rep_::AssureHasConnectionHandle_ ()
 {
     RequireNotNull (fSessionHandle_.get ());
     if (fConnectionHandle_.get () == nullptr) {
-        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.fHost.c_str (), fURL_.GetEffectivePortNumber (), 0)));
+        fConnectionHandle_ = shared_ptr<AutoWinHINTERNET> (new AutoWinHINTERNET (::WinHttpConnect (*fSessionHandle_, fURL_.GetHost ().c_str (), fURL_.GetEffectivePortNumber (), 0)));
     }
 }
 #endif

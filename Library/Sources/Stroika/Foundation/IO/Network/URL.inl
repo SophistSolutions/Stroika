@@ -17,7 +17,12 @@ namespace   Stroika {
         namespace   IO {
             namespace   Network {
 
-                //  class   URLQueryDecoder
+
+                /*
+                 ********************************************************************************
+                 ******************************** URLQueryDecoder *******************************
+                 ********************************************************************************
+                 */
                 inline  const map<String, String>& URLQueryDecoder::GetMap () const
                 {
                     return fMap;
@@ -55,7 +60,11 @@ namespace   Stroika {
                 }
 
 
-                //  class   URL
+                /*
+                 ********************************************************************************
+                 *************************************** URL ************************************
+                 ********************************************************************************
+                 */
                 inline  int     URL::GetEffectivePortNumber () const
                 {
                     if (fPort == kDefaultPort) {
@@ -73,19 +82,27 @@ namespace   Stroika {
                 {
                     fPort = portNum;
                 }
-                inline  bool    operator!= (const URL& lhs, const URL& rhs)
+                inline  bool    URL::operator== (const URL& rhs) const
                 {
-                    return not (lhs == rhs);
+                    return Equals (rhs);
+                }
+                inline  bool    URL::operator!= (const URL& rhs) const
+                {
+                    return not Equals (rhs);
                 }
 
 
-
-                //  class   LabeledURL
-                inline  LabeledURL::LabeledURL (const String& url, const String& label)
+                /*
+                 ********************************************************************************
+                 ******************************** LabeledURL ************************************
+                 ********************************************************************************
+                 */
+                inline  LabeledURL::LabeledURL (const URL& url, const String& label)
                     : fURL (url)
                     , fLabel (label)
                 {
                 }
+
 
             }
         }

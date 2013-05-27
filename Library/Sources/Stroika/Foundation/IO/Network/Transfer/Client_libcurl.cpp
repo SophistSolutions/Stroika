@@ -160,7 +160,7 @@ URL     Connection_LibCurl::Rep_::GetURL () const
 void    Connection_LibCurl::Rep_::SetURL (const URL& url)
 {
     MakeHandleIfNeeded_ ();
-    fCURLCache_URL_ = String (url.GetURL ()).AsUTF8 ();
+    fCURLCache_URL_ = String (url.GetFullURL ()).AsUTF8 ();
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_URL, fCURLCache_URL_.c_str ()));
 }
 
