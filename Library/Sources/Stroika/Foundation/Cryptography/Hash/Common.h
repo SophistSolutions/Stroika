@@ -10,7 +10,7 @@
 #include    <vector>
 
 #include    "../../Configuration/Common.h"
-#include	"../../Streams/BinaryInputStream.h"
+#include    "../../Streams/BinaryInputStream.h"
 
 
 
@@ -19,7 +19,7 @@
  * STATUS *****************DRAFT ..... ROUHGH OUTLINE
  *
  * TODO:
- *      o   
+ *      o
  *
  *
  */
@@ -31,17 +31,17 @@ namespace   Stroika {
             namespace   Hash {
 
 
-				using	Memory::Byte;
+                using   Memory::Byte;
 
 
-				template	<typename ReturnType, typename ALGORITHM>
-				struct Hasher {
-					static	ReturnType	Hash (const Streams::BinaryInputStream& from);
-					static	ReturnType	Hash (const Byte* from, const Byte* to);
-					template	<typename	PODTYPE>
-						static	ReturnType	Hash (const PODTYPE& pod);
+                template    <typename ReturnType, typename ALGORITHM>
+                struct Hasher {
+                    static  ReturnType  Hash (const Streams::BinaryInputStream& from);
+                    static  ReturnType  Hash (const Byte* from, const Byte* to);
+                    template    <typename   PODTYPE>
+                    static  ReturnType  Hash (const PODTYPE& pod);
 
-				};
+                };
 
 
             }

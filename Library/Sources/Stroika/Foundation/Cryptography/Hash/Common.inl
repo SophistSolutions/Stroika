@@ -11,12 +11,12 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
-	        namespace   Hash {
+            namespace   Hash {
 
 
 
 
-	        }
+            }
         }
     }
 }

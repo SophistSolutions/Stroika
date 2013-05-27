@@ -13,3 +13,5 @@ This Folder contains the Foundation::Cryptography::Hash source code.
 	(VERY PROTOTYPE DEFINITION AT THIS STAGE)
 	
 
+
+o	Adapters take other types – like string, or stream, etc, and maybe template things todo other types, and let use plug in an int-based algorithm, and ??

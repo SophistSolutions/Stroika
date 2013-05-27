@@ -15,16 +15,18 @@
 /*
  * STATUS *****************DRAFT ..... ROUHGH OUTLINE
  *
- *		VERY ROUGH
+ *      VERY ROUGH
  *
- *		SEE http://en.wikipedia.org/wiki/Jenkins_hash_function#cite_note-4
+ *      SEE http://en.wikipedia.org/wiki/Jenkins_hash_function#cite_note-4
  *
- *		Several OTHERS there todo likewise - SPOOKY???
+ *      Several OTHERS there todo likewise - SPOOKY???
  *
- *		
+ *      (SEE README ABOUT ADAPTERS)
+ *
+ *
  *
  * TODO:
- *      o   
+ *      o
  *
  *
  */
@@ -36,18 +38,18 @@ namespace   Stroika {
             namespace   Hash {
 
 
-				// Just a name to select template implementation
-				struct Jenkins {
-				};
+                // Just a name to select template implementation
+                struct Jenkins {
+                };
 
 
-				template	<>
-				struct Hasher<uint32_t,Jenkins> {
-					static	uint32_t	Hash (const Streams::BinaryInputStream& from);
-					static	uint32_t	Hash (const Byte* from, const Byte* to);
-					template	<typename	PODTYPE>
-						static	uint32_t	Hash (const PODTYPE& pod);
-				};
+                template    <>
+                struct Hasher<uint32_t, Jenkins> {
+                    static  uint32_t    Hash (const Streams::BinaryInputStream& from);
+                    static  uint32_t    Hash (const Byte* from, const Byte* to);
+                    template    <typename   PODTYPE>
+                    static  uint32_t    Hash (const PODTYPE& pod);
+                };
 
 
             }
