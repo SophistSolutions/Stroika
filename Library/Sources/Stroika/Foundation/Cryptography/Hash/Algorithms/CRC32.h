@@ -40,8 +40,12 @@ namespace   Stroika {
 
 
                     // Just a name to select template implementation
+                    /// SEE
+                    // http://www.riccibitti.com/crcguide.htm
+                    /// for C code / algoritjhm
                     struct CRC32 {
                     };
+
 
                 }
 
@@ -50,16 +54,10 @@ namespace   Stroika {
                 /// SEE
                 // http://www.riccibitti.com/crcguide.htm
                 /// for C code / algoritjhm
-#if 0
-#endif
                 template    <>
                 struct Hasher<uint32_t, Algorithms::CRC32> {
                     static  uint32_t    Hash (const Streams::BinaryInputStream& from);
                     static  uint32_t    Hash (const Byte* from, const Byte* to);
-#if 0
-                    template    <typename   PODTYPE>
-                    static  uint32_t    Hash (const PODTYPE& pod);
-#endif
                 };
 
 
