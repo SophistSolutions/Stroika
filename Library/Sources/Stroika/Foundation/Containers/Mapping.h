@@ -127,6 +127,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  NOTE- calling Remove(Key) when the key is not found is perfectly legal.
+                 *
+                 *  @todo CONSIDER:::
+                 *      TBD in the case of Remove() on in iterator???? Probably should have consistent
+                 *      answers but review Remove()for other containers as well.
                  */
                 nonvirtual  void    Remove (Key key);
                 nonvirtual  void    Remove (const Iterator<pair<Key, T>>& i);
