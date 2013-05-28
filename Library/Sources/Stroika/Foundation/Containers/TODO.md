@@ -58,6 +58,15 @@ TODO (Foundation::Containers)
 			http://www.cs.cornell.edu/Courses/cs312/2003sp/lectures/lec26.html
 
 
+	(o)		Consider adding another category of containers - "OrderPreserving" - like "Sorted" - but
+			where additions done later than earlier additions come out in the same relative 
+			iteration order as how they were added.
+
+			A doubly linked list could be used for this (cuz easy to append and find from front). Hard to
+			do and make efficient for large sets. But COULD be handy sometimes for things like
+			URLQuery class IF there was a desire to make a few changes, but otherwise preserve the order
+			of entries. MAYBE defer for Stroika v3?
+			
 
 Notes from obsolete Collection.h
 	TRAITS:
