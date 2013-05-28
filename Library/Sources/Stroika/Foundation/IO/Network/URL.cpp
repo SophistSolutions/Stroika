@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if qPlatform_Windows
+#if     qPlatform_Windows
 #include    <atlbase.h>
 
 #include    <Windows.h>
@@ -21,6 +21,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 
 #if     qPlatform_Windows
 using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
@@ -79,12 +80,12 @@ int     Network::GetDefaultPortForProtocol (const String& proto)
  ********************************************************************************
  */
 URL::URL ()
-    : fProtocol ()
-    , fHost ()
-    , fPort (kDefaultPort)
-    , fRelPath ()
-    , fQuery ()
-    , fFragment ()
+    : fProtocol_ ()
+    , fHost_ ()
+    , fPort_ (kDefaultPort)
+    , fRelPath_ ()
+    , fQuery_ ()
+    , fFragment_ ()
 {
 }
 
@@ -144,12 +145,12 @@ namespace   {
 }
 #endif
 URL::URL (const String& w)
-    : fProtocol ()
-    , fHost ()
-    , fPort (kDefaultPort)
-    , fRelPath ()
-    , fQuery ()
-    , fFragment ()
+    : fProtocol_ ()
+    , fHost_ ()
+    , fPort_ (kDefaultPort)
+    , fRelPath_ ()
+    , fQuery_ ()
+    , fFragment_ ()
 {
     if (w.empty ()) {
         return;
@@ -166,7 +167,7 @@ URL::URL (const String& w)
     {
         size_t  e   =   w.find (':');
         if (e != kBadStringIndex) {
-            fProtocol = w.SubString (0, e).ToLowerCase ();
+            fProtocol_ = w.SubString (0, e).ToLowerCase ();
         }
     }
 
@@ -198,7 +199,7 @@ URL::URL (const String& w)
                 }
             }
             size_t  endOfHost       =   i;
-            fHost = w.SubString (hostNameStart, endOfHost);
+            fHost_ = w.SubString (hostNameStart, endOfHost);
 
             // COULD check right here for port# if c == ':' - but dont bother since never did before - and this is apparantly good enuf for now...
             if (i < w.length ()) {
@@ -210,7 +211,7 @@ URL::URL (const String& w)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        fPort = String2Int (num);
+                        fPort_ = String2Int (num);
                     }
                 }
             }
@@ -218,26 +219,26 @@ URL::URL (const String& w)
     }
 
     {
-        fRelPath = w.SubString (i);
+        fRelPath_ = w.SubString (i);
 
         // It should be RELATIVE to that hostname and the slash is the separator character
         // NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
         // on the leading slash!
         //      -- LGP 2008-09-04
-        if (not fRelPath.empty () and fRelPath[0] == '/') {
-            fRelPath = fRelPath.SubString (1);
+        if (not fRelPath_.empty () and fRelPath_[0] == '/') {
+            fRelPath_ = fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   fRelPath.find ('#');
+        size_t  startOfFragment =   fRelPath_.find ('#');
         if (startOfFragment != kBadStringIndex) {
-            fFragment = fRelPath.SubString (startOfFragment + 1);
-            fRelPath.erase (startOfFragment);
+            fRelPath_ = fRelPath_.SubString (startOfFragment + 1);
+            fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   fRelPath.find ('?');
+        size_t  startOfQuery    =   fRelPath_.find ('?');
         if (startOfQuery != kBadStringIndex) {
-            fQuery = fRelPath.substr (startOfQuery + 1);
-            fRelPath.erase (startOfQuery);
+            fQuery_ = fRelPath_.substr (startOfQuery + 1);
+            fRelPath_.erase (startOfQuery);
         }
     }
 
@@ -250,12 +251,12 @@ URL::URL (const String& w)
         String testRelPath;
         String testQuery;
         OLD_Cracker (w, &testProtocol, &testHost, &testPort, &testRelPath, &testQuery);
-        Assert (testProtocol == fProtocol);
+        Assert (testProtocol == fProtocol_);
         if (testProtocol == L"http") {
-            Assert (testHost == fHost.ToLowerCase ());
+            Assert (testHost == fHost_.ToLowerCase ());
             {
                 //Assert (testPort == fPort);
-                if (fPort == 80) {
+                if (fPort_ == 80) {
                     Assert (testPort == L"" or testPort == L"80");
                 }
                 else {
@@ -263,30 +264,30 @@ URL::URL (const String& w)
                     //Assert (fPort == ::_wtoi (testPort.c_str ()));
                 }
             }
-            Assert (testRelPath == fRelPath || testRelPath.find (':') != kBadStringIndex || ((L"/" + fRelPath) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
-            Assert (testQuery == fQuery or not fFragment.empty ()); // old code didn't check fragment
+            Assert (testRelPath == fRelPath_ || testRelPath.find (':') != kBadStringIndex || ((L"/" + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testQuery == fQuery_ or not fFragment_.empty ()); // old code didn't check fragment
         }
     }
 #endif
 }
 
 URL::URL (const String& protocol, const String& host, int portNumber, const String& relPath, const String& query, const String& fragment)
-    : fProtocol (protocol)
-    , fHost (host)
-    , fPort (portNumber)
-    , fRelPath (relPath)
-    , fQuery (query)
-    , fFragment (fragment)
+    : fProtocol_ (protocol)
+    , fHost_ (host)
+    , fPort_ (portNumber)
+    , fRelPath_ (relPath)
+    , fQuery_ (query)
+    , fFragment_ (fragment)
 {
 }
 
 URL::URL (const String& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
-    : fProtocol (protocol)
-    , fHost (host)
-    , fPort (kDefaultPort)
-    , fRelPath (relPath)
-    , fQuery (query)
-    , fFragment (fragment)
+    : fProtocol_ (protocol)
+    , fHost_ (host)
+    , fPort_ (kDefaultPort)
+    , fRelPath_ (relPath)
+    , fQuery_ (query)
+    , fFragment_ (fragment)
 {
 }
 
@@ -294,26 +295,26 @@ URL URL::ParseHostRelativeURL (const String& w)
 {
     URL url;
     {
-        url.fRelPath = w;
+        url.fRelPath_ = w;
 
         // It should be RELATIVE to that hostname and the slash is the separator character
         // NB: This is a change as of 2008-09-04 - so be careful in case anyone elsewhere dependend
         // on the leading slash!
         //      -- LGP 2008-09-04
-        if (not url.fRelPath.empty () and url.fRelPath[0] == '/') {
-            url.fRelPath = url.fRelPath.SubString (1);
+        if (not url.fRelPath_.empty () and url.fRelPath_[0] == '/') {
+            url.fRelPath_ = url.fRelPath_.SubString (1);
         }
 
-        size_t  startOfFragment =   url.fRelPath.find ('#');
+        size_t  startOfFragment =   url.fRelPath_.find ('#');
         if (startOfFragment != kBadStringIndex) {
-            url.fFragment = url.fRelPath.SubString (startOfFragment + 1);
-            url.fRelPath.erase (startOfFragment);
+            url.fFragment_ = url.fRelPath_.SubString (startOfFragment + 1);
+            url.fRelPath_.erase (startOfFragment);
         }
 
-        size_t  startOfQuery    =   url.fRelPath.find ('?');
+        size_t  startOfQuery    =   url.fRelPath_.find ('?');
         if (startOfQuery != kBadStringIndex) {
-            url.fQuery = url.fRelPath.SubString (startOfQuery + 1);
-            url.fRelPath.erase (startOfQuery);
+            url.fQuery_ = url.fRelPath_.SubString (startOfQuery + 1);
+            url.fRelPath_.erase (startOfQuery);
         }
     }
     return url;
@@ -322,37 +323,37 @@ URL URL::ParseHostRelativeURL (const String& w)
 bool    URL::IsSecure () const
 {
     // should be large list of items - and maybe do soemthing to assure case matching handled properly, if needed?
-    return fProtocol == L"https" or fProtocol == L"ftps" or fProtocol == L"ldaps";
+    return fProtocol_ == L"https" or fProtocol_ == L"ftps" or fProtocol_ == L"ldaps";
 }
 
 String URL::GetFullURL () const
 {
     String result;
-    //result.reserve (10 + fHost.length () + fRelPath.length () + fQuery.length () + fFragment.length ());
+    //result.reserve (10 + fHost.length () + fRelPath_.length () + fQuery.length () + fFragment_.length ());
 
-    if (fProtocol.empty ()) {
+    if (fProtocol_.empty ()) {
         result += L"http:";
     }
     else {
-        result += fProtocol + L":";
+        result += fProtocol_ + L":";
     }
 
-    if (not fHost.empty ()) {
-        result += L"//" + fHost;
-        if (fPort != kDefaultPort and fPort != GetDefaultPortForProtocol (fProtocol)) {
-            result += Format (L":%d", fPort);
+    if (not fHost_.empty ()) {
+        result += L"//" + fHost_;
+        if (fPort_ != kDefaultPort and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
+            result += Format (L":%d", fPort_);
         }
         result +=  L"/";
     }
 
-    result += fRelPath;
+    result += fRelPath_;
 
-    if (not fQuery.empty ()) {
-        result += L"?" + fQuery;
+    if (not fQuery_.empty ()) {
+        result += L"?" + fQuery_;
     }
 
-    if (not fFragment.empty ()) {
-        result += L"#" + fFragment;
+    if (not fFragment_.empty ()) {
+        result += L"#" + fFragment_;
     }
 
     return result;
@@ -360,7 +361,7 @@ String URL::GetFullURL () const
 
 String URL::GetHostRelPathDir () const
 {
-    String  result  =   fRelPath;
+    String  result  =   fRelPath_;
     size_t  i       =   result.rfind ('/');
     if (i == kBadStringIndex) {
         result.clear ();
@@ -373,18 +374,18 @@ String URL::GetHostRelPathDir () const
 
 void    URL::clear ()
 {
-    fProtocol.clear ();
-    fHost.clear ();
-    fRelPath.clear ();
-    fQuery.clear ();
-    fFragment.clear ();
-    fPort = kDefaultPort;
+    fProtocol_.clear ();
+    fHost_.clear ();
+    fRelPath_.clear ();
+    fQuery_.clear ();
+    fFragment_.clear ();
+    fPort_ = kDefaultPort;
     Ensure (empty ());
 }
 
 bool    URL::empty () const
 {
-    return fProtocol.empty () and fHost.empty () and fRelPath.empty () and fQuery.empty () and fFragment.empty () and fPort == kDefaultPort;
+    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_ == kDefaultPort;
 }
 
 bool    URL::Equals (const URL& rhs) const
@@ -500,13 +501,13 @@ string  Network::EncodeURLQueryStringField (const String& s)
 
 /*
  ********************************************************************************
- ********************************* URLQueryDecoder ******************************
+ ********************************* URLQuery ******************************
  ********************************************************************************
  */
 namespace   {
     // According to http://tools.ietf.org/html/rfc3986 - URLs need to be treated as UTF-8 before
     // doing % etc substitution
-    void    InitURLQueryDecoder_ (map<String, String>* m, const string& utf8Query)
+    void    InitURLQueryDecoder_ (Mapping<String, String>* m, const string& utf8Query)
     {
         size_t  utfqLen =   utf8Query.length ();
         for (size_t i = 0; i < utfqLen; ) {
@@ -530,7 +531,7 @@ namespace   {
                             }
                     }
                 }
-                m->insert (map<String, String>::value_type (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val)));
+                m->Add (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val));
             }
             if (e == kBadStringIndex) {
                 break;
@@ -539,30 +540,27 @@ namespace   {
         }
     }
 }
-URLQueryDecoder::URLQueryDecoder (const String& query):
-    fMap ()
+URLQuery::URLQuery (const String& query):
+    fMap_ ()
 {
-    InitURLQueryDecoder_ (&fMap, query.AsUTF8 ());
+    InitURLQueryDecoder_ (&fMap_, query.AsUTF8 ());
 }
 
-URLQueryDecoder::URLQueryDecoder (const string& query):
-    fMap ()
+URLQuery::URLQuery (const string& query):
+    fMap_ ()
 {
-    InitURLQueryDecoder_ (&fMap, query);
+    InitURLQueryDecoder_ (&fMap_, query);
 }
 
-void    URLQueryDecoder::RemoveFieldIfAny (const String& idx)
+void    URLQuery::RemoveFieldIfAny (const String& idx)
 {
-    map<String, String>::iterator  i   =   fMap.find (idx);
-    if (i != fMap.end ()) {
-        fMap.erase (i);
-    }
+    fMap_.Remove (idx);
 }
 
-String URLQueryDecoder::ComputeQueryString () const
+String URLQuery::ComputeQueryString () const
 {
     string  result;
-    for (auto i = fMap.begin (); i != fMap.end (); ++i) {
+    for (auto i = fMap_.begin (); i != fMap_.end (); ++i) {
         Containers::ReserveSpeedTweekAdd1 (result);
         if (not result.empty ()) {
             result += "&";

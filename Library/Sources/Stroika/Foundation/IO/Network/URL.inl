@@ -20,41 +20,34 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************** URLQueryDecoder *******************************
+                 ******************************** URLQuery *******************************
                  ********************************************************************************
                  */
-                inline  const map<String, String>& URLQueryDecoder::GetMap () const
+                inline  const Containers::Mapping<String, String>& URLQuery::GetMap () const
                 {
-                    return fMap;
+                    return fMap_;
                 }
-                inline  String     URLQueryDecoder::operator () (const String& idx) const
+                inline  String     URLQuery::operator () (const String& idx) const
                 {
-                    map<String, String>::const_iterator    i   =   fMap.find (idx);
-                    if (i == fMap.end ()) {
-                        return String ();
-                    }
-                    else {
-                        return (*i).second;
-                    }
+                    return fMap_.Lookup (idx).Value ();
                 }
-                inline  String     URLQueryDecoder::operator () (const string& idx) const
+                inline  String     URLQuery::operator () (const string& idx) const
                 {
                     return operator () (Characters::UTF8StringToWide (idx));
                 }
-                inline  bool        URLQueryDecoder::HasField (const String& idx) const
+                inline  bool        URLQuery::HasField (const String& idx) const
                 {
-                    map<String, String>::const_iterator    i   =   fMap.find (idx);
-                    return (i != fMap.end ());
+                    return fMap_.ContainsKey (idx);
                 }
-                inline  bool        URLQueryDecoder::HasField (const string& idx) const
+                inline  bool        URLQuery::HasField (const string& idx) const
                 {
                     return HasField (Characters::UTF8StringToWide (idx));
                 }
-                inline  void    URLQueryDecoder::AddField (const String& idx, const String& value)
+                inline  void    URLQuery::AddField (const String& idx, const String& value)
                 {
-                    fMap.insert (map<String, String>::value_type (idx, value));
+                    fMap_.Add (idx, value);
                 }
-                inline  void    URLQueryDecoder::RemoveFieldIfAny (const string& idx)
+                inline  void    URLQuery::RemoveFieldIfAny (const string& idx)
                 {
                     RemoveFieldIfAny (Characters::UTF8StringToWide (idx));
                 }
@@ -67,20 +60,68 @@ namespace   Stroika {
                  */
                 inline  int     URL::GetEffectivePortNumber () const
                 {
-                    if (fPort == kDefaultPort) {
-                        return GetDefaultPortForProtocol (fProtocol);
+                    if (fPort_ == kDefaultPort) {
+                        return GetDefaultPortForProtocol (fProtocol_);
                     }
                     else {
-                        return fPort;
+                        return fPort_;
                     }
                 }
                 inline  int     URL::GetPortNumber () const
                 {
-                    return fPort;
+                    return fPort_;
                 }
                 inline  void    URL::SetPortNumber (int portNum)
                 {
-                    fPort = portNum;
+                    fPort_ = portNum;
+                }
+                inline  String  URL::GetProtocol () const
+                {
+                    return fProtocol_;
+                }
+                inline  void    URL::SetProtocol (const String& protocol)
+                {
+                    fProtocol_ = protocol;
+                }
+                inline  String  URL::GetHost () const
+                {
+                    return fHost_;
+                }
+                inline  void    URL::SetHost (const String& host)
+                {
+                    fHost_ = host;
+                }
+                inline  String  URL::GetHostRelativePath () const
+                {
+                    return fRelPath_;
+                }
+                inline  void    URL::SetHostRelativePath (const String& hostRelativePath)
+                {
+                    fRelPath_ = hostRelativePath;
+                }
+                inline  URLQuery  URL::GetQuery () const
+                {
+                    return URLQuery (fQuery_);
+                }
+                inline  void    URL::SetQuery (const URLQuery& query)
+                {
+                    fQuery_ = query.ComputeQueryString ();
+                }
+                inline  String  URL::GetQueryString () const
+                {
+                    return fQuery_;
+                }
+                inline  void    URL::SetQueryString (const String& queryString)
+                {
+                    fQuery_ = queryString;
+                }
+                inline  String  URL::GetFragment () const
+                {
+                    return fFragment_;
+                }
+                inline  void    URL::SetFragment (const String& frag)
+                {
+                    fFragment_ = frag;
                 }
                 inline  bool    URL::operator== (const URL& rhs) const
                 {

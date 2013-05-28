@@ -6,10 +6,10 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <map>
 #include    <string>
 
 #include    "../../Characters/String.h"
+#include    "../../Containers/Mapping.h"
 #include    "../../Configuration/Common.h"
 
 
@@ -18,16 +18,26 @@
  *  \file
  *
  * TODO:
- *      @todo   major cleanup of URL class needed - started process of making
- *              some stuff private - but a long way to go
- *      @todo   Redo using Stroika String class and Mapping<>
+ *
+ *      @todo   CLEANUP PROTOCOL AND HOSTNAME METHODS - ADD CLEAR REQUIREMENTS AND ENFORCE
+ *              ESP FOR STUFF LIKE COLONS!!!
+ *
  *      @todo   Add overload for URL with map<> for query.
+ *
  *      @todo   Add PREDEFINED namespace and list predefined protocols
  *              o   HTTP
  *              o   HTTPS
  *              o   FTP
  *              o   FILE
  *          (only do with new stroika string class so we can use low-cost constants)
+ *
+ *      @todo   Add Compare() method, and operator<, so we can easily add URL to
+ *              sorted types.
+ *
+ *      @todo   Current implementation contains Windows code for assertion checking.
+ *              Instead - move that to a regression test suite and pepper it with lots
+ *              of tests. That cleanups up our portable implemenation (but requires lots
+ *              of reg-tests tests!).
  */
 
 
@@ -54,15 +64,14 @@ namespace   Stroika {
 
 
                 /**
-                ***TODO: RENAME URLQuery
                  */
-                class   URLQueryDecoder {
+                class   URLQuery {
                 public:
-                    URLQueryDecoder (const string& query);
-                    URLQueryDecoder (const String& query);
+                    URLQuery (const string& query);
+                    URLQuery (const String& query);
 
                 public:
-                    nonvirtual  const map<String, String>& GetMap () const;
+                    nonvirtual  const Containers::Mapping<String, String>& GetMap () const;
 
                 public:
                     nonvirtual  String operator () (const string& idx) const;
@@ -81,7 +90,7 @@ namespace   Stroika {
                     nonvirtual  String ComputeQueryString () const;
 
                 private:
-                    map<String, String>    fMap;
+                    Containers::Mapping<String, String>    fMap_;
                 };
 
 
@@ -89,6 +98,11 @@ namespace   Stroika {
                  *  Class to help encode/decode the logical parts of an internet URL
                  *
                  *  @see http://www.ietf.org/rfc/rfc1738.txt
+                 *
+                 * TODO:
+                 *      @todo   DOCUMENT and ENFORCE restrictions on values of query string, hostname, and protocol (eg. no : in protocol, etc)
+                 *
+                 *      @todo   Bake in as member the URLQuery object
                  */
                 class   URL {
                 public:
@@ -129,11 +143,13 @@ namespace   Stroika {
 
                 public:
                     /**
+                    *** CHANGE TO USE OPTIONAL API
                      */
                     nonvirtual  int     GetPortNumber () const;
 
                 public:
                     /**
+                    *** CHANGE TO USE OPTIONAL API
                      */
                     nonvirtual  void    SetPortNumber (int portNum = kDefaultPort);
 
@@ -160,70 +176,78 @@ namespace   Stroika {
                      */
                     nonvirtual  bool    empty () const;
 
-
-
                 public:
-                    String  GetProtocol () const {
-                        return fProtocol;
-                    }
-                public:
-                    void    SetProtocol (const String& protocol) {
-                        fProtocol = protocol;
-                    }
+                    /**
+                     */
+                    String  GetProtocol () const;
 
                 public:
-                    String  GetHost () const {
-                        return fHost;
-                    }
-                public:
-                    void    SetHost (const String& host) {
-                        fHost = host;
-                    }
+                    /**
+                     */
+                    void    SetProtocol (const String& protocol);
 
                 public:
-                    String  GetHostRelativePath () const {
-                        return fRelPath;
-                    }
-                public:
-                    void    SetHostRelativePath (const String& hostRelativePath) {
-                        fRelPath = hostRelativePath;
-                    }
+                    /**
+                     */
+                    String  GetHost () const;
 
                 public:
-                    String  GetQueryString () const {
-                        return fQuery;
-                    }
-                public:
-                    void    SetQueryString (const String& queryString) {
-                        fQuery = queryString;
-                    }
+                    /**
+                     */
+                    void    SetHost (const String& host);
 
                 public:
-                    String  GetFragment () const {
-                        return fFragment;
-                    }
-                public:
-                    void    SetFragment (const String& frag) {
-                        fFragment = frag;
-                    }
+                    /**
+                     */
+                    String  GetHostRelativePath () const;
 
                 public:
-                private:
-                    /// TODO
-                    //  @todo -make private and proivide accessors
-                    // for Query - consider haivng URLQueryDecoder as value/...
-                    String fProtocol;
-                    String fHost;
-                    String fRelPath;
-                    String fQuery;
-                    String fFragment;
+                    /**
+                     */
+                    void    SetHostRelativePath (const String& hostRelativePath);
+
+                public:
+                    /**
+                     */
+                    URLQuery  GetQuery () const;
+
+                public:
+                    /**
+                     */
+                    void    SetQuery (const URLQuery& query);
+
+                public:
+                    /**
+                     */
+                    String  GetQueryString () const;
+
+                public:
+                    /**
+                     */
+                    void    SetQueryString (const String& queryString);
+
+                public:
+                    /**
+                     */
+                    String  GetFragment () const;
+                public:
+                    /**
+                     */
+                    void    SetFragment (const String& frag);
 
                 public:
                     nonvirtual  bool    operator== (const URL& rhs) const;
                     nonvirtual  bool    operator!= (const URL& rhs) const;
 
                 private:
-                    int     fPort;      // PERHPAS SHOULD USE OPTIONAL FOR THIS!!!
+                    String fProtocol_;
+                    String fHost_;
+                    String fRelPath_;
+                    String fQuery_;
+                    String fFragment_;
+
+                private:
+                    int     fPort_;      // PERHPAS SHOULD USE OPTIONAL FOR THIS!!!
                 };
 
 
@@ -234,7 +258,7 @@ namespace   Stroika {
 
                 class   LabeledURL {
                 public:
-                    LabeledURL (const URL& url, const String& label = String ());
+                    LabeledURL (const URL& url = URL (), const String& label = String ());
 
                 public:
                     URL     fURL;
