@@ -121,6 +121,9 @@
     <Filter Include="Sources\Cryptography\Hash">
       <UniqueIdentifier>{11bf2507-553c-47f8-aa78-2b6535bf6e89}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Cryptography\Hash\Algorithms">
+      <UniqueIdentifier>{1a5f6d25-2dce-4905-a34f-71b6b872dad4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -504,8 +507,14 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Jenkins.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.cpp">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1179,8 +1188,14 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h">
       <Filter>Sources\Cryptography\Hash</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Jenkins.h">
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.h">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.h">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1749,11 +1764,17 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Jenkins.inl">
-      <Filter>Sources\Cryptography\Hash</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\ReadMe.md">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Adapters.inl">
+      <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\CRC32.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.inl">
+      <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </None>
   </ItemGroup>
 </Project>
