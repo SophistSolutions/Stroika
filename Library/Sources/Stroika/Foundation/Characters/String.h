@@ -47,6 +47,9 @@
  *
  * TODO:
  *
+ *      @todo   Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
+ *              Should be able to do for (Character c : s) {...}
+ *
  *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
  *              functions returning a new string. Has performance implications, but also usability.
  *              Not sure what way to go (probably do it), but clearly document!!! And docment reasons.
@@ -477,13 +480,13 @@ namespace   Stroika {
             public:
                 /*
                  * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivilent.
+                 * upper case equivilent. Note that non-lower-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToLowerCase () const;
 
                 /*
                  * Return a new string based on this string where each lower case characer is replaced by its
-                 * upper case equivilent.
+                 * upper case equivilent. Note that non-upper-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToUpperCase () const;
 
