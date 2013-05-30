@@ -6,11 +6,12 @@ include	../../SharedBuildRules.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/
 
-.PHONY:			SSL
+.PHONY:			Hash SSL
 
 
 SubDirs	=	\
-	SSL	\
+	Hash	\
+	SSL		\
 
 
 vpath %cpp $(SrcDir)
@@ -25,13 +26,15 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
+Hash_OBJS := $(addprefix "./Hash/", $(shell cd Hash; make -s list-objs))
 SSL_OBJS := $(addprefix "./SSL/", $(shell cd SSL; make -s list-objs))
 
 
 list-objs::
-	@echo $(SSL_OBJS)
+	@echo $(Hash_OBJS) $(SSL_OBJS)
+
+Hash:
+	(cd Hash; make -s)
 
 SSL:
 	(cd SSL; make -s)
-
-
