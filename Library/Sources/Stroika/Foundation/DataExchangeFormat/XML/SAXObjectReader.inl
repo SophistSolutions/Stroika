@@ -17,7 +17,12 @@ namespace   Stroika {
         namespace   DataExchangeFormat {
             namespace   XML {
 
-                //  class   SAXObjectReader
+
+                /*
+                 ********************************************************************************
+                 ********************************** SAXObjectReader *****************************
+                 ********************************************************************************
+                 */
                 inline  SAXObjectReader::SAXObjectReader ()
 #if     qDefaultTracingOn
                     : fTraceThisReader (false)
@@ -50,10 +55,19 @@ namespace   Stroika {
                 }
 
 
+                /*
+                 ********************************************************************************
+                 ********************************** BuiltinReader *******************************
+                 ********************************************************************************
+                 */
                 template    <>
                 class   BuiltinReader<String> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (String* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (String* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String* value_;
                 public:
@@ -64,7 +78,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<int> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (int* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (int* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String  tmpVal_;
                     int*    value_;
@@ -76,7 +94,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<unsigned int> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (unsigned int* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (unsigned int* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
@@ -88,7 +110,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<float> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (float* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (float* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String  tmpVal_;
                     float*  value_;
@@ -100,7 +126,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<double> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (double* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (double* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String  tmpVal_;
                     double* value_;
@@ -112,7 +142,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (bool* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (bool* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String  tmpVal_;
                     bool*   value_;
@@ -124,7 +158,11 @@ namespace   Stroika {
                 template    <>
                 class   BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
                 public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     BuiltinReader (Time::DateTime* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+#else
+                    BuiltinReader (Time::DateTime* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+#endif
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;
@@ -135,10 +173,11 @@ namespace   Stroika {
                 };
 
 
-
-
-
-
+                /*
+                 ********************************************************************************
+                 ******************** OptionalTypesReader<T, ACTUAL_READER> *********************
+                 ********************************************************************************
+                 */
                 template    <typename   T, typename ACTUAL_READER>
                 OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs)
                     : value_ (intoVal)
@@ -168,10 +207,11 @@ namespace   Stroika {
                 }
 
 
-
-
-
-
+                /*
+                 ********************************************************************************
+                 ******************************* ComplexObjectReader<T> *************************
+                 ********************************************************************************
+                 */
                 template    <typename   T>
                 inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp, const map<String, Memory::VariantValue>& attrs)
                     : fValuePtr (vp)
@@ -198,9 +238,11 @@ namespace   Stroika {
                 }
 
 
-
-
-
+                /*
+                 ********************************************************************************
+                 *************************** ListOfObjectReader<TRAITS> *************************
+                 ********************************************************************************
+                 */
                 template    <typename TRAITS>
                 ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs)
                     : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
@@ -234,7 +276,6 @@ namespace   Stroika {
                     }
                     ComplexObjectReader<vector<typename TRAITS::ElementType>>::HandleEndTag (r);
                 }
-
 
 
             }
