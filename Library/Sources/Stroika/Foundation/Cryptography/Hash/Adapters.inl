@@ -22,7 +22,6 @@ namespace   Stroika {
                 struct Adapapter<Hasher<uint32_t, Algorithms::Jenkins>> {
                     typedef Hasher<uint32_t, Algorithms::Jenkins>::ReturnType   ReturnType;
 
-                    //template    <>
                     static  uint32_t  Hash (uint32_t data2Hash);
                 };
 

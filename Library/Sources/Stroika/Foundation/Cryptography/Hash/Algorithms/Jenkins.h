@@ -42,17 +42,15 @@ namespace   Stroika {
                     // Just a name to select template implementation
                     struct Jenkins {
                     };
-
                 }
+
 
                 template    <>
                 struct Hasher<uint32_t, Algorithms::Jenkins> {
-                    static  uint32_t    Hash (const Streams::BinaryInputStream& from);
-                    static  uint32_t    Hash (const Byte* from, const Byte* to);
-#if 0
-                    template    <typename   PODTYPE>
-                    static  uint32_t    Hash (const PODTYPE& pod);
-#endif
+                    typedef uint32_t   ReturnType;
+
+					static  ReturnType  Hash (const Streams::BinaryInputStream& from);
+                    static  ReturnType	Hash (const Byte* from, const Byte* to);
                 };
 
 

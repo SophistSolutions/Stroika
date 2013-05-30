@@ -12,10 +12,10 @@ using   namespace   Stroika::Foundation::Cryptography::Hash;
 
 
 
-
-
-//
 // Robert Jenkins' 32 bit integer hash function
+//
+////			@todo	FIND SOURCE/COPYRIGHT ATTRIBUTE - NOT SURE WHERE I GOT THIS?
+//
 //
 uint32_t  Adapapter<Hasher<uint32_t, Algorithms::Jenkins>>::Hash (uint32_t data2Hash)
 {
