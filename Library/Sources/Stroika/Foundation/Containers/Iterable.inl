@@ -29,7 +29,6 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Iterable<T>::_IRep::_IsEmpty () const
             {
-                RequireNotNull (fRep_.get ());
                 return GetLength () == 0;
             }
             template    <typename T>
