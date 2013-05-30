@@ -49,8 +49,8 @@ namespace   Stroika {
                 struct Hasher<uint32_t, Algorithms::Jenkins> {
                     typedef uint32_t   ReturnType;
 
-					static  ReturnType  Hash (const Streams::BinaryInputStream& from);
-                    static  ReturnType	Hash (const Byte* from, const Byte* to);
+                    static  ReturnType  Hash (const Streams::BinaryInputStream& from);
+                    static  ReturnType  Hash (const Byte* from, const Byte* to);
                 };
 
 

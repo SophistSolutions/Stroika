@@ -15,6 +15,15 @@
 
 
 
+/**
+ *  \file
+ *
+ *  TODO:
+ *
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
@@ -22,12 +31,15 @@ namespace   Stroika {
 
 
                 /**
-                 *      The basic idea of the SAXObjectReader is to make it easier to write C++ code to deserialize an XML source (via SAX), into
-                 *  a C++ data structure. This tends to be MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing the DOM
-                 *  with XPath. So why would you do it? This way is dramatically more efficeint. For one thing - there is no need to have the entire source in memory at
-                 *  a time, and there is no need to ever construct intermediary DOM nodes.
+                 *      The basic idea of the SAXObjectReader is to make it easier to write C++ code
+                 *  to deserialize an XML source (via SAX), into a C++ data structure. This tends to be
+                 *  MUCH MUCH harder than doing something similar by loading an XML DOM, and then traversing
+                 *  the DOM with XPath. So why would you do it? This way is dramatically more efficeint.
+                 *  For one thing - there is no need to have the entire source in memory at a time, and there
+                 *  is no need to ever construct intermediary DOM nodes.
                  *
-                 *      We need good docs - on how to use this - but for the time being, just look at the example usage in the regression test.
+                 *      We need good docs - on how to use this - but for the time being, just look at the
+                 *  example usage in the regression test.
                  */
                 class SAXObjectReader {
                 public:
@@ -72,7 +84,7 @@ namespace   Stroika {
                 };
 
 
-                /*
+                /**
                  * BuiltinReader<> is not implemented for all types - just for the specialized ones listed below:
                  *      String
                  *      int
@@ -107,14 +119,15 @@ namespace   Stroika {
                 class   BuiltinReader<Time::DateTime>;
 
 
-                /*
-                 * OptionalTypesReader supports reads of optional types. This will work - for any types for which BuiltinReader<T>
-                 * is implemented.
+                /**
+                 *  OptionalTypesReader supports reads of optional types. This will work - for any types for
+                 *  which BuiltinReader<T> is implemented.
                  *
-                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has already occurred. The reaosn for Optional<>
-                 *  part is because the caller had an optional element which might never have triggered the invocation of this class.
+                 *  Note - this ALWAYS produces a result. Its only called when the element in quesiton has
+                 *  already occurred. The reaosn for Optional<> part is because the caller had an optional
+                 *  element which might never have triggered the invocation of this class.
                  */
-                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T> >
+                template    <typename   T, typename ACTUAL_READER = BuiltinReader<T>>
                 class   OptionalTypesReader : public SAXObjectReader::ObjectBase {
                 public:
                     OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
@@ -131,9 +144,9 @@ namespace   Stroika {
                 };
 
 
-                /*
-                 * Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read. This is necessary to balance out
-                 * the Start Tag / End Tag combinations.
+                /**
+                 *  Push one of these Nodes onto the stack to handle 'reading' a node which is not to be read.
+                 *  This is necessary to balance out the Start Tag / End Tag combinations.
                  */
                 class   IgnoreNodeReader : public SAXObjectReader::ObjectBase {
                 public:
@@ -147,8 +160,8 @@ namespace   Stroika {
                 };
 
 
-                /*
-                 * Helper class for reading complex (structured) objects.
+                /**
+                 *  Helper class for reading complex (structured) objects.
                  */
                 template    <typename   T>
                 class   ComplexObjectReader : public SAXObjectReader::ObjectBase {
@@ -166,10 +179,9 @@ namespace   Stroika {
                 };
 
 
-                /*
-                 * The ListOfObjectReader<> template can be used to create a vector of type "T" - to capture repeating elements
-                 * in a sequence.
-                 *
+                /**
+                 *  The ListOfObjectReader<> template can be used to create a vector of type "T" -
+                 *  to capture repeating elements in a sequence.
                  *
                  *  EXAMPLE TRAITS:
                  *      struct  ReaderTraits {
