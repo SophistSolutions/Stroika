@@ -30,7 +30,7 @@ namespace   Stroika {
             namespace   XML {
 
 #if     !qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                constexpr   map<String, Memory::VariantValue>   kEmptyMapString2VariantVal_;
+                const   map<String, Memory::VariantValue>   kEmptyMapString2VariantVal_;
 #endif
 
 
@@ -102,7 +102,6 @@ namespace   Stroika {
 #else
                     BuiltinReader (T* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
-                    BuiltinReader (T* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
 
                 private:
                     T* value_;
