@@ -8,14 +8,12 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "Algorithms/Jenkins.h"
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Cryptography {
             namespace   Hash {
-
-                namespace Algorithms {
-                    struct Jenkins;
-                }
 
 
                 template    <>
