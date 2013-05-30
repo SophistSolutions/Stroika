@@ -106,10 +106,25 @@ namespace   Stroika {
                  */
                 class   URL {
                 public:
+                    /**
+                     *  From http://www.ietf.org/rfc/rfc1738.txt (section 2.1. The main parts of URLs)
+                     *
+                     * Scheme names consist of a sequence of characters. The lower case
+                       letters "a"--"z", digits, and the characters plus ("+"), period
+                       ("."), and hyphen ("-") are allowed. For resiliency, programs
+                       interpreting URLs should treat upper case letters as equivalent to
+                       lower case in scheme names (e.g., allow "HTTP" as well as "http").
+                        */
+                    typedef String  SchemeType; // AKA PROTOCOL
+
+                public:
+                    /**
+                     * See SetProtocol () for handling of the 'protocol' parameter.
+                    */
                     URL ();
                     explicit URL (const String& fullURL);
-                    explicit URL (const String& protocol, const String& host, int portNumber = kDefaultPort, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
-                    explicit URL (const String& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
+                    explicit URL (const SchemeType& protocol, const String& host, int portNumber = kDefaultPort, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    explicit URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
 
                 public:
                     /**
@@ -163,6 +178,10 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  this does not do a field by field compare. It returns true iff GetFullURL() on lhs / rhs would return the
+                     *  same string
+                     *
+                     *  @todo   (modulo what should be compared canse instaitivive???) - hostname?
                      */
                     nonvirtual  bool    Equals (const URL& rhs) const;
 
@@ -179,61 +198,67 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    String  GetProtocol () const;
+                    nonvirtual  SchemeType  GetProtocol () const;
+
+                public:
+                    /**
+                     *  Since From http://www.ietf.org/rfc/rfc1738.txt suggests mapping upper case to lower case, this function does that.
+                     *  But other violations in teh format of a protocol generate exceptions.
+                     */
+                    nonvirtual  void    SetProtocol (const SchemeType& protocol);
 
                 public:
                     /**
                      */
-                    void    SetProtocol (const String& protocol);
+                    nonvirtual  String  GetHost () const;
+
+                public:
+                    /**
+                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+                     */
+                    nonvirtual  void    SetHost (const String& host);
 
                 public:
                     /**
                      */
-                    String  GetHost () const;
+                    nonvirtual  String  GetHostRelativePath () const;
+
+                public:
+                    /**
+                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+                     */
+                    nonvirtual  void    SetHostRelativePath (const String& hostRelativePath);
 
                 public:
                     /**
                      */
-                    void    SetHost (const String& host);
+                    nonvirtual  URLQuery  GetQuery () const;
 
                 public:
                     /**
                      */
-                    String  GetHostRelativePath () const;
+                    nonvirtual  void    SetQuery (const URLQuery& query);
 
                 public:
                     /**
                      */
-                    void    SetHostRelativePath (const String& hostRelativePath);
+                    nonvirtual  String  GetQueryString () const;
+
+                public:
+                    /**
+                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+                     */
+                    nonvirtual  void    SetQueryString (const String& queryString);
 
                 public:
                     /**
                      */
-                    URLQuery  GetQuery () const;
-
+                    nonvirtual  String  GetFragment () const;
                 public:
                     /**
+                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
                      */
-                    void    SetQuery (const URLQuery& query);
-
-                public:
-                    /**
-                     */
-                    String  GetQueryString () const;
-
-                public:
-                    /**
-                     */
-                    void    SetQueryString (const String& queryString);
-
-                public:
-                    /**
-                     */
-                    String  GetFragment () const;
-                public:
-                    /**
-                     */
-                    void    SetFragment (const String& frag);
+                    nonvirtual  void    SetFragment (const String& frag);
 
                 public:
                     nonvirtual  bool    operator== (const URL& rhs) const;

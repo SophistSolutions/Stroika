@@ -79,10 +79,6 @@ namespace   Stroika {
                 {
                     return fProtocol_;
                 }
-                inline  void    URL::SetProtocol (const String& protocol)
-                {
-                    fProtocol_ = protocol;
-                }
                 inline  String  URL::GetHost () const
                 {
                     return fHost_;

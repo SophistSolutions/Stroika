@@ -13,6 +13,7 @@
 #include    "../../Characters/StringUtils.h"
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Exceptions.h"
+#include    "../../Execution/StringException.h"
 #if     qPlatform_Windows
 #include    "../../Execution/Platform/Windows/HRESULTErrorException.h"
 #endif
@@ -29,6 +30,27 @@ using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
 
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
+
+
+
+
+namespace {
+    URL::SchemeType NormalizeScheme_ (URL::SchemeType s)
+    {
+        // replace all uppercase with lowercase - dont validate here
+        return s.ToLowerCase ();
+    }
+    void    ValidateScheme_ (const URL::SchemeType& s)
+    {
+        // use for (Character c : s) {... when that works -- LGP 2013-05-29)
+        for (size_t i = 0; i < s.GetLength (); ++i) {
+            if (not s[i].IsAscii () or not (s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
+                Execution::DoThrow<Execution::StringException> (Execution::StringException (L"bad character in scheme"));
+            }
+        }
+    }
+}
+
 
 
 namespace   {
@@ -167,7 +189,8 @@ URL::URL (const String& w)
     {
         size_t  e   =   w.find (':');
         if (e != kBadStringIndex) {
-            fProtocol_ = w.SubString (0, e).ToLowerCase ();
+            fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
+            ValidateScheme_ (fProtocol_);
         }
     }
 
@@ -271,24 +294,26 @@ URL::URL (const String& w)
 #endif
 }
 
-URL::URL (const String& protocol, const String& host, int portNumber, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (protocol)
+URL::URL (const SchemeType& protocol, const String& host, int portNumber, const String& relPath, const String& query, const String& fragment)
+    : fProtocol_ (NormalizeScheme_ (protocol))
     , fHost_ (host)
     , fPort_ (portNumber)
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
+    ValidateScheme_ (fProtocol_);
 }
 
-URL::URL (const String& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
-    : fProtocol_ (protocol)
+URL::URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
+    : fProtocol_ (NormalizeScheme_ (protocol))
     , fHost_ (host)
     , fPort_ (kDefaultPort)
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
+    ValidateScheme_ (fProtocol_);
 }
 
 URL URL::ParseHostRelativeURL (const String& w)
@@ -318,6 +343,12 @@ URL URL::ParseHostRelativeURL (const String& w)
         }
     }
     return url;
+}
+
+void    URL::SetProtocol (const SchemeType& protocol)
+{
+    fProtocol_ = NormalizeScheme_ (protocol);
+    ValidateScheme_ (fProtocol_);
 }
 
 bool    URL::IsSecure () const
