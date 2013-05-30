@@ -192,6 +192,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Containers", "Makefile-Foundation-Containers");
 		mkDirWithLinks("Foundation/Cryptography", "Makefile-Foundation-Cryptography");
 		mkDirWithLinks2("Foundation/Cryptography/Hash", "Makefile-Foundation-Cryptography-Hash");
+		mkDirWithLinks3("Foundation/Cryptography/Hash/Algorithms", "Makefile-Foundation-Cryptography-Hash-Algorithms");
 		mkDirWithLinks2("Foundation/Cryptography/SSL", "Makefile-Foundation-Cryptography-SSL");
 		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
 		mkDirWithLinks("Foundation/DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
