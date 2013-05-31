@@ -201,7 +201,8 @@ namespace   Stroika {
 #if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr size_t    kBadIndex   = wstring::npos;
 #else
-                static  constexpr size_t    kBadIndex   = (size_t) - 1;
+                DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
+                //static  constexpr size_t    kBadIndex   = (size_t) - 1;
 #endif
 
             public:
