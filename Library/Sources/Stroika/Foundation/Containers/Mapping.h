@@ -29,6 +29,10 @@
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
+ *
+ *      @todo   Not sure where this note goes - but eventually add "Database-Based" implementation of mapping
+ *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
+ *              other db module would inherit from mapping).
  */
 
 

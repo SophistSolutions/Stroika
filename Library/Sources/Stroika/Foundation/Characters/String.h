@@ -47,6 +47,8 @@
  *
  * TODO:
  *
+ *      @todo   Move String_BufferedArray - etc - to separate module/file
+ *
  *      @todo   Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
  *              Should be able to do for (Character c : s) {...}
  *
