@@ -75,7 +75,7 @@ namespace   Stroika {
                 {
                     fPort_ = portNum;
                 }
-                inline  String  URL::GetProtocol () const
+                inline  URL::SchemeType  URL::GetProtocol () const
                 {
                     return fProtocol_;
                 }
