@@ -78,7 +78,7 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Linux';
 	}
 	if ("$^O" eq "cygwin") {
-		# first try vs 2k12
+		# try vs 2k12
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
@@ -90,8 +90,9 @@ sub	SetInitialDefaults_
 			}
 		}
 
-		# first try vs 2k10
+		# try vs 2k10 (NOTE - OBSOLETE)
 		if ($PROJECTPLATFORMSUBDIR eq "") {
+			print ("****ERRROR - WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
 			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
 			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 10.0/VC") {
@@ -102,7 +103,7 @@ sub	SetInitialDefaults_
 			}
 		}
 	}
-	
+
 	if ("$^O" eq "linux" && -e '/usr/include/openssl/conf.h') {
 		$ENABLE_OPENSSL = 1;
 	}
@@ -258,8 +259,12 @@ sub	ParseCommandLine_Remaining_
 sub	CHECK_OPTIONS_
 {
 	if ($PROJECTPLATFORMSUBDIR eq "") {
-		die ("Cannot identify ProjectPlatformSubdir");
+		die ("Cannot identify ProjectPlatformSubdir\n");
 	}
+	if ($PROJECTPLATFORMSUBDIR eq "VisualStudio.Net-2010") {
+		die ("WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
+	}
+	
 }
 
 sub	ParseCommandLine_
