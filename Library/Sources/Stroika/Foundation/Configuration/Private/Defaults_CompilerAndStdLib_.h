@@ -907,14 +907,18 @@
 
 
 /*
- * NB: we can lose these macros once all our compilers support the new C++ syntax.
+ *  NB: we can lose these macros once all our compilers support the new C++ syntax.
+ *
+ *  Also note - the bug workaround - enum  { NAME = static_cast<TYPE> (VALUE) } - doesn't
+ *  work pefrectly - since it doesnt create a name of the desired type, but its usually
+ *  pretty close.
  */
 #if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     static  constexpr TYPE NAME = VALUE;
 #else
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
-    enum  { NAME = VALUE };
+    enum  { NAME = static_cast<TYPE> (VALUE) };
 #endif
 
 
