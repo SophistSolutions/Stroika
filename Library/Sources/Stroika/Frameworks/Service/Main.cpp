@@ -621,54 +621,54 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
 
 /*
  ********************************************************************************
- ****************************** Service::Main::IRep *****************************
+ ****************************** Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-Main::IRep::IRep ()
+Main::IApplicationRep::IApplicationRep ()
     : fStopping_ (false)
     , fMustReReadConfig (false)
 {
 }
 
-Main::IRep::~IRep ()
+Main::IApplicationRep::~IApplicationRep ()
 {
 }
 
-void    Main::IRep::OnStartRequest ()
+void    Main::IApplicationRep::OnStartRequest ()
 {
     // This procedure ends when the entire service process ends...
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::OnStartRequest"));
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStartRequest"));
     MainLoop ();
 }
 
-void    Main::IRep::OnStopRequest ()
+void    Main::IApplicationRep::OnStopRequest ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::OnStopRequest"));
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStopRequest"));
     // default to using thread stuff to send us a signal to abort...
     fStopping_ = true;
 }
 
-void    Main::IRep::OnReReadConfigurationRequest ()
+void    Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
     fMustReReadConfig = true;
 }
 
-String  Main::IRep::GetServiceStatusMessage () const
+String  Main::IApplicationRep::GetServiceStatusMessage () const
 {
     return String ();
 }
 
 #if     qPlatform_POSIX
-String  Main::IRep::GetPIDFileName () const
+String  Main::IApplicationRep::GetPIDFileName () const
 {
     return L"/tmp/" + GetServiceDescription ().fName + L".pid";
 }
 #endif
 
 #if     qPlatform_POSIX
-void    Main::IRep::SignalHandler (int signum)
+void    Main::IApplicationRep::SignalHandler (int signum)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IRep::SignalHandler"));
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::SignalHandler"));
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
@@ -709,12 +709,14 @@ const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-shared_ptr<Main::IRep>   Main::_sRep;
+shared_ptr<Main::IApplicationRep>   Main::_sAppRep;
+shared_ptr<Main::IServiceRep>       Main::_sServiceRep;
 
-Main::Main (shared_ptr<IRep> rep)
+Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceRep> serviceRep)
 {
-    Require  (_sRep.get () == nullptr);     // singleton
-    _sRep = rep;
+    Require  (_sAppRep.get () == nullptr);     // singleton
+    _sAppRep = rep;
+    _sServiceRep = serviceRep;
 #if     qPlatform_POSIX
     SetupSignalHanlders_ ();
 #endif
@@ -741,7 +743,7 @@ Main::State Main::GetState () const
 #if     qPlatform_POSIX
 pid_t   Main::GetServicePID () const
 {
-    ifstream    in (_sRep->GetPIDFileName ().AsTString ().c_str ());
+    ifstream    in (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
     if (in) {
         pid_t   n = 0;
         in >> n;
@@ -777,7 +779,7 @@ String      Main::GetServiceStatusMessage () const
         default:
             AssertNotReached ();
     }
-    tmp << _sRep->GetServiceStatusMessage ().As<wstring> ();
+    tmp << _sAppRep->GetServiceStatusMessage ().As<wstring> ();
     DbgTrace (L"returning status: (%s)", tmp.str ().c_str ());
     return tmp.str ();
 }
@@ -789,21 +791,21 @@ void    Main::RunAsService ()
 
     try {
 #if     qPlatform_POSIX
-        ofstream    out (_sRep->GetPIDFileName ().AsTString ().c_str ());
+        ofstream    out (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
         out << getpid () << endl;
 #endif
-        _sRep->OnStartRequest ();
+        _sAppRep->OnStartRequest ();
     }
     catch (const Execution::ThreadAbortException& /*threadAbort*/) {
 #if     qPlatform_POSIX
-        unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+        unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
         // ignore this - just means service ended normally
     }
     catch (...) {
         DbgTrace (TSTR ("Unexpected exception ended running service"));
 #if     qPlatform_POSIX
-        unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+        unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
         throw;
     }
@@ -891,7 +893,7 @@ void    Main::Kill ()
 #if     qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 }
 
@@ -904,7 +906,7 @@ void    Main::_Restart (Time::DurationSecondsType timeout)
     IgnoreExceptionsForCall (Stop (timeout));
 #if     qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
     Start (endAt - Time::GetTickCount ());
 }
@@ -926,7 +928,7 @@ void    Main::_CleanupDeadService ()
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
 #if     qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 #endif
 }
 
@@ -965,13 +967,13 @@ void    Main::Continue ()
 
 Main::ServiceDescription    Main::GetServiceDescription () const
 {
-    return _sRep->GetServiceDescription ();
+    return _sAppRep->GetServiceDescription ();
 }
 
 #if     qPlatform_POSIX
 void    Main::SignalHandler (int signum)
 {
-    _sRep->SignalHandler (signum);
+    _sAppRep->SignalHandler (signum);
 }
 #endif
 

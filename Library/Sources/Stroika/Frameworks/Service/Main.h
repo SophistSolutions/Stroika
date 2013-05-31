@@ -17,7 +17,11 @@
 #include    "../../Foundation/Configuration/Common.h"
 
 
-/*
+/**
+ *
+ *  STATUS  VERY PRELIMINARY - GOT SOMETHING SIMILAR WORKING ON UNIX A WHILE BACK BUT NEW FACTORING
+ *          IS A PROTOTYPE - AND CODE FOR WINDOWS NOT EVEN PROTOTYPE STAGE YET...
+ *
  * TODO:
  *      (o) For UNIX
  *
@@ -34,76 +38,62 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Service {
 
+
             using   namespace   Stroika::Foundation;
             using   Characters::String;
 
-            // very very rough draft -
+
+            /**
+             *  There are two differnt dimentions along which you can subtype the behavior of a service application:
+             *      (1) what the service provides
+             *      (2) the OS service mechanism to use
+             *
+             *  Users of this class will themselves address #1, by subclassing from the IApplicationRep, and providing their application
+             *  behavior. But users can also select different 'service implementation' strategies. What serice implementation
+             *  strategies are available will depend on the OS you've built for, and often on command-line app arguments.
+             *
+             */
             class   Main {
             public:
                 struct  ServiceDescription {
                     String  fName;
                 };
+
             public:
-                /*
-                 * To use this class you must implement your own Rep (to represent the running service).
-                 *
-                 *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
-                 *  so be careful of thread safety!
-                 */
-                class   IRep {
-                public:
-                    IRep ();
-                    virtual ~IRep ();
+                class   IApplicationRep;
 
-                public:
-                    // This should be overridden by each service, and should  never return until the service is done (stop request).
-                    virtual void                MainLoop () = 0;
-
-                public:
-                    virtual void                OnStartRequest ();
-                    virtual void                OnStopRequest ();
-                    virtual void                OnReReadConfigurationRequest ();    //NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24
-
-                    //  returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
-                    //  service specific extras
-                    virtual String              GetServiceStatusMessage () const;
-                    virtual ServiceDescription  GetServiceDescription () const = 0;
+            public:
+                class   IServiceRep;
 
 #if     qPlatform_POSIX
-                public:
-                    virtual String              GetPIDFileName () const;
+            public:
+                // Default for UNIX - responds in standard way to basic signals etc
+                class   BasicUNIXServiceImpl;
 #endif
+            public:
+                // Mostly for regression tests (and windoze)
+                class   RunTilIdleService;
+
+            public:
+                // Run with absolultely minimal OS integration support. Count on the app itself to make service calls
+                // to start/stop
+                class   RunNoFrillsService;
 
 #if     qPlatform_POSIX
-                public:
-                    virtual void                SignalHandler (int signum);
+            public:
+                // Run as a windows service - integrating with the Windows Service Mgr
+                class   WinowsService;
 #endif
 
-
-                    // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
-                protected:
-                    nonvirtual  bool    _CheckShouldReReadConfig () const;
-                    nonvirtual  void    _DidReReadConfig ();
-                private:
-                    bool    fMustReReadConfig;
-
-                protected:
-                    // Called periodically in subclasses of MainLoop to abort processing when the service is being shut down. Triggers a
-                    // ThreadAborted exception when its time...
-                    nonvirtual  void    _CheckAndAbortThread () const;
-
-                private:
-                    bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
-
-                };
             public:
-                /*
+                /**
                  * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
-                Main (shared_ptr<IRep> rep);
+                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceRep> serviceRep);
 
             protected:
-                static  shared_ptr<IRep> _sRep;
+                static  shared_ptr<IApplicationRep> _sAppRep;
+                static  shared_ptr<IServiceRep>     _sServiceRep;
 
 
 #if     qPlatform_POSIX
@@ -139,9 +129,10 @@ namespace   Stroika {
 #endif
 
             public:
-                /*
-                 *  Checks the state of the given service. NOTE - this works ACROSS PROCESSES. It can be called to ask in a controller exe
-                 *  if the serviceMain EXE is running. It also - COULD give the wrong answer - given races, so use with care.
+                /**
+                 *  Checks the state of the given service. NOTE - this works ACROSS PROCESSES. It can be called
+                 *  to ask in a controller exe if the serviceMain EXE is running. It also - COULD give the
+                 *  wrong answer - given races, so use with care.
                  */
                 enum  class State : uint8_t {
                     eStopped,
@@ -149,6 +140,7 @@ namespace   Stroika {
                     ePaused,        // STOPPED in unix
                 };
                 nonvirtual  State               GetState () const;
+
 
 #if     qPlatform_POSIX
             public:
@@ -268,6 +260,62 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
             };
+
+
+
+            /*
+             * To use this class you must implement your own Rep (to represent the running service).
+             *
+             *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
+             *  so be careful of thread safety!
+             */
+            class   Main::IApplicationRep {
+            public:
+                IApplicationRep ();
+                virtual ~IApplicationRep ();
+
+            public:
+                // This should be overridden by each service, and should  never return until the service is done (stop request).
+                virtual void                MainLoop () = 0;
+
+            public:
+                virtual void                OnStartRequest ();
+                virtual void                OnStopRequest ();
+                virtual void                OnReReadConfigurationRequest ();    //NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24
+
+                //  returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
+                //  service specific extras
+                virtual String              GetServiceStatusMessage () const;
+                virtual ServiceDescription  GetServiceDescription () const = 0;
+
+#if     qPlatform_POSIX
+            public:
+                virtual String              GetPIDFileName () const;
+#endif
+
+#if     qPlatform_POSIX
+            public:
+                virtual void                SignalHandler (int signum);
+#endif
+
+
+                // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
+            protected:
+                nonvirtual  bool    _CheckShouldReReadConfig () const;
+                nonvirtual  void    _DidReReadConfig ();
+            private:
+                bool    fMustReReadConfig;
+
+            protected:
+                // Called periodically in subclasses of MainLoop to abort processing when the service is being shut down. Triggers a
+                // ThreadAborted exception when its time...
+                nonvirtual  void    _CheckAndAbortThread () const;
+
+            private:
+                bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
+
+            };
+
 
         }
     }

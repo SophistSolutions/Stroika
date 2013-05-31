@@ -17,19 +17,19 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Service {
 
-            //  class   Service::Main::IRep
-            inline  void    Main::IRep::_CheckAndAbortThread () const
+            //  class   Service::Main::IApplicationRep
+            inline  void    Main::IApplicationRep::_CheckAndAbortThread () const
             {
                 Execution::CheckForThreadAborting ();
                 if (fStopping_) {
                     Execution::DoThrow (Execution::ThreadAbortException ());
                 }
             }
-            inline  bool    Main::IRep::_CheckShouldReReadConfig () const
+            inline  bool    Main::IApplicationRep::_CheckShouldReReadConfig () const
             {
                 return fMustReReadConfig;
             }
-            inline  void    Main::IRep::_DidReReadConfig ()
+            inline  void    Main::IApplicationRep::_DidReReadConfig ()
             {
                 fMustReReadConfig = false;
             }
