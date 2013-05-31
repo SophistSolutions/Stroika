@@ -11,6 +11,7 @@
 #include    "../../Characters/String.h"
 #include    "../../Containers/Mapping.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Memory/Optional.h"
 
 
 
@@ -48,19 +49,13 @@ namespace   Stroika {
             namespace   Network {
 
 
-                // TODO - probably use OPTIOINAL instead of a sentinal value!!!
-                // OR - BETTER - USE SETINAL INTERNALLY - as IMPL DETIAL - but change public API to use Optional!!!! Better API, and
-                // then basically the same perforamncnce...
-                const   int kDefaultPort    =   -1;
-
-
                 using   Characters::String;
 
 
                 /**
                  * probably should define standard protos here - with named constnats - like http/ftp/https etc
                  */
-                int     GetDefaultPortForProtocol (const String& proto);
+                uint16_t     GetDefaultPortForProtocol (const String& proto);
 
 
                 /**
@@ -117,13 +112,17 @@ namespace   Stroika {
                         */
                     typedef String  SchemeType; // AKA PROTOCOL
 
+
+                public:
+                    typedef uint16_t    PortType;
+
                 public:
                     /**
                      * See SetProtocol () for handling of the 'protocol' parameter.
                     */
                     URL ();
                     explicit URL (const String& fullURL);
-                    explicit URL (const SchemeType& protocol, const String& host, int portNumber = kDefaultPort, const String& relPath = String (), const String& query = String (), const String& fragment = String ());
+                    explicit URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber = Memory::Optional<PortType> (), const String& relPath = String (), const String& query = String (), const String& fragment = String ());
                     explicit URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query = String (), const String& fragment = String ());
 
                 public:
@@ -142,7 +141,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Returns a fully String representation of the fully qualified URL.
+                     *  Returns a String representation of the fully qualified URL.
                      */
                     nonvirtual  String  GetFullURL () const;
 
@@ -154,19 +153,20 @@ namespace   Stroika {
                 public:
                     /**
                      */
-                    nonvirtual  int     GetEffectivePortNumber () const;    // if port# not specified, returns detault given the protocol
+                    nonvirtual  URL::PortType     GetEffectivePortNumber () const;    // if port# not specified, returns detault given the protocol
 
                 public:
                     /**
-                    *** CHANGE TO USE OPTIONAL API
+                     *  If the result is empty () - then the value returned by GetEffectivePortNumber() will be determinted automtically
+                     *  based on the current 'protocol'.
                      */
-                    nonvirtual  int     GetPortNumber () const;
+                    nonvirtual  Memory::Optional<PortType>     GetPortNumber () const;
 
                 public:
                     /**
-                    *** CHANGE TO USE OPTIONAL API
+                     *  @see GetPortNumber ();
                      */
-                    nonvirtual  void    SetPortNumber (int portNum = kDefaultPort);
+                    nonvirtual  void    SetPortNumber (const Memory::Optional<PortType>& portNum = Memory::Optional<PortType> ());
 
                 public:
                     /**
@@ -197,6 +197,7 @@ namespace   Stroika {
 
                 public:
                     /**
+                     *  Always returns a valid (or empty) protocol/URL scheme - according to http://www.ietf.org/rfc/rfc1738.txt
                      */
                     nonvirtual  SchemeType  GetProtocol () const;
 
@@ -272,7 +273,8 @@ namespace   Stroika {
                     String fFragment_;
 
                 private:
-                    int     fPort_;      // PERHPAS SHOULD USE OPTIONAL FOR THIS!!!
+                    DEFINE_CONSTEXPR_CONSTANT (PortType, kDefaultPortSentinal_, -1);    // sentinal value a more efficient rep than Optional<>
+                    PortType     fPort_;
                 };
 
 

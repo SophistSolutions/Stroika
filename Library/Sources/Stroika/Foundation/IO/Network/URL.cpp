@@ -77,7 +77,7 @@ namespace   {
  ********************* Network::GetDefaultPortForProtocol ***********************
  ********************************************************************************
  */
-int     Network::GetDefaultPortForProtocol (const String& proto)
+uint16_t     Network::GetDefaultPortForProtocol (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
     if (proto == L"")       {       return 80;  }
@@ -88,7 +88,7 @@ int     Network::GetDefaultPortForProtocol (const String& proto)
     if (proto == L"ftp")    {       return 21;  }
     if (proto == L"ftps")   {       return 990; }
 
-    Assert (false); // if this ever happens - we probably have some work todo - the above list is inadequate
+    AssertNotReached (); // if this ever happens - we probably have some work todo - the above list is inadequate
     return 80;  // hack...
 }
 
@@ -104,7 +104,7 @@ int     Network::GetDefaultPortForProtocol (const String& proto)
 URL::URL ()
     : fProtocol_ ()
     , fHost_ ()
-    , fPort_ (kDefaultPort)
+    , fPort_ (kDefaultPortSentinal_)
     , fRelPath_ ()
     , fQuery_ ()
     , fFragment_ ()
@@ -169,7 +169,7 @@ namespace   {
 URL::URL (const String& w)
     : fProtocol_ ()
     , fHost_ ()
-    , fPort_ (kDefaultPort)
+    , fPort_ (kDefaultPortSentinal_)
     , fRelPath_ ()
     , fQuery_ ()
     , fFragment_ ()
@@ -308,7 +308,7 @@ URL::URL (const SchemeType& protocol, const String& host, int portNumber, const 
 URL::URL (const SchemeType& protocol, const String& host, const String& relPath, const String& query, const String& fragment)
     : fProtocol_ (NormalizeScheme_ (protocol))
     , fHost_ (host)
-    , fPort_ (kDefaultPort)
+    , fPort_ (kDefaultPortSentinal_)
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
@@ -371,7 +371,7 @@ String URL::GetFullURL () const
 
     if (not fHost_.empty ()) {
         result += L"//" + fHost_;
-        if (fPort_ != kDefaultPort and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
+        if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
         result +=  L"/";
@@ -410,13 +410,13 @@ void    URL::clear ()
     fRelPath_.clear ();
     fQuery_.clear ();
     fFragment_.clear ();
-    fPort_ = kDefaultPort;
+    fPort_ = kDefaultPortSentinal_;
     Ensure (empty ());
 }
 
 bool    URL::empty () const
 {
-    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_ == kDefaultPort;
+    return fProtocol_.empty () and fHost_.empty () and fRelPath_.empty () and fQuery_.empty () and fFragment_.empty () and fPort_ == kDefaultPortSentinal_;
 }
 
 bool    URL::Equals (const URL& rhs) const
@@ -532,7 +532,7 @@ string  Network::EncodeURLQueryStringField (const String& s)
 
 /*
  ********************************************************************************
- ********************************* URLQuery ******************************
+ ************************************** URLQuery ********************************
  ********************************************************************************
  */
 namespace   {
@@ -571,14 +571,14 @@ namespace   {
         }
     }
 }
-URLQuery::URLQuery (const String& query):
-    fMap_ ()
+URLQuery::URLQuery (const String& query)
+    : fMap_ ()
 {
     InitURLQueryDecoder_ (&fMap_, query.AsUTF8 ());
 }
 
-URLQuery::URLQuery (const string& query):
-    fMap_ ()
+URLQuery::URLQuery (const string& query)
+    : fMap_ ()
 {
     InitURLQueryDecoder_ (&fMap_, query);
 }
