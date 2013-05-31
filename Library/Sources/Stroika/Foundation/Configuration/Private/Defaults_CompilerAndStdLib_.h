@@ -25,14 +25,14 @@
  */
 
 #if     defined (__clang__)
-/////////////////////////////////////// DRAFT SUPPORT FOR CLANG++--- VERY MININAL TESTING AND NOT NOT CLOSE TO WORKING
+/////////////////////////////////////// DRAFT SUPPORT FOR CLANG++--- ALMOST WORKING - BUT NOT QUITE...
 
-// Must check CLANG first, since it also defines GCC
+// Must check CLANG first, since CLANG also defines GCC
 //#define __clang_major__ 3
 //#define __clang_minor__ 0
 //#define __clang_patchlevel__ 0
-#if     __clang_major__ < 3 || (__clang_major__ == 3 && (__clang_minor__ < 0))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.0")
+#if     __clang_major__ < 3 || (__clang_major__ == 3 && (__clang_minor__ < 2))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.2")
 #endif
 
 #elif   defined (__GNUC__)
@@ -48,8 +48,8 @@
 
 #define _MS_VS_2k10_VER_    1600
 #define _MS_VS_2k12_VER_    1700
-#if      _MSC_VER < _MS_VS_2k10_VER_
-#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2010")
+#if      _MSC_VER < _MS_VS_2k12_VER_
+#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2012")
 #endif
 #if      _MSC_VER > _MS_VS_2k12_VER_
 #pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
