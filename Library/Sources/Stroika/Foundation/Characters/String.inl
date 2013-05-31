@@ -104,11 +104,11 @@ namespace   Stroika {
             }
             inline  bool    String::Contains (Character c, CompareOptions co) const
             {
-                return bool (Find (c, co) != kBadStringIndex);
+                return bool (Find (c, co) != kBadIndex);
             }
             inline  bool    String::Contains (const String& subString, CompareOptions co) const
             {
-                return bool (Find (subString, co) != kBadStringIndex);
+                return bool (Find (subString, co) != kBadIndex);
             }
             inline  void    String::InsertAt (Character c, size_t at)
             {

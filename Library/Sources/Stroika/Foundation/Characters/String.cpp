@@ -689,7 +689,7 @@ void    String::RemoveAt (size_t index, size_t nCharsToRemove)
 void    String::Remove (Character c)
 {
     size_t index = Find (c, CompareOptions::eWithCase);
-    if (index != kBadStringIndex) {
+    if (index != kBadIndex) {
         RemoveAt (index, 1);
     }
 }
@@ -717,17 +717,17 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
             }
             break;
     }
-    return (kBadStringIndex);
+    return (kBadIndex);
 }
 
 size_t  String::Find (const String& subString, size_t startAt, CompareOptions co) const
 {
     Require (startAt <= GetLength ());
     if (subString.GetLength () == 0) {
-        return ((GetLength () == 0) ? kBadStringIndex : 0);
+        return ((GetLength () == 0) ? kBadIndex : 0);
     }
     if (GetLength () < subString.GetLength ()) {
-        return (kBadStringIndex);   // important test cuz size_t is unsigned
+        return (kBadIndex);   // important test cuz size_t is unsigned
     }
 
     //TODO: FIX HORRIBLE PERFORMANCE!!!
@@ -761,7 +761,7 @@ nogood2:
             }
             break;
     }
-    return (kBadStringIndex);
+    return (kBadIndex);
 }
 
 pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t startAt) const
@@ -774,7 +774,7 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
     if (res.size () >= 1) {
         return pair<size_t, size_t> (res.position (), res.position () + res.length ());
     }
-    return pair<size_t, size_t> (kBadStringIndex, kBadStringIndex);
+    return pair<size_t, size_t> (kBadIndex, kBadIndex);
 }
 
 vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions co) const
@@ -840,7 +840,7 @@ size_t  String::RFind (Character c) const
             return (i - 1);
         }
     }
-    return (kBadStringIndex);
+    return (kBadIndex);
 }
 
 size_t  String::RFind (const String& subString) const
@@ -850,7 +850,7 @@ size_t  String::RFind (const String& subString) const
      * Do quickie implementation, and dont worry about efficiency...
      */
     if (subString.GetLength () == 0) {
-        return ((GetLength () == 0) ? kBadStringIndex : GetLength () - 1);
+        return ((GetLength () == 0) ? kBadIndex : GetLength () - 1);
     }
 
     size_t  subStrLen   =   subString.GetLength ();
@@ -860,7 +860,7 @@ size_t  String::RFind (const String& subString) const
             return (i - 1);
         }
     }
-    return (kBadStringIndex);
+    return (kBadIndex);
 }
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
@@ -903,11 +903,11 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
 
 String  String::SubString (size_t from, size_t to) const
 {
-    Require ((from <= to) or (to == kBadStringIndex));
-    Require ((to <= GetLength ()) or (to == kBadStringIndex));
+    Require ((from <= to) or (to == kBadIndex));
+    Require ((to <= GetLength ()) or (to == kBadIndex));
 
     size_t  myLength    =   GetLength ();
-    size_t  length  =   (to == kBadStringIndex) ? (myLength - from) : (to - from);
+    size_t  length  =   (to == kBadIndex) ? (myLength - from) : (to - from);
     if (length == 0) {
         return String ();
     }
@@ -1105,7 +1105,7 @@ void    String::erase (size_t from, size_t count)
 {
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
-    if (count == kBadStringIndex) {
+    if (count == kBadIndex) {
         RemoveAt (from, max2Erase);
     }
     else {
@@ -1116,11 +1116,11 @@ void    String::erase (size_t from, size_t count)
 String      String::substr (size_t from, size_t count) const
 {
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
-    if (count == kBadStringIndex) {
+    if (count == kBadIndex) {
         return SubString (from);
     }
     else {
-        size_t  end =   min (from + count, GetLength ());   // really should worry more about overflow (say if count is kBadStringIndex-1)
+        size_t  end =   min (from + count, GetLength ());   // really should worry more about overflow (say if count is kBadIndex-1)
         Assert (from <= end);
         return SubString (from, end);
     }

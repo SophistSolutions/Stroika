@@ -303,7 +303,7 @@ namespace   {
         VerifyTestResult (t1 == L"Fred Flintstone");
         t5 = t1.SubString (5, 5 + 10);
         VerifyTestResult (t5 == L"Flintstone");
-        VerifyTestResult (t5.Find (L"STONE") == kBadStringIndex);
+        VerifyTestResult (t5.Find (L"STONE") == String::kBadIndex);
         VerifyTestResult (not t5.Contains (L"SToNE"));
         VerifyTestResult (t5.Find (L"STONE", CompareOptions::eCaseInsensitive) == 5);
         VerifyTestResult (t5.Contains (L"SToNE", CompareOptions::eCaseInsensitive));
@@ -326,7 +326,7 @@ namespace   {
         VerifyTestResult (t5.Find (L"fR") == 0);
         VerifyTestResult (t5.Find (L"fRE") == 0);
         VerifyTestResult (t5.Find (L"fRED") == 0);
-        VerifyTestResult (t5.Find (L"fRD") == kBadStringIndex);
+        VerifyTestResult (t5.Find (L"fRD") == String::kBadIndex);
         VerifyTestResult (t5.Find ('R') == 1);
         VerifyTestResult (t5.Find ('E') == 2);
         VerifyTestResult (t5.Find ('D') == 3);
@@ -340,7 +340,7 @@ namespace   {
         VerifyTestResult (t5.RFind (L"ED") == 2);
         VerifyTestResult (t5.RFind (L"RED") == 1);
         VerifyTestResult (t5.RFind (L"fRED") == 0);
-        VerifyTestResult (t5.RFind (L"fr") == kBadStringIndex);
+        VerifyTestResult (t5.RFind (L"fr") == String::kBadIndex);
         VerifyTestResult (t5.RFind (L"f") == 0);
 
         t5.SetCharAt ('D', 0);
@@ -352,10 +352,10 @@ namespace   {
         VerifyTestResult (t5.RFind ('D') == 3);
         VerifyTestResult (t5.RFind (L"D") == 3);
 
-        VerifyTestResult (t5.Find ('f') == kBadStringIndex);
-        VerifyTestResult (t5.Find (L"f") == kBadStringIndex);
-        VerifyTestResult (t5.RFind ('f') == kBadStringIndex);
-        VerifyTestResult (t5.RFind (L"f") == kBadStringIndex);
+        VerifyTestResult (t5.Find ('f') == String::kBadIndex);
+        VerifyTestResult (t5.Find (L"f") == String::kBadIndex);
+        VerifyTestResult (t5.RFind ('f') == String::kBadIndex);
+        VerifyTestResult (t5.RFind (L"f") == String::kBadIndex);
 
         VerifyTestResult (t5[0] == 'D');
         VerifyTestResult (t5[1] == 'D');
@@ -654,8 +654,8 @@ namespace   {
     void    Test17_Find_ ()
     {
         VerifyTestResult (String (L"abc").Find (L"b") == 1);
-        VerifyTestResult (String (L"abc").Find (L"x") == kBadStringIndex);
-        VerifyTestResult (String (L"abc").Find (L"b", 2) == kBadStringIndex);
+        VerifyTestResult (String (L"abc").Find (L"x") == String::kBadIndex);
+        VerifyTestResult (String (L"abc").Find (L"b", 2) == String::kBadIndex);
     }
     void    Test17_RegExp_Search_ ()
     {

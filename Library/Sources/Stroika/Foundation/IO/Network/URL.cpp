@@ -132,7 +132,7 @@ namespace   {
 
         {
             size_t  e   =   canonical.find (':');
-            if (e != kBadStringIndex) {
+            if (e != String::kBadIndex) {
                 *protocol = canonical.SubString (0, e);
             }
         }
@@ -145,11 +145,11 @@ namespace   {
         {
             String  matchStr        =   *protocol + L"://" + *host;
             size_t  startOfPath     =   canonical.Find (matchStr);
-            if (startOfPath == kBadStringIndex) {
+            if (startOfPath == String::kBadIndex) {
                 matchStr        =   *protocol + L":";
                 startOfPath     =   canonical.Find (matchStr);
             }
-            if (startOfPath == kBadStringIndex) {
+            if (startOfPath == String::kBadIndex) {
                 startOfPath = canonical.length ();
             }
             else {
@@ -158,7 +158,7 @@ namespace   {
             *relPath = canonical.SubString (startOfPath);
 
             size_t  startOfQuery    =   relPath->find ('?');
-            if (startOfQuery != kBadStringIndex) {
+            if (startOfQuery != String::kBadIndex) {
                 *query = relPath->SubString (startOfQuery + 1);
                 relPath->erase (startOfQuery);
             }
@@ -188,7 +188,7 @@ URL::URL (const String& w)
 
     {
         size_t  e   =   w.find (':');
-        if (e != kBadStringIndex) {
+        if (e != String::kBadIndex) {
             fProtocol_ = NormalizeScheme_ (w.SubString (0, e));
             ValidateScheme_ (fProtocol_);
         }
@@ -199,7 +199,7 @@ URL::URL (const String& w)
         size_t  len             =   w.length ();
         size_t  hostNameStart   =   0;      // default with hostname at start of URL, unless there is a PROTOCOL: in front
         size_t  e               =   w.find (':');
-        if (e != kBadStringIndex) {
+        if (e != String::kBadIndex) {
             hostNameStart = e + 1;
         }
         i = hostNameStart;
@@ -253,13 +253,13 @@ URL::URL (const String& w)
         }
 
         size_t  startOfFragment =   fRelPath_.find ('#');
-        if (startOfFragment != kBadStringIndex) {
+        if (startOfFragment != String::kBadIndex) {
             fRelPath_ = fRelPath_.SubString (startOfFragment + 1);
             fRelPath_.erase (startOfFragment);
         }
 
         size_t  startOfQuery    =   fRelPath_.find ('?');
-        if (startOfQuery != kBadStringIndex) {
+        if (startOfQuery != String::kBadIndex) {
             fQuery_ = fRelPath_.substr (startOfQuery + 1);
             fRelPath_.erase (startOfQuery);
         }
@@ -287,7 +287,7 @@ URL::URL (const String& w)
                     //Assert (fPort == ::_wtoi (testPort.c_str ()));
                 }
             }
-            Assert (testRelPath == fRelPath_ || testRelPath.find (':') != kBadStringIndex || ((L"/" + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testRelPath == fRelPath_ || testRelPath.find (':') != String::kBadIndex || ((L"/" + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
             Assert (testQuery == fQuery_ or not fFragment_.empty ()); // old code didn't check fragment
         }
     }
@@ -331,13 +331,13 @@ URL URL::ParseHostRelativeURL (const String& w)
         }
 
         size_t  startOfFragment =   url.fRelPath_.find ('#');
-        if (startOfFragment != kBadStringIndex) {
+        if (startOfFragment != String::kBadIndex) {
             url.fFragment_ = url.fRelPath_.SubString (startOfFragment + 1);
             url.fRelPath_.erase (startOfFragment);
         }
 
         size_t  startOfQuery    =   url.fRelPath_.find ('?');
-        if (startOfQuery != kBadStringIndex) {
+        if (startOfQuery != String::kBadIndex) {
             url.fQuery_ = url.fRelPath_.SubString (startOfQuery + 1);
             url.fRelPath_.erase (startOfQuery);
         }
@@ -394,7 +394,7 @@ String URL::GetHostRelPathDir () const
 {
     String  result  =   fRelPath_;
     size_t  i       =   result.rfind ('/');
-    if (i == kBadStringIndex) {
+    if (i == String::kBadIndex) {
         result.clear ();
     }
     else {
@@ -564,7 +564,7 @@ namespace   {
                 }
                 m->Add (UTF8StringToWide (elt.substr (0, brk)), UTF8StringToWide (val));
             }
-            if (e == kBadStringIndex) {
+            if (e == String::kBadIndex) {
                 break;
             }
             i = e + 1;

@@ -122,7 +122,7 @@ public:
                 String  value;
                 {
                     size_t n = line.Find (':');
-                    if (n != Characters::kBadStringIndex) {
+                    if (n != Characters::String::kBadIndex) {
                         label = line.SubString (0, n);
                         value = line.SubString (n + 1).Trim ();
                     }

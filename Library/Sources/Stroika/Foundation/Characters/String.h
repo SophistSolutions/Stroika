@@ -168,9 +168,6 @@ namespace   Stroika {
         namespace   Characters {
 
 
-            constexpr size_t    kBadStringIndex   = wstring::npos;
-
-
             class   RegularExpression;
 
 
@@ -199,6 +196,13 @@ namespace   Stroika {
              */
             class   String {
             public:
+#if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr size_t    kBadIndex   = wstring::npos;
+#else
+                static  constexpr size_t    kBadIndex   = (size_t) - 1;
+#endif
+
+            public:
                 /**
                  * All the constructors are obvious, except to note that NUL-character ARE allowed in strings,
                  * except for the case of single char* argument constructors - which find the length based on
@@ -214,6 +218,7 @@ namespace   Stroika {
                 String (const String && from);
                 ~String ();
 
+            public:
                 nonvirtual  String& operator= (const String& newString);
 
             public:
@@ -289,7 +294,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Produce a substring of this string, starting at from, and up to to
-                 *  (require from <= to unless to == kBadStingIndex). If to is kBadStringIndex (default)
+                 *  (require from <= to unless to == kBadStingIndex). If to is kBadIndex (default)
                  *  then return all the way to the end of the string.
                  *
                  *  *NB* This function treats the second argument differntly than String::substr () -
@@ -298,12 +303,12 @@ namespace   Stroika {
                  *  very common cases of substr(N) - because second argument is defaulted, and,
                  *  substr (0, N) - because then the count and end are the same.
                  *
-                 *  \req  ((from <= to) or (to == kBadStringIndex));
-                 *  \req  ((to <= GetLength ()) or (to == kBadStringIndex));
+                 *  \req  ((from <= to) or (to == kBadIndex));
+                 *  \req  ((to <= GetLength ()) or (to == kBadIndex));
                  *
                  *  @see substr
                  */
-                nonvirtual  String      SubString (size_t from, size_t to = kBadStringIndex) const;
+                nonvirtual  String      SubString (size_t from, size_t to = kBadIndex) const;
 
             public:
                 /**
@@ -370,7 +375,7 @@ namespace   Stroika {
                 /**
                  *  Find returns the index of the first occurance of the given Character/substring argument in
                  *  this string. Find () always returns a valid string index, which is followed by the
-                 *  given substring, or kBadStringIndex otherwise.
+                 *  given substring, or kBadIndex otherwise.
                  *
                  *  Find () can optionally be provided a 'startAt' offset to begin the search at.
                  *
@@ -423,7 +428,7 @@ namespace   Stroika {
                 /**
                  * RFind (substring) returns the index of the last occurance of the given substring in
                  * this string. This function always returns a valid string index, which is followed by the
-                 * given substring, or kBadStringIndex otherwise.
+                 * given substring, or kBadIndex otherwise.
                  */
                 nonvirtual  size_t  RFind (Character c) const;
                 nonvirtual  size_t  RFind (const String& subString) const;
@@ -592,7 +597,7 @@ namespace   Stroika {
                 nonvirtual  size_t rfind (wchar_t c) const;
 
                 // mimic (much of - need more overloads) STL variant
-                nonvirtual  void erase (size_t from = 0, size_t count = kBadStringIndex);
+                nonvirtual  void erase (size_t from = 0, size_t count = kBadIndex);
 
                 nonvirtual  void    push_back (wchar_t c);
                 nonvirtual  void    push_back (Character c);
@@ -603,7 +608,7 @@ namespace   Stroika {
                  *
                  *  @see SubString
                  */
-                nonvirtual  String      substr (size_t from, size_t count = kBadStringIndex) const;
+                nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
             protected:
                 class   _IRep;
