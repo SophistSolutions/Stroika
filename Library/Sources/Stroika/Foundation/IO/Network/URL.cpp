@@ -294,10 +294,10 @@ URL::URL (const String& w)
 #endif
 }
 
-URL::URL (const SchemeType& protocol, const String& host, int portNumber, const String& relPath, const String& query, const String& fragment)
+URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortType> portNumber, const String& relPath, const String& query, const String& fragment)
     : fProtocol_ (NormalizeScheme_ (protocol))
     , fHost_ (host)
-    , fPort_ (portNumber)
+    , fPort_ (portNumber.Value (kDefaultPortSentinal_))
     , fRelPath_ (relPath)
     , fQuery_ (query)
     , fFragment_ (fragment)
