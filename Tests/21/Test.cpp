@@ -18,6 +18,7 @@
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Memory/BLOB.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 
@@ -183,6 +184,18 @@ namespace  {
 
 
 
+namespace {
+    template    <typename HASHER>
+    void    DoCommonHasherTest_ (const Byte* dataStart, const Byte* dataEnd, uint32_t answer)
+    {
+        VerifyTestResult (HASHER::Hash (dataStart, dataEnd) == answer);
+        VerifyTestResult (HASHER::Hash (Memory::BLOB (dataStart, dataEnd).As<Streams::BinaryInputStream> ()) == answer);
+    }
+
+}
+
+
+
 
 namespace  {
     namespace Hash_CRC32 {
@@ -191,10 +204,9 @@ namespace  {
 
         void    DoRegressionTests_ ()
         {
-            typedef Hasher<uint32_t, Algorithms::CRC32> USE_HASHER_;
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                VerifyTestResult (USE_HASHER_::Hash ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == 3692548919);
+                DoCommonHasherTest_<Hasher<uint32_t, Algorithms::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
             }
         }
     }
@@ -231,7 +243,7 @@ namespace  {
             }
             {
                 const   char    kSrc[] = "This is a very good test of a very good test";
-                VerifyTestResult (USE_HASHER_::Hash ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == 2786528596);
+                DoCommonHasherTest_<USE_HASHER_> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 2786528596);
             }
         }
     }
