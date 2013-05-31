@@ -14,6 +14,7 @@
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Cryptography/Base64.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Adapters.h"
+#include    "Stroika/Foundation/Cryptography/Hash/Algorithms/CRC32.h"
 #include    "Stroika/Foundation/Cryptography/Hash/Algorithms/Jenkins.h"
 #include    "Stroika/Foundation/Cryptography/MD5.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -181,6 +182,25 @@ namespace  {
 
 
 
+
+
+namespace  {
+    namespace Hash_CRC32 {
+
+        using   namespace   Cryptography::Hash;
+
+        void    DoRegressionTests_ ()
+        {
+            typedef Hasher<uint32_t, Algorithms::CRC32> USE_HASHER_;
+            {
+                const   char    kSrc[] = "This is a very good test of a very good test";
+                VerifyTestResult (USE_HASHER_::Hash ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == 3692548919);
+            }
+        }
+    }
+}
+
+
 namespace  {
     namespace Hash_Jenkins {
 
@@ -200,12 +220,18 @@ namespace  {
         }
         void    DoRegressionTests_ ()
         {
-            auto realHashFunction = Adapapter<Hasher<uint32_t, Algorithms::Jenkins>>::Hash;
-            VerifyTestResult (realHashFunction (1) == 3028713910);
-            VerifyTestResult (realHashFunction (93993) == 2249810398);
-            // semi-random range test
-            for (uint32_t i = 3034; i > 0; i += 101) {
-                VerifyTestResult (realHashFunction (i) == PRIVATE_::robert_jenkins_hash_ (i));
+            typedef Hasher<uint32_t, Algorithms::Jenkins>   USE_HASHER_;
+            {
+                VerifyTestResult (Adapapter<USE_HASHER_>::Hash (1) == 3028713910);
+                VerifyTestResult (Adapapter<USE_HASHER_>::Hash (93993) == 2249810398);
+                // semi-random range test
+                for (uint32_t i = 3034; i > 0; i += 101) {
+                    VerifyTestResult (Adapapter<USE_HASHER_>::Hash (i) == PRIVATE_::robert_jenkins_hash_ (i));
+                }
+            }
+            {
+                const   char    kSrc[] = "This is a very good test of a very good test";
+                VerifyTestResult (USE_HASHER_::Hash ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc)) == 2786528596);
             }
         }
     }
@@ -221,6 +247,7 @@ namespace   {
     {
         Base64Test::DoRegressionTests_ ();
         MD5Test::DoRegressionTests_ ();
+        Hash_CRC32::DoRegressionTests_ ();
         Hash_Jenkins::DoRegressionTests_ ();
     }
 }

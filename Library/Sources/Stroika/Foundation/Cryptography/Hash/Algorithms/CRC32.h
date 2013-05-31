@@ -12,21 +12,13 @@
 
 
 
-/*
- * STATUS *****************DRAFT ..... ROUHGH OUTLINE
+/**
+ *  \file
  *
- *      VERY ROUGH
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
- *      SEE
- *
- *      Several OTHERS there todo likewise - SPOOKY???
- *
- *      (SEE README ABOUT ADAPTERS)
- *
- *
- *
- * TODO:
- *      o
+ *  @see    http://en.wikipedia.org/wiki/Cyclic_redundancy_check
+ *  @see    http://www.riccibitti.com/crcguide.htm
  *
  *
  */
@@ -39,10 +31,6 @@ namespace   Stroika {
                 namespace   Algorithms {
 
 
-                    // Just a name to select template implementation
-                    /// SEE
-                    // http://www.riccibitti.com/crcguide.htm
-                    /// for C code / algoritjhm
                     struct CRC32 {
                     };
 
@@ -50,14 +38,12 @@ namespace   Stroika {
                 }
 
 
-
-                /// SEE
-                // http://www.riccibitti.com/crcguide.htm
-                /// for C code / algoritjhm
                 template    <>
                 struct Hasher<uint32_t, Algorithms::CRC32> {
-                    static  uint32_t    Hash (const Streams::BinaryInputStream& from);
-                    static  uint32_t    Hash (const Byte* from, const Byte* to);
+                    typedef uint32_t   ReturnType;
+
+                    static  ReturnType    Hash (const Streams::BinaryInputStream& from);
+                    static  ReturnType    Hash (const Byte* from, const Byte* to);
                 };
 
 

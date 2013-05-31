@@ -12,21 +12,16 @@
 
 
 
-/*
- * STATUS *****************DRAFT ..... ROUHGH OUTLINE
+/**
+ *  \file
  *
- *      VERY ROUGH
+ *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
- *      SEE http://en.wikipedia.org/wiki/Jenkins_hash_function#cite_note-4
- *
- *      Several OTHERS there todo likewise - SPOOKY???
- *
- *      (SEE README ABOUT ADAPTERS)
- *
+ *  @see    http://en.wikipedia.org/wiki/Jenkins_hash_function
  *
  *
  * TODO:
- *      o
+ *      @todo   Add other hashes - listed on http://en.wikipedia.org/wiki/Jenkins_hash_function - like - SPOOKY???
  *
  *
  */
