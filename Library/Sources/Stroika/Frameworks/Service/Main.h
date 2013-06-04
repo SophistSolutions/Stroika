@@ -51,7 +51,9 @@ namespace   Stroika {
              *  Users of this class will themselves address #1, by subclassing from the IApplicationRep, and providing their application
              *  behavior. But users can also select different 'service implementation' strategies. What serice implementation
              *  strategies are available will depend on the OS you've built for, and often on command-line app arguments.
-             *
+			 *
+			 *	This class is sort of like a singleton, in that it can be instantiated only once, never copied, etc. But 
+			 *	its unusual for the singleton pattern, since the user must explicitly construct it. The owner controls its lifetime.
              */
             class   Main {
             public:
@@ -91,7 +93,7 @@ namespace   Stroika {
                  */
                 explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceRep> serviceRep);
 
-            protected:
+            private:
                 static  shared_ptr<IApplicationRep> _sAppRep;
                 static  shared_ptr<IServiceRep>     _sServiceRep;
 

@@ -13,4 +13,5 @@ system ("cd LedIt; perl buildall.pl");
 system ("cd LedLineIt; perl buildall.pl");
 system ("cd SimpleLedTest; perl buildall.pl");
 system ("cd SSDPClient; perl buildall.pl");
+system ("cd SampleService; perl buildall.pl");
 system ("cd WebServer; perl buildall.pl");

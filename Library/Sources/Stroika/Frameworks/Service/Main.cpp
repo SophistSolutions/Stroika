@@ -621,7 +621,7 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
 
 /*
  ********************************************************************************
- ****************************** Service::Main::IApplicationRep *****************************
+ ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
 Main::IApplicationRep::IApplicationRep ()
