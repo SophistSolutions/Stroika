@@ -17,7 +17,12 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Service {
 
-            //  class   Service::Main::IApplicationRep
+
+            /*
+             ********************************************************************************
+             ********************* Service::Main::IApplicationRep ***************************
+             ********************************************************************************
+             */
             inline  void    Main::IApplicationRep::_CheckAndAbortThread () const
             {
                 Execution::CheckForThreadAborting ();
@@ -35,14 +40,22 @@ namespace   Stroika {
             }
 
 
-            //  class   Service::Main
+            /*
+             ********************************************************************************
+             ************************************ Service::Main *****************************
+             ********************************************************************************
+             */
             inline  void    Main::Start (Time::DurationSecondsType timeout)
             {
-                _Start (timeout);
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+                DbgTrace ("(timeout = %f)", timeout);
+                _sServiceRep->_Start (timeout);
             }
             inline  void    Main::Stop (Time::DurationSecondsType timeout)
             {
-                _Stop (timeout);
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+                DbgTrace ("(timeout = %f)", timeout);
+                _sServiceRep->_Stop (timeout);
             }
             inline  void    Main::Restart (Time::DurationSecondsType timeout)
             {

@@ -15,6 +15,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Execution/Process.h"
 
 
 
@@ -149,11 +150,9 @@ namespace   Stroika {
                 nonvirtual  State               GetState () const;
 
 
-#if     qPlatform_POSIX
             public:
                 // Return 0 if no service running
                 nonvirtual  pid_t   GetServicePID () const;
-#endif
 
 
             public:
@@ -170,15 +169,11 @@ namespace   Stroika {
                 /*
                  */
                 nonvirtual  void            Start (Time::DurationSecondsType timeout = Time::kInfinite);
-            protected:
-                virtual void                _Start (Time::DurationSecondsType timeout);
 
             public:
                 /**
                  */
                 nonvirtual  void            Stop (Time::DurationSecondsType timeout = Time::kInfinite);
-            protected:
-                virtual     void            _Stop (Time::DurationSecondsType timeout);
 
             public:
                 /**
@@ -208,21 +203,6 @@ namespace   Stroika {
                 /**
                 */
                 virtual void                Continue ();
-
-            protected:
-                // Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that
-                // need to be cleaned up via _CleanupDeadService ()
-                virtual     bool            _IsServiceFailed ();
-
-            protected:
-                // Called internally when - for example - asked to start and we find there are already lock files etc from
-                // a previous run of the service, but its actually dead
-                virtual     void            _CleanupDeadService ();
-
-            protected:
-                // Checks if the service process is actually running - not just if it is supposed to be. This can be used to
-                // wait for a service to startup, or to shut down
-                virtual     bool    _IsServiceActuallyRunning ();
 
             public:
                 /*
@@ -365,7 +345,18 @@ namespace   Stroika {
             protected:
                 /**
                  */
+                virtual     void            _ForcedStop (Time::DurationSecondsType timeout)   =   0;
+
+
+            protected:
+                /**
+                 */
                 virtual void                _Restart (Time::DurationSecondsType timeout)    =   0;
+
+            protected:
+                /**
+                 */
+                virtual  pid_t   GetServicePID () const = 0;
 
             private:
                 friend  class   Main;
@@ -382,7 +373,9 @@ namespace   Stroika {
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
+                virtual  pid_t   GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -397,7 +390,9 @@ namespace   Stroika {
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
+                virtual  pid_t   GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -414,7 +409,25 @@ namespace   Stroika {
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
+                virtual  pid_t   GetServicePID () const override;
+
+            protected:
+                // Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that
+                // need to be cleaned up via _CleanupDeadService ()
+                virtual     bool            _IsServiceFailed ();
+
+            protected:
+                // Called internally when - for example - asked to start and we find there are already lock files etc from
+                // a previous run of the service, but its actually dead
+                virtual     void            _CleanupDeadService ();
+
+            protected:
+                // Checks if the service process is actually running - not just if it is supposed to be. This can be used to
+                // wait for a service to startup, or to shut down
+                virtual     bool    _IsServiceActuallyRunning ();
+
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -432,7 +445,9 @@ namespace   Stroika {
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
+                virtual  pid_t   GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
