@@ -15,7 +15,7 @@ VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)SSDPClient.o\
+	$(ObjDir)SampleService.o\
 
 
 all:	$(TARGETEXE)
