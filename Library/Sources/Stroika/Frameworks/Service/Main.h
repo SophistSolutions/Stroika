@@ -46,7 +46,7 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation;
             using   Characters::String;
 
-			using	Execution::pid_t;
+            using   Execution::pid_t;
 
 
             /**
