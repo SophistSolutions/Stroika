@@ -17,6 +17,7 @@
 #include    "../../Foundation/Configuration/Common.h"
 
 
+
 /**
  *
  *  STATUS  VERY PRELIMINARY - GOT SOMETHING SIMILAR WORKING ON UNIX A WHILE BACK BUT NEW FACTORING
@@ -33,6 +34,8 @@
  *
  *      (o) Windoze implementation - supproting the richer set of control mechanism.
  */
+
+
 
 namespace   Stroika {
     namespace   Frameworks {
@@ -57,15 +60,13 @@ namespace   Stroika {
              */
             class   Main {
             public:
-                struct  ServiceDescription {
-                    String  fName;
-                };
+                struct  ServiceDescription;
 
             public:
                 class   IApplicationRep;
 
             public:
-                class   IServiceRep;
+                class   IServiceIntegrationRep;
 
 #if     qPlatform_POSIX
             public:
@@ -84,18 +85,18 @@ namespace   Stroika {
 #if     qPlatform_Windows
             public:
                 // Run as a windows service - integrating with the Windows Service Mgr
-                class   WinowsService;
+                class   WindowsService;
 #endif
 
             public:
                 /**
                  * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
-                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceRep> serviceRep);
+                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceIntegrationRep> serviceRep);
 
             private:
                 static  shared_ptr<IApplicationRep> _sAppRep;
-                static  shared_ptr<IServiceRep>     _sServiceRep;
+                static  shared_ptr<IServiceIntegrationRep>     _sServiceRep;
 
 
 #if     qPlatform_POSIX
@@ -223,38 +224,7 @@ namespace   Stroika {
                 nonvirtual  ServiceDescription  GetServiceDescription () const;
 
             public:
-                struct  CommandNames {
-                    /*
-                     *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
-                     *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
-                     *
-                     *  This is typically called INDRECTLY via a specail fork/exec as a result of a kStart command, or its called from
-                     *  init as part of system startup.
-                     */
-                    static  const   wchar_t kRunAsService[];
-                    /*
-                     *  The kStart command tells the service to start running. It returns an error
-                     *  if the service is already started.
-                     */
-                    static  const   wchar_t kStart[];
-                    /*
-                     *  The kStop command tells the service to start terminate
-                     */
-                    static  const   wchar_t kStop[];
-                    //DOCUMENT EACH
-                    //NEATLY
-                    // KILL termiantes (kill-9)
-                    //
-                    static  const   wchar_t kKill[];
-                    // restart synonmy for stop (no error if not already running), and then start
-                    static  const   wchar_t kRestart[];
-                    // If service knows how to find its own config files - recheck them
-                    static  const   wchar_t kReloadConfiguration[];
-                    // SIGSTOP
-                    static  const   wchar_t kPause[];
-                    // SIGCONT
-                    static  const   wchar_t kContinue[];
-                };
+                struct  CommandNames;
 
             protected:
                 /*
@@ -264,7 +234,46 @@ namespace   Stroika {
             };
 
 
-            /*
+			struct  Main::ServiceDescription {
+                String  fName;
+            };
+
+			
+			struct  Main::CommandNames {
+                /*
+                    *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
+                    *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
+                    *
+                    *  This is typically called INDRECTLY via a specail fork/exec as a result of a kStart command, or its called from
+                    *  init as part of system startup.
+                    */
+                static  const   wchar_t kRunAsService[];
+                /*
+                    *  The kStart command tells the service to start running. It returns an error
+                    *  if the service is already started.
+                    */
+                static  const   wchar_t kStart[];
+                /*
+                    *  The kStop command tells the service to start terminate
+                    */
+                static  const   wchar_t kStop[];
+                //DOCUMENT EACH
+                //NEATLY
+                // KILL termiantes (kill-9)
+                //
+                static  const   wchar_t kKill[];
+                // restart synonmy for stop (no error if not already running), and then start
+                static  const   wchar_t kRestart[];
+                // If service knows how to find its own config files - recheck them
+                static  const   wchar_t kReloadConfiguration[];
+                // SIGSTOP
+                static  const   wchar_t kPause[];
+                // SIGCONT
+                static  const   wchar_t kContinue[];
+            };
+
+            
+			/*
              * To use this class you must implement your own Rep (to represent the running service).
              *
              *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
@@ -320,24 +329,58 @@ namespace   Stroika {
 
             /**
              */
-            class   Main::IServiceRep {
+            class   Main::IServiceIntegrationRep {
+            protected:
+                /**
+                 */
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep)	=	0;
+
+            protected:
+                /**
+                 */
+                virtual void                _Start (Time::DurationSecondsType timeout)	=	0;
+
+            protected:
+                /**
+                 */
+                virtual     void            _Stop (Time::DurationSecondsType timeout)	=	0;
+
+
+            protected:
+                /**
+                 */
+                virtual void                _Restart (Time::DurationSecondsType timeout)	=	0;
             };
 
 
             /**
-             *
-                // Mostly for regression tests (and windoze)
+             *	Mostly for regression tests (and windoze)
              */
-            class   Main::RunTilIdleService : public Main::IServiceRep {
+            class   Main::RunTilIdleService : public Main::IServiceIntegrationRep {
+			public:
+				RunTilIdleService ();
+            protected:
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                _Start (Time::DurationSecondsType timeout) override;
+                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                _Restart (Time::DurationSecondsType timeout) override;
+			private:
+				shared_ptr<IApplicationRep>	fAppRep_;
             };
 
 
             /**
-             *
-                // Run with absolultely minimal OS integration support. Count on the app itself to make service calls
-                // to start/stop
+             *	Run with absolultely minimal OS integration support. Count on the app itself to make service calls
+             *	to start/stop
              */
-            class   Main::RunNoFrillsService : public Main::IServiceRep {
+            class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
+            protected:
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                _Start (Time::DurationSecondsType timeout) override;
+                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                _Restart (Time::DurationSecondsType timeout) override;
+			private:
+				shared_ptr<IApplicationRep>	fAppRep_;
             };
 
 
@@ -345,7 +388,14 @@ namespace   Stroika {
             /**
              *
              */
-            class   Main::BasicUNIXServiceImpl : public Main::IServiceRep {
+            class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
+            protected:
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                _Start (Time::DurationSecondsType timeout) override;
+                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                _Restart (Time::DurationSecondsType timeout) override;
+			private:
+				shared_ptr<IApplicationRep>	fAppRep_;
             };
 #endif
 
@@ -354,7 +404,14 @@ namespace   Stroika {
             /**
              *
              */
-            class   Main::WinowsService : public Main::IServiceRep {
+            class   Main::WindowsService : public Main::IServiceIntegrationRep {
+            protected:
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual void                _Start (Time::DurationSecondsType timeout) override;
+                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                _Restart (Time::DurationSecondsType timeout) override;
+			private:
+				shared_ptr<IApplicationRep>	fAppRep_;
             };
 #endif
 

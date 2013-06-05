@@ -710,9 +710,9 @@ const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause"
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
 shared_ptr<Main::IApplicationRep>   Main::_sAppRep;
-shared_ptr<Main::IServiceRep>       Main::_sServiceRep;
+shared_ptr<Main::IServiceIntegrationRep>       Main::_sServiceRep;
 
-Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceRep> serviceRep)
+Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceRep)
 {
     Require  (_sAppRep.get () == nullptr);     // singleton
     _sAppRep = rep;
@@ -1016,3 +1016,140 @@ bool    Main::_HandleStandardCommandLineArgument (const String& arg)
     return false;
 }
 
+
+
+
+
+/*
+ ********************************************************************************
+ ******************* Service::Main::RunTilIdleService ***************************
+ ********************************************************************************
+ */
+				Main::RunTilIdleService::RunTilIdleService ()
+					: fAppRep_ ()
+				{
+				}
+                void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep) 
+				{
+					RequireNotNull (appRep);
+					fAppRep_ = appRep;
+				}
+                 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout) 
+				{
+				}
+                    void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout) 
+				{
+					Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
+					fAppRep_->OnStopRequest ();
+				}
+                void                Main::RunTilIdleService::_Restart (Time::DurationSecondsType timeout) 
+				{
+					/////// WRONG HANDLING OF TIMEOUT
+					_Stop (timeout);
+					_Start (timeout);
+				}
+
+
+
+#if     qPlatform_POSIX
+/*
+ ********************************************************************************
+ ******************* Service::Main::BasicUNIXServiceImpl ************************
+ ********************************************************************************
+ */
+				Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
+					: fAppRep_ ()
+				{
+				}
+                void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep) 
+				{
+					RequireNotNull (appRep);
+					fAppRep_ = appRep;
+				}
+                 void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout) 
+				{
+					Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+					DbgTrace ("(timeout = %f)", timeout);
+
+					Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
+
+					// Check not already runnig, (someday) and then for and exec the
+
+					if (_IsServiceFailed ()) {
+						_CleanupDeadService ();
+					}
+
+					// REALLY should use GETSTATE - and return state based on if PID file exsits...
+					if (GetServicePID ()  != 0) {
+						Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
+					}
+
+					Characters::TString thisEXEPath =   Execution::GetEXEPath ();
+					pid_t   pid =   fork ();
+					Execution::ThrowErrNoIfNegative (pid);
+					if (pid == 0) {
+						/*
+						 * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
+						 *
+						 * Possibly should close more descriptors?
+						 */
+						for (int i = 0; i < 3; ++i) {
+							::close (i);
+						}
+						int id = open ("/dev/null", O_RDWR);
+						dup2 (id, 0);
+						dup2 (id, 1);
+						dup2 (id, 2);
+
+						int r   =   execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
+						exit (-1);
+					}
+					else {
+						// parent - in this case - no reason to wait - our work is done... Future versions might wait to
+						// see if the 'pidfile' got created....
+						//      --LGP 2011-09-23
+					}
+
+					while (not _IsServiceActuallyRunning ()) {
+						Execution::Sleep (0.5);
+						if (Time::GetTickCount () > timeoutAt) {
+							Execution::DoThrow (Execution::WaitTimedOutException ());
+						}
+					}
+				}
+                    void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout) 
+				{
+
+
+					bool kInProc_ = false;
+					if (kInProc_) {
+						/// kill running....
+					}
+					else {
+    Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
+    // Send signal to server to stop
+    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
+    while (_IsServiceActuallyRunning ()) {
+        Execution::Sleep (0.5);
+        if (Time::GetTickCount () > timeoutAt) {
+            Execution::DoThrow (Execution::WaitTimedOutException ());
+        }
+    }
+					}
+				}
+                 void                Main::BasicUNIXServiceImpl::_Kill ()
+				{
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
+    fAppRep_->_Stop ();
+    // Send signal to server to stop
+    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
+    // REALY should WAIT for server to stop and only do this it fails -
+    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+				}
+                void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsType timeout) 
+				{
+					/////// WRONG HANDLING OF TIMEOUT
+					_Stop (timeout);
+					_Start (timeout);
+				}
+#endif

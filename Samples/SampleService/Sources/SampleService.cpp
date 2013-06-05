@@ -65,7 +65,7 @@ int main (int argc, const char* argv[])
     }
 
     // must fix to pass right backend
-    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), nullptr);
+    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ()));
 #if 0
     try {
         Listener l;
