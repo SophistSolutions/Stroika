@@ -46,6 +46,8 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation;
             using   Characters::String;
 
+			using	Execution::pid_t;
+
 
             /**
              *  There are two differnt dimentions along which you can subtype the behavior of a service application:
