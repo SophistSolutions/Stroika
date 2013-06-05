@@ -67,13 +67,13 @@ int main (int argc, const char* argv[])
 #endif
 
     // must fix to pass right backend
-	shared_ptr<Main::IServiceIntegrationRep>	serviceIntegrationRep;
-	if (true) {
-		serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
-	}
-	else {
-		serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-	}
+    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
+    if (true) {
+        serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
+    }
+    else {
+        serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
+    }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
 #if 0
     try {

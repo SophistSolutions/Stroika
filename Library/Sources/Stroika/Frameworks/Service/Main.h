@@ -74,7 +74,7 @@ namespace   Stroika {
                 class   BasicUNIXServiceImpl;
 #endif
 
-			public:
+            public:
                 // Mostly for regression tests (and windoze)
                 class   RunTilIdleService;
 
@@ -90,13 +90,13 @@ namespace   Stroika {
 #endif
 
 
-			public:
+            public:
                 /**
                  * The result type depends on your OS/compilation flags.
                  */
-				static	shared_ptr<IServiceIntegrationRep>	mkDefaultServiceIntegrationRep ();
+                static  shared_ptr<IServiceIntegrationRep>  mkDefaultServiceIntegrationRep ();
 
-			public:
+            public:
                 /**
                  * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
@@ -182,8 +182,8 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	Does a regular stop, but if that doesnt work, do low-level force stop and cleanup
-				 *	as best as possible.
+                 *  Does a regular stop, but if that doesnt work, do low-level force stop and cleanup
+                 *  as best as possible.
                  */
                 nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
 
@@ -195,18 +195,18 @@ namespace   Stroika {
                 virtual void                _Restart (Time::DurationSecondsType timeout);
 
             public:
-				/**
-				*/
+                /**
+                */
                 virtual void                ReReadConfiguration ();
 
             public:
-				/**
-				*/
+                /**
+                */
                 virtual void                Pause ();
 
             public:
-				/**
-				*/
+                /**
+                */
                 virtual void                Continue ();
 
             protected:
@@ -238,22 +238,22 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
 
-			private:
+            private:
                 static  shared_ptr<IApplicationRep> _sAppRep;
                 static  shared_ptr<IServiceIntegrationRep>     _sServiceRep;
             };
 
 
-			/**
-			*/
-			struct  Main::ServiceDescription {
+            /**
+            */
+            struct  Main::ServiceDescription {
                 String  fName;
             };
 
-			
-			/**
-			*/
-			struct  Main::CommandNames {
+
+            /**
+            */
+            struct  Main::CommandNames {
                 /**
                  *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
                  *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
@@ -262,14 +262,14 @@ namespace   Stroika {
                  *  init as part of system startup.
                  */
                 static  const   wchar_t kRunAsService[];
-                
-				/*
+
+                /*
                  *  The kStart command tells the service to start running. It returns an error
                  *  if the service is already started.
                  */
                 static  const   wchar_t kStart[];
-                
-				/**
+
+                /**
                  *  The kStop command tells the service to start terminate
                  */
                 static  const   wchar_t kStop[];
@@ -288,8 +288,8 @@ namespace   Stroika {
                 static  const   wchar_t kContinue[];
             };
 
-            
-			/**
+
+            /**
              * To use this class you must implement your own Rep (to represent the running service).
              *
              *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
@@ -349,48 +349,48 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep)	=	0;
+                virtual void                _Attach (shared_ptr<IApplicationRep> appRep)    =   0;
 
             protected:
                 /**
                  */
-                virtual void                _Start (Time::DurationSecondsType timeout)	=	0;
+                virtual void                _Start (Time::DurationSecondsType timeout)  =   0;
 
             protected:
                 /**
                  */
-                virtual     void            _Stop (Time::DurationSecondsType timeout)	=	0;
+                virtual     void            _Stop (Time::DurationSecondsType timeout)   =   0;
 
 
             protected:
                 /**
                  */
-                virtual void                _Restart (Time::DurationSecondsType timeout)	=	0;
+                virtual void                _Restart (Time::DurationSecondsType timeout)    =   0;
 
-			private:
-				friend	class	Main;
+            private:
+                friend  class   Main;
             };
 
 
             /**
-             *	Mostly for regression tests (and windoze)
+             *  Mostly for regression tests (and windoze)
              */
             class   Main::RunTilIdleService : public Main::IServiceIntegrationRep {
-			public:
-				RunTilIdleService ();
+            public:
+                RunTilIdleService ();
             protected:
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
-			private:
-				shared_ptr<IApplicationRep>	fAppRep_;
+            private:
+                shared_ptr<IApplicationRep> fAppRep_;
             };
 
 
             /**
-             *	Run with absolultely minimal OS integration support. Count on the app itself to make service calls
-             *	to start/stop
+             *  Run with absolultely minimal OS integration support. Count on the app itself to make service calls
+             *  to start/stop
              */
             class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
             protected:
@@ -398,8 +398,8 @@ namespace   Stroika {
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
-			private:
-				shared_ptr<IApplicationRep>	fAppRep_;
+            private:
+                shared_ptr<IApplicationRep> fAppRep_;
             };
 
 
@@ -408,15 +408,15 @@ namespace   Stroika {
              *
              */
             class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
-			public:
-				BasicUNIXServiceImpl ();
+            public:
+                BasicUNIXServiceImpl ();
             protected:
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
-			private:
-				shared_ptr<IApplicationRep>	fAppRep_;
+            private:
+                shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif
 
@@ -426,15 +426,15 @@ namespace   Stroika {
              *
              */
             class   Main::WindowsService : public Main::IServiceIntegrationRep {
-			public:
-				WindowsService ();
+            public:
+                WindowsService ();
             protected:
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
                 virtual     void            _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
-			private:
-				shared_ptr<IApplicationRep>	fAppRep_;
+            private:
+                shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif
 
