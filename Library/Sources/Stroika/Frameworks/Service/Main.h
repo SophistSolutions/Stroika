@@ -51,9 +51,9 @@ namespace   Stroika {
              *  Users of this class will themselves address #1, by subclassing from the IApplicationRep, and providing their application
              *  behavior. But users can also select different 'service implementation' strategies. What serice implementation
              *  strategies are available will depend on the OS you've built for, and often on command-line app arguments.
-			 *
-			 *	This class is sort of like a singleton, in that it can be instantiated only once, never copied, etc. But 
-			 *	its unusual for the singleton pattern, since the user must explicitly construct it. The owner controls its lifetime.
+             *
+             *  This class is sort of like a singleton, in that it can be instantiated only once, never copied, etc. But
+             *  its unusual for the singleton pattern, since the user must explicitly construct it. The owner controls its lifetime.
              */
             class   Main {
             public:
@@ -321,45 +321,45 @@ namespace   Stroika {
             /**
              */
             class   Main::IServiceRep {
-			};
+            };
 
 
             /**
-			 *
+             *
                 // Mostly for regression tests (and windoze)
              */
             class   Main::RunTilIdleService : public Main::IServiceRep {
-			};
+            };
 
 
             /**
-			 *
+             *
                 // Run with absolultely minimal OS integration support. Count on the app itself to make service calls
                 // to start/stop
              */
             class   Main::RunNoFrillsService : public Main::IServiceRep {
-			};
+            };
 
 
 #if     qPlatform_POSIX
             /**
-			 *
+             *
              */
             class   Main::BasicUNIXServiceImpl : public Main::IServiceRep {
-			};
+            };
 #endif
 
 
 #if     qPlatform_Windows
             /**
-			 *
+             *
              */
             class   Main::WinowsService : public Main::IServiceRep {
-			};
+            };
 #endif
 
-		
-		}
+
+        }
     }
 }
 

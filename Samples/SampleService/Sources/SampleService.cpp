@@ -9,7 +9,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
-#include	"Stroika/Frameworks/Service/Main.h"
+#include    "Stroika/Frameworks/Service/Main.h"
 
 using   namespace std;
 
@@ -22,22 +22,18 @@ using   Memory::Optional;
 
 namespace {
     struct   AppRep_ : Main::IApplicationRep {
-        AppRep_ ()
-		{
-		}
-        virtual ~AppRep_ ()
-		{
-		}
+        AppRep_ () {
+        }
+        virtual ~AppRep_ () {
+        }
 
     public:
-		virtual void                MainLoop () override
-		{
-		}
-        virtual Main::ServiceDescription  GetServiceDescription () const override
-		{
-			Main::ServiceDescription	t;
-			return t;
-		}
+        virtual void                MainLoop () override {
+        }
+        virtual Main::ServiceDescription  GetServiceDescription () const override {
+            Main::ServiceDescription    t;
+            return t;
+        }
     };
 }
 
@@ -68,8 +64,8 @@ int main (int argc, const char* argv[])
         return EXIT_FAILURE;
     }
 
-	// must fix to pass right backend
-	Main	m (shared_ptr<AppRep_> (new AppRep_ ()), nullptr);
+    // must fix to pass right backend
+    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), nullptr);
 #if 0
     try {
         Listener l;
