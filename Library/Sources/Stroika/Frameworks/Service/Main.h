@@ -81,7 +81,7 @@ namespace   Stroika {
                 // to start/stop
                 class   RunNoFrillsService;
 
-#if     qPlatform_POSIX
+#if     qPlatform_Windows
             public:
                 // Run as a windows service - integrating with the Windows Service Mgr
                 class   WinowsService;
@@ -264,7 +264,6 @@ namespace   Stroika {
             };
 
 
-
             /*
              * To use this class you must implement your own Rep (to represent the running service).
              *
@@ -319,7 +318,48 @@ namespace   Stroika {
             };
 
 
-        }
+            /**
+             */
+            class   Main::IServiceRep {
+			};
+
+
+            /**
+			 *
+                // Mostly for regression tests (and windoze)
+             */
+            class   Main::RunTilIdleService : public Main::IServiceRep {
+			};
+
+
+            /**
+			 *
+                // Run with absolultely minimal OS integration support. Count on the app itself to make service calls
+                // to start/stop
+             */
+            class   Main::RunNoFrillsService : public Main::IServiceRep {
+			};
+
+
+#if     qPlatform_POSIX
+            /**
+			 *
+             */
+            class   Main::BasicUNIXServiceImpl : public Main::IServiceRep {
+			};
+#endif
+
+
+#if     qPlatform_Windows
+            /**
+			 *
+             */
+            class   Main::WinowsService : public Main::IServiceRep {
+			};
+#endif
+
+		
+		}
     }
 }
 
