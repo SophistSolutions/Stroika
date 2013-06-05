@@ -20,6 +20,27 @@ using   Characters::String;
 using   Memory::Optional;
 
 
+namespace {
+    struct   AppRep_ : Main::IApplicationRep {
+        AppRep_ ()
+		{
+		}
+        virtual ~AppRep_ ()
+		{
+		}
+
+    public:
+		virtual void                MainLoop () override
+		{
+		}
+        virtual Main::ServiceDescription  GetServiceDescription () const override
+		{
+			Main::ServiceDescription	t;
+			return t;
+		}
+    };
+}
+
 
 int main (int argc, const char* argv[])
 {
@@ -47,6 +68,8 @@ int main (int argc, const char* argv[])
         return EXIT_FAILURE;
     }
 
+	// must fix to pass right backend
+	Main	m (shared_ptr<AppRep_> (new AppRep_ ()), nullptr);
 #if 0
     try {
         Listener l;
