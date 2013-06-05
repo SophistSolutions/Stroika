@@ -25,12 +25,7 @@
 #error  "qHas_pid_t must  be defined in StroikaConfig.h"
 #endif
 
-
-
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Execution {
-
+/// TODO - maybe move this to configuraiotn module???
 
 #if     !qHas_pid_t
 #if     qPlatform_Windows
@@ -39,6 +34,12 @@ namespace   Stroika {
             typedef int pid_t;
 #endif
 #endif
+
+
+
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Execution {
 
 
             pid_t   GetCurrentProcessID ();
