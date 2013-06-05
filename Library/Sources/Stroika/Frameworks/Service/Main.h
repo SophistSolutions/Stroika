@@ -73,7 +73,8 @@ namespace   Stroika {
                 // Default for UNIX - responds in standard way to basic signals etc
                 class   BasicUNIXServiceImpl;
 #endif
-            public:
+
+			public:
                 // Mostly for regression tests (and windoze)
                 class   RunTilIdleService;
 
@@ -88,15 +89,18 @@ namespace   Stroika {
                 class   WindowsService;
 #endif
 
-            public:
+
+			public:
+                /**
+                 * The result type depends on your OS/compilation flags.
+                 */
+				static	shared_ptr<IServiceIntegrationRep>	mkDefaultServiceIntegrationRep ();
+
+			public:
                 /**
                  * Note - besides the obvios, the Main () function also sets signal handlers to point to this objects signal handler.
                  */
-                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceIntegrationRep> serviceRep);
-
-            private:
-                static  shared_ptr<IApplicationRep> _sAppRep;
-                static  shared_ptr<IServiceIntegrationRep>     _sServiceRep;
+                explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
 
 
 #if     qPlatform_POSIX
@@ -170,16 +174,18 @@ namespace   Stroika {
                 virtual void                _Start (Time::DurationSecondsType timeout);
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  void            Stop (Time::DurationSecondsType timeout = Time::kInfinite);
             protected:
                 virtual     void            _Stop (Time::DurationSecondsType timeout);
 
             public:
-                /*
+                /**
+				 *	Does a regular stop, but if that doesnt work, do low-level force stop and cleanup
+				 *	as best as possible.
                  */
-                virtual void                Kill ();
+                nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
 
             public:
                 /*
@@ -189,18 +195,18 @@ namespace   Stroika {
                 virtual void                _Restart (Time::DurationSecondsType timeout);
 
             public:
-                /*
-                 */
+				/**
+				*/
                 virtual void                ReReadConfiguration ();
 
             public:
-                /*
-                 */
+				/**
+				*/
                 virtual void                Pause ();
 
             public:
-                /*
-                 */
+				/**
+				*/
                 virtual void                Continue ();
 
             protected:
@@ -231,37 +237,47 @@ namespace   Stroika {
                  * Will handle the given command line argument, and return true if it recognized it, and handled it. It will return false otherwise.
                  */
                 nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
+
+			private:
+                static  shared_ptr<IApplicationRep> _sAppRep;
+                static  shared_ptr<IServiceIntegrationRep>     _sServiceRep;
             };
 
 
+			/**
+			*/
 			struct  Main::ServiceDescription {
                 String  fName;
             };
 
 			
+			/**
+			*/
 			struct  Main::CommandNames {
-                /*
-                    *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
-                    *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
-                    *
-                    *  This is typically called INDRECTLY via a specail fork/exec as a result of a kStart command, or its called from
-                    *  init as part of system startup.
-                    */
+                /**
+                 *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
+                 *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
+                 *
+                 *  This is typically called INDRECTLY via a specail fork/exec as a result of a kStart command, or its called from
+                 *  init as part of system startup.
+                 */
                 static  const   wchar_t kRunAsService[];
-                /*
-                    *  The kStart command tells the service to start running. It returns an error
-                    *  if the service is already started.
-                    */
+                
+				/*
+                 *  The kStart command tells the service to start running. It returns an error
+                 *  if the service is already started.
+                 */
                 static  const   wchar_t kStart[];
-                /*
-                    *  The kStop command tells the service to start terminate
-                    */
+                
+				/**
+                 *  The kStop command tells the service to start terminate
+                 */
                 static  const   wchar_t kStop[];
                 //DOCUMENT EACH
                 //NEATLY
                 // KILL termiantes (kill-9)
                 //
-                static  const   wchar_t kKill[];
+                static  const   wchar_t kForcedStop[];
                 // restart synonmy for stop (no error if not already running), and then start
                 static  const   wchar_t kRestart[];
                 // If service knows how to find its own config files - recheck them
@@ -273,7 +289,7 @@ namespace   Stroika {
             };
 
             
-			/*
+			/**
              * To use this class you must implement your own Rep (to represent the running service).
              *
              *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
@@ -350,6 +366,9 @@ namespace   Stroika {
                 /**
                  */
                 virtual void                _Restart (Time::DurationSecondsType timeout)	=	0;
+
+			private:
+				friend	class	Main;
             };
 
 
@@ -389,6 +408,8 @@ namespace   Stroika {
              *
              */
             class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
+			public:
+				BasicUNIXServiceImpl ();
             protected:
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;
@@ -405,6 +426,8 @@ namespace   Stroika {
              *
              */
             class   Main::WindowsService : public Main::IServiceIntegrationRep {
+			public:
+				WindowsService ();
             protected:
                 virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual void                _Start (Time::DurationSecondsType timeout) override;

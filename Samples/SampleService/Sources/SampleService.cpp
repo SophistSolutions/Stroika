@@ -59,13 +59,22 @@ int main (int argc, const char* argv[])
             }
         }
     }
+#if 0
     if (not listen and searchFor.empty ()) {
         cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
         return EXIT_FAILURE;
     }
+#endif
 
     // must fix to pass right backend
-    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ()));
+	shared_ptr<Main::IServiceIntegrationRep>	serviceIntegrationRep;
+	if (true) {
+		serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
+	}
+	else {
+		serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
+	}
+    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
 #if 0
     try {
         Listener l;

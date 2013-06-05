@@ -703,20 +703,34 @@ void    Main::IApplicationRep::SignalHandler (int signum)
 const   wchar_t Service::Main::CommandNames::kRunAsService[]        =   L"Run-As-Service";
 const   wchar_t Service::Main::CommandNames::kStart[]               =   L"Start";
 const   wchar_t Service::Main::CommandNames::kStop[]                =   L"Stop";
-const   wchar_t Service::Main::CommandNames::kKill[]                =   L"Kill";
+const   wchar_t Service::Main::CommandNames::kForcedStop[]          =   L"ForcedStop";
 const   wchar_t Service::Main::CommandNames::kRestart[]             =   L"Restart";
 const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload-Configuration";
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-shared_ptr<Main::IApplicationRep>   Main::_sAppRep;
-shared_ptr<Main::IServiceIntegrationRep>       Main::_sServiceRep;
+shared_ptr<Main::IApplicationRep>   Main::_sAppRep;	// lose this - get frfom servicerep
+shared_ptr<Main::IServiceIntegrationRep>       Main::_sServiceRep;	// make private
 
-Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceRep)
+shared_ptr<Main::IServiceIntegrationRep>	Main::mkDefaultServiceIntegrationRep ()
 {
+#if     qPlatform_POSIX
+	return shared_ptr<IServiceIntegrationRep> (new BasicUNIXServiceImpl ());
+#elif	qPlatform_Windows
+	return shared_ptr<IServiceIntegrationRep> (new WindowsService ());
+#else
+	return shared_ptr<IServiceIntegrationRep> (new RunNoFrillsService ());
+#endif
+}
+
+Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep)
+{
+	RequireNotNull (rep);
+	RequireNotNull (serviceIntegrationRep);
+	serviceIntegrationRep->_Attach (rep);
     Require  (_sAppRep.get () == nullptr);     // singleton
     _sAppRep = rep;
-    _sServiceRep = serviceRep;
+    _sServiceRep = serviceIntegrationRep;
 #if     qPlatform_POSIX
     SetupSignalHanlders_ ();
 #endif
@@ -885,10 +899,12 @@ void    Main::_Stop (Time::DurationSecondsType timeout)
     }
 }
 
-void    Main::Kill ()
+void    Main::ForcedStop (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
-    Stop ();
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForceStop"));
+	if (timeout > 0) {
+		Stop (timeout);
+	}
     // Send signal to server to stop
 #if     qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
@@ -992,8 +1008,8 @@ bool    Main::_HandleStandardCommandLineArgument (const String& arg)
         Stop ();
         return true;
     }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kKill)) {
-        Kill ();
+    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kForcedStop)) {
+        ForcedStop (3);
         return true;
     }
     else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRestart)) {
@@ -1137,7 +1153,7 @@ bool    Main::_HandleStandardCommandLineArgument (const String& arg)
     }
 					}
 				}
-                 void                Main::BasicUNIXServiceImpl::_Kill ()
+                 void                Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 				{
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
     fAppRep_->_Stop ();
@@ -1147,6 +1163,40 @@ bool    Main::_HandleStandardCommandLineArgument (const String& arg)
     unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
 				}
                 void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsType timeout) 
+				{
+					/////// WRONG HANDLING OF TIMEOUT
+					_Stop (timeout);
+					_Start (timeout);
+				}
+#endif
+
+
+
+
+				#if     qPlatform_Windows
+/*
+ ********************************************************************************
+ ************************* Service::Main::WindowsService ************************
+ ********************************************************************************
+ */
+				Main::WindowsService::WindowsService ()
+					: fAppRep_ ()
+				{
+				}
+                void                Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep) 
+				{
+					RequireNotNull (appRep);
+					fAppRep_ = appRep;
+				}
+                 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout) 
+				{
+					Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
+					DbgTrace ("(timeout = %f)", timeout);
+				}
+                    void            Main::WindowsService::_Stop (Time::DurationSecondsType timeout) 
+				{
+				}
+                void                Main::WindowsService::_Restart (Time::DurationSecondsType timeout) 
 				{
 					/////// WRONG HANDLING OF TIMEOUT
 					_Stop (timeout);
