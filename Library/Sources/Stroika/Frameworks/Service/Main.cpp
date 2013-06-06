@@ -25,7 +25,6 @@
 #include    "../../Foundation/Execution/ErrNoException.h"
 #include    "../../Foundation/Execution/Module.h"
 #include    "../../Foundation/Execution/ThreadAbortException.h"
-#include    "../../Foundation/Execution/Signals.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/WaitTimedOutException.h"
 #include    "../../Foundation/IO/FileSystem/FileUtils.h"
@@ -633,7 +632,6 @@ void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* ch
     }
 }
 
-
 void    Main::IApplicationRep::OnStartRequest ()
 {
     // TODO - CHEKC IF RUNNING AND SAY "OK" if running - do nothing. But otherwise - start thread...
@@ -660,30 +658,6 @@ String  Main::IApplicationRep::GetServiceStatusMessage () const
 {
     return String ();
 }
-
-#if     qPlatform_POSIX
-void    Main::IApplicationRep::SignalHandler (int signum)
-{
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::SignalHandler"));
-    DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
-    // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
-    switch (signum) {
-        case    SIGTERM:
-            DbgTrace ("setting fStopping_ to true");
-            fStopping_ = true;
-            break;
-#if     qCompilerAndStdLib_Supports_constexpr
-        case    kSIG_ReReadConfiguration:
-#else
-        case    SIGHUP:
-#endif
-            OnReReadConfigurationRequest ();
-            break;
-    }
-}
-#endif
-
-
 
 
 
@@ -806,11 +780,14 @@ void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSec
 void    Main::ReReadConfiguration ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
+    AssertNotImplemented ();
     // SEND APPROPRIATE SIGNAL
+#if 0
 #if     qPlatform_POSIX
     pid_t   pid =   GetServicePID ();
     Assert (pid != 0);  // maybe throw if non-zero???
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
+#endif
 #endif
 }
 
@@ -829,12 +806,6 @@ Main::ServiceDescription    Main::GetServiceDescription () const
     return GetAppRep_ ().GetServiceDescription ();
 }
 
-#if     qPlatform_POSIX
-void    Main::SignalHandler (int signum)
-{
-    GetServiceRep_ ().SignalHandler (signum);
-}
-#endif
 void    Main::Restart (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
@@ -962,16 +933,16 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 {
 }
 
-void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
+void	Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
-    if (fAppRep_ != nullptr) {
-        // CLEAR SIGNAL HANDLER
-    }
+	if (fAppRep_ != nullptr) {
+		// CLEAR SIGNAL HANDLER
+	}
     fAppRep_ = appRep;
-    if (appRep != nullptr) {
-        SetupSignalHanlders_ ();
-    }
+	if (appRep != nullptr) {
+		SetupSignalHanlders_ ();
+	}
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -982,7 +953,7 @@ shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedA
 Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 {
     // @todo - maybe not qutie right - but a good approx ... review...
-    if (GetServicePID () != 0) {
+    if (_GetServicePID () != 0) {
         return State::eRunning;
     }
     return State::eStopped;
@@ -1049,7 +1020,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
     else {
         Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
         // Send signal to server to stop
-        Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGTERM));
+        Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGTERM));
         while (_IsServiceActuallyRunning ()) {
             Execution::Sleep (0.5);
             if (Time::GetTickCount () > timeoutAt) {
@@ -1064,7 +1035,7 @@ void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecon
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
     fAppRep_->OnStopRequest ();
     // Send signal to server to stop
-    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
+    Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
     unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
@@ -1082,8 +1053,8 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 
 void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
 {
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler);
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler);
+    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler_);
+    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler_);
 }
 
 String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
@@ -1094,7 +1065,7 @@ String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
-    pid_t   servicePID  =   GetServicePID ();
+    pid_t   servicePID  =   _GetServicePID ();
     if (servicePID > 0) {
         return not _IsServiceActuallyRunning ();
     }
@@ -1110,12 +1081,32 @@ void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
 {
-    pid_t   servicePID  =   GetServicePID ();
+    pid_t   servicePID  =   _GetServicePID ();
     if (servicePID > 0) {
         int result  =   ::kill (servicePID, 0);
         return result == 0;
     }
     return false;
+}
+
+void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
+{
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
+    DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
+    // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
+    switch (signum) {
+        case    SIGTERM:
+            DbgTrace ("setting fStopping_ to true");
+//            fStopping_ = true;
+            break;
+#if     qCompilerAndStdLib_Supports_constexpr
+        case    kSIG_ReReadConfiguration:
+#else
+        case    SIGHUP:
+#endif
+            //OnReReadConfigurationRequest ();
+            break;
+    }
 }
 #endif
 

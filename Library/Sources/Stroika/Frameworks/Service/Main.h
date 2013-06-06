@@ -494,9 +494,8 @@ namespace   Stroika {
 #else
                 static  const   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
 #endif
-            public:
-                static  void    SignalHandler (SignalIDType signum);
-
+            private:
+                static  void    SignalHandler_ (SignalIDType signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
             protected:
