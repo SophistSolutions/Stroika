@@ -672,13 +672,6 @@ String  Main::IApplicationRep::GetServiceStatusMessage () const
 }
 
 #if     qPlatform_POSIX
-String  Main::IApplicationRep::GetPIDFileName () const
-{
-    return L"/tmp/" + GetServiceDescription ().fName + L".pid";
-}
-#endif
-
-#if     qPlatform_POSIX
 void    Main::IApplicationRep::SignalHandler (int signum)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::SignalHandler"));
@@ -722,8 +715,7 @@ const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-shared_ptr<Main::IApplicationRep>   Main::_sAppRep; // lose this - get frfom servicerep
-shared_ptr<Main::IServiceIntegrationRep>       Main::_sServiceRep;  // make private
+Main*	Main::sTHIS_	=	nullptr;
 
 shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep ()
 {
@@ -737,16 +729,22 @@ shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep
 }
 
 Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep)
+	: fServiceRep_ (serviceIntegrationRep)
 {
+	Require (sTHIS_ == nullptr);    // singleton(ish)
+	sTHIS_ = this;
     RequireNotNull (rep);
     RequireNotNull (serviceIntegrationRep);
     serviceIntegrationRep->_Attach (rep);
-    Require  (_sAppRep.get () == nullptr);     // singleton
-    _sAppRep = rep;
-    _sServiceRep = serviceIntegrationRep;
 #if     qPlatform_POSIX
     SetupSignalHanlders_ ();
 #endif
+}
+
+Main::~Main ()
+{
+	Require (sTHIS_ == this);
+	sTHIS_ = nullptr;
 }
 
 #if     qPlatform_POSIX
@@ -806,7 +804,6 @@ String      Main::GetServiceStatusMessage () const
         default:
             AssertNotReached ();
     }
-    tmp << _sAppRep->GetServiceStatusMessage ().As<wstring> ();
     DbgTrace (L"returning status: (%s)", tmp.str ().c_str ());
     return tmp.str ();
 }
@@ -821,7 +818,10 @@ void    Main::RunAsService ()
         ofstream    out (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
         out << getpid () << endl;
 #endif
-        _sAppRep->OnStartRequest ();
+#if 0
+		// UNCLEAR HOW TO DISTINGUISH START STYLES HERE!!!
+        fServiceRep_->_Start ();
+#endif
     }
     catch (const Execution::ThreadAbortException& /*threadAbort*/) {
 #if     qPlatform_POSIX
@@ -836,34 +836,6 @@ void    Main::RunAsService ()
 #endif
         throw;
     }
-}
-
-void    Main::ForcedStop (Time::DurationSecondsType timeout)
-{
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForceStop"));
-    if (timeout > 0) {
-        Stop (timeout);
-    }
-    // Send signal to server to stop
-#if     qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
-    // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
-#endif
-}
-
-void    Main::_Restart (Time::DurationSecondsType timeout)
-{
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
-    DbgTrace ("(timeout = %f)", timeout);
-
-    Time::DurationSecondsType endAt =   Time::GetTickCount () + timeout;
-    IgnoreExceptionsForCall (Stop (timeout));
-#if     qPlatform_POSIX
-    // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
-#endif
-    Start (endAt - Time::GetTickCount ());
 }
 
 void    Main::ReReadConfiguration ()
@@ -889,7 +861,7 @@ void    Main::Continue ()
 
 Main::ServiceDescription    Main::GetServiceDescription () const
 {
-    return _sAppRep->GetServiceDescription ();
+    return GetAppRep_ ().GetServiceDescription ();
 }
 
 #if     qPlatform_POSIX
@@ -958,6 +930,11 @@ void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep
     fAppRep_ = appRep;
 }
 
+ shared_ptr<Main::IApplicationRep>		Main::RunTilIdleService::_GetAttachedAppRep () const  
+ {
+	 return fAppRep_;
+ }
+
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
 	AssertNotImplemented ();
@@ -982,7 +959,7 @@ void                Main::RunTilIdleService::_Restart (Time::DurationSecondsType
     _Start (timeout);
 }
 
-pid_t   Main::RunTilIdleService::GetServicePID () const
+pid_t   Main::RunTilIdleService::_GetServicePID () const
 {
     return 0;
 }
@@ -1009,7 +986,12 @@ void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplication
     fAppRep_ = appRep;
 }
 
-void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
+ shared_ptr<Main::IApplicationRep>		Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const  
+ {
+	 return fAppRep_;
+ }
+
+ void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
@@ -1097,17 +1079,32 @@ void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsT
     /////// WRONG HANDLING OF TIMEOUT
     _Stop (timeout);
     _Start (timeout);
+#if 0
+    Time::DurationSecondsType endAt =   Time::GetTickCount () + timeout;
+    IgnoreExceptionsForCall (Stop (timeout));
+#if     qPlatform_POSIX
+    // REALY should WAIT for server to stop and only do this it fails -
+    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+#endif
+    Start (endAt - Time::GetTickCount ());
+#endif
 }
 
 pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
 {
-    ifstream    in (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+    ifstream    in (GetPIDFileName ().AsTString ().c_str ());
     if (in) {
         pid_t   n = 0;
         in >> n;
         return n;
     }
     return 0;
+}
+
+String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
+{
+	return IO::FileSystem::WellKnownLocations::
+    return L"/tmp/" + _sAppRep->GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
@@ -1165,6 +1162,11 @@ void	Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
     fAppRep_ = appRep;
 }
 
+ shared_ptr<Main::IApplicationRep>		Main::WindowsService::_GetAttachedAppRep () const  
+ {
+	 return fAppRep_;
+ }
+
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
@@ -1196,7 +1198,7 @@ void                Main::WindowsService::_Restart (Time::DurationSecondsType ti
     _Start (timeout);
 }
 
-pid_t   Main::WindowsService::GetServicePID () const
+pid_t   Main::WindowsService::_GetServicePID () const
 {
     return 0;
 }

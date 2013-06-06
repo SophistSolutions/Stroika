@@ -31,6 +31,9 @@
  *				approahc and unix approach
  *
  *
+ *		@todo	Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which 
+ *				adds in SYSLOG calls for state changes.
+ *
  *      (o) For UNIX
  *
  *          (o) Store in file system file with current PID.
@@ -79,22 +82,17 @@ namespace   Stroika {
 
 #if     qPlatform_POSIX
             public:
-                // Default for UNIX - responds in standard way to basic signals etc
                 class   BasicUNIXServiceImpl;
 #endif
 
             public:
-                // Mostly for regression tests (and windoze)
                 class   RunTilIdleService;
 
             public:
-                // Run with absolultely minimal OS integration support. Count on the app itself to make service calls
-                // to start/stop
                 class   RunNoFrillsService;
 
 #if     qPlatform_Windows
             public:
-                // Run as a windows service - integrating with the Windows Service Mgr
                 class   WindowsService;
 #endif
 
@@ -110,6 +108,11 @@ namespace   Stroika {
                  */
                 explicit Main (shared_ptr<IApplicationRep> appRep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep = mkDefaultServiceIntegrationRep ());
 
+            public:
+				~Main ();
+			public:
+				NO_COPY_CONSTRUCTOR(Main);
+				NO_ASSIGNMENT_OPERATOR(Main);
 
 #if     qPlatform_POSIX
             private:
@@ -159,6 +162,7 @@ namespace   Stroika {
 
             public:
                 // Return 0 if no service running
+				// ????
                 nonvirtual  pid_t   GetServicePID () const;
 
 
@@ -169,6 +173,7 @@ namespace   Stroika {
             public:
                 /*
                  *  RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
+				 * (REVIEEW - nOT SURE WE NEED THIS ANYMORE)
                  */
                 virtual void                RunAsService ();
 
@@ -190,11 +195,9 @@ namespace   Stroika {
                 nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
 
             public:
-                /*
-                 */
+                /**
+                */
                 nonvirtual  void            Restart (Time::DurationSecondsType timeout = Time::kInfinite);
-            protected:
-                virtual void                _Restart (Time::DurationSecondsType timeout);
 
             public:
                 /**
@@ -225,9 +228,18 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
 
+
+			private:
+				nonvirtual	const IServiceIntegrationRep&	GetServiceRep_ () const;
+				nonvirtual	IServiceIntegrationRep&			GetServiceRep_ ();
+				nonvirtual	const IApplicationRep&			GetAppRep_ () const;
+				nonvirtual	IApplicationRep&				GetAppRep_ ();
+
+			private:
+				static	Main*	sTHIS_;
+
             private:
-                static  shared_ptr<IApplicationRep> _sAppRep;
-                static  shared_ptr<IServiceIntegrationRep>     _sServiceRep;
+                shared_ptr<IServiceIntegrationRep>		fServiceRep_;
             };
 
 
@@ -287,9 +299,24 @@ namespace   Stroika {
             public:
                 IApplicationRep ();
                 virtual ~IApplicationRep ();
+			public:
+				NO_COPY_CONSTRUCTOR(IApplicationRep);
+				NO_ASSIGNMENT_OPERATOR(IApplicationRep);
 
             public:
-                // This should be overridden by each service, and should  never return until the service is done (stop request).
+				/**
+                 * This should be overridden by each service, and should  never return until the service is done (stop request).
+				 *
+				 *	It might be written as:
+				 *		DoServiceOneTimeInits_();
+				 *		bool	stopping = false;
+				 *		_SimpleGenericRunLoopHelper (&e, &stopping, [] () {
+				 *			DoPeriodicallyWithoutBlocking...();
+				 *		});
+				 *		DoCleanupsAsServiceStops_();
+				 *
+				 *	@see _SimpleGenericRunLoopHelper
+				 */
                 virtual void                MainLoop () = 0;
 
 			protected:
@@ -307,18 +334,21 @@ namespace   Stroika {
 
             public:
                 virtual void                OnStartRequest ();
+            
+			public:
                 virtual void                OnStopRequest ();
+            
+			public:
                 virtual void                OnReReadConfigurationRequest ();    //NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24
 
+			public:
                 //  returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
                 //  service specific extras
                 virtual String              GetServiceStatusMessage () const;
+			
+			public:
                 virtual ServiceDescription  GetServiceDescription () const = 0;
 
-#if     qPlatform_POSIX
-            public:
-                virtual String              GetPIDFileName () const;
-#endif
 
 #if     qPlatform_POSIX
             public:
@@ -340,44 +370,53 @@ namespace   Stroika {
 
             private:
                 bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
-
             };
 
 
             /**
              */
             class   Main::IServiceIntegrationRep {
-            protected:
+			public:
+				IServiceIntegrationRep ();
+				NO_COPY_CONSTRUCTOR(IServiceIntegrationRep);
+				NO_ASSIGNMENT_OPERATOR(IServiceIntegrationRep);
+			public:
+				virtual ~IServiceIntegrationRep ();
+
+			protected:
                 /**
                  */
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep)    =   0;
+                virtual void	_Attach (shared_ptr<IApplicationRep> appRep)    =   0;
 
-            protected:
+			protected:
                 /**
                  */
-                virtual void                _Start (Time::DurationSecondsType timeout)  =   0;
-
-            protected:
-                /**
-                 */
-                virtual     void            _Stop (Time::DurationSecondsType timeout)   =   0;
-
-
-            protected:
-                /**
-                 */
-                virtual     void            _ForcedStop (Time::DurationSecondsType timeout)   =   0;
-
+                virtual shared_ptr<IApplicationRep>		_GetAttachedAppRep () const    =   0;
 
             protected:
                 /**
                  */
-                virtual void                _Restart (Time::DurationSecondsType timeout)    =   0;
+                virtual	void	_Start (Time::DurationSecondsType timeout)  =   0;
 
             protected:
                 /**
                  */
-                virtual  pid_t   GetServicePID () const = 0;
+                virtual     void	_Stop (Time::DurationSecondsType timeout)   =   0;
+
+            protected:
+                /**
+                 */
+                virtual     void	_ForcedStop (Time::DurationSecondsType timeout)   =   0;
+
+            protected:
+                /**
+                 */
+                virtual void        _Restart (Time::DurationSecondsType timeout)    =   0;
+
+            protected:
+                /**
+                 */
+                virtual  pid_t		_GetServicePID () const = 0;
 
             private:
                 friend  class   Main;
@@ -391,12 +430,13 @@ namespace   Stroika {
             public:
                 RunTilIdleService ();
             protected:
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual void                _Start (Time::DurationSecondsType timeout) override;
-                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
-                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                _Restart (Time::DurationSecondsType timeout) override;
-                virtual  pid_t   GetServicePID () const override;
+                virtual	void						_Attach (shared_ptr<IApplicationRep> appRep) override;
+				virtual shared_ptr<IApplicationRep>	_GetAttachedAppRep () const override;
+                virtual void						_Start (Time::DurationSecondsType timeout) override;
+                virtual void						_Stop (Time::DurationSecondsType timeout) override;
+                virtual void						_ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual void						_Restart (Time::DurationSecondsType timeout) override;
+                virtual pid_t						_GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -408,12 +448,13 @@ namespace   Stroika {
              */
             class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
             protected:
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual void                _Start (Time::DurationSecondsType timeout) override;
-                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
-                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                _Restart (Time::DurationSecondsType timeout) override;
-                virtual  pid_t   GetServicePID () const override;
+                virtual	void						_Attach (shared_ptr<IApplicationRep> appRep) override;
+				virtual shared_ptr<IApplicationRep>	_GetAttachedAppRep () const override;
+                virtual void						_Start (Time::DurationSecondsType timeout) override;
+                virtual void						_Stop (Time::DurationSecondsType timeout) override;
+                virtual void						_ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual void						_Restart (Time::DurationSecondsType timeout) override;
+                virtual pid_t						_GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -421,20 +462,24 @@ namespace   Stroika {
 
 #if     qPlatform_POSIX
             /**
-             *
+             *	Default for UNIX - responds in standard way to basic signals etc
              */
             class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
             public:
                 BasicUNIXServiceImpl ();
             protected:
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual void                _Start (Time::DurationSecondsType timeout) override;
-                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
-                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                _Restart (Time::DurationSecondsType timeout) override;
-                virtual  pid_t   GetServicePID () const override;
+                virtual	void						_Attach (shared_ptr<IApplicationRep> appRep) override;
+				virtual shared_ptr<IApplicationRep>	_GetAttachedAppRep () const override;
+                virtual void						_Start (Time::DurationSecondsType timeout) override;
+                virtual void						_Stop (Time::DurationSecondsType timeout) override;
+                virtual void						_ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual void						_Restart (Time::DurationSecondsType timeout) override;
+                virtual pid_t						_GetServicePID () const override;
 
-            protected:
+			protected:
+                virtual String              GetPIDFileName () const;
+
+			protected:
                 // Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that
                 // need to be cleaned up via _CleanupDeadService ()
                 virtual     bool            _IsServiceFailed ();
@@ -457,18 +502,19 @@ namespace   Stroika {
 
 #if     qPlatform_Windows
             /**
-             *
+             *	Run as a windows service - integrating with the Windows Service Mgr
              */
             class   Main::WindowsService : public Main::IServiceIntegrationRep {
             public:
                 WindowsService ();
             protected:
-                virtual void                _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual void                _Start (Time::DurationSecondsType timeout) override;
-                virtual     void            _Stop (Time::DurationSecondsType timeout) override;
-                virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                _Restart (Time::DurationSecondsType timeout) override;
-                virtual  pid_t   GetServicePID () const override;
+                virtual	void						_Attach (shared_ptr<IApplicationRep> appRep) override;
+				virtual shared_ptr<IApplicationRep>	_GetAttachedAppRep () const override;
+                virtual void						_Start (Time::DurationSecondsType timeout) override;
+                virtual void						_Stop (Time::DurationSecondsType timeout) override;
+                virtual void						_ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual void						_Restart (Time::DurationSecondsType timeout) override;
+                virtual pid_t						_GetServicePID () const override;
 			private:
 				nonvirtual	Characters::TString	GetSvcName_ () const;
 				nonvirtual	void				SetServiceStatus_ (DWORD dwState) noexcept;
@@ -486,7 +532,6 @@ namespace   Stroika {
         }
     }
 }
-
 
 
 
