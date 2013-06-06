@@ -25,15 +25,8 @@ using   Memory::Optional;
 /// *** TODO ****
 ///	add option to log to LOGGER instead of stderr!!!
 //
-//	replace kUseRunTilIdleServiceHandler_with something to check cmdline
 
 
-
-namespace {
-	// handy to test, but real users will want to point this to the default implementation (set to false)
-	// or pull the value from a command line argument
-	constexpr	bool	kUseRunTilIdleServiceHandler_	=	true;
-}
 
 
 
@@ -64,16 +57,37 @@ int main (int argc, const char* argv[])
 {
 	vector<String>	args	=	Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
-    if (kUseRunTilIdleServiceHandler_) {
-        serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
-    }
-    else {
-        serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-    }
+	{
+		bool	run2IdleMode = false;
+		// redo using sequence and lamnda code
+		for (String i : args) {
+			if (Execution::MatchesCommandLineArgument (i, L"run2Idle")) {
+				run2IdleMode = true;
+			}
+		}
+		if (run2IdleMode) {
+			serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
+		}
+		else {
+			serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
+		}
+	}
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     try {
 		m.Run (args);
 	}
+    catch (const std::exception& e) {
+        cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
+        cout << "Failed" << endl;
+        DbgTrace ("FAILED: REGRESSION TEST (std::exception): '%s", e.what ());
+        return EXIT_FAILURE;
+    }
+    catch (const Execution::StringException& e) {
+        cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
+        cout << "Failed" << endl;
+        DbgTrace (L"FAILED: REGRESSION TEST (std::exception): '%s", e.As<wstring> ().c_str ());
+        return EXIT_FAILURE;
+    }
 	catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;

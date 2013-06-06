@@ -27,7 +27,6 @@
 #include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/WaitTimedOutException.h"
-//#include    "../../Foundation/IO/FileSystem/FileUtils.h"
 #include    "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
@@ -937,6 +936,7 @@ bool    Main::_HandleStandardCommandLineArgument (const String& arg)
  */
 Main::RunTilIdleService::RunTilIdleService ()
     : fAppRep_ ()
+	, fRunThread_ ()
 {
 }
 
@@ -945,6 +945,8 @@ void    Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep)
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)
             );
+	fRunThread_.Abort ();
+	fRunThread_ = Execution::Thread ();
     fAppRep_ = appRep;
 }
 
@@ -955,35 +957,54 @@ shared_ptr<Main::IApplicationRep>      Main::RunTilIdleService::_GetAttachedAppR
 
 Main::State             Main::RunTilIdleService::_GetState () const
 {
-    AssertNotImplemented ();
+	//tmphack.... must think through states...
+	switch (fRunThread_.GetStatus ()) {
+	case Execution::Thread::Status::eRunning:	return Main::State::eRunning;
+	}
     return Main::State::eStopped;
 }
 
 void		Main::RunTilIdleService::_RunAsAservice ()
 {
-	//tmphack...
-	// probably ebst to invoeke app-xxx on sep thread... so easy to terminate...
+	// VERY WEAK TO WRONG IMPL
+	auto appRep = fAppRep_;
+	fRunThread_ = Execution::Thread ([appRep] () {
+		appRep->MainLoop ();
+	});
+	fRunThread_.Start ();
+	float timeTilIdleHack = 3.0;
+	IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack));	//tmphack - as
 }
 
-void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
+void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
-    AssertNotImplemented ();
+	// VERY WEAK TO WRONG IMPL
+	auto appRep = fAppRep_;
+	fRunThread_ = Execution::Thread ([appRep] () {
+		appRep->MainLoop ();
+	});
+	fRunThread_.Start ();
 }
 
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
+	// VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fAppRep_->OnStopRequest ();
+	fRunThread_.AbortAndWaitForDone (timeout);
 }
 
 void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
+	// VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fAppRep_->OnStopRequest ();
+	fRunThread_.AbortAndWaitForDone (timeout);
 }
 
 pid_t   Main::RunTilIdleService::_GetServicePID () const
 {
+	// VERY WEAK TO WRONG IMPL
     return 0;
 }
 
