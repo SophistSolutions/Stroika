@@ -67,15 +67,20 @@ namespace   Stroika {
 
             /**
              *  There are two differnt dimentions along which you can subtype the behavior of a service application:
-             *      (1) what the service provides
+             *      (1) the functionality the service provides
              *      (2) the OS service mechanism to use
              *
              *  Users of this class will themselves address #1, by subclassing from the IApplicationRep, and providing their application
-             *  behavior. But users can also select different 'service implementation' strategies. What serice implementation
-             *  strategies are available will depend on the OS you've built for, and often on command-line app arguments.
+             *  behavior. But users can also select different 'service implementation' strategies by selecting the IServiceIntegrationRep subtype
+			 *	to pass into the constructor. What serice implementation strategies are available will depend on the OS you've built for,
+			 *	and often on command-line app arguments.
              *
              *  This class is sort of like a singleton, in that it can be instantiated only once, never copied, etc. But
              *  its unusual for the singleton pattern, since the user must explicitly construct it. The owner controls its lifetime.
+			 *
+			 *	Note that this class provides a convient wrapper on requesting actions on the underlying service
+			 *	from EITEHR the process in which the service is run, or from any other process (via IPC - specific to the process
+			 *	service backend implementation).
              */
             class   Main {
             public:
@@ -152,10 +157,13 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  RunAsService () will not return - until the service has terminated. It runs the service 'MainLoop'.
-                 * (REVIEEW - nOT SURE WE NEED THIS ANYMORE)
+                 *  RunAsService () will not return until the service has terminated. It runs the service 'MainLoop'.
+				 *	When that happens, the calling application should exit.
+				 *
+				 *	This should NOT be called directly - except when command line arguments say "RunAsService".
+				 *	.... TO BE CLARIFIED .. RETHOUGHT>...
                  */
-                virtual void                RunAsService ();
+                nonvirtual	void			RunAsService ();
 
             public:
                 /**
