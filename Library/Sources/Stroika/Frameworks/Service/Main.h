@@ -26,9 +26,9 @@
  *
  * TODO:
  *
- *		@todo	Think through and document clearly the distinction between running service and driver
- *				to control stop/start etc. Think through relationship between windows
- *				approahc and unix approach
+ *      @todo   Think through and document clearly the distinction between running service and driver
+ *              to control stop/start etc. Think through relationship between windows
+ *              approahc and unix approach
  *
  *
  *		@todo	Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which 
@@ -246,8 +246,8 @@ namespace   Stroika {
             /**
             */
             struct  Main::ServiceDescription {
-                String  fRegistrationName;		// key name used when registering service with OS
-                String  fPrettyName;			// pretty printed version of fRegistrationName (can be same)
+                String  fRegistrationName;      // key name used when registering service with OS
+                String  fPrettyName;            // pretty printed version of fRegistrationName (can be same)
             };
 
 
@@ -319,18 +319,18 @@ namespace   Stroika {
 				 */
                 virtual void                MainLoop () = 0;
 
-			protected:
-				/*
-				 *	This utility function MAY be used inside MainLoop() to implement run-til-stop logic.
-				 *	Just provide a lambda/callback todo the inner loop of your main loop. That loop will be called
-				 *	repeatedly (unless stopping is set).
-				 *		aka:
-				 *			while (not *stopping) {
-				 *				realMainInnerLoop ();	// must not block for long periods - or must itself check checkStopEvent
-				 *				checkStopEvent->Wait();
-				 *			}
-				 */
-				void	_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop);
+            protected:
+                /*
+                 *  This utility function MAY be used inside MainLoop() to implement run-til-stop logic.
+                 *  Just provide a lambda/callback todo the inner loop of your main loop. That loop will be called
+                 *  repeatedly (unless stopping is set).
+                 *      aka:
+                 *          while (not *stopping) {
+                 *              realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
+                 *              checkStopEvent->Wait();
+                 *          }
+                 */
+                void    _SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop);
 
             public:
                 virtual void                OnStartRequest ();
