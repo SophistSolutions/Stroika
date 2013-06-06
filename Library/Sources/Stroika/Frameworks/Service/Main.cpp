@@ -879,9 +879,11 @@ Main::RunTilIdleService::RunTilIdleService ()
 {
 }
 
-void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep)
+void	Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep)
 {
-    RequireNotNull (appRep);
+	Require ((appRep == nullptr and fAppRep_ != nullptr) or
+			 (fAppRep_ == nullptr and fAppRep_ != appRep)
+			);
     fAppRep_ = appRep;
 }
 
@@ -936,7 +938,9 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 
 void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
-    RequireNotNull (appRep);
+	Require ((appRep == nullptr and fAppRep_ != nullptr) or
+			 (fAppRep_ == nullptr and fAppRep_ != appRep)
+			);
     if (fAppRep_ != nullptr) {
         // CLEAR SIGNAL HANDLER
     }
@@ -1133,7 +1137,9 @@ Main::WindowsService::WindowsService ()
 
 void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
 {
-    RequireNotNull (appRep);
+	Require ((appRep == nullptr and fAppRep_ != nullptr) or
+			 (fAppRep_ == nullptr and fAppRep_ != appRep)
+			);
     fAppRep_ = appRep;
 }
 
