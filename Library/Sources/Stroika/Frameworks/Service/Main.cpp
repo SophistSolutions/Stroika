@@ -653,7 +653,7 @@ void    Main::IApplicationRep::OnStopRequest ()
 
 void    Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
-  //  fMustReReadConfig = true;
+    //  fMustReReadConfig = true;
 }
 
 String  Main::IApplicationRep::GetServiceStatusMessage () const
@@ -840,10 +840,10 @@ void    Main::SignalHandler (int signum)
     GetServiceRep_ ().SignalHandler (signum);
 }
 #endif
-            void    Main::Restart (Time::DurationSecondsType timeout)
-            {
-                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
-                DbgTrace ("(timeout = %f)", timeout);
+void    Main::Restart (Time::DurationSecondsType timeout)
+{
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
+    DbgTrace ("(timeout = %f)", timeout);
 
     /////// WRONG HANDLING OF TIMEOUT
     Stop (timeout);
@@ -857,7 +857,7 @@ void    Main::SignalHandler (int signum)
 #endif
     Start (endAt - Time::GetTickCount ());
 #endif
-            }
+}
 
 bool    Main::_HandleStandardCommandLineArgument (const String& arg)
 {

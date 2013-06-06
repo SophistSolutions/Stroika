@@ -31,11 +31,11 @@
  *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
  *              adds in SYSLOG calls for state changes.
  *
- *      @todo	Windoze implementation - supproting the richer set of control mechanism.
+ *      @todo   Windoze implementation - supproting the richer set of control mechanism.
  *
- *      @todo	For UNIX
+ *      @todo   For UNIX
  *          (o) Get working (again) - used to work about a year ago but did major rewirte. Try to get
- *				working with demo app.
+ *              working with demo app.
  *
  *          (o) Store in file system file with current PID.
  *
@@ -43,9 +43,9 @@
  *
  *          (o) Must have generic signal handler registered (at least for TERMINATE/STOP/CONTINUE, SIGNIT (re-read conf))
  *
- *		@todo	Support Pause/Continue
+ *      @todo   Support Pause/Continue
  *
- *		@todo	Support Install/Uninstall () - at least on windoze!
+ *      @todo   Support Install/Uninstall () - at least on windoze!
  */
 
 
@@ -61,7 +61,7 @@ namespace   Stroika {
             using   Execution::pid_t;
 
 #if     qPlatform_POSIX
-			using	Execution::SignalIDType;
+            using   Execution::SignalIDType;
 #endif
 
 
@@ -139,15 +139,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 *	Return 0 if no service running
-                 *	????
-				 */
+                 *  Return 0 if no service running
+                 *  ????
+                 */
                 nonvirtual  pid_t   GetServicePID () const;
 
             public:
                 /**
-				 *	Return non-structured, human readable summary of service status
-				 */
+                 *  Return non-structured, human readable summary of service status
+                 */
                 nonvirtual  String      GetServiceStatusMessage () const;
 
             public:
@@ -169,8 +169,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Does a regular stop, but if that doesnt work (by the given timeout), do low-level 
-				 *	force stop and cleanup as best as possible.
+                 *  Does a regular stop, but if that doesnt work (by the given timeout), do low-level
+                 *  force stop and cleanup as best as possible.
                  */
                 nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
 
@@ -182,8 +182,8 @@ namespace   Stroika {
             public:
                 /**
                  *  Does ForcedStop(timeout) - ignoring errors if was already stopped, and then starts.
-				 *	This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
-				 *	it fails to restart the service.
+                 *  This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
+                 *  it fails to restart the service.
                  */
                 nonvirtual  void            ForcedRestart (Time::DurationSecondsType timeout = Time::kInfinite, Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
 
@@ -503,7 +503,7 @@ namespace   Stroika {
             private:
                 bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
 
-			private:
+            private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif
