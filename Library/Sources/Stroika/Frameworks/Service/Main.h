@@ -358,6 +358,11 @@ namespace   Stroika {
 
             protected:
                 /**
+				 *	Only legel to attach if _GetAttachedAppRep() == nullptr, and only legal to detach if _GetAttachedAppRep () != nullptr.
+				 *
+				 *	Must be attached before other methods can be called (at least most - document which).
+				 *
+				 *	Must be detatched before DTOR.
                  */
                 virtual void    _Attach (shared_ptr<IApplicationRep> appRep)    =   0;
 
@@ -372,7 +377,7 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                virtual void    _Start (Time::DurationSecondsType timeout)  =   0;
+                virtual		void    _Start (Time::DurationSecondsType timeout)  =   0;
 
             protected:
                 /**

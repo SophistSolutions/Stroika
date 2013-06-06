@@ -726,24 +726,14 @@ Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> 
     RequireNotNull (rep);
     RequireNotNull (serviceIntegrationRep);
     serviceIntegrationRep->_Attach (rep);
-#if     qPlatform_POSIX
-    SetupSignalHanlders_ ();
-#endif
 }
 
 Main::~Main ()
 {
     Require (sTHIS_ == this);
     sTHIS_ = nullptr;
+    fServiceRep_->_Attach (nullptr);
 }
-
-#if     qPlatform_POSIX
-void    Main::SetupSignalHanlders_ ()
-{
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler);
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler);
-}
-#endif
 
 String      Main::GetServiceStatusMessage () const
 {
@@ -806,6 +796,11 @@ void    Main::RunAsService ()
         throw;
     }
 #endif
+}
+
+void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSecondsType unforcedStopTimeout)
+{
+    AssertNotImplemented ();
 }
 
 void    Main::ReReadConfiguration ()
@@ -967,10 +962,16 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 {
 }
 
-void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
+void	Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
+	if (fAppRep_ != nullptr) {
+		// CLEAR SIGNAL HANDLER
+	}
     fAppRep_ = appRep;
+	if (appRep != nullptr) {
+		SetupSignalHanlders_ ();
+	}
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -1077,6 +1078,12 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
         return n;
     }
     return 0;
+}
+
+void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
+{
+    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler);
+    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler);
 }
 
 String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
