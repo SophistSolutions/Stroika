@@ -617,6 +617,35 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
 
 
 
+/*
+ ********************************************************************************
+ *********************** Service::Main::CommandArgs *****************************
+ ********************************************************************************
+ */
+Main::CommandArgs::CommandArgs ()
+	: fMajorOperation ()
+	, fUnusedArguments ()
+{
+}
+
+Main::CommandArgs::CommandArgs (const vector<String>& args)
+	: fMajorOperation ()
+	, fUnusedArguments ()
+{
+	for (String si : args) {
+		if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kRunAsService)) {
+			fMajorOperation = MajorOperation::eRunServiceMain;
+		}
+		else if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kStop)) {
+			fMajorOperation = MajorOperation::eStop;
+		}
+		else {
+			fUnusedArguments.push_back (si);
+		}
+	}
+}
+
+
 
 
 
@@ -625,6 +654,11 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
+bool	Main::IApplicationRep::HandleCommandLineArgument (const String& s)
+{
+	return false;
+}
+
 void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
 {
     while (not * stopping) {
@@ -662,6 +696,15 @@ String  Main::IApplicationRep::GetServiceStatusMessage () const
 
 
 
+/*
+ ********************************************************************************
+ ********************* Main::IServiceIntegrationRep *****************************
+ ********************************************************************************
+ */
+bool	Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
+{
+	return _GetAttachedAppRep ()->HandleCommandLineArgument (s);
+}
 
 
 
@@ -710,6 +753,22 @@ Main::~Main ()
     fServiceRep_->_Attach (nullptr);
 }
 
+void	Main::Run (const CommandArgs& args)
+{
+	for (String i : args.fUnusedArguments) {
+		fServiceRep_->HandleCommandLineArgument (i);
+	}
+	if (args.fMajorOperation.empty ()) {
+		Execution::DoThrow (Execution::StringException (L"NO RECOGNIAED MAJOR VERB"));	/// not sure where this validation should go - and need better set of exceptions to use!!!
+	}
+	switch (*args.fMajorOperation) {
+	case CommandArgs::MajorOperation::eRunServiceMain: {
+		RunAsService ();
+	}
+	break;
+	}
+}
+
 String      Main::GetServiceStatusMessage () const
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
@@ -745,6 +804,7 @@ void    Main::RunAsService ()
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     // VERY PRIMITIVE IMPL - WE NEED LOCKING on tmpfile stuff - add good tempfile supprot to fileuitls or use existing...
 
+	GetServiceRep_ ()._RunAsAservice ();
 #if 0
 
     try {
@@ -828,6 +888,7 @@ void    Main::Restart (Time::DurationSecondsType timeout)
 
 bool    Main::_HandleStandardCommandLineArgument (const String& arg)
 {
+	///REDO INSIDE COMMNADLINE PARSING CODE...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_HandleStandardCommandLineArgument"));
     if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRunAsService)) {
         RunAsService ();
@@ -898,6 +959,12 @@ Main::State             Main::RunTilIdleService::_GetState () const
     return Main::State::eStopped;
 }
 
+void		Main::RunTilIdleService::_RunAsAservice ()
+{
+	//tmphack...
+	// probably ebst to invoeke app-xxx on sep thread... so easy to terminate...
+}
+
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
     AssertNotImplemented ();
@@ -962,6 +1029,10 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
         return State::eRunning;
     }
     return State::eStopped;
+}
+
+void		Main::BasicUNIXServiceImpl::_RunAsAservice ()
+{
 }
 
 void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -1152,6 +1223,10 @@ Main::State             Main::WindowsService::_GetState () const
 {
     AssertNotImplemented ();
     return Main::State::eStopped;
+}
+
+void		Main::WindowsService::_RunAsAservice ()
+{
 }
 
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)

@@ -9,6 +9,7 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/Execution/Process.h"
+#include	"../../Foundation/Memory/Optional.h"
 
 #if     qPlatform_POSIX
 #include    "../../Foundation/Execution/Signals.h"
@@ -22,6 +23,8 @@
  *          IS A PROTOTYPE - AND CODE FOR WINDOWS NOT EVEN PROTOTYPE STAGE YET...
  *
  * TODO:
+ *
+ *		@todo	Command-line processing is totally kludged and needs cleanup!!!
  *
  *      @todo   Think through and document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
@@ -128,6 +131,24 @@ namespace   Stroika {
             public:
                 NO_COPY_CONSTRUCTOR(Main);
                 NO_ASSIGNMENT_OPERATOR(Main);
+
+            public:
+                struct  CommandArgs;
+
+			public:
+				/*
+				 *	These arguments are command-line arguments. They will also be indirectly passed to the IApplicationRep.
+				 *	So a typical app main() might be:
+				 *		TBD
+				 *
+				 *	When this function returns, the calling main() should exit. The caller should also be prepared for
+				 *	exceptions to be thrown by Run - for example - in case of bad command line arguments.
+				 *
+				 *	Note also - some command line arguments are interpretted as meaning to send messages to another process
+				 *	hosing the service. While others cause this process to become the process main process, and run until
+				 *	told to exit.
+				 */
+				nonvirtual	void	Run (const CommandArgs& args);
 
             public:
                 /**
@@ -284,6 +305,26 @@ namespace   Stroika {
             };
 
 
+			/**
+			 *	This is helpful to take command-line arguments and produce a set of things todo
+			 *	for the service mgr. This constructor will throw if it sees something obviously wrong
+			 *	but will ignore unrecognized arguments.
+			 */
+			struct  Main::CommandArgs {
+				CommandArgs ();
+				CommandArgs (const vector<String>& args);
+
+				enum class MajorOperation {
+					eRunServiceMain,
+					eStop,
+					//....
+				};
+
+				Memory::Optional<MajorOperation>	fMajorOperation;
+				vector<String>						fUnusedArguments;
+			};
+
+
             /**
              * To use this class you must implement your own Rep (to represent the running service).
              *
@@ -297,6 +338,20 @@ namespace   Stroika {
             public:
                 NO_COPY_CONSTRUCTOR(IApplicationRep);
                 NO_ASSIGNMENT_OPERATOR(IApplicationRep);
+
+
+			public:
+				/**
+				 *	Each command line argument is first passed to the IApplicationRep, and it returns true if it handled it
+				 *	and default for the default behavior.
+				 *
+				 *	Note - for multi-argument sequences, the implementer must set state so its prepared for the next
+				 *	argument.
+				 *
+				 *	This function MAY raise an exception if it receives unrecognized argumetns, and shoudl not
+				 *	print an error message in that case.
+				 */
+				virtual	bool	HandleCommandLineArgument (const String& s);
 
             public:
                 /**
@@ -383,6 +438,24 @@ namespace   Stroika {
                 virtual  State               _GetState () const =   0;
 
             protected:
+				/**
+				 *	Each command line argument is first passed to the IApplicationRep, and it returns true if it handled it
+				 *	and default for the default behavior.
+				 *
+				 *	Note - for multi-argument sequences, the implementer must set state so its prepared for the next
+				 *	argument.
+				 *
+				 *	This function MAY raise an exception if it receives unrecognized argumetns, and shoudl not
+				 *	print an error message in that case.
+				 */
+				virtual	bool	HandleCommandLineArgument (const String& s);
+
+			protected:
+                /**
+                 */
+                virtual void    _RunAsAservice ()    =   0;
+
+            protected:
                 /**
                  */
                 virtual     void    _Start (Time::DurationSecondsType timeout)  =   0;
@@ -417,6 +490,7 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void						_RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -435,6 +509,7 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void						_RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -455,6 +530,7 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void						_RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -532,6 +608,7 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void						_RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;

@@ -8,6 +8,7 @@
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Frameworks/Service/Main.h"
 
@@ -20,6 +21,23 @@ using   Characters::String;
 using   Memory::Optional;
 
 
+
+/// *** TODO ****
+///	add option to log to LOGGER instead of stderr!!!
+//
+//	replace kUseRunTilIdleServiceHandler_with something to check cmdline
+
+
+
+namespace {
+	// handy to test, but real users will want to point this to the default implementation (set to false)
+	// or pull the value from a command line argument
+	constexpr	bool	kUseRunTilIdleServiceHandler_	=	true;
+}
+
+
+
+
 namespace {
     struct   AppRep_ : Main::IApplicationRep {
         AppRep_ () {
@@ -28,77 +46,37 @@ namespace {
         }
 
     public:
-        virtual void                MainLoop () override {
+        virtual void  MainLoop () override {
+			Execution::Sleep (1 * 24 * 60 * 60);	// wait 1 day ... simple test....
         }
         virtual Main::ServiceDescription  GetServiceDescription () const override {
             Main::ServiceDescription    t;
+			t.fPrettyName = L"Test Service";
+			t.fRegistrationName = L"Test-Service";
             return t;
         }
     };
 }
 
 
+
 int main (int argc, const char* argv[])
 {
-    bool    listen  =   false;
-    Optional<String>    searchFor;
-
-    vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
-    for (auto argi = args.begin (); argi != args.end(); ++argi) {
-        if (Execution::MatchesCommandLineArgument (*argi, L"l")) {
-            listen = true;
-        }
-        if (Execution::MatchesCommandLineArgument (*argi, L"s")) {
-            ++argi;
-            if (argi != args.end ()) {
-                searchFor = *argi;
-            }
-            else {
-                cerr << "Expected arg to -s" << endl;
-                return EXIT_FAILURE;
-            }
-        }
-    }
-#if 0
-    if (not listen and searchFor.empty ()) {
-        cerr << "Usage: SSDPClient [-l] [-s SEARCHFOR]" << endl;
-        return EXIT_FAILURE;
-    }
-#endif
-
-    // must fix to pass right backend
+	vector<String>	args	=	Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
-    if (true) {
+    if (kUseRunTilIdleServiceHandler_) {
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     else {
         serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
-#if 0
     try {
-        Listener l;
-        if (listen) {
-            DoListening_ (&l);
-        }
-        Search  s;
-        if (not searchFor.empty ()) {
-            DoSearching_ (&s, *searchFor);
-        }
-
-        if (listen or not searchFor.empty ()) {
-            Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
-        }
-        else {
-            cerr << "Specify -l to listen or -s STRING to search" << endl;
-            return EXIT_FAILURE;
-        }
-    }
-    catch (...) {
+		m.Run (args);
+	}
+	catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
-    }
-#endif
-
+	}
     return EXIT_SUCCESS;
 }
