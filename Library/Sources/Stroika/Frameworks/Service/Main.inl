@@ -45,12 +45,12 @@ namespace   Stroika {
              ********************* Service::Main::IApplicationRep ***************************
              ********************************************************************************
              */
-			inline	Main::IServiceIntegrationRep::IServiceIntegrationRep ()
-			{
-			}
-			inline	Main::IServiceIntegrationRep::~IServiceIntegrationRep ()
-			{
-			}
+            inline  Main::IServiceIntegrationRep::IServiceIntegrationRep ()
+            {
+            }
+            inline  Main::IServiceIntegrationRep::~IServiceIntegrationRep ()
+            {
+            }
 
 
             /*
@@ -58,26 +58,26 @@ namespace   Stroika {
              ************************************ Service::Main *****************************
              ********************************************************************************
              */
-			inline	const Main::IServiceIntegrationRep&	Main::GetServiceRep_ () const
-			{
-				RequireNotNull (fServiceRep_);
+            inline  const Main::IServiceIntegrationRep& Main::GetServiceRep_ () const
+            {
+                RequireNotNull (fServiceRep_);
                 return *fServiceRep_;
-			}
-			inline	Main::IServiceIntegrationRep&	Main::GetServiceRep_ ()
-			{
-				RequireNotNull (fServiceRep_);
+            }
+            inline  Main::IServiceIntegrationRep&   Main::GetServiceRep_ ()
+            {
+                RequireNotNull (fServiceRep_);
                 return *fServiceRep_;
-			}
-			inline	const Main::IApplicationRep&		Main::GetAppRep_ () const
-			{
-				RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
+            }
+            inline  const Main::IApplicationRep&        Main::GetAppRep_ () const
+            {
+                RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
                 return *GetServiceRep_ ()._GetAttachedAppRep ();
-			}
-			inline	Main::IApplicationRep&		Main::GetAppRep_ ()
-			{
-				RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
+            }
+            inline  Main::IApplicationRep&      Main::GetAppRep_ ()
+            {
+                RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
                 return *GetServiceRep_ ()._GetAttachedAppRep ();
-			}
+            }
             inline  void    Main::Start (Time::DurationSecondsType timeout)
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
