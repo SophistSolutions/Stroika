@@ -55,25 +55,25 @@ int main (int argc, const char* argv[])
 {
     vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
-	{
-		bool	run2IdleMode = false;
-		// redo using sequence and lamnda code
-		for (String i : args) {
-			if (Execution::MatchesCommandLineArgument (i, L"run2Idle")) {
-				run2IdleMode = true;
-			}
-		}
-		if (run2IdleMode) {
-			serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
-		}
-		else {
-			serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-		}
-	}
+    {
+        bool    run2IdleMode = false;
+        // redo using sequence and lamnda code
+        for (String i : args) {
+            if (Execution::MatchesCommandLineArgument (i, L"run2Idle")) {
+                run2IdleMode = true;
+            }
+        }
+        if (run2IdleMode) {
+            serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
+        }
+        else {
+            serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
+        }
+    }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     try {
-		m.Run (args);
-	}
+        m.Run (args);
+    }
     catch (const std::exception& e) {
         cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
         cout << "Failed" << endl;
@@ -86,7 +86,7 @@ int main (int argc, const char* argv[])
         DbgTrace (L"FAILED: REGRESSION TEST (std::exception): '%s", e.As<wstring> ().c_str ());
         return EXIT_FAILURE;
     }
-	catch (...) {
+    catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
     }

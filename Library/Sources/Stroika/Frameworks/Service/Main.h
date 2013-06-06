@@ -10,7 +10,7 @@
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/Thread.h"
-#include	"../../Foundation/Memory/Optional.h"
+#include    "../../Foundation/Memory/Optional.h"
 
 #if     qPlatform_POSIX
 #include    "../../Foundation/Execution/Signals.h"
@@ -162,7 +162,7 @@ namespace   Stroika {
                     eRunning,
                     ePaused,        // STOPPED in unix
                 };
-                nonvirtual  State	GetState () const;
+                nonvirtual  State   GetState () const;
 
             public:
                 /**
@@ -497,7 +497,7 @@ namespace   Stroika {
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
             private:
-				Execution::Thread			fRunThread_;
+                Execution::Thread           fRunThread_;
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 
