@@ -78,6 +78,9 @@ namespace   Stroika {
                 class   IApplicationRep;
 
             public:
+                class   SimpleIApplicationRepHelper;
+
+            public:
                 class   IServiceIntegrationRep;
 
 #if     qPlatform_POSIX
@@ -372,6 +375,14 @@ namespace   Stroika {
                 bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
             };
 
+			
+            /**
+             */
+            class   Main::SimpleIApplicationRepHelper : public Main::IApplicationRep {
+			public:
+				SimpleIApplicationRepHelper ();
+			};
+
 
             /**
              */
@@ -477,7 +488,7 @@ namespace   Stroika {
                 virtual pid_t						_GetServicePID () const override;
 
 			protected:
-                virtual String              GetPIDFileName () const;
+                virtual String              _GetPIDFileName () const;
 
 			protected:
                 // Call to check if the service appears to be NOT RUNNING, but have some remnants of a previous run that

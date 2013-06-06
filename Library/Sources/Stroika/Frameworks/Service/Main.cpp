@@ -765,19 +765,6 @@ Main::State Main::GetState () const
     return State::eStopped;    // otherwise (esp on other platforms where not implemented) must  be stopped
 }
 
-#if     qPlatform_POSIX
-pid_t   Main::GetServicePID () const
-{
-    ifstream    in (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
-    if (in) {
-        pid_t   n = 0;
-        in >> n;
-        return n;
-    }
-    return 0;
-}
-#endif
-
 String      Main::GetServiceStatusMessage () const
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
@@ -815,7 +802,7 @@ void    Main::RunAsService ()
 
     try {
 #if     qPlatform_POSIX
-        ofstream    out (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+        ofstream    out (GetServiceRep_ ()._GetPIDFileName ().AsTString ().c_str ());
         out << getpid () << endl;
 #endif
 #if 0
@@ -825,14 +812,14 @@ void    Main::RunAsService ()
     }
     catch (const Execution::ThreadAbortException& /*threadAbort*/) {
 #if     qPlatform_POSIX
-        unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+        unlink (GetServiceRep_ ().GetPIDFileName ().AsTString ().c_str ());
 #endif
         // ignore this - just means service ended normally
     }
     catch (...) {
         DbgTrace (TSTR ("Unexpected exception ended running service"));
 #if     qPlatform_POSIX
-        unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+        unlink (GetServiceRep_ ()._GetPIDFileName ().AsTString ().c_str ());
 #endif
         throw;
     }
@@ -867,7 +854,7 @@ Main::ServiceDescription    Main::GetServiceDescription () const
 #if     qPlatform_POSIX
 void    Main::SignalHandler (int signum)
 {
-    _sAppRep->SignalHandler (signum);
+    GetServiceRep_ ().SignalHandler (signum);
 }
 #endif
 
@@ -1045,8 +1032,6 @@ void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplication
 
 void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 {
-
-
     bool kInProc_ = false;
     if (kInProc_) {
         /// kill running....
@@ -1071,7 +1056,7 @@ void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecon
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
 
 void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsType timeout)
@@ -1084,7 +1069,7 @@ void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsT
     IgnoreExceptionsForCall (Stop (timeout));
 #if     qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_sAppRep->_GetPIDFileName ().AsTString ().c_str ());
 #endif
     Start (endAt - Time::GetTickCount ());
 #endif
@@ -1092,7 +1077,7 @@ void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsT
 
 pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
 {
-    ifstream    in (GetPIDFileName ().AsTString ().c_str ());
+    ifstream    in (_GetPIDFileName ().AsTString ().c_str ());
     if (in) {
         pid_t   n = 0;
         in >> n;
@@ -1103,8 +1088,7 @@ pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
 
 String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
 {
-	return IO::FileSystem::WellKnownLocations::
-    return L"/tmp/" + _sAppRep->GetServiceDescription ().fRegistrationName + L".pid";
+	return IO::FileSystem::WellKnownLocations::GetTemporary () + _GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()

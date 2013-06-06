@@ -39,7 +39,8 @@ namespace   Stroika {
                 fMustReReadConfig = false;
             }
 
-            /*
+
+			/*
              ********************************************************************************
              ********************* Service::Main::IApplicationRep ***************************
              ********************************************************************************
@@ -81,29 +82,29 @@ namespace   Stroika {
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
                 DbgTrace ("(timeout = %f)", timeout);
-				RequireNotNull (fServiceRep_);
-                fServiceRep_->_Start (timeout);
+                GetServiceRep_ ()._Start (timeout);
             }
             inline  void    Main::Stop (Time::DurationSecondsType timeout)
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Stop"));
                 DbgTrace ("(timeout = %f)", timeout);
-				RequireNotNull (fServiceRep_);
-                fServiceRep_->_Stop (timeout);
+                GetServiceRep_ ()._Stop (timeout);
             }
             inline  void    Main::Restart (Time::DurationSecondsType timeout)
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
                 DbgTrace ("(timeout = %f)", timeout);
-				RequireNotNull (fServiceRep_);
-                fServiceRep_->_Restart (timeout);
+                GetServiceRep_ ()._Restart (timeout);
             }
 			inline	void    Main::ForcedStop (Time::DurationSecondsType timeout)
 			{
 				Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForcedStop"));
 				DbgTrace ("(timeout = %f)", timeout);
-				RequireNotNull (fServiceRep_);
-				fServiceRep_->_ForcedStop (timeout);
+				GetServiceRep_ ()._ForcedStop (timeout);
+			}
+			inline	pid_t   Main::GetServicePID () const
+			{
+				return GetServiceRep_ ()._GetServicePID ();
 			}
 
 
