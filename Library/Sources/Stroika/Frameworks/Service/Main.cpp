@@ -1088,7 +1088,7 @@ pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
 
 String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
 {
-	return IO::FileSystem::WellKnownLocations::GetTemporary () + _GetServiceDescription ().fRegistrationName + L".pid";
+    return IO::FileSystem::WellKnownLocations::GetTemporary () + _GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()

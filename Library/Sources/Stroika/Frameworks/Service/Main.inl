@@ -40,7 +40,7 @@ namespace   Stroika {
             }
 
 
-			/*
+            /*
              ********************************************************************************
              ********************* Service::Main::IApplicationRep ***************************
              ********************************************************************************
@@ -96,16 +96,16 @@ namespace   Stroika {
                 DbgTrace ("(timeout = %f)", timeout);
                 GetServiceRep_ ()._Restart (timeout);
             }
-			inline	void    Main::ForcedStop (Time::DurationSecondsType timeout)
-			{
-				Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForcedStop"));
-				DbgTrace ("(timeout = %f)", timeout);
-				GetServiceRep_ ()._ForcedStop (timeout);
-			}
-			inline	pid_t   Main::GetServicePID () const
-			{
-				return GetServiceRep_ ()._GetServicePID ();
-			}
+            inline  void    Main::ForcedStop (Time::DurationSecondsType timeout)
+            {
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForcedStop"));
+                DbgTrace ("(timeout = %f)", timeout);
+                GetServiceRep_ ()._ForcedStop (timeout);
+            }
+            inline  pid_t   Main::GetServicePID () const
+            {
+                return GetServiceRep_ ()._GetServicePID ();
+            }
 
 
         }

@@ -375,13 +375,13 @@ namespace   Stroika {
                 bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
             };
 
-			
+
             /**
              */
             class   Main::SimpleIApplicationRepHelper : public Main::IApplicationRep {
-			public:
-				SimpleIApplicationRepHelper ();
-			};
+            public:
+                SimpleIApplicationRepHelper ();
+            };
 
 
             /**
@@ -479,15 +479,15 @@ namespace   Stroika {
             public:
                 BasicUNIXServiceImpl ();
             protected:
-                virtual	void						_Attach (shared_ptr<IApplicationRep> appRep) override;
-				virtual shared_ptr<IApplicationRep>	_GetAttachedAppRep () const override;
-                virtual void						_Start (Time::DurationSecondsType timeout) override;
-                virtual void						_Stop (Time::DurationSecondsType timeout) override;
-                virtual void						_ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void						_Restart (Time::DurationSecondsType timeout) override;
-                virtual pid_t						_GetServicePID () const override;
+                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
+                virtual void                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual void                        _Restart (Time::DurationSecondsType timeout) override;
+                virtual pid_t                       _GetServicePID () const override;
 
-			protected:
+            protected:
                 virtual String              _GetPIDFileName () const;
 
             protected:
