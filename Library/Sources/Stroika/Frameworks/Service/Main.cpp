@@ -16,6 +16,7 @@
 #endif
 
 #include    "../../Foundation/Characters/Format.h"
+#include    "../../Foundation/Characters/TString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Debug/Trace.h"
@@ -40,7 +41,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
-
+using	Characters::TString;
 
 
 
@@ -300,7 +301,7 @@ namespace   {
     public:
         virtual     void    Run () override {
             SERVICE_TABLE_ENTRY st[] = {
-                { const_cast<TCHAR*> (kServiceName), _ServiceMain },
+                { const_cast<TCHAR*> (kServiceName), ServiceMain_ },
                 { NULL, NULL }
             };
             if (::StartServiceCtrlDispatcher (st) == 0) {
@@ -309,7 +310,7 @@ namespace   {
         }
 
     private:
-        void    ServiceMain (DWORD dwArgc, LPTSTR* lpszArgv) throw() {
+        void    ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) throw() {
             // Register the control request handler
             fServiceStatus.dwCurrentState = SERVICE_START_PENDING;
             fServiceStatusHandle = ::RegisterServiceCtrlHandler (kServiceName, _Handler);
@@ -329,7 +330,7 @@ namespace   {
             Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
             SetServiceStatus (SERVICE_STOPPED);
         }
-        static void WINAPI _ServiceMain (DWORD dwArgc, LPTSTR* lpszArgv) throw () {
+        static void WINAPI ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) throw () {
             sTHIS->ServiceMain (dwArgc, lpszArgv);
         }
 
@@ -634,8 +635,20 @@ Main::IApplicationRep::~IApplicationRep ()
 {
 }
 
+void	Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
+{
+	while (not *stopping) {
+		realMainInnerLoop ();	// must not block for long periods - or must itself check checkStopEvent
+		checkStopEvent->Wait();
+	}
+}
+
+
 void    Main::IApplicationRep::OnStartRequest ()
 {
+	// TODO - CHEKC IF RUNNING AND SAY "OK" if running - do nothing. But otherwise - start thread...
+	//
+
     // This procedure ends when the entire service process ends...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStartRequest"));
     MainLoop ();
@@ -773,7 +786,7 @@ String      Main::GetServiceStatusMessage () const
     const   wchar_t kTAB[]  =   L"    ";    // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription  svd =   GetServiceDescription ();
     wstringstream   tmp;
-    tmp << L"Service '" << svd.fName.As<wstring> () << "'" << endl;
+	tmp << L"Service '" << svd.fPrettyName.As<wstring> () << "'" << endl;
     switch (this->GetState ()) {
         case    State::eStopped:
             tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "STOPPED" << endl;
@@ -938,30 +951,37 @@ Main::RunTilIdleService::RunTilIdleService ()
     : fAppRep_ ()
 {
 }
+
 void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
     fAppRep_ = appRep;
 }
+
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
+	AssertNotImplemented ();
 }
+
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fAppRep_->OnStopRequest ();
 }
+
 void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fAppRep_->OnStopRequest ();
 }
+
 void                Main::RunTilIdleService::_Restart (Time::DurationSecondsType timeout)
 {
     /////// WRONG HANDLING OF TIMEOUT
     _Stop (timeout);
     _Start (timeout);
 }
+
 pid_t   Main::RunTilIdleService::GetServicePID () const
 {
     return 0;
@@ -982,11 +1002,13 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fAppRep_ ()
 {
 }
+
 void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
     fAppRep_ = appRep;
 }
+
 void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
@@ -1038,6 +1060,7 @@ void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsTyp
         }
     }
 }
+
 void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType timeout)
 {
 
@@ -1058,6 +1081,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
         }
     }
 }
+
 void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
@@ -1125,32 +1149,137 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
  */
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
+    , fStopServiceEvent_ ()
+    , fServiceStatusHandle_ (nullptr)
+    , fServiceStatus_ ()
 {
+    memset (&fServiceStatus_, 0, sizeof (fServiceStatus_));
+    fServiceStatus_.dwServiceType = SERVICE_WIN32_OWN_PROCESS;
+    fServiceStatus_.dwCurrentState = SERVICE_STOPPED;
+    fServiceStatus_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 }
-void                Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
+
+void	Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
     fAppRep_ = appRep;
 }
+
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
+	// MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
+    SERVICE_TABLE_ENTRY st[] = {
+        { const_cast<TCHAR*> (GetSvcName_ ().c_str ()), StaticServiceMain_ },
+        { NULL, NULL }
+    };
+    if (::StartServiceCtrlDispatcher (st) == 0) {
+        fServiceStatus_.dwWin32ExitCode = GetLastError ();
+    }
 }
+
 void            Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
+	AssertNotImplemented ();
 }
+
 void            Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
 {
+	AssertNotImplemented ();
 }
+
 void                Main::WindowsService::_Restart (Time::DurationSecondsType timeout)
 {
     /////// WRONG HANDLING OF TIMEOUT
     _Stop (timeout);
     _Start (timeout);
 }
+
 pid_t   Main::WindowsService::GetServicePID () const
 {
     return 0;
 }
+
+TString	Main::WindowsService::GetSvcName_ () const
+{
+	RequireNotNull (fAppRep_);	// must attach first
+	return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
+}
+
+void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept 
+{
+    DbgTrace ("SetServiceStatus_ (%d)", dwState);
+	Assert (fServiceStatusHandle_ != nullptr);
+    fServiceStatus_.dwCurrentState = dwState;
+    ::SetServiceStatus (fServiceStatusHandle_, &fServiceStatus_);
+}
+
+void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept 
+{
+    // Register the control request handler
+    fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
+#if 0
+	// KEEP THIS - SEE IFDEFED OUT CODE ABOVE FOR HANLDERS AND MAPPING MESSAGE IDS
+    fServiceStatusHandle_ = ::RegisterServiceCtrlHandler (GetSvcName_ ().c_str (), _Handler);
+    if (fServiceStatusHandle_ == nullptr) {
+        Logger::EmitMessage (Logger::eError_MT, "Handler not installed");
+        return;
+    }
+#endif
+    SetServiceStatus_ (SERVICE_START_PENDING);
+
+    fServiceStatus_.dwWin32ExitCode = S_OK;
+    fServiceStatus_.dwCheckPoint = 0;
+    fServiceStatus_.dwWaitHint = 0;
+
+    // When the Run function returns, the service has stopped.
+#if 0
+	// about like this - FIX - KEEP SOMETHING SIMIALR
+    fServiceStatus_.dwWin32ExitCode = ServiceRun_ ();
+#endif
+
+    //Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
+    SetServiceStatus_ (SERVICE_STOPPED);
+}
+
+void	WINAPI	Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept
+{
+	// NEED SOMETHING LIKE THIS!!!
+    //sTHIS->ServiceMain (dwArgc, lpszArgv);
+}
+
+#if 0
+        DWORD   Main::WindowsService::ServiceRun_ () throw () {
+            try {
+                InitializeAppDataRepositoryDirectories ();
+                InitMoreModules ();
+                InitializeSecurity_ ();
+
+                StartRefContentMgr ();
+                StartServiceThreads ();
+
+                {
+                    TString runningFile =   GetServerRunningFilePath_ ();
+                    if (IO::FileSystem::FileExists (runningFile)) {
+                        Logger::EmitMessage (Logger::eWarning_MT, "HealthFrameWorks Server appears to have not shutdown cleanly last time it was run");
+                    }
+                    else {
+                        IO::FileSystem::CreateDirectoryForFile (runningFile);
+                        IO::FileSystem::FileWriter writer (runningFile.c_str ());
+                    }
+                }
+
+                SetServiceStatus (SERVICE_RUNNING);
+
+                //wait on semaphore set by the STOP call
+                DbgTrace ("Waiting for stop-service event");
+                fStopServiceEvent.Wait ();
+                DbgTrace ("Wait for stop-service event complete, so exiting from ServiceRun_");
+            }
+            HealthFrameWorks_LogMessageHelper (_T ("While starting up HealthFrameWorks Server"));
+            return 0;
+        }
+#endif
+
 #endif
