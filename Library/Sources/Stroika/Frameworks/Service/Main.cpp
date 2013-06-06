@@ -962,16 +962,16 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 {
 }
 
-void	Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
-	if (fAppRep_ != nullptr) {
-		// CLEAR SIGNAL HANDLER
-	}
+    if (fAppRep_ != nullptr) {
+        // CLEAR SIGNAL HANDLER
+    }
     fAppRep_ = appRep;
-	if (appRep != nullptr) {
-		SetupSignalHanlders_ ();
-	}
+    if (appRep != nullptr) {
+        SetupSignalHanlders_ ();
+    }
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
