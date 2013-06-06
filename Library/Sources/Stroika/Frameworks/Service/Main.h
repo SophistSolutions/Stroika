@@ -26,9 +26,9 @@
  *
  * TODO:
  *
- *		@todo	Think through and document clearly the distinction between running service and driver
- *				to control stop/start etc. Think through relationship between windows
- *				approahc and unix approach
+ *      @todo   Think through and document clearly the distinction between running service and driver
+ *              to control stop/start etc. Think through relationship between windows
+ *              approahc and unix approach
  *
  *
  *      (o) For UNIX
@@ -234,8 +234,8 @@ namespace   Stroika {
             /**
             */
             struct  Main::ServiceDescription {
-                String  fRegistrationName;		// key name used when registering service with OS
-                String  fPrettyName;			// pretty printed version of fRegistrationName (can be same)
+                String  fRegistrationName;      // key name used when registering service with OS
+                String  fPrettyName;            // pretty printed version of fRegistrationName (can be same)
             };
 
 
@@ -292,18 +292,18 @@ namespace   Stroika {
                 // This should be overridden by each service, and should  never return until the service is done (stop request).
                 virtual void                MainLoop () = 0;
 
-			protected:
-				/*
-				 *	This utility function MAY be used inside MainLoop() to implement run-til-stop logic.
-				 *	Just provide a lambda/callback todo the inner loop of your main loop. That loop will be called
-				 *	repeatedly (unless stopping is set).
-				 *		aka:
-				 *			while (not *stopping) {
-				 *				realMainInnerLoop ();	// must not block for long periods - or must itself check checkStopEvent
-				 *				checkStopEvent->Wait();
-				 *			}
-				 */
-				void	_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop);
+            protected:
+                /*
+                 *  This utility function MAY be used inside MainLoop() to implement run-til-stop logic.
+                 *  Just provide a lambda/callback todo the inner loop of your main loop. That loop will be called
+                 *  repeatedly (unless stopping is set).
+                 *      aka:
+                 *          while (not *stopping) {
+                 *              realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
+                 *              checkStopEvent->Wait();
+                 *          }
+                 */
+                void    _SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop);
 
             public:
                 virtual void                OnStartRequest ();
@@ -469,15 +469,15 @@ namespace   Stroika {
                 virtual     void            _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual void                _Restart (Time::DurationSecondsType timeout) override;
                 virtual  pid_t   GetServicePID () const override;
-			private:
-				nonvirtual	Characters::TString	GetSvcName_ () const;
-				nonvirtual	void				SetServiceStatus_ (DWORD dwState) noexcept;
-				nonvirtual	void				ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-				static		void    WINAPI		StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-			private:
-				Execution::Event			fStopServiceEvent_;
-				SERVICE_STATUS_HANDLE		fServiceStatusHandle_;		// nullptr if invalid - not INVALID_HANDLE
-				SERVICE_STATUS				fServiceStatus_;
+            private:
+                nonvirtual  Characters::TString GetSvcName_ () const;
+                nonvirtual  void                SetServiceStatus_ (DWORD dwState) noexcept;
+                nonvirtual  void                ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+                static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+            private:
+                Execution::Event            fStopServiceEvent_;
+                SERVICE_STATUS_HANDLE       fServiceStatusHandle_;      // nullptr if invalid - not INVALID_HANDLE
+                SERVICE_STATUS              fServiceStatus_;
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif

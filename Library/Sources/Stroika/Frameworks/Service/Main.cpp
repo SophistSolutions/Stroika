@@ -41,7 +41,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
-using	Characters::TString;
+using   Characters::TString;
 
 
 
@@ -635,19 +635,19 @@ Main::IApplicationRep::~IApplicationRep ()
 {
 }
 
-void	Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
+void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
 {
-	while (not *stopping) {
-		realMainInnerLoop ();	// must not block for long periods - or must itself check checkStopEvent
-		checkStopEvent->Wait();
-	}
+    while (not * stopping) {
+        realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
+        checkStopEvent->Wait();
+    }
 }
 
 
 void    Main::IApplicationRep::OnStartRequest ()
 {
-	// TODO - CHEKC IF RUNNING AND SAY "OK" if running - do nothing. But otherwise - start thread...
-	//
+    // TODO - CHEKC IF RUNNING AND SAY "OK" if running - do nothing. But otherwise - start thread...
+    //
 
     // This procedure ends when the entire service process ends...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStartRequest"));
@@ -786,7 +786,7 @@ String      Main::GetServiceStatusMessage () const
     const   wchar_t kTAB[]  =   L"    ";    // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription  svd =   GetServiceDescription ();
     wstringstream   tmp;
-	tmp << L"Service '" << svd.fPrettyName.As<wstring> () << "'" << endl;
+    tmp << L"Service '" << svd.fPrettyName.As<wstring> () << "'" << endl;
     switch (this->GetState ()) {
         case    State::eStopped:
             tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "STOPPED" << endl;
@@ -960,7 +960,7 @@ void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep
 
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
-	AssertNotImplemented ();
+    AssertNotImplemented ();
 }
 
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
@@ -1159,7 +1159,7 @@ Main::WindowsService::WindowsService ()
     fServiceStatus_.dwControlsAccepted = SERVICE_ACCEPT_STOP;
 }
 
-void	Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
+void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
 {
     RequireNotNull (appRep);
     fAppRep_ = appRep;
@@ -1169,7 +1169,7 @@ void                Main::WindowsService::_Start (Time::DurationSecondsType time
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
-	// MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
+    // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
     SERVICE_TABLE_ENTRY st[] = {
         { const_cast<TCHAR*> (GetSvcName_ ().c_str ()), StaticServiceMain_ },
         { NULL, NULL }
@@ -1181,12 +1181,12 @@ void                Main::WindowsService::_Start (Time::DurationSecondsType time
 
 void            Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
-	AssertNotImplemented ();
+    AssertNotImplemented ();
 }
 
 void            Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
 {
-	AssertNotImplemented ();
+    AssertNotImplemented ();
 }
 
 void                Main::WindowsService::_Restart (Time::DurationSecondsType timeout)
@@ -1201,26 +1201,24 @@ pid_t   Main::WindowsService::GetServicePID () const
     return 0;
 }
 
-TString	Main::WindowsService::GetSvcName_ () const
+TString Main::WindowsService::GetSvcName_ () const
 {
-	RequireNotNull (fAppRep_);	// must attach first
-	return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
+    RequireNotNull (fAppRep_);  // must attach first
+    return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
 }
 
-void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept 
-{
+void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
     DbgTrace ("SetServiceStatus_ (%d)", dwState);
-	Assert (fServiceStatusHandle_ != nullptr);
+    Assert (fServiceStatusHandle_ != nullptr);
     fServiceStatus_.dwCurrentState = dwState;
     ::SetServiceStatus (fServiceStatusHandle_, &fServiceStatus_);
 }
 
-void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept 
-{
+void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
 #if 0
-	// KEEP THIS - SEE IFDEFED OUT CODE ABOVE FOR HANLDERS AND MAPPING MESSAGE IDS
+    // KEEP THIS - SEE IFDEFED OUT CODE ABOVE FOR HANLDERS AND MAPPING MESSAGE IDS
     fServiceStatusHandle_ = ::RegisterServiceCtrlHandler (GetSvcName_ ().c_str (), _Handler);
     if (fServiceStatusHandle_ == nullptr) {
         Logger::EmitMessage (Logger::eError_MT, "Handler not installed");
@@ -1235,7 +1233,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
 
     // When the Run function returns, the service has stopped.
 #if 0
-	// about like this - FIX - KEEP SOMETHING SIMIALR
+    // about like this - FIX - KEEP SOMETHING SIMIALR
     fServiceStatus_.dwWin32ExitCode = ServiceRun_ ();
 #endif
 
@@ -1243,43 +1241,43 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     SetServiceStatus_ (SERVICE_STOPPED);
 }
 
-void	WINAPI	Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept
-{
-	// NEED SOMETHING LIKE THIS!!!
+void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+    // NEED SOMETHING LIKE THIS!!!
     //sTHIS->ServiceMain (dwArgc, lpszArgv);
 }
 
 #if 0
-        DWORD   Main::WindowsService::ServiceRun_ () throw () {
-            try {
-                InitializeAppDataRepositoryDirectories ();
-                InitMoreModules ();
-                InitializeSecurity_ ();
+DWORD   Main::WindowsService::ServiceRun_ () throw ()
+{
+    try {
+        InitializeAppDataRepositoryDirectories ();
+        InitMoreModules ();
+        InitializeSecurity_ ();
 
-                StartRefContentMgr ();
-                StartServiceThreads ();
+        StartRefContentMgr ();
+        StartServiceThreads ();
 
-                {
-                    TString runningFile =   GetServerRunningFilePath_ ();
-                    if (IO::FileSystem::FileExists (runningFile)) {
-                        Logger::EmitMessage (Logger::eWarning_MT, "HealthFrameWorks Server appears to have not shutdown cleanly last time it was run");
-                    }
-                    else {
-                        IO::FileSystem::CreateDirectoryForFile (runningFile);
-                        IO::FileSystem::FileWriter writer (runningFile.c_str ());
-                    }
-                }
-
-                SetServiceStatus (SERVICE_RUNNING);
-
-                //wait on semaphore set by the STOP call
-                DbgTrace ("Waiting for stop-service event");
-                fStopServiceEvent.Wait ();
-                DbgTrace ("Wait for stop-service event complete, so exiting from ServiceRun_");
+        {
+            TString runningFile =   GetServerRunningFilePath_ ();
+            if (IO::FileSystem::FileExists (runningFile)) {
+                Logger::EmitMessage (Logger::eWarning_MT, "HealthFrameWorks Server appears to have not shutdown cleanly last time it was run");
             }
-            HealthFrameWorks_LogMessageHelper (_T ("While starting up HealthFrameWorks Server"));
-            return 0;
+            else {
+                IO::FileSystem::CreateDirectoryForFile (runningFile);
+                IO::FileSystem::FileWriter writer (runningFile.c_str ());
+            }
         }
+
+        SetServiceStatus (SERVICE_RUNNING);
+
+        //wait on semaphore set by the STOP call
+        DbgTrace ("Waiting for stop-service event");
+        fStopServiceEvent.Wait ();
+        DbgTrace ("Wait for stop-service event complete, so exiting from ServiceRun_");
+    }
+    HealthFrameWorks_LogMessageHelper (_T ("While starting up HealthFrameWorks Server"));
+    return 0;
+}
 #endif
 
 #endif
