@@ -61,4 +61,3 @@ namespace   Stroika {
  */
 
 #endif  /*_Stroika_Foundation_Execution_CommandLine_h_*/
-
