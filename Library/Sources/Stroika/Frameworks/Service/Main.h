@@ -6,16 +6,13 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-#include    <vector>
-
-#if     qPlatform_POSIX
-#include    <csignal>
-#endif
-
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/Execution/Process.h"
+
+#if     qPlatform_POSIX
+#include    "../../Foundation/Execution/Signals.h"
+#endif
 
 
 
@@ -34,7 +31,11 @@
  *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
  *              adds in SYSLOG calls for state changes.
  *
- *      (o) For UNIX
+ *      @todo	Windoze implementation - supproting the richer set of control mechanism.
+ *
+ *      @todo	For UNIX
+ *          (o) Get working (again) - used to work about a year ago but did major rewirte. Try to get
+ *				working with demo app.
  *
  *          (o) Store in file system file with current PID.
  *
@@ -42,7 +43,9 @@
  *
  *          (o) Must have generic signal handler registered (at least for TERMINATE/STOP/CONTINUE, SIGNIT (re-read conf))
  *
- *      (o) Windoze implementation - supproting the richer set of control mechanism.
+ *		@todo	Support Pause/Continue
+ *
+ *		@todo	Support Install/Uninstall () - at least on windoze!
  */
 
 
@@ -51,11 +54,14 @@ namespace   Stroika {
     namespace   Frameworks {
         namespace   Service {
 
-
             using   namespace   Stroika::Foundation;
             using   Characters::String;
 
             using   Execution::pid_t;
+
+#if     qPlatform_POSIX
+			using	Execution::SignalIDType;
+#endif
 
 
             /**
@@ -117,38 +123,6 @@ namespace   Stroika {
                 NO_COPY_CONSTRUCTOR(Main);
                 NO_ASSIGNMENT_OPERATOR(Main);
 
-#if     qPlatform_POSIX
-            private:
-                nonvirtual  void    SetupSignalHanlders_ ();
-#endif
-
-
-#if     qPlatform_POSIX
-                /*
-                 * By default, ServiceMain sets up its own signal handlers for
-                 *
-                 *      SIGTERM
-                 *      SIGHUP
-                 *      ....
-                 *<<should  add more - like TSTP and CONT - but not high priorities since the default UNIX behavior of these is pretty reasonable
-                 *>>>--LGP 2011-09-24
-                 *
-                 *  If the user of this class needs there own signal handlers, but still wnats to leverage the default handling in this
-                 *  class, there are two easy ways:
-                 *      (1)     overide the 'rep' method Signalhandler and delegate t your own handlers.
-                 *      (2)     or, replace the signal hanlder yourself (with the signal system call), and call
-                 *              SignalHandler () directly on this class.
-                 */
-            public:
-#if     qCompilerAndStdLib_Supports_constexpr
-                static  constexpr   int kSIG_ReReadConfiguration    =   SIGHUP;
-#else
-                static  const   int kSIG_ReReadConfiguration    =   SIGHUP;
-#endif
-            public:
-                static  void    SignalHandler (int signum);
-#endif
-
             public:
                 /**
                  *  Checks the state of the given service. NOTE - this works ACROSS PROCESSES. It can be called
@@ -164,13 +138,16 @@ namespace   Stroika {
 
 
             public:
-                // Return 0 if no service running
-                // ????
+                /**
+                 *	Return 0 if no service running
+                 *	????
+				 */
                 nonvirtual  pid_t   GetServicePID () const;
 
-
             public:
-                // Return non-structured, human readable summary of service status
+                /**
+				 *	Return non-structured, human readable summary of service status
+				 */
                 nonvirtual  String      GetServiceStatusMessage () const;
 
             public:
@@ -181,7 +158,7 @@ namespace   Stroika {
                 virtual void                RunAsService ();
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  void            Start (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -192,8 +169,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Does a regular stop, but if that doesnt work, do low-level force stop and cleanup
-                 *  as best as possible.
+                 *  Does a regular stop, but if that doesnt work (by the given timeout), do low-level 
+				 *	force stop and cleanup as best as possible.
                  */
                 nonvirtual  void            ForcedStop (Time::DurationSecondsType timeout);
 
@@ -201,6 +178,14 @@ namespace   Stroika {
                 /**
                 */
                 nonvirtual  void            Restart (Time::DurationSecondsType timeout = Time::kInfinite);
+
+            public:
+                /**
+                 *  Does ForcedStop(timeout) - ignoring errors if was already stopped, and then starts.
+				 *	This only fails if it couldn't (even forced) stop the service (ignoring timeout) or if
+				 *	it fails to restart the service.
+                 */
+                nonvirtual  void            ForcedRestart (Time::DurationSecondsType timeout = Time::kInfinite, Time::DurationSecondsType unforcedStopTimeout = Time::kInfinite);
 
             public:
                 /**
@@ -218,8 +203,8 @@ namespace   Stroika {
                 virtual void                Continue ();
 
             public:
-                /*
-                 */
+                /**
+                */
                 nonvirtual  ServiceDescription  GetServiceDescription () const;
 
             public:
@@ -230,7 +215,6 @@ namespace   Stroika {
                  * Will handle the given command line argument, and return true if it recognized it, and handled it. It will return false otherwise.
                  */
                 nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
-
 
             private:
                 nonvirtual  const IServiceIntegrationRep&   GetServiceRep_ () const;
@@ -351,28 +335,6 @@ namespace   Stroika {
 
             public:
                 virtual ServiceDescription  GetServiceDescription () const = 0;
-
-
-#if     qPlatform_POSIX
-            public:
-                virtual void                SignalHandler (int signum);
-#endif
-
-
-                // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
-            protected:
-                nonvirtual  bool    _CheckShouldReReadConfig () const;
-                nonvirtual  void    _DidReReadConfig ();
-            private:
-                bool    fMustReReadConfig;
-
-            protected:
-                // Called periodically in subclasses of MainLoop to abort processing when the service is being shut down. Triggers a
-                // ThreadAborted exception when its time...
-                nonvirtual  void    _CheckAndAbortThread () const;
-
-            private:
-                bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
             };
 
 
@@ -422,11 +384,6 @@ namespace   Stroika {
             protected:
                 /**
                  */
-                virtual void        _Restart (Time::DurationSecondsType timeout)    =   0;
-
-            protected:
-                /**
-                 */
                 virtual  pid_t      _GetServicePID () const = 0;
 
             private:
@@ -446,7 +403,6 @@ namespace   Stroika {
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                        _Restart (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
@@ -464,7 +420,6 @@ namespace   Stroika {
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                        _Restart (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
@@ -484,7 +439,6 @@ namespace   Stroika {
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                        _Restart (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
 
             protected:
@@ -506,6 +460,44 @@ namespace   Stroika {
                 virtual     bool    _IsServiceActuallyRunning ();
 
             private:
+                nonvirtual  void    SetupSignalHanlders_ ();
+
+                /*
+                 * By default, ServiceMain sets up its own signal handlers for
+                 *
+                 *      SIGTERM
+                 *      SIGHUP
+                 *      ....
+                 *<<should  add more - like TSTP and CONT - but not high priorities since the default UNIX behavior of these is pretty reasonable
+                 *>>>--LGP 2011-09-24
+                 *
+                 *  If the user of this class needs there own signal handlers, but still wnats to leverage the default handling in this
+                 *  class, there are two easy ways:
+                 *      (1)     overide the 'rep' method Signalhandler and delegate t your own handlers.
+                 *      (2)     or, replace the signal hanlder yourself (with the signal system call), and call
+                 *              SignalHandler () directly on this class.
+                 */
+            public:
+#if     qCompilerAndStdLib_Supports_constexpr
+                static  constexpr   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
+#else
+                static  const   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
+#endif
+            public:
+                static  void    SignalHandler (SignalIDType signum);
+
+
+                // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
+            protected:
+                nonvirtual  bool    _CheckShouldReReadConfig () const;
+                nonvirtual  void    _DidReReadConfig ();
+            private:
+                bool    fMustReReadConfig;
+
+            private:
+                bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
+
+			private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif
@@ -524,7 +516,6 @@ namespace   Stroika {
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual void                        _Restart (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
             private:
                 nonvirtual  Characters::TString GetSvcName_ () const;
@@ -532,7 +523,6 @@ namespace   Stroika {
                 nonvirtual  void                ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
                 static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
             private:
-                Execution::Event            fStopServiceEvent_;
                 SERVICE_STATUS_HANDLE       fServiceStatusHandle_;      // nullptr if invalid - not INVALID_HANDLE
                 SERVICE_STATUS              fServiceStatus_;
                 shared_ptr<IApplicationRep> fAppRep_;

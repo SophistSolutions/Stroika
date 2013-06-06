@@ -23,20 +23,11 @@ namespace   Stroika {
              ********************* Service::Main::IApplicationRep ***************************
              ********************************************************************************
              */
-            inline  void    Main::IApplicationRep::_CheckAndAbortThread () const
+            inline  Main::IApplicationRep::IApplicationRep ()
             {
-                Execution::CheckForThreadAborting ();
-                if (fStopping_) {
-                    Execution::DoThrow (Execution::ThreadAbortException ());
-                }
             }
-            inline  bool    Main::IApplicationRep::_CheckShouldReReadConfig () const
+            inline  Main::IApplicationRep::~IApplicationRep ()
             {
-                return fMustReReadConfig;
-            }
-            inline  void    Main::IApplicationRep::_DidReReadConfig ()
-            {
-                fMustReReadConfig = false;
             }
 
 
@@ -90,12 +81,6 @@ namespace   Stroika {
                 DbgTrace ("(timeout = %f)", timeout);
                 GetServiceRep_ ()._Stop (timeout);
             }
-            inline  void    Main::Restart (Time::DurationSecondsType timeout)
-            {
-                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
-                DbgTrace ("(timeout = %f)", timeout);
-                GetServiceRep_ ()._Restart (timeout);
-            }
             inline  void    Main::ForcedStop (Time::DurationSecondsType timeout)
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ForcedStop"));
@@ -113,6 +98,3 @@ namespace   Stroika {
     }
 }
 #endif  /*_Stroika_Frameworks_Service_Main_inl_*/
-
-
-

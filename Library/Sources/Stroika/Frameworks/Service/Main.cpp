@@ -625,16 +625,6 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-Main::IApplicationRep::IApplicationRep ()
-    : fStopping_ (false)
-    , fMustReReadConfig (false)
-{
-}
-
-Main::IApplicationRep::~IApplicationRep ()
-{
-}
-
 void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
 {
     while (not * stopping) {
@@ -658,12 +648,12 @@ void    Main::IApplicationRep::OnStopRequest ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStopRequest"));
     // default to using thread stuff to send us a signal to abort...
-    fStopping_ = true;
+//    fStopping_ = true;
 }
 
 void    Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
-    fMustReReadConfig = true;
+  //  fMustReReadConfig = true;
 }
 
 String  Main::IApplicationRep::GetServiceStatusMessage () const
@@ -860,6 +850,24 @@ void    Main::SignalHandler (int signum)
     GetServiceRep_ ().SignalHandler (signum);
 }
 #endif
+            void    Main::Restart (Time::DurationSecondsType timeout)
+            {
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
+                DbgTrace ("(timeout = %f)", timeout);
+
+    /////// WRONG HANDLING OF TIMEOUT
+    Stop (timeout);
+    Start (timeout);
+#if 0
+    Time::DurationSecondsType endAt =   Time::GetTickCount () + timeout;
+    IgnoreExceptionsForCall (Stop (timeout));
+#if     qPlatform_POSIX
+    // REALY should WAIT for server to stop and only do this it fails -
+    unlink (_sAppRep->_GetPIDFileName ().AsTString ().c_str ());
+#endif
+    Start (endAt - Time::GetTickCount ());
+#endif
+            }
 
 bool    Main::_HandleStandardCommandLineArgument (const String& arg)
 {
@@ -940,13 +948,6 @@ void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType 
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fAppRep_->OnStopRequest ();
-}
-
-void                Main::RunTilIdleService::_Restart (Time::DurationSecondsType timeout)
-{
-    /////// WRONG HANDLING OF TIMEOUT
-    _Stop (timeout);
-    _Start (timeout);
 }
 
 pid_t   Main::RunTilIdleService::_GetServicePID () const
@@ -1062,22 +1063,6 @@ void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecon
     unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
 
-void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsType timeout)
-{
-    /////// WRONG HANDLING OF TIMEOUT
-    _Stop (timeout);
-    _Start (timeout);
-#if 0
-    Time::DurationSecondsType endAt =   Time::GetTickCount () + timeout;
-    IgnoreExceptionsForCall (Stop (timeout));
-#if     qPlatform_POSIX
-    // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->_GetPIDFileName ().AsTString ().c_str ());
-#endif
-    Start (endAt - Time::GetTickCount ());
-#endif
-}
-
 pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 {
     ifstream    in (_GetPIDFileName ().AsTString ().c_str ());
@@ -1133,7 +1118,6 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
  */
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
-    , fStopServiceEvent_ ()
     , fServiceStatusHandle_ (nullptr)
     , fServiceStatus_ ()
 {
@@ -1176,13 +1160,6 @@ void            Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 void            Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     AssertNotImplemented ();
-}
-
-void                Main::WindowsService::_Restart (Time::DurationSecondsType timeout)
-{
-    /////// WRONG HANDLING OF TIMEOUT
-    _Stop (timeout);
-    _Start (timeout);
 }
 
 pid_t   Main::WindowsService::_GetServicePID () const
