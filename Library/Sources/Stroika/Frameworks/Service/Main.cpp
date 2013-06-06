@@ -715,7 +715,7 @@ const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
 
-Main*	Main::sTHIS_	=	nullptr;
+Main*   Main::sTHIS_    =   nullptr;
 
 shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep ()
 {
@@ -729,10 +729,10 @@ shared_ptr<Main::IServiceIntegrationRep>    Main::mkDefaultServiceIntegrationRep
 }
 
 Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> serviceIntegrationRep)
-	: fServiceRep_ (serviceIntegrationRep)
+    : fServiceRep_ (serviceIntegrationRep)
 {
-	Require (sTHIS_ == nullptr);    // singleton(ish)
-	sTHIS_ = this;
+    Require (sTHIS_ == nullptr);    // singleton(ish)
+    sTHIS_ = this;
     RequireNotNull (rep);
     RequireNotNull (serviceIntegrationRep);
     serviceIntegrationRep->_Attach (rep);
@@ -743,8 +743,8 @@ Main::Main (shared_ptr<IApplicationRep> rep, shared_ptr<IServiceIntegrationRep> 
 
 Main::~Main ()
 {
-	Require (sTHIS_ == this);
-	sTHIS_ = nullptr;
+    Require (sTHIS_ == this);
+    sTHIS_ = nullptr;
 }
 
 #if     qPlatform_POSIX
@@ -819,7 +819,7 @@ void    Main::RunAsService ()
         out << getpid () << endl;
 #endif
 #if 0
-		// UNCLEAR HOW TO DISTINGUISH START STYLES HERE!!!
+        // UNCLEAR HOW TO DISTINGUISH START STYLES HERE!!!
         fServiceRep_->_Start ();
 #endif
     }
@@ -930,10 +930,10 @@ void                Main::RunTilIdleService::_Attach (shared_ptr<IApplicationRep
     fAppRep_ = appRep;
 }
 
- shared_ptr<Main::IApplicationRep>		Main::RunTilIdleService::_GetAttachedAppRep () const  
- {
-	 return fAppRep_;
- }
+shared_ptr<Main::IApplicationRep>      Main::RunTilIdleService::_GetAttachedAppRep () const
+{
+    return fAppRep_;
+}
 
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
@@ -986,12 +986,12 @@ void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplication
     fAppRep_ = appRep;
 }
 
- shared_ptr<Main::IApplicationRep>		Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const  
- {
-	 return fAppRep_;
- }
+shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
+{
+    return fAppRep_;
+}
 
- void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
+void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
@@ -1103,8 +1103,8 @@ pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
 
 String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
 {
-	return IO::FileSystem::WellKnownLocations::
-    return L"/tmp/" + _sAppRep->GetServiceDescription ().fRegistrationName + L".pid";
+    return IO::FileSystem::WellKnownLocations::
+           return L"/tmp/" + _sAppRep->GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
@@ -1162,10 +1162,10 @@ void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
     fAppRep_ = appRep;
 }
 
- shared_ptr<Main::IApplicationRep>		Main::WindowsService::_GetAttachedAppRep () const  
- {
-	 return fAppRep_;
- }
+shared_ptr<Main::IApplicationRep>      Main::WindowsService::_GetAttachedAppRep () const
+{
+    return fAppRep_;
+}
 
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
