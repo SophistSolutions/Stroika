@@ -745,16 +745,6 @@ void    Main::SetupSignalHanlders_ ()
 }
 #endif
 
-Main::State Main::GetState () const
-{
-#if     qPlatform_POSIX
-    if (GetServicePID () != 0) {
-        return State::eRunning;
-    }
-#endif
-    return State::eStopped;    // otherwise (esp on other platforms where not implemented) must  be stopped
-}
-
 String      Main::GetServiceStatusMessage () const
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
@@ -933,6 +923,12 @@ shared_ptr<Main::IApplicationRep>      Main::RunTilIdleService::_GetAttachedAppR
     return fAppRep_;
 }
 
+Main::State             Main::RunTilIdleService::_GetState () const
+{
+	AssertNotImplemented ();
+	return Main::State::eStopped;
+}
+
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 {
     AssertNotImplemented ();
@@ -980,6 +976,15 @@ void                Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplication
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
 {
     return fAppRep_;
+}
+
+Main::State             Main::BasicUNIXServiceImpl::_GetState () const
+{
+	// @todo - maybe not qutie right - but a good approx ... review...
+    if (GetServicePID () != 0) {
+        return State::eRunning;
+    }
+    return State::eStopped;
 }
 
 void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -1136,6 +1141,12 @@ void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
 shared_ptr<Main::IApplicationRep>      Main::WindowsService::_GetAttachedAppRep () const
 {
     return fAppRep_;
+}
+
+Main::State             Main::WindowsService::_GetState () const
+{
+	AssertNotImplemented ();
+	return Main::State::eStopped;
 }
 
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
