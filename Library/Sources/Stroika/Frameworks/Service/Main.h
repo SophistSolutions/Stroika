@@ -55,7 +55,7 @@ namespace   Stroika {
         namespace   Service {
 
 
-			using   namespace   Stroika::Foundation;
+            using   namespace   Stroika::Foundation;
             using   Characters::String;
 
             using   Execution::pid_t;
@@ -367,9 +367,9 @@ namespace   Stroika {
                 virtual shared_ptr<IApplicationRep>     _GetAttachedAppRep () const    =   0;
 
             protected:
-                virtual  State               _GetState () const	=	0;
+                virtual  State               _GetState () const =   0;
 
-			protected:
+            protected:
                 /**
                  */
                 virtual void    _Start (Time::DurationSecondsType timeout)  =   0;
@@ -403,7 +403,7 @@ namespace   Stroika {
             protected:
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State						_GetState () const override;
+                virtual  State                      _GetState () const override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -421,7 +421,7 @@ namespace   Stroika {
             protected:
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State						_GetState () const override;
+                virtual  State                      _GetState () const override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -441,7 +441,7 @@ namespace   Stroika {
             protected:
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State						_GetState () const override;
+                virtual  State                      _GetState () const override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -519,7 +519,7 @@ namespace   Stroika {
             protected:
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State						_GetState () const override;
+                virtual  State                      _GetState () const override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;

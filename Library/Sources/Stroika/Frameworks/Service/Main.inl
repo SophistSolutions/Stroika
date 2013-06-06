@@ -91,10 +91,10 @@ namespace   Stroika {
             {
                 return GetServiceRep_ ()._GetServicePID ();
             }
-            inline	Main::State    Main::GetState () const
-			{
+            inline  Main::State    Main::GetState () const
+            {
                 return GetServiceRep_ ()._GetState ();
-			}
+            }
 
 
         }

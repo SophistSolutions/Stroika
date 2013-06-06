@@ -925,8 +925,8 @@ shared_ptr<Main::IApplicationRep>      Main::RunTilIdleService::_GetAttachedAppR
 
 Main::State             Main::RunTilIdleService::_GetState () const
 {
-	AssertNotImplemented ();
-	return Main::State::eStopped;
+    AssertNotImplemented ();
+    return Main::State::eStopped;
 }
 
 void                Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
@@ -980,7 +980,7 @@ shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedA
 
 Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 {
-	// @todo - maybe not qutie right - but a good approx ... review...
+    // @todo - maybe not qutie right - but a good approx ... review...
     if (GetServicePID () != 0) {
         return State::eRunning;
     }
@@ -1145,8 +1145,8 @@ shared_ptr<Main::IApplicationRep>      Main::WindowsService::_GetAttachedAppRep 
 
 Main::State             Main::WindowsService::_GetState () const
 {
-	AssertNotImplemented ();
-	return Main::State::eStopped;
+    AssertNotImplemented ();
+    return Main::State::eStopped;
 }
 
 void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
