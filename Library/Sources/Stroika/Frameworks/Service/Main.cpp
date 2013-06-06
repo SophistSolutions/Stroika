@@ -622,26 +622,26 @@ int APIENTRY    _tWinMain (HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR 
  ********************************************************************************
  */
 Main::CommandArgs::CommandArgs ()
-	: fMajorOperation ()
-	, fUnusedArguments ()
+    : fMajorOperation ()
+    , fUnusedArguments ()
 {
 }
 
 Main::CommandArgs::CommandArgs (const vector<String>& args)
-	: fMajorOperation ()
-	, fUnusedArguments ()
+    : fMajorOperation ()
+    , fUnusedArguments ()
 {
-	for (String si : args) {
-		if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kRunAsService)) {
-			fMajorOperation = MajorOperation::eRunServiceMain;
-		}
-		else if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kStop)) {
-			fMajorOperation = MajorOperation::eStop;
-		}
-		else {
-			fUnusedArguments.push_back (si);
-		}
-	}
+    for (String si : args) {
+        if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kRunAsService)) {
+            fMajorOperation = MajorOperation::eRunServiceMain;
+        }
+        else if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kStop)) {
+            fMajorOperation = MajorOperation::eStop;
+        }
+        else {
+            fUnusedArguments.push_back (si);
+        }
+    }
 }
 
 
@@ -653,9 +653,9 @@ Main::CommandArgs::CommandArgs (const vector<String>& args)
  ******************* Service::Main::IApplicationRep *****************************
  ********************************************************************************
  */
-bool	Main::IApplicationRep::HandleCommandLineArgument (const String& s)
+bool    Main::IApplicationRep::HandleCommandLineArgument (const String& s)
 {
-	return false;
+    return false;
 }
 
 void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
@@ -700,9 +700,9 @@ String  Main::IApplicationRep::GetServiceStatusMessage () const
  ********************* Main::IServiceIntegrationRep *****************************
  ********************************************************************************
  */
-bool	Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
+bool    Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s)
 {
-	return _GetAttachedAppRep ()->HandleCommandLineArgument (s);
+    return _GetAttachedAppRep ()->HandleCommandLineArgument (s);
 }
 
 
@@ -752,20 +752,20 @@ Main::~Main ()
     fServiceRep_->_Attach (nullptr);
 }
 
-void	Main::Run (const CommandArgs& args)
+void    Main::Run (const CommandArgs& args)
 {
-	for (String i : args.fUnusedArguments) {
-		fServiceRep_->HandleCommandLineArgument (i);
-	}
-	if (args.fMajorOperation.empty ()) {
-		Execution::DoThrow (Execution::StringException (L"NO RECOGNIAED MAJOR VERB"));	/// not sure where this validation should go - and need better set of exceptions to use!!!
-	}
-	switch (*args.fMajorOperation) {
-	case CommandArgs::MajorOperation::eRunServiceMain: {
-		RunAsService ();
-	}
-	break;
-	}
+    for (String i : args.fUnusedArguments) {
+        fServiceRep_->HandleCommandLineArgument (i);
+    }
+    if (args.fMajorOperation.empty ()) {
+        Execution::DoThrow (Execution::StringException (L"NO RECOGNIAED MAJOR VERB"));  /// not sure where this validation should go - and need better set of exceptions to use!!!
+    }
+    switch (*args.fMajorOperation) {
+        case CommandArgs::MajorOperation::eRunServiceMain: {
+                RunAsService ();
+            }
+            break;
+    }
 }
 
 String      Main::GetServiceStatusMessage () const
@@ -803,7 +803,7 @@ void    Main::RunAsService ()
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     // VERY PRIMITIVE IMPL - WE NEED LOCKING on tmpfile stuff - add good tempfile supprot to fileuitls or use existing...
 
-	GetServiceRep_ ()._RunAsAservice ();
+    GetServiceRep_ ()._RunAsAservice ();
 #if 0
 
     try {
@@ -887,7 +887,7 @@ void    Main::Restart (Time::DurationSecondsType timeout)
 
 bool    Main::_HandleStandardCommandLineArgument (const String& arg)
 {
-	///REDO INSIDE COMMNADLINE PARSING CODE...
+    ///REDO INSIDE COMMNADLINE PARSING CODE...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_HandleStandardCommandLineArgument"));
     if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRunAsService)) {
         RunAsService ();
@@ -964,7 +964,7 @@ Main::State             Main::RunTilIdleService::_GetState () const
     return Main::State::eStopped;
 }
 
-void		Main::RunTilIdleService::_RunAsAservice ()
+void        Main::RunTilIdleService::_RunAsAservice ()
 {
 	// VERY WEAK TO WRONG IMPL
 	auto appRep = fAppRep_;
@@ -1052,7 +1052,7 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
     return State::eStopped;
 }
 
-void		Main::BasicUNIXServiceImpl::_RunAsAservice ()
+void        Main::BasicUNIXServiceImpl::_RunAsAservice ()
 {
 }
 
@@ -1246,7 +1246,7 @@ Main::State             Main::WindowsService::_GetState () const
     return Main::State::eStopped;
 }
 
-void		Main::WindowsService::_RunAsAservice ()
+void        Main::WindowsService::_RunAsAservice ()
 {
 }
 

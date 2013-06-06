@@ -23,10 +23,8 @@ using   Memory::Optional;
 
 
 /// *** TODO ****
-///	add option to log to LOGGER instead of stderr!!!
+/// add option to log to LOGGER instead of stderr!!!
 //
-
-
 
 
 
@@ -40,12 +38,12 @@ namespace {
 
     public:
         virtual void  MainLoop () override {
-			Execution::Sleep (1 * 24 * 60 * 60);	// wait 1 day ... simple test....
+            Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
         }
         virtual Main::ServiceDescription  GetServiceDescription () const override {
             Main::ServiceDescription    t;
-			t.fPrettyName = L"Test Service";
-			t.fRegistrationName = L"Test-Service";
+            t.fPrettyName = L"Test Service";
+            t.fRegistrationName = L"Test-Service";
             return t;
         }
     };
@@ -55,7 +53,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-	vector<String>	args	=	Execution::ParseCommandLine (argc, argv);
+    vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
 	{
 		bool	run2IdleMode = false;
@@ -91,6 +89,6 @@ int main (int argc, const char* argv[])
 	catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
-	}
+    }
     return EXIT_SUCCESS;
 }
