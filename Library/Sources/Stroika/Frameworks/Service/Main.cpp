@@ -800,6 +800,8 @@ void    Main::RunAsService ()
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     // VERY PRIMITIVE IMPL - WE NEED LOCKING on tmpfile stuff - add good tempfile supprot to fileuitls or use existing...
 
+#if 0
+
     try {
 #if     qPlatform_POSIX
         ofstream    out (GetServiceRep_ ()._GetPIDFileName ().AsTString ().c_str ());
@@ -823,6 +825,7 @@ void    Main::RunAsService ()
 #endif
         throw;
     }
+#endif
 }
 
 void    Main::ReReadConfiguration ()
@@ -992,7 +995,7 @@ void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsTyp
     }
 
     // REALLY should use GETSTATE - and return state based on if PID file exsits...
-    if (GetServicePID ()  != 0) {
+    if (_GetServicePID ()  != 0) {
         Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
     }
 
@@ -1075,7 +1078,7 @@ void                Main::BasicUNIXServiceImpl::_Restart (Time::DurationSecondsT
 #endif
 }
 
-pid_t   Main::BasicUNIXServiceImpl::GetServicePID () const
+pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 {
     ifstream    in (_GetPIDFileName ().AsTString ().c_str ());
     if (in) {
