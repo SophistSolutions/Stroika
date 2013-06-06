@@ -27,7 +27,8 @@
 #include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/WaitTimedOutException.h"
-#include    "../../Foundation/IO/FileSystem/FileUtils.h"
+//#include    "../../Foundation/IO/FileSystem/FileUtils.h"
+#include    "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
 #include    "Main.h"
@@ -1057,9 +1058,9 @@ void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
     Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler_);
 }
 
-String  Main::BasicUNIXServiceImpl::GetPIDFileName () const
+String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return IO::FileSystem::WellKnownLocations::GetTemporary () + _GetServiceDescription ().fRegistrationName + L".pid";
+    return String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + fAppRep_->GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
@@ -1076,7 +1077,7 @@ void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->GetPIDFileName ().AsTString ().c_str ());
+    unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
