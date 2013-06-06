@@ -23,16 +23,16 @@ using   Memory::Optional;
 
 
 /// *** TODO ****
-///	add option to log to LOGGER instead of stderr!!!
+/// add option to log to LOGGER instead of stderr!!!
 //
-//	replace kUseRunTilIdleServiceHandler_with something to check cmdline
+//  replace kUseRunTilIdleServiceHandler_with something to check cmdline
 
 
 
 namespace {
-	// handy to test, but real users will want to point this to the default implementation (set to false)
-	// or pull the value from a command line argument
-	constexpr	bool	kUseRunTilIdleServiceHandler_	=	true;
+    // handy to test, but real users will want to point this to the default implementation (set to false)
+    // or pull the value from a command line argument
+    constexpr   bool    kUseRunTilIdleServiceHandler_   =   true;
 }
 
 
@@ -47,12 +47,12 @@ namespace {
 
     public:
         virtual void  MainLoop () override {
-			Execution::Sleep (1 * 24 * 60 * 60);	// wait 1 day ... simple test....
+            Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
         }
         virtual Main::ServiceDescription  GetServiceDescription () const override {
             Main::ServiceDescription    t;
-			t.fPrettyName = L"Test Service";
-			t.fRegistrationName = L"Test-Service";
+            t.fPrettyName = L"Test Service";
+            t.fRegistrationName = L"Test-Service";
             return t;
         }
     };
@@ -62,7 +62,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-	vector<String>	args	=	Execution::ParseCommandLine (argc, argv);
+    vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
     if (kUseRunTilIdleServiceHandler_) {
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
@@ -72,11 +72,11 @@ int main (int argc, const char* argv[])
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     try {
-		m.Run (args);
-	}
-	catch (...) {
+        m.Run (args);
+    }
+    catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
-	}
+    }
     return EXIT_SUCCESS;
 }
