@@ -1022,7 +1022,7 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  */
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fAppRep_ ()
-	, fRunThread_ ()
+    , fRunThread_ ()
 {
 }
 
@@ -1064,7 +1064,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
         appRep->MainLoop ();
     });
     fRunThread_.Start ();
-	fRunThread_.WaitForDone ();
+    fRunThread_.WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
