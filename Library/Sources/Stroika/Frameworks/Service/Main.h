@@ -25,12 +25,14 @@
  *
  * TODO:
  *
+ *		@todo	Lose (I THINK) OnStopRequest - for Ix... app - instread document
+ *				that we use throwthreadexception!
+ *
  *      @todo   Command-line processing is totally kludged and needs cleanup!!!
  *
- *      @todo   Think through and document clearly the distinction between running service and driver
+ *      @todo   Document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
  *              approahc and unix approach
- *
  *
  *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
  *              adds in SYSLOG calls for state changes.

@@ -778,6 +778,45 @@ void    Main::Run (const CommandArgs& args)
                 RunAsService ();
             }
             break;
+		case CommandArgs::MajorOperation::eStart: {
+                Start ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eStop: {
+                Stop ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eForcedStop: {
+				AssertNotImplemented ();
+                //ForcedStop ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eRestart: {
+                Restart ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eForcedRestart: {
+                ForcedRestart ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eReloadConfiguration: {
+			//// NYI....
+				AssertNotImplemented ();
+                //ReloadConfiguration ();
+            }
+            break;
+		case CommandArgs::MajorOperation::ePause: {
+                Pause ();
+            }
+            break;
+		case CommandArgs::MajorOperation::eContinue: {
+                Continue ();
+            }
+            break;
+		default: {
+			AssertNotReached ();
+            }
+            break;
     }
 }
 
@@ -814,35 +853,7 @@ String      Main::GetServiceStatusMessage () const
 void    Main::RunAsService ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
-    // VERY PRIMITIVE IMPL - WE NEED LOCKING on tmpfile stuff - add good tempfile supprot to fileuitls or use existing...
-
     GetServiceRep_ ()._RunAsAservice ();
-#if 0
-
-    try {
-#if     qPlatform_POSIX
-        ofstream    out (GetServiceRep_ ()._GetPIDFileName ().AsTString ().c_str ());
-        out << getpid () << endl;
-#endif
-#if 0
-        // UNCLEAR HOW TO DISTINGUISH START STYLES HERE!!!
-        fServiceRep_->_Start ();
-#endif
-    }
-    catch (const Execution::ThreadAbortException& /*threadAbort*/) {
-#if     qPlatform_POSIX
-        unlink (GetServiceRep_ ().GetPIDFileName ().AsTString ().c_str ());
-#endif
-        // ignore this - just means service ended normally
-    }
-    catch (...) {
-        DbgTrace (TSTR ("Unexpected exception ended running service"));
-#if     qPlatform_POSIX
-        unlink (GetServiceRep_ ()._GetPIDFileName ().AsTString ().c_str ());
-#endif
-        throw;
-    }
-#endif
 }
 
 void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSecondsType unforcedStopTimeout)
@@ -1031,13 +1042,23 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 
 void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
 {
-    // VERY WEAK TO WRONG IMPL
+    // VERY WEAK IMPL
     auto appRep = fAppRep_;
     fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ();
     });
     fRunThread_.Start ();
-    fRunThread_.WaitForDone ();
+	{
+		ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
+		out << getpid () << endl;
+	}
+	try {
+		fRunThread_.WaitForDone ();
+		::unlink (_GetPIDFileName ().AsTString ().c_str ());
+	}
+	catch (...) {
+		::unlink (_GetPIDFileName ().AsTString ().c_str ());
+	}
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -1113,7 +1134,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
 
 void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Kill"));
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
     fAppRep_->OnStopRequest ();
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
