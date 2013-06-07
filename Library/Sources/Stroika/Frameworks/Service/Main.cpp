@@ -632,25 +632,25 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     , fUnusedArguments ()
 {
     for (String si : args) {
-		static	pair<String,MajorOperation>	kPairs_[] = {
-			pair<String,MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
-			pair<String,MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
-			pair<String,MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
-			pair<String,MajorOperation> (Main::CommandNames::kForcedStop, MajorOperation::eForcedStop),
-			pair<String,MajorOperation> (Main::CommandNames::kRestart, MajorOperation::eRestart),
-			pair<String,MajorOperation> (Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart),
-			pair<String,MajorOperation> (Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration),
-			pair<String,MajorOperation> (Main::CommandNames::kPause, MajorOperation::ePause),
-			pair<String,MajorOperation> (Main::CommandNames::kContinue, MajorOperation::eContinue),
-		};
-		bool	found	=	false;
-		for (auto i : kPairs_) {
-			if (Execution::MatchesCommandLineArgument (si, i.first)) {
-				found = true;
-				fMajorOperation = i.second;
-			}
-		}
-		if (not found) {
+        static  pair<String, MajorOperation> kPairs_[] = {
+            pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
+            pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
+            pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
+            pair<String, MajorOperation> (Main::CommandNames::kForcedStop, MajorOperation::eForcedStop),
+            pair<String, MajorOperation> (Main::CommandNames::kRestart, MajorOperation::eRestart),
+            pair<String, MajorOperation> (Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart),
+            pair<String, MajorOperation> (Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration),
+            pair<String, MajorOperation> (Main::CommandNames::kPause, MajorOperation::ePause),
+            pair<String, MajorOperation> (Main::CommandNames::kContinue, MajorOperation::eContinue),
+        };
+        bool    found   =   false;
+        for (auto i : kPairs_) {
+            if (Execution::MatchesCommandLineArgument (si, i.first)) {
+                found = true;
+                fMajorOperation = i.second;
+            }
+        }
+        if (not found) {
             fUnusedArguments.push_back (si);
         }
     }
