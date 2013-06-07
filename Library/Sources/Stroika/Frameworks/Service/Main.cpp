@@ -1053,11 +1053,11 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
     return State::eStopped;
 }
 
-void        Main::BasicUNIXServiceImpl::_RunAsAservice ()
+void	Main::BasicUNIXServiceImpl::_RunAsAservice ()
 {
 }
 
-void                Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
+void	Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
