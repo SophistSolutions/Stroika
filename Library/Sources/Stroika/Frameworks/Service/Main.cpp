@@ -1006,7 +1006,7 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  */
 
 namespace {
-	Execution::Thread sigHandlerThread2Abort_;
+    Execution::Thread sigHandlerThread2Abort_;
 }
 
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
@@ -1053,7 +1053,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
         appRep->MainLoop ();
     });
     fRunThread_.Start ();
-	sigHandlerThread2Abort_ = fRunThread_;
+    sigHandlerThread2Abort_ = fRunThread_;
     {
         ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
         out << getpid () << endl;
@@ -1199,8 +1199,8 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
 
 void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
 {
-	// @todo		TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
-	//
+    // @todo        TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
+    //
 
 
 
@@ -1210,7 +1210,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
     switch (signum) {
         case    SIGTERM:
             DbgTrace ("setting fStopping_ to true");
-			sigHandlerThread2Abort_.Abort ();
+            sigHandlerThread2Abort_.Abort ();
 //            fStopping_ = true;
             break;
 #if     qCompilerAndStdLib_Supports_constexpr
