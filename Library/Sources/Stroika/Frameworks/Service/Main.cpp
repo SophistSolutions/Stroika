@@ -778,43 +778,43 @@ void    Main::Run (const CommandArgs& args)
                 RunAsService ();
             }
             break;
-		case CommandArgs::MajorOperation::eStart: {
+        case CommandArgs::MajorOperation::eStart: {
                 Start ();
             }
             break;
-		case CommandArgs::MajorOperation::eStop: {
+        case CommandArgs::MajorOperation::eStop: {
                 Stop ();
             }
             break;
-		case CommandArgs::MajorOperation::eForcedStop: {
-				AssertNotImplemented ();
+        case CommandArgs::MajorOperation::eForcedStop: {
+                AssertNotImplemented ();
                 //ForcedStop ();
             }
             break;
-		case CommandArgs::MajorOperation::eRestart: {
+        case CommandArgs::MajorOperation::eRestart: {
                 Restart ();
             }
             break;
-		case CommandArgs::MajorOperation::eForcedRestart: {
+        case CommandArgs::MajorOperation::eForcedRestart: {
                 ForcedRestart ();
             }
             break;
-		case CommandArgs::MajorOperation::eReloadConfiguration: {
-			//// NYI....
-				AssertNotImplemented ();
+        case CommandArgs::MajorOperation::eReloadConfiguration: {
+                //// NYI....
+                AssertNotImplemented ();
                 //ReloadConfiguration ();
             }
             break;
-		case CommandArgs::MajorOperation::ePause: {
+        case CommandArgs::MajorOperation::ePause: {
                 Pause ();
             }
             break;
-		case CommandArgs::MajorOperation::eContinue: {
+        case CommandArgs::MajorOperation::eContinue: {
                 Continue ();
             }
             break;
-		default: {
-			AssertNotReached ();
+        default: {
+                AssertNotReached ();
             }
             break;
     }
@@ -1048,17 +1048,17 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
         appRep->MainLoop ();
     });
     fRunThread_.Start ();
-	{
-		ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
-		out << getpid () << endl;
-	}
-	try {
-		fRunThread_.WaitForDone ();
-		::unlink (_GetPIDFileName ().AsTString ().c_str ());
-	}
-	catch (...) {
-		::unlink (_GetPIDFileName ().AsTString ().c_str ());
-	}
+    {
+        ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
+        out << getpid () << endl;
+    }
+    try {
+        fRunThread_.WaitForDone ();
+        ::unlink (_GetPIDFileName ().AsTString ().c_str ());
+    }
+    catch (...) {
+        ::unlink (_GetPIDFileName ().AsTString ().c_str ());
+    }
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
