@@ -25,6 +25,11 @@ using   Containers::Sequence;
 
 /// *** TODO ****
 /// add option to log to LOGGER instead of stderr!!!
+///			(we have TODO adding wrapper of service backend which writes to syslog. Use that).
+//			OR - maybe - just always do logging. Thats probably better, and have a flag in service wrapper
+//			about log level? No - maybe thats obvihs too. Mabe just upagrade service code to use logger!!!
+//			I think that would always - or nearly always - be desirable. Maybe make configurable. But no need
+//			as a user can always use their own servcie impl!
 //
 
 
@@ -50,7 +55,9 @@ namespace {
     };
 }
 
-
+#if 0
+usage --start, or --stop or --status or --restart
+#endif
 
 int main (int argc, const char* argv[])
 {
