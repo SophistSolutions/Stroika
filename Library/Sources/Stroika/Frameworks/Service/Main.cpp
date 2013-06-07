@@ -645,7 +645,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
 		};
 		bool	found	=	false;
 		for (auto i : kPairs_) {
-			if (i.first == si) {
+			if (Execution::MatchesCommandLineArgument (si, i.first)) {
 				found = true;
 				fMajorOperation = i.second;
 			}

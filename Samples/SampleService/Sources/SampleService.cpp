@@ -63,9 +63,11 @@ int main (int argc, const char* argv[])
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"status"); })) {
 		cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+		return EXIT_SUCCESS;
     }
     else if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"help"); })) {
 		//ShowUsage_ ();
+		return EXIT_SUCCESS;
     }
     try {
         m.Run (args);
