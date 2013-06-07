@@ -25,6 +25,10 @@
  *
  * TODO:
  *
+ *		@todo	Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
+ *				stuff. Righjt now needed to make Sercice STOP work under posix, but its
+ *				NOT reliably done!!!
+ *
  *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
  *              that we use throwthreadexception!
  *

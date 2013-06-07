@@ -1004,6 +1004,11 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  ******************* Service::Main::BasicUNIXServiceImpl ************************
  ********************************************************************************
  */
+
+namespace {
+	Execution::Thread sigHandlerThread2Abort_;
+}
+
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fAppRep_ ()
     , fRunThread_ ()
@@ -1048,6 +1053,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
         appRep->MainLoop ();
     });
     fRunThread_.Start ();
+	sigHandlerThread2Abort_ = fRunThread_;
     {
         ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
         out << getpid () << endl;
@@ -1193,12 +1199,18 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
 
 void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
 {
+	// @todo		TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
+	//
+
+
+
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
         case    SIGTERM:
             DbgTrace ("setting fStopping_ to true");
+			sigHandlerThread2Abort_.Abort ();
 //            fStopping_ = true;
             break;
 #if     qCompilerAndStdLib_Supports_constexpr
