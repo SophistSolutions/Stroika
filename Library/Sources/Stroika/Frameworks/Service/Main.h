@@ -597,6 +597,7 @@ namespace   Stroika {
                 bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
 
             private:
+                Execution::Thread           fRunThread_;
                 shared_ptr<IApplicationRep> fAppRep_;
             };
 #endif

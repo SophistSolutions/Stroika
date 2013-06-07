@@ -1022,6 +1022,7 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  */
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
     : fAppRep_ ()
+	, fRunThread_ ()
 {
 }
 
@@ -1037,6 +1038,8 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
     if (appRep != nullptr) {
         SetupSignalHanlders_ ();
     }
+    fRunThread_.Abort ();
+    fRunThread_ = Execution::Thread ();
 }
 
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
@@ -1055,6 +1058,13 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
 
 void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
 {
+    // VERY WEAK TO WRONG IMPL
+    auto appRep = fAppRep_;
+    fRunThread_ = Execution::Thread ([appRep] () {
+        appRep->MainLoop ();
+    });
+    fRunThread_.Start ();
+	fRunThread_.WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
