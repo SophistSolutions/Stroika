@@ -25,8 +25,8 @@
  *
  * TODO:
  *
- *		@todo	Lose (I THINK) OnStopRequest - for Ix... app - instread document
- *				that we use throwthreadexception!
+ *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
+ *              that we use throwthreadexception!
  *
  *      @todo   Command-line processing is totally kludged and needs cleanup!!!
  *
