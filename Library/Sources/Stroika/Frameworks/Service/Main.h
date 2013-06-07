@@ -21,13 +21,13 @@
 /**
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *				(note - basic functionality works on linux - start/stop/restart etc), but nothing on windoze yet.
+ *              (note - basic functionality works on linux - start/stop/restart etc), but nothing on windoze yet.
  *
  * TODO:
  *
- *		@todo	Add ShowUsage () method to IApp... and to service (vectoring) - and use that
- *				to oimplemtn usage behvairo genericlaly. And do 'invalid-param' exAborttion
- *				and use that for usage - to trigger usage.
+ *      @todo   Add ShowUsage () method to IApp... and to service (vectoring) - and use that
+ *              to oimplemtn usage behvairo genericlaly. And do 'invalid-param' exAborttion
+ *              and use that for usage - to trigger usage.
  *
  *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
  *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
