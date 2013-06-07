@@ -243,12 +243,6 @@ namespace   Stroika {
             public:
                 struct  CommandNames;
 
-            protected:
-                /*
-                 * Will handle the given command line argument, and return true if it recognized it, and handled it. It will return false otherwise.
-                 */
-                nonvirtual  bool    _HandleStandardCommandLineArgument (const String& arg);
-
             private:
                 nonvirtual  const IServiceIntegrationRep&   GetServiceRep_ () const;
                 nonvirtual  IServiceIntegrationRep&         GetServiceRep_ ();
@@ -300,6 +294,7 @@ namespace   Stroika {
                 static  const   wchar_t kForcedStop[];
                 // restart synonmy for stop (no error if not already running), and then start
                 static  const   wchar_t kRestart[];
+                static  const   wchar_t kForcedRestart[];
                 // If service knows how to find its own config files - recheck them
                 static  const   wchar_t kReloadConfiguration[];
                 // SIGSTOP
@@ -320,8 +315,14 @@ namespace   Stroika {
 
                 enum    class   MajorOperation {
                     eRunServiceMain,
+                    eStart,
                     eStop,
-                    //....
+                    eForcedStop,
+                    eRestart,
+                    eForcedRestart,
+                    eReloadConfiguration,
+                    ePause,
+                    eContinue,
                 };
 
                 Memory::Optional<MajorOperation>    fMajorOperation;

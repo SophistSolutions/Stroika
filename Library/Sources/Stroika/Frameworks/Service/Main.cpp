@@ -632,13 +632,25 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     , fUnusedArguments ()
 {
     for (String si : args) {
-        if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kRunAsService)) {
-            fMajorOperation = MajorOperation::eRunServiceMain;
-        }
-        else if (Execution::MatchesCommandLineArgument (si, Main::CommandNames::kStop)) {
-            fMajorOperation = MajorOperation::eStop;
-        }
-        else {
+		static	pair<String,MajorOperation>	kPairs_[] = {
+			pair<String,MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
+			pair<String,MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
+			pair<String,MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
+			pair<String,MajorOperation> (Main::CommandNames::kForcedStop, MajorOperation::eForcedStop),
+			pair<String,MajorOperation> (Main::CommandNames::kRestart, MajorOperation::eRestart),
+			pair<String,MajorOperation> (Main::CommandNames::kForcedRestart, MajorOperation::eForcedRestart),
+			pair<String,MajorOperation> (Main::CommandNames::kReloadConfiguration, MajorOperation::eReloadConfiguration),
+			pair<String,MajorOperation> (Main::CommandNames::kPause, MajorOperation::ePause),
+			pair<String,MajorOperation> (Main::CommandNames::kContinue, MajorOperation::eContinue),
+		};
+		bool	found	=	false;
+		for (auto i : kPairs_) {
+			if (i.first == si) {
+				found = true;
+				fMajorOperation = i.second;
+			}
+		}
+		if (not found) {
             fUnusedArguments.push_back (si);
         }
     }
@@ -718,6 +730,7 @@ const   wchar_t Service::Main::CommandNames::kStart[]               =   L"Start"
 const   wchar_t Service::Main::CommandNames::kStop[]                =   L"Stop";
 const   wchar_t Service::Main::CommandNames::kForcedStop[]          =   L"ForcedStop";
 const   wchar_t Service::Main::CommandNames::kRestart[]             =   L"Restart";
+const   wchar_t Service::Main::CommandNames::kForcedRestart[]       =   L"ForcedRestart";
 const   wchar_t Service::Main::CommandNames::kReloadConfiguration[] =   L"Reload-Configuration";
 const   wchar_t Service::Main::CommandNames::kPause[]               =   L"Pause";
 const   wchar_t Service::Main::CommandNames::kContinue[]            =   L"Continue";
@@ -883,46 +896,6 @@ void    Main::Restart (Time::DurationSecondsType timeout)
 #endif
     Start (endAt - Time::GetTickCount ());
 #endif
-}
-
-bool    Main::_HandleStandardCommandLineArgument (const String& arg)
-{
-    ///REDO INSIDE COMMNADLINE PARSING CODE...
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_HandleStandardCommandLineArgument"));
-    if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRunAsService)) {
-        RunAsService ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kStart)) {
-        Start ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kStop)) {
-        Stop ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kForcedStop)) {
-        ForcedStop (3);
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kRestart)) {
-        Restart ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kReloadConfiguration)) {
-        ReReadConfiguration ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kPause)) {
-        Pause ();
-        return true;
-    }
-    else if (Execution::MatchesCommandLineArgument (arg, CommandNames::kContinue)) {
-        Continue ();
-        return true;
-    }
-    /// MANY more neeeded, and fix to use named constants...
-    return false;
 }
 
 
