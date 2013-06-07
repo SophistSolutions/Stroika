@@ -55,21 +55,10 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
-    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
-    {
-        bool    run2IdleMode = false;
-        // redo using sequence and lamnda code
-        for (String i : args) {
-            if (Execution::MatchesCommandLineArgument (i, L"run2Idle")) {
-                run2IdleMode = true;
-            }
-        }
-        if (run2IdleMode) {
-            serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
-        }
-        else {
-            serviceIntegrationRep = Main::mkDefaultServiceIntegrationRep ();
-        }
+    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep	=	Main::mkDefaultServiceIntegrationRep ();
+    if (args.ApplyUntilTrue ([] (const String& i) { return Execution::MatchesCommandLineArgument (i, L"run2Idle"); })) {
+		// note - cannot use 'contains' because we need MatchesCommandLineArgument matching...
+        serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     try {
