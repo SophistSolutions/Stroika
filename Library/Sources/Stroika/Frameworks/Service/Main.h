@@ -60,10 +60,10 @@ namespace   Stroika {
 
 
             using   namespace   Stroika::Foundation;
-            
-			
-			using   Characters::String;
-			using	Containers::Sequence;
+
+
+            using   Characters::String;
+            using   Containers::Sequence;
             using   Execution::pid_t;
 
 
@@ -318,7 +318,7 @@ namespace   Stroika {
                 CommandArgs ();
                 CommandArgs (const Sequence<String>& args);
 
-                enum	class	MajorOperation {
+                enum    class   MajorOperation {
                     eRunServiceMain,
                     eStop,
                     //....

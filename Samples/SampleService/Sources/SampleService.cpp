@@ -19,7 +19,7 @@ using   namespace Stroika::Frameworks::Service;
 
 using   Characters::String;
 using   Memory::Optional;
-using	Containers::Sequence;
+using   Containers::Sequence;
 
 
 

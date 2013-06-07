@@ -9,7 +9,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/TChar.h"
 #include    "../Characters/String.h"
-#include	"../Containers/Sequence.h"
+#include    "../Containers/Sequence.h"
 
 
 
