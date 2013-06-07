@@ -20,10 +20,14 @@
 
 /**
  *
- *  STATUS  VERY PRELIMINARY - GOT SOMETHING SIMILAR WORKING ON UNIX A WHILE BACK BUT NEW FACTORING
- *          IS A PROTOTYPE - AND CODE FOR WINDOWS NOT EVEN PROTOTYPE STAGE YET...
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
+ *				(note - basic functionality works on linux - start/stop/restart etc), but nothing on windoze yet.
  *
  * TODO:
+ *
+ *		@todo	Add ShowUsage () method to IApp... and to service (vectoring) - and use that
+ *				to oimplemtn usage behvairo genericlaly. And do 'invalid-param' exAborttion
+ *				and use that for usage - to trigger usage.
  *
  *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
  *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
@@ -32,7 +36,7 @@
  *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
  *              that we use throwthreadexception!
  *
- *      @todo   Command-line processing is totally kludged and needs cleanup!!!
+ *      @todo   Command-line processing is kludged and needs cleanup!!!
  *
  *      @todo   Document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
