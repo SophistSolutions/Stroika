@@ -310,15 +310,14 @@ namespace   Stroika {
                  */
                 nonvirtual  void    operator++ (int);
 
-			public:
-				//tmphack to test - LGP 2013-06-06 - so can say "Iterator i = x; if (i) {...
-				// - handy for stuff like ApplyUntilTrue ()...
-				nonvirtual	operator bool () const
-				{
-					return not Done ();
-				}
+            public:
+                //tmphack to test - LGP 2013-06-06 - so can say "Iterator i = x; if (i) {...
+                // - handy for stuff like ApplyUntilTrue ()...
+                nonvirtual  operator bool () const {
+                    return not Done ();
+                }
 
-			public:
+            public:
                 /**
                  *  \brief
                  *  Provides a limited notion of equality suitable for STL-style iteration and iterator comparison.

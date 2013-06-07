@@ -55,9 +55,9 @@ namespace {
 int main (int argc, const char* argv[])
 {
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
-    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep	=	Main::mkDefaultServiceIntegrationRep ();
-    if (args.ApplyUntilTrue ([] (const String& i) { return Execution::MatchesCommandLineArgument (i, L"run2Idle"); })) {
-		// note - cannot use 'contains' because we need MatchesCommandLineArgument matching...
+    shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
+    if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"run2Idle"); })) {
+        // note - cannot use 'contains' because we need MatchesCommandLineArgument matching...
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);

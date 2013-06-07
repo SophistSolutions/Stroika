@@ -21,7 +21,7 @@
  *  TODO:
  *
  *
- *		@todo	Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
+ *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
 
  *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
  *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
