@@ -65,15 +65,11 @@ int main (int argc, const char* argv[])
         m.Run (args);
     }
     catch (const std::exception& e) {
-        cerr << "FAILED: REGRESSION TEST (std::exception): '" << e.what () << endl;
-        cout << "Failed" << endl;
-        DbgTrace ("FAILED: REGRESSION TEST (std::exception): '%s", e.what ());
+        cerr << "FAILED: (std::exception): '" << e.what () << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
-        cerr << "FAILED: REGRESSION TEST (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
-        cout << "Failed" << endl;
-        DbgTrace (L"FAILED: REGRESSION TEST (std::exception): '%s", e.As<wstring> ().c_str ());
+        cerr << "FAILED: (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
