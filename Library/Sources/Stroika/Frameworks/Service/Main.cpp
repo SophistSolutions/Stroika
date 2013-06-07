@@ -627,7 +627,7 @@ Main::CommandArgs::CommandArgs ()
 {
 }
 
-Main::CommandArgs::CommandArgs (const vector<String>& args)
+Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     : fMajorOperation ()
     , fUnusedArguments ()
 {

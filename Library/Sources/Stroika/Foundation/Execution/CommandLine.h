@@ -6,11 +6,10 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <vector>
-
 #include    "../Configuration/Common.h"
 #include    "../Characters/TChar.h"
 #include    "../Characters/String.h"
+#include	"../Containers/Sequence.h"
 
 
 
@@ -20,10 +19,11 @@ namespace   Stroika {
 
 
             using   Characters::String;
+            using   Containers::Sequence;
 
 
-            vector<String>  ParseCommandLine (int argc, const char* argv[]);
-            vector<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
+            Sequence<String>  ParseCommandLine (int argc, const char* argv[]);
+            Sequence<String>  ParseCommandLine (int argc, const wchar_t* argv[]);
 
 
             //

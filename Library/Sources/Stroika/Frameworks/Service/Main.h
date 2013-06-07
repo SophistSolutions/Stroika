@@ -60,9 +60,12 @@ namespace   Stroika {
 
 
             using   namespace   Stroika::Foundation;
-            using   Characters::String;
-
+            
+			
+			using   Characters::String;
+			using	Containers::Sequence;
             using   Execution::pid_t;
+
 
 #if     qPlatform_POSIX
             using   Execution::SignalIDType;
@@ -313,16 +316,16 @@ namespace   Stroika {
              */
             struct  Main::CommandArgs {
                 CommandArgs ();
-                CommandArgs (const vector<String>& args);
+                CommandArgs (const Sequence<String>& args);
 
-                enum class MajorOperation {
+                enum	class	MajorOperation {
                     eRunServiceMain,
                     eStop,
                     //....
                 };
 
                 Memory::Optional<MajorOperation>    fMajorOperation;
-                vector<String>                      fUnusedArguments;
+                Sequence<String>                    fUnusedArguments;
             };
 
 

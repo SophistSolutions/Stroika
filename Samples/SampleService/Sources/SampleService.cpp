@@ -19,6 +19,7 @@ using   namespace Stroika::Frameworks::Service;
 
 using   Characters::String;
 using   Memory::Optional;
+using	Containers::Sequence;
 
 
 
@@ -53,7 +54,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
-    vector<String>  args    =   Execution::ParseCommandLine (argc, argv);
+    Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep;
     {
         bool    run2IdleMode = false;

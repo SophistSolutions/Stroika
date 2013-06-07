@@ -17,12 +17,10 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
-vector<String>  Execution::ParseCommandLine (int argc, const char* argv[])
+Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);
-    vector<String>  results;
-    results.reserve (argc);
-
+    Sequence<String>  results;
     for (int i = 0; i < argc; ++i) {
         results.push_back (Characters::NarrowSDKStringToWide (argv[i]));
     }
@@ -30,18 +28,17 @@ vector<String>  Execution::ParseCommandLine (int argc, const char* argv[])
     return results;
 }
 
-vector<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
+Sequence<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
 {
     Require (argc >= 0);
-    vector<String>  results;
-    results.reserve (argc);
-
+    Sequence<String>  results;
     for (int i = 0; i < argc; ++i) {
         results.push_back (argv[i]);
     }
-
     return results;
 }
+
+
 
 
 namespace   {
