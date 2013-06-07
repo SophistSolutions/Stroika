@@ -1,0 +1,83 @@
+compile under gcc   
+
+*** Random Adds ***
+Testing Container of 1000000 entries with uniform DataDistribution. type = unoptimized
+  max height = 11, average = 1.3336
+  failed find avg comparisons = 33.4635; avg rotations = 0
+  find avg comparisons = 32.4635; avg rotations = 0
+  add  avg comparisons = 43.1689; avg rotations = 1.33407
+  remove  avg comparisons = 43.2199; avg rotations = 1.3336
+  ***CRUDE WEIGHT*** = 34.8765
+Testing Container of 1000000 entries with normal DataDistribution. type = unoptimized
+  max height = 11, average = 1.33444
+  failed find avg comparisons = 32.9; avg rotations = 0
+  find avg comparisons = 31.8866; avg rotations = 0
+  add  avg comparisons = 42.6612; avg rotations = 1.33272
+  remove  avg comparisons = 43.2966; avg rotations = 1.33478
+  ***CRUDE WEIGHT*** = 34.3718
+Testing Container of 1000000 entries with zipf DataDistribution. type = unoptimized
+  max height = 11, average = 1.33282
+  failed find avg comparisons = 35.3761; avg rotations = 0
+  find avg comparisons = 34.2325; avg rotations = 0
+  add  avg comparisons = 45.0476; avg rotations = 1.33336
+  remove  avg comparisons = 44.7935; avg rotations = 1.33362
+  ***CRUDE WEIGHT*** = 36.6368
+Testing Container of 1000000 entries with uniform DataDistribution. type = optimized
+  max height = 10, average = 1.33333
+  failed find avg comparisons = 22.4029; avg rotations = 0
+  find avg comparisons = 21.4029; avg rotations = 0
+  add  avg comparisons = 31.1407; avg rotations = 1.33171
+  remove  avg comparisons = 41.0299; avg rotations = 1.33333
+  ***CRUDE WEIGHT*** = 24.6059
+Testing Container of 1000000 entries with normal DataDistribution. type = optimized
+  max height = 11, average = 1.33282
+  failed find avg comparisons = 35.9201; avg rotations = 0
+  find avg comparisons = 34.8971; avg rotations = 0
+  add  avg comparisons = 45.2359; avg rotations = 1.33298
+  remove  avg comparisons = 45.1701; avg rotations = 1.33411
+  ***CRUDE WEIGHT*** = 37.225
+Testing Container of 1000000 entries with zipf DataDistribution. type = optimized
+  max height = 10, average = 1.3324
+  failed find avg comparisons = 37.6322; avg rotations = 0
+  find avg comparisons = 34.0084; avg rotations = 0
+  add  avg comparisons = 44.0029; avg rotations = 1.33393
+  remove  avg comparisons = 45.062; avg rotations = 1.33314
+  ***CRUDE WEIGHT*** = 36.3799
+
+Length  Order   Find Time       Fail Time       Distribution    Description     Weight  Total Time
+1000000 Random  7.85568         8.6356          uniform         unoptimized             36.3961 16.4913
+1000000 Random  7.62438         8.22662         normal          unoptimized             36.6422 15.851
+1000000 Random  5.07789         6.26267         zipf            unoptimized             37.6671 11.3406
+1000000 Random  7.52919         8.65122         uniform         optimized               24.5882 16.1804
+1000000 Random  7.43811         8.11482         normal          optimized               36.1663 15.5529
+1000000 Random  5.21068         5.84028         zipf            optimized               35.4843 11.051
+
+
+Skiplist with string keyed entries
+Creating SkipList of 100000 entries, random add:  2099 milliseconds (2.099 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+390 milliseconds (0.390 seconds)
+normal distribution
+282 milliseconds (0.282 seconds)
+zipf distribution
+196 milliseconds (0.196 seconds)
+Optimized SkipList  16 milliseconds (0.016 seconds)
+
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+283 milliseconds (0.283 seconds)
+normal distribution
+265 milliseconds (0.265 seconds)
+zipf distribution
+170 milliseconds (0.170 seconds)
+
+Skiplist with hashed string keyed entries
+Creating SkipList of 100000 entries, random add:  601 milliseconds (0.601 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+196 milliseconds (0.196 seconds)
+normal distribution
+110 milliseconds (0.110 seconds)
+zipf distribution
+87 milliseconds (0.087 seconds)

@@ -1,0 +1,147 @@
+ compile under gcc   
+
+Note: readded fParent field. That makes treaps use slightly more memory, and doesn't really speed things up appreciably (< 5%). But I think it will make
+it more possible to parallelize, especially iterators, which must otherwise track signficant chunks of the tree
+
+*** Random Adds ***
+Testing Container of 1000000 entries with uniform DataDistribution. type = unoptimized
+  max height = 51, average = 27.1115
+  failed find avg comparisons = 27.1115; avg rotations = 0
+  find avg comparisons = 26.1115; avg rotations = 0
+  add  avg comparisons = 26.2386; avg rotations = 2.05418
+  remove  avg comparisons = 25.7638; avg rotations = 2.0428
+  ***CRUDE WEIGHT*** = 26.4992
+Testing Container of 1000000 entries with normal DataDistribution. type = unoptimized
+  max height = 50, average = 26.6364
+  failed find avg comparisons = 26.6393; avg rotations = 0
+  find avg comparisons = 25.6305; avg rotations = 0
+  add  avg comparisons = 25.436; avg rotations = 2.00923
+  remove  avg comparisons = 25.0625; avg rotations = 1.9809
+  ***CRUDE WEIGHT*** = 25.9532
+Testing Container of 1000000 entries with zipf DataDistribution. type = unoptimized
+  max height = 49, average = 27.0056
+  failed find avg comparisons = 27.538; avg rotations = 0
+  find avg comparisons = 26.0324; avg rotations = 0
+  add  avg comparisons = 24.2462; avg rotations = 1.7347
+  remove  avg comparisons = 22.6956; avg rotations = 1.76579
+  ***CRUDE WEIGHT*** = 25.8701
+Testing Container of 1000000 entries with uniform DataDistribution. type = optimized
+  max height = 20, average = 19.9514
+  failed find avg comparisons = 19.9514; avg rotations = 0
+  find avg comparisons = 18.9514; avg rotations = 0
+  add  avg comparisons = 22.2379; avg rotations = 11.666
+  remove  avg comparisons = 27.2092; avg rotations = 0.894608
+  ***CRUDE WEIGHT*** = 21.3619
+Testing Container of 1000000 entries with normal DataDistribution. type = optimized
+  max height = 52, average = 26.8669
+  failed find avg comparisons = 26.8696; avg rotations = 0
+  find avg comparisons = 25.8597; avg rotations = 0
+  add  avg comparisons = 25.7324; avg rotations = 2.03505
+  remove  avg comparisons = 24.7958; avg rotations = 1.98746
+  ***CRUDE WEIGHT*** = 26.1429
+Testing Container of 1000000 entries with zipf DataDistribution. type = optimized
+  max height = 52, average = 26.6245
+  failed find avg comparisons = 26.2225; avg rotations = 0
+  find avg comparisons = 26.1533; avg rotations = 0
+  add  avg comparisons = 24.1752; avg rotations = 1.73217
+  remove  avg comparisons = 22.863; avg rotations = 1.71602
+  ***CRUDE WEIGHT*** = 25.9713
+Testing Container of 1000000 entries with uniform DataDistribution. type = 10% Find Opt
+  max height = 49, average = 26.9505
+  failed find avg comparisons = 26.9505; avg rotations = 0
+  find avg comparisons = 25.5654; avg rotations = 0.102156
+  add  avg comparisons = 25.5495; avg rotations = 1.9574
+  remove  avg comparisons = 26.3158; avg rotations = 2.08786
+  ***CRUDE WEIGHT*** = 26.1251
+Testing Container of 1000000 entries with normal DataDistribution. type = 10% Find Opt
+  max height = 52, average = 28.0349
+  failed find avg comparisons = 28.0361; avg rotations = 0
+  find avg comparisons = 27.0071; avg rotations = 0.10006
+  add  avg comparisons = 26.6514; avg rotations = 1.86885
+  remove  avg comparisons = 25.666; avg rotations = 2.04554
+  ***CRUDE WEIGHT*** = 27.3089
+Testing Container of 1000000 entries with zipf DataDistribution. type = 10% Find Opt
+  max height = 48, average = 26.5884
+  failed find avg comparisons = 26.5069; avg rotations = 0
+  find avg comparisons = 20.7843; avg rotations = 0.049005
+  add  avg comparisons = 21.6315; avg rotations = 1.23673
+  remove  avg comparisons = 21.7585; avg rotations = 1.76662
+  ***CRUDE WEIGHT*** = 21.306
+Testing Container of 1000000 entries with uniform DataDistribution. type = 5% Find Opt
+  max height = 50, average = 26.8782
+  failed find avg comparisons = 26.8782; avg rotations = 0
+  find avg comparisons = 25.9108; avg rotations = 0.051463
+  add  avg comparisons = 25.754; avg rotations = 2.01098
+  remove  avg comparisons = 25.2437; avg rotations = 2.06251
+  ***CRUDE WEIGHT*** = 26.2769
+Testing Container of 1000000 entries with normal DataDistribution. type = 5% Find Opt
+  max height = 50, average = 27.1939
+  failed find avg comparisons = 27.1891; avg rotations = 0
+  find avg comparisons = 26.0802; avg rotations = 0.051022
+  add  avg comparisons = 26.0114; avg rotations = 1.93569
+  remove  avg comparisons = 25.5797; avg rotations = 2.01311
+  ***CRUDE WEIGHT*** = 26.459
+Testing Container of 1000000 entries with zipf DataDistribution. type = 5% Find Opt
+  max height = 53, average = 27.1382
+  failed find avg comparisons = 28.0347; avg rotations = 0
+  find avg comparisons = 21.9692; avg rotations = 0.028062
+  add  avg comparisons = 22.2568; avg rotations = 1.42951
+  remove  avg comparisons = 21.8921; avg rotations = 1.8576
+  ***CRUDE WEIGHT*** = 22.3414
+Testing Container of 1000000 entries with uniform DataDistribution. type = 2% Find Opt
+  max height = 51, average = 27.813
+  failed find avg comparisons = 27.813; avg rotations = 0
+  find avg comparisons = 26.8308; avg rotations = 0.020875
+  add  avg comparisons = 26.4502; avg rotations = 2.04178
+  remove  avg comparisons = 26.0496; avg rotations = 2.04923
+  ***CRUDE WEIGHT*** = 27.1404
+Testing Container of 1000000 entries with normal DataDistribution. type = 2% Find Opt
+  max height = 54, average = 27.6668
+  failed find avg comparisons = 27.6578; avg rotations = 0
+  find avg comparisons = 26.7203; avg rotations = 0.020705
+  add  avg comparisons = 26.5335; avg rotations = 1.98673
+  remove  avg comparisons = 25.8223; avg rotations = 1.99746
+  ***CRUDE WEIGHT*** = 27.0268
+Testing Container of 1000000 entries with zipf DataDistribution. type = 2% Find Opt
+  max height = 52, average = 27.4738
+  failed find avg comparisons = 27.2946; avg rotations = 0
+  find avg comparisons = 23.2862; avg rotations = 0.012202
+  add  avg comparisons = 23.0125; avg rotations = 1.36826
+  remove  avg comparisons = 22.9642; avg rotations = 1.67789
+  ***CRUDE WEIGHT*** = 23.541
+Length  Order   Find Time       Fail Time       Distribution    Description     Weight  Total Time
+1000000 Random  2.68621         2.93958         uniform         unoptimized             26.6992 5.62579
+1000000 Random  2.56057         3.07057         normal          unoptimized             26.155  5.63114
+1000000 Random  1.68909         2.12384         zipf            unoptimized             26.1712 3.81292
+1000000 Random  2.6462          2.96253         uniform         optimized               21.5619 5.60873
+1000000 Random  2.82068         3.28345         normal          optimized               26.3448 6.10414
+1000000 Random  1.47644         2.0666          zipf            optimized               25.9851 3.54304
+1000000 Random  3.10779         3.07869         uniform         10% Find Opt            26.3817 6.18648
+1000000 Random  2.9297          3.14726         normal          10% Find Opt            27.4947 6.07697
+1000000 Random  1.60239         2.24882         zipf            10% Find Opt            22.4407 3.8512
+1000000 Random  2.84402         3.20085         uniform         5% Find Opt             26.4601 6.04486
+1000000 Random  2.81198         2.9754          normal          5% Find Opt             26.6705 5.78739
+1000000 Random  1.68778         1.98546         zipf            5% Find Opt             23.5489 3.67324
+1000000 Random  2.96311         3.32383         uniform         2% Find Opt             27.3327 6.28693
+1000000 Random  2.84254         3.19083         normal          2% Find Opt             27.2102 6.03338
+1000000 Random  1.82377         2.06796         zipf            2% Find Opt             24.3402 3.89173
+
+
+Treap with string keyed entries
+Creating Treap Tree of 100000 entries, random add:  173 milliseconds (0.173 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+247 milliseconds (0.247 seconds)
+normal distribution
+202 milliseconds (0.202 seconds)
+zipf distribution
+178 milliseconds (0.178 seconds)
+
+Treap with hashed string keyed entries
+Creating Treap Tree of 100000 entries, random add:  79 milliseconds (0.079 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+114 milliseconds (0.114 seconds)
+normal distribution
+129 milliseconds (0.129 seconds)
+zipf distribution

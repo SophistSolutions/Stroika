@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_layout_file>
+	<ActiveTarget name="Debug" />
+	<File name="main.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="38270" topLine="1177" />
+	</File>
+	<File name="../Headers/SkipList.h" open="0" top="0" tabpos="0">
+		<Cursor position="5177" topLine="104" />
+	</File>
+	<File name="../Headers/SkipList.inl" open="0" top="0" tabpos="0">
+		<Cursor position="9669" topLine="335" />
+	</File>
+	<File name="../Headers/SplayTree.h" open="0" top="0" tabpos="0">
+		<Cursor position="4942" topLine="93" />
+	</File>
+	<File name="../Headers/SplayTree.inl" open="0" top="0" tabpos="0">
+		<Cursor position="9780" topLine="388" />
+	</File>
+	<File name="../Headers/Treap.h" open="0" top="0" tabpos="0">
+		<Cursor position="6806" topLine="126" />
+	</File>
+	<File name="../Headers/Treap.inl" open="0" top="0" tabpos="0">
+		<Cursor position="10461" topLine="391" />
+	</File>
+	<File name="../Shared/Headers/BlockAllocated.h" open="0" top="0" tabpos="0">
+		<Cursor position="1208" topLine="0" />
+	</File>
+	<File name="../Shared/Headers/BlockAllocated.inl" open="0" top="0" tabpos="0">
+		<Cursor position="4312" topLine="78" />
+	</File>
+	<File name="../Shared/Headers/Comparer.h" open="0" top="0" tabpos="0">
+		<Cursor position="1622" topLine="43" />
+	</File>
+	<File name="../Shared/Headers/Config.h" open="0" top="0" tabpos="0">
+		<Cursor position="571" topLine="13" />
+	</File>
+	<File name="../Shared/Headers/TestingData.h" open="0" top="0" tabpos="0">
+		<Cursor position="820" topLine="19" />
+	</File>
+	<File name="../Shared/Headers/TestingData.inl" open="0" top="0" tabpos="0">
+		<Cursor position="1373" topLine="42" />
+	</File>
+	<File name="../Shared/Headers/TreeTraits.h" open="0" top="0" tabpos="0">
+		<Cursor position="626" topLine="0" />
+	</File>
+	<File name="../Shared/Headers/Utils.h" open="0" top="0" tabpos="0">
+		<Cursor position="837" topLine="12" />
+	</File>
+	<File name="../Shared/Sources/HashKey.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="1283" topLine="18" />
+	</File>
+	<File name="../Shared/Sources/TestingData.cpp" open="0" top="0" tabpos="0">
+		<Cursor position="47" topLine="0" />
+	</File>
+</CodeBlocks_layout_file>

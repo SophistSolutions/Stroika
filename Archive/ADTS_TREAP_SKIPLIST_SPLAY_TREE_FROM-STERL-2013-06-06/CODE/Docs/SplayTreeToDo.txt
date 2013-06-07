@@ -1,0 +1,129 @@
+compile under gcc   
+
+*** Random Adds ***
+Testing Container of 1000000 entries with uniform DataDistribution. type = always
+  max height = 54, average = 28.8299
+  failed find avg comparisons = 28.8299; avg rotations = 0
+  find avg comparisons = 28.1628; avg rotations = 27.1628
+  add  avg comparisons = 28.6167; avg rotations = 28.6167
+  remove  avg comparisons = 37.0863; avg rotations = 36.0863
+  ***CRUDE WEIGHT*** = 57.3011
+Testing Container of 1000000 entries with uniform DataDistribution. type = uniform
+  max height = 53, average = 27.7511
+  failed find avg comparisons = 27.7511; avg rotations = 0
+  find avg comparisons = 27.0311; avg rotations = 1.77317
+  add  avg comparisons = 28.5432; avg rotations = 1.90145
+  remove  avg comparisons = 26.8897; avg rotations = 25.8897
+  ***CRUDE WEIGHT*** = 31.3658
+Testing Container of 1000000 entries with uniform DataDistribution. type = normal
+  max height = 49, average = 26.6771
+  failed find avg comparisons = 26.677; avg rotations = 0
+  find avg comparisons = 26.5685; avg rotations = 0.099782
+  add  avg comparisons = 28.53; avg rotations = 0.107012
+  remove  avg comparisons = 26.3971; avg rotations = 25.3971
+  ***CRUDE WEIGHT*** = 29.3777
+Testing Container of 1000000 entries with uniform DataDistribution. type = zipf
+  max height = 53, average = 28.4164
+  failed find avg comparisons = 28.4164; avg rotations = 0
+  find avg comparisons = 26.8343; avg rotations = 0.582495
+  add  avg comparisons = 28.5348; avg rotations = 0.634282
+  remove  avg comparisons = 26.4963; avg rotations = 25.4963
+  ***CRUDE WEIGHT*** = 30.0496
+Testing Container of 1000000 entries with normal DataDistribution. type = always
+  max height = 54, average = 28.8299
+  failed find avg comparisons = 28.8369; avg rotations = 0
+  find avg comparisons = 26.336; avg rotations = 25.336
+  add  avg comparisons = 27.4012; avg rotations = 27.4012
+  remove  avg comparisons = 35.8709; avg rotations = 34.8709
+  ***CRUDE WEIGHT*** = 53.8919
+Testing Container of 1000000 entries with normal DataDistribution. type = uniform
+  max height = 56, average = 28.3721
+  failed find avg comparisons = 28.3694; avg rotations = 0
+  find avg comparisons = 26.747; avg rotations = 1.75652
+  add  avg comparisons = 27.4907; avg rotations = 1.82196
+  remove  avg comparisons = 26.9585; avg rotations = 25.9585
+  ***CRUDE WEIGHT*** = 31.0258
+Testing Container of 1000000 entries with normal DataDistribution. type = normal
+  max height = 51, average = 27.4373
+  failed find avg comparisons = 27.4407; avg rotations = 0
+  find avg comparisons = 27.0043; avg rotations = 0.098303
+  add  avg comparisons = 27.528; avg rotations = 0.101712
+  remove  avg comparisons = 26.5743; avg rotations = 25.5743
+  ***CRUDE WEIGHT*** = 29.66
+Testing Container of 1000000 entries with normal DataDistribution. type = zipf
+  max height = 53, average = 27.2419
+  failed find avg comparisons = 27.2468; avg rotations = 0
+  find avg comparisons = 26.7687; avg rotations = 0.579939
+  add  avg comparisons = 27.5126; avg rotations = 0.605875
+  remove  avg comparisons = 26.6467; avg rotations = 25.6467
+  ***CRUDE WEIGHT*** = 29.9201
+Testing Container of 1000000 entries with zipf DataDistribution. type = always
+  max height = 54, average = 28.8299
+  failed find avg comparisons = 28.2986; avg rotations = 0
+  find avg comparisons = 17.1693; avg rotations = 16.1693
+  add  avg comparisons = 19.035; avg rotations = 19.035
+  remove  avg comparisons = 24.3345; avg rotations = 23.3345
+  ***CRUDE WEIGHT*** = 35.2448
+Testing Container of 1000000 entries with zipf DataDistribution. type = uniform
+  max height = 54, average = 29.5702
+  failed find avg comparisons = 30.0296; avg rotations = 0
+  find avg comparisons = 17.0318; avg rotations = 0.975081
+  add  avg comparisons = 19.1175; avg rotations = 1.13674
+  remove  avg comparisons = 19.6713; avg rotations = 18.6713
+  ***CRUDE WEIGHT*** = 20.2652
+Testing Container of 1000000 entries with zipf DataDistribution. type = normal
+  max height = 50, average = 26.6961
+  failed find avg comparisons = 26.0442; avg rotations = 0
+  find avg comparisons = 16.5034; avg rotations = 0.049672
+  add  avg comparisons = 19.0859; avg rotations = 0.059318
+  remove  avg comparisons = 19.5065; avg rotations = 18.5065
+  ***CRUDE WEIGHT*** = 18.9583
+Testing Container of 1000000 entries with zipf DataDistribution. type = zipf
+  max height = 50, average = 26.5929
+  failed find avg comparisons = 26.6759; avg rotations = 0
+  find avg comparisons = 16.7812; avg rotations = 0.291104
+  add  avg comparisons = 19.1035; avg rotations = 0.356266
+  remove  avg comparisons = 19.5342; avg rotations = 18.5342
+  ***CRUDE WEIGHT*** = 19.4107
+
+Length  Order   Find Time       Fail Time       Distribution    Description     Weight  Total Time
+1000000 Random  4.27742         3.04178         uniform         always          52.0023 7.3192
+1000000 Random  3.0505          2.92361         uniform         uniform         31.0832 5.97412
+1000000 Random  2.67602         2.73794         uniform         normal          29.5908 5.41396
+1000000 Random  2.79408         2.76999         uniform         zipf            30.4522 5.56407
+1000000 Random  3.83001         3.15863         normal          always          49.314  6.98864
+1000000 Random  2.91976         2.83699         normal          uniform         30.788  5.75675
+1000000 Random  2.74766         2.84163         normal          normal          29.7066 5.58929
+1000000 Random  2.92703         2.84563         normal          zipf            30.2166 5.77265
+1000000 Random  1.86151         1.92675         zipf            always          34.228  3.78826
+1000000 Random  1.50292         1.83693         zipf            uniform         22.1871 3.33985
+1000000 Random  0.987252        1.8813          zipf            normal          20.9382 2.86855
+1000000 Random  1.2515          1.85962         zipf            zipf            21.4901 3.11111
+
+
+Splay of 1000000 string keyed entries
+Creating Splay Tree of 100000 entries, random add:  140 milliseconds (0.140 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+231 milliseconds (0.231 seconds)
+normal distribution
+200 milliseconds (0.200 seconds)
+zipf distribution
+122 milliseconds (0.122 seconds)
+
+Splay of 1000000 hashed string keyed entries
+Creating Splay Tree of 100000 entries, random add:  36 milliseconds (0.036 seconds)
+Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+uniform distribution
+100 milliseconds (0.100 seconds)
+normal distribution
+78 milliseconds (0.078 seconds)
+zipf distribution
+58 milliseconds (0.058 seconds)
+
+
+
+
+
+
+
