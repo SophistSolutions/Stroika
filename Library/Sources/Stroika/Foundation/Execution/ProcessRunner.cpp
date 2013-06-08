@@ -5,7 +5,10 @@
 
 #include    <sstream>
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
+#include    "../Characters/Tokenize.h"
+#include    "../Containers/Sequence.h"
 #include    "../Debug/Trace.h"
 #if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
@@ -22,6 +25,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 
 using   Debug::TraceContextBumper;
@@ -566,4 +570,139 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
         SetStdOut (oldStdOut);
         Execution::DoReThrow ();
     }
+}
+
+
+
+
+
+
+
+
+
+/*
+ ********************************************************************************
+ ****************** Execution::DetachedProcessRunner ****************************
+ ********************************************************************************
+ */
+pid_t   Execution::DetachedProcessRunner (const String& commandLine)
+{
+#if     qPlatform_Windows
+    PROCESS_INFORMATION processInfo;
+    memset (&processInfo, 0, sizeof (processInfo));
+    processInfo.hProcess = INVALID_HANDLE_VALUE;
+    processInfo.hThread = INVALID_HANDLE_VALUE;
+
+    STARTUPINFO startInfo;
+    memset (&startInfo, 0, sizeof (startInfo));
+    startInfo.cb = sizeof (startInfo);
+    startInfo.hStdInput = INVALID_HANDLE_VALUE;
+    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
+    startInfo.hStdError = INVALID_HANDLE_VALUE;
+    startInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+    DWORD   createProcFlags =   0;
+    createProcFlags |= CREATE_NO_WINDOW;
+    createProcFlags |= NORMAL_PRIORITY_CLASS;
+    createProcFlags |= DETACHED_PROCESS;
+    {
+        bool    bInheritHandles     =   true;
+        TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
+        Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), commandLine.AsTString ().c_str ());
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (
+            ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
+        );
+    }
+    return processInfo.dwProcessId;
+#elif   qPlatform_POSIX
+
+#endif
+
+    // @todo - better job both parsing separate args, and documenting how this is done!!!
+    String  exe;
+    Sequence<String>    args;
+
+    vector<wstring> tmp =   Characters::Tokenize<wstring> (commandLine.As<wstring> (), L" ");
+    if (tmp.size () == 0) {
+        Execution::DoThrow (Execution::StringException (L"invalid command argument to DetachedProcessRunner"));
+    }
+    exe = tmp[0];
+    for (auto i = tmp.begin () + 1; i != tmp.end (); ++i) {
+        args.Append (*i);
+    }
+    return DetachedProcessRunner (exe, args);
+}
+
+pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
+{
+#if     qPlatform_Windows
+    PROCESS_INFORMATION processInfo;
+    memset (&processInfo, 0, sizeof (processInfo));
+    processInfo.hProcess = INVALID_HANDLE_VALUE;
+    processInfo.hThread = INVALID_HANDLE_VALUE;
+    STARTUPINFO startInfo;
+    memset (&startInfo, 0, sizeof (startInfo));
+    startInfo.cb = sizeof (startInfo);
+    startInfo.hStdInput = INVALID_HANDLE_VALUE;
+    startInfo.hStdOutput = INVALID_HANDLE_VALUE;
+    startInfo.hStdError = INVALID_HANDLE_VALUE;
+    startInfo.dwFlags |= STARTF_USESTDHANDLES;
+    DWORD   createProcFlags =   0;
+    createProcFlags |= CREATE_NO_WINDOW;
+    createProcFlags |= NORMAL_PRIORITY_CLASS;
+    createProcFlags |= DETACHED_PROCESS;
+    {
+        bool    bInheritHandles     =   true;
+        TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
+        cmdLineBuf[0] = '\0';
+        for (String i : args) {
+            //quickie/weak impl...
+            if (cmdLineBuf[0] != '\0') {
+                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), TSTR(" "));
+            }
+            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsTString ().c_str ());
+        }
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (
+            ::CreateProcess (executable.AsTString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
+        );
+    }
+    return processInfo.dwProcessId;
+#elif   qPlatform_POSIX
+    Characters::TString thisEXEPath =   executable.AsTString ();
+    pid_t   pid =   fork ();
+    Execution::ThrowErrNoIfNegative (pid);
+    if (pid == 0) {
+        /*
+         * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
+         *
+         * Possibly should close more descriptors?
+         */
+        for (int i = 0; i < 3; ++i) {
+            ::close (i);
+        }
+        int id = open ("/dev/null", O_RDWR);
+        dup2 (id, 0);
+        dup2 (id, 1);
+        dup2 (id, 2);
+
+        // must map args to TString, and then right lifetime c-string pointers
+        vector<TString> tmpArgs;
+        tmpTStrArgs.reserve (args.size ());
+        for (String i : args) {
+            tmpTStrArgs.push_back (i.AsTString ());
+        }
+        vector<char*>   useArgsV;
+        for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
+            useArgsV.push_back (i->c_str ());
+        }
+        useArgsV.push_back (nullptr);
+        int r   =   execv (thisEXEPath.c_str (), thisEXEPath.c_str (), std::begin (useArgsV));
+        // no practical way to return this failure...
+        // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
+        _exit (-1);
+    }
+    else {
+        return pid;
+    }
+#endif
 }

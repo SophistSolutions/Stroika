@@ -15,6 +15,7 @@
 #include    "../Streams/BinaryOutputStream.h"
 
 #include    "IRunnable.h"
+#include    "Process.h"
 #include    "ProgressMonitor.h"
 
 
@@ -80,6 +81,9 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
+
+            using   Characters::String;
 
 
             /**
@@ -178,6 +182,15 @@ namespace   Stroika {
                 Streams::BinaryOutputStream     fStdOut_;
                 Streams::BinaryOutputStream     fStdErr_;
             };
+
+
+            /**
+             *  Setup stdin/out/error to refer to devnull (or closed), and then run the given process. This throws
+             *  exceptions on failure to run and returns the created process id, but doesn't wait to monitor
+             *  process progress.
+             */
+            pid_t   DetachedProcessRunner (const String& commandLine);
+            pid_t   DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
 
 
         }
