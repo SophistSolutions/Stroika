@@ -8,7 +8,6 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
-#include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Frameworks/Service/Main.h"
 
 
