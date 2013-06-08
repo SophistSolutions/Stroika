@@ -80,3 +80,32 @@ bool    Execution::MatchesCommandLineArgument (const String& actualArg, const St
     // must first strip everything after the '=' in the actualarg, and then similar to first overload...
     return false;
 }
+
+bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
+{
+#if 1
+    return argList.ApplyUntilTrue ([matchesArgPattern] (String i) ->bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+#else
+    for (String i : argList) {
+        if (MatchesCommandLineArgument (i, matchesArgPattern)) {
+            return true;
+        }
+    }
+    return false;
+#endif
+}
+
+bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult)
+{
+#if 1
+    return argList.ApplyUntilTrue ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
+#else
+    for (String i : argList) {
+        if (MatchesCommandLineArgument (i, matchesArgPattern, associatedArgResult)) {
+            return true;
+        }
+    }
+    return false;
+#endif
+}
+

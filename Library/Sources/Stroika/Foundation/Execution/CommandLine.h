@@ -19,6 +19,7 @@ namespace   Stroika {
 
 
             using   Characters::String;
+            using   Containers::Iterable;
             using   Containers::Sequence;
 
 
@@ -46,6 +47,8 @@ namespace   Stroika {
             //
             bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern);
             bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern, String* associatedArgResult);
+            bool    MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern);
+            bool    MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult);
 
 
         }
