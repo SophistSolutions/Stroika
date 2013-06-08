@@ -19,8 +19,10 @@
 
 /**
  * TODO:
- *
- *
+ *	@todo	Either use, or document why not using - sockaddr_storage. I think the answer is no need
+ *			and this class is a more (space) efficient alternative to sockaddr_storage? But off hand
+ *			this code LOOKS wrong on teh surface - in that it us storing in sockaddr which doesnt appear
+ *			fast sockaddr_in6
  */
 
 
