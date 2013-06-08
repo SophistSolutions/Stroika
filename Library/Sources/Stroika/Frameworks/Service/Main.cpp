@@ -24,6 +24,7 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Execution/ErrNoException.h"
 #include    "../../Foundation/Execution/Module.h"
+#include    "../../Foundation/Execution/ProcessRunner.h"
 #include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/Sleep.h"
 #include    "../../Foundation/Execution/WaitTimedOutException.h"
@@ -1089,6 +1090,8 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
     pid_t   pid =   fork ();
     Execution::ThrowErrNoIfNegative (pid);
     if (pid == 0) {
+        // @todo USE Execution::DetachedProcessRunner()....
+
         /*
          * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
          *
@@ -1235,6 +1238,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
  */
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
+    , fStopServiceEvent_ ()
     , fServiceStatusHandle_ (nullptr)
     , fServiceStatus_ ()
 {
@@ -1263,27 +1267,47 @@ Main::State             Main::WindowsService::_GetState () const
     return Main::State::eStopped;
 }
 
-void        Main::WindowsService::_RunAsAservice ()
+void    Main::WindowsService::_RunAsAservice ()
 {
-}
-
-void                Main::WindowsService::_Start (Time::DurationSecondsType timeout)
-{
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
-    DbgTrace ("(timeout = %f)", timeout);
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
     SERVICE_TABLE_ENTRY st[] = {
         { const_cast<TCHAR*> (GetSvcName_ ().c_str ()), StaticServiceMain_ },
-        { NULL, NULL }
+        { nullptr, nullptr }
     };
     if (::StartServiceCtrlDispatcher (st) == 0) {
-        fServiceStatus_.dwWin32ExitCode = GetLastError ();
+        fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
     }
 }
 
-void            Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
+void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
-    AssertNotImplemented ();
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
+    DbgTrace ("(timeout = %f)", timeout);
+
+
+    // SEE UNIX IMPL - WE WANT REST OF CRAP THEY HAVE THERE TOO (except using processrunner)
+
+#if      qCompilerAndStdLib_Supports_initializer_lists
+    Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {(String (L"--") + String (CommandNames::kRunAsService))}));
+#else
+    Sequence<String>    tmp;
+    tmp += (String (L"--") + String (CommandNames::kRunAsService));
+    Execution::DetachedProcessRunner (Execution::GetEXEPath (), tmp);
+#endif
+
+
+
+
+#if 0
+    && & no - this must shellexec my exe with / run - as - service
+#endif
+
+}
+
+void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
+{
+    SetServiceStatus_ (SERVICE_STOP_PENDING);
+    fStopServiceEvent_.Set ();
 }
 
 void            Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
@@ -1339,6 +1363,23 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
 void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
     // NEED SOMETHING LIKE THIS!!!
     //sTHIS->ServiceMain (dwArgc, lpszArgv);
+
+
+/// THIS BELEOW LOGIC BELONGS IN SERVICEMAIN!!!
+
+    // Run ACTUAL code in separate thread. This must wiat on fStopServiceEvent_, if thread terminates otehrwise, it
+    // must also set fStopServiceEvent_...
+    // then this will bottom out.
+
+    // At START of this code - we do file (PIDFILE) etc create, and after - PIDFILE cleanup
+
+    //  fStopServiceEvent_.Wait ();
+
+    /// DO ABORT ON THREAD HERE...AND WIAT TIL ITS DONE
+
+#if 0
+    ::DeleteFile (GetServerRunningFilePath_ ().c_str ());
+#endif
 }
 
 #if 0
