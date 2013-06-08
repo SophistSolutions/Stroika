@@ -14,6 +14,8 @@
 /**
  * TODO:
  *
+ *      @todo   Redo so at least WORKS with Sequence<String> - but maybe even get rid of other versions?
+ *
  *      @todo   Consider adding new Split() function. It seems that is quite similar - maybe identical to
  *              the Tokenize() funciton. Consider overloads for String - returing Sequnce<String>
  *              and taking Set<Character>.
