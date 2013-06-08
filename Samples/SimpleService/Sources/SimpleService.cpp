@@ -99,8 +99,12 @@ namespace {
 
 
 namespace {
-    void    ShowUsage_ ()
+    void    ShowUsage_ (const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
+        if (not e.fMessage.empty ()) {
+            cerr << e.fMessage.AsUTF8 () << endl;
+            cerr << endl;
+        }
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "      /* Run this process as service (doesnt exit til serice done ...) */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "             /* Service/Control Function: Start the service */" << endl;
@@ -157,6 +161,9 @@ int main (int argc, const char* argv[])
     }
     try {
         m.Run (args);
+    }
+    catch (const Execution::InvalidCommandLineArgument& e) {
+        ShowUsage_ (e);
     }
     catch (const std::exception& e) {
 #if     qUseLogger
