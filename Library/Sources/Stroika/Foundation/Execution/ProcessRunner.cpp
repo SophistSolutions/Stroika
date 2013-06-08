@@ -5,6 +5,11 @@
 
 #include    <sstream>
 
+#if     qPlatform_POSIX
+#include    <sys/types.h>
+#include    <unistd.h>
+#endif
+
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/Tokenize.h"
@@ -13,6 +18,7 @@
 #if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
 #endif
+#include    "../../Foundation/Execution/ErrNoException.h"
 #include    "../Streams/BasicBinaryInputOutputStream.h"
 #include    "../Streams/TextOutputStreamBinaryAdapter.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
@@ -148,26 +154,6 @@ namespace {
     }
 }
 #endif
-
-namespace {
-    Memory::BLOB    ReadStreamAsBLOB_ (istream& in)
-    {
-        streamoff   start   =   in.tellg ();
-        in.seekg (0, ios_base::end);
-        streamoff   end     =   in.tellg ();
-        Assert (start <= end);
-        if (end - start > numeric_limits<size_t>::max ()) {
-            Execution::DoThrow (StringException (L"stream too large"));
-        }
-        size_t  bufLen  =   static_cast<size_t> (end - start);
-        Memory::SmallStackBuffer<Byte>  buf (bufLen);
-        in.seekg (start, ios_base::beg);
-        in.read (reinterpret_cast<char*> (buf.begin ()), bufLen);
-        size_t xxx = static_cast<size_t> (in.gcount ());
-        Assert (xxx <= bufLen);
-        return Memory::BLOB (buf, buf + xxx);
-    }
-}
 
 
 namespace {
