@@ -3,7 +3,6 @@
  */
 #include    "Stroika/Frameworks/StroikaPreComp.h"
 
-#include    <mutex>
 #include    <iostream>
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
@@ -17,8 +16,6 @@ using   namespace std;
 using   namespace Stroika::Foundation;
 using   namespace Stroika::Frameworks::Service;
 
-using   Characters::String;
-using   Memory::Optional;
 using   Containers::Sequence;
 
 
@@ -63,12 +60,10 @@ int main (int argc, const char* argv[])
 {
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
-    if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"run2Idle"); })) {
-        // note - cannot use 'contains' because we need MatchesCommandLineArgument matching...
+    if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
-#if 1
     if (Execution::MatchesCommandLineArgument (args, L"status")) {
         cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
         return EXIT_SUCCESS;
@@ -77,25 +72,15 @@ int main (int argc, const char* argv[])
         //ShowUsage_ ();
         return EXIT_SUCCESS;
     }
-#else
-    if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"status"); })) {
-        cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
-        return EXIT_SUCCESS;
-    }
-    else if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"help"); })) {
-        //ShowUsage_ ();
-        return EXIT_SUCCESS;
-    }
-#endif
     try {
         m.Run (args);
     }
     catch (const std::exception& e) {
-        cerr << "FAILED: (std::exception): '" << e.what () << endl;
+        cerr << "FAILED: '" << e.what () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
-        cerr << "FAILED: (Execution::StringException): '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << endl;
+        cerr << "FAILED: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
