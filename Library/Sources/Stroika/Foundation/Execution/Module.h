@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/TString.h"
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 
 
@@ -15,10 +15,10 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            using   Characters::TString;
+            using   Characters::String;
 
-            TString GetEXEDir ();
-            TString GetEXEPath ();
+            String GetEXEDir ();
+            String GetEXEPath ();
 
         }
     }

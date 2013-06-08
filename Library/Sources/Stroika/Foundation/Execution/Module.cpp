@@ -30,9 +30,9 @@ using   namespace   Stroika::Foundation::Execution;
  ***************************** Execution::GetEXEDir *****************************
  ********************************************************************************
  */
-TString Execution::GetEXEDir ()
+String Execution::GetEXEDir ()
 {
-    return IO::FileSystem::GetFileDirectory (GetEXEPath ());
+    return IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ());
 }
 
 
@@ -44,7 +44,7 @@ TString Execution::GetEXEDir ()
  **************************** Execution::GetEXEPath *****************************
  ********************************************************************************
  */
-TString Execution::GetEXEPath ()
+String Execution::GetEXEPath ()
 {
     // See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
     //      Mac OS X: _NSGetExecutablePath() (man 3 dyld)
@@ -76,7 +76,7 @@ TString Execution::GetEXEPath ()
     return buf.begin ();
 #else
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 

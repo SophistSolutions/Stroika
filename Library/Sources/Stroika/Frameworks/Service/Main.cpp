@@ -1291,6 +1291,7 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
     // SEE UNIX IMPL - WE WANT REST OF CRAP THEY HAVE THERE TOO (except using processrunner)
 
+
 #if      qCompilerAndStdLib_Supports_initializer_lists
     Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {(String (L"--") + String (CommandNames::kRunAsService))}));
 #else
