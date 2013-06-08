@@ -286,7 +286,8 @@ namespace   Stroika {
                  *
                  *   Also, note that this function does NOT change any elements of the Iterable.
                  */
-                nonvirtual  Iterator<T>    ApplyUntilTrue (bool (*doToElement) (const T& item)) const;
+                nonvirtual  Iterator<T>    ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const;
+                nonvirtual  Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const;
 
 
             protected:

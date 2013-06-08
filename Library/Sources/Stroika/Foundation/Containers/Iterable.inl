@@ -202,7 +202,26 @@ namespace   Stroika {
 #endif
             }
             template    <typename T>
-            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (bool (*doToElement) (const T& item)) const
+            inline  Iterator<T>    Iterable<T>::ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const
+            {
+                RequireNotNull (doToElement);
+#if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
+                return _GetRep ().ApplyUntilTrue (doToElement);
+#elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
+                struct CheapLambda_ {
+                    CheapLambda_ (bool (*doToElement) (const T& item))
+                        : fToDoItem (doToElement) {
+                    }
+                    bool (*fToDoItem) (const T& item);
+                    static bool DoToItem (const void* cookie, const T& item) {
+                        return (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
+                    }
+                };
+                return _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
+#endif
+            }
+            template    <typename T>
+            inline  Iterator<T>    Iterable<T>::ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const
             {
                 RequireNotNull (doToElement);
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
