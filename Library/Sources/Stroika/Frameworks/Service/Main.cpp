@@ -632,7 +632,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     , fUnusedArguments ()
 {
     for (String si : args) {
-        static  const	pair<String, MajorOperation> kPairs_[] = {
+        static  const   pair<String, MajorOperation> kPairs_[] = {
             pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
             pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
             pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
