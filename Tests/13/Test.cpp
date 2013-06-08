@@ -484,6 +484,20 @@ namespace   {
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClass>> ();
 
+
+
+#if      qCompilerAndStdLib_Supports_initializer_lists
+        // fix - once we have on all subclasses - do be basic test for aech
+        {
+            Sequence<int> x1 = { };
+            VerifyTestResult (x1.size () == 0);
+            Sequence<int> x2 = { 1, 2, 3 };
+            VerifyTestResult (x2.size () == 3);
+            VerifyTestResult (x2[0] == 1);
+        }
+#endif
+
+
 #if 0
         // NOT WORKING YET - LGP 2013-05-07
         SimpleSequenceTest_All_For_Type<Sequence_stdvector<size_t>> ();
