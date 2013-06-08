@@ -16,7 +16,7 @@ my @kConfigurations = (
 
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
-print("Building Samples/SampleService...\n");
+print("Building Samples/SimpleService...\n");
 if ("$^O" eq "linux") {
 	use Cwd;
 	use Cwd 'abs_path';
@@ -24,19 +24,19 @@ if ("$^O" eq "linux") {
 
 	chdir ("../../IntermediateFiles/Platform_Linux/Debug/");
 	if ($useBld eq "rebuild") {
-		print ("Samples_SampleService; clobber...\n");
-		system ("cd Samples_SampleService; make -s clobber");
+		print ("Samples_SimpleService; clobber...\n");
+		system ("cd Samples_SimpleService; make -s clobber");
 		$useBld = "all";
 	}
 	
-	print ("Samples_SampleService; $useBld...\n");
-	system ("cd Samples_SampleService; make -s $useBld");
+	print ("Samples_SimpleService; $useBld...\n");
+	system ("cd Samples_SimpleService; make -s $useBld");
 	chdir ($savedDir);
 }
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SampleService.sln /p:$curConfig /target:$useBld");
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SimpleService.sln /p:$curConfig /target:$useBld");
 	}
 }
