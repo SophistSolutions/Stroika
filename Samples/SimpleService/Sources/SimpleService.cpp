@@ -74,16 +74,6 @@ namespace   {
 
 
 
-/// *** TODO ****
-/// add option to log to LOGGER instead of stderr!!!
-///         (we have TODO adding wrapper of service backend which writes to syslog. Use that).
-//          OR - maybe - just always do logging. Thats probably better, and have a flag in service wrapper
-//          about log level? No - maybe thats obvihs too. Mabe just upagrade service code to use logger!!!
-//          I think that would always - or nearly always - be desirable. Maybe make configurable. But no need
-//          as a user can always use their own servcie impl!
-//
-
-
 
 
 namespace {
@@ -107,22 +97,28 @@ namespace {
 }
 
 
+
 namespace {
     void    ShowUsage_ ()
     {
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "			/* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "			/* Service/Control Function: Stop the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "		/* Run this process as service (doesnt exit til serice done ...) */" << endl;
-        cerr << "\t--Status							/* Service/Control Function: Print status of running service */ " << endl;
-
-        // cleanup...
-        cerr << "[--restart] ";
-        cerr << "[--run2Idle] ";
-        cerr << "[--help] ";
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "      /* Run this process as service (doesnt exit til serice done ...) */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "             /* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "             /* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kForcedStop) << "           /* kForcedStop */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRestart) << "		/*kRestart */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kForcedRestart) << "      /* ForcedRestart */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kReloadConfiguration) << "	     /* kReloadConfiguration */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kPause) << "          /* kPause */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kContinue) << "           /* kContinue */" << endl;
+        cerr << "\t--Status	                             /* Service/Control Function: Print status of running service */ " << endl;
+        cerr << "\t--run2Idle                         /* run2Idle */ " << endl;
+        cerr << "\t--help                              /* help */ " << endl;
         cerr << endl;
     }
 }
+
+
 
 
 int main (int argc, const char* argv[])
@@ -135,13 +131,19 @@ int main (int argc, const char* argv[])
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
 #endif
 
-#if     qUseLogger && qHas_Syslog
-    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
+#if     qUseLogger
+#if     qHas_Syslog
+    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Main::LoggerServiceWrapper (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")))));
+#elif   qPlatform_Windows
+    //  -- NYI as of 2013-06-08
+    //Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Main::LoggerServiceWrapper (Logger::IAppenderRepPtr (new Logger::WindowsEventLogAppender (L"Stroika-Sample-SimpleService")))));
+#endif
 #endif
 
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
+        cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);

@@ -42,6 +42,7 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
 using   Characters::TString;
+using   Execution::Logger;
 
 
 
@@ -908,6 +909,68 @@ void    Main::Restart (Time::DurationSecondsType timeout)
 #endif
     Start (endAt - Time::GetTickCount ());
 #endif
+}
+
+
+
+
+/*
+ ********************************************************************************
+ **************** Service::Main::LoggerServiceWrapper ***************************
+ ********************************************************************************
+ */
+Main::LoggerServiceWrapper::LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo)
+    : fDelegateTo_ (delegateTo)
+{
+    RequireNotNull (delegateTo);
+}
+
+void    Main::LoggerServiceWrapper::_Attach (shared_ptr<IApplicationRep> appRep)
+{
+    fDelegateTo_->_Attach (appRep);
+}
+
+shared_ptr<Main::IApplicationRep>      Main::LoggerServiceWrapper::_GetAttachedAppRep () const
+{
+    return fDelegateTo_->_GetAttachedAppRep ();
+}
+
+Main::State     Main::LoggerServiceWrapper::_GetState () const
+{
+    return fDelegateTo_->_GetState ();
+}
+
+void    Main::LoggerServiceWrapper::_RunAsAservice ()
+{
+    Logger::Get ().Log (Logger::Priority::eInfo, L"Service Starting");
+    try {
+        fDelegateTo_->_RunAsAservice ();
+    }
+    catch (...) {
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
+        Execution::DoReThrow ();
+    }
+    Logger::Get ().Log (Logger::Priority::eInfo, L"Service Stopped Normally");
+}
+
+void  Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_Start (timeout);
+}
+
+void    Main::LoggerServiceWrapper::_Stop (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_Stop (timeout);
+}
+
+void    Main::LoggerServiceWrapper::_ForcedStop (Time::DurationSecondsType timeout)
+{
+    fDelegateTo_->_ForcedStop (timeout);
+}
+
+pid_t   Main::LoggerServiceWrapper::_GetServicePID () const
+{
+    return fDelegateTo_->_GetServicePID ();
 }
 
 

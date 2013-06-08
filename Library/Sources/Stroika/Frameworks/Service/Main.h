@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/Thread.h"
 #include    "../../Foundation/Memory/Optional.h"
@@ -118,6 +119,9 @@ namespace   Stroika {
             public:
                 class   BasicUNIXServiceImpl;
 #endif
+
+            public:
+                class   LoggerServiceWrapper;
 
             public:
                 class   RunTilIdleService;
@@ -494,6 +498,26 @@ namespace   Stroika {
 
             private:
                 friend  class   Main;
+            };
+
+
+            /**
+             *  Wrap this around any IServiceIntegrationRep, to get Logging to work.
+             */
+            class   Main::LoggerServiceWrapper : public Main::IServiceIntegrationRep {
+            public:
+                LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo);
+            protected:
+                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
+                virtual  State                      _GetState () const override;
+                virtual void                        _RunAsAservice () override;
+                virtual void                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                       _GetServicePID () const override;
+            private:
+                shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_;
             };
 
 
