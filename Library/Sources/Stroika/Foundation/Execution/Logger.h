@@ -21,6 +21,8 @@
  *      @todo   EITHER somehow automatically be smart about filtering out logging that misses log level filter,
  *              or add explicit data member saying to skip logging stuff below a given level. We probably need todo
  *              the later, and let the former be done by the backend appender.
+ *
+ *      @todo   Add support for Windows Event Manager Log Appender -- WindowsEventLogAppender
  */
 
 
