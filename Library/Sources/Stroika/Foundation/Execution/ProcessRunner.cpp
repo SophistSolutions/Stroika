@@ -631,13 +631,15 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         useArgs.Append (executable);
     }
     else {
+        bool firstTimeThru = true;
         for (auto i = args.begin (); i != args.end (); ++i) {
-            if (i == args.begin () and i->empty ()) {
+            if (firstTimeThru and i->empty ()) {
                 useArgs.Append (executable);
             }
             else {
                 useArgs.Append (*i);
             }
+            firstTimeThru = false;
         }
     }
 
