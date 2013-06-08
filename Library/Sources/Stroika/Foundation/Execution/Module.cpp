@@ -32,7 +32,7 @@ using   namespace   Stroika::Foundation::Execution;
  */
 String Execution::GetEXEDir ()
 {
-    return IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ());
+    return String::FromTString (IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ()));
 }
 
 
@@ -58,8 +58,7 @@ String Execution::GetEXEPath ()
     Characters::TChar   buf[MAX_PATH];
     memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
-    return buf;
-    Memory::SmallStackBuffer<Characters::TChar> bufx (1000);
+    return String::FromTString (buf);
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. THe only way to tell it wasn't enuf (maybe) is if all the
     // bytes passed in are used. That COULD mean it all fit, or there was more. If we get that - double buf size and try again
@@ -73,7 +72,7 @@ String Execution::GetEXEPath ()
     }
     Assert (n < buf.GetSize ());
     *(buf.begin () + n) = '\0';
-    return buf.begin ();
+    return String::FromTString (buf.begin ());
 #else
     AssertNotImplemented ();
     return String ();
