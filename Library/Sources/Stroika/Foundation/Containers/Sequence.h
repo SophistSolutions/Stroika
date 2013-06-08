@@ -156,6 +156,9 @@ namespace   Stroika {
                  */
                 Sequence ();
                 Sequence (const Sequence<T>& s);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Sequence (const std::initializer_list<T>& s);
+#endif
                 template <typename CONTAINER_OF_T>
                 explicit Sequence (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR>

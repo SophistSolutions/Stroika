@@ -422,6 +422,19 @@
 
 
 
+#ifndef qCompilerAndStdLib_Supports_initializer_lists
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define qCompilerAndStdLib_Supports_initializer_lists   1
+#endif
+#endif
+
+
+
+
+
+
 #ifndef qCompilerAndStdLib_Supports_TempalteAlias_n2258
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER > _MS_VS_2k12_VER_)

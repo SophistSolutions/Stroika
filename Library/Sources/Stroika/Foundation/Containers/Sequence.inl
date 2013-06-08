@@ -30,6 +30,14 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (s))
             {
             }
+#if     qCompilerAndStdLib_Supports_initializer_lists
+            template    <typename T>
+            inline  Sequence<T>::Sequence (const std::initializer_list<T>& s)
+                : inherited (Concrete::mkSequence_Default<T> ())
+            {
+                InsertAll (0, s);
+            }
+#endif
             template    <typename T>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
@@ -225,19 +233,19 @@ namespace   Stroika {
             {
                 RemoveAll ();
             }
-#if 0
             template    <typename T>
             inline  Sequence<T>& Sequence<T>::operator+= (T item)
             {
-                Add (item);
-                return (*this);
+                Append (item);
+                return *this;
             }
             template    <typename T>
-            inline  Bag<T>& Bag<T>::operator+= (const Bag<T>& items)
+            inline  Sequence<T>& Sequence<T>::operator+= (const Sequence<T>& items)
             {
-                Add (items);
-                return (*this);
+                AppendAll (items);
+                return *this;
             }
+#if 0
             template    <typename T>
             inline  Bag<T>& Bag<T>::operator-= (T item)
             {
