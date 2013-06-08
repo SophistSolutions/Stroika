@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Frameworks/Service/Main.h"
 
+
 using   namespace std;
 
 using   namespace Stroika::Foundation;
@@ -27,15 +28,51 @@ using   Containers::Sequence;
 #define     qUseLogger 1
 #endif
 
+/*
+ *  Most likely would want todo this. It has nothing todo with the service framework, but often desirable
+ *  in service apps.
+ */
+#ifndef     qRegisterFatalErrorHandlers
+#define     qRegisterFatalErrorHandlers 1
+#endif
+
+
+
+
 
 #if     qUseLogger
 #include    "Stroika/Foundation/Execution/Logger.h"
-#endif
-
-
-#if     qUseLogger
 using   Execution::Logger;
 #endif
+
+
+#if     qRegisterFatalErrorHandlers
+#include    "Stroika/Foundation/Debug/Fatal.h"
+#if     qPlatform_Windows
+#include    "Stroika/Foundation/Execution/Platform/Windows/Exception.h"
+#include    "Stroika/Foundation/Execution/Platform/Windows/StructuredException.h"
+#endif
+#endif
+
+
+
+
+
+
+
+#if     qRegisterFatalErrorHandlers
+namespace   {
+    void    _FatalErorrHandler_ (const Characters::TChar* msg)
+    {
+        DbgTrace (TSTR ("Fatal Error %s encountered"), msg);
+#if     qUseLogger
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::TString2NarrowSDK (msg).c_str ());
+#endif
+    }
+}
+#endif
+
+
 
 
 /// *** TODO ****
@@ -75,10 +112,10 @@ namespace {
     void    ShowUsage_ ()
     {
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "		/* Service/Control Function: Start the service */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "		/* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "			/* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "			/* Service/Control Function: Stop the service */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "		/* Run this process as service (doesnt exit til serice done ...) */" << endl;
-        cerr << "\t--status					/* Service/Control Function: Print status of running service */ " << endl;
+        cerr << "\t--Status							/* Service/Control Function: Print status of running service */ " << endl;
 
         // cleanup...
         cerr << "[--restart] ";
@@ -91,6 +128,14 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+#if     qRegisterFatalErrorHandlers
+#if qPlatform_Windows
+    Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
+    Execution::Platform::Windows::StructuredException::RegisterHandler ();      // map win32 structured exceptions to our own C++ class (mainly for better
+#endif
+    Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
+#endif
+
 #if     qUseLogger && qHas_Syslog
     Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
 #endif
