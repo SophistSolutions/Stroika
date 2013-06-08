@@ -18,6 +18,11 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
+/*
+ ********************************************************************************
+ ******************* Execution::InvalidCommandLineArgument **********************
+ ********************************************************************************
+ */
 Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
     : StringException (L"Invalid Command Argument")
     , fMessage ()
@@ -44,6 +49,11 @@ Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String&
 
 
 
+/*
+ ********************************************************************************
+ ************************* Execution::ParseCommandLine **************************
+ ********************************************************************************
+ */
 Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);
@@ -68,6 +78,11 @@ Sequence<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
 
 
 
+/*
+ ********************************************************************************
+ ****************** Execution::MatchesCommandLineArgument ***********************
+ ********************************************************************************
+ */
 namespace   {
     String  Simplify2Compare_ (const String& actualArg)
     {
@@ -110,29 +125,11 @@ bool    Execution::MatchesCommandLineArgument (const String& actualArg, const St
 
 bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern)
 {
-#if 1
     return argList.ApplyUntilTrue ([matchesArgPattern] (String i) ->bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
-#else
-    for (String i : argList) {
-        if (MatchesCommandLineArgument (i, matchesArgPattern)) {
-            return true;
-        }
-    }
-    return false;
-#endif
 }
 
 bool    Execution::MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult)
 {
-#if 1
     return argList.ApplyUntilTrue ([matchesArgPattern, associatedArgResult] (String i) -> bool { return Execution::MatchesCommandLineArgument (i, matchesArgPattern); });
-#else
-    for (String i : argList) {
-        if (MatchesCommandLineArgument (i, matchesArgPattern, associatedArgResult)) {
-            return true;
-        }
-    }
-    return false;
-#endif
 }
 
