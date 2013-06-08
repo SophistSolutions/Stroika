@@ -5,17 +5,17 @@ include	../Library/SharedMakeVariables.mk
 
 
 RelPathToStroikaDevRoot	=	../../../../
-SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SampleService/
+SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SimpleService/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Samples_SampleService
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Samples_SimpleService
 
 
 VPATH	=			$(SrcDir)/Sources/
 
 
 Objs	=	\
-	$(ObjDir)SampleService.o\
+	$(ObjDir)SimpleService.o\
 
 
 all:	$(TARGETEXE)

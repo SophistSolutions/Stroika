@@ -233,8 +233,8 @@ sub MakeUnixDirs {
 
 		mkdir "$intermediateFiles/$platform/$target/Samples_SSDPClient";
 		system ("ln -s ../../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SSDPClient/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Samples_SampleService";
-		system ("ln -s ../../../../Samples/SampleService/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SampleService/Makefile");
+		mkdir "$intermediateFiles/$platform/$target/Samples_SimpleService";
+		system ("ln -s ../../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SimpleService/Makefile");
 
 		foreach $tst (GetAllTests ()) {
 			mkdir "$intermediateFiles/$platform/$target/Test$tst";

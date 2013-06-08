@@ -54,7 +54,7 @@
     <ProjectGuid>{2E2192CA-3B55-45AD-A66A-3E43FAB9B42C}</ProjectGuid>
     <RootNamespace>Test</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <ProjectName>SampleService</ProjectName>
+    <ProjectName>SimpleService</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'" Label="Configuration">
@@ -165,36 +165,36 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">true</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SampleService\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SampleService\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\Builds\Windows\$(Configuration)\Samples-SimpleService\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(ProjectDir)..\..\..\..\IntermediateFiles\Windows\$(Configuration)\Samples-SimpleService\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">false</LinkIncremental>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">false</LinkIncremental>
@@ -485,7 +485,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Sources\SampleService.cpp">
+    <ClCompile Include="..\..\Sources\SimpleService.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">..\Library\Sources;..\..\Library\Sources;..\..\..\Library\Sources;..\..\..\..\Library\Sources;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
