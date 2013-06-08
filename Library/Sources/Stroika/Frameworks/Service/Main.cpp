@@ -632,7 +632,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     , fUnusedArguments ()
 {
     for (String si : args) {
-        static  pair<String, MajorOperation> kPairs_[] = {
+        static  const	pair<String, MajorOperation> kPairs_[] = {
             pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
             pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
             pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
@@ -672,7 +672,7 @@ bool    Main::IApplicationRep::HandleCommandLineArgument (const String& s)
 
 void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
 {
-    while (not * stopping) {
+    while (not (*stopping)) {
         realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
         checkStopEvent->Wait();
     }
