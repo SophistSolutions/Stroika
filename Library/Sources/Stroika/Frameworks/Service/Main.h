@@ -25,6 +25,8 @@
  *
  * TODO:
  *
+ *      @todo   Add --daemonize option - as of often handy in UNIX - to detach...
+ *
  *      @todo   Add ShowUsage () method to IApp... and to service (vectoring) - and use that
  *              to oimplemtn usage behvairo genericlaly. And do 'invalid-param' exAborttion
  *              and use that for usage - to trigger usage.

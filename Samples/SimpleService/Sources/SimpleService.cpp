@@ -28,12 +28,12 @@ using   Containers::Sequence;
 #endif
 
 
-#if qUseLogger
+#if     qUseLogger
 #include    "Stroika/Foundation/Execution/Logger.h"
 #endif
 
 
-#if qUseLogger
+#if     qUseLogger
 using   Execution::Logger;
 #endif
 
@@ -74,10 +74,13 @@ namespace {
 namespace {
     void    ShowUsage_ ()
     {
-        cerr << "Usage: Sample-SimpleService ";
-        cerr << "[--start] ";
-        cerr << "[--stop] ";
-        cerr << "[--status] ";
+        cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "		/* Service/Control Function: Start the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "		/* Service/Control Function: Stop the service */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "		/* Run this process as service (doesnt exit til serice done ...) */" << endl;
+        cerr << "\t--status					/* Service/Control Function: Print status of running service */ " << endl;
+
+        // cleanup...
         cerr << "[--restart] ";
         cerr << "[--run2Idle] ";
         cerr << "[--help] ";
