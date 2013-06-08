@@ -20,7 +20,8 @@
 #if     qPlatform_Windows
 #include    "Platform/Windows/Exception.h"
 #endif
-#include    "../../Foundation/Execution/ErrNoException.h"
+#include    "../Execution/ErrNoException.h"
+#include    "../IO/FileSystem/FileUtils.h"
 #include    "../Streams/BasicBinaryInputOutputStream.h"
 #include    "../Streams/TextOutputStreamBinaryAdapter.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
@@ -615,7 +616,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
         Execution::DoThrow (Execution::StringException (L"invalid command argument to DetachedProcessRunner"));
     }
     exe = tmp[0];
-    for (auto i = tmp.begin () + 1; i != tmp.end (); ++i) {
+    for (auto i = tmp.begin (); i != tmp.end (); ++i) {
         args.Append (*i);
     }
     return DetachedProcessRunner (exe, args);
@@ -623,6 +624,23 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
+    IO::FileSystem::CheckFileAccess (executable.AsTString (), true, false);
+
+    Sequence<String>    useArgs;
+    if (args.empty ()) {
+        useArgs.Append (executable);
+    }
+    else {
+        for (auto i = args.begin (); i != args.end (); ++i) {
+            if (i == args.begin () and i->empty ()) {
+                useArgs.Append (executable);
+            }
+            else {
+                useArgs.Append (*i);
+            }
+        }
+    }
+
 #if     qPlatform_Windows
     PROCESS_INFORMATION processInfo;
     memset (&processInfo, 0, sizeof (processInfo));
@@ -643,7 +661,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         bool    bInheritHandles     =   true;
         TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
         cmdLineBuf[0] = '\0';
-        for (String i : args) {
+        for (String i : useArgs) {
             //quickie/weak impl...
             if (cmdLineBuf[0] != '\0') {
                 Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), TSTR(" "));
@@ -676,7 +694,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         // must map args to TString, and then right lifetime c-string pointers
         vector<TString> tmpTStrArgs;
         tmpTStrArgs.reserve (args.size ());
-        for (String i : args) {
+        for (String i : useArgs) {
             tmpTStrArgs.push_back (i.AsTString ());
         }
         vector<char*>   useArgsV;

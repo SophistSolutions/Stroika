@@ -188,6 +188,13 @@ namespace   Stroika {
              *  Setup stdin/out/error to refer to devnull (or closed), and then run the given process. This throws
              *  exceptions on failure to run and returns the created process id, but doesn't wait to monitor
              *  process progress.
+             *
+             *  For the commmandLine overload, it is TBD how the commandLine will be decoded (@todo) - maybe
+             *  parse it here systematically, or maybe leave it to OS to do (sh or windows CreateProcess API).
+             *
+             *  For the executable/args overload, the first member of args will be assumed to be the application
+             *  name (argv[0] - which CAN differ from the path to the executable). If this is omitted or the empty
+             *  string, it will be generated automatically.
              */
             pid_t   DetachedProcessRunner (const String& commandLine);
             pid_t   DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args);
