@@ -70,9 +70,21 @@ namespace {
     };
 }
 
-#if 0
-usage --start, or --stop or --status or --restart
-#endif
+
+namespace {
+	void	ShowUsage_ ()
+	{
+		cerr << "Usage: Sample-SimpleService ";
+		cerr << "[--start] ";
+		cerr << "[--stop] ";
+		cerr << "[--status] ";
+		cerr << "[--restart] ";
+		cerr << "[--run2Idle] ";
+		cerr << "[--help] ";
+		cerr << endl;
+	}
+}
+
 
 int main (int argc, const char* argv[])
 {
@@ -91,7 +103,7 @@ int main (int argc, const char* argv[])
         return EXIT_SUCCESS;
     }
     else if (Execution::MatchesCommandLineArgument (args, L"help")) {
-        //ShowUsage_ ();
+        ShowUsage_ ();
         return EXIT_SUCCESS;
     }
     try {
