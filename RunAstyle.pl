@@ -12,6 +12,18 @@ if (-e "$astyleEXE_GCC") {
 	$astyleEXE	=	$astyleEXE_GCC;
 }
 
+# avoid quirks - ubuntu stores find in one place, and windows has own find, and cygin stores
+# elsewhere... Sigh...
+my $findEXE	=	"find";
+if (-e "/bin/find") {
+	$findEXE	=	"/bin/find";
+}
+if (-e "/usr/bin/find") {
+	$findEXE	=	"/usr/bin/find";
+}
+
+
+
 my $runFile;
 
 my $aStyleArgs = "";
