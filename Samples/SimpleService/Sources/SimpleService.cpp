@@ -72,24 +72,24 @@ namespace {
 
 
 namespace {
-	void	ShowUsage_ ()
-	{
-		cerr << "Usage: Sample-SimpleService ";
-		cerr << "[--start] ";
-		cerr << "[--stop] ";
-		cerr << "[--status] ";
-		cerr << "[--restart] ";
-		cerr << "[--run2Idle] ";
-		cerr << "[--help] ";
-		cerr << endl;
-	}
+    void    ShowUsage_ ()
+    {
+        cerr << "Usage: Sample-SimpleService ";
+        cerr << "[--start] ";
+        cerr << "[--stop] ";
+        cerr << "[--status] ";
+        cerr << "[--restart] ";
+        cerr << "[--run2Idle] ";
+        cerr << "[--help] ";
+        cerr << endl;
+    }
 }
 
 
 int main (int argc, const char* argv[])
 {
 #if     qUseLogger && qHas_Syslog
-    Logger::Get ().SetAppender (Logger::SysLogAppender (L"Stroika-Sample-SimpleService"));
+    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
 #endif
 
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);

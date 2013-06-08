@@ -14,6 +14,17 @@
 
 
 
+/**
+ *  \file
+ *
+ *  TODO:
+ *      @todo   EITHER somehow automatically be smart about filtering out logging that misses log level filter,
+ *              or add explicit data member saying to skip logging stuff below a given level. We probably need todo
+ *              the later, and let the former be done by the backend appender.
+ */
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
@@ -56,8 +67,8 @@ namespace   Stroika {
 
             public:
                 class   IAppenderRep;
-            private:
-                shared_ptr<IAppenderRep> fRep_;
+            public:
+                typedef shared_ptr<IAppenderRep>    IAppenderRepPtr;
 
             public:
 #if     qHas_Syslog
@@ -74,11 +85,11 @@ namespace   Stroika {
                 Logger ();
 
             public:
-                nonvirtual  shared_ptr<IAppenderRep> GetAppender () const;
-                nonvirtual  void                     SetAppender (const shared_ptr<IAppenderRep>& rep);
+                nonvirtual  IAppenderRepPtr GetAppender () const;
+                nonvirtual  void            SetAppender (const IAppenderRepPtr& rep);
 
             private:
-                shared_ptr<IAppenderRep> fAppender_;
+                IAppenderRepPtr fAppender_;
 
             public:
 
