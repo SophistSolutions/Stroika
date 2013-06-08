@@ -31,11 +31,19 @@ namespace   Stroika {
 
 
             /**
+             *  @see GetEXEDir
+             *
+             *  The variant returning TString is useful especially when you need to avoid other Stroika
+             *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
              */
             TString GetEXEDirT ();
 
 
             /**
+             *  @see GetEXEPath
+             *
+             *  The variant returning TString is useful especially when you need to avoid other Stroika
+             *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
              */
             TString GetEXEPathT ();
 
