@@ -8,6 +8,8 @@
 #if     qPlatform_POSIX
 #include    <sys/types.h>
 #include    <unistd.h>
+#include    <sys/stat.h>
+#include    <fcntl.h>
 #endif
 
 #include    "../Characters/CString/Utilities.h"
@@ -672,17 +674,20 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         dup2 (id, 2);
 
         // must map args to TString, and then right lifetime c-string pointers
-        vector<TString> tmpArgs;
+        vector<TString> tmpTStrArgs;
         tmpTStrArgs.reserve (args.size ());
         for (String i : args) {
             tmpTStrArgs.push_back (i.AsTString ());
         }
         vector<char*>   useArgsV;
         for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {
-            useArgsV.push_back (i->c_str ());
+            // POSIX API takes non-const strings, but I'm pretty sure this is safe, and I cannot imagine
+            // their overwriting these strings!
+            // -- LGP 2013-06-08
+            useArgsV.push_back (const_cast<char*> (i->c_str ()));
         }
         useArgsV.push_back (nullptr);
-        int r   =   execv (thisEXEPath.c_str (), thisEXEPath.c_str (), std::begin (useArgsV));
+        int r   =   execv (thisEXEPath.c_str (), std::addressof (*std::begin (useArgsV)));
         // no practical way to return this failure...
         // UNCLEAR if we want tod exit or _exit  () - avoiding static DTORS
         _exit (-1);
