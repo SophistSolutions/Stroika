@@ -51,29 +51,31 @@ if ($runFile == "") {
 	## at end cutoff on cygwin/Windows 8...
 	##
 	
-	my $aStyleFileTargets = "";
-	$aStyleFileTargets .= "Library/*.cpp ";
-	$aStyleFileTargets .= "Library/*.h ";
-	$aStyleFileTargets .= "Library/*.inl ";
-	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
+	$aStyleArgs = "$aStyleArgs --formatted ";
 	
-	my $aStyleFileTargets = "";
-	$aStyleFileTargets .= "Samples/*.cpp ";
-	$aStyleFileTargets .= "Samples/*.h ";
-	$aStyleFileTargets .= "Samples/*.inl ";
-	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
-	
-	my $aStyleFileTargets = "";
-	$aStyleFileTargets .= "Tests/*.cpp ";
-	$aStyleFileTargets .= "Tests/*.h ";
-	$aStyleFileTargets .= "Tests/*.inl ";
-	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
-	
-	my $aStyleFileTargets = "";
-	$aStyleFileTargets .= "Tools/*.cpp ";
-	$aStyleFileTargets .= "Tools/*.h ";
-	$aStyleFileTargets .= "Tools/*.inl ";
-	system ("$astyleEXE $aStyleArgs --recursive $aStyleFileTargets");
+	print ("Library...\n");
+	system ("/bin/find Library -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Library -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Library -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	print ("           ...done\n");
+
+	print ("Samples...\n");
+	system ("/bin/find Samples -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Samples -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Samples -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	print ("           ...done\n");
+
+	print ("Tests...\n");
+	system ("/bin/find Tests -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Tests -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Tests -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	print ("           ...done\n");
+
+	print ("Tools...\n");
+	system ("/bin/find Tools -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Tools -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("/bin/find Tools -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	print ("           ...done\n");
 }
 else {
 	system ("$astyleEXE $aStyleArgs < $runFile > $runFile.XXX");
