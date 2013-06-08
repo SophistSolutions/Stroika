@@ -17,6 +17,33 @@ using   namespace   Stroika::Foundation::Execution;
 
 
 
+
+Execution::InvalidCommandLineArgument::InvalidCommandLineArgument ()
+    : StringException (L"Invalid Command Argument")
+    , fMessage ()
+    , fArgument ()
+{
+}
+Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message)
+    : StringException (message.As<wstring> ())
+    , fMessage (message)
+    , fArgument ()
+{
+}
+Execution::InvalidCommandLineArgument::InvalidCommandLineArgument (const String& message, const String& argument)
+    : StringException (message.As<wstring> ())
+    , fMessage (message)
+    , fArgument (argument)
+{
+}
+
+
+
+
+
+
+
+
 Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
 {
     Require (argc >= 0);

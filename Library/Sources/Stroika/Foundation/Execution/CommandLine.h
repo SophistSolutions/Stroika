@@ -10,6 +10,7 @@
 #include    "../Characters/TChar.h"
 #include    "../Characters/String.h"
 #include    "../Containers/Sequence.h"
+#include    "../Execution/StringException.h"
 
 
 
@@ -49,6 +50,20 @@ namespace   Stroika {
             bool    MatchesCommandLineArgument (const String& actualArg, const String& matchesArgPattern, String* associatedArgResult);
             bool    MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern);
             bool    MatchesCommandLineArgument (const Iterable<String>& argList, const String& matchesArgPattern, String* associatedArgResult);
+
+
+            /**
+             *  TODO - REFACTOR/CLEANUP/BETTER ORGNAIZE EXCEPTIONS!!!!
+             */
+            class   InvalidCommandLineArgument : public Execution::StringException {
+            public:
+                InvalidCommandLineArgument ();
+                InvalidCommandLineArgument (const String& message);
+                InvalidCommandLineArgument (const String& message, const String& argument);
+            public:
+                String  fMessage;
+                String  fArgument;
+            };
 
 
         }
