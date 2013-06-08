@@ -15,8 +15,10 @@
 /**
  * TODO:
  *
- *      o   See Stroika 1.0. It has some stuff about breaking paths into components. I'm not sure I like that design -but its woth looking
- *          at more closely. We need something like that here.
+ *      @todo   Redo these APIs using String instead of TString!
+ *
+ *      @todo   See Stroika 1.0. It has some stuff about breaking paths into components. I'm not sure I like that design -but its woth looking
+ *              at more closely. We need something like that here.
  *              -- LGP 2011-09-29
  *
  *
