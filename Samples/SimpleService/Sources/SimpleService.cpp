@@ -130,14 +130,14 @@ int main (int argc, const char* argv[])
 #if     qRegisterFatalErrorHandlers
 #if qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
-    Execution::Platform::Windows::StructuredException::RegisterHandler ();      // map win32 structured exceptions to our own C++ class (mainly for better
+    Execution::Platform::Windows::StructuredException::RegisterHandler ();
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
 #endif
 
 #if     qUseLogger
 #if     qHas_Syslog
-    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Main::LoggerServiceWrapper (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")))));
+    Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
 #elif   qPlatform_Windows
     //  -- NYI as of 2013-06-08
     //Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Main::LoggerServiceWrapper (Logger::IAppenderRepPtr (new Logger::WindowsEventLogAppender (L"Stroika-Sample-SimpleService")))));
@@ -150,6 +150,9 @@ int main (int argc, const char* argv[])
         cerr << "Warning: RunTilIdleService not really done correctly yet - no notion of idle" << endl;
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
+#if     qUseLogger
+    serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::LoggerServiceWrapper (serviceIntegrationRep));
+#endif
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     if (Execution::MatchesCommandLineArgument (args, L"status")) {
         cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
