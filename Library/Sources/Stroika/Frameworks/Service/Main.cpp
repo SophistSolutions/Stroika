@@ -443,7 +443,7 @@ namespace   {
                 return true;
             }
 
-            TString commandLine2ExecForSvc = _T ("\"") + Execution::GetEXEPath () + _T ("\"") + _T (" /RunAsService");
+            TString commandLine2ExecForSvc = _T ("\"") + Execution::GetEXEPathT () + _T ("\"") + _T (" /RunAsService");
             SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
             if (hSCM == NULL) {
                 Logger::EmitMessage (Logger::eError_MT, "Could not open Service Manager");

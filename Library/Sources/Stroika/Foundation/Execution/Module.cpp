@@ -32,7 +32,20 @@ using   namespace   Stroika::Foundation::Execution;
  */
 String Execution::GetEXEDir ()
 {
-    return String::FromTString (IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ()));
+    return String::FromTString (GetEXEDirT ());
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ***************************** Execution::GetEXEDirT *****************************
+ ********************************************************************************
+ */
+TString Execution::GetEXEDirT ()
+{
+    return IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ());
 }
 
 
@@ -46,6 +59,18 @@ String Execution::GetEXEDir ()
  */
 String Execution::GetEXEPath ()
 {
+    return String::FromTString (GetEXEPathT ());
+}
+
+
+
+/*
+ ********************************************************************************
+ **************************** Execution::GetEXEPathT ****************************
+ ********************************************************************************
+ */
+TString Execution::GetEXEPathT ()
+{
     // See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
     //      Mac OS X: _NSGetExecutablePath() (man 3 dyld)
     //      Linux: readlink /proc/self/exe
@@ -58,7 +83,7 @@ String Execution::GetEXEPath ()
     Characters::TChar   buf[MAX_PATH];
     memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
-    return String::FromTString (buf);
+    return buf;
 #elif   qPlatform_POSIX && qSupport_Proc_Filesystem
     // readlink () isn't clear about finding the right size. THe only way to tell it wasn't enuf (maybe) is if all the
     // bytes passed in are used. That COULD mean it all fit, or there was more. If we get that - double buf size and try again
@@ -72,10 +97,10 @@ String Execution::GetEXEPath ()
     }
     Assert (n < buf.GetSize ());
     *(buf.begin () + n) = '\0';
-    return String::FromTString (buf.begin ());
+    return buf.begin ();
 #else
     AssertNotImplemented ();
-    return String ();
+    return TString ();
 #endif
 }
 

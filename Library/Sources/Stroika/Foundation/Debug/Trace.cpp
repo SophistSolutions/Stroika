@@ -184,7 +184,7 @@ namespace   {
         // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
         TString mfname;
         {
-            mfname = Execution::GetEXEPath ();
+            mfname = Execution::GetEXEPathT ();
             size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
             if (i != TString::npos) {
                 mfname = mfname.substr (i + 1);
