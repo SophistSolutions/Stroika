@@ -22,6 +22,7 @@
 #endif
 #include    "../Execution/ErrNoException.h"
 #include    "../IO/FileSystem/FileUtils.h"
+#include    "../IO/FileSystem/PathName.h"
 #include    "../Streams/BasicBinaryInputOutputStream.h"
 #include    "../Streams/TextOutputStreamBinaryAdapter.h"
 #include    "../Streams/TextInputStreamBinaryAdapter.h"
@@ -628,13 +629,13 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
 
     Sequence<String>    useArgs;
     if (args.empty ()) {
-        useArgs.Append (executable);
+        useArgs.Append (String::FromTString (IO::FileSystem::GetFileBaseName (executable.AsTString ())));
     }
     else {
         bool firstTimeThru = true;
         for (auto i = args.begin (); i != args.end (); ++i) {
             if (firstTimeThru and i->empty ()) {
-                useArgs.Append (executable);
+                useArgs.Append (String::FromTString (IO::FileSystem::GetFileBaseName (executable.AsTString ())));
             }
             else {
                 useArgs.Append (*i);
