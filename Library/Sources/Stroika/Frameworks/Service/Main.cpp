@@ -1086,37 +1086,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
     }
 
-#if 1
-    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {(String (L"--") + String (CommandNames::kRunAsService))}));
-#else
-    Characters::TString thisEXEPath =   Execution::GetEXEPath ();
-    pid_t   pid =   fork ();
-    Execution::ThrowErrNoIfNegative (pid);
-    if (pid == 0) {
-        // @todo USE Execution::DetachedProcessRunner()....
-
-        /*
-         * Very primitive code to detatch the console. No error checking cuz frankly we dont care.
-         *
-         * Possibly should close more descriptors?
-         */
-        for (int i = 0; i < 3; ++i) {
-            ::close (i);
-        }
-        int id = open ("/dev/null", O_RDWR);
-        dup2 (id, 0);
-        dup2 (id, 1);
-        dup2 (id, 2);
-
-        int r   =   execl (thisEXEPath.c_str (), thisEXEPath.c_str (), (String (L"--") + String (CommandNames::kRunAsService)).AsTString ().c_str (), nullptr);
-        exit (-1);
-    }
-    else {
-        // parent - in this case - no reason to wait - our work is done... Future versions might wait to
-        // see if the 'pidfile' got created....
-        //      --LGP 2011-09-23
-    }
-#endif
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String (L"--") + String (CommandNames::kRunAsService))}));
 
     while (not _IsServiceActuallyRunning ()) {
         Execution::Sleep (0.5);
@@ -1293,9 +1263,10 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
 
 #if      qCompilerAndStdLib_Supports_initializer_lists
-    Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {(String (L"--") + String (CommandNames::kRunAsService))}));
+    Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String (L"--") + String (CommandNames::kRunAsService))}));
 #else
     Sequence<String>    tmp;
+    tmp += String ();
     tmp += (String (L"--") + String (CommandNames::kRunAsService));
     Execution::DetachedProcessRunner (Execution::GetEXEPath (), tmp);
 #endif
