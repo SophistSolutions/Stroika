@@ -68,6 +68,16 @@ int main (int argc, const char* argv[])
         serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::RunTilIdleService ());
     }
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
+#if 1
+    if (Execution::MatchesCommandLineArgument (args, L"status")) {
+        cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+        return EXIT_SUCCESS;
+    }
+    else if (Execution::MatchesCommandLineArgument (args, L"help")) {
+        //ShowUsage_ ();
+        return EXIT_SUCCESS;
+    }
+#else
     if (args.ApplyUntilTrue ([] (const String & i) { return Execution::MatchesCommandLineArgument (i, L"status"); })) {
         cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
         return EXIT_SUCCESS;
@@ -76,6 +86,7 @@ int main (int argc, const char* argv[])
         //ShowUsage_ ();
         return EXIT_SUCCESS;
     }
+#endif
     try {
         m.Run (args);
     }
