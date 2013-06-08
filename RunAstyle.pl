@@ -66,27 +66,27 @@ if ($runFile == "") {
 	$aStyleArgs = "$aStyleArgs --formatted ";
 	
 	print ("Library...\n");
-	system ("/bin/find Library -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Library -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Library -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Library -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Library -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Library -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
 	print ("Samples...\n");
-	system ("/bin/find Samples -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Samples -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Samples -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Samples -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Samples -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Samples -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
 	print ("Tests...\n");
-	system ("/bin/find Tests -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Tests -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Tests -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tests -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tests -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tests -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
 	print ("Tools...\n");
-	system ("/bin/find Tools -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Tools -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
-	system ("/bin/find Tools -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tools -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tools -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
+	system ("$findEXE Tools -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 }
 else {
