@@ -1086,6 +1086,9 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         Execution::DoThrow (Execution::StringException (L"Cannot Start service because its already running"));
     }
 
+#if 1
+    (void)Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {(String (L"--") + String (CommandNames::kRunAsService))}));
+#else
     Characters::TString thisEXEPath =   Execution::GetEXEPath ();
     pid_t   pid =   fork ();
     Execution::ThrowErrNoIfNegative (pid);
@@ -1113,6 +1116,7 @@ void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
         // see if the 'pidfile' got created....
         //      --LGP 2011-09-23
     }
+#endif
 
     while (not _IsServiceActuallyRunning ()) {
         Execution::Sleep (0.5);
