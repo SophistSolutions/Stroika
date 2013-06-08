@@ -19,6 +19,24 @@ using   namespace Stroika::Frameworks::Service;
 using   Containers::Sequence;
 
 
+/*
+ *  Almost always would want to use logger with a service. But demarcate so clear what is 'service' demo
+ *  and what is logger demo.
+ */
+#ifndef     qUseLogger
+#define     qUseLogger 1
+#endif
+
+
+#if qUseLogger
+#include    "Stroika/Foundation/Execution/Logger.h"
+#endif
+
+
+#if qUseLogger
+using   Execution::Logger;
+#endif
+
 
 /// *** TODO ****
 /// add option to log to LOGGER instead of stderr!!!
@@ -58,6 +76,10 @@ usage --start, or --stop or --status or --restart
 
 int main (int argc, const char* argv[])
 {
+#if     qUseLogger && qHas_Syslog
+    Logger::Get ().SetAppender (Logger::SysLogAppender (L"Stroika-Sample-SimpleService"));
+#endif
+
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
@@ -76,14 +98,25 @@ int main (int argc, const char* argv[])
         m.Run (args);
     }
     catch (const std::exception& e) {
+#if     qUseLogger
+        // @todo - WRONG - GENERICALLYT HANLDLE e.wwhat() codepage issue better
+        // not sure what codepage to use for convert???
+        Logger::Get ().Log (Logger::Priority::eError, Characters::NarrowSDKStringToWide (e.what ()));
+#endif
         cerr << "FAILED: '" << e.what () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
+#if     qUseLogger
+        Logger::Get ().Log (Logger::Priority::eError, e.As<wstring> ());
+#endif
         cerr << "FAILED: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
+#if     qUseLogger
+        Logger::Get ().Log (Logger::Priority::eError, L"Unknown Exception...");
+#endif
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
     }
