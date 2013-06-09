@@ -516,6 +516,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.cpp">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Finally.cpp">
+      <Filter>Sources\Execution</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1197,6 +1200,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Algorithms\Jenkins.h">
       <Filter>Sources\Cryptography\Hash\Algorithms</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Finally.h">
+      <Filter>Sources\Execution</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1778,6 +1784,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\TODO.md">
       <Filter>Sources\Cryptography\Hash</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Finally.inl">
+      <Filter>Sources\Execution</Filter>
     </None>
   </ItemGroup>
 </Project>
