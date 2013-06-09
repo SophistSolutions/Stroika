@@ -8,13 +8,16 @@
 
 #include    <string>
 
+#include    "../Characters/String.h"
+
 #include    "Exceptions.h"
 
 
 
 /*
  * TODO:
- *          Consider if StringException should inherit from std::exception - and map its string value to 'what' char* value?
+ *          @todo   Consider if StringException should inherit from std::exception - and map its string value to 'what' char* value?
+ *                  Not sure of the answer - about what our base SB, but char* should be ddefined to be a c-string in the PlatformSDK string codepage!
  */
 
 
@@ -28,16 +31,18 @@ namespace   Stroika {
             public:
                 StringException (const wstring& reasonForError);
 
-                // Only implemented for wstring
+                // Only implemented for wstring, String
                 template    <typename T>
                 nonvirtual  T   As () const;
 
             private:
-                wstring fError;
+                wstring fError_;
             };
 
             template    <>
             wstring StringException::As () const;
+            template    <>
+            Characters::String StringException::As () const;
 
             template    <>
             void    _NoReturn_  DoThrow (const StringException& e2Throw);

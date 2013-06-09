@@ -16,15 +16,25 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            //  class   StringException
+
+            /*
+             ********************************************************************************
+             ******************************** StringException *******************************
+             ********************************************************************************
+             */
             inline  StringException::StringException (const wstring& reasonForError)
-                : fError (reasonForError)
+                : fError_ (reasonForError)
             {
             }
             template    <>
             inline  wstring StringException::As () const
             {
-                return fError;
+                return fError_;
+            }
+            template    <>
+            inline  Characters::String StringException::As () const
+            {
+                return fError_;
             }
 
 
