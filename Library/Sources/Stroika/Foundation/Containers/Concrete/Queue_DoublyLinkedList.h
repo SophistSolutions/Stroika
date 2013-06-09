@@ -46,8 +46,8 @@ namespace   Stroika {
                     Queue_DoublyLinkedList (const Queue_DoublyLinkedList<T>& q);
                     template <typename CONTAINER_OF_T>
                     explicit Queue_DoublyLinkedList (const CONTAINER_OF_T& q);
-                    template <typename COPY_FROM_ITERATOR>
-                    explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Queue_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     nonvirtual  Queue_DoublyLinkedList<T>& operator= (const Queue_DoublyLinkedList<T>& q);

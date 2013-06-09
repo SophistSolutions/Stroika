@@ -165,8 +165,8 @@ namespace   Stroika {
 #endif
                 template <typename CONTAINER_OF_T>
                 explicit Sequence (const CONTAINER_OF_T& s);
-                template <typename COPY_FROM_ITERATOR>
-                explicit Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Sequence (const _SharedPtrIRep& rep);
@@ -253,8 +253,8 @@ namespace   Stroika {
                  *  \brief Insert all the given items into this sequence, starting at offset 'i'.
                  */
                 nonvirtual  void    InsertAll (size_t i, const Iterable<T>& items);
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    InsertAll (size_t i, const CONTAINER_OF_T& s);
 

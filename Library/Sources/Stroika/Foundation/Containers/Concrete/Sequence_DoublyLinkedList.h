@@ -46,8 +46,8 @@ namespace   Stroika {
                     Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR>
-                    explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                     nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& s);
 

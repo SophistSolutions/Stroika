@@ -52,8 +52,8 @@ namespace   Stroika {
                 RequireNotNull (rep);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (Concrete::mkSequence_Default<T> ())
             {
                 Append (start, end);
@@ -135,8 +135,8 @@ namespace   Stroika {
                 return _GetRep ().Insert (i, &item, &item + 1);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            void    Sequence<T>::InsertAll (size_t i, COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 Require (i <= this->GetLength ());
                 size_t  insertAt = i;

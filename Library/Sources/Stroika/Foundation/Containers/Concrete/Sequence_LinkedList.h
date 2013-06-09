@@ -46,8 +46,8 @@ namespace   Stroika {
                     Sequence_LinkedList (const Sequence_LinkedList<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_LinkedList (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR>
-                    explicit Sequence_LinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Sequence_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     nonvirtual  Sequence_LinkedList<T>& operator= (const Sequence_LinkedList<T>& s);

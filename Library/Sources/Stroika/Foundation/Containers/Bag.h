@@ -110,8 +110,8 @@ namespace   Stroika {
                 Bag (const Bag<T>& b);
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& b);
-                template <typename COPY_FROM_ITERATOR>
-                explicit Bag (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Bag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Bag (const _SharedPtrIRep& rep);
@@ -135,8 +135,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
 
@@ -171,8 +171,8 @@ namespace   Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual  void    RemoveAll ();
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
 

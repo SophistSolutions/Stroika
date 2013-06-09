@@ -47,8 +47,8 @@ namespace   Stroika {
                 RequireNotNull (rep);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline Deque<T>::Deque (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline Deque<T>::Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast<const inherited&> (Concrete::mkDeque_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);

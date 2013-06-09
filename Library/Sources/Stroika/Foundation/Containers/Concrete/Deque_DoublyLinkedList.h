@@ -46,8 +46,8 @@ namespace   Stroika {
                     Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR>
-                    explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                     nonvirtual  Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& s);
 

@@ -47,8 +47,8 @@ namespace   Stroika {
                 RequireNotNull (rep);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline Set<T>::Set (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline Set<T>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
@@ -77,8 +77,8 @@ namespace   Stroika {
                 _GetRep ().Add (item);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            void    Set<T>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            void    Set<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
@@ -104,8 +104,8 @@ namespace   Stroika {
                 _GetRep ().Remove (i);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            void    Set<T>::RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            void    Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i);

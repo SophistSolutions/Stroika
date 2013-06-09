@@ -75,8 +75,8 @@ namespace   Stroika {
                 Queue (const Queue<T>& q);
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& q);
-                template <typename COPY_FROM_ITERATOR>
-                explicit Queue (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Queue (const _SharedPtrIRep& rep);

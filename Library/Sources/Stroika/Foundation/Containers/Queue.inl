@@ -50,8 +50,8 @@ namespace   Stroika {
                 RequireNotNull (rep);
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            inline Queue<T>::Queue (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);

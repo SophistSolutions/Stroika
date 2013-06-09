@@ -47,8 +47,8 @@ namespace   Stroika {
                     Stack_LinkedList (const Stack_LinkedList<T>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Stack_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
-                    template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Stack_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Stack_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
 
                 public:

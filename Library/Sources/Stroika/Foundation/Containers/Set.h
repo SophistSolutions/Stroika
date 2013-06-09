@@ -75,8 +75,8 @@ namespace   Stroika {
                 Set (const Set<T>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Set (const CONTAINER_OF_T& s);
-                template <typename COPY_FROM_ITERATOR>
-                explicit Set (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
                 explicit Set (const _SharedPtrIRep& rep);
@@ -97,8 +97,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& s);
 
@@ -109,8 +109,8 @@ namespace   Stroika {
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
             public:
-                template    <typename COPY_FROM_ITERATOR>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& s);
                 nonvirtual  void    RemoveAll ();

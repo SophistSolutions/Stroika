@@ -288,8 +288,8 @@ namespace   Stroika {
                     InsertAll (0, s);
                 }
                 template    <typename T>
-                template    <typename COPY_FROM_ITERATOR>
-                inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                inline Sequence_stdvector<T>::Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);

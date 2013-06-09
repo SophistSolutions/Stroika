@@ -46,8 +46,8 @@ namespace   Stroika {
                     Sequence_stdvector (const Sequence_stdvector<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_stdvector (const CONTAINER_OF_T& s);
-                    template <typename COPY_FROM_ITERATOR>
-                    explicit Sequence_stdvector (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                    template <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Sequence_stdvector (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
                 public:
                     nonvirtual  Sequence_stdvector<T>& operator= (const Sequence_stdvector<T>& s);

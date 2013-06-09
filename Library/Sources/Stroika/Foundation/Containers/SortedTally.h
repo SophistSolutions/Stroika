@@ -53,8 +53,8 @@ namespace   Stroika {
                 SortedTally (const SortedTally<T>& st);
                 template <typename CONTAINER_OF_T>
                 explicit SortedTally (const CONTAINER_OF_T& st);
-                template <typename COPY_FROM_ITERATOR>
-                explicit SortedTally (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end);
+                template <typename COPY_FROM_ITERATOR_OF_T>
+                explicit SortedTally (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 nonvirtual  SortedTally<T>& operator= (const SortedTally<T>& rhs);

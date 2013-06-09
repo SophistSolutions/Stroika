@@ -46,8 +46,8 @@ namespace   Stroika {
                     SortedSet_stdset (const SortedSet_stdset<T>& s);
                     template    <typename CONTAINER_OF_T>
                     explicit SortedSet_stdset (const CONTAINER_OF_T& cp);
-                    template    <typename COPY_FROM_ITERATOR_T>
-                    explicit SortedSet_stdset (COPY_FROM_ITERATOR_T start, COPY_FROM_ITERATOR_T end);
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
 
                 public:

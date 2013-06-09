@@ -74,8 +74,8 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            void    Bag<T>::AddAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            void    Bag<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
@@ -124,8 +124,8 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T>
-            template    <typename COPY_FROM_ITERATOR>
-            void    Bag<T>::RemoveAll (COPY_FROM_ITERATOR start, COPY_FROM_ITERATOR end)
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            void    Bag<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i);
