@@ -633,7 +633,14 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
     : fMajorOperation ()
     , fUnusedArguments ()
 {
+    bool didFirst = false;
     for (String si : args) {
+        if (not didFirst) {
+            // skip argv[0]
+            // @todo - nice to try args.SubSequence (1)....
+            didFirst = true;
+            continue;
+        }
         static  const   pair<String, MajorOperation> kPairs_[] = {
             pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
             pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
@@ -648,8 +655,13 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         bool    found   =   false;
         for (auto i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
-                found = true;
-                fMajorOperation = i.second;
+                if (found) {
+                    found = true;
+                    fMajorOperation = i.second;
+                }
+                else {
+                    Execution::DoThrow (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));
+                }
             }
         }
         if (not found) {
