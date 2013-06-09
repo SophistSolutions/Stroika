@@ -1317,8 +1317,9 @@ Main::State             Main::WindowsService::_GetState () const
 void    Main::WindowsService::_RunAsAservice ()
 {
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
+    TString svcName =   GetSvcName_ ();
     SERVICE_TABLE_ENTRY st[] = {
-        { const_cast<TCHAR*> (GetSvcName_ ().c_str ()), StaticServiceMain_ },
+        { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
         { nullptr, nullptr }
     };
     if (::StartServiceCtrlDispatcher (st) == 0) {
@@ -1333,7 +1334,6 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
 
     // SEE UNIX IMPL - WE WANT REST OF CRAP THEY HAVE THERE TOO (except using processrunner)
-
 
 #if      qCompilerAndStdLib_Supports_initializer_lists
     Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String (L"--") + String (CommandNames::kRunAsService))}));
