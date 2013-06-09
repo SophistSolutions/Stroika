@@ -261,14 +261,14 @@ int main (int argc, const char* argv[])
     }
     catch (const std::exception& e) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, String::FromNarrowSDKString (e.what ()));
+        Logger::Get ().Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
 #endif
         cerr << "FAILED: '" << e.what () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, e.As<String> ());
+        Logger::Get ().Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
 #endif
         cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
         return EXIT_FAILURE;
