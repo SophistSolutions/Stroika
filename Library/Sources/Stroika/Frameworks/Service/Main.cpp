@@ -656,12 +656,10 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
         for (auto i : kPairs_) {
             if (Execution::MatchesCommandLineArgument (si, i.first)) {
                 if (found) {
-                    found = true;
-                    fMajorOperation = i.second;
-                }
-                else {
                     Execution::DoThrow (Execution::InvalidCommandLineArgument (L"Only one major command-line option can be specified at a time"));
                 }
+                found = true;
+                fMajorOperation = i.second;
             }
         }
         if (not found) {
