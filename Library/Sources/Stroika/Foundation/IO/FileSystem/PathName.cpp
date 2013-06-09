@@ -193,6 +193,21 @@ TString FileSystem::GetFileBaseName (const TString& pathName)
     memset (ext, 0, sizeof (ext));
     ::_tsplitpath_s (useFName.c_str (), drive, dir, fname, ext);
     return fname;
+#elif   qPlatform_POSIX
+    TString tmp =   pathName;
+    {
+        size_t i = tmp.rfind ('/');
+        if (i != TString::npos) {
+            tmp =  tmp.substr (i + 1);
+        }
+    }
+    {
+        size_t i = tmp.find ('.');
+        if (i != TString::npos) {
+            tmp =  tmp.substr (0, i);
+        }
+    }
+    return tmp;
 #else
     AssertNotImplemented ();
 #endif
