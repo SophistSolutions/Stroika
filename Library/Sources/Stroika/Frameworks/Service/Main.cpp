@@ -751,7 +751,6 @@ Main::WindowsService*       Main::WindowsService::s_SvcRunningTHIS_ =   nullptr;
 
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
-    , fStopServiceEvent_ ()
     , fServiceStatusHandle_ (nullptr)
     , fServiceStatus_ ()
 {
@@ -883,10 +882,28 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
 void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
-    AssertNotImplemented ();    // dont think fStopServiceEvent_ is even needed anyhow..
-    // NO - use same stuff from service control mgr - used in uninstall
-    SetServiceStatus_ (SERVICE_STOP_PENDING);
-    fStopServiceEvent_.Set ();
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+
+    TString svcName = GetSvcName_ ();
+    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), SERVICE_STOP | DELETE);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Finally cleanup2 ([hService] () {
+        ::CloseServiceHandle (hService);
+    });
+
+    {
+        SERVICE_STATUS status;
+        if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
+            DWORD e = ::GetLastError ();
+            if (e != ERROR_SERVICE_NOT_ACTIVE) {
+                Execution::Platform::Windows::Exception::DoThrow (e);
+            }
+        }
+    }
 }
 
 void    Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)

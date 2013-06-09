@@ -679,9 +679,6 @@ namespace   Stroika {
                 bool    fMustReReadConfig;
 
             private:
-                bool    fStopping_; // set to true externally (from other thread) and MainLoop should terminate itself cleanly
-
-            private:
                 Execution::Thread           fRunThread_;
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -718,7 +715,6 @@ namespace   Stroika {
             private:
                 static  WindowsService*     s_SvcRunningTHIS_;
                 Execution::Thread           fRunThread_;
-                Execution::Event            fStopServiceEvent_;
                 SERVICE_STATUS_HANDLE       fServiceStatusHandle_;      // nullptr if invalid - not INVALID_HANDLE
                 SERVICE_STATUS              fServiceStatus_;
                 shared_ptr<IApplicationRep> fAppRep_;
