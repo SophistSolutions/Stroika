@@ -773,7 +773,7 @@ void    Main::Run (const CommandArgs& args)
         fServiceRep_->HandleCommandLineArgument (i);
     }
     if (args.fMajorOperation.empty ()) {
-        Execution::DoThrow (Execution::StringException (L"NO RECOGNIAED MAJOR VERB"));  /// not sure where this validation should go - and need better set of exceptions to use!!!
+        Execution::DoThrow (Execution::InvalidCommandLineArgument (L"No recognized operation"));
     }
     switch (*args.fMajorOperation) {
         case CommandArgs::MajorOperation::eRunServiceMain: {
