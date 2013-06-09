@@ -61,6 +61,10 @@
  *                  Sequence<T> (ITER iFrom, ITER iTo) - do re-allocate size if appropriate - can do diff
  *                  iTo-iFrom.
  *
+ *  Long-Term TODO:
+ *
+ *      @todo       Consider adding a SubSequence(i,j) method - like std::basic_string<>::substr(). Make it efficient
+ *                  so lazy-copy except on update. Medium/low priority
  */
 
 
