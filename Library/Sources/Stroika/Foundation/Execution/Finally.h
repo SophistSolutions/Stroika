@@ -12,6 +12,13 @@
 
 
 
+/**
+ *  \file
+ *
+ *      Finally utility - to appoximate C++ try/finally support.
+ */
+
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -47,8 +54,6 @@ namespace   Stroika {
             private:
                 function<void()> fCleanupCodeBlock_;
             };
-
-
 
 
         }

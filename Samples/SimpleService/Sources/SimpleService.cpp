@@ -121,18 +121,28 @@ namespace {
              *  In your main loop, first run any setup.
              */
             // INITIALIZE_SOMETHING();
-            fSomeOtherTaskDoingRealWork = Thread ([] () { Execution::Sleep (1 * 24 * 60 * 60); });
+            fSomeOtherTaskDoingRealWork = Thread ([] () {
+                Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+            });
             fSomeOtherTaskDoingRealWork.Start ();
 
-            while (true) {
-                // Or you could use a waitable event and wait forever, or do some period bookkeeping.
-                Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+            if (false) {
+                Execution::Event w;
+                w.Wait ();
+            }
+            else {
+                while (true) {
+                    // Or you could use a waitable event and wait forever, or do some period bookkeeping.
+                    Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+                }
             }
 
             /*
              *  Cleanups - on exit handled in finally/Cleanup above.
              */
         }
+
+    public:
         virtual Main::ServiceDescription  GetServiceDescription () const override {
             Main::ServiceDescription    t;
             t.fPrettyName = L"Test Service";
@@ -141,6 +151,9 @@ namespace {
         }
 
     public:
+        // No NEED to use this technique, but its an easy way to have as many paralell process tasks
+        // ask you want running while your main task does essentially nothing but cleanup when the
+        // service shuts down
         Thread  fSomeOtherTaskDoingRealWork;
     };
 }
