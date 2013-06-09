@@ -43,6 +43,12 @@
  *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
  *              NOT reliably done!!!
  *
+ *              SEE "ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT" in Execution::Signal module
+ *
+ *      @todo - Main::CommandNames - consider making these STRING params, and then this could be end-user configurable (good idea!)
+ *
+ *      @todo   Main::CommandNames - provide for command aliases.
+ *
  *      @todo   Document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
  *              approahc and unix approach
@@ -277,10 +283,6 @@ namespace   Stroika {
 
 
             /**
-             *  @todo - consider making these STRING params, and then this could be end-user configurable (good idea!)
-             *
-             *  @todo   ALSO - provide for command aliases.
-             *
              */
             struct  Main::CommandNames {
                 /**

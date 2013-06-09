@@ -22,6 +22,14 @@
  *
  *
  * TODO:
+ *      @todo   ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT
+ *
+ *              Much signal handling - like in Frameworks::Service::Main - unsafe anyhow cuz of malloc in signal handler)
+ *
+ *              Must provide SOME way to safely delegate the signal call
+ *              to another handler - perhaps by having a queue (with all ram preallocated), and a special handler thread
+ *              and some configuraiton mechanism so signals get sent to the hander via the extra level of indirection.
+ *
  *      @todo   Becaues Stroika Mapping class is so safe, I may not need the critical section
  *              protecting sHandlers_ any longer.
  *
