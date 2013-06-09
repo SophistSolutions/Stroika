@@ -37,9 +37,6 @@
  *              Added the startedCB method - just so fewer incompatible API-breaking changes needed in the
  *              future.
  *
- *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
- *              that we use throwthreadexception!
- *
  *      @todo   Support Install/Uninstall () - at least on windoze!
  *              (to make that work - probably need to add install/uninstall operations to service, but then
  *              have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
@@ -359,8 +356,8 @@ namespace   Stroika {
             /**
              * To use this class you must implement your own Rep (to represent the running service).
              *
-             *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX events maybe called on this object, but from any thread
-             *  so be careful of thread safety!
+             *  MainLoop () is automatically setup to run on its own thread. Betware, the OnXXX
+             *  events maybe called on this object, but from any thread so be careful of thread safety!
              */
             class   Main::IApplicationRep {
             public:
@@ -385,38 +382,29 @@ namespace   Stroika {
 
             public:
                 /**
-                 * This should be overridden by each service, and should  never return until the service is done (stop request).
+                 *  This should be overridden by each service, and should  never return until the service is done
+                 *  (probably because of a stop request).
+                 *
+                 *  Each MainLoop() runs on a thread, and it is terminated by being sent a ThreadAbortException.
+                 *
+                 *  This is handy, because its mostly treated by Stroika classes automatically, and mostly automatically
+                 *  cleans up any ongoing operations.
                  *
                  *  It might be written as:
-                 *      DoServiceOneTimeInits_();
-                 *      bool    stopping = false;
-                 *      _SimpleGenericRunLoopHelper (&e, &stopping, [] () {
-                 *          DoPeriodicallyWithoutBlocking...();
+                 *      ...
+                 *      Execution::Finally cleanup ([this] () {
+                 *      // do your cleanup here
                  *      });
-                 *      DoCleanupsAsServiceStops_();
+                 *      // INITIALIZE_SOMETHING(); - maybe firing off other threads
+                 *      startedCallback (); // notify the service subsystem you've successfully started your service
+                 *      Execution::Event w;
+                 *      w.Wait ();  // wait til your told your done. This could be replaced with real work, but need
+                 *                  // not be - if you do you real work on another thread
+                 *      return;
                  *
-                 *  @see _SimpleGenericRunLoopHelper
+                 *  See the Samples/SimpleService example code for a functioanl example.
                  */
                 virtual void                MainLoop (std::function<void()> startedCB) = 0;
-
-            protected:
-                /*
-                 *  This utility function MAY be used inside MainLoop() to implement run-til-stop logic.
-                 *  Just provide a lambda/callback todo the inner loop of your main loop. That loop will be called
-                 *  repeatedly (unless stopping is set).
-                 *      aka:
-                 *          while (not *stopping) {
-                 *              realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
-                 *              checkStopEvent->Wait();
-                 *          }
-                 */
-                void    _SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop);
-
-            public:
-                virtual void                OnStartRequest ();
-
-            public:
-                virtual void                OnStopRequest ();
 
             public:
                 virtual void                OnReReadConfigurationRequest ();    //NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24

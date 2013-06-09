@@ -682,31 +682,6 @@ bool    Main::IApplicationRep::HandleCommandLineArgument (const String& s)
     return false;
 }
 
-void    Main::IApplicationRep::_SimpleGenericRunLoopHelper (Execution::Event* checkStopEvent, bool* stopping, const std::function<void()>& realMainInnerLoop)
-{
-    while (not (*stopping)) {
-        realMainInnerLoop ();   // must not block for long periods - or must itself check checkStopEvent
-        checkStopEvent->Wait();
-    }
-}
-
-void    Main::IApplicationRep::OnStartRequest ()
-{
-    // TODO - CHEKC IF RUNNING AND SAY "OK" if running - do nothing. But otherwise - start thread...
-    //
-
-    // This procedure ends when the entire service process ends...
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStartRequest"));
-    MainLoop ([] () {});
-}
-
-void    Main::IApplicationRep::OnStopRequest ()
-{
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStopRequest"));
-    // default to using thread stuff to send us a signal to abort...
-//    fStopping_ = true;
-}
-
 void    Main::IApplicationRep::OnReReadConfigurationRequest ()
 {
     //  fMustReReadConfig = true;
@@ -1049,7 +1024,6 @@ void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeou
 {
     // VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
-    fAppRep_->OnStopRequest ();
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
@@ -1057,7 +1031,6 @@ void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType 
 {
     // VERY WEAK TO WRONG IMPL
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
-    fAppRep_->OnStopRequest ();
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
@@ -1188,10 +1161,9 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
     }
 }
 
-void                Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
+void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
-    fAppRep_->OnStopRequest ();
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
@@ -1332,7 +1304,6 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
-
     // SEE UNIX IMPL - WE WANT REST OF CRAP THEY HAVE THERE TOO (except using processrunner)
 
 #if      qCompilerAndStdLib_Supports_initializer_lists
@@ -1359,7 +1330,7 @@ void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
     fStopServiceEvent_.Set ();
 }
 
-void            Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
+void    Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     AssertNotImplemented ();
 }
