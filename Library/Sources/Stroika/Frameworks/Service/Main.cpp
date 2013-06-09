@@ -1410,7 +1410,7 @@ void    Main::WindowsService::_RunAsAservice ()
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 
-    //cerr << "s_SvcRunningTHIS_->IsInstalled_ ()=" << s_SvcRunningTHIS_->IsInstalled_ () << endl;
+    //Logger::Get ().Log (Logger::Priority::eInfo, L"s_SvcRunningTHIS_->IsInstalled_ ()=%d", (int)s_SvcRunningTHIS_->IsInstalled_ ());
 
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
 #if 1
@@ -1508,17 +1508,19 @@ void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
 
 void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
     // do file create stuff here
+    //Logger::Get ().Log (Logger::Priority::eInfo, L"entering ServiceMain_");
 
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
-#if 0
+#if 1
     // KEEP THIS - SEE IFDEFED OUT CODE ABOVE FOR HANLDERS AND MAPPING MESSAGE IDS
-    fServiceStatusHandle_ = ::RegisterServiceCtrlHandler (GetSvcName_ ().c_str (), _Handler);
+    fServiceStatusHandle_ = ::RegisterServiceCtrlHandler (GetSvcName_ ().c_str (), StaticHandler_);
     if (fServiceStatusHandle_ == nullptr) {
-        Logger::EmitMessage (Logger::eError_MT, "Handler not installed");
+//        Logger::EmitMessage (Logger::eError_MT, "Handler not installed");
         return;
     }
 #endif
+    //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set pending");
     SetServiceStatus_ (SERVICE_START_PENDING);
 
     fServiceStatus_.dwWin32ExitCode = S_OK;
@@ -1532,6 +1534,9 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
         appRep->MainLoop ([] () {});
     });
     fRunThread_.Start ();
+    //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
+    SetServiceStatus_ (SERVICE_RUNNING);
+
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());   //tmphack - as
     fServiceStatus_.dwWin32ExitCode = 0;
 
@@ -1561,6 +1566,43 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
 void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
     AssertNotNull (s_SvcRunningTHIS_);
     s_SvcRunningTHIS_->ServiceMain_ (dwArgc, lpszArgv);
+}
+
+void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept {
+    switch (dwOpcode) {
+        case SERVICE_CONTROL_STOP:
+            fRunThread_.Abort ();
+            break;
+    }
+
+#if 0
+    switch (dwOpcode) {
+        case SERVICE_CONTROL_STOP:
+            OnStop ();
+            break;
+        case SERVICE_CONTROL_PAUSE:
+            OnPause ();
+            break;
+        case SERVICE_CONTROL_CONTINUE:
+            OnContinue ();
+            break;
+        case SERVICE_CONTROL_INTERROGATE:
+            OnInterrogate ();
+            break;
+        case SERVICE_CONTROL_SHUTDOWN:
+            OnShutdown ();
+            break;
+        default:
+            OnUnknownRequest (dwOpcode);
+            break;
+    }
+#endif
+}
+
+void    WINAPI  Main::WindowsService::StaticHandler_ (DWORD dwOpcode) throw ()
+{
+    AssertNotNull (s_SvcRunningTHIS_);
+    s_SvcRunningTHIS_->Handler_ (dwOpcode);
 }
 
 #if 0
