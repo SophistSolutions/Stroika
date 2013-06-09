@@ -107,7 +107,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
         for (String i2 : part2) {
             for (String i3 : part3) {
                 for (String i4 : part4) {
-                    IgnoreExceptionsForCall (return Characters::NarrowSDKStringToWide (locale ((i1 + i2 + i3 + i4).AsUTF8 ().c_str ()).name ()));
+                    IgnoreExceptionsForCall (return String::FromNarrowSDKString (locale ((i1 + i2 + i3 + i4).AsUTF8 ().c_str ()).name ()));
                 }
             }
         }

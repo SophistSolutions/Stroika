@@ -59,7 +59,7 @@ Sequence<String>  Execution::ParseCommandLine (int argc, const char* argv[])
     Require (argc >= 0);
     Sequence<String>  results;
     for (int i = 0; i < argc; ++i) {
-        results.push_back (Characters::NarrowSDKStringToWide (argv[i]));
+        results.push_back (String::FromNarrowSDKString (argv[i]));
     }
 
     return results;
