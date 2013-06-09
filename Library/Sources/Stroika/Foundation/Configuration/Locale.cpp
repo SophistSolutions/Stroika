@@ -112,7 +112,7 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
             }
         }
     }
-    Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Locale not found"));
+    Execution::DoThrow (Execution::StringException (L"Locale not found"));
 }
 
 

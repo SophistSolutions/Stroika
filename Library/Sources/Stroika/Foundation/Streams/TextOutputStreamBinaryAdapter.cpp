@@ -56,7 +56,7 @@ Again:
         }
         if (r != codecvt_utf8<wchar_t>::ok) {
             // not sure waht to throw!
-            Execution::DoThrow<Execution::StringException> (Execution::StringException (L"Error converting characters codepage"));
+            Execution::DoThrow (Execution::StringException (L"Error converting characters codepage"));
         }
 #else
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);

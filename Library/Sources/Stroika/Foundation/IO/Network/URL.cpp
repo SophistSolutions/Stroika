@@ -45,7 +45,7 @@ namespace {
         // use for (Character c : s) {... when that works -- LGP 2013-05-29)
         for (size_t i = 0; i < s.GetLength (); ++i) {
             if (not s[i].IsAscii () or not (s[i].IsAlphabetic () or s[i].IsDigit () or s[i] == '-' or s[i] == '.' or s[i] == '+')) {
-                Execution::DoThrow<Execution::StringException> (Execution::StringException (L"bad character in scheme"));
+                Execution::DoThrow (Execution::StringException (L"bad character in scheme"));
             }
         }
     }
