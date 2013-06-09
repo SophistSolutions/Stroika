@@ -117,3 +117,69 @@ void    Logger::FileAppender::Log (Priority logLevel, const String& message)
 }
 
 
+
+
+
+
+#if     qPlatform_Windows
+/*
+ ********************************************************************************
+ ************************ Execution::SysLogAppender *****************************
+ ********************************************************************************
+ */
+Logger::WindowsEventLogAppender::WindowsEventLogAppender ()
+{
+}
+
+void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& message)
+{
+    /*
+     * VERY QUICK HACK - AT LEAST DUMPS SOME INFO TO EVENTLOG - BUT MUCH TWEAKING LEFT TODO
+     */
+    const   TCHAR   kEventSourceName[]  =   _T ("xxxtest");
+    WORD    eventType   =   EVENTLOG_ERROR_TYPE;
+    switch (logLevel) {
+        case Priority::eInfo:
+            eventType = EVENTLOG_INFORMATION_TYPE;
+            break;
+        case Priority::eNotice:
+            eventType = EVENTLOG_INFORMATION_TYPE;
+            break;
+        case Priority::eWarning:
+            eventType = EVENTLOG_WARNING_TYPE;
+            break;
+        case Priority::eError:
+            eventType = EVENTLOG_ERROR_TYPE;
+            break;
+        case Priority::eAlertError:
+            eventType = EVENTLOG_ERROR_TYPE;
+            break;
+        case Priority::eEmergency:
+            eventType = EVENTLOG_ERROR_TYPE;
+            break;
+    }
+#define CATEGORY_Normal                  0x00000001L
+    WORD    eventCategoryID =   CATEGORY_Normal;
+    // See SPR#565 for wierdness - where I cannot really get these paid attention to
+    // by the Windows EventLog. So had to use the .Net eventlogger. It SEEMS
+#define EVENT_Message                    0x00000064L
+    const   DWORD   kEventID            =   EVENT_Message;
+    HANDLE  hEventSource = RegisterEventSource (NULL, kEventSourceName);
+    Verify (hEventSource != NULL);
+    wstring tmp = message.As<wstring> ();
+    const wchar_t* msg = tmp.c_str ();
+    Verify (::ReportEvent (
+                hEventSource,
+                eventType,
+                eventCategoryID,
+                kEventID,
+                NULL,
+                (WORD)1,
+                0,
+                &msg,
+                NULL
+            )
+           );
+    Verify (::DeregisterEventSource (hEventSource));
+}
+#endif

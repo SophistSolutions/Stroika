@@ -22,7 +22,9 @@
  *              or add explicit data member saying to skip logging stuff below a given level. We probably need todo
  *              the later, and let the former be done by the backend appender.
  *
- *      @todo   Add support for Windows Event Manager Log Appender -- WindowsEventLogAppender
+ *      @todo   Finish support for Windows Event Manager Log Appender -- WindowsEventLogAppender. Its
+ *              printing some data, but very minimally and wrongly handling categories etc. Probably could get close
+ *              by specifying hardwired/hacked values in the CTOR args.
  */
 
 
@@ -168,6 +170,18 @@ namespace   Stroika {
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
             };
+
+
+#if     qPlatform_Windows
+            /**
+             */
+            class   Logger::WindowsEventLogAppender : public Logger::IAppenderRep {
+            public:
+                WindowsEventLogAppender ();
+            public:
+                virtual void    Log (Priority logLevel, const String& message) override;
+            };
+#endif
 
 
         }
