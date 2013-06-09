@@ -699,6 +699,8 @@ namespace   Stroika {
                 nonvirtual  void                ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
                 static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
             private:
+                static  WindowsService*     s_SvcRunningTHIS_;
+                Execution::Thread           fRunThread_;
                 Execution::Event            fStopServiceEvent_;
                 SERVICE_STATUS_HANDLE       fServiceStatusHandle_;      // nullptr if invalid - not INVALID_HANDLE
                 SERVICE_STATUS              fServiceStatus_;

@@ -1317,6 +1317,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
  ************************* Service::Main::WindowsService ************************
  ********************************************************************************
  */
+Main::WindowsService*       Main::WindowsService::s_SvcRunningTHIS_ =   nullptr;
+
 Main::WindowsService::WindowsService ()
     : fAppRep_ ()
     , fStopServiceEvent_ ()
@@ -1337,7 +1339,7 @@ void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
     fAppRep_ = appRep;
 }
 
-shared_ptr<Main::IApplicationRep>      Main::WindowsService::_GetAttachedAppRep () const
+shared_ptr<Main::IApplicationRep>   Main::WindowsService::_GetAttachedAppRep () const
 {
     return fAppRep_;
 }
@@ -1390,7 +1392,6 @@ void    Main::WindowsService::_UnInstall ()
         ::CloseServiceHandle (hService);
     });
 
-#if 1
     {
         SERVICE_STATUS status;
         if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
@@ -1400,33 +1401,39 @@ void    Main::WindowsService::_UnInstall ()
             }
         }
     }
-#else
-    {
-        SERVICE_STATUS status;
-        if (!::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
-            DWORD dwError = GetLastError ();
-            if (!((dwError == ERROR_SERVICE_NOT_ACTIVE) or (dwError == ERROR_SERVICE_CANNOT_ACCEPT_CTRL and status.dwCurrentState == SERVICE_STOP_PENDING))) {
-                Logger::EmitMessage (Logger::eError_MT, "Could not stop service");
-
-            }
-        }
-    }
-#endif
 
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::DeleteService (hService));
 }
 
 void    Main::WindowsService::_RunAsAservice ()
 {
+    Assert (s_SvcRunningTHIS_ == nullptr);
+    s_SvcRunningTHIS_ = this;
+
+    //cerr << "s_SvcRunningTHIS_->IsInstalled_ ()=" << s_SvcRunningTHIS_->IsInstalled_ () << endl;
+
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
+#if 1
+    static TString svcName =   GetSvcName_ ();
+    static SERVICE_TABLE_ENTRY st[] = {
+        { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
+        { nullptr, nullptr }
+    };
+#else
     TString svcName =   GetSvcName_ ();
     SERVICE_TABLE_ENTRY st[] = {
         { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
         { nullptr, nullptr }
     };
+#endif
     if (::StartServiceCtrlDispatcher (st) == 0) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
+        if (fServiceStatus_.dwWin32ExitCode ==      ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
+            //cerr << "fServiceStatus_.dwWin32ExitCode=" << "ERROR_FAILED_SERVICE_CONTROLLER_CONNECT" << endl;
+        }
+        //cerr << "fServiceStatus_.dwWin32ExitCode=" << fServiceStatus_.dwWin32ExitCode << endl;
     }
+    //cerr << "exint WindowsService::_RunAsAservice" << endl;
 }
 
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
@@ -1456,6 +1463,7 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 
 void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
+    // NO - use same stuff from service control mgr - used in uninstall
     SetServiceStatus_ (SERVICE_STOP_PENDING);
     fStopServiceEvent_.Set ();
 }
@@ -1499,6 +1507,8 @@ void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
 }
 
 void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+    // do file create stuff here
+
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
 #if 0
@@ -1516,18 +1526,16 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     fServiceStatus_.dwWaitHint = 0;
 
     // When the Run function returns, the service has stopped.
-#if 0
     // about like this - FIX - KEEP SOMETHING SIMIALR
-    fServiceStatus_.dwWin32ExitCode = ServiceRun_ ();
-#endif
+    auto appRep = fAppRep_;
+    fRunThread_ = Execution::Thread ([appRep] () {
+        appRep->MainLoop ([] () {});
+    });
+    fRunThread_.Start ();
+    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());   //tmphack - as
+    fServiceStatus_.dwWin32ExitCode = 0;
 
-    //Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
-    SetServiceStatus_ (SERVICE_STOPPED);
-}
-
-void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
-    // NEED SOMETHING LIKE THIS!!!
-    //sTHIS->ServiceMain (dwArgc, lpszArgv);
+    //    fServiceStatus_.dwWin32ExitCode = ServiceRun_ ();
 
 
 /// THIS BELEOW LOGIC BELONGS IN SERVICEMAIN!!!
@@ -1545,6 +1553,14 @@ void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* 
 #if 0
     ::DeleteFile (GetServerRunningFilePath_ ().c_str ());
 #endif
+
+    //Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
+    SetServiceStatus_ (SERVICE_STOPPED);
+}
+
+void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+    AssertNotNull (s_SvcRunningTHIS_);
+    s_SvcRunningTHIS_->ServiceMain_ (dwArgc, lpszArgv);
 }
 
 #if 0
