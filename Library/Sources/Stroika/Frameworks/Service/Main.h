@@ -26,9 +26,10 @@
  *
  * TODO:
  *
- *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
- *              adds in SYSLOG calls for state changes.
- *              ((DONE BUT UNTESTED)
+ *      @todo   Add "Starting" and "Stopping" status values.
+ *
+ *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
+ *              that we use throwthreadexception!
  *
  *      @todo   Support Install/Uninstall () - at least on windoze!
  *              (to make that work - probably need to add install/uninstall operations to service, but then
@@ -36,16 +37,11 @@
  *
  *      @todo   Get windows service support working as well as unix one does
  *
- *      @todo   Add --daemonize option - as of often handy in UNIX - to detach...
- *
  *      @todo   Implement/test (it maybe implemented) --ReloadConfiguraiton operation.
  *
  *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
  *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
  *              NOT reliably done!!!
- *
- *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
- *              that we use throwthreadexception!
  *
  *      @todo   Document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
@@ -54,6 +50,10 @@
  *      @todo   Windoze implementation - supproting the richer set of control mechanism.
  *
  *      @todo   Support Pause/Continue
+ *
+ * Long-Term TODO:
+ *      @todo   Consider adding a 'heartbeat' mechanism - so callback in IApplicationRep
+ *              called periodically to see if all OK, and otherwise have recovery strategies.
  */
 
 
@@ -92,6 +92,10 @@ namespace   Stroika {
              *  Note that this class provides a convient wrapper on requesting actions on the underlying service
              *  from EITEHR the process in which the service is run, or from any other process (via IPC - specific to the process
              *  service backend implementation).
+             *
+             *  Miscelaneous Notes:
+             *      o   No need for a --daemonize option for --Run-As-Service, because thats essentially
+             *          what the --start command does
              */
             class   Main {
             public:

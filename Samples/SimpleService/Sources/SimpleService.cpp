@@ -46,6 +46,14 @@ using   Execution::Thread;
 /*
  *  Almost always would want to use logger with a service. But demarcate so clear what is 'service' demo
  *  and what is logger demo.
+ *
+ *  To test, on many systems, you can do
+ *      tail -f /var/log/syslog (in one window - note - depending on your system, the logfile could be elsewhere)
+ *  and
+ *      Samples_SimpleService -start
+ *      Samples_SimpleService -status
+ *      Samples_SimpleService -stop
+ *  and see the log messages appear in the logfile.
  */
 #ifndef     qUseLogger
 #define     qUseLogger 1
@@ -91,6 +99,7 @@ namespace   {
 #if     qUseLogger
         Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::TString2NarrowSDK (msg).c_str ());
 #endif
+        _exit (1);
     }
 }
 #endif
