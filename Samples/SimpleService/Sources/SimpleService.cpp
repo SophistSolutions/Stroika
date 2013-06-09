@@ -117,7 +117,7 @@ namespace {
         }
 
     public:
-        virtual void  MainLoop () override {
+        virtual void  MainLoop (std::function<void()> startedCB) override {
 
             Execution::Finally cleanup ([this] () {
                 /*
@@ -134,6 +134,8 @@ namespace {
                 Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
             });
             fSomeOtherTaskDoingRealWork.Start ();
+
+            startedCB ();
 
             if (false) {
                 Execution::Event w;

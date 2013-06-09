@@ -699,7 +699,7 @@ void    Main::IApplicationRep::OnStartRequest ()
 
     // This procedure ends when the entire service process ends...
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::IApplicationRep::OnStartRequest"));
-    MainLoop ();
+    MainLoop ([] () {});
 }
 
 void    Main::IApplicationRep::OnStopRequest ()
@@ -1030,7 +1030,7 @@ void        Main::RunTilIdleService::_RunAsAservice ()
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
     fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ();
+        appRep->MainLoop ([] () {});
     });
     fRunThread_.Start ();
     float timeTilIdleHack = 3.0;
@@ -1042,7 +1042,7 @@ void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
     fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ();
+        appRep->MainLoop ([] () {});
     });
     fRunThread_.Start ();
 }
@@ -1126,7 +1126,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
     // VERY WEAK IMPL
     auto appRep = fAppRep_;
     fRunThread_ = Execution::Thread ([appRep] () {
-        appRep->MainLoop ();
+        appRep->MainLoop ([] () {});
     });
     fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;

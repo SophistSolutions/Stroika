@@ -26,7 +26,16 @@
  *
  * TODO:
  *
- *      @todo   Add "Starting" and "Stopping" status values.
+ *      @todo   Support passing extra args to subprocess. For example, if we do --start --logfile=xxx,
+ *              We need the invocation of EXE --Run-As-Service to ALSO take --logfile=xxx param. NYI
+ *
+ *      @todo   Add "Starting" and "Stopping" status values to possible states.
+ *              Probably add extra states, and then callback parameter to IApplicationRep::MainLoop()
+ *              so it can callback and say status moved from starting to running. Easier to automatically
+ *              do the stopping/stopped change (cuz we have the hooks).
+ *
+ *              Added the startedCB method - just so fewer incompatible API-breaking changes needed in the
+ *              future.
  *
  *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
  *              that we use throwthreadexception!
@@ -103,7 +112,7 @@ namespace   Stroika {
              *      o   No need for a --daemonize option for --Run-As-Service, because thats essentially
              *          what the --start command does
              */
-            class   Main {
+            class   Main final {
             public:
                 struct  ServiceDescription;
 
@@ -388,7 +397,7 @@ namespace   Stroika {
                  *
                  *  @see _SimpleGenericRunLoopHelper
                  */
-                virtual void                MainLoop () = 0;
+                virtual void                MainLoop (std::function<void()> startedCB) = 0;
 
             protected:
                 /*
