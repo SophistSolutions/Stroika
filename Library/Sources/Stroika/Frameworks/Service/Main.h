@@ -26,6 +26,20 @@
  *
  * TODO:
  *
+ *      @todo   Window service not fully working - see why when you start/stop we dont see
+ *              Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
+ *              message printed out. Basic startup/shutdown seems roughly OK though.
+ *
+ *      @todo   Carefully review Windows service code for thread locking and races. Complete missing cases, and
+ *              bullet proof.
+ *
+ *      @todo   Decide if we want PIDFILE support on windows or not? Maybe not need. But also we have
+ *              static  TString GetServerRunningFilePath_ () {
+ *                  return IO::FileSystem::WellKnownLocations::GetApplicationData () + Options::kServiceConfigAppRelPathDir +  _T ("HFWServer.running");
+ *              }
+ *              support (so we can detect crash) and warn. Maybe include that  - maybe not. Maybe merge with pidfile - maybe not?
+ *              Document reaosns for choices.
+ *
  *      @todo   Support passing extra args to subprocess. For example, if we do --start --logfile=xxx,
  *              We need the invocation of EXE --Run-As-Service to ALSO take --logfile=xxx param. NYI
  *
@@ -37,9 +51,8 @@
  *              Added the startedCB method - just so fewer incompatible API-breaking changes needed in the
  *              future.
  *
- *      @todo   Support Install/Uninstall () - at least on windoze!
- *              (to make that work - probably need to add install/uninstall operations to service, but then
- *              have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
+ *      @todo   have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
+ *              Use that in SampleApp - to optionally show --Install/--Uninstall options.
  *
  *      @todo   Get windows service support working as well as unix one does
  *
@@ -60,6 +73,7 @@
  *              approahc and unix approach
  *
  *      @todo   Windoze implementation - supproting the richer set of control mechanism.
+ *              AT LEAST support --stop from command-line (currently broken - but you can use net stop or net start servicename;
  *
  *      @todo   Support Pause/Continue
  *
@@ -700,6 +714,7 @@ namespace   Stroika {
                 static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
                 nonvirtual  void                Handler_ (DWORD dwOpcode) noexcept;
                 static void WINAPI              StaticHandler_ (DWORD dwOpcode) noexcept;
+                nonvirtual  void                OnStopRequest_ () noexcept;
             private:
                 static  WindowsService*     s_SvcRunningTHIS_;
                 Execution::Thread           fRunThread_;

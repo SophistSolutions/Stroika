@@ -1413,7 +1413,7 @@ void    Main::WindowsService::_RunAsAservice ()
     //Logger::Get ().Log (Logger::Priority::eInfo, L"s_SvcRunningTHIS_->IsInstalled_ ()=%d", (int)s_SvcRunningTHIS_->IsInstalled_ ());
 
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
-#if 1
+#if 0
     static TString svcName =   GetSvcName_ ();
     static SERVICE_TABLE_ENTRY st[] = {
         { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
@@ -1568,35 +1568,26 @@ void    WINAPI  Main::WindowsService::StaticServiceMain_ (DWORD dwArgc, LPTSTR* 
     s_SvcRunningTHIS_->ServiceMain_ (dwArgc, lpszArgv);
 }
 
+void    Main::WindowsService::OnStopRequest_ () noexcept {
+    /*
+     *  WARNING - this maybe a race about setting status!!! - what if we get stop request when already stopped.
+     *  THIS CODE NEEDS THREAD LOCKS!!!
+     */
+    if (fServiceStatus_.dwCurrentState == SERVICE_RUNNING) {
+        SetServiceStatus_ (SERVICE_STOP_PENDING);
+        fRunThread_.Abort ();
+    }
+}
+
 void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept {
     switch (dwOpcode) {
         case SERVICE_CONTROL_STOP:
-            fRunThread_.Abort ();
-            break;
-    }
-
-#if 0
-    switch (dwOpcode) {
-        case SERVICE_CONTROL_STOP:
-            OnStop ();
-            break;
-        case SERVICE_CONTROL_PAUSE:
-            OnPause ();
-            break;
-        case SERVICE_CONTROL_CONTINUE:
-            OnContinue ();
-            break;
-        case SERVICE_CONTROL_INTERROGATE:
-            OnInterrogate ();
-            break;
-        case SERVICE_CONTROL_SHUTDOWN:
-            OnShutdown ();
+            OnStopRequest_  ();
             break;
         default:
-            OnUnknownRequest (dwOpcode);
+            // others ignored for now
             break;
     }
-#endif
 }
 
 void    WINAPI  Main::WindowsService::StaticHandler_ (DWORD dwOpcode) throw ()
@@ -1604,39 +1595,4 @@ void    WINAPI  Main::WindowsService::StaticHandler_ (DWORD dwOpcode) throw ()
     AssertNotNull (s_SvcRunningTHIS_);
     s_SvcRunningTHIS_->Handler_ (dwOpcode);
 }
-
-#if 0
-DWORD   Main::WindowsService::ServiceRun_ () throw ()
-{
-    try {
-        InitializeAppDataRepositoryDirectories ();
-        InitMoreModules ();
-        InitializeSecurity_ ();
-
-        StartRefContentMgr ();
-        StartServiceThreads ();
-
-        {
-            TString runningFile =   GetServerRunningFilePath_ ();
-            if (IO::FileSystem::FileExists (runningFile)) {
-                Logger::EmitMessage (Logger::eWarning_MT, "HealthFrameWorks Server appears to have not shutdown cleanly last time it was run");
-            }
-            else {
-                IO::FileSystem::CreateDirectoryForFile (runningFile);
-                IO::FileSystem::FileWriter writer (runningFile.c_str ());
-            }
-        }
-
-        SetServiceStatus (SERVICE_RUNNING);
-
-        //wait on semaphore set by the STOP call
-        DbgTrace ("Waiting for stop-service event");
-        fStopServiceEvent.Wait ();
-        DbgTrace ("Wait for stop-service event complete, so exiting from ServiceRun_");
-    }
-    HealthFrameWorks_LogMessageHelper (_T ("While starting up HealthFrameWorks Server"));
-    return 0;
-}
-#endif
-
 #endif

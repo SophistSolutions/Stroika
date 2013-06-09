@@ -124,6 +124,9 @@ namespace {
                  *  Now - we can shutdown any subsidiary threads, and exit
                  */
                 fSomeOtherTaskDoingRealWork.AbortAndWaitForDone ();
+#if     qUseLogger
+                Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
+#endif
             });
 
             /*
@@ -137,6 +140,9 @@ namespace {
 
             startedCB ();
 
+#if     qUseLogger
+            Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is started");
+#endif
             if (false) {
                 Execution::Event w;
                 w.Wait ();
