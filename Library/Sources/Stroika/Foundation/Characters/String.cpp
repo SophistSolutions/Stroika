@@ -617,6 +617,17 @@ String  String::FromTString (const basic_string<TChar>& from)
     return TString2Wide (from);
 }
 
+String  String::FromNarrowSDKString (const char* from)
+{
+    RequireNotNull (from);
+    return NarrowSDKStringToWide (from);
+}
+
+String  String::FromNarrowSDKString (const string& from)
+{
+    return NarrowSDKStringToWide (from);
+}
+
 void    String::SetLength (size_t newLength)
 {
     try {
@@ -1063,6 +1074,19 @@ void    String::AsTString (TString* into) const
 {
     RequireNotNull (into);
     *into = Wide2TString (As<wstring> ());  // poor inefficient implementation
+}
+
+string  String::AsNarrowSDKString () const
+{
+    string result;
+    AsNarrowSDKString (&result);
+    return result;
+}
+
+void    String::AsNarrowSDKString (string* into) const
+{
+    RequireNotNull (into);
+    *into = Characters::WideStringToNarrowSDKString (As<wstring> ());  // poor inefficient implementation
 }
 
 template    <>

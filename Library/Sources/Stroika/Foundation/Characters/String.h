@@ -234,6 +234,10 @@ namespace   Stroika {
                 static  String  FromTString (const TString& from);
 
             public:
+                static  String  FromNarrowSDKString (const char* from);
+                static  String  FromNarrowSDKString (const string& from);
+
+            public:
                 nonvirtual  String& operator+= (Character appendage);
                 nonvirtual  String& operator+= (const String& appendage);
 
@@ -544,6 +548,12 @@ namespace   Stroika {
                  */
                 nonvirtual  TString AsTString () const;
                 nonvirtual  void    AsTString (TString* into) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  string  AsNarrowSDKString () const;
+                nonvirtual  void    AsNarrowSDKString (string* into) const;
 
             public:
                 /*
