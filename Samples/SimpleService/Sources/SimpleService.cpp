@@ -7,8 +7,30 @@
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Frameworks/Service/Main.h"
+
+
+/**
+ *  \file
+ *
+ *  SAMPLE CODE
+ *
+ *  Sample Simple Service Application
+ *
+ *  This sample demonstrates a few Stroika features.
+ *
+ *      o   Creating a service application (one that can be automatically started/stopped by
+ *          the OS, and one where you can query the status, check process ID, etc)
+ *
+ *      o   Simple example of command line processing
+ *
+ *      o   Simple example of Logging (to syslog or windows log or other)
+ */
+
+
 
 
 using   namespace std;
@@ -16,7 +38,9 @@ using   namespace std;
 using   namespace Stroika::Foundation;
 using   namespace Stroika::Frameworks::Service;
 
+
 using   Containers::Sequence;
+using   Execution::Thread;
 
 
 /*
@@ -85,7 +109,29 @@ namespace {
 
     public:
         virtual void  MainLoop () override {
-            Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+
+            Execution::Finally cleanup ([this] () {
+                /*
+                 *  Now - we can shutdown any subsidiary threads, and exit
+                 */
+                fSomeOtherTaskDoingRealWork.AbortAndWaitForDone ();
+            });
+
+            /*
+             *  In your main loop, first run any setup.
+             */
+            // INITIALIZE_SOMETHING();
+            fSomeOtherTaskDoingRealWork = Thread ([] () { Execution::Sleep (1 * 24 * 60 * 60); });
+            fSomeOtherTaskDoingRealWork.Start ();
+
+            while (true) {
+                // Or you could use a waitable event and wait forever, or do some period bookkeeping.
+                Execution::Sleep (1 * 24 * 60 * 60);    // wait 1 day ... simple test....
+            }
+
+            /*
+             *  Cleanups - on exit handled in finally/Cleanup above.
+             */
         }
         virtual Main::ServiceDescription  GetServiceDescription () const override {
             Main::ServiceDescription    t;
@@ -93,6 +139,9 @@ namespace {
             t.fRegistrationName = L"Test-Service";
             return t;
         }
+
+    public:
+        Thread  fSomeOtherTaskDoingRealWork;
     };
 }
 
@@ -130,6 +179,9 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+    /*
+     *  Setup basic (optional) error handling.
+     */
 #if     qRegisterFatalErrorHandlers
 #if qPlatform_Windows
     Execution::Platform::Windows::RegisterDefaultHandler_invalid_parameter ();
@@ -138,6 +190,9 @@ int main (int argc, const char* argv[])
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErorrHandler_);
 #endif
 
+    /*
+     *  Setup Logging to the OS logging facility.
+     */
 #if     qUseLogger
 #if     qHas_Syslog
     Logger::Get ().SetAppender (Logger::IAppenderRepPtr (new Logger::SysLogAppender (L"Stroika-Sample-SimpleService")));
@@ -147,6 +202,9 @@ int main (int argc, const char* argv[])
 #endif
 #endif
 
+    /*
+     *  Parse command line arguments, and start looking at options.
+     */
     Sequence<String>  args    =   Execution::ParseCommandLine (argc, argv);
     shared_ptr<Main::IServiceIntegrationRep>    serviceIntegrationRep   =   Main::mkDefaultServiceIntegrationRep ();
     if (Execution::MatchesCommandLineArgument (args, L"run2Idle")) {
@@ -156,6 +214,10 @@ int main (int argc, const char* argv[])
 #if     qUseLogger
     serviceIntegrationRep = shared_ptr<Main::IServiceIntegrationRep> (new Main::LoggerServiceWrapper (serviceIntegrationRep));
 #endif
+
+    /*
+     *  Create service handler instance.
+     */
     Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
     if (Execution::MatchesCommandLineArgument (args, L"status")) {
         cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
@@ -165,6 +227,10 @@ int main (int argc, const char* argv[])
         ShowUsage_ ();
         return EXIT_SUCCESS;
     }
+
+    /*
+     *  Run the commands, and capture/display exceptions
+     */
     try {
         m.Run (args);
     }
@@ -182,7 +248,7 @@ int main (int argc, const char* argv[])
 #if     qUseLogger
         Logger::Get ().Log (Logger::Priority::eError, e.As<String> ());
 #endif
-		cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
+        cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
