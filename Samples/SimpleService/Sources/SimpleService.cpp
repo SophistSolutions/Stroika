@@ -98,6 +98,8 @@ namespace {
 
 
 
+
+
 namespace {
     void    ShowUsage_ (const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
@@ -118,6 +120,7 @@ namespace {
         cerr << "\t--Status                /* Service/Control Function: Print status of running service */ " << endl;
         cerr << "\t--run2Idle              /* run2Idle (@todo  TDB) */ " << endl;
         cerr << "\t--help                  /* Print this help. */ " << endl;
+        cerr << endl << "\tExtra unrecognized parameters for start/restart, and forcedrestart operations will be passed along to the actual service process" << endl;
         cerr << endl;
     }
 }
@@ -170,18 +173,16 @@ int main (int argc, const char* argv[])
     }
     catch (const std::exception& e) {
 #if     qUseLogger
-        // @todo - WRONG - GENERICALLYT HANLDLE e.wwhat() codepage issue better
-        // not sure what codepage to use for convert???
-        Logger::Get ().Log (Logger::Priority::eError, Characters::NarrowSDKStringToWide (e.what ()));
+        Logger::Get ().Log (Logger::Priority::eError, String::FromNarrowSDKString (e.what ()));
 #endif
         cerr << "FAILED: '" << e.what () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, e.As<wstring> ());
+        Logger::Get ().Log (Logger::Priority::eError, e.As<String> ());
 #endif
-        cerr << "FAILED: '" << Characters::WideStringToNarrowSDKString (e.As<wstring> ()) << "'" << endl;
+		cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
