@@ -26,11 +26,19 @@
  *
  * TODO:
  *
+ *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
+ *              adds in SYSLOG calls for state changes.
+ *              ((DONE BUT UNTESTED)
+ *
+ *      @todo   Support Install/Uninstall () - at least on windoze!
+ *              (to make that work - probably need to add install/uninstall operations to service, but then
+ *              have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
+ *
+ *      @todo   Get windows service support working as well as unix one does
+ *
  *      @todo   Add --daemonize option - as of often handy in UNIX - to detach...
  *
- *      @todo   Add ShowUsage () method to IApp... and to service (vectoring) - and use that
- *              to oimplemtn usage behvairo genericlaly. And do 'invalid-param' exAborttion
- *              and use that for usage - to trigger usage.
+ *      @todo   Implement/test (it maybe implemented) --ReloadConfiguraiton operation.
  *
  *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
  *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
@@ -39,30 +47,13 @@
  *      @todo   Lose (I THINK) OnStopRequest - for Ix... app - instread document
  *              that we use throwthreadexception!
  *
- *      @todo   Command-line processing is kludged and needs cleanup!!!
- *
  *      @todo   Document clearly the distinction between running service and driver
  *              to control stop/start etc. Think through relationship between windows
  *              approahc and unix approach
  *
- *      @todo   Consider adding IServceApp wrapper (taking IServcieApp sharedPtr as ctor arg) - which
- *              adds in SYSLOG calls for state changes.
- *
  *      @todo   Windoze implementation - supproting the richer set of control mechanism.
  *
- *      @todo   For UNIX
- *          (o) Get working (again) - used to work about a year ago but did major rewirte. Try to get
- *              working with demo app.
- *
- *          (o) Store in file system file with current PID.
- *
- *          (o) Start/Stop work by sending SIGNALS
- *
- *          (o) Must have generic signal handler registered (at least for TERMINATE/STOP/CONTINUE, SIGNIT (re-read conf))
- *
  *      @todo   Support Pause/Continue
- *
- *      @todo   Support Install/Uninstall () - at least on windoze!
  */
 
 
@@ -156,7 +147,7 @@ namespace   Stroika {
                 struct  CommandArgs;
 
             public:
-                /*
+                /**
                  *  These arguments are command-line arguments. They will also be indirectly passed to the IApplicationRep.
                  *  So a typical app main() might be:
                  *      TBD
@@ -282,7 +273,11 @@ namespace   Stroika {
 
 
             /**
-            */
+             *  @todo - consider making these STRING params, and then this could be end-user configurable (good idea!)
+             *
+             *  @todo   ALSO - provide for command aliases.
+             *
+             */
             struct  Main::CommandNames {
                 /**
                  *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
@@ -359,7 +354,6 @@ namespace   Stroika {
             public:
                 NO_COPY_CONSTRUCTOR(IApplicationRep);
                 NO_ASSIGNMENT_OPERATOR(IApplicationRep);
-
 
             public:
                 /**
