@@ -8,6 +8,3 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
-
-
-]
