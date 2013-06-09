@@ -204,7 +204,17 @@ namespace   Stroika {
                 nonvirtual  String      GetServiceStatusMessage () const;
 
             public:
-                /*
+                /**
+                 */
+                nonvirtual  void    Install ();
+
+            public:
+                /**
+                 */
+                nonvirtual  void    UnInstall ();
+
+            public:
+                /**
                  *  RunAsService () will not return until the service has terminated. It runs the service 'MainLoop'.
                  *  When that happens, the calling application should exit.
                  *
@@ -291,6 +301,10 @@ namespace   Stroika {
             /**
              */
             struct  Main::CommandNames {
+
+                static  const   wchar_t kInstall[];
+                static  const   wchar_t kUnInstall[];
+
                 /**
                  *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
                  *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
@@ -337,6 +351,8 @@ namespace   Stroika {
                 CommandArgs (const Sequence<String>& args);
 
                 enum    class   MajorOperation {
+                    eInstall,
+                    eUnInstall,
                     eRunServiceMain,
                     eStart,
                     eStop,
@@ -453,7 +469,7 @@ namespace   Stroika {
                 virtual shared_ptr<IApplicationRep>     _GetAttachedAppRep () const    =   0;
 
             protected:
-                virtual  State               _GetState () const =   0;
+                virtual  State      _GetState () const =   0;
 
             protected:
                 /**
@@ -467,6 +483,19 @@ namespace   Stroika {
                  *  print an error message in that case.
                  */
                 virtual bool    HandleCommandLineArgument (const String& s);
+
+
+            protected:
+                /**
+                 *  (only supported if (need service supports install-uninstlal-fetautre)
+                 */
+                virtual void    _Install () = 0;
+
+            protected:
+                /**
+                 *  (only supported if (need service supports install-uninstlal-fetautre)
+                 */
+                virtual void    _UnInstall () = 0;
 
             protected:
                 /**
@@ -508,6 +537,8 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void                        _Install () override;
+                virtual void                        _UnInstall () override;
                 virtual void                        _RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
@@ -528,6 +559,8 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void                        _Install () override;
+                virtual void                        _UnInstall () override;
                 virtual void                        _RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
@@ -548,6 +581,8 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void                        _Install () override;
+                virtual void                        _UnInstall () override;
                 virtual void                        _RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
@@ -569,6 +604,8 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void                        _Install () override;
+                virtual void                        _UnInstall () override;
                 virtual void                        _RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
@@ -648,6 +685,8 @@ namespace   Stroika {
                 virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
                 virtual  State                      _GetState () const override;
+                virtual void                        _Install () override;
+                virtual void                        _UnInstall () override;
                 virtual void                        _RunAsAservice () override;
                 virtual void                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                        _Stop (Time::DurationSecondsType timeout) override;
@@ -655,6 +694,7 @@ namespace   Stroika {
                 virtual pid_t                       _GetServicePID () const override;
             private:
                 nonvirtual  Characters::TString GetSvcName_ () const;
+                nonvirtual  bool                IsInstalled_ () const noexcept;
                 nonvirtual  void                SetServiceStatus_ (DWORD dwState) noexcept;
                 nonvirtual  void                ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
                 static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;

@@ -14,6 +14,9 @@
 #include    <sys/stat.h>
 #include    <fcntl.h>
 #endif
+#if     qPlatform_Windows
+#include    "../../Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/TString.h"
@@ -23,7 +26,9 @@
 #include    "../../Foundation/Execution/CommandLine.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Execution/ErrNoException.h"
+#include    "../../Foundation/Execution/Finally.h"
 #include    "../../Foundation/Execution/Module.h"
+#include    "../../Foundation/Execution/OperationNotSupportedException.h"
 #include    "../../Foundation/Execution/ProcessRunner.h"
 #include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/Sleep.h"
@@ -642,6 +647,8 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
             continue;
         }
         static  const   pair<String, MajorOperation> kPairs_[] = {
+            pair<String, MajorOperation> (Main::CommandNames::kInstall, MajorOperation::eInstall),
+            pair<String, MajorOperation> (Main::CommandNames::kUnInstall, MajorOperation::eUnInstall),
             pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
             pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
             pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
@@ -711,7 +718,8 @@ bool    Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s
  ************************************ Service::Main *****************************
  ********************************************************************************
  */
-
+const   wchar_t Service::Main::CommandNames::kInstall[]             =   L"Install";
+const   wchar_t Service::Main::CommandNames::kUnInstall[]           =   L"UnInstall";
 const   wchar_t Service::Main::CommandNames::kRunAsService[]        =   L"Run-As-Service";
 const   wchar_t Service::Main::CommandNames::kStart[]               =   L"Start";
 const   wchar_t Service::Main::CommandNames::kStop[]                =   L"Stop";
@@ -761,6 +769,14 @@ void    Main::Run (const CommandArgs& args)
         Execution::DoThrow (Execution::InvalidCommandLineArgument (L"No recognized operation"));
     }
     switch (*args.fMajorOperation) {
+        case CommandArgs::MajorOperation::eInstall: {
+                Install ();
+            }
+            break;
+        case CommandArgs::MajorOperation::eUnInstall: {
+                UnInstall ();
+            }
+            break;
         case CommandArgs::MajorOperation::eRunServiceMain: {
                 RunAsService ();
             }
@@ -925,6 +941,32 @@ Main::State     Main::LoggerServiceWrapper::_GetState () const
     return fDelegateTo_->_GetState ();
 }
 
+void    Main::LoggerServiceWrapper::_Install ()
+{
+    Logger::Get ().Log (Logger::Priority::eInfo, L"Installing Service...");
+    try {
+        fDelegateTo_->_Install ();
+    }
+    catch (...) {
+        // @todo - capture useful message
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to install - aborting...");
+        Execution::DoReThrow ();
+    }
+}
+
+void    Main::LoggerServiceWrapper::_UnInstall ()
+{
+    Logger::Get ().Log (Logger::Priority::eInfo, L"UnInstalling Service...");
+    try {
+        fDelegateTo_->_UnInstall ();
+    }
+    catch (...) {
+        // @todo - capture useful message
+        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to uninstall - aborting...");
+        Execution::DoReThrow ();
+    }
+}
+
 void    Main::LoggerServiceWrapper::_RunAsAservice ()
 {
     Logger::Get ().Log (Logger::Priority::eInfo, L"Service Starting");
@@ -996,6 +1038,16 @@ Main::State             Main::RunTilIdleService::_GetState () const
             return Main::State::eRunning;
     }
     return Main::State::eStopped;
+}
+
+void    Main::RunTilIdleService::_Install ()
+{
+    Execution::DoThrow (Execution::OperationNotSupportedException (L"Install"));
+}
+
+void    Main::RunTilIdleService::_UnInstall ()
+{
+    Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
 void        Main::RunTilIdleService::_RunAsAservice ()
@@ -1090,6 +1142,16 @@ Main::State             Main::BasicUNIXServiceImpl::_GetState () const
         return State::eRunning;
     }
     return State::eStopped;
+}
+
+void    Main::BasicUNIXServiceImpl::_Install ()
+{
+    Execution::DoThrow (Execution::OperationNotSupportedException (L"Install"));
+}
+
+void    Main::BasicUNIXServiceImpl::_UnInstall ()
+{
+    Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
 void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
@@ -1280,10 +1342,78 @@ shared_ptr<Main::IApplicationRep>      Main::WindowsService::_GetAttachedAppRep 
     return fAppRep_;
 }
 
-Main::State             Main::WindowsService::_GetState () const
+Main::State     Main::WindowsService::_GetState () const
 {
     AssertNotImplemented ();
     return Main::State::eStopped;
+}
+
+void    Main::WindowsService::_Install ()
+{
+    if (IsInstalled_ ()) {
+        return;
+    }
+
+    String  cmdLineForRunSvc = L"\"" + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+
+    TString svcName = GetSvcName_ ();
+    SC_HANDLE hService = ::CreateService (
+                             hSCM, svcName.c_str (), svcName.c_str (),
+                             SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
+                             SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
+                             cmdLineForRunSvc.AsTString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL
+                         );
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+}
+
+void    Main::WindowsService::_UnInstall ()
+{
+    if (not IsInstalled_ ()) {
+        return;
+    }
+
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+
+    TString svcName = GetSvcName_ ();
+    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), SERVICE_STOP | DELETE);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
+    Execution::Finally cleanup2 ([hService] () {
+        ::CloseServiceHandle (hService);
+    });
+
+#if 1
+    {
+        SERVICE_STATUS status;
+        if (not ::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
+            DWORD e = ::GetLastError ();
+            if (e != ERROR_SERVICE_NOT_ACTIVE) {
+                Execution::Platform::Windows::Exception::DoThrow (e);
+            }
+        }
+    }
+#else
+    {
+        SERVICE_STATUS status;
+        if (!::ControlService (hService, SERVICE_CONTROL_STOP, &status)) {
+            DWORD dwError = GetLastError ();
+            if (!((dwError == ERROR_SERVICE_NOT_ACTIVE) or (dwError == ERROR_SERVICE_CANNOT_ACCEPT_CTRL and status.dwCurrentState == SERVICE_STOP_PENDING))) {
+                Logger::EmitMessage (Logger::eError_MT, "Could not stop service");
+
+            }
+        }
+    }
+#endif
+
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::DeleteService (hService));
 }
 
 void    Main::WindowsService::_RunAsAservice ()
@@ -1344,6 +1474,21 @@ TString Main::WindowsService::GetSvcName_ () const
 {
     RequireNotNull (fAppRep_);  // must attach first
     return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
+}
+
+bool    Main::WindowsService::IsInstalled_ () const noexcept
+{
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, READ_CONTROL);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SERVICE_QUERY_CONFIG);
+    if (hService != nullptr) {
+        ::CloseServiceHandle (hService);
+    }
+    return hService != NULL;
 }
 
 void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {

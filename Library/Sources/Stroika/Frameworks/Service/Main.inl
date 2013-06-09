@@ -69,6 +69,17 @@ namespace   Stroika {
                 RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
                 return *GetServiceRep_ ()._GetAttachedAppRep ();
             }
+            inline  void    Main::Install ()
+            {
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Install"));
+                GetServiceRep_ ()._Install ();
+            }
+
+            inline  void    Main::UnInstall ()
+            {
+                Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::UnInstall"));
+                GetServiceRep_ ()._UnInstall ();
+            }
             inline  void    Main::Start (Time::DurationSecondsType timeout)
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
