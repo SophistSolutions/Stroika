@@ -26,6 +26,10 @@
  *
  * TODO:
  *
+ *      @todo   Windows service mgr fails to start from cmdline
+ *              SimpleService --start
+ *              doesnt work, though net start Test-Service does.
+ *
  *      @todo   Window service not fully working - see why when you start/stop we dont see
  *              Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
  *              message printed out. Basic startup/shutdown seems roughly OK though.
