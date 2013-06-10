@@ -12,6 +12,7 @@
  ********************************************************************************
  */
 #include    <cstring>
+#include    <type_traits>
 
 #include    "../Debug/Assertions.h"
 #include    "Common.h"
@@ -21,7 +22,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Memory {
 
-            //  class   SmallStackBuffer<T,BUF_SIZE>
+
+            /*
+             ********************************************************************************
+             ************************* SmallStackBuffer<T, BUF_SIZE> ************************
+             ********************************************************************************
+             */
             template    <typename   T, size_t BUF_SIZE>
             inline  void    SmallStackBuffer<T, BUF_SIZE>::GrowToSize (size_t nElements)
             {
@@ -70,6 +76,9 @@ namespace   Stroika {
                 //, fBuffer_ ()
                 , fPointer_ (fBuffer_)
             {
+                static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
+                static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
+                static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
                 GrowToSize (nElements);
             }
             template    <typename   T, size_t BUF_SIZE>
@@ -78,6 +87,9 @@ namespace   Stroika {
                 //, fBuffer_ (),
                 , fPointer_ (fBuffer_)
             {
+                static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
+                static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
+                static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
                 GrowToSize (from.fSize_);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);
@@ -148,6 +160,7 @@ namespace   Stroika {
                 AssertNotNull (fPointer_);
                 return (fPointer_);
             }
+
 
         }
     }

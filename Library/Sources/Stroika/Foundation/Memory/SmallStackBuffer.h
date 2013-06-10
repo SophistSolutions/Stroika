@@ -15,6 +15,15 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *  TODO:
+ *      @todo   Support more flexible CTOR - like SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from)
+*               using differnt SIZE value. At same time - same for operator=
+ *
+ *  Long-Term TOD:
+ *      @todo   Support non-POD type 'T' values properly.
+ *              IE Lose \req std::is_trivially_constructible<T>::value,
+ *              std::is_trivially_destructible<T>::value,
+ *              std::is_trivially_copyable<T>::value
  */
 
 
@@ -38,7 +47,9 @@ namespace   Stroika {
              *
              *  typically sizeof(SmallStackBuffer<T,BUF_SIZE>) will come to roughly 4K, and always at least something.
              *
-             *  NB: this code is only safe for POD-types - not for types with constructors etc.
+             *  \req std::is_trivially_constructible<T>::value
+             *  \req std::is_trivially_destructible<T>::value
+             *  \req std::is_trivially_copyable<T>::value
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#POD-Level-Thread-Safety">POD-Level-Thread-Safety</a>
              *
@@ -46,34 +57,50 @@ namespace   Stroika {
             template    < typename   T, size_t BUF_SIZE = ((4096 / sizeof(T)) == 0 ? 1 : (4096 / sizeof(T))) >
             class   SmallStackBuffer {
             public :
-                SmallStackBuffer (size_t nElements);
+                explicit SmallStackBuffer (size_t nElements);
                 SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
                 ~SmallStackBuffer ();
+
+            public:
+                NO_DEFAULT_CONSTRUCTOR(SmallStackBuffer);
 
             public:
                 nonvirtual  SmallStackBuffer<T, BUF_SIZE>&   operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);
 
             public:
-                operator const T* () const;
-                operator T* ();
+                /**
+                 */
+                nonvirtual  operator const T* () const;
+                nonvirtual  operator T* ();
 
             public:
                 typedef T*          iterator;
                 typedef const T*    const_iterator;
 
             public:
+                /**
+                 */
                 nonvirtual  iterator        begin ();
-                nonvirtual  iterator        end ();
                 nonvirtual  const_iterator  begin () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  iterator        end ();
                 nonvirtual  const_iterator  end () const;
 
             public:
-                // Returns the size of the buffer in ELEMENTS (not necessarily in bytes)
+                /**
+                 *  Returns the size of the buffer in ELEMENTS (not necessarily in bytes)
+                 */
                 nonvirtual  size_t  GetSize () const;
 
             public:
-                // Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize ()
+                /**
+                 *  Despite the name, it is OK if nElements shrinks the list. This really should be better called Resize ()
+                 */
                 nonvirtual  void    GrowToSize (size_t nElements);
+
             private:
                 nonvirtual  void    GrowToSize_ (size_t nElements);
 
