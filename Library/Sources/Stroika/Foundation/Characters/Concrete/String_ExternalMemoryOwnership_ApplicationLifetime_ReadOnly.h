@@ -13,7 +13,11 @@
  *  \file
  *
  * TODO:
- *
+ *      @todo   Decide what todo about String_Constant
+ *              > delete it and use String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly directly
+ *              > leave it here
+ *              > Move it to separate file
+ *              > Decide if it SB in Concrete or top-level characters namespace.
  *
  */
 

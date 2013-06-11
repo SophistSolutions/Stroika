@@ -16,13 +16,10 @@
  * TODO:
  *      @todo   Add move CTOR
  *
- *      @todo   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
- *              or use separate buffer. Good reasons for both ways. Not sure whats best.
+ *      @todo   Evaluate and document effacacy of qUseBlockAllocatedForSmallBufStrings in implementaiton.
  *
- *              o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
- *                  which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
- *
- *              o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
+ *      @todo   Make rep-type available so that other sibling types can easiy use it to construct/morph
+ *              into this type (maybe not needed - cuz they can use String_BufferedArray(xxx).GetRep()().
  *
  */
 
