@@ -26,27 +26,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Concrete;
 
-//using   Memory::SharedByValue;
-
-
-
-
-namespace   {
-    /*
-     *  UnsupportedFeatureException_
-     *
-     *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support
-     *      any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
-     *      that supports everything todo that.
-     *
-     *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before
-     *      each all, or have an extra return value about if it succeeded. But - that would be alot of
-     *      overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
-     *      to change a string that happened to come from a 'readonly' source. We can handle that internally,
-     *      and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
-     */
-    class   UnsupportedFeatureException_ {};
-}
 
 
 
@@ -128,25 +107,25 @@ namespace   {
                 }
             }
             virtual void    InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
             virtual void    RemoveAll () override {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
             virtual void    SetAt (Character item, size_t index) {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
             virtual void    RemoveAt (size_t index, size_t amountToRemove) {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
             virtual void    SetLength (size_t newLength) override {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
             virtual const wchar_t*  c_str_peek () const  noexcept override {
                 return nullptr;
             }
             virtual const wchar_t*      c_str_change () override {
-                Execution::DoThrow (UnsupportedFeatureException_ ());
+                Execution::DoThrow (UnsupportedFeatureException ());
             }
 
         protected:

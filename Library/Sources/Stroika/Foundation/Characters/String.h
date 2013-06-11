@@ -53,8 +53,11 @@
  *                      public:
  *              ...
  *              Moved to common place so shared among various impls.
+ *
  *              IMPORTANT! Do like we did with CONTAINERS - With better declared public/private/protected REPS and share
  *              as needed among implementations.
+ *
+ *				VERY IMPORTANT TODO NEXT CUZ REMOVES LOTS OF DUPLICATED CODE!
  *
  *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
  *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
@@ -63,6 +66,9 @@
  *      @todo   WHEN we have String_stdwstring implemented  - we can do String (wstring&& ctor that
  *              does std::move of wstring - and builds String_stdwstring rep! That could be notably
  *              faster for constructing Strings from wstring - in some cases...
+ *
+ *		@todo	Add a String_UTF8 backend - (maybe a number of variants). Key is that these can be more compact
+ *				and for many operaitons, just fine, but for insert, and a[i] = quite sucky.
  *
  *      @todo   Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
  *              Should be able to do for (Character c : s) {...}
@@ -104,9 +110,18 @@
  *      @todo   Move DOCS in the top of this file down to the appropriate major classes - and then review the implemantion and make sure
  *              it is all correct for each (especially SetStorage () sutff looks quesitonable)
  *
+ *      @todo   String::Remove()
+ *				CRAPPY API - probably delete or redo. See if ever used!!! RemoveAll or RemoveFirst() would be
+ *              better names (thogh all woudl be a change in functionality) - and maybe return a bool so
+ *              you can tell if it did anyhting? Also - make case match an optional param.
+ *
  *      @todo   Use new CopyTo() method to get rid of MOST of the casts/memcpy code in the implementation
  *
  *      @todo   Try and get rid of the Peek () API
+ *
+ *				OR better document why its OK (unexpected throw stuff may make it OK).
+ *
+ *				Maybe also add GetRepSupportedFeatures() API? Maybe not worth it. If no - dumcument why someplace!
  *
  *      @todo   WRITEUP THREAD SAFETY:
  *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
@@ -324,10 +339,6 @@ namespace   Stroika {
                 /**
                  *  Remove the first occurence of Character 'c' from the string. Not an error if none
                  *  found.
-                 *
-                 *      @todo   CRAPPY API - probably delete or redo. See if ever used!!! RemoveAll or RemoveFirst() would be
-                 *              better names (thogh all woudl be a change in functionality) - and maybe return a bool so
-                 *              you can tell if it did anyhting?
                  */
                 nonvirtual  void        Remove (Character c);
 
@@ -732,6 +743,22 @@ namespace   Stroika {
                 typedef     String::_SharedPtrIRep  _SharedPtrIRep;
 
             public:
+				/*
+				 *  UnsupportedFeatureException
+				 *
+				 *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support
+				 *      any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
+				 *      that supports everything todo that.
+				 *
+				 *          We COULD have done this by having a SUPPORTSX() predicate method called on each rep before
+				 *      each all, or have an extra return value about if it succeeded. But - that would be alot of
+				 *      overhead for something likely quite rate. In other words, it will be EXCEPTIONAL that one tries
+				 *      to change a string that happened to come from a 'readonly' source. We can handle that internally,
+				 *      and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
+				 */
+				class   UnsupportedFeatureException {};
+            
+			public:
 
                 virtual _SharedPtrIRep      Clone () const                          = 0;
 
