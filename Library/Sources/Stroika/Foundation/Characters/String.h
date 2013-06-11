@@ -52,9 +52,9 @@
  *                  struct  _ReadOnlyRep : public String::_IRep {
  *                      public:
  *              ...
- *              Moved to common place so shared among various impls. 
- *				IMPORTANT! Do like we did with CONTAINERS - With better declared public/private/protected REPS and share
- *				as needed among implementations.
+ *              Moved to common place so shared among various impls.
+ *              IMPORTANT! Do like we did with CONTAINERS - With better declared public/private/protected REPS and share
+ *              as needed among implementations.
  *
  *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
  *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
@@ -154,20 +154,20 @@
  *      @todo   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
  *              and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
  *
- *		@todo	Implement String_Common
- *				NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
+ *      @todo   Implement String_Common
+ *              NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
  *
- *				String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
- *				be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
- *				allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
+ *              String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
+ *              be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
+ *              allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
  *
- *				We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
- *				also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
- *				is trivial and efficient.
- *				class   String_Common : public String {
- *					public:
- *						explicit String_Common (const String& from);
- *				};
+ *              We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
+ *              also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
+ *              is trivial and efficient.
+ *              class   String_Common : public String {
+ *                  public:
+ *                      explicit String_Common (const String& from);
+ *              };
  *
  */
 
@@ -203,12 +203,12 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
-			 *		@see   Concrete::String_BufferedArray
-			 *		@see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)
-			 *		@see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
-			 *		@see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly
-			 *		@see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
-			 *		@see   Concrete::String_Common
+             *      @see   Concrete::String_BufferedArray
+             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)
+             *      @see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
+             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly
+             *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
+             *      @see   Concrete::String_Common
              */
             class   String {
             public:
@@ -280,41 +280,41 @@ namespace   Stroika {
                 nonvirtual  void    SetLength (size_t newLength);
 
             public:
-				/**
-				 */
+                /**
+                 */
                 nonvirtual  bool    empty () const;
 
             public:
-				/**
-				 */
+                /**
+                 */
                 nonvirtual  void    clear ();
 
             public:
-				/**
-				 */
+                /**
+                 */
                 nonvirtual  Character   operator[] (size_t i) const;
                 nonvirtual  void        SetCharAt (Character c, size_t i);
 
             public:
-				/**
-                 *	Note that it is legal, but pointless to pass in an empty string to insert
-				 */
+                /**
+                 *  Note that it is legal, but pointless to pass in an empty string to insert
+                 */
                 nonvirtual  void        InsertAt (Character c, size_t at);
                 nonvirtual  void        InsertAt (const String& s, size_t at);
                 nonvirtual  void        InsertAt (const wchar_t* from, const wchar_t* to, size_t at);
                 nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
 
             public:
-				/**
-                 *	Note that it is legal, but pointless to pass in an empty string to insert
-				 */
+                /**
+                 *  Note that it is legal, but pointless to pass in an empty string to insert
+                 */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
                 nonvirtual  void        Append (const wchar_t* from, const wchar_t* to);
                 nonvirtual  void        Append (const Character* from, const Character* to);
 
             public:
-				/**
+                /**
                  * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
                  * It is an error if this implies removing characters off the end of the string.
                  */
@@ -434,7 +434,7 @@ namespace   Stroika {
                 nonvirtual  pair<size_t, size_t>    Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
-				/**
+                /**
                  *  This is just like Find, but captures all the matching results in an iterable result.
                  *  The reason the overload for RegularExpression's returns a list of pair<size_t,size_t> is because
                  *  the endpoint of the match is ambiguous. For fixed string Find, the end of match is computable
@@ -523,28 +523,28 @@ namespace   Stroika {
                 nonvirtual  String  StripAll (bool (*removeCharIf) (Character)) const;
 
             public:
-				/**
+                /**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivilent. Note that non-lower-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToLowerCase () const;
 
             public:
-				/**
+                /**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivilent. Note that non-upper-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToUpperCase () const;
 
             public:
-				/**
+                /**
                  * Return true if the string contains zero non-whitespace characters.
                  */
                 nonvirtual  bool    IsWhitespace () const;
 
 
             public:
-				/**
+                /**
                  *  CopyTo () copies the contents of this string to the target buffer.
                  *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
                  *  is >= this->GetLength ()
@@ -554,7 +554,7 @@ namespace   Stroika {
 
 
             public:
-				/**
+                /**
                  * Convert String losslessly into a standard C++ type (right now just <wstring>,
                  * <const wchar_t*>,<const Character*> supported)
                  *
@@ -567,7 +567,7 @@ namespace   Stroika {
                 nonvirtual  void    As (T* into) const;
 
             public:
-				/**
+                /**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * Note - template param is optional.
                  */

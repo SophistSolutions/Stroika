@@ -10,10 +10,10 @@
 #include    "Stroika/Foundation/Characters/Format.h"
 #include    "Stroika/Foundation/Characters/RegularExpression.h"
 #include    "Stroika/Foundation/Characters/String.h"
-#include    "Stroika/Foundation/Characters/String_BufferedArray.h"
-#include    "Stroika/Foundation/Characters/String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h"
-#include    "Stroika/Foundation/Characters/String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h"
-#include    "Stroika/Foundation/Characters/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_BufferedArray.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime_ReadOnly.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h"
+#include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "Stroika/Foundation/Containers/Common.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
@@ -27,6 +27,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Characters::Concrete;
 
 
 #define qPrintTimings   0
