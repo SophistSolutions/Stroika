@@ -52,7 +52,9 @@
  *                  struct  _ReadOnlyRep : public String::_IRep {
  *                      public:
  *              ...
- *              Moved to common place so shared among various impls
+ *              Moved to common place so shared among various impls. 
+ *				IMPORTANT! Do like we did with CONTAINERS - With better declared public/private/protected REPS and share
+ *				as needed among implementations.
  *
  *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
  *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
@@ -69,8 +71,6 @@
  *              functions returning a new string. Has performance implications, but also usability.
  *              Not sure what way to go (probably do it), but clearly document!!! And docment reasons.
  *              Maybe can be done transparently with envelope (maybe already done?)
- *
- *      @todo   FromTString() overload like FromUTF8(), and docs for BOTH
  *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
@@ -91,23 +91,11 @@
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
- *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
- *              documentation, and make clearer, and document the tricky bits loosely
- *              alluded to in the appropriate place if the API is truely DOABLE.
- *
  *      @todo   At this stage - for our one trivial test - performance is now about 5% faster than
  *              visual studio.net 2010, but
  *              about a factor of 2 SLOWER than GCC (as of 2011-12-04).
  *
  *              I SUSPECT the next big change to address this will be && MOVE OPERATOR support.
- *
- *      @todo   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
- *              or use separate buffer. Good reasons for both ways. Not sure whats best.
- *
- *              o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
- *                  which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
- *
- *              o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
  *
  *      @todo   Fix const   Memory::SharedByValue<String::String::Rep>  String::kEmptyStringRep_ (new String_CharArray::MyRep_ (nullptr, 0), &String::Clone_);
  *              to properly handle cross-module startup (not safe as is - probably use ModuleInit<> stuff. OR use static intit PTR and assure its fixed
@@ -131,7 +119,6 @@
  *overload so can be string arg OR lambda!
  *              > Compare () - returns < less > more =0 for equal- with CI optin
  *              > Equals() - with CI optin
- *
  *
  *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
  *
@@ -160,19 +147,27 @@
  *              THEN the class can be fully readonly and use sequence stuff to modify?
  *              UNSURE - maybe just too conveinet to be able to modify (but still do sequnce converters?)
  *
- *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
- *
- *      @todo   Do String_stdwstring() – as impl optimized to return std::wstring() a lot – saving that impl internally.
- *              Do make this efficient, must have pur virtual method of String:::Rep which fills in a wstring* arg
- *              (what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT –
- *              but pretty sure we want some sort of String_stdwstring().
- *
  *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
  *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
  *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  *
  *      @todo   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
  *              and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
+ *
+ *		@todo	Implement String_Common
+ *				NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
+ *
+ *				String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
+ *				be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
+ *				allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
+ *
+ *				We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
+ *				also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
+ *				is trivial and efficient.
+ *				class   String_Common : public String {
+ *					public:
+ *						explicit String_Common (const String& from);
+ *				};
  *
  */
 
@@ -208,6 +203,12 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+			 *		@see   Concrete::String_BufferedArray
+			 *		@see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly     (aka String_Constant)
+			 *		@see   Concrete::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
+			 *		@see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly
+			 *		@see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
+			 *		@see   Concrete::String_Common
              */
             class   String {
             public:
@@ -249,6 +250,7 @@ namespace   Stroika {
                  *  Create a String object from a 'TChar' (os-setting - current code page) encoded string.
                  */
                 static  String  FromTString (const TChar* from);
+                static  String  FromTString (const TChar* from, const TChar* to);
                 static  String  FromTString (const TString& from);
 
             public:
@@ -278,31 +280,41 @@ namespace   Stroika {
                 nonvirtual  void    SetLength (size_t newLength);
 
             public:
+				/**
+				 */
                 nonvirtual  bool    empty () const;
 
             public:
+				/**
+				 */
                 nonvirtual  void    clear ();
 
             public:
+				/**
+				 */
                 nonvirtual  Character   operator[] (size_t i) const;
                 nonvirtual  void        SetCharAt (Character c, size_t i);
 
             public:
-                // Note that it is legal, but pointless to pass in an empty string to insert
+				/**
+                 *	Note that it is legal, but pointless to pass in an empty string to insert
+				 */
                 nonvirtual  void        InsertAt (Character c, size_t at);
                 nonvirtual  void        InsertAt (const String& s, size_t at);
                 nonvirtual  void        InsertAt (const wchar_t* from, const wchar_t* to, size_t at);
                 nonvirtual  void        InsertAt (const Character* from, const Character* to, size_t at);
 
             public:
-                // Note that it is legal, but pointless to pass in an empty string to insert
+				/**
+                 *	Note that it is legal, but pointless to pass in an empty string to insert
+				 */
                 nonvirtual  void        Append (Character c);
                 nonvirtual  void        Append (const String& s);
                 nonvirtual  void        Append (const wchar_t* from, const wchar_t* to);
                 nonvirtual  void        Append (const Character* from, const Character* to);
 
             public:
-                /*
+				/**
                  * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
                  * It is an error if this implies removing characters off the end of the string.
                  */
@@ -422,7 +434,7 @@ namespace   Stroika {
                 nonvirtual  pair<size_t, size_t>    Find (const RegularExpression& regEx, size_t startAt = 0) const;
 
             public:
-                /*
+				/**
                  *  This is just like Find, but captures all the matching results in an iterable result.
                  *  The reason the overload for RegularExpression's returns a list of pair<size_t,size_t> is because
                  *  the endpoint of the match is ambiguous. For fixed string Find, the end of match is computable
@@ -511,26 +523,28 @@ namespace   Stroika {
                 nonvirtual  String  StripAll (bool (*removeCharIf) (Character)) const;
 
             public:
-                /*
+				/**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivilent. Note that non-lower-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToLowerCase () const;
 
-                /*
+            public:
+				/**
                  * Return a new string based on this string where each lower case characer is replaced by its
                  * upper case equivilent. Note that non-upper-case characters (such as punctuation) un unchanged.
                  */
                 nonvirtual  String  ToUpperCase () const;
 
-                /*
+            public:
+				/**
                  * Return true if the string contains zero non-whitespace characters.
                  */
                 nonvirtual  bool    IsWhitespace () const;
 
 
             public:
-                /*
+				/**
                  *  CopyTo () copies the contents of this string to the target buffer.
                  *  CopyTo () does NOT nul-terminate the target buffer, but DOES assert that (bufTo-bufFrom)
                  *  is >= this->GetLength ()
@@ -540,7 +554,7 @@ namespace   Stroika {
 
 
             public:
-                /*
+				/**
                  * Convert String losslessly into a standard C++ type (right now just <wstring>,
                  * <const wchar_t*>,<const Character*> supported)
                  *
@@ -553,7 +567,7 @@ namespace   Stroika {
                 nonvirtual  void    As (T* into) const;
 
             public:
-                /*
+				/**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * Note - template param is optional.
                  */
@@ -781,116 +795,6 @@ namespace   Stroika {
              *              lhs.compare (rhs, co);
              */
             bool Equals (const String& lhs, const String& rhs, CompareOptions co = CompareOptions::eWithCase);
-
-
-            /// CAREFULLY REVIEW AND THEN MOVE OR LOSE IFDEFED OUT CODE BELOW
-#if 0
-
-            /**
-            *
-
-
-            ***** MAYBE THIS APPLIES TO String_ExternalMemoryOwnership_StackLifetime_ReadOnly ???
-
-
-            *   Design Overview:
-            *
-            *       This class looks and acts like a regular String object, but with the performance advantage
-            *   that it requires no (significant) free-store allocation. It allocates a 'rep' object from
-            *   block-allocation, and re-uses its argument pointers for actual string character storage.
-            *
-            *       Also important, it avoids having todo any copying of the original string.
-            *
-            *       It can avoid these costs under MANY - but not ALL circumstances. This underlying String
-            *   object may remain highly efficeint (working off stack memory) only so long as its original
-            *   String_ExternalMemoryOwnership_StackLifetime_ReadOnly exsts. Once that goes out of scope
-            *   the underlying StringRep must be 'morphed' effectively into a regular string-rep (if there
-            *   remain any references.
-            *
-            *       Also - SOME APIS (still TBD, but perhaps including c_str()) - will force that morphing
-            *   /copying.
-            *
-            *       This can STILL be a HUGE performance benefit. Consider a shim API between Xerces and
-            *   Stroika - for SAX - where lots of strings are efficiently passed by Xerces - and are forwarded
-            *   to Stroika 'SAX' APIs. But consider a usage, where several of the strings are never used.
-            *
-            *       The shim would be copying/converting these strings, all for no purpose, since they never
-            *   got used. This cost can be almost totally eliminated.
-            *
-            *       Plus - many - perhaps even most String API methods can be applied to these ligher cost
-            *   strings in that 'SAX Callback' scenario without ever constructing high-cost String objects.
-            *
-            *       But - if anyone ever does allocate one of those objects - no biggie. It just gets morphed
-            *   and the cost paid then.
-            *
-            *       THATS THE PLAN ANYHOW....
-            *
-            *
-            **
-            ** SERIOUS - NOT sure what todo about stuff like c_str() - as doc says below - no obvious limitation on lifetime! I GUESS we must simply
-            ** force such APIs to 'breakreferences' - as the note below says. THAT does appear to fix the problem - but at a cost - maybe too huge cost?
-            *
-            *
-            *     o   Seriously reconsider design / semantics of String_ExternalMemoryOwnership_StackLifetime_ReadOnly/String_ExternalMemoryOwnership_StackLifetime_ReadWrite classes.
-            *         There maybe a serious / hopeless bug having todo with threads and c_str(). Suppose in one thread we do:
-            *             void    f()
-            *                 {
-            *                     wchar_t buf[1024] = L"fred";
-            *                     String_ExternalMemoryOwnership_StackLifetime_ReadOnly tmp (buf);
-            *
-            *                     // Then call some function F() with tmp - where F() passes the value (as a String) to another thread, and that other thread runs for a very long time with the string - just READING
-            *                     // the string - never MODIFYING it.
-            *                     //
-            *                     // THEN - because of second thread owning that string - the refCount is bumped up. And suppose that other string calls s.c_str() - and is ever so briefly using the s.c_str() results - say
-            *                     // in a printf() call.
-            *                     //
-            *                     // Now when String_ExternalMemoryOwnership_StackLifetime_ReadOnly goes out of scope - and it notices its refCount != 0, it must somehow MORPH the underlying representation into
-            *                     // something SAFE (copy all the strings). But thats tricky - ESPECIALLY in light of threads and someone else doing a c_str().
-            *                     //
-            *                     // I guess its not IMPOSSIBLE to fix all this. You could
-            *                     //          (o)     On c_str() calls - at least for this class rep - maybe always - BREAKREFERENCES() - so the lifetime of your ptr is garuanteed friendly
-            *                     //          (o)     Put in enuf flags and CriticalSection code - so on String_ExternalMemoryOwnership_StackLifetime_ReadOnly () - we block until we can
-            *                     //                  Copy all the data safely and set a flag saying to free it at the end - as a regular string - not a String_ExternalMemoryOwnership_StackLifetime_ReadOnly::Rep (would be nice
-            *                     //                  to transform the rep object but thats trickier).
-            *                 }
-
-            *
-             */
-
-            /*
-             * In case of trouble in stack lifetime string make bundle copy object. Store it in rep. Then next call from envelope triggers exception which forces type morph call from envelope!
-
-            Think that fixes most trouble except that aLl enveoes methods now need to handle exceotion
-            */
-
-#endif
-
-
-#if     0
-            /**
-             *
-             *  NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
-             *
-             *  String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
-             *  be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
-             *  allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
-             *
-             *  We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
-             *  also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
-             *  is trivial and efficient.
-             *
-             *      <<TODO: OPTIMIZATION not really implemented yet. But it can still freeely be used safely.>>
-             */
-            class   String_Common : public String {
-            public:
-                explicit String_Common (const String& from);
-            };
-#endif
-
-
-#if     0
-#endif
-
 
 
             /**

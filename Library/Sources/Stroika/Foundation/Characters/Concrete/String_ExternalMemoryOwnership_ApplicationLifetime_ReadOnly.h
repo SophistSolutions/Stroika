@@ -83,7 +83,7 @@ namespace   Stroika {
 
 
             /**
-            &&&& UNSURE ABOUT WHOLE THING
+            &&&& UNSURE ABOUT TYPEDEF
              */
             typedef Concrete::String_Constant String_Constant;
 

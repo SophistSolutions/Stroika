@@ -14,8 +14,15 @@
  *
  *
  * TODO:
+ *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
  *
+ *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
+ *              documentation, and make clearer, and document the tricky bits loosely
+ *              alluded to in the appropriate place if the API is truely DOABLE.
  *
+ *      @todo   Unclear how terribly useful this is. Only can really re-use the RAM while refcount is one. Elsewise we
+ *              get cloning (SharedByValue). Still - this could possibly be a useful class. Consider losing
+ *              however... Or relegating to POST v2?
  */
 
 

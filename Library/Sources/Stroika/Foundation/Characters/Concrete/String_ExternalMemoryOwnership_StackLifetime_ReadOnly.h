@@ -12,6 +12,42 @@
 /**
  *  \file
  *
+ *      @todo   Redo implementation of String_StackLifetime - using high-performance algorithm described in the documentation.
+ *
+ *      @todo   Make another pass over String_ExternalMemoryOwnership_StackLifetime_ReadOnly/ReadWrite
+ *              documentation, and make clearer, and document the tricky bits loosely
+ *              alluded to in the appropriate place if the API is truely DOABLE.
+ *
+ *      @todo   Review this criticism (below). Not sure still valid:
+ *
+ ** SERIOUS - NOT sure what todo about stuff like c_str() - as doc says below - no obvious limitation on lifetime! I GUESS we must simply
+ ** force such APIs to 'breakreferences' - as the note below says. THAT does appear to fix the problem - but at a cost - maybe too huge cost?
+ *
+ *     o   Seriously reconsider design / semantics of String_ExternalMemoryOwnership_StackLifetime_ReadOnly/String_ExternalMemoryOwnership_StackLifetime_ReadWrite classes.
+ *         There maybe a serious / hopeless bug having todo with threads and c_str(). Suppose in one thread we do:
+ *             void    f()
+ *                 {
+ *                     wchar_t buf[1024] = L"fred";
+ *                     String_ExternalMemoryOwnership_StackLifetime_ReadOnly tmp (buf);
+ *
+ *                     // Then call some function F() with tmp - where F() passes the value (as a String) to another thread, and that other thread runs for a very long time with the string - just READING
+ *                     // the string - never MODIFYING it.
+ *                     //
+ *                     // THEN - because of second thread owning that string - the refCount is bumped up. And suppose that other string calls s.c_str() - and is ever so briefly using the s.c_str() results - say
+ *                     // in a printf() call.
+ *                     //
+ *                     // Now when String_ExternalMemoryOwnership_StackLifetime_ReadOnly goes out of scope - and it notices its refCount != 0, it must somehow MORPH the underlying representation into
+ *                     // something SAFE (copy all the strings). But thats tricky - ESPECIALLY in light of threads and someone else doing a c_str().
+ *                     //
+ *                     // I guess its not IMPOSSIBLE to fix all this. You could
+ *                     //          (o)     On c_str() calls - at least for this class rep - maybe always - BREAKREFERENCES() - so the lifetime of your ptr is garuanteed friendly
+ *                     //          (o)     Put in enuf flags and CriticalSection code - so on String_ExternalMemoryOwnership_StackLifetime_ReadOnly () - we block until we can
+ *                     //                  Copy all the data safely and set a flag saying to free it at the end - as a regular string - not a String_ExternalMemoryOwnership_StackLifetime_ReadOnly::Rep (would be nice
+ *                     //                  to transform the rep object but thats trickier).
+ *                 }
+
+ *
+ *
  */
 
 
@@ -61,6 +97,39 @@ namespace   Stroika {
                  *
                  *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
                  *          real optimized implemenation >>
+                 *
+                 *
+                 *  TODO::::COOPY SOME OF THIS - CLEANUP THESE DCOS
+                 *
+                *       This class looks and acts like a regular String object, but with the performance advantage
+                *   that it requires no (significant) free-store allocation. It allocates a 'rep' object from
+                *   block-allocation, and re-uses its argument pointers for actual string character storage.
+                *
+                *       Also important, it avoids having todo any copying of the original string.
+                *
+                *       It can avoid these costs under MANY - but not ALL circumstances. This underlying String
+                *   object may remain highly efficient (working off stack memory) only so long as its original
+                *   String_ExternalMemoryOwnership_StackLifetime_ReadOnly exsts. Once that goes out of scope
+                *   the underlying StringRep must be 'morphed' effectively into a regular string-rep (if there
+                *   remain any references.
+                *
+                *       Also - SOME APIS (still TBD, but perhaps including c_str()) - will force that morphing
+                *   /copying.
+                *
+                *       This can STILL be a HUGE performance benefit. Consider a shim API between Xerces and
+                *   Stroika - for SAX - where lots of strings are efficiently passed by Xerces - and are forwarded
+                *   to Stroika 'SAX' APIs. But consider a usage, where several of the strings are never used.
+                *
+                *       The shim would be copying/converting these strings, all for no purpose, since they never
+                *   got used. This cost can be almost totally eliminated.
+                *
+                *       Plus - many - perhaps even most String API methods can be applied to these ligher cost
+                *   strings in that 'SAX Callback' scenario without ever constructing high-cost String objects.
+                *
+                *       But - if anyone ever does allocate one of those objects - no biggie. It just gets morphed
+                *   and the cost paid then.
+                *
+                *       THATS THE PLAN ANYHOW....
                  */
                 class   String_ExternalMemoryOwnership_StackLifetime_ReadOnly : public String {
                 public:

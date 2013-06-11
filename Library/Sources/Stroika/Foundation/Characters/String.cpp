@@ -553,6 +553,11 @@ String  String::FromTString (const TChar* from)
     return TString2Wide (from);
 }
 
+String  String::FromTString (const TChar* from, const TChar* to)
+{
+    return TString2Wide (TString (from, to));
+}
+
 String  String::FromTString (const basic_string<TChar>& from)
 {
     return TString2Wide (from);

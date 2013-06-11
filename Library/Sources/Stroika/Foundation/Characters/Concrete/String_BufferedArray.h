@@ -16,6 +16,14 @@
  * TODO:
  *      @todo   Add move CTOR
  *
+ *      @todo   EITHER embed data as buffer in BufferdString - so small strings fit without malloc,
+ *              or use separate buffer. Good reasons for both ways. Not sure whats best.
+ *
+ *              o   At least one StringRep variant (maybe the stanrdard/common string-buffer rep
+ *                  which has a fixed-size buffer, and uses that INLINE, and allocates POINTER if that isn't big enuf?
+ *
+ *              o   PROBABLY best to just DO direct blockallocated() calls for data < fixed size
+ *
  */
 
 

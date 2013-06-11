@@ -9,17 +9,16 @@
 #include    "../String.h"
 
 
+
 /**
  *  \file
  *
  *
  * TODO:
- *      @todo   SERIOUSLY CONSIDER LOSING THIS CLASS - AND THEN CAN RENMAE
- *              String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly to
- *              String_ExternalMemoryOwnership_ApplicationLifetime.
  *
- *              It would have the feature that IF you ever called a method to modify it - it would lose the old rep,
- *              cons up a new one? Not sure how that would be useful??? Maybe thats best?
+ *      @todo   Unclear how terribly useful this is. Only can really re-use the RAM while refcount is one. Elsewise we
+ *              get cloning (SharedByValue). Still - this could possibly be a useful class. Consider losing
+ *              however... Or relegating to POST v2?
  */
 
 
