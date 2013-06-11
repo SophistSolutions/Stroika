@@ -47,7 +47,20 @@
  *
  * TODO:
  *
- *      @todo   Move String_BufferedArray - etc - to separate module/file
+ *      @todo   NEED
+ *              struct  HELPER_ : String {
+ *                  struct  _ReadOnlyRep : public String::_IRep {
+ *                      public:
+ *              ...
+ *              Moved to common place so shared among various impls
+ *
+ *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
+ *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
+ *              commutativity issues (wchar* == String versus String == wchar*).
+ *
+ *      @todo   WHEN we have String_stdwstring implemented  - we can do String (wstring&& ctor that
+ *              does std::move of wstring - and builds String_stdwstring rep! That could be notably
+ *              faster for constructing Strings from wstring - in some cases...
  *
  *      @todo   Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
  *              Should be able to do for (Character c : s) {...}
@@ -198,11 +211,10 @@ namespace   Stroika {
              */
             class   String {
             public:
-#if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr size_t    kBadIndex   = wstring::npos;
 #else
                 DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
-                //static  constexpr size_t    kBadIndex   = (size_t) - 1;
 #endif
 
             public:
@@ -225,15 +237,24 @@ namespace   Stroika {
                 nonvirtual  String& operator= (const String& newString);
 
             public:
+                /**
+                 *  Create a String object from a 'char-based' utf-8 encoded string.
+                 */
                 static  String  FromUTF8 (const char* from);
                 static  String  FromUTF8 (const char* from, const char* to);
                 static  String  FromUTF8 (const std::string& from);
 
             public:
+                /**
+                 *  Create a String object from a 'TChar' (os-setting - current code page) encoded string.
+                 */
                 static  String  FromTString (const TChar* from);
                 static  String  FromTString (const TString& from);
 
             public:
+                /**
+                 *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
+                 */
                 static  String  FromNarrowSDKString (const char* from);
                 static  String  FromNarrowSDKString (const string& from);
 
@@ -544,7 +565,7 @@ namespace   Stroika {
                 nonvirtual  void        AsUTF8 (std::string* into) const;
 
             public:
-                /*
+                /**
                  */
                 nonvirtual  TString AsTString () const;
                 nonvirtual  void    AsTString (TString* into) const;
@@ -556,7 +577,7 @@ namespace   Stroika {
                 nonvirtual  void    AsNarrowSDKString (string* into) const;
 
             public:
-                /*
+                /**
                  * Convert String losslessly into a standard C++ type (right now just <string> supported).
                  * The source string MUST be valid ascii characters (asserted)
                  */
@@ -762,137 +783,16 @@ namespace   Stroika {
             bool Equals (const String& lhs, const String& rhs, CompareOptions co = CompareOptions::eWithCase);
 
 
-            /**
-             *  String_BufferedArray is a kind of string which maintains extra buffer space, and
-             *  is more efficient if you are going to resize your string.
-             */
-            class   String_BufferedArray  : public String {
-            public:
-                /*
-                 * Note for the meaning of the reserve parameter, see String_BufferedArray::reserve()
-                 */
-                String_BufferedArray ();
-                String_BufferedArray (size_t reserve);
-                explicit String_BufferedArray (const wchar_t* cString);
-                explicit String_BufferedArray (const wchar_t* cString, size_t reserve);
-                explicit String_BufferedArray (const wstring& str);
-                explicit String_BufferedArray (const wstring& str, size_t reserve);
-                explicit String_BufferedArray (const String& from);
-                explicit String_BufferedArray (const String& from, size_t reserve);
-                String_BufferedArray (const String_BufferedArray& s);
-
-                String_BufferedArray& operator= (const String_BufferedArray& s);
-
-            public:
-                // This returns the number of characters of space available in the buffer
-                // (without doing memory allocations)
-                nonvirtual  size_t  capacity () const;
-
-            public:
-                // Reserve the given number of characters of space. N can be any size, and is only a hint.
-                // A value of n < GetLength () will be ignored.
-                nonvirtual  void    reserve (size_t n);
-            };
-
-
-            /**
-             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly is a subtype of string you can
-             * use to construct a String object, so long as the memory pointed to in the argument has a
-             *      o   FULL APPLICATION LIFETIME,
-             *      o   the member referenced never changes - is READONLY.
-             *
-             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly will NOT change the memory
-             * referenced in the CTOR.
-             *
-             *      Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly
-             * maybe treated like normal strings - passed anywhere, and even modified via the String APIs.
-             *
-             *  For example
-             *      String  tmp1    =   L"FRED";
-             *      String  tmp2    =   String (L"FRED");
-             *      String  tmp3    =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (L"FRED");
-             *
-             *      extern String saved;
-             *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-             *      F(tmp1);
-             *      F(tmp2);
-             *      F(tmp3);
-             *
-             *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
-             * maybe slightly more efficent, but all are equally safe.
-             *
-             */
-            class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly : public String {
-            public:
-                explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString);
-                String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
-
-                String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s);
-
-            private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-            public:
-#endif
-                class   MyRep_;
-            };
-
-
-            /**
-             *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
-             * with a minimum of cost.
-             */
-            typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
-
-
-            /**
-             *      String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite is a subtype of string you can
-             * use to construct a String object, so long as the memory pointed to in the argument has a
-             *      o   FULL APPLICATION LIFETIME,
-             *      o   and never changes value through that pointer
-             *
-             *      Note that the memory passed in MUST BE MODIFIABLE (READ/WRITE) - as
-             * String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite MAY modify the data in the
-             * pointer during the objects lifetime.
-             *
-             *      Strings constructed with this String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
-             * maybe treated like normal strings - passed anywhere, and even modified via the String APIs.
-             * However, the underlying implemenation may cache the argument const wchar_t* cString
-             * indefinitely, and re-use it as needed, so only call this String constructor with a block
-             * of read-only, never changing memory, and then - only as a performance optimization.
-             *
-             *  For example
-             *      String  tmp1    =   L"FRED";
-             *      String  tmp2    =   String (L"FRED");
-             *      static  wchar_t buf[1024] = { L"FRED" };
-             *      String  tmp3    =   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (buf);
-             *
-             *      extern String saved;
-             *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-             *      F(tmp1);
-             *      F(tmp2);
-             *      F(tmp3);
-             *
-             *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
-             * maybe slightly more efficent, but all are equally safe.
-             *
-             */
-            class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite : public String {
-            public:
-                explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString);
-                String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s);
-
-                String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s);
-
-            private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
-            public:
-#endif
-                class   MyRep_;
-            };
-
+            /// CAREFULLY REVIEW AND THEN MOVE OR LOSE IFDEFED OUT CODE BELOW
+#if 0
 
             /**
             *
+
+
+            ***** MAYBE THIS APPLIES TO String_ExternalMemoryOwnership_StackLifetime_ReadOnly ???
+
+
             *   Design Overview:
             *
             *       This class looks and acts like a regular String object, but with the performance advantage
@@ -963,106 +863,7 @@ namespace   Stroika {
             Think that fixes most trouble except that aLl enveoes methods now need to handle exceotion
             */
 
-
-
-            /*
-             *  String_ExternalMemoryOwnership_StackLifetime_ReadOnly is a subtype of String you can use to construct a String object, so long as the memory pointed to
-             * in the argument has a
-             *      o   Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime_ReadOnly envelope class
-             *      o   and buffer data never changes value externally to this String represenation
-             *
-            ///REVIEW - PRETTY SURE THIS IS WRONG!!!! - UNSAFE - READONLY SHOULD mean pointer passed in is CONST - so memory may NOT be modified in this case -- LGP 2012-03-28
-            /// DOBLE CHECK NO ASSIMPTIONS BELOW - WRONG - LINE NOT ASSUMED ANYWHERE
-             *  Note that the memory passed in must be READ/WRITE - and may be modified by the String_ExternalMemoryOwnership_StackLifetime_ReadOnly ()!
-             *
-             *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadOnly maybe treated like normal strings - passed anywhere, and even modified via the
-             *  String APIs. However, the underlying implemenation may cache the argument const wchar_t* cString for as long as the lifetime of the envelope class,
-             *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
-             *
-             *  This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
-             *  call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
-             *  association will be broken when the String_ExternalMemoryOwnership_StackLifetime_ReadOnly goes out of scope.
-             *
-             *  This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
-             *  copied in that case).
-             *
-             *  For example
-             *
-             *      extern String saved;
-             *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-             *
-             *
-             *      void f (const wchar_t* cs)
-             *          {
-             *              F(L"FRED";);
-             *              F(String (L"FRED"));
-             *              F(String_ExternalMemoryOwnership_StackLifetime_ReadOnly (cs));
-             *          }
-             *
-             *  These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadOnly()
-             *  based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (now malloc/copy needed).
-             *
-             *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
-             *          real optimized implemenation >>
-             */
-            class   String_ExternalMemoryOwnership_StackLifetime_ReadOnly : public String {
-            public:
-                explicit String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString);
-// DOCUMENT THESE NEW EXTRA CTORS!!! NYI
-                explicit String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* start, const wchar_t* end);
-            };
-
-
-            /**
-             *  String_ExternalMemoryOwnership_StackLifetime_ReadWrite is a subtype of string you can use to
-             *  construct a String object, so long as the memory pointed to min the argument has a
-             *      o   Greater lifetime than the String_ExternalMemoryOwnership_StackLifetime_ReadWrite envelope class
-             *      o   and buffer data never changes value externally to this String represenation (but maybe changed by
-             *          the String_ExternalMemoryOwnership_StackLifetime_ReadWrite implementation)
-             *
-             *  Note that the memory passed in must be READ/WRITE - and may be modified by the
-             *  String_ExternalMemoryOwnership_StackLifetime_ReadWrite ()!
-             *
-             *  Strings constructed with this String_ExternalMemoryOwnership_StackLifetime_ReadWrite maybe treated
-             *  like normal strings - passed anywhere, and even modified via the
-             *  String APIs. However, the underlying implemenation may cache the argument 'wchar_t* cString' for as long as the lifetime of the envelope class,
-             *  and re-use it as needed during this time, so only call this String constructor with great care, and then - only as a performance optimization.
-             *
-             *  This particular form of String wrapper CAN be a great performance optimization when a C-string buffer is presented and one must
-             *  call a 'String' based API. The argument C-string will be used to handle all the Stroika-String operations, and never modified, and the
-             *  association will be broken when the String_ExternalMemoryOwnership_StackLifetime_ReadWrite goes out of scope.
-             *
-             *  This means its EVEN safe to use in cases where the String object might get assigned to long-lived String variables (the internal data will be
-             *  copied in that case).
-             *
-             *  For example
-             *
-             *      extern String saved;
-             *      inline  String  F(String x)         { saved = x; x.InsertAt ('X', 1); saved = x.ToUpperCase () + "fred";  return saved; }
-             *
-             *
-             *      void f ()
-             *          {
-             *              char    cs[1024] = L"FRED";
-             *              F(L"FRED";);
-             *              F(String (L"FRED"));
-             *              F(String_ExternalMemoryOwnership_StackLifetime_ReadWrite (cs));
-             *          }
-             *
-             *  These ALL do essentially the same thing, and are all equally safe. The third call to F () with String_ExternalMemoryOwnership_StackLifetime_ReadWrite()
-             *  based memory maybe more efficient than the previous two, because the string pointed to be 'cs' never needs to be copied (until its changed inside F()).
-             *
-             *      <<TODO: not sure we have all the CTOR/op= stuff done correctly for this class - must rethink - but only needed to rethink when we do
-             *          real optimized implemenation >>
-             */
-            class   String_ExternalMemoryOwnership_StackLifetime_ReadWrite : public String {
-            public:
-                explicit String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* cString);
-// DOCUMENT THESE NEW EXTRA CTORS!!! NYI
-                explicit String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* start, wchar_t* end);
-//TODO: start/end defines range of string, and bufend if 'extra bytes' usable after end - enen though not orignally part of string
-                explicit String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* start, wchar_t* end, wchar_t* bufEnd);
-            };
+#endif
 
 
 #if     0
@@ -1088,20 +889,6 @@ namespace   Stroika {
 
 
 #if     0
-            /**
-             *  NOT YET IMPLEMETNED
-             *
-             *  String_stdwstring is completely compatible with any other String implementation, except that it represents things
-             *  internally using the stdC++ wstring class. The principle advantage of this is that converting TO wstrings
-             *  is much more efficient.
-             *
-             *      (AS OF YET UNCLEAR IF/HOW WE CAN SUPPORT MANIPULATIONS OF A wstring* or wstring& alias to the String rep's owned copy.
-             *      probably won't be allowed, but it would be helpful to some applicaitons if we could)
-             */
-            class   String_stdwstring : public String {
-            public:
-                explicit String_stdwstring (const String& from);
-            };
 #endif
 
 

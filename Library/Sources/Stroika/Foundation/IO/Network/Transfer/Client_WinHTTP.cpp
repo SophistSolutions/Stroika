@@ -11,7 +11,7 @@
 #include    <list>
 
 #include    "../../../Characters/Format.h"
-#include    "../../../Characters/StringUtils.h"
+#include    "../../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../../Containers/STL/VectorUtils.h"
 #include    "../../../Time/Date.h"
 #include    "../../../Time/DateTime.h"

@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
+
 #include    "InternetMediaType.h"
 
 
@@ -23,7 +25,7 @@ using   namespace   Stroika::Foundation::Execution;
  ********************************************************************************
  */
 DataExchangeFormat::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
-    : kOctetStream_CT                       (String_Constant (L"application/octet-stream"))
+    : kOctetStream_CT                       (Concrete::String_Constant (L"application/octet-stream"))
 
     , kImage_CT                             (String_Constant (L"image"))
     , kImage_PNG_CT                         (String_Constant (L"image/png"))

@@ -17,10 +17,10 @@
 #include    "../Memory/BlockAllocated.h"
 
 #include    "RegularExpression.h"
+#include    "Concrete/String_BufferedArray.h"
 #include    "TString.h"
 
 #include    "String.h"
-
 
 
 
@@ -389,65 +389,6 @@ namespace   {
 
 
 
-class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public HELPER_::_ReadOnlyRep {
-public:
-    MyRep_ (const wchar_t* start, const wchar_t* end)
-        : _ReadOnlyRep (start, end) {
-        Require (start + ::wcslen (start) == end);
-    }
-    virtual shared_ptr<_IRep>   Clone () const override {
-        /*
-         * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
-         * make a rep that is modifyable
-         */
-        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
-    }
-    virtual const wchar_t*  c_str_peek () const  noexcept override {
-        // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
-        Assert (_fStart + ::wcslen (_fStart) == _fEnd);
-        return _fStart;
-    }
-public:
-    DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-};
-
-
-
-
-
-
-
-
-
-/*
- * TODO:
- *      o   COULD do better - saving ORIGNIAL BUFFER SIZE - in addition to memory range.
- *          Right now - this class takes a big buffer (possibly) and lets you modify it, and possibly shrunk the string, but if you ever try to insert,
- *          its forgotten its original size (bufsize), and so it mallocs a new buffer (by thorwing unsupported).
- *
- *          Not a biggie issue for now since this class really isn't used (much).
- *              -- LGP 2011-12-03
- *
- */
-class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_ : public HELPER_::_ReadWriteRep {
-public:
-    MyRep_ (wchar_t* start, wchar_t* end)
-        : _ReadWriteRep (start, end) {
-    }
-    virtual shared_ptr<_IRep>   Clone () const override {
-        /*
-         * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
-         * one can use it, and the other must make a copy.
-         */
-        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
-    }
-public:
-    DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
-};
-
-
-
-
 
 
 
@@ -639,7 +580,7 @@ void    String::SetLength (size_t newLength)
         }
     }
     catch (const UnsupportedFeatureException_&) {
-        String_BufferedArray    tmp =   String_BufferedArray (*this, max (GetLength (), newLength));
+        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, max (GetLength (), newLength));
         _fRep = tmp._fRep;
         if (newLength == 0) {
             _fRep->RemoveAll ();
@@ -658,7 +599,7 @@ void    String::SetCharAt (Character c, size_t i)
         _fRep->SetAt (c, i);
     }
     catch (const UnsupportedFeatureException_&) {
-        String_BufferedArray    tmp =   String_BufferedArray (*this);
+        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
         _fRep = tmp._fRep;
         _fRep->SetAt (c, i);
     }
@@ -678,7 +619,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         _fRep->InsertAt (from, to, at);
     }
     catch (const UnsupportedFeatureException_&) {
-        String_BufferedArray    tmp =   String_BufferedArray (*this, GetLength () + (to - from));
+        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + (to - from));
         _fRep = tmp._fRep;
         _fRep->InsertAt (from, to, at);
     }
@@ -691,7 +632,7 @@ void    String::RemoveAt (size_t index, size_t nCharsToRemove)
         _fRep->RemoveAt (index, nCharsToRemove);
     }
     catch (const UnsupportedFeatureException_&) {
-        String_BufferedArray    tmp =   String_BufferedArray (*this);
+        Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
         _fRep = tmp._fRep;
         _fRep->RemoveAt (index, nCharsToRemove);
     }
@@ -1115,7 +1056,7 @@ const wchar_t*  String::c_str () const
             return REALTHIS->_fRep->c_str_change ();
         }
         catch (const UnsupportedFeatureException_&) {
-            String_BufferedArray    tmp =   String_BufferedArray (*this, GetLength () + 1);
+            Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + 1);
             REALTHIS->_fRep = tmp._fRep;
             return REALTHIS->_fRep->c_str_change ();
         }
@@ -1149,164 +1090,6 @@ String      String::substr (size_t from, size_t count) const
         return SubString (from, end);
     }
 }
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ***************************** String_BufferedArray *****************************
- ********************************************************************************
- */
-String_BufferedArray::String_BufferedArray ()
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0)))
-{
-}
-
-String_BufferedArray::String_BufferedArray (size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve)))
-{
-}
-
-String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
-{
-}
-
-String_BufferedArray::String_BufferedArray (const wchar_t* cString, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve)))
-{
-    Require (GetLength () <= reserve);
-}
-
-String_BufferedArray::String_BufferedArray (const wstring& str)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ())))
-{
-}
-
-String_BufferedArray::String_BufferedArray (const wstring& str, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve)))
-{
-    Require (GetLength () <= reserve);
-}
-
-String_BufferedArray::String_BufferedArray (const String& from)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ())))
-{
-}
-
-String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve)))
-{
-    Require (GetLength () <= reserve);
-}
-
-size_t  String_BufferedArray::capacity () const
-{
-    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
-    return dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ())->capacity ();
-}
-
-void    String_BufferedArray::reserve (size_t n)
-{
-    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
-    dynamic_cast<String_BufferedArray_Rep_*> (_fRep.get ())->reserve (n);
-}
-
-
-
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly *********
- ********************************************************************************
- */
-String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
-{
-}
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ********** String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite ********
- ********************************************************************************
- */
-String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
-{
-}
-
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- ********* String_ExternalMemoryOwnership_StackLifetime_ReadOnly ****************
- ********************************************************************************
- */
-String_ExternalMemoryOwnership_StackLifetime_ReadOnly::String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString)
-    : String (cString)
-{
-    /* TODO: FIX PERFORMANCE!!!
-     *      This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
-     *  advantages the class description promises.
-     *
-     *      TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
-     *  Then in the DTOR for this envelope, we call FREEZE on that rep - causing it to throw away its unsafe pointer. That must ONLY be done if refcount > 1 (in our DTOR).
-     */
-}
-
-
-
-
-
-
-
-/*
- ********************************************************************************
- *********** String_ExternalMemoryOwnership_StackLifetime_ReadWrite *************
- ********************************************************************************
- */
-String_ExternalMemoryOwnership_StackLifetime_ReadWrite::String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* cString)
-    : String (cString)
-{
-    /* TODO: FIX PERFORMANCE!!!
-     *      This implementation conforms to the requirements of the API, so that this class CAN be used safely. However, it does NOT exhibit the performance
-     *  advantages the class description promises.
-     *
-     *      TODO so - it must do its own rep (similar to String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::MyRep_) - except that it must ALSO have an extra method - FREEZE (or some such).
-     *  Then in the DTOR for this envelope, we call FREEZE on that rep - causing it to throw away its unsafe pointer. That must ONLY be done if refcount > 1 (in our DTOR).
-     */
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -1426,7 +1209,7 @@ const Character*    String_Substring_::MyRep_::Peek () const
  */
 String  Stroika::Foundation::Characters::operator+ (const String& lhs, const String& rhs)
 {
-    String_BufferedArray    tmp =   String_BufferedArray (lhs, lhs.size () + rhs.size ());
+    Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (lhs, lhs.size () + rhs.size ());
     tmp.InsertAt (rhs, tmp.GetLength ());
     return tmp;
 }

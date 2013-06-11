@@ -403,54 +403,6 @@ namespace   Stroika {
 
             /*
             ********************************************************************************
-            ************************** String_BufferedArray ********************************
-            ********************************************************************************
-            */
-            inline  String_BufferedArray::String_BufferedArray (const String_BufferedArray& s)
-                : String (s)
-            {
-            }
-            inline  String_BufferedArray& String_BufferedArray::operator= (const String_BufferedArray& s)
-            {
-                String::operator= (s);
-                return (*this);
-            }
-
-
-            /*
-            ********************************************************************************
-            ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly **********
-            ********************************************************************************
-            */
-            inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
-                : String (s)
-            {
-            }
-            inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
-            {
-                String::operator= (s);
-                return (*this);
-            }
-
-
-            /*
-            ********************************************************************************
-            ********* String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite *********
-            ********************************************************************************
-            */
-            inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
-                : String (s)
-            {
-            }
-            inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite& s)
-            {
-                String::operator= (s);
-                return (*this);
-            }
-
-
-            /*
-            ********************************************************************************
             ********************************* String_ModuleInit_ ***************************
             ********************************************************************************
             */
