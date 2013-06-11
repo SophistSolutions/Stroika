@@ -76,9 +76,11 @@ namespace   Stroika {
                 //, fBuffer_ ()
                 , fPointer_ (fBuffer_)
             {
+#if     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
                 static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
+#endif
                 GrowToSize (nElements);
             }
             template    <typename   T, size_t BUF_SIZE>
@@ -87,9 +89,11 @@ namespace   Stroika {
                 //, fBuffer_ (),
                 , fPointer_ (fBuffer_)
             {
+#if     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
                 static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
+#endif
                 GrowToSize (from.fSize_);
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
                 Memory::Private::VC_BWA_std_copy (from.fPointer_, from.fPointer_ + from.fSize_, fPointer_);

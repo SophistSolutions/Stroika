@@ -953,12 +953,6 @@
 
 
 
-// Workaround gcc < 4.8
-#if !qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
-#define is_trivially_constructible has_trivial_constructor
-#define is_trivially_destructible has_trivial_destructor
-#define is_trivially_copyable has_trivial_copy_constructor
-#endif
 
 
 
