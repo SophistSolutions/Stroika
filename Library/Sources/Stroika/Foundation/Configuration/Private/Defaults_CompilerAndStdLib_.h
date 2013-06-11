@@ -362,6 +362,23 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#else
+#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     1
+#endif
+#endif
+
+
+
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
@@ -934,6 +951,14 @@
     enum  { NAME = static_cast<TYPE> (VALUE) };
 #endif
 
+
+
+// Workaround gcc < 4.8
+#if !qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+#define is_trivially_constructible has_trivial_constructor
+#define is_trivially_destructible has_trivial_destructor
+#define is_trivially_copyable has_trivial_copy_constructor
+#endif
 
 
 
