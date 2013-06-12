@@ -565,6 +565,10 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Queue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Sequence.h" />
@@ -808,6 +812,10 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IterableUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\Array.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\DoublyLinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\LinkedList.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\SynchronizationUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Queue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\ReadMe.md" />

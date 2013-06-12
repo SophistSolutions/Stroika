@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/PatchingDataStructures/LinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -56,8 +56,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_           fLockSupport_;
-                    Private::DataStructures::LinkedList_Patch<T>    fData_;
+                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList_Patch<T>    fData_;
                     friend  class Sequence_LinkedList<T>::IteratorRep_;
                 };
 
@@ -97,8 +97,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable Private::DataStructures::LinkedListMutator_Patch<T>     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
+                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<T>     fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -252,7 +252,7 @@ namespace   Stroika {
                         else {
                             size_t index = at;
                             T tmphack;
-                            for (Private::DataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                            for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         it.AddBefore (*p);
@@ -274,7 +274,7 @@ namespace   Stroika {
                     size_t amountToRemove = (to - from);
                     T tmphack;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                        for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     it.RemoveCurrent ();

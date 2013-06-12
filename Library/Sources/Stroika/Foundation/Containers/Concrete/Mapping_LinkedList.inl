@@ -11,7 +11,7 @@
  */
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/PatchingDataStructures/LinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -65,8 +65,8 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::DataStructures::LinkedList_Patch<pair<Key, T>>  fData_;
+                    Private::ContainerRepLockDataSupport_                           fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList_Patch<pair<Key, T>> fData_;
                     friend  class Mapping_LinkedList<Key, T>::IteratorRep_;
                 };
 
@@ -111,8 +111,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>>  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                          fLockSupport_;
+                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<pair<Key, T>>  fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -228,7 +228,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<Key, T>::Rep_::Add (Key key, T newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
+                        for (Private::PatchingDataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 it.UpdateCurrent (pair<Key, T> (key, newElt));
                                 return;
@@ -242,7 +242,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<Key, T>::Rep_::Remove (Key key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
+                        for (Private::PatchingDataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 it.RemoveCurrent ();
                                 return;

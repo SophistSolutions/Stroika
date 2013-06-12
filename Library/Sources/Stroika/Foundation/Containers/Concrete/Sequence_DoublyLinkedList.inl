@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/DoublyLinkedList.h"
+#include    "../Private/PatchingDataStructures/DoublyLinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -57,7 +57,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::DataStructures::DoublyLinkedList_Patch<T>  fData_;
+                    Private::PatchingDataStructures::DoublyLinkedList_Patch<T>  fData_;
                     friend  class Sequence_DoublyLinkedList<T>::IteratorRep_;
                 };
 
@@ -97,8 +97,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
-                    mutable Private::DataStructures::DoublyLinkedListMutator_Patch<T>   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
+                    mutable Private::PatchingDataStructures::DoublyLinkedListMutator_Patch<T>   fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -252,7 +252,7 @@ namespace   Stroika {
                         else {
                             size_t index = at;
                             T tmphack;
-                            for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                            for (Private::PatchingDataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         it.AddBefore (*p);
@@ -274,7 +274,7 @@ namespace   Stroika {
                     size_t amountToRemove = (to - from);
                     T tmphack;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                        for (Private::PatchingDataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     it.RemoveCurrent ();

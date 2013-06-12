@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/Array.h"
+#include    "../Private/PatchingDataStructures/Array.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -57,7 +57,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    Private::DataStructures::Array_Patch<T> fData_;
+                    Private::PatchingDataStructures::Array_Patch<T> fData_;
                     friend  class Sequence_Array<T>::IteratorRep_;
                 };
 
@@ -97,8 +97,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable Private::DataStructures::ForwardArrayMutator_Patch<T>   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
+                    mutable Private::PatchingDataStructures::ForwardArrayMutator_Patch<T>   fIterator_;
 
                 private:
                     friend  class   Rep_;

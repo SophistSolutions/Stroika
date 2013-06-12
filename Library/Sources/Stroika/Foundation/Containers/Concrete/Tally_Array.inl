@@ -11,7 +11,7 @@
  */
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/Array.h"
+#include    "../Private/PatchingDataStructures/Array.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -72,8 +72,8 @@ namespace   Stroika {
                     nonvirtual void                                 Compact ();
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::DataStructures::Array_Patch<TallyEntry<T>> fData_;
+                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
+                    Private::PatchingDataStructures::Array_Patch<TallyEntry<T>> fData_;
 
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
 
@@ -122,8 +122,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
-                    mutable Private::DataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
+                    mutable Private::PatchingDataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >  fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 

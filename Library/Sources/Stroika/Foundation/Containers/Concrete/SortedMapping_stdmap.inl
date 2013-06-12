@@ -11,7 +11,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/STLContainerWrapper.h"
+#include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
@@ -67,8 +67,8 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                 fLockSupport_;
-                    Private::DataStructures::Patching::STLContainerWrapper<map<Key, T>>   fData_;
+                    Private::ContainerRepLockDataSupport_                               fLockSupport_;
+                    Private::PatchingDataStructures::STLContainerWrapper<map<Key, T>>   fData_;
 
                 private:
                     friend  class SortedMapping_stdmap<Key, T>::IteratorRep_;
@@ -116,7 +116,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                                                      fLockSupport_;
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<map<Key, T>>::BasicForwardIterator  fIterator_;
+                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<map<Key, T>>::BasicForwardIterator    fIterator_;
 
                 private:
                     friend  class   Rep_;

@@ -13,7 +13,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/STLContainerWrapper.h"
+#include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -61,7 +61,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_                           fLockSupport_;
-                    Private::DataStructures::Patching::STLContainerWrapper<set<T>>  fData_;
+                    Private::PatchingDataStructures::STLContainerWrapper<set<T>>    fData_;
 
                 private:
                     friend  class SortedSet_stdset<T>::IteratorRep_;
@@ -109,7 +109,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<set<T>>::BasicForwardIterator   fIterator_;
+                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<set<T>>::BasicForwardIterator     fIterator_;
 
                 private:
                     friend  class   Rep_;

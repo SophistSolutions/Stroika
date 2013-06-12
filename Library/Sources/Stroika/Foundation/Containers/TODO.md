@@ -1,5 +1,7 @@
 TODO (Foundation::Containers)
 
+	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
+
 	(o)		Use qCompilerAndStdLib_Supports_initializer_lists std::initializer_lists everywhere appropriate
 			(started as test)
 

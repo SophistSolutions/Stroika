@@ -12,7 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/DoublyLinkedList.h"
+#include    "../Private/PatchingDataStructures/DoublyLinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -53,8 +53,8 @@ namespace   Stroika {
                     virtual void        RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::DataStructures::DoublyLinkedList_Patch<T>  fData_;
+                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
+                    Private::PatchingDataStructures::DoublyLinkedList_Patch<T>  fData_;
                     friend  class Queue_DoublyLinkedList<T>::IteratorRep_;
                 };
 
@@ -94,8 +94,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
-                    mutable Private::DataStructures::DoublyLinkedListMutator_Patch<T>   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
+                    mutable Private::PatchingDataStructures::DoublyLinkedListMutator_Patch<T>   fIterator_;
 
                 private:
                     friend  class   Rep_;

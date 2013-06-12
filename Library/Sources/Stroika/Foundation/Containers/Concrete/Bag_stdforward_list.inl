@@ -13,7 +13,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/STLContainerWrapper.h"
+#include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -63,8 +63,8 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                           fLockSupport_;
-                    Private::DataStructures::Patching::STLContainerWrapper<std::forward_list<T>>    fData_;
+                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
+                    Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>>  fData_;
 
                 private:
                     friend  class   Bag_stdforward_list<T>::IteratorRep_;
@@ -112,7 +112,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                                                          fLockSupport_;
-                    mutable typename Private::DataStructures::Patching::STLContainerWrapper<forward_list<T>>::BasicForwardIterator  fIterator_;
+                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator    fIterator_;
 
                 private:
                     friend  class   Bag_stdforward_list<T>::Rep_;
@@ -235,7 +235,7 @@ namespace   Stroika {
                         auto ei = fData_.before_begin ();
                         for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                             if (*i == item) {
-                                Memory::SmallStackBuffer<typename Private::DataStructures::Patching::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
+                                Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
                                 fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                 auto newI = fData_.erase_after (ei);
                                 fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
@@ -260,7 +260,7 @@ namespace   Stroika {
                             auto ei = fData_.before_begin ();
                             for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                                 if (i == mir.fIterator_.fStdIterator) {
-                                    Memory::SmallStackBuffer<typename Private::DataStructures::Patching::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
+                                    Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
                                     fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                     auto newI = fData_.erase_after (ei);
                                     fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);

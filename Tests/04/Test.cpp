@@ -8,6 +8,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Private/DataStructures/LinkedList.h"
+#include    "Stroika/Foundation/Containers/Private/PatchingDataStructures/LinkedList.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -22,6 +23,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Containers::Private::DataStructures;
+using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
 
 

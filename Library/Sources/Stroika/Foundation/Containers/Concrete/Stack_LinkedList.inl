@@ -11,7 +11,7 @@
  */
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/PatchingDataStructures/LinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -56,8 +56,8 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_           fLockSupport_;
-                    Private::DataStructures::LinkedList_Patch<T>    fData_;
+                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList_Patch<T>    fData_;
 
                 private:
                     friend  class Stack_LinkedList<T>::IteratorRep_;
@@ -104,8 +104,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable Private::DataStructures::LinkedListMutator_Patch<T>     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
+                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<T>     fIterator_;
 
                 private:
                     friend  class   Rep_;

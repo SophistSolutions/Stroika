@@ -6,9 +6,6 @@
 
 #include    "../../../StroikaPreComp.h"
 
-//#include  <vector>
-//#include  <forward_list>
-
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/SmallStackBuffer.h"
 
@@ -110,6 +107,8 @@ namespace   Stroika {
                     };
 
 
+
+#if 0
                     namespace Patching {
 
 
@@ -241,6 +240,7 @@ namespace   Stroika {
 
 
                     }
+#endif
                 }
             }
         }

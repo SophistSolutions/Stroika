@@ -11,7 +11,7 @@
  */
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/LinkedList.h"
+#include    "../Private/PatchingDataStructures/LinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -67,8 +67,8 @@ namespace   Stroika {
                     virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
-                    Private::DataStructures::LinkedList_Patch<TallyEntry<T>>    fData_;
+                    Private::ContainerRepLockDataSupport_                               fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList_Patch<TallyEntry<T>>    fData_;
 
                     friend  class Tally_LinkedList<T>::IteratorRep_;
                 };
@@ -112,8 +112,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                          fLockSupport_;
+                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<TallyEntry<T>> fIterator_;
 
                 private:
                     friend class Tally_LinkedList<T>::Rep_;
@@ -216,7 +216,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
+                            for (Private::PatchingDataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     current.fCount += count;
                                     it.UpdateCurrent (current);
@@ -234,7 +234,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (Private::DataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
+                            for (Private::PatchingDataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;

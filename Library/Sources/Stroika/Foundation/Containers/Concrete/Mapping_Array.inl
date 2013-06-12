@@ -11,7 +11,7 @@
  */
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/DataStructures/Array.h"
+#include    "../Private/PatchingDataStructures/Array.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -65,8 +65,8 @@ namespace   Stroika {
                     virtual  void           Remove (Iterator<pair<Key, T>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::DataStructures::Array_Patch<pair<Key, T>>  fData_;
+                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
+                    Private::PatchingDataStructures::Array_Patch<pair<Key, T>>  fData_;
 
                 private:
                     friend  class Mapping_Array<Key, T>::IteratorRep_;
@@ -113,8 +113,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
-                    mutable Private::DataStructures::ForwardArrayMutator_Patch<pair<Key, T>>    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
+                    mutable Private::PatchingDataStructures::ForwardArrayMutator_Patch<pair<Key, T>>    fIterator_;
 
                 private:
                     friend  class   Rep_;
