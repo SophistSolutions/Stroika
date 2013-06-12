@@ -71,6 +71,40 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebServi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-UPnP", "Stroika-Frameworks-UPnP.vcxproj", "{3ADD4C32-1D77-47A2-9F23-83908A2446F6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CONTAINER_BACKENDS2IMPORT", "CONTAINER_BACKENDS2IMPORT", "{D90E7090-B320-402A-9B46-87A9732D2A88}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\BitString.cc = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\BitString.cc
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\BitString.hh = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\BitString.hh
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\CircularArray.cc = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\CircularArray.cc
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\CircularArray.hh = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\CircularArray.hh
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Comparer.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Comparer.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Config.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Config.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.cpp = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.cpp
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\HashKey.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\HashTable.cc = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\HashTable.cc
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\HashTable.hh = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\HashTable.hh
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\KeyValue.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\KeyValue.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\KeyValue.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\KeyValue.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\RedBlackTree.cc = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\RedBlackTree.cc
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\RedBlackTree.hh = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\RedBlackTree.hh
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SimpleTree.cc = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SimpleTree.cc
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SimpleTree.hh = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SimpleTree.hh
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SkipList.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SkipList.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SkipList.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SkipList.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SplayTree.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SplayTree.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SplayTree.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\SplayTree.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.cpp = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.cpp
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TestingData.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\Treap.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\Treap.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\Treap.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\Treap.inl
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TreeTraits.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\TreeTraits.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.cpp = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.cpp
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.h = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.h
+		..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.inl = ..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\TO_BE_IMPORTED\UTILS4NewSterlStuff\Utils.inl
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug-A-32|Win32 = Debug-A-32|Win32
