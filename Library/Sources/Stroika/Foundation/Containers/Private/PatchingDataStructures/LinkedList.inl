@@ -54,7 +54,7 @@ namespace   Stroika {
                         return bool (fIterators != nullptr);
                     }
                     template    <class T>
-                    inline  void    LinkedList_Patch<T>::PatchViewsAdd (const DataStructures::Link<T>* link) const
+                    inline  void    LinkedList_Patch<T>::PatchViewsAdd (const Link* link) const
                     {
                         RequireNotNull (link);
                         for (LinkedListIterator_Patch<T>* v = fIterators; v != nullptr; v = v->fNext) {
@@ -62,7 +62,7 @@ namespace   Stroika {
                         }
                     }
                     template    <class T>
-                    inline  void    LinkedList_Patch<T>::PatchViewsRemove (const DataStructures::Link<T>* link) const
+                    inline  void    LinkedList_Patch<T>::PatchViewsRemove (const Link* link) const
                     {
                         RequireNotNull (link);
                         for (LinkedListIterator_Patch<T>* v = fIterators; v != nullptr; v = v->fNext) {
@@ -103,12 +103,12 @@ namespace   Stroika {
                             Prepend (item);
                         }
                         else {
-                            DataStructures::Link<T>* last = this->fFirst;
+                            Link* last = this->fFirst;
                             for (; last->fNext != nullptr; last = last->fNext)
                                 ;
                             Assert (last != nullptr);
                             Assert (last->fNext == nullptr);
-                            last->fNext = new DataStructures::Link<T> (item, nullptr);
+                            last->fNext = new Link (item, nullptr);
                             this->fLength++;
                             PatchViewsAdd (last->fNext);
                         }
@@ -292,7 +292,7 @@ namespace   Stroika {
                         return (not this->Done ());
                     }
                     template    <class T>
-                    inline  void    LinkedListIterator_Patch<T>::PatchAdd (const DataStructures::Link<T>* link)
+                    inline  void    LinkedListIterator_Patch<T>::PatchAdd (const Link* link)
                     {
                         /*
                          *      link is the new link just added. If it was just after current, then
@@ -306,7 +306,7 @@ namespace   Stroika {
                         }
                     }
                     template    <class T>
-                    inline  void    LinkedListIterator_Patch<T>::PatchRemove (const DataStructures::Link<T>* link)
+                    inline  void    LinkedListIterator_Patch<T>::PatchRemove (const Link* link)
                     {
                         RequireNotNull (link);
 
@@ -382,7 +382,7 @@ namespace   Stroika {
                     {
                         Require (not this->Done ());
                         this->Invariant ();
-                        DataStructures::Link<T>*    victim  = const_cast<DataStructures::Link<T>*> (this->fCurrent);
+                        Link*    victim  = const_cast<Link*> (this->fCurrent);
                         AssertNotNull (this->fData);
                         this->fData->PatchViewsRemove (victim);
                         Assert (this->fCurrent != victim);              // patching should  have guaranteed this
@@ -404,7 +404,7 @@ namespace   Stroika {
                         }
                         else {
                             Assert (this->fPrev->fNext == victim);
-                            const_cast<DataStructures::Link<T>*> (this->fPrev)->fNext = victim->fNext;
+                            const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
                         }
                         const_cast<LinkedList_Patch<T>*> (this->fData)->fLength--;
                         delete (victim);
@@ -415,7 +415,7 @@ namespace   Stroika {
                     inline  void    LinkedListMutator_Patch<T>::UpdateCurrent (T newValue)
                     {
                         RequireNotNull (this->fCurrent);
-                        const_cast<DataStructures::Link<T>*> (this->fCurrent)->fItem = newValue;
+                        const_cast<Link*> (this->fCurrent)->fItem = newValue;
                     }
                     template    <class T>
                     inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue)
@@ -438,13 +438,13 @@ namespace   Stroika {
                         }
                         if (this->fPrev == nullptr) {
                             Assert (this->fData->fFirst == this->fCurrent);     // could be nullptr, or not...
-                            const_cast<LinkedList_Patch<T>*> (this->fData)->fFirst = new DataStructures::Link<T> (newValue, this->fData->fFirst);
+                            const_cast<LinkedList_Patch<T>*> (this->fData)->fFirst = new Link (newValue, this->fData->fFirst);
                             const_cast<LinkedList_Patch<T>*> (this->fData)->fLength++;
                             this->fData->PatchViewsAdd (this->fData->fFirst);       // Will adjust fPrev
                         }
                         else {
                             Assert (this->fPrev->fNext == this->fCurrent);
-                            const_cast<DataStructures::Link<T>*>(this->fPrev)->fNext = new DataStructures::Link<T> (newValue, this->fPrev->fNext);
+                            const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
                             const_cast<LinkedList_Patch<T>*> (this->fData)->fLength++;
                             this->fData->PatchViewsAdd (this->fPrev->fNext);        // Will adjust fPrev
                         }
@@ -455,7 +455,7 @@ namespace   Stroika {
                     {
                         Require (not this->Done ());
                         AssertNotNull (this->fCurrent); // since not done...
-                        const_cast<DataStructures::Link<T>*>(this->fCurrent)->fNext = new Link<T> (newValue, this->fCurrent->fNext);
+                        const_cast<Link*>(this->fCurrent)->fNext = new Link (newValue, this->fCurrent->fNext);
                         const_cast<LinkedList_Patch<T>*> (this->fData)->fLength++;
                         this->fData->PatchViewsAdd (this->fCurrent->fNext);
                     }

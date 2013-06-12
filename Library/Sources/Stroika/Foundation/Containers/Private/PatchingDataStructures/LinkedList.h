@@ -65,8 +65,8 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (const DataStructures::Link<T>* link) const;      //  call after add
-                        nonvirtual  void    PatchViewsRemove (const DataStructures::Link<T>* link) const;   //  call before remove
+                        nonvirtual  void    PatchViewsAdd (const typename LinkedList<T>::Link* link) const;      //  call after add
+                        nonvirtual  void    PatchViewsRemove (const typename LinkedList<T>::Link* link) const;   //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
                         /*
@@ -95,6 +95,8 @@ namespace   Stroika {
                     template    <class T>
                     class   LinkedListIterator_Patch : public DataStructures::LinkedListIterator<T> {
                     public:
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+                    public:
                         LinkedListIterator_Patch (const LinkedList_Patch<T>& data);
                         LinkedListIterator_Patch (const LinkedListIterator_Patch<T>& from);
                         ~LinkedListIterator_Patch ();
@@ -106,8 +108,8 @@ namespace   Stroika {
                          */
                         nonvirtual  bool    More (T* current, bool advance);
 
-                        nonvirtual  void    PatchAdd (const DataStructures::Link<T>* link);     //  call after add
-                        nonvirtual  void    PatchRemove (const DataStructures::Link<T>* link);  //  call before remove
+                        nonvirtual  void    PatchAdd (const Link* link);     //  call after add
+                        nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
                         // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
@@ -116,7 +118,7 @@ namespace   Stroika {
                             RequireNotNull (fData);
                             RequireNotNull (this->fCurrent);
                             size_t i = 0;
-                            for (const DataStructures::Link<T>* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
+                            for (const Link* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
                                 AssertNotNull (l);
                             }
                             return i;
@@ -125,7 +127,7 @@ namespace   Stroika {
                     protected:
                         const LinkedList_Patch<T>*  fData;
                         LinkedListIterator_Patch<T>*    fNext;
-                        const DataStructures::Link<T>*              fPrev;      // keep extra previous link for fast patchremove
+                        const Link*              fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 

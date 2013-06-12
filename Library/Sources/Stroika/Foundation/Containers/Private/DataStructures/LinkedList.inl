@@ -17,13 +17,13 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    *********************************** Link<T> ************************************
+                    *********************** LinkedList<T>::Link ************************************
                     ********************************************************************************
                     */
                     template    <class T>
-                    inline  Link<T>::Link (T item, Link<T>* next) :
-                        fItem (item),
-                        fNext (next)
+                    inline  LinkedList<T>::Link::Link (T item, Link* next)
+                        : fItem (item)
+                        , fNext (next)
                     {
                     }
 
@@ -46,11 +46,11 @@ namespace   Stroika {
                          *  case is handled outside, before the loop.
                          */
                         if (from.fFirst != nullptr) {
-                            fFirst = new Link<T> (from.fFirst->fItem, nullptr);
-                            Link<T>*    newCur  =   fFirst;
-                            for (const Link<T>* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
-                                Link<T>*    newPrev =   newCur;
-                                newCur = new Link<T> (cur->fItem, nullptr);
+                            fFirst = new Link (from.fFirst->fItem, nullptr);
+                            Link*    newCur  =   fFirst;
+                            for (const Link* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                                Link*    newPrev =   newCur;
+                                newCur = new Link (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
                             }
                         }
@@ -104,7 +104,7 @@ namespace   Stroika {
                     inline  void    LinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
-                        fFirst = new Link<T> (item, fFirst);
+                        fFirst = new Link (item, fFirst);
                         fLength++;
                         Invariant ();
                     }
@@ -114,7 +114,7 @@ namespace   Stroika {
                         RequireNotNull (fFirst);
                         Invariant ();
 
-                        Link<T>* victim = fFirst;
+                        Link* victim = fFirst;
                         fFirst = victim->fNext;
                         delete (victim);
                         fLength--;
@@ -136,11 +136,11 @@ namespace   Stroika {
                          *  case is handled outside, before the loop.
                          */
                         if (list.fFirst != nullptr) {
-                            fFirst = new Link<T> (list.fFirst->fItem, nullptr);
-                            Link<T>*    newCur  =   fFirst;
-                            for (const Link<T>* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
-                                Link<T>*    newPrev =   newCur;
-                                newCur = new Link<T> (cur->fItem, nullptr);
+                            fFirst = new Link (list.fFirst->fItem, nullptr);
+                            Link*    newCur  =   fFirst;
+                            for (const Link* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                                Link*    newPrev =   newCur;
+                                newCur = new Link (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
                             }
                         }
@@ -162,8 +162,8 @@ namespace   Stroika {
                             RemoveFirst ();
                         }
                         else {
-                            Link<T>*    prev    =   nullptr;
-                            for (Link<T>* link = fFirst; link != nullptr; prev = link, link = link->fNext) {
+                            Link*    prev    =   nullptr;
+                            for (Link* link = fFirst; link != nullptr; prev = link, link = link->fNext) {
                                 if (link->fItem == item) {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
@@ -179,7 +179,7 @@ namespace   Stroika {
                     template    <typename   T>
                     bool    LinkedList<T>::Contains (T item) const
                     {
-                        for (const Link<T>* current = fFirst; current != nullptr; current = current->fNext) {
+                        for (const Link* current = fFirst; current != nullptr; current = current->fNext) {
                             if (current->fItem == item) {
                                 return (true);
                             }
@@ -189,8 +189,8 @@ namespace   Stroika {
                     template    <typename   T>
                     void    LinkedList<T>::RemoveAll ()
                     {
-                        for (Link<T>* i = fFirst; i != nullptr;) {
-                            Link<T>*    deleteMe    =   i;
+                        for (Link* i = fFirst; i != nullptr;) {
+                            Link*    deleteMe    =   i;
                             i = i->fNext;
                             delete (deleteMe);
                         }
@@ -202,7 +202,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < fLength);
-                        const Link<T>* cur = fFirst;
+                        const Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -214,7 +214,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < fLength);
-                        Link<T>* cur = fFirst;
+                        Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -229,7 +229,7 @@ namespace   Stroika {
                          * Check we are properly linked together.
                          */
                         size_t  counter =   0;
-                        for (Link<T>* i = fFirst; i != nullptr; i = i->fNext) {
+                        for (Link* i = fFirst; i != nullptr; i = i->fNext) {
                             counter++;
                             Assert (counter <= fLength);    // to this test in the loop so we detect circularities...
                         }

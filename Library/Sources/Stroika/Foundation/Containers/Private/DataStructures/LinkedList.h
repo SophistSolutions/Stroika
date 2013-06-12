@@ -16,6 +16,14 @@
  *
  * TODO:
  *
+ *
+ *      @todo   Move LinkedListIterator to LinkedList<T>::ForwardIterator
+ *              (in other words - change name AND make nested)
+ *
+ *      @todo   Consider losing fSize data member - and storing it just as needed in things like Sequence_LinkedList (not even sure there - dont use LL
+ *              if you want to know the size!!!)
+ *
+ *
  *      @todo   Do MUTATORS (or some such) to avoid making
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
@@ -48,19 +56,6 @@ namespace   Stroika {
 
                     template    <typename   T>
                     class   LinkedListIterator;
-
-
-                    template    <typename   T>
-                    class   Link {
-                    public:
-                        DECLARE_USE_BLOCK_ALLOCATION (Link);
-                    public:
-                        Link (T item, Link<T>* next);
-
-                    public:
-                        T           fItem;
-                        Link<T>*    fNext;
-                    };
 
 
                     /*
@@ -117,11 +112,22 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    Invariant () const;
 
-                    protected:
+                    public:
+                        class   Link {
+                        public:
+                            DECLARE_USE_BLOCK_ALLOCATION (Link);
+                        public:
+                            Link (T item, Link* next);
+
+                        public:
+                            T        fItem;
+                            Link*    fNext;
+                        };
+
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
                         size_t      fLength;
-                        Link<T>*    fFirst;
+                        Link*       fFirst;
 
 #if     qDebug
                     protected:
@@ -156,7 +162,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const Link<T>*  fCurrent;
+                        const typename LinkedList<T>::Link*     fCurrent;
                         bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
