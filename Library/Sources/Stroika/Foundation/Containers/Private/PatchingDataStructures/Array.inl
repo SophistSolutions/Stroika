@@ -21,10 +21,10 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const Array_Patch<T>& data) :
-                        ArrayIteratorBase<T>(data),
-                        fData (&data),
-                        fNext (data.fIterators)
+                    inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const Array_Patch<T>& data)
+                        : ArrayIteratorBase (data)
+                        , fData (&data)
+                        , fNext (data.fIterators)
                     {
                         const_cast <Array_Patch<T>*> (fData)->fIterators = this;
 
@@ -33,10 +33,10 @@ namespace   Stroika {
                          */
                     }
                     template    <typename T>
-                    inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from) :
-                        ArrayIteratorBase<T>(from),
-                        fData (from.fData),
-                        fNext (from.fData->fIterators)
+                    inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from)
+                        : ArrayIteratorBase (from)
+                        , fData (from.fData)
+                        , fNext (from.fData->fIterators)
                     {
                         RequireNotNull (fData);
                         const_cast <Array_Patch<T>*> (fData)->fIterators = this;
@@ -229,8 +229,8 @@ namespace   Stroika {
                     template    <typename T>
                     void    ArrayIterator_PatchBase<T>::Invariant_ () const
                     {
-                        ArrayIteratorBase<T>::Invariant_ ();
-                        Assert (fData == ArrayIteratorBase<T>::fData);
+                        inherited::Invariant_ ();
+                        Assert (fData == inherited::fData);
                     }
 #endif  /*qDebug*/
 

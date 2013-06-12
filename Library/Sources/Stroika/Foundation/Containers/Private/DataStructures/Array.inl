@@ -343,12 +343,12 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************* ArrayIteratorBase<T> *********************************
+                    ************************* Array<T>::ArrayIteratorBase **************************
                     ********************************************************************************
                     */
 #if     qDebug
                     template    <typename T>
-                    void    ArrayIteratorBase<T>::Invariant_ () const
+                    void    Array<T>::ArrayIteratorBase::Invariant_ () const
                     {
                         AssertNotNull (fData);
                         Assert (fStart == fData->_fItems);
@@ -357,14 +357,14 @@ namespace   Stroika {
                     }
 #endif
                     template    <typename T>
-                    inline  void    ArrayIteratorBase<T>::Invariant () const
+                    inline  void    Array<T>::ArrayIteratorBase::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
                     template    <typename T>
-                    inline  ArrayIteratorBase<T>::ArrayIteratorBase (const Array<T>& data) :
+                    inline  Array<T>::ArrayIteratorBase::ArrayIteratorBase (const Array<T>& data) :
 #if     qDebug
                         fData (&data),
 #endif
@@ -381,7 +381,7 @@ namespace   Stroika {
                          */
                     }
                     template    <typename T>
-                    bool    ArrayIteratorBase<T>::More (T* current, bool advance)
+                    bool    Array<T>::ArrayIteratorBase::More (T* current, bool advance)
                     {
                         if (advance) {
                             this->fSuppressMore = false;
@@ -397,13 +397,13 @@ namespace   Stroika {
                         return (false);
                     }
                     template    <typename T>
-                    inline  bool    ArrayIteratorBase<T>::Done () const
+                    inline  bool    Array<T>::ArrayIteratorBase::Done () const
                     {
                         Invariant ();
                         return bool (fCurrent == fEnd);
                     }
                     template    <typename T>
-                    inline  size_t  ArrayIteratorBase<T>::CurrentIndex () const
+                    inline  size_t  Array<T>::ArrayIteratorBase::CurrentIndex () const
                     {
                         /*
                          * NB: This can be called if we are done - if so, it returns GetLength().
@@ -412,7 +412,7 @@ namespace   Stroika {
                         return fCurrent - fStart;
                     }
                     template    <typename T>
-                    inline  T       ArrayIteratorBase<T>::Current () const
+                    inline  T       Array<T>::ArrayIteratorBase::Current () const
                     {
                         Ensure (fData->GetAt (CurrentIndex ()) == *fCurrent);
                         Invariant ();
@@ -426,8 +426,8 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  ForwardArrayIterator<T>::ForwardArrayIterator (const Array<T>& data) :
-                        ArrayIteratorBase<T>(data)
+                    inline  ForwardArrayIterator<T>::ForwardArrayIterator (const Array<T>& data)
+                        : inherited (data)
                     {
                         this->fCurrent = this->fStart;
                         Invariant ();
@@ -497,8 +497,9 @@ namespace   Stroika {
                     ************************** BackwardArrayIterator<T> ****************************
                     ********************************************************************************
                     */
-                    template    <typename T>    inline  BackwardArrayIterator<T>::BackwardArrayIterator (const Array<T>& data)
-                        : ArrayIteratorBase<T>(data)
+                    template    <typename T>
+                    inline  BackwardArrayIterator<T>::BackwardArrayIterator (const Array<T>& data)
+                        : inherited (data)
                     {
                         if (data.GetLength () == 0) {
                             this->fCurrent = this->fEnd;    // magic to indicate done

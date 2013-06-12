@@ -97,7 +97,10 @@ namespace   Stroika {
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template    <typename T>
-                    class   ArrayIterator_PatchBase : public DataStructures::ArrayIteratorBase<T> {
+                    class   ArrayIterator_PatchBase : public DataStructures::Array<T>::ArrayIteratorBase {
+                    private:
+                        typedef typename DataStructures::Array<T>::ArrayIteratorBase    inherited;
+
                     public:
                         ArrayIterator_PatchBase (const Array_Patch<T>& data);
                         ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from);
@@ -126,8 +129,6 @@ namespace   Stroika {
                         virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
 
                         friend  class   Array_Patch<T>;
-                    private:
-                        typedef ArrayIteratorBase<T>    inherited;
                     };
 
 
