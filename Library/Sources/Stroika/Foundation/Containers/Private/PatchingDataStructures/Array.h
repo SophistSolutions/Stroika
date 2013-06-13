@@ -24,17 +24,6 @@ namespace   Stroika {
 
 
                     /*
-                     *  Patching Support:
-                     *
-                     *      Here we provide Patching Versions of each iterator, and for convienience
-                     *  versions of array that maintain a list of all Patching iterators of a given
-                     *  type.
-                     */
-                    template    <typename T>
-                    class   ArrayIterator_PatchBase;
-
-
-                    /*
                      *      Array_Patch<T> is an array implemantion that keeps a list of patchable
                      *  iterators, and handles the patching automatically for you. Use this if
                      *  you ever plan to use patchable iterators.
@@ -75,6 +64,10 @@ namespace   Stroika {
                         nonvirtual  void    PatchViewsRealloc () const;             //  call after realloc could have happened
 
 
+                        // THIS SB PROTECTED
+                    public:
+                        class   ArrayIterator_PatchBase;
+
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
                          */
@@ -82,9 +75,11 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     private:
-                        ArrayIterator_PatchBase<T>* fIterators;
+                        ArrayIterator_PatchBase* fIterators;
 
+#if 0
                         friend  class   ArrayIterator_PatchBase<T>;
+#endif
 
 #if     qDebug
                         virtual void    Invariant_ () const override;
@@ -98,16 +93,16 @@ namespace   Stroika {
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template    <typename T>
-                    class   ArrayIterator_PatchBase : public DataStructures::Array<T>::ArrayIteratorBase {
+                    class   Array_Patch<T>::ArrayIterator_PatchBase : public DataStructures::Array<T>::_ArrayIteratorBase {
                     private:
-                        typedef typename DataStructures::Array<T>::ArrayIteratorBase    inherited;
+                        typedef typename DataStructures::Array<T>::_ArrayIteratorBase    inherited;
 
                     public:
                         ArrayIterator_PatchBase (const Array_Patch<T>& data);
-                        ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from);
+                        ArrayIterator_PatchBase (const ArrayIterator_PatchBase& from);
                         ~ArrayIterator_PatchBase ();
 
-                        nonvirtual  ArrayIterator_PatchBase<T>& operator= (const ArrayIterator_PatchBase<T>& rhs);
+                        nonvirtual  ArrayIterator_PatchBase& operator= (const ArrayIterator_PatchBase& rhs);
 
                         nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
 
@@ -121,7 +116,7 @@ namespace   Stroika {
 
                     protected:
                         const Array_Patch<T>*       fData;
-                        ArrayIterator_PatchBase<T>* fNext;
+                        ArrayIterator_PatchBase* fNext;
 
 #if     qDebug
                         virtual void    Invariant_ () const override;
@@ -141,21 +136,18 @@ namespace   Stroika {
                      *  mixins.
                      */
                     template    <typename T>
-                    class  ForwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
+                    class  ForwardArrayIterator_Patch : public Array_Patch<T>::ArrayIterator_PatchBase {
+                    private:
+                        typedef typename Array_Patch<T>::ArrayIterator_PatchBase    inherited;
+
                     public:
                         ForwardArrayIterator_Patch (const Array_Patch<T>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
 
                     protected:
                         virtual void    PatchRemoveCurrent () override;
-
-                    private:
-                        typedef ArrayIterator_PatchBase<T>    inherited;
                     };
 
 
@@ -165,23 +157,17 @@ namespace   Stroika {
                      */
                     template    <typename T>
                     class  ForwardArrayMutator_Patch : public ForwardArrayIterator_Patch<T> {
+                    private:
+                        typedef ForwardArrayIterator_Patch<T>    inherited;
+
                     public:
                         ForwardArrayMutator_Patch (Array_Patch<T>& data);
-
-                        nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
-
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
 
                     public:
                         nonvirtual  void    RemoveCurrent ();
                         nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);             //  NB: Can be called if done
                         nonvirtual  void    AddAfter (T item);
-
-                    private:
-                        typedef ForwardArrayIterator_Patch<T>    inherited;
                     };
 
 
@@ -193,22 +179,18 @@ namespace   Stroika {
                      *  mixins.
                      */
                     template    <typename T>
-                    class  BackwardArrayIterator_Patch : public ArrayIterator_PatchBase<T> {
+                    class  BackwardArrayIterator_Patch : public Array_Patch<T>::ArrayIterator_PatchBase {
+                    private:
+                        typedef typename Array_Patch<T>::ArrayIterator_PatchBase    inherited;
+
                     public:
                         BackwardArrayIterator_Patch (const Array_Patch<T>& data);
 
                     public:
-                        nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
-
                         nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
 
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
                     protected:
                         virtual void    PatchRemoveCurrent () override;
-
-                    private:
-                        typedef ArrayIterator_PatchBase<T>    inherited;
                     };
 
 
@@ -218,21 +200,17 @@ namespace   Stroika {
                      */
                     template    <typename T>
                     class  BackwardArrayMutator_Patch : public BackwardArrayIterator_Patch<T> {
+                    private:
+                        typedef BackwardArrayIterator_Patch<T>    inherited;
+
                     public:
                         BackwardArrayMutator_Patch (Array_Patch<T>& data);
 
-                        nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
                     public:
                         nonvirtual  void    RemoveCurrent ();
                         nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);              //  NB: Can be called if done
-
-                    private:
-                        typedef BackwardArrayIterator_Patch<T>    inherited;
                     };
 
 

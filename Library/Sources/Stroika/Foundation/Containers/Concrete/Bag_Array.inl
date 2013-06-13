@@ -225,7 +225,7 @@ namespace   Stroika {
                         /*
                          *  Iterate backwards since removing from the end of an array will be faster.
                          */
-                        for (Private::DataStructures::BackwardArrayIterator<T> it (fData_); it.More (nullptr, true);) {
+                        for (Private::DataStructures::Array<T>::BackwardArrayIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;

@@ -70,14 +70,8 @@
  *
  *  TODO:
  *
- *      @todo   Move Forward/Backward/Etc interators to be NESTED CLASSES!
- *
- *
  *      @todo   FIX realloc() stuff. We probably need to get rid of realloc altogether. Look at what
  *              std::vector<> does for hints about most efficient way..
- *
- *
- *
  */
 
 
@@ -134,9 +128,14 @@ namespace   Stroika {
 
                         nonvirtual  void    Invariant () const;
 
-                        // probably SB protected
+                    protected:
+                        class   _ArrayIteratorBase;
+
                     public:
-                        class   ArrayIteratorBase;
+                        class   ForwardArrayIterator;
+                        class   ForwardArrayMutator;
+                        class   BackwardArrayIterator;
+                        class   BackwardArrayMutator;
 
                     protected:
                         size_t          _fLength;            // #items advertised/constructed
@@ -147,43 +146,42 @@ namespace   Stroika {
                     protected:
                         virtual void    Invariant_ () const;
 #endif
-#if 0
-                    private:
-                        friend  class   ArrayIteratorBase<T>;
-#endif
                     };
 
 
                     /*
-                     *      ArrayIteratorBase<T> is an un-advertised implementation
+                     *      _ArrayIteratorBase<T> is an un-advertised implementation
                      *  detail designed to help in source-code sharing among various
                      *  iterator implementations.
                      */
                     template    <typename T>
-                    class   Array<T>::ArrayIteratorBase {
+                    class   Array<T>::_ArrayIteratorBase {
                     private:
-                        ArrayIteratorBase ();       // not defined - do not call.
+                        _ArrayIteratorBase ();       // not defined - do not call.
 
                     public:
-                        ArrayIteratorBase (const Array<T>& data);
+                        _ArrayIteratorBase (const Array<T>& data);
 
                         nonvirtual  T       Current () const;           //  Error to call if Done (), otherwise OK
                         nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  bool    Done () const;
 
+                    public:
                         nonvirtual  void    Invariant () const;
 
-                    protected:
 #if     qDebug
+                    protected:
                         const Array<T>*     fData;
 #endif
+                    protected:
                         const T*            fStart;         // points to FIRST elt
                         const T*            fEnd;           // points 1 PAST last elt
                         const T*            fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
                         bool                fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
+                    protected:
                         virtual void    Invariant_ () const;
 #endif
                     };
@@ -195,17 +193,15 @@ namespace   Stroika {
                      *  since it is not safe. Use ForwardArrayIterator_Patch for those cases.
                      */
                     template    <typename T>
-                    class   ForwardArrayIterator : public Array<T>::ArrayIteratorBase {
+                    class   Array<T>::ForwardArrayIterator : public Array<T>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array<T>::ArrayIteratorBase    inherited;
+                        typedef typename Array<T>::_ArrayIteratorBase    inherited;
 
                     public:
                         ForwardArrayIterator (const Array<T>& data);
 
+                    public:
                         nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
                     };
 
 
@@ -213,19 +209,16 @@ namespace   Stroika {
                      *      ForwardArrayMutator<T> is the same as ForwardArrayIterator<T> but
                      *  adds the ability to update the contents of the array as you go along.
                      */
-                    template    <typename T> class  ForwardArrayMutator : public ForwardArrayIterator<T> {
+                    template    <typename T>
+                    class   Array<T>::ForwardArrayMutator : public Array<T>::ForwardArrayIterator {
+                    private:
+                        typedef typename Array<T>::ForwardArrayIterator    inherited;
+
                     public:
                         ForwardArrayMutator (Array<T>& data);
 
-                        nonvirtual  bool    More (T* current, bool advance);                // shadow to avoid scope ambiguity
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
-
+                    public:
                         nonvirtual  void    UpdateCurrent (T newValue);
-
-                    private:
-                        typedef ForwardArrayIterator<T>    inherited;
                     };
 
 
@@ -235,18 +228,15 @@ namespace   Stroika {
                      *  since it is not safe. Use BackwardArrayIterator_Patch for those cases.
                      */
                     template    <typename T>
-                    class   BackwardArrayIterator : public Array<T>::ArrayIteratorBase {
+                    class   Array<T>::BackwardArrayIterator : public Array<T>::_ArrayIteratorBase {
                     private:
-                        typedef typename    Array<T>::ArrayIteratorBase    inherited;
+                        typedef typename    Array<T>::_ArrayIteratorBase    inherited;
 
                     public:
                         BackwardArrayIterator (const Array<T>& data);
 
+                    public:
                         nonvirtual  bool    More (T* current, bool advance);
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
-
                     };
 
 
@@ -255,19 +245,15 @@ namespace   Stroika {
                      *  adds the ability to update the contents of the array as you go along.
                      */
                     template    <typename T>
-                    class  BackwardArrayMutator : public BackwardArrayIterator<T> {
+                    class  Array<T>::BackwardArrayMutator : public Array<T>::BackwardArrayIterator {
+                    private:
+                        typedef typename    Array<T>::BackwardArrayIterator    inherited;
+
                     public:
                         BackwardArrayMutator (Array<T>& data);
 
-                        nonvirtual  bool    More (T* current, bool advance);      // shadow to avoid scope ambiguity
-                        nonvirtual  bool    Done () const;          // shadow to avoid scope ambiguity
-
-                        nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
-
+                    public:
                         nonvirtual  void    UpdateCurrent (T newValue);
-
-                    private:
-                        typedef BackwardArrayIterator<T>    inherited;
                     };
 
 
