@@ -287,7 +287,7 @@ namespace   Stroika {
                     {
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedList<T>::DoublyLinkedListIterator::DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from)
+                    inline  DoublyLinkedList<T>::DoublyLinkedListIterator::DoublyLinkedListIterator (const DoublyLinkedListIterator& from)
                         : fCurrent (from.fCurrent)
                         , fSuppressMore (from.fSuppressMore)
                     {
@@ -299,7 +299,7 @@ namespace   Stroika {
                         fCurrent = rhs.fCurrent;
                         fSuppressMore = rhs.fSuppressMore;
                         Invariant ();
-                        return (*this);
+                        return *this;
                     }
                     template    <typename   T>
                     inline  bool    DoublyLinkedList<T>::DoublyLinkedListIterator::Done () const

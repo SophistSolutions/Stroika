@@ -17,14 +17,15 @@
  * TODO:
  *
  *
+ *
+ *      @todo   Do RemoveAt(ForwardIterator), and other mutator methods as method of LinkedList<T>
+ *              THen mask in Patching:::LinkedList<T> - and do patching there. Then get rid of
+ *              mutator objects!
+ *
+ *
  *      @todo   Consider losing fSize data member - and storing it just as needed in things like Sequence_LinkedList (not even sure there - dont use LL
  *              if you want to know the size!!!)
  *
- *
- *      @todo   Do MUTATORS (or some such) to avoid making
-
-                    public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
-
 
  *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
  *
@@ -71,6 +72,9 @@ namespace   Stroika {
                         nonvirtual  LinkedList<T>& operator= (const LinkedList<T>& list);
 
                     public:
+                        class   ForwardIterator;
+
+                    public:
                         nonvirtual  size_t  GetLength () const;
 
                         /*
@@ -90,6 +94,9 @@ namespace   Stroika {
 
 
                     public:
+                        nonvirtual  void    RemoveAt (const ForwardIterator& it);
+
+                    public:
                         nonvirtual  void    Remove (T item);
                         nonvirtual  void    RemoveAll ();
 
@@ -102,17 +109,16 @@ namespace   Stroika {
                         nonvirtual  T       GetAt (size_t i) const;
                         nonvirtual  void    SetAt (T item, size_t i);
 
+
                     public:
                         nonvirtual  void    Invariant () const;
 
                     public:
                         class   Link;
 
-                    public:
-                        class   ForwardIterator;
-
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
+                        //protected:
                         size_t      fLength;
                         Link*       fFirst;
 
@@ -162,8 +168,9 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
+                        const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
                         const typename LinkedList<T>::Link*     fCurrent;
-                        bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                        bool                                    fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
                         virtual void    Invariant_ () const;

@@ -77,10 +77,6 @@ namespace   Stroika {
                     private:
                         ArrayIterator_PatchBase* fIterators;
 
-#if 0
-                        friend  class   ArrayIterator_PatchBase<T>;
-#endif
-
 #if     qDebug
                         virtual void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;

@@ -152,6 +152,41 @@ namespace   Stroika {
                         return (*this);
                     }
                     template    <typename   T>
+                    void    LinkedList<T>::RemoveAt (const ForwardIterator& it)
+                    {
+                        Require (not it.Done ());
+                        it.Invariant ();
+                        Link*    victim  = const_cast<Link*> (it.fCurrent);
+
+                        /*
+                         *      At this point we need the fPrev pointer. But it may have been lost
+                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
+                         *  fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
+                         *  is still nullptr, that means update fFirst.
+                         */
+                        Link*    prevLink  = it.fCachedPrev;
+                        if ((prevLink == nullptr) and (this->fFirst != victim)) {
+                            AssertNotNull (this->fFirst);    // cuz there must be something to remove current
+                            for (prevLink = this->fFirst; prevLink->fNext != victim; prevLink = prevLink->fNext) {
+                                AssertNotNull (prevLink);    // cuz that would mean victim not in LinkedList!!!
+                            }
+                        }
+                        if (prevLink == nullptr) {
+                            Assert (this->fFirst == victim);
+                            this->fFirst = victim->fNext;
+                        }
+                        else {
+                            Assert (prevLink->fNext == victim);
+                            prevLink->fNext = victim->fNext;
+                        }
+
+                        this->->fLength--;
+                        delete (victim);
+
+                        it.Invariant ();
+                        this->Invariant ();
+                    }
+                    template    <typename   T>
                     void    LinkedList<T>::Remove (T item)
                     {
                         Require (fLength >= 1);
@@ -251,15 +286,17 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename   T>
-                    inline  LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>& data) :
-                        fCurrent (data.fFirst),
-                        fSuppressMore (true)
+                    inline  LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>& data)
+                        : fCachedPrev (nullptr)
+                        , fCurrent (data.fFirst)
+                        , fSuppressMore (true)
                     {
                     }
                     template    <typename   T>
-                    inline  LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from) :
-                        fCurrent (from.fCurrent),
-                        fSuppressMore (from.fSuppressMore)
+                    inline  LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                        : fCachedPrev (nullptr)
+                        , fCurrent (from.fCurrent)
+                        , fSuppressMore (from.fSuppressMore)
                     {
                     }
                     template    <typename   T>
