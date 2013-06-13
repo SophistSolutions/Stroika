@@ -17,7 +17,7 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ****************** DoublyLinkedList<T>::Link *****************************
+                    ************************ DoublyLinkedList<T>::Link *****************************
                     ********************************************************************************
                     */
                     template    <typename   T>
@@ -34,9 +34,9 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
-                    DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from) :
-                        fLength (from.fLength),
-                        fFirst (nullptr)
+                    DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
+                        : fLength (from.fLength)
+                        , fFirst (nullptr)
                     {
                         /*
                          *      Copy the link list by keeping a point to the new current and new
@@ -65,9 +65,9 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedList<T>::DoublyLinkedList () :
-                        fLength (0),
-                        fFirst (nullptr)
+                    inline  DoublyLinkedList<T>::DoublyLinkedList ()
+                        : fLength (0)
+                        , fFirst (nullptr)
                     {
                         Invariant ();
                     }
@@ -270,30 +270,30 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ********************** DoublyLinkedListIterator<T> *****************************
+                    *********** DoublyLinkedList<T>::DoublyLinkedListIterator **********************
                     ********************************************************************************
                     */
                     template    <typename   T>
-                    inline  void    DoublyLinkedListIterator<T>::Invariant () const
+                    inline  void    DoublyLinkedList<T>::DoublyLinkedListIterator::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedListIterator<T>::DoublyLinkedListIterator (const DoublyLinkedList<T>& data) :
-                        fCurrent (data.fFirst),
-                        fSuppressMore (true)
+                    inline  DoublyLinkedList<T>::DoublyLinkedListIterator::DoublyLinkedListIterator (const DoublyLinkedList<T>& data)
+                        : fCurrent (data.fFirst)
+                        , fSuppressMore (true)
                     {
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedListIterator<T>::DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from) :
-                        fCurrent (from.fCurrent),
-                        fSuppressMore (from.fSuppressMore)
+                    inline  DoublyLinkedList<T>::DoublyLinkedListIterator::DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from)
+                        : fCurrent (from.fCurrent)
+                        , fSuppressMore (from.fSuppressMore)
                     {
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedListIterator<T>&  DoublyLinkedListIterator<T>::operator= (const DoublyLinkedListIterator<T>& rhs)
+                    inline  typename DoublyLinkedList<T>::DoublyLinkedListIterator&  DoublyLinkedList<T>::DoublyLinkedListIterator::operator= (const DoublyLinkedListIterator& rhs)
                     {
                         Invariant ();
                         fCurrent = rhs.fCurrent;
@@ -302,13 +302,13 @@ namespace   Stroika {
                         return (*this);
                     }
                     template    <typename   T>
-                    inline  bool    DoublyLinkedListIterator<T>::Done () const
+                    inline  bool    DoublyLinkedList<T>::DoublyLinkedListIterator::Done () const
                     {
                         Invariant ();
                         return bool (fCurrent == nullptr);
                     }
                     template    <typename   T>
-                    inline  bool    DoublyLinkedListIterator<T>::More (T* current, bool advance)
+                    inline  bool    DoublyLinkedList<T>::DoublyLinkedListIterator::More (T* current, bool advance)
                     {
                         Invariant ();
 
@@ -329,7 +329,7 @@ namespace   Stroika {
                         return (not Done ());
                     }
                     template    <typename   T>
-                    inline  T   DoublyLinkedListIterator<T>::Current () const
+                    inline  T   DoublyLinkedList<T>::DoublyLinkedListIterator::Current () const
                     {
                         Require (not (Done ()));
                         Invariant ();
@@ -338,7 +338,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template    <typename   T>
-                    void    DoublyLinkedListIterator<T>::Invariant_ () const
+                    void    DoublyLinkedList<T>::DoublyLinkedListIterator::Invariant_ () const
                     {
                     }
 #endif

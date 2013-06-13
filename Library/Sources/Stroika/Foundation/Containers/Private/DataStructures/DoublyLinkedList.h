@@ -18,6 +18,7 @@
  * TODO:
  *
  *      @todo   Add MUTATOR object - (or similar) - so we can make fLength/fFirst protected below!!!
+ *              (NO MUTATOR OBJECT - INSTEAD - UPDATECURRENT (ITERATOR) MEHTOD ON OBJECT ITSELF.
  *
  *      @todo   Somheow when this got ported from old code - we lost fLast??? Maybe irrelevant if we switch to
  *              using STL list??? But ..??
@@ -39,14 +40,6 @@ namespace   Stroika {
         namespace   Containers {
             namespace Private {
                 namespace   DataStructures {
-
-
-
-#if 0
-                    /// NEXT TODO @@@TODO - is move DoublyLinkedListIterator to DoublyLinkedList<T>::ForwardIterator#en
-#endif
-                    template    <typename   T>
-                    class   DoublyLinkedListIterator;
 
 
                     /*
@@ -108,17 +101,10 @@ namespace   Stroika {
 
                     public:
                         // for now public... but soon protected - just for helper iterator classes...
-                        class   Link {
-                        public:
-                            DECLARE_USE_BLOCK_ALLOCATION (Link);
-                        public:
-                            Link (T item, Link* next);
+                        class   Link;
 
-                        public:
-                            T           fItem;
-                            Link* fNext;
-                        };
-
+                    public:
+                        class   DoublyLinkedListIterator;
 
                     protected:
                     public:         // To make this protected we need to write (without patch stuff) a mutator
@@ -133,7 +119,20 @@ namespace   Stroika {
 #endif
 
                     private:
-                        friend  class   DoublyLinkedListIterator<T>;
+                        friend  class   DoublyLinkedListIterator;
+                    };
+
+                    // for now public... but soon protected - just for helper iterator classes...
+                    template    <typename   T>
+                    class   DoublyLinkedList<T>::Link {
+                    public:
+                        DECLARE_USE_BLOCK_ALLOCATION (Link);
+                    public:
+                        Link (T item, Link* next);
+
+                    public:
+                        T           fItem;
+                        Link* fNext;
                     };
 
 
@@ -144,16 +143,16 @@ namespace   Stroika {
                      *  for that.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedListIterator {
+                    class   DoublyLinkedList<T>::DoublyLinkedListIterator {
                     public:
-                        DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from);
+                        DoublyLinkedListIterator (const DoublyLinkedListIterator& from);
                         DoublyLinkedListIterator (const DoublyLinkedList<T>& data);
 
                     public:
                         typedef typename DoublyLinkedList<T>::Link    Link;
 
                     public:
-                        nonvirtual  DoublyLinkedListIterator<T>& operator= (const DoublyLinkedListIterator<T>& list);
+                        nonvirtual  DoublyLinkedListIterator& operator= (const DoublyLinkedListIterator& list);
 
                     public:
                         nonvirtual  bool    Done () const;

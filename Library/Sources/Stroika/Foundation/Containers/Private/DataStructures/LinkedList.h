@@ -112,7 +112,6 @@ namespace   Stroika {
                         class   ForwardIterator;
 
 
-
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
                         size_t      fLength;
                         Link*       fFirst;
@@ -127,7 +126,6 @@ namespace   Stroika {
                     };
 
 
-
                     template    <typename   T>
                     class   LinkedList<T>::Link {
                     public:
@@ -139,6 +137,7 @@ namespace   Stroika {
                         T        fItem;
                         Link*    fNext;
                     };
+
 
                     /*
                      *      ForwardIterator<T> allows you to iterate over a LinkedList<T>. Its API

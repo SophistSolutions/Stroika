@@ -102,9 +102,9 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedListIterator<T> {
+                    class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedList<T>::DoublyLinkedListIterator {
                     private:
-                        typedef DataStructures::DoublyLinkedListIterator<T> inherited;
+                        typedef typename DataStructures::DoublyLinkedList<T>::DoublyLinkedListIterator inherited;
 
                     public:
                         DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data);
