@@ -437,7 +437,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         if (advance) {
-                            if (not this->fSuppressMore and not Done ()) {
+                            if (not this->fSuppressMore and not this->Done ()) {
                                 Assert (this->fCurrent < this->fEnd);
                                 this->fCurrent++;
                             }
@@ -461,7 +461,7 @@ namespace   Stroika {
                     inline  void    Array<T>::ForwardArrayMutator::UpdateCurrent (T newValue)
                     {
                         Invariant ();
-                        Require (not Done ());
+                        Require (not this->Done ());
                         AssertNotNull (this->fCurrent);
                         const_cast<T*> (this->fCurrent)->fItem = newValue;
                     }
@@ -489,14 +489,14 @@ namespace   Stroika {
                     {
                         Invariant ();
                         if (advance) {
-                            if (not this->fSuppressMore and not Done ()) {
+                            if (not this->fSuppressMore and not this->Done ()) {
                                 if (this->fCurrent == this->fStart) {
                                     this->fCurrent = this->fEnd;    // magic to indicate done
-                                    Ensure (Done ());
+                                    Ensure (this->Done ());
                                 }
                                 else {
                                     this->fCurrent--;
-                                    Ensure (not Done ());
+                                    Ensure (not this->Done ());
                                 }
                             }
                         }
@@ -519,7 +519,7 @@ namespace   Stroika {
                     inline  void    Array<T>::BackwardArrayMutator::UpdateCurrent (T newValue)
                     {
                         Invariant ();
-                        Require (not Done ());
+                        Require (not this->Done ());
                         AssertNotNull (this->fCurrent);
                         *const_cast<T*> (this->fCurrent) = newValue;   // not sure how to handle better the (~const)
                     }

@@ -412,25 +412,25 @@ namespace   Stroika {
                         inherited (data)
                     {
                         this->fCurrent = this->fStart;
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  bool    ForwardArrayIterator_Patch<T>::More (T* current, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
-                            if (not this->fSuppressMore and not Done ()) {
+                            if (not this->fSuppressMore and not this->Done ()) {
                                 Assert ( this->fCurrent <  this->fEnd);
                                 this->fCurrent++;
                             }
 
                             this->fSuppressMore = false;
-                            if ((current != nullptr) and (not Done ())) {
+                            if ((current != nullptr) and (not this->Done ())) {
                                 *current = (*this->fCurrent);
                             }
                         }
-                        Invariant ();
-                        return (not Done ());
+                        this->Invariant ();
+                        return (not this->Done ());
                     }
                     template    <typename T>
                     inline  void    ForwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
@@ -447,23 +447,23 @@ namespace   Stroika {
                     */
                     template    <typename T>
                     inline  ForwardArrayMutator_Patch<T>::ForwardArrayMutator_Patch (Array_Patch<T>& data) :
-                        ForwardArrayIterator_Patch<T>((const Array_Patch<T>&)data)
+                        inherited ((const Array_Patch<T>&)data)
                     {
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  void    ForwardArrayMutator_Patch<T>::RemoveCurrent ()
                     {
-                        Invariant ();
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (CurrentIndex ());
-                        Invariant ();
+                        const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (this->CurrentIndex ());
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  void    ForwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
                     {
-                        Invariant ();
-                        Require (not Done ());
+                        this->Invariant ();
+                        Require (not this->Done ());
                         AssertNotNull (this->fCurrent);
                         *const_cast<T*>(this->fCurrent) = newValue;
                     }
@@ -473,19 +473,19 @@ namespace   Stroika {
                         /*
                          * NB: This can be called if we are done.
                          */
-                        Invariant ();
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ());
-                        Invariant ();
+                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, this->CurrentIndex ());
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  void    ForwardArrayMutator_Patch<T>::AddAfter (T newValue)
                     {
-                        Require (not Done ());
-                        Invariant ();
+                        Require (not this->Done ());
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex () + 1);
-                        Invariant ();
+                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, this->CurrentIndex () + 1);
+                        this->Invariant ();
                     }
 
 
@@ -496,7 +496,7 @@ namespace   Stroika {
                     */
                     template    <typename T>
                     inline  BackwardArrayIterator_Patch<T>::BackwardArrayIterator_Patch (const Array_Patch<T>& data)
-                        : ArrayIterator_PatchBase<T> (data)
+                        : inherited (data)
                     {
                         if (data.GetLength () == 0) {
                             this->fCurrent = this->fEnd;    // magic to indicate done
@@ -504,41 +504,41 @@ namespace   Stroika {
                         else {
                             this->fCurrent = this->fEnd - 1; // last valid item
                         }
-                        Invariant ();
+                        this->Invariant ();
                     }
                     // Careful to keep hdr and src copies identical...
                     template    <typename T>
                     inline  bool    BackwardArrayIterator_Patch<T>::More (T* current, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
                             if (this->fSuppressMore) {
                                 this->fSuppressMore = false;
-                                if (not Done ()) {
+                                if (not this->Done ()) {
                                     *current = *(this->fCurrent);
                                 }
-                                return (not Done ());
+                                return (not this->Done ());
                             }
                             else {
-                                if (Done ()) {
+                                if (this->Done ()) {
                                     return (false);
                                 }
                                 else {
                                     if (this->fCurrent == this->fStart) {
                                         this->fCurrent = this->fEnd;    // magic to indicate done
-                                        Ensure (Done ());
+                                        Ensure (this->Done ());
                                         return (false);
                                     }
                                     else {
                                         this->fCurrent--;
                                         *current = *(this->fCurrent);
-                                        Ensure (not Done ());
+                                        Ensure (not this->Done ());
                                         return (true);
                                     }
                                 }
                             }
                         }
-                        return (not Done ());
+                        return (not this->Done ());
                     }
                     template    <typename T>
                     inline  void    BackwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
@@ -563,31 +563,31 @@ namespace   Stroika {
                     inline  BackwardArrayMutator_Patch<T>::BackwardArrayMutator_Patch (Array_Patch<T>& data) :
                         inherited ((const Array_Patch<T>&)data)
                     {
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  void    BackwardArrayMutator_Patch<T>::RemoveCurrent ()
                     {
-                        Invariant ();
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (CurrentIndex ());
+                        const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (this->CurrentIndex ());
                     }
                     template    <typename T>
                     inline  void    BackwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
                     {
-                        Invariant ();
-                        Require (not Done ());
+                        this->Invariant ();
+                        Require (not this->Done ());
                         AssertNotNull (this->fCurrent);
                         *const_cast<T*>(this->fCurrent) = newValue;
                     }
                     template    <typename T>
                     inline  void    BackwardArrayMutator_Patch<T>::AddBefore (T newValue)
                     {
-                        Require (not Done ());
-                        Invariant ();
+                        Require (not this->Done ());
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, CurrentIndex ());
-                        Invariant ();
+                        const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, this->CurrentIndex ());
+                        this->Invariant ();
                     }
                     template    <typename T>
                     inline  void    BackwardArrayMutator_Patch<T>::AddAfter (T newValue)
@@ -595,10 +595,10 @@ namespace   Stroika {
                         /*
                          * NB: This can be called if we are done.
                          */
-                        Invariant ();
+                        this->Invariant ();
                         AssertNotNull (this->fData);
-                        const_cast<Array_Patch<T>*>(this->fData)->InsertAt (newValue, CurrentIndex () + 1);
-                        Invariant ();
+                        const_cast<Array_Patch<T>*>(this->fData)->InsertAt (newValue, this->CurrentIndex () + 1);
+                        this->Invariant ();
                     }
 
 
