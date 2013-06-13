@@ -41,6 +41,10 @@ namespace   Stroika {
                 namespace   DataStructures {
 
 
+
+#if 0
+                    /// NEXT TODO @@@TODO - is move DoublyLinkedListIterator to DoublyLinkedList<T>::ForwardIterator#en
+#endif
                     template    <typename   T>
                     class   DoublyLinkedListIterator;
 
@@ -104,15 +108,15 @@ namespace   Stroika {
 
                     public:
                         // for now public... but soon protected - just for helper iterator classes...
-                        class   DoubleLink {
+                        class   Link {
                         public:
-                            DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
+                            DECLARE_USE_BLOCK_ALLOCATION (Link);
                         public:
-                            DoubleLink (T item, DoubleLink* next);
+                            Link (T item, Link* next);
 
                         public:
                             T           fItem;
-                            DoubleLink* fNext;
+                            Link* fNext;
                         };
 
 
@@ -121,7 +125,7 @@ namespace   Stroika {
                         size_t              fLength;
                     protected:
                     public:         // To make this protected we need to write (without patch stuff) a mutator
-                        DoubleLink*      fFirst;
+                        Link*      fFirst;
 
 #if     qDebug
                     protected:
@@ -146,7 +150,7 @@ namespace   Stroika {
                         DoublyLinkedListIterator (const DoublyLinkedList<T>& data);
 
                     public:
-                        typedef typename DoublyLinkedList<T>::DoubleLink    DoubleLink;
+                        typedef typename DoublyLinkedList<T>::Link    Link;
 
                     public:
                         nonvirtual  DoublyLinkedListIterator<T>& operator= (const DoublyLinkedListIterator<T>& list);
@@ -159,7 +163,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const DoubleLink*  fCurrent;
+                        const Link*  fCurrent;
                         bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
