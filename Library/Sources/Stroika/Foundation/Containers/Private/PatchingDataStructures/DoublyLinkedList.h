@@ -51,6 +51,9 @@ namespace   Stroika {
                     public:
                         nonvirtual  DoublyLinkedList_Patch<T>& operator= (const DoublyLinkedList_Patch<T>& list);
 
+                    public:
+                        typedef typename DoublyLinkedList<T>::DoubleLink    DoubleLink;
+
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
                          * patching, thats fine - use scope resolution operator to call this's base
@@ -71,8 +74,8 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (const DataStructures::DoubleLink<T>* link) const;      //  call after add
-                        nonvirtual  void    PatchViewsRemove (const DataStructures::DoubleLink<T>* link) const;   //  call before remove
+                        nonvirtual  void    PatchViewsAdd (const DoubleLink* link) const;      //  call after add
+                        nonvirtual  void    PatchViewsRemove (const DoubleLink* link) const;   //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
                         /*
@@ -112,13 +115,16 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedListIterator_Patch<T>&    operator= (const DoublyLinkedListIterator_Patch<T>& rhs);
 
                     public:
+                        typedef typename DataStructures::DoublyLinkedList<T>::DoubleLink    DoubleLink;
+
+                    public:
                         /*
                          * Shadow more to keep track of prev.
                          */
                         nonvirtual  bool    More (T* current, bool advance);
 
-                        nonvirtual  void    PatchAdd (const DataStructures::DoubleLink<T>* link);     //  call after add
-                        nonvirtual  void    PatchRemove (const DataStructures::DoubleLink<T>* link);  //  call before remove
+                        nonvirtual  void    PatchAdd (const DoubleLink* link);     //  call after add
+                        nonvirtual  void    PatchRemove (const DoubleLink* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
                         // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
@@ -127,7 +133,7 @@ namespace   Stroika {
                             RequireNotNull (fData);
                             RequireNotNull (this->fCurrent);
                             size_t i = 0;
-                            for (const DataStructures::DoubleLink<T>* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
+                            for (const DoubleLink* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
                                 AssertNotNull (l);
                             }
                             return i;
@@ -136,7 +142,7 @@ namespace   Stroika {
                     protected:
                         const DoublyLinkedList_Patch<T>*        fData;
                         DoublyLinkedListIterator_Patch<T>*      fNext;
-                        const DataStructures::DoubleLink<T>*                    fPrev;      // keep extra previous link for fast patchremove
+                        const DoubleLink*                    fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 

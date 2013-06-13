@@ -17,13 +17,13 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ******************************* DoubleLink<T> **********************************
+                    ****************** DoublyLinkedList<T>::DoubleLink *****************************
                     ********************************************************************************
                     */
                     template    <class T>
-                    inline  DoubleLink<T>::DoubleLink (T item, DoubleLink<T>* next) :
-                        fItem (item),
-                        fNext (next)
+                    inline  DoublyLinkedList<T>::DoubleLink::DoubleLink (T item, DoubleLink* next)
+                        : fItem (item)
+                        , fNext (next)
                     {
                     }
 
@@ -46,11 +46,11 @@ namespace   Stroika {
                          *  case is handled outside, before the loop.
                          */
                         if (from.fFirst != nullptr) {
-                            fFirst = new DoubleLink<T> (from.fFirst->fItem, nullptr);
-                            DoubleLink<T>*    newCur  =   fFirst;
-                            for (const DoubleLink<T>* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
-                                DoubleLink<T>*    newPrev =   newCur;
-                                newCur = new DoubleLink<T> (cur->fItem, nullptr);
+                            fFirst = new DoubleLink (from.fFirst->fItem, nullptr);
+                            DoubleLink*    newCur  =   fFirst;
+                            for (const DoubleLink* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                                DoubleLink*    newPrev =   newCur;
+                                newCur = new DoubleLink (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
                             }
                         }
@@ -112,7 +112,7 @@ namespace   Stroika {
                     inline  void    DoublyLinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
-                        fFirst = new DoubleLink<T> (item, fFirst);
+                        fFirst = new DoubleLink (item, fFirst);
                         fLength++;
                         Invariant ();
                     }
@@ -122,7 +122,7 @@ namespace   Stroika {
                         RequireNotNull (fFirst);
                         Invariant ();
 
-                        DoubleLink<T>* victim = fFirst;
+                        DoubleLink* victim = fFirst;
                         fFirst = victim->fNext;
                         delete (victim);
                         fLength--;
@@ -136,12 +136,12 @@ namespace   Stroika {
                         Invariant ();
 
                         // HACK - SEE OLD 1992 Stroika code - or abandom this impl - and use STL?
-                        DoubleLink<T>* i = fFirst;
+                        DoubleLink* i = fFirst;
                         AssertNotNull (i);
                         for (; i->fNext != nullptr; i = i->fNext)
                             ;
                         AssertNotNull (i);
-                        DoubleLink<T>* victim = i;
+                        DoubleLink* victim = i;
                         if (victim == fFirst) {
                             fFirst = nullptr;
                         }
@@ -166,11 +166,11 @@ namespace   Stroika {
                          *  case is handled outside, before the loop.
                          */
                         if (list.fFirst != nullptr) {
-                            fFirst = new DoubleLink<T> (list.fFirst->fItem, nullptr);
-                            DoubleLink<T>*    newCur  =   fFirst;
-                            for (const DoubleLink<T>* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
-                                DoubleLink<T>*    newPrev =   newCur;
-                                newCur = new DoubleLink<T> (cur->fItem, nullptr);
+                            fFirst = new DoubleLink (list.fFirst->fItem, nullptr);
+                            DoubleLink*    newCur  =   fFirst;
+                            for (const DoubleLink* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                                DoubleLink*    newPrev =   newCur;
+                                newCur = new DoubleLink (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
                             }
                         }
@@ -192,8 +192,8 @@ namespace   Stroika {
                             RemoveFirst ();
                         }
                         else {
-                            DoubleLink<T>*    prev    =   nullptr;
-                            for (DoubleLink<T>* link = fFirst; link != nullptr; prev = link, link = link->fNext) {
+                            DoubleLink*    prev    =   nullptr;
+                            for (DoubleLink* link = fFirst; link != nullptr; prev = link, link = link->fNext) {
                                 if (link->fItem == item) {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
@@ -209,7 +209,7 @@ namespace   Stroika {
                     template    <typename   T>
                     bool    DoublyLinkedList<T>::Contains (T item) const
                     {
-                        for (const DoubleLink<T>* current = fFirst; current != nullptr; current = current->fNext) {
+                        for (const DoubleLink* current = fFirst; current != nullptr; current = current->fNext) {
                             if (current->fItem == item) {
                                 return (true);
                             }
@@ -219,8 +219,8 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList<T>::RemoveAll ()
                     {
-                        for (DoubleLink<T>* i = fFirst; i != nullptr;) {
-                            DoubleLink<T>*    deleteMe    =   i;
+                        for (DoubleLink* i = fFirst; i != nullptr;) {
+                            DoubleLink*    deleteMe    =   i;
                             i = i->fNext;
                             delete (deleteMe);
                         }
@@ -232,7 +232,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < fLength);
-                        const DoubleLink<T>* cur = fFirst;
+                        const DoubleLink* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -244,7 +244,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < fLength);
-                        DoubleLink<T>* cur = fFirst;
+                        DoubleLink* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -259,7 +259,7 @@ namespace   Stroika {
                          * Check we are properly linked together.
                          */
                         size_t  counter =   0;
-                        for (DoubleLink<T>* i = fFirst; i != nullptr; i = i->fNext) {
+                        for (DoubleLink* i = fFirst; i != nullptr; i = i->fNext) {
                             counter++;
                             Assert (counter <= fLength);    // to this test in the loop so we detect circularities...
                         }

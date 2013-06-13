@@ -19,8 +19,6 @@
  *
  *      @todo   Add MUTATOR object - (or similar) - so we can make fLength/fFirst protected below!!!
  *
- *      @todo   FIX DoubleLink to be nested class inside DoublyLinkedList
- *
  *      @todo   Somheow when this got ported from old code - we lost fLast??? Maybe irrelevant if we switch to
  *              using STL list??? But ..??
  *
@@ -36,7 +34,6 @@
  */
 
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
@@ -46,19 +43,6 @@ namespace   Stroika {
 
                     template    <typename   T>
                     class   DoublyLinkedListIterator;
-
-
-                    template    <typename   T>
-                    class   DoubleLink {
-                    public:
-                        DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
-                    public:
-                        DoubleLink (T item, DoubleLink<T>* next);
-
-                    public:
-                        T               fItem;
-                        DoubleLink<T>*  fNext;
-                    };
 
 
                     /*
@@ -101,11 +85,9 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    Contains (T item) const;
 
-
                     public:
                         nonvirtual  void    Remove (T item);
                         nonvirtual  void    RemoveAll ();
-
 
                         /*
                          *      Not alot of point in having these, as they are terribly slow,
@@ -118,15 +100,31 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    Invariant () const;
 
+
+
+                    public:
+                        // for now public... but soon protected - just for helper iterator classes...
+                        class   DoubleLink {
+                        public:
+                            DECLARE_USE_BLOCK_ALLOCATION (DoubleLink);
+                        public:
+                            DoubleLink (T item, DoubleLink* next);
+
+                        public:
+                            T           fItem;
+                            DoubleLink* fNext;
+                        };
+
+
                     protected:
                     public:         // To make this protected we need to write (without patch stuff) a mutator
                         size_t              fLength;
                     protected:
                     public:         // To make this protected we need to write (without patch stuff) a mutator
-                        DoubleLink<T>*      fFirst;
+                        DoubleLink*      fFirst;
 
-                    protected:
 #if     qDebug
+                    protected:
                         virtual     void    Invariant_ () const;
 #endif
 
@@ -148,6 +146,9 @@ namespace   Stroika {
                         DoublyLinkedListIterator (const DoublyLinkedList<T>& data);
 
                     public:
+                        typedef typename DoublyLinkedList<T>::DoubleLink    DoubleLink;
+
+                    public:
                         nonvirtual  DoublyLinkedListIterator<T>& operator= (const DoublyLinkedListIterator<T>& list);
 
                     public:
@@ -158,7 +159,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const DoubleLink<T>*  fCurrent;
+                        const DoubleLink*  fCurrent;
                         bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
