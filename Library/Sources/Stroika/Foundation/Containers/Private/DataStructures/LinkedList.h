@@ -17,9 +17,6 @@
  * TODO:
  *
  *
- *      @todo   Move LinkedListIterator to LinkedList<T>::ForwardIterator
- *              (in other words - change name AND make nested)
- *
  *      @todo   Consider losing fSize data member - and storing it just as needed in things like Sequence_LinkedList (not even sure there - dont use LL
  *              if you want to know the size!!!)
  *
@@ -52,10 +49,6 @@ namespace   Stroika {
         namespace   Containers {
             namespace Private {
                 namespace   DataStructures {
-
-
-                    template    <typename   T>
-                    class   LinkedListIterator;
 
 
                     /*
@@ -113,16 +106,11 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     public:
-                        class   Link {
-                        public:
-                            DECLARE_USE_BLOCK_ALLOCATION (Link);
-                        public:
-                            Link (T item, Link* next);
+                        class   Link;
 
-                        public:
-                            T        fItem;
-                            Link*    fNext;
-                        };
+                    public:
+                        class   ForwardIterator;
+
 
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
@@ -135,24 +123,37 @@ namespace   Stroika {
 #endif
 
                     private:
-                        friend  class   LinkedListIterator<T>;
+                        friend  class   ForwardIterator;
                     };
 
 
+
+                    template    <class T>
+                    class   LinkedList<T>::Link {
+                    public:
+                        DECLARE_USE_BLOCK_ALLOCATION (Link);
+                    public:
+                        Link (T item, Link* next);
+
+                    public:
+                        T        fItem;
+                        Link*    fNext;
+                    };
+
                     /*
-                     *      LinkedListIterator<T> allows you to iterate over a LinkedList<T>. Its API
+                     *      ForwardIterator<T> allows you to iterate over a LinkedList<T>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                      *  for that.
                      */
                     template    <class T>
-                    class   LinkedListIterator {
+                    class   LinkedList<T>::ForwardIterator {
                     public:
-                        LinkedListIterator (const LinkedListIterator<T>& from);
-                        LinkedListIterator (const LinkedList<T>& data);
+                        ForwardIterator (const ForwardIterator& from);
+                        ForwardIterator (const LinkedList& data);
 
                     public:
-                        nonvirtual  LinkedListIterator<T>& operator= (const LinkedListIterator<T>& list);
+                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& it);
 
                     public:
                         nonvirtual  bool    Done () const;

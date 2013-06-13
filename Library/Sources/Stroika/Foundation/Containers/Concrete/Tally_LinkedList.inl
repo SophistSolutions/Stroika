@@ -192,7 +192,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         TallyEntry<T>   c;
-                        for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
+                        for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
                             if (c.fItem == item) {
                                 Assert (c.fCount != 0);
                                 return (true);
@@ -297,7 +297,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T>   c;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::DataStructures::LinkedListIterator<TallyEntry<T>> it (fData_); it.More (&c, true); ) {
+                        for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
                             if (c.fItem == item) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);

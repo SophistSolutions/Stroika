@@ -99,9 +99,9 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template    <class T>
-                    class   LinkedListIterator_Patch : public DataStructures::LinkedListIterator<T> {
+                    class   LinkedListIterator_Patch : public DataStructures::LinkedList<T>::ForwardIterator {
                     private:
-                        typedef DataStructures::LinkedListIterator<T>   inherited;
+                        typedef typename DataStructures::LinkedList<T>::ForwardIterator   inherited;
 
                     public:
                         LinkedListIterator_Patch (const LinkedList_Patch<T>& data);
