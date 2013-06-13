@@ -41,7 +41,7 @@ namespace   Stroika {
                     template    <typename   T>
                     class   DoublyLinkedList_Patch : public DataStructures::DoublyLinkedList<T> {
                     private:
-                        typedef DataStructures::DoublyLinkedList<T> inherited;
+                        typedef typename DataStructures::DoublyLinkedList<T> inherited;
 
                     public:
                         DoublyLinkedList_Patch ();
@@ -52,7 +52,7 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList_Patch<T>& operator= (const DoublyLinkedList_Patch<T>& list);
 
                     public:
-                        typedef typename DoublyLinkedList<T>::Link    Link;
+                        typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
 
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
@@ -170,6 +170,9 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  DoublyLinkedListMutator_Patch<T>& operator= (DoublyLinkedListMutator_Patch<T>& rhs);
+
+                    public:
+                        typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
 
                     public:
                         nonvirtual  void    RemoveCurrent ();
