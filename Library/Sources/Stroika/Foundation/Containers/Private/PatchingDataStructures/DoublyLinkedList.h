@@ -40,6 +40,9 @@ namespace   Stroika {
                     class   DoublyLinkedListIterator_Patch;
                     template    <typename   T>
                     class   DoublyLinkedList_Patch : public DataStructures::DoublyLinkedList<T> {
+                    private:
+                        typedef DataStructures::DoublyLinkedList<T> inherited;
+
                     public:
                         DoublyLinkedList_Patch ();
                         DoublyLinkedList_Patch (const DoublyLinkedList_Patch<T>& from);
@@ -97,13 +100,18 @@ namespace   Stroika {
                      */
                     template    <class T>
                     class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedListIterator<T> {
+                    private:
+                        typedef DataStructures::DoublyLinkedListIterator<T> inherited;
+
                     public:
                         DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data);
                         DoublyLinkedListIterator_Patch (const DoublyLinkedListIterator_Patch<T>& from);
                         ~DoublyLinkedListIterator_Patch ();
 
+                    public:
                         nonvirtual  DoublyLinkedListIterator_Patch<T>&    operator= (const DoublyLinkedListIterator_Patch<T>& rhs);
 
+                    public:
                         /*
                          * Shadow more to keep track of prev.
                          */
@@ -147,12 +155,17 @@ namespace   Stroika {
                      */
                     template    <class T>
                     class   DoublyLinkedListMutator_Patch : public DoublyLinkedListIterator_Patch<T> {
+                    private:
+                        typedef DoublyLinkedListIterator_Patch<T> inherited;
+
                     public:
                         DoublyLinkedListMutator_Patch (DoublyLinkedList_Patch<T>& data);
                         DoublyLinkedListMutator_Patch (const DoublyLinkedListMutator_Patch<T>& from);
 
+                    public:
                         nonvirtual  DoublyLinkedListMutator_Patch<T>& operator= (DoublyLinkedListMutator_Patch<T>& rhs);
 
+                    public:
                         nonvirtual  void    RemoveCurrent ();
                         nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);

@@ -29,16 +29,16 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename   T>
-                    inline  LinkedList_Patch<T>::LinkedList_Patch () :
-                        LinkedList<T> (),
-                        fIterators (nullptr)
+                    inline  LinkedList_Patch<T>::LinkedList_Patch ()
+                        : inherited ()
+                        , fIterators (nullptr)
                     {
                         Invariant ();
                     }
                     template    <typename   T>
-                    inline  LinkedList_Patch<T>::LinkedList_Patch (const LinkedList_Patch<T>& from) :
-                        LinkedList<T> (from),
-                        fIterators (nullptr)    // Don't copy the list of iterators - would be trouble with backpointers!
+                    inline  LinkedList_Patch<T>::LinkedList_Patch (const LinkedList_Patch<T>& from)
+                        : inherited (from)
+                        , fIterators (nullptr)    // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
                     {
                         Invariant ();
@@ -84,14 +84,14 @@ namespace   Stroika {
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
                         Assert (not (HasActiveIterators ()));   // cuz copy of LinkedList does not copy iterators...
-                        LinkedList<T>::operator= (rhs);
+                        inherited::operator= (rhs);
                         return (*this);
                     }
                     template    <typename   T>
                     inline  void    LinkedList_Patch<T>::Prepend (T item)
                     {
                         Invariant ();
-                        LinkedList<T>::Prepend (item);
+                        inherited::Prepend (item);
                         PatchViewsAdd (this->fFirst);
                         Invariant ();
                     }
@@ -118,14 +118,14 @@ namespace   Stroika {
                     {
                         Invariant ();
                         PatchViewsRemove (this->fFirst);
-                        LinkedList<T>::RemoveFirst ();
+                        inherited::RemoveFirst ();
                         Invariant ();
                     }
                     template    <typename   T>
                     inline  void    LinkedList_Patch<T>::RemoveAll ()
                     {
                         Invariant ();
-                        LinkedList<T>::RemoveAll ();
+                        inherited::RemoveAll ();
                         PatchViewsRemoveAll ();
                         Invariant ();
                     }
@@ -149,7 +149,7 @@ namespace   Stroika {
                     template    <typename   T>
                     void    LinkedList_Patch<T>::Invariant_ () const
                     {
-                        LinkedList<T>::Invariant_ ();
+                        inherited::Invariant_ ();
                         /*
                          *      Be sure each iterator points back to us. Thats about all we can test from
                          *  here since we cannot call each iterators Invariant(). That would be
@@ -183,21 +183,21 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <class T>
-                    inline  LinkedListIterator_Patch<T>::LinkedListIterator_Patch (const LinkedList_Patch<T>& data) :
-                        LinkedListIterator<T> (data),
-                        fData (&data),
-                        fNext (data.fIterators),
-                        fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
+                    inline  LinkedListIterator_Patch<T>::LinkedListIterator_Patch (const LinkedList_Patch<T>& data)
+                        : inherited (data)
+                        , fData (&data)
+                        , fNext (data.fIterators)
+                        , fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
                     {
                         const_cast<LinkedList_Patch<T>*> (&data)->fIterators = this;
                         this->Invariant ();
                     }
                     template    <class T>
-                    inline  LinkedListIterator_Patch<T>::LinkedListIterator_Patch (const LinkedListIterator_Patch<T>& from) :
-                        LinkedListIterator<T> (from),
-                        fData (from.fData),
-                        fNext (from.fData->fIterators),
-                        fPrev (from.fPrev)
+                    inline  LinkedListIterator_Patch<T>::LinkedListIterator_Patch (const LinkedListIterator_Patch<T>& from)
+                        : inherited (from)
+                        , fData (from.fData)
+                        , fNext (from.fData->fIterators)
+                        , fPrev (from.fPrev)
                     {
                         from.Invariant ();
                         const_cast<LinkedList_Patch<T>*> (fData)->fIterators = this;
@@ -263,7 +263,7 @@ namespace   Stroika {
                         fData = rhs.fData;
                         fPrev = rhs.fPrev;
 
-                        LinkedListIterator<T>::operator= (rhs);
+                        inherited::operator= (rhs);
 
                         this->Invariant ();
                         return (*this);
@@ -346,7 +346,7 @@ namespace   Stroika {
                     template    <typename   T>
                     void    LinkedListIterator_Patch<T>::Invariant_ () const
                     {
-                        LinkedListIterator<T>::Invariant_ ();
+                        inherited::Invariant_ ();
 
                         /*
                          *  fPrev could be nullptr, but if it isn't then its next must be fCurrent.
@@ -381,6 +381,8 @@ namespace   Stroika {
                     inline  void    LinkedListMutator_Patch<T>::RemoveCurrent ()
                     {
                         Require (not this->Done ());
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+
                         this->Invariant ();
                         Link*    victim  = const_cast<Link*> (this->fCurrent);
                         AssertNotNull (this->fData);
@@ -415,11 +417,13 @@ namespace   Stroika {
                     inline  void    LinkedListMutator_Patch<T>::UpdateCurrent (T newValue)
                     {
                         RequireNotNull (this->fCurrent);
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
                         const_cast<Link*> (this->fCurrent)->fItem = newValue;
                     }
                     template    <class T>
                     inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue)
                     {
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
                         /*
                          * NB: This code works fine, even if we are done!!!
                          */
@@ -454,6 +458,7 @@ namespace   Stroika {
                     inline  void    LinkedListMutator_Patch<T>::AddAfter (T newValue)
                     {
                         Require (not this->Done ());
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
                         AssertNotNull (this->fCurrent); // since not done...
                         const_cast<Link*>(this->fCurrent)->fNext = new Link (newValue, this->fCurrent->fNext);
                         const_cast<LinkedList_Patch<T>*> (this->fData)->fLength++;

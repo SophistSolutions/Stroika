@@ -40,12 +40,18 @@ namespace   Stroika {
                     class   LinkedListIterator_Patch;
                     template    <typename   T>
                     class   LinkedList_Patch : public DataStructures::LinkedList<T> {
+                    private:
+                        typedef typename DataStructures::LinkedList<T>  inherited;
+
                     public:
                         LinkedList_Patch ();
                         LinkedList_Patch (const LinkedList_Patch<T>& from);
                         ~LinkedList_Patch ();
 
                         nonvirtual  LinkedList_Patch<T>& operator= (const LinkedList_Patch<T>& list);
+
+                    public:
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
 
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
@@ -65,8 +71,8 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (const typename LinkedList<T>::Link* link) const;      //  call after add
-                        nonvirtual  void    PatchViewsRemove (const typename LinkedList<T>::Link* link) const;   //  call before remove
+                        nonvirtual  void    PatchViewsAdd (const Link* link) const;      //  call after add
+                        nonvirtual  void    PatchViewsRemove (const Link* link) const;   //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
                         /*
@@ -94,8 +100,9 @@ namespace   Stroika {
                      */
                     template    <class T>
                     class   LinkedListIterator_Patch : public DataStructures::LinkedListIterator<T> {
-                    public:
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+                    private:
+                        typedef DataStructures::LinkedListIterator<T>   inherited;
+
                     public:
                         LinkedListIterator_Patch (const LinkedList_Patch<T>& data);
                         LinkedListIterator_Patch (const LinkedListIterator_Patch<T>& from);
@@ -103,6 +110,10 @@ namespace   Stroika {
 
                         nonvirtual  LinkedListIterator_Patch<T>&    operator= (const LinkedListIterator_Patch<T>& rhs);
 
+                    public:
+                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+
+                    public:
                         /*
                          * Shadow more to keep track of prev.
                          */
@@ -150,8 +161,10 @@ namespace   Stroika {
                         LinkedListMutator_Patch (LinkedList_Patch<T>& data);
                         LinkedListMutator_Patch (const LinkedListMutator_Patch<T>& from);
 
+                    public:
                         nonvirtual  LinkedListMutator_Patch<T>& operator= (LinkedListMutator_Patch<T>& rhs);
 
+                    public:
                         nonvirtual  void    RemoveCurrent ();
                         nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);

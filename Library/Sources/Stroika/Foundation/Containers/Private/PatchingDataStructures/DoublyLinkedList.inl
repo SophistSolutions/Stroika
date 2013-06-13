@@ -30,14 +30,14 @@ namespace   Stroika {
                     }
                     template    <typename   T>
                     inline  DoublyLinkedList_Patch<T>::DoublyLinkedList_Patch ()
-                        : DoublyLinkedList<T> ()
+                        : inherited ()
                         , fIterators (nullptr)
                     {
                         Invariant ();
                     }
                     template    <typename   T>
                     inline  DoublyLinkedList_Patch<T>::DoublyLinkedList_Patch (const DoublyLinkedList_Patch<T>& from)
-                        : DoublyLinkedList<T> (from)
+                        : inherited (from)
                         , fIterators (nullptr)    // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
                     {
@@ -84,14 +84,14 @@ namespace   Stroika {
                          * If this is to be supported at some future date, well need to work on our patching.
                          */
                         Assert (not (HasActiveIterators ()));   // cuz copy of DoublyLinkedList does not copy iterators...
-                        DoublyLinkedList<T>::operator= (rhs);
-                        return (*this);
+                        inherited::operator= (rhs);
+                        return *this;
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::Prepend (T item)
                     {
                         Invariant ();
-                        DoublyLinkedList<T>::Prepend (item);
+                        inherited::Prepend (item);
                         PatchViewsAdd (this->fFirst);
                         Invariant ();
                     }
@@ -118,14 +118,14 @@ namespace   Stroika {
                     {
                         Invariant ();
                         PatchViewsRemove (this->fFirst);
-                        DoublyLinkedList<T>::RemoveFirst ();
+                        inherited::RemoveFirst ();
                         Invariant ();
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::RemoveAll ()
                     {
                         Invariant ();
-                        DoublyLinkedList<T>::RemoveAll ();
+                        inherited::RemoveAll ();
                         PatchViewsRemoveAll ();
                         Invariant ();
                     }
@@ -149,7 +149,7 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList_Patch<T>::Invariant_ () const
                     {
-                        DoublyLinkedList<T>::Invariant_ ();
+                        inherited::Invariant_ ();
                         /*
                          *      Be sure each iterator points back to us. Thats about all we can test from
                          *  here since we cannot call each iterators Invariant(). That would be
@@ -183,21 +183,21 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <class T>
-                    inline  DoublyLinkedListIterator_Patch<T>::DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data) :
-                        DoublyLinkedListIterator<T> (data),
-                        fData (&data),
-                        fNext (data.fIterators),
-                        fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
+                    inline  DoublyLinkedListIterator_Patch<T>::DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data)
+                        :                        inherited (data)
+                        , fData (&data)
+                        , fNext (data.fIterators)
+                        , fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
                     {
                         const_cast<DoublyLinkedList_Patch<T>*> (&data)->fIterators = this;
                         this->Invariant ();
                     }
                     template    <class T>
-                    inline  DoublyLinkedListIterator_Patch<T>::DoublyLinkedListIterator_Patch (const DoublyLinkedListIterator_Patch<T>& from) :
-                        DoublyLinkedListIterator<T> (from),
-                        fData (from.fData),
-                        fNext (from.fData->fIterators),
-                        fPrev (from.fPrev)
+                    inline  DoublyLinkedListIterator_Patch<T>::DoublyLinkedListIterator_Patch (const DoublyLinkedListIterator_Patch<T>& from)
+                        : inherited (from)
+                        , fData (from.fData)
+                        , fNext (from.fData->fIterators)
+                        , fPrev (from.fPrev)
                     {
                         from.Invariant ();
                         const_cast<DoublyLinkedList_Patch<T>*> (fData)->fIterators = this;
@@ -263,10 +263,10 @@ namespace   Stroika {
                         fData = rhs.fData;
                         fPrev = rhs.fPrev;
 
-                        DoublyLinkedListIterator<T>::operator= (rhs);
+                        inherited::operator= (rhs);
 
                         this->Invariant ();
-                        return (*this);
+                        return *this;
                     }
                     template    <class T>
                     inline  bool    DoublyLinkedListIterator_Patch<T>::More (T* current, bool advance)
@@ -346,7 +346,7 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedListIterator_Patch<T>::Invariant_ () const
                     {
-                        DoublyLinkedListIterator<T>::Invariant_ ();
+                        inherited::Invariant_ ();
 
                         /*
                          *  fPrev could be nullptr, but if it isn't then its next must be fCurrent.
@@ -363,18 +363,18 @@ namespace   Stroika {
                     */
                     template    <class T>
                     inline  DoublyLinkedListMutator_Patch<T>::DoublyLinkedListMutator_Patch (DoublyLinkedList_Patch<T>& data) :
-                        DoublyLinkedListIterator_Patch<T> ((const DoublyLinkedList_Patch<T>&)data)
+                        inherited ((const DoublyLinkedList_Patch<T>&)data)
                     {
                     }
                     template    <class T>
                     inline  DoublyLinkedListMutator_Patch<T>::DoublyLinkedListMutator_Patch (const DoublyLinkedListMutator_Patch<T>& from) :
-                        DoublyLinkedListIterator_Patch<T> ((const DoublyLinkedListIterator_Patch<T>&)from)
+                        inherited ((const DoublyLinkedListIterator_Patch<T>&)from)
                     {
                     }
                     template    <class T>
                     inline  DoublyLinkedListMutator_Patch<T>& DoublyLinkedListMutator_Patch<T>::operator= (DoublyLinkedListMutator_Patch<T>& rhs)
                     {
-                        DoublyLinkedListIterator_Patch<T>::operator= ((const DoublyLinkedListIterator_Patch<T>&)rhs);
+                        inherited::operator= ((const DoublyLinkedListIterator_Patch<T>&)rhs);
                         return (*this);
                     }
                     template    <class T>

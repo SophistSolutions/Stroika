@@ -33,7 +33,6 @@ namespace   Stroika {
                     template    <typename T>
                     class   ArrayIterator_PatchBase;
 
-                    template    <typename  T>  class   ArrayIterator_PatchBase;
 
                     /*
                      *      Array_Patch<T> is an array implemantion that keeps a list of patchable
@@ -42,6 +41,8 @@ namespace   Stroika {
                      */
                     template    <typename T>
                     class   Array_Patch : public DataStructures::Array<T> {
+                    private:
+                        typedef typename DataStructures::Array<T> inherited;
                     public:
                         Array_Patch ();
                         Array_Patch (const Array_Patch<T>& from);

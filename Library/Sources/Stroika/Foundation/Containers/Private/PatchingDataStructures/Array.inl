@@ -22,7 +22,7 @@ namespace   Stroika {
                     */
                     template    <typename T>
                     inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const Array_Patch<T>& data)
-                        : ArrayIteratorBase (data)
+                        : inherited (data)
                         , fData (&data)
                         , fNext (data.fIterators)
                     {
@@ -34,7 +34,7 @@ namespace   Stroika {
                     }
                     template    <typename T>
                     inline  ArrayIterator_PatchBase<T>::ArrayIterator_PatchBase (const ArrayIterator_PatchBase<T>& from)
-                        : ArrayIteratorBase (from)
+                        : inherited (from)
                         , fData (from.fData)
                         , fNext (from.fData->fIterators)
                     {
@@ -101,7 +101,7 @@ namespace   Stroika {
                             ((Array_Patch<T>*)fData)->fIterators = this;
                         }
 
-                        ArrayIteratorBase<T>::operator=(rhs);
+                        inherited::operator=(rhs);
 
                         Invariant ();
 
@@ -249,15 +249,15 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename T>
-                    inline  Array_Patch<T>::Array_Patch () :
-                        Array<T> (),
-                        fIterators (0)
+                    inline  Array_Patch<T>::Array_Patch ()
+                        : inherited ()
+                        , fIterators (0)
                     {
                         Invariant ();
                     }
                     template    <typename T>
                     inline  Array_Patch<T>::Array_Patch (const Array_Patch<T>& from) :
-                        Array<T> (from),
+                        inherited (from),
                         fIterators (0)  // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
                     {
@@ -316,7 +316,7 @@ namespace   Stroika {
                          */
                         Assert (not (HasActiveIterators ()));   // cuz copy of array does not copy iterators...
                         Invariant ();
-                        Array<T>::operator= (rhs);
+                        inherited::operator= (rhs);
                         Invariant ();
                         return (*this);
                     }
@@ -330,7 +330,7 @@ namespace   Stroika {
                     inline  void    Array_Patch<T>::InsertAt (T item, size_t index)
                     {
                         Invariant ();
-                        Array<T>::InsertAt (item, index);
+                        inherited::InsertAt (item, index);
                         PatchViewsAdd (index);          // PatchRealloc done in PatchViewsAdd()
                         Invariant ();
                     }
@@ -339,7 +339,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         PatchViewsRemove (index);
-                        Array<T>::RemoveAt (index);
+                        inherited::RemoveAt (index);
                         // Dont call PatchViewsRealloc () since removeat does not do a SetCapacity, it
                         // just destructs things.
                         Invariant ();
@@ -348,7 +348,7 @@ namespace   Stroika {
                     inline  void    Array_Patch<T>::RemoveAll ()
                     {
                         Invariant ();
-                        Array<T>::RemoveAll ();
+                        inherited::RemoveAll ();
                         PatchViewsRemoveAll ();     // PatchRealloc not needed cuz removeall just destructs things,
                         // it does not realloc pointers (ie does not call SetCapacity).
                         Invariant ();
@@ -357,7 +357,7 @@ namespace   Stroika {
                     inline  void    Array_Patch<T>::SetCapacity (size_t slotsAlloced)
                     {
                         Invariant ();
-                        Array<T>::SetCapacity (slotsAlloced);
+                        inherited::SetCapacity (slotsAlloced);
                         PatchViewsRealloc ();
                         Invariant ();
                     }
@@ -365,7 +365,7 @@ namespace   Stroika {
                     inline  void    Array_Patch<T>::Compact ()
                     {
                         Invariant ();
-                        Array<T>::Compact ();
+                        inherited::Compact ();
                         PatchViewsRealloc ();
                         Invariant ();
                     }
@@ -373,7 +373,7 @@ namespace   Stroika {
                     template    <typename T>
                     void    Array_Patch<T>::Invariant_ () const
                     {
-                        Array<T>::Invariant_ ();
+                        inherited::Invariant_ ();
 
                         /*
                          *      Be sure each iterator points back to us. Thats about all we can test from
