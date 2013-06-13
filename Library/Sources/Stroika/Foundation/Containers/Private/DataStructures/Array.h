@@ -33,7 +33,6 @@
  *  semantics of the Array.
  *
  *
- *
  *  Notes:
  *
  *  Warning:
@@ -73,11 +72,6 @@
  *      @todo   ADD DATA MEMBERS TO ARRAYITERATORBASE WHCI ALLOW MANIP OF NEEDED STUFF IN ARRAY
  *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely
  *              WRT type safety / protected!!!
- *
- *      @todo   LOSE MUTATOR - and have UPDATE be method of Array<> class taking an ITERATOR as
- *              arg (as our high level containers do - and STL does).
- *
- *              THat SIMPLIFES - and reduces our number of classes!
  *
  *      @todo   FIX realloc() stuff. We probably need to get rid of realloc altogether. Look at what
  *              std::vector<> does for hints about most efficient way..
@@ -151,6 +145,14 @@ namespace   Stroika {
                         class   BackwardArrayIterator;
                         class   BackwardArrayMutator;
 
+                    public:
+                        nonvirtual  void    RemoveAt (const ForwardArrayIterator& at, T newValue);
+                        nonvirtual  void    RemoveAt (const BackwardArrayIterator& at, T newValue);
+
+                    public:
+                        nonvirtual  void    UpdateAt (const ForwardArrayIterator& at, T newValue);
+                        nonvirtual  void    UpdateAt (const BackwardArrayIterator& at, T newValue);
+
                     protected:
                         size_t          _fLength;            // #items advertised/constructed
                         size_t          _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
@@ -220,23 +222,6 @@ namespace   Stroika {
 
 
                     /**
-                     *      ForwardArrayMutator<T> is the same as ForwardArrayIterator<T> but
-                     *  adds the ability to update the contents of the array as you go along.
-                     */
-                    template    <typename T>
-                    class   Array<T>::ForwardArrayMutator : public Array<T>::ForwardArrayIterator {
-                    private:
-                        typedef typename Array<T>::ForwardArrayIterator    inherited;
-
-                    public:
-                        ForwardArrayMutator (Array<T>& data);
-
-                    public:
-                        nonvirtual  void    UpdateCurrent (T newValue);
-                    };
-
-
-                    /**
                      *      Use this iterator to iterate backwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
                      *  since it is not safe. Use BackwardArrayIterator_Patch for those cases.
@@ -254,28 +239,12 @@ namespace   Stroika {
                     };
 
 
-                    /**
-                     *      BackwardArrayMutator<T> is the same as BackwardArrayIterator<T> but
-                     *  adds the ability to update the contents of the array as you go along.
-                     */
-                    template    <typename T>
-                    class  Array<T>::BackwardArrayMutator : public Array<T>::BackwardArrayIterator {
-                    private:
-                        typedef typename    Array<T>::BackwardArrayIterator    inherited;
-
-                    public:
-                        BackwardArrayMutator (Array<T>& data);
-
-                    public:
-                        nonvirtual  void    UpdateCurrent (T newValue);
-                    };
-
-
                 }
             }
         }
     }
 }
+
 
 
 /*

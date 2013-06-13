@@ -340,6 +340,30 @@ namespace   Stroika {
                     {
                         SetCapacity (GetLength ());
                     }
+                    template    <typename T>
+                    inline  void    Array<T>::RemoveAt (const ForwardArrayIterator& at, T newValue)
+                    {
+                        Require (not at.Done ());
+                        this->RemoveAt (at.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    inline  void    Array<T>::RemoveAt (const BackwardArrayIterator& at, T newValue)
+                    {
+                        Require (not at.Done ());
+                        this->RemoveAt (at.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    inline  void    Array<T>::UpdateAt (const ForwardArrayIterator& at, T newValue)
+                    {
+                        Require (not at.Done ());
+                        SetAt (newValue, at.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    inline  void    Array<T>::UpdateAt (const BackwardArrayIterator& at, T newValue)
+                    {
+                        Require (not at.Done ());
+                        SetAt (newValue, at.CurrentIndex ());
+                    }
 
 
                     /*
@@ -446,7 +470,7 @@ namespace   Stroika {
                         return (inherited::More (current, advance));
                     }
 
-
+#if 0
                     /*
                     ********************************************************************************
                     ******************* Array<T>::ForwardArrayMutator ******************************
@@ -466,6 +490,7 @@ namespace   Stroika {
                         AssertNotNull (this->fCurrent);
                         const_cast<T*> (this->fCurrent)->fItem = newValue;
                     }
+#endif
 
 
                     /*
@@ -505,6 +530,7 @@ namespace   Stroika {
                     }
 
 
+#if 0
                     /*
                     ********************************************************************************
                     ******************** Array<T>::BackwardArrayMutator ****************************
@@ -524,6 +550,7 @@ namespace   Stroika {
                         AssertNotNull (this->fCurrent);
                         *const_cast<T*> (this->fCurrent) = newValue;   // not sure how to handle better the (~const)
                     }
+#endif
 
 
 

@@ -15,25 +15,67 @@ namespace   Stroika {
                 namespace   PatchingDataStructures {
 
 
+
+                    //// GET RID OF MUTATOR CODE SOON!!!
+                    /*
+                     *      ForwardArrayMutator_Patch<T> is the same as ForwardIterator<T> but
+                     *  adds the ability to update the contents of the array as you go along.
+                     */
+                    template    <typename T>
+                    class  Array_Patch<T>::ForwardArrayMutator_Patch : public ForwardIterator {
+                    private:
+                        typedef ForwardIterator   inherited;
+
+                    public:
+                        ForwardArrayMutator_Patch (Array_Patch<T>& data);
+
+                    public:
+                        nonvirtual  void    RemoveCurrent ();
+                        nonvirtual  void    UpdateCurrent (T newValue);
+                        nonvirtual  void    AddBefore (T item);             //  NB: Can be called if done
+                        nonvirtual  void    AddAfter (T item);
+                    };
+
+                    /*
+                     *      BackwardArrayMutator_Patch<T> is the same as BackwardIterator<T> but
+                     *  adds the ability to update the contents of the array as you go along.
+                     */
+                    template    <typename T>
+                    class  Array_Patch<T>::BackwardArrayMutator_Patch : public Array_Patch<T>::BackwardIterator {
+                    private:
+                        typedef typename Array_Patch<T>::BackwardIterator    inherited;
+
+                    public:
+                        BackwardArrayMutator_Patch (Array_Patch<T>& data);
+
+                    public:
+                        nonvirtual  void    RemoveCurrent ();
+                        nonvirtual  void    UpdateCurrent (T newValue);
+                        nonvirtual  void    AddBefore (T item);
+                        nonvirtual  void    AddAfter (T item);              //  NB: Can be called if done
+                    };
+
+
+
+
                     /*
                     ********************************************************************************
-                    ************************ ArrayIterator_PatchBase<T> ****************************
+                    ******************** Array_Patch<T>::_ArrayIteratorBase ************************
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  Array_Patch<T>::ArrayIterator_PatchBase::ArrayIterator_PatchBase (const Array_Patch<T>& data)
+                    inline  Array_Patch<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array_Patch<T>& data)
                         : inherited (data)
                         , fData (&data)
                         , fNext (data.fIterators)
                     {
                         const_cast <Array_Patch<T>*> (fData)->fIterators = this;
-
                         /*
                          * Cannot call invariant () here since fCurrent not yet setup.
                          */
                     }
                     template    <typename T>
-                    inline  Array_Patch<T>::ArrayIterator_PatchBase::ArrayIterator_PatchBase (const typename Array_Patch<T>::ArrayIterator_PatchBase& from)
+                    inline  Array_Patch<T>::_ArrayIteratorBase::_ArrayIteratorBase (const typename Array_Patch<T>::_ArrayIteratorBase& from)
                         : inherited (from)
                         , fData (from.fData)
                         , fNext (from.fData->fIterators)
@@ -43,7 +85,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
-                    inline  Array_Patch<T>::ArrayIterator_PatchBase::~ArrayIterator_PatchBase ()
+                    inline  Array_Patch<T>::_ArrayIteratorBase::~_ArrayIteratorBase ()
                     {
                         Invariant ();
                         AssertNotNull (fData);
@@ -51,7 +93,7 @@ namespace   Stroika {
                             const_cast <Array_Patch<T>*> (fData)->fIterators = fNext;
                         }
                         else {
-                            ArrayIterator_PatchBase* v = fData->fIterators;
+                            _ArrayIteratorBase* v = fData->fIterators;
                             for (; v->fNext != this; v = v->fNext) {
                                 AssertNotNull (v);
                                 AssertNotNull (v->fNext);
@@ -62,7 +104,7 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T>
-                    inline  typename Array_Patch<T>::ArrayIterator_PatchBase& Array_Patch<T>::ArrayIterator_PatchBase::operator= (const typename Array_Patch<T>::ArrayIterator_PatchBase& rhs)
+                    inline  typename Array_Patch<T>::_ArrayIteratorBase& Array_Patch<T>::_ArrayIteratorBase::operator= (const typename Array_Patch<T>::_ArrayIteratorBase& rhs)
                     {
                         Invariant ();
 
@@ -82,7 +124,7 @@ namespace   Stroika {
                                 ((Array_Patch<T>*)fData)->fIterators = fNext;
                             }
                             else {
-                                ArrayIterator_PatchBase* v = fData->fIterators;
+                                _ArrayIteratorBase* v = fData->fIterators;
                                 for (; v->fNext != this; v = v->fNext) {
                                     AssertNotNull (v);
                                     AssertNotNull (v->fNext);
@@ -108,17 +150,17 @@ namespace   Stroika {
                         return (*this);
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::ArrayIterator_PatchBase::Invariant () const
+                    inline  void    Array_Patch<T>::_ArrayIteratorBase::Invariant () const
                     {
                         inherited::Invariant ();
                     }
                     template    <typename T>
-                    inline  size_t  Array_Patch<T>::ArrayIterator_PatchBase::CurrentIndex () const
+                    inline  size_t  Array_Patch<T>::_ArrayIteratorBase::CurrentIndex () const
                     {
                         return (inherited::CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::ArrayIterator_PatchBase::PatchAdd (size_t index)
+                    inline  void    Array_Patch<T>::_ArrayIteratorBase::PatchAdd (size_t index)
                     {
                         /*
                          *      NB: We cannot call invariants here because this is called after the add
@@ -158,7 +200,7 @@ namespace   Stroika {
                         }
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::ArrayIterator_PatchBase::PatchRemove (size_t index)
+                    inline  void    Array_Patch<T>::_ArrayIteratorBase::PatchRemove (size_t index)
                     {
                         Require (index >= 0);
                         Require (index < fData->GetLength ());
@@ -202,7 +244,7 @@ namespace   Stroika {
                         this->fEnd--;
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::ArrayIterator_PatchBase::PatchRemoveAll ()
+                    inline  void    Array_Patch<T>::_ArrayIteratorBase::PatchRemoveAll ()
                     {
                         Require (fData->GetLength () == 0);     //  since called after removeall
 
@@ -212,7 +254,7 @@ namespace   Stroika {
                         this->fSuppressMore = true;
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::ArrayIterator_PatchBase::PatchRealloc ()
+                    inline  void    Array_Patch<T>::_ArrayIteratorBase::PatchRealloc ()
                     {
                         /*
                          *      NB: We can only call invariant after we've fixed things up, since realloc
@@ -227,7 +269,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template    <typename T>
-                    void    Array_Patch<T>::ArrayIterator_PatchBase::Invariant_ () const
+                    void    Array_Patch<T>::_ArrayIteratorBase::Invariant_ () const
                     {
                         inherited::Invariant_ ();
                         Assert (fData == inherited::fData);
@@ -281,7 +323,7 @@ namespace   Stroika {
                          *      Must call PatchRealloc before PatchAdd() since the test of currentIndex
                          *  depends on things being properly adjusted.
                          */
-                        for (ArrayIterator_PatchBase* v = fIterators; v != 0; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != 0; v = v->fNext) {
                             v->PatchRealloc ();
                             v->PatchAdd (index);
                         }
@@ -289,21 +331,21 @@ namespace   Stroika {
                     template    <typename T>
                     inline  void    Array_Patch<T>::PatchViewsRemove (size_t index) const
                     {
-                        for (ArrayIterator_PatchBase* v = fIterators; v != 0; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != 0; v = v->fNext) {
                             v->PatchRemove (index);
                         }
                     }
                     template    <typename T>
                     inline  void    Array_Patch<T>::PatchViewsRemoveAll () const
                     {
-                        for (ArrayIterator_PatchBase* v = fIterators; v != 0; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != 0; v = v->fNext) {
                             v->PatchRemoveAll ();
                         }
                     }
                     template    <typename T>
                     inline  void    Array_Patch<T>::PatchViewsRealloc () const
                     {
-                        for (ArrayIterator_PatchBase* v = fIterators; v != 0; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != 0; v = v->fNext) {
                             v->PatchRealloc ();
                         }
                     }
@@ -383,7 +425,7 @@ namespace   Stroika {
                          *  date. Instead, so that in local shadow of Invariant() done in Array_Patch<T>
                          *  so only called when WE call Invariant().
                          */
-                        for (ArrayIterator_PatchBase* v = fIterators; v != nullptr; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != nullptr; v = v->fNext) {
                             Assert (v->fData == this);
                         }
                     }
@@ -394,7 +436,7 @@ namespace   Stroika {
                          *      Only here can we iterate over each iterator and calls its Invariant()
                          *  since now we've completed any needed patching.
                          */
-                        for (ArrayIterator_PatchBase* v = fIterators; v != nullptr; v = v->fNext) {
+                        for (_ArrayIteratorBase* v = fIterators; v != nullptr; v = v->fNext) {
                             Assert (v->fData == this);
                             v->Invariant ();
                         }
@@ -404,18 +446,18 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************ ForwardArrayIterator_Patch<T> *************************
+                    **************** Array_Patch<T>::ForwardIterator ********************
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  ForwardArrayIterator_Patch<T>::ForwardArrayIterator_Patch (const Array_Patch<T>& data) :
+                    inline  Array_Patch<T>::ForwardIterator::ForwardIterator (const Array_Patch<T>& data) :
                         inherited (data)
                     {
                         this->fCurrent = this->fStart;
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  bool    ForwardArrayIterator_Patch<T>::More (T* current, bool advance)
+                    inline  bool    Array_Patch<T>::ForwardIterator::More (T* current, bool advance)
                     {
                         this->Invariant ();
                         if (advance) {
@@ -433,7 +475,7 @@ namespace   Stroika {
                         return (not this->Done ());
                     }
                     template    <typename T>
-                    inline  void    ForwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
+                    inline  void    Array_Patch<T>::ForwardIterator::PatchRemoveCurrent ()
                     {
                         Assert ( this->fCurrent <  this->fEnd); // cannot remove something past the end
                         this->fSuppressMore = true;
@@ -446,13 +488,13 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  ForwardArrayMutator_Patch<T>::ForwardArrayMutator_Patch (Array_Patch<T>& data) :
+                    inline  Array_Patch<T>::ForwardArrayMutator_Patch::ForwardArrayMutator_Patch (Array_Patch<T>& data) :
                         inherited ((const Array_Patch<T>&)data)
                     {
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  void    ForwardArrayMutator_Patch<T>::RemoveCurrent ()
+                    inline  void    Array_Patch<T>::ForwardArrayMutator_Patch::RemoveCurrent ()
                     {
                         this->Invariant ();
                         AssertNotNull (this->fData);
@@ -460,7 +502,7 @@ namespace   Stroika {
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  void    ForwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
+                    inline  void    Array_Patch<T>::ForwardArrayMutator_Patch::UpdateCurrent (T newValue)
                     {
                         this->Invariant ();
                         Require (not this->Done ());
@@ -468,7 +510,7 @@ namespace   Stroika {
                         *const_cast<T*>(this->fCurrent) = newValue;
                     }
                     template    <typename T>
-                    inline  void    ForwardArrayMutator_Patch<T>::AddBefore (T newValue)
+                    inline  void    Array_Patch<T>::ForwardArrayMutator_Patch::AddBefore (T newValue)
                     {
                         /*
                          * NB: This can be called if we are done.
@@ -479,7 +521,7 @@ namespace   Stroika {
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  void    ForwardArrayMutator_Patch<T>::AddAfter (T newValue)
+                    inline  void    Array_Patch<T>::ForwardArrayMutator_Patch::AddAfter (T newValue)
                     {
                         Require (not this->Done ());
                         this->Invariant ();
@@ -491,11 +533,11 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    *********************** BackwardArrayIterator_Patch<T> *************************
+                    ********************* Array_Patch<T>::BackwardIterator *************************
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  BackwardArrayIterator_Patch<T>::BackwardArrayIterator_Patch (const Array_Patch<T>& data)
+                    inline  Array_Patch<T>::BackwardIterator::BackwardIterator (const Array_Patch<T>& data)
                         : inherited (data)
                     {
                         if (data.GetLength () == 0) {
@@ -508,7 +550,7 @@ namespace   Stroika {
                     }
                     // Careful to keep hdr and src copies identical...
                     template    <typename T>
-                    inline  bool    BackwardArrayIterator_Patch<T>::More (T* current, bool advance)
+                    inline  bool    Array_Patch<T>::BackwardIterator::More (T* current, bool advance)
                     {
                         this->Invariant ();
                         if (advance) {
@@ -541,7 +583,7 @@ namespace   Stroika {
                         return (not this->Done ());
                     }
                     template    <typename T>
-                    inline  void    BackwardArrayIterator_Patch<T>::PatchRemoveCurrent ()
+                    inline  void    Array_Patch<T>::BackwardIterator::PatchRemoveCurrent ()
                     {
                         if (this->fCurrent == this->fStart) {
                             this->fCurrent = this->fEnd;    // magic to indicate done
@@ -560,20 +602,20 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  BackwardArrayMutator_Patch<T>::BackwardArrayMutator_Patch (Array_Patch<T>& data) :
+                    inline  Array_Patch<T>::BackwardArrayMutator_Patch::BackwardArrayMutator_Patch (Array_Patch<T>& data) :
                         inherited ((const Array_Patch<T>&)data)
                     {
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  void    BackwardArrayMutator_Patch<T>::RemoveCurrent ()
+                    inline  void    Array_Patch<T>::BackwardArrayMutator_Patch::RemoveCurrent ()
                     {
                         this->Invariant ();
                         AssertNotNull (this->fData);
                         const_cast<Array_Patch<T>*> (this->fData)->RemoveAt (this->CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    BackwardArrayMutator_Patch<T>::UpdateCurrent (T newValue)
+                    inline  void    Array_Patch<T>::BackwardArrayMutator_Patch::UpdateCurrent (T newValue)
                     {
                         this->Invariant ();
                         Require (not this->Done ());
@@ -581,7 +623,7 @@ namespace   Stroika {
                         *const_cast<T*>(this->fCurrent) = newValue;
                     }
                     template    <typename T>
-                    inline  void    BackwardArrayMutator_Patch<T>::AddBefore (T newValue)
+                    inline  void    Array_Patch<T>::BackwardArrayMutator_Patch::AddBefore (T newValue)
                     {
                         Require (not this->Done ());
                         this->Invariant ();
@@ -590,7 +632,7 @@ namespace   Stroika {
                         this->Invariant ();
                     }
                     template    <typename T>
-                    inline  void    BackwardArrayMutator_Patch<T>::AddAfter (T newValue)
+                    inline  void    Array_Patch<T>::BackwardArrayMutator_Patch::AddAfter (T newValue)
                     {
                         /*
                          * NB: This can be called if we are done.

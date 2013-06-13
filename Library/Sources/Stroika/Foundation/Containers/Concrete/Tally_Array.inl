@@ -122,8 +122,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
-                    mutable Private::PatchingDataStructures::ForwardArrayMutator_Patch<TallyEntry<T> >  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::Array_Patch<TallyEntry<T>>::ForwardArrayMutator_Patch fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 
