@@ -18,7 +18,7 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************************* Array<T> *********************************
+                    *********************************** Array<T> ***********************************
                     ********************************************************************************
                     */
                     template    <typename  T>
@@ -42,7 +42,7 @@ namespace   Stroika {
                         , _fItems (nullptr)
                     {
                         from.Invariant ();
-                        SetCapacity (from.GetCapacity ());
+                        SetCapacity (from.GetLength ());
 
                         /*
                          *  Construct the new items in-place into the new memory.
@@ -302,7 +302,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < _fLength);
-                        return (_fItems [i]);
+                        return _fItems [i];
                     }
                     template    <typename  T>
                     inline  void    Array<T>::SetAt (T item, size_t i)
@@ -470,28 +470,6 @@ namespace   Stroika {
                         return (inherited::More (current, advance));
                     }
 
-#if 0
-                    /*
-                    ********************************************************************************
-                    ******************* Array<T>::ForwardArrayMutator ******************************
-                    ********************************************************************************
-                    */
-                    template    <typename T>
-                    inline  Array<T>::ForwardArrayMutator::ForwardArrayMutator (Array<T>& data) :
-                        inherited ((const Array<T>&)data)
-                    {
-                        Invariant ();
-                    }
-                    template    <typename T>
-                    inline  void    Array<T>::ForwardArrayMutator::UpdateCurrent (T newValue)
-                    {
-                        Invariant ();
-                        Require (not this->Done ());
-                        AssertNotNull (this->fCurrent);
-                        const_cast<T*> (this->fCurrent)->fItem = newValue;
-                    }
-#endif
-
 
                     /*
                     ********************************************************************************
@@ -528,30 +506,6 @@ namespace   Stroika {
                         }
                         return inherited::More (current, advance);
                     }
-
-
-#if 0
-                    /*
-                    ********************************************************************************
-                    ******************** Array<T>::BackwardArrayMutator ****************************
-                    ********************************************************************************
-                    */
-                    template    <typename T>
-                    inline  Array<T>::BackwardArrayMutator::BackwardArrayMutator (Array<T>& data)
-                        : inherited ((const Array<T>&)data)
-                    {
-                        Invariant ();
-                    }
-                    template    <typename T>
-                    inline  void    Array<T>::BackwardArrayMutator::UpdateCurrent (T newValue)
-                    {
-                        Invariant ();
-                        Require (not this->Done ());
-                        AssertNotNull (this->fCurrent);
-                        *const_cast<T*> (this->fCurrent) = newValue;   // not sure how to handle better the (~const)
-                    }
-#endif
-
 
 
                 }

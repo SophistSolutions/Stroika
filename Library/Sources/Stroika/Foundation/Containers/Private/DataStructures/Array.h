@@ -125,6 +125,7 @@ namespace   Stroika {
 
                         nonvirtual  bool    Contains (T item) const;
 
+                    public:
                         /*
                          * Memory savings/optimization methods.  Use this to tune useage
                          * of arrays so that they dont waste time in Realloc's.
@@ -133,8 +134,6 @@ namespace   Stroika {
                         nonvirtual  void    SetCapacity (size_t slotsAlloced);
 
                         nonvirtual  void    Compact ();
-
-                        nonvirtual  void    Invariant () const;
 
                     protected:
                         class   _ArrayIteratorBase;
@@ -153,15 +152,18 @@ namespace   Stroika {
                         nonvirtual  void    UpdateAt (const ForwardArrayIterator& at, T newValue);
                         nonvirtual  void    UpdateAt (const BackwardArrayIterator& at, T newValue);
 
-                    protected:
-                        size_t          _fLength;            // #items advertised/constructed
-                        size_t          _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
-                        T*              _fItems;
+                    public:
+                        nonvirtual  void    Invariant () const;
 
 #if     qDebug
                     protected:
                         virtual void    Invariant_ () const;
 #endif
+
+                    protected:
+                        size_t          _fLength;            // #items advertised/constructed
+                        size_t          _fSlotsAllocated;    // #items allocated (though not necessarily initialized)
+                        T*              _fItems;
                     };
 
 
