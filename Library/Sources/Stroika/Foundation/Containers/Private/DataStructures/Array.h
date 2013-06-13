@@ -50,7 +50,7 @@
  *      The natural thing to do in iteration would be to have fCurrent
  *  point to the current item, but that would pose difficulties in the
  *  final test at the end of the iteration when iterating backwards. The
- *  final test would be fCurrent < fStart. This would be illegal in ANSI C.
+ *  final test would be fCurrent < _fStart. This would be illegal in ANSI C.
  *
  *      The next possible trick is for backwards iteration always point one
  *  past the one you mean, and have it.Current () subtract one before
@@ -59,7 +59,7 @@
  *
  *      The next possible trick, and the one we use for now, is to have
  *  fCurrent point to the current item, and in the Next() code, when
- *  going backwards, reset fCurrent to fEnd - bizzare as this may seem
+ *  going backwards, reset fCurrent to _fEnd - bizzare as this may seem
  *  then the test code can be shared among the forwards and backwards
  *  implemenations, all the patching code can be shared, with only this
  *  one minor check. Other potential choices are presented in the TODO
@@ -145,12 +145,21 @@ namespace   Stroika {
                         class   BackwardArrayMutator;
 
                     public:
-                        nonvirtual  void    RemoveAt (const ForwardArrayIterator& at, T newValue);
-                        nonvirtual  void    RemoveAt (const BackwardArrayIterator& at, T newValue);
+                        nonvirtual  void    RemoveAt (const ForwardArrayIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const BackwardArrayIterator& i, T newValue);
 
                     public:
-                        nonvirtual  void    UpdateAt (const ForwardArrayIterator& at, T newValue);
-                        nonvirtual  void    UpdateAt (const BackwardArrayIterator& at, T newValue);
+                        nonvirtual  void    UpdateAt (const ForwardArrayIterator& i, T newValue);
+                        nonvirtual  void    UpdateAt (const BackwardArrayIterator& i, T newValue);
+
+                    public:
+                        //  NB: Can be called if done
+                        nonvirtual  void    AddBefore (const ForwardArrayIterator& i, T item);
+                        nonvirtual  void    AddBefore (const BackwardArrayIterator& i, T item);
+
+                    public:
+                        nonvirtual  void    AddAfter (const ForwardArrayIterator& i, T item);
+                        nonvirtual  void    AddAfter (const BackwardArrayIterator& i, T item);
 
                     public:
                         nonvirtual  void    Invariant () const;
@@ -190,13 +199,13 @@ namespace   Stroika {
 
 #if     qDebug
                     protected:
-                        const Array<T>*     fData;
+                        const Array<T>*     _fData;
 #endif
                     protected:
-                        const T*            fStart;         // points to FIRST elt
-                        const T*            fEnd;           // points 1 PAST last elt
-                        const T*            fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
-                        bool                fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                        const T*            _fStart;         // points to FIRST elt
+                        const T*            _fEnd;           // points 1 PAST last elt
+                        const T*            _fCurrent;       // points to CURRENT elt (SUBCLASSES MUST INITIALIZE THIS!)
+                        bool                _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
                     protected:

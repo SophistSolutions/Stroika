@@ -48,6 +48,17 @@ namespace   Stroika {
                         nonvirtual  Array_Patch<T>& operator= (const Array_Patch<T>& rhs);
 
                         /*
+                         * Methods to do the patching yourself. Iterate over all the iterators and
+                         * perform patching.
+                         */
+                    public:
+                        nonvirtual  bool    HasActiveIterators () const;            //  are there any iterators to be patched?
+                        nonvirtual  void    PatchViewsAdd (size_t index) const;     //  call after add
+                        nonvirtual  void    PatchViewsRemove (size_t index) const;  //  call before remove
+                        nonvirtual  void    PatchViewsRemoveAll () const;           //  call after removeall
+                        nonvirtual  void    PatchViewsRealloc () const;             //  call after realloc could have happened
+
+                        /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
                          * patching, thats fine - use scope resolution operator to call this's base
                          * class version.
@@ -60,27 +71,17 @@ namespace   Stroika {
                         nonvirtual  void    SetCapacity (size_t slotsAlloced);
                         nonvirtual  void    Compact ();
 
-                        /*
-                         * Methods to do the patching yourself. Iterate over all the iterators and
-                         * perform patching.
-                         */
-                    public:
-                        nonvirtual  bool    HasActiveIterators () const;            //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (size_t index) const;     //  call after add
-                        nonvirtual  void    PatchViewsRemove (size_t index) const;  //  call before remove
-                        nonvirtual  void    PatchViewsRemoveAll () const;           //  call after removeall
-                        nonvirtual  void    PatchViewsRealloc () const;             //  call after realloc could have happened
-
-
                     protected:
                         class   _ArrayIteratorBase;
 
                     public:
                         class  ForwardIterator;
-                        class  ForwardArrayMutator_Patch;
                         class  BackwardIterator;
-                        class  BackwardArrayMutator_Patch;
 
+                        // TO BE LOST/REPLACED
+                    public:
+                        class  ForwardArrayMutator_Patch;
+                        class  BackwardArrayMutator_Patch;
 
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
@@ -89,7 +90,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     private:
-                        _ArrayIteratorBase* fIterators;
+                        _ArrayIteratorBase*     fIterators_;
 
 #if     qDebug
                         virtual void    Invariant_ () const override;

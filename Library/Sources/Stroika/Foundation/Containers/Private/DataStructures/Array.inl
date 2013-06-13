@@ -341,28 +341,52 @@ namespace   Stroika {
                         SetCapacity (GetLength ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const ForwardArrayIterator& at, T newValue)
+                    inline  void    Array<T>::RemoveAt (const ForwardArrayIterator& i, T newValue)
                     {
-                        Require (not at.Done ());
-                        this->RemoveAt (at.CurrentIndex ());
+                        Require (not i.Done ());
+                        this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const BackwardArrayIterator& at, T newValue)
+                    inline  void    Array<T>::RemoveAt (const BackwardArrayIterator& i, T newValue)
                     {
-                        Require (not at.Done ());
-                        this->RemoveAt (at.CurrentIndex ());
+                        Require (not i.Done ());
+                        this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const ForwardArrayIterator& at, T newValue)
+                    inline  void    Array<T>::UpdateAt (const ForwardArrayIterator& i, T newValue)
                     {
-                        Require (not at.Done ());
-                        SetAt (newValue, at.CurrentIndex ());
+                        Require (not i.Done ());
+                        SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const BackwardArrayIterator& at, T newValue)
+                    inline  void    Array<T>::UpdateAt (const BackwardArrayIterator& i, T newValue)
                     {
-                        Require (not at.Done ());
-                        SetAt (newValue, at.CurrentIndex ());
+                        Require (not i.Done ());
+                        SetAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array<T>::AddBefore (const ForwardArrayIterator& i, T item)
+                    {
+                        // i CAN BE DONE OR NOT
+                        InsertAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array<T>::AddBefore (const BackwardArrayIterator& i, T item)
+                    {
+                        // i CAN BE DONE OR NOT
+                        InsertAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array<T>::AddAfter (const ForwardArrayIterator& i, T item)
+                    {
+                        Require (not i.Done ());
+                        InsertAt (newValue, i.CurrentIndex () + 1);
+                    }
+                    template    <typename T>
+                    void    Array<T>::AddAfter (const BackwardArrayIterator& i, T item)
+                    {
+                        Require (not i.Done ());
+                        InsertAt (newValue, i.CurrentIndex () + 1);
                     }
 
 
@@ -375,10 +399,10 @@ namespace   Stroika {
                     template    <typename T>
                     void    Array<T>::_ArrayIteratorBase::Invariant_ () const
                     {
-                        AssertNotNull (fData);
-                        Assert (fStart == fData->_fItems);
-                        Assert (size_t (fEnd - fStart) == fData->GetLength ());
-                        Assert ((fCurrent >= fStart) and (fCurrent <= fEnd));   // ANSI C requires this is always TRUE
+                        AssertNotNull (_fData);
+                        Assert (_fStart == _fData->_fItems);
+                        Assert (size_t (_fEnd - _fStart) == _fData->GetLength ());
+                        Assert ((_fCurrent >= _fStart) and (_fCurrent <= _fEnd));   // ANSI C requires this is always TRUE
                     }
 #endif
                     template    <typename T>
@@ -391,30 +415,30 @@ namespace   Stroika {
                     template    <typename T>
                     inline  Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T>& data) :
 #if     qDebug
-                        fData (&data),
+                        _fData (&data),
 #endif
-                        fStart (&data._fItems[0]),
-                        fEnd (&data._fItems[data.GetLength ()]),
-                        //fCurrent ()                           dont initialize - done in subclasses...
-                        fSuppressMore (true)                // first time thru - cuz of how used in for loops...
+                        _fStart (&data._fItems[0]),
+                        _fEnd (&data._fItems[data.GetLength ()]),
+                        //_fCurrent ()                           dont initialize - done in subclasses...
+                        _fSuppressMore (true)                // first time thru - cuz of how used in for loops...
                     {
 #if     qDebug
-                        fCurrent = nullptr; // more likely to cause bugs...
+                        _fCurrent = nullptr; // more likely to cause bugs...
 #endif
                         /*
-                         * Cannot call invariant () here since fCurrent not yet setup.
+                         * Cannot call invariant () here since _fCurrent not yet setup.
                          */
                     }
                     template    <typename T>
                     bool    Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
                     {
                         if (advance) {
-                            this->fSuppressMore = false;
+                            this->_fSuppressMore = false;
                         }
                         Invariant ();
                         if (not Done ()) {
                             if (current != nullptr) {
-                                *current = *fCurrent;
+                                *current = *_fCurrent;
                             }
                             return true;
                         }
@@ -425,7 +449,7 @@ namespace   Stroika {
                     inline  bool    Array<T>::_ArrayIteratorBase::Done () const
                     {
                         Invariant ();
-                        return bool (fCurrent == fEnd);
+                        return bool (_fCurrent == _fEnd);
                     }
                     template    <typename T>
                     inline  size_t  Array<T>::_ArrayIteratorBase::CurrentIndex () const
@@ -434,14 +458,14 @@ namespace   Stroika {
                          * NB: This can be called if we are done - if so, it returns GetLength().
                          */
                         Invariant ();
-                        return fCurrent - fStart;
+                        return _fCurrent - _fStart;
                     }
                     template    <typename T>
                     inline  T       Array<T>::_ArrayIteratorBase::Current () const
                     {
-                        Ensure (fData->GetAt (CurrentIndex ()) == *fCurrent);
+                        Ensure (_fData->GetAt (CurrentIndex ()) == *_fCurrent);
                         Invariant ();
-                        return *fCurrent;
+                        return *_fCurrent;
                     }
 
 
@@ -454,7 +478,7 @@ namespace   Stroika {
                     inline  Array<T>::ForwardArrayIterator::ForwardArrayIterator (const Array<T>& data)
                         : inherited (data)
                     {
-                        this->fCurrent = this->fStart;
+                        this->_fCurrent = this->_fStart;
                         Invariant ();
                     }
                     template    <typename T>
@@ -462,9 +486,9 @@ namespace   Stroika {
                     {
                         Invariant ();
                         if (advance) {
-                            if (not this->fSuppressMore and not this->Done ()) {
-                                Assert (this->fCurrent < this->fEnd);
-                                this->fCurrent++;
+                            if (not this->_fSuppressMore and not this->Done ()) {
+                                Assert (this->_fCurrent < this->_fEnd);
+                                this->_fCurrent++;
                             }
                         }
                         return (inherited::More (current, advance));
@@ -481,10 +505,10 @@ namespace   Stroika {
                         : inherited (data)
                     {
                         if (data.GetLength () == 0) {
-                            this->fCurrent = this->fEnd;    // magic to indicate done
+                            this->_fCurrent = this->_fEnd;    // magic to indicate done
                         }
                         else {
-                            this->fCurrent = this->fEnd - 1; // last valid item
+                            this->_fCurrent = this->_fEnd - 1; // last valid item
                         }
                         Invariant ();
                     }
@@ -493,13 +517,13 @@ namespace   Stroika {
                     {
                         Invariant ();
                         if (advance) {
-                            if (not this->fSuppressMore and not this->Done ()) {
-                                if (this->fCurrent == this->fStart) {
-                                    this->fCurrent = this->fEnd;    // magic to indicate done
+                            if (not this->_fSuppressMore and not this->Done ()) {
+                                if (this->_fCurrent == this->_fStart) {
+                                    this->_fCurrent = this->_fEnd;    // magic to indicate done
                                     Ensure (this->Done ());
                                 }
                                 else {
-                                    this->fCurrent--;
+                                    this->_fCurrent--;
                                     Ensure (not this->Done ());
                                 }
                             }
