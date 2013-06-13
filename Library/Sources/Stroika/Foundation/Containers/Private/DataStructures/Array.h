@@ -70,8 +70,22 @@
  *
  *  TODO:
  *
+ *      @todo   ADD DATA MEMBERS TO ARRAYITERATORBASE WHCI ALLOW MANIP OF NEEDED STUFF IN ARRAY
+ *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely
+ *              WRT type safety / protected!!!
+ *
+ *      @todo   LOSE MUTATOR - and have UPDATE be method of Array<> class taking an ITERATOR as
+ *              arg (as our high level containers do - and STL does).
+ *
+ *              THat SIMPLIFES - and reduces our number of classes!
+ *
  *      @todo   FIX realloc() stuff. We probably need to get rid of realloc altogether. Look at what
  *              std::vector<> does for hints about most efficient way..
+ *
+ *      @todo   Add RVALUE-REF (MOVE) stuff.
+ *
+ *      @todo   (close to rvalue thing above) - fix construction/destruction stuff. More mdoern C++.
+ *              That crap was written around 1990!!!
  */
 
 

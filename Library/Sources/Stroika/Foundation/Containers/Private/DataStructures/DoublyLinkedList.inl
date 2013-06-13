@@ -20,7 +20,7 @@ namespace   Stroika {
                     ****************** DoublyLinkedList<T>::Link *****************************
                     ********************************************************************************
                     */
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedList<T>::Link::Link (T item, Link* next)
                         : fItem (item)
                         , fNext (next)
@@ -57,21 +57,21 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    DoublyLinkedList<T>::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedList<T>::DoublyLinkedList () :
                         fLength (0),
                         fFirst (nullptr)
                     {
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedList<T>::~DoublyLinkedList ()
                     {
                         /*
@@ -88,19 +88,19 @@ namespace   Stroika {
                         Ensure (fLength == 0);
                         Ensure (fFirst == nullptr);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  size_t  DoublyLinkedList<T>::GetLength () const
                     {
                         return (fLength);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  T   DoublyLinkedList<T>::GetFirst () const
                     {
                         Require (fLength > 0);
                         AssertNotNull (fFirst);
                         return (fFirst->fItem);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  T   DoublyLinkedList<T>::GetLast () const
                     {
                         // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
@@ -108,7 +108,7 @@ namespace   Stroika {
                         Require (fLength > 0);
                         return GetAt (fLength - 1);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    DoublyLinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
@@ -116,7 +116,7 @@ namespace   Stroika {
                         fLength++;
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    DoublyLinkedList<T>::RemoveFirst ()
                     {
                         RequireNotNull (fFirst);
@@ -129,7 +129,7 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    DoublyLinkedList<T>::RemoveLast ()
                     {
                         RequireNotNull (fFirst);
@@ -273,26 +273,26 @@ namespace   Stroika {
                     ********************** DoublyLinkedListIterator<T> *****************************
                     ********************************************************************************
                     */
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    DoublyLinkedListIterator<T>::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedListIterator<T>::DoublyLinkedListIterator (const DoublyLinkedList<T>& data) :
                         fCurrent (data.fFirst),
                         fSuppressMore (true)
                     {
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedListIterator<T>::DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from) :
                         fCurrent (from.fCurrent),
                         fSuppressMore (from.fSuppressMore)
                     {
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  DoublyLinkedListIterator<T>&  DoublyLinkedListIterator<T>::operator= (const DoublyLinkedListIterator<T>& rhs)
                     {
                         Invariant ();
@@ -301,13 +301,13 @@ namespace   Stroika {
                         Invariant ();
                         return (*this);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  bool    DoublyLinkedListIterator<T>::Done () const
                     {
                         Invariant ();
                         return bool (fCurrent == nullptr);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  bool    DoublyLinkedListIterator<T>::More (T* current, bool advance)
                     {
                         Invariant ();
@@ -328,7 +328,7 @@ namespace   Stroika {
                         }
                         return (not Done ());
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  T   DoublyLinkedListIterator<T>::Current () const
                     {
                         Require (not (Done ()));

@@ -36,7 +36,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <class T>
+                template    <typename   T>
                 class   Sequence_stdvector : public Sequence<T> {
                 private:
                     typedef     Sequence<T>  inherited;

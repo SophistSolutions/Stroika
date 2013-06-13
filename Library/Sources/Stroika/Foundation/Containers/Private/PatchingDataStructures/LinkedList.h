@@ -36,7 +36,7 @@ namespace   Stroika {
                      *  adjusted when the link list is adjusted. This is the class of LinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   LinkedListIterator_Patch;
                     template    <typename   T>
                     class   LinkedList_Patch : public DataStructures::LinkedList<T> {
@@ -98,7 +98,7 @@ namespace   Stroika {
                      *  link list of iterators headed by the LinkedList_Patch<T>, and takes care
                      *  of all patching details.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   LinkedListIterator_Patch : public DataStructures::LinkedList<T>::ForwardIterator {
                     private:
                         typedef typename DataStructures::LinkedList<T>::ForwardIterator   inherited;
@@ -155,7 +155,7 @@ namespace   Stroika {
                      *  currently in the iteration. This is be used most commonly in
                      *  implementing concrete iterators for Stroika containers.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   LinkedListMutator_Patch : public LinkedListIterator_Patch<T> {
                     public:
                         LinkedListMutator_Patch (LinkedList_Patch<T>& data);

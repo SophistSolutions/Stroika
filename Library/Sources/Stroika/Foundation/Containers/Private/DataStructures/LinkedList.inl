@@ -20,7 +20,7 @@ namespace   Stroika {
                     *********************** LinkedList<T>::Link ************************************
                     ********************************************************************************
                     */
-                    template    <class T>
+                    template    <typename   T>
                     inline  LinkedList<T>::Link::Link (T item, Link* next)
                         : fItem (item)
                         , fNext (next)
@@ -57,21 +57,21 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    LinkedList<T>::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  LinkedList<T>::LinkedList () :
                         fLength (0),
                         fFirst (nullptr)
                     {
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  LinkedList<T>::~LinkedList ()
                     {
                         /*
@@ -88,19 +88,19 @@ namespace   Stroika {
                         Ensure (fLength == 0);
                         Ensure (fFirst == nullptr);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  size_t  LinkedList<T>::GetLength () const
                     {
                         return (fLength);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  T   LinkedList<T>::GetFirst () const
                     {
                         Require (fLength > 0);
                         AssertNotNull (fFirst);
                         return (fFirst->fItem);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    LinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
@@ -108,7 +108,7 @@ namespace   Stroika {
                         fLength++;
                         Invariant ();
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    LinkedList<T>::RemoveFirst ()
                     {
                         RequireNotNull (fFirst);
@@ -243,26 +243,26 @@ namespace   Stroika {
                     ********************* LinkedList<T>::ForwardIterator ***************************
                     ********************************************************************************
                     */
-                    template    <class T>
+                    template    <typename   T>
                     inline  void    LinkedList<T>::ForwardIterator::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  LinkedList<T>::ForwardIterator::ForwardIterator (const LinkedList<T>& data) :
                         fCurrent (data.fFirst),
                         fSuppressMore (true)
                     {
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  LinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from) :
                         fCurrent (from.fCurrent),
                         fSuppressMore (from.fSuppressMore)
                     {
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  typename LinkedList<T>::ForwardIterator&  LinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
                         Invariant ();
@@ -271,13 +271,13 @@ namespace   Stroika {
                         Invariant ();
                         return (*this);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  bool    LinkedList<T>::ForwardIterator::Done () const
                     {
                         Invariant ();
                         return bool (fCurrent == nullptr);
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  bool    LinkedList<T>::ForwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
@@ -298,7 +298,7 @@ namespace   Stroika {
                         }
                         return (not Done ());
                     }
-                    template    <class T>
+                    template    <typename   T>
                     inline  T   LinkedList<T>::ForwardIterator::Current () const
                     {
                         Require (not (Done ()));

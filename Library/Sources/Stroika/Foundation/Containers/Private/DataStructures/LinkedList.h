@@ -128,7 +128,7 @@ namespace   Stroika {
 
 
 
-                    template    <class T>
+                    template    <typename   T>
                     class   LinkedList<T>::Link {
                     public:
                         DECLARE_USE_BLOCK_ALLOCATION (Link);
@@ -146,7 +146,7 @@ namespace   Stroika {
                      *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                      *  for that.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   LinkedList<T>::ForwardIterator {
                     public:
                         ForwardIterator (const ForwardIterator& from);

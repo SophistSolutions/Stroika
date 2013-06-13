@@ -143,7 +143,7 @@ namespace   Stroika {
                      *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListMutator_Patch<T>
                      *  for that.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   DoublyLinkedListIterator {
                     public:
                         DoublyLinkedListIterator (const DoublyLinkedListIterator<T>& from);

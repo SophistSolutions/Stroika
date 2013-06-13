@@ -56,7 +56,7 @@ namespace   Stroika {
                 T           fItem;
                 Priority    fPriority;
             };
-            template    <class T>
+            template    <typename   T>
             Boolean   operator== (const PQEntry<T>& lhs, const PQEntry<T>& rhs);
 
 

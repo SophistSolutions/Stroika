@@ -36,7 +36,7 @@ namespace   Stroika {
                      *  adjusted when the link list is adjusted. This is the class of DoublyLinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   DoublyLinkedListIterator_Patch;
                     template    <typename   T>
                     class   DoublyLinkedList_Patch : public DataStructures::DoublyLinkedList<T> {
@@ -101,7 +101,7 @@ namespace   Stroika {
                      *  link list of iterators headed by the DoublyLinkedList_Patch<T>, and takes care
                      *  of all patching details.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedListIterator<T> {
                     private:
                         typedef DataStructures::DoublyLinkedListIterator<T> inherited;
@@ -159,7 +159,7 @@ namespace   Stroika {
                      *  currently in the iteration. This is be used most commonly in
                      *  implementing concrete iterators for Stroika containers.
                      */
-                    template    <class T>
+                    template    <typename   T>
                     class   DoublyLinkedListMutator_Patch : public DoublyLinkedListIterator_Patch<T> {
                     private:
                         typedef DoublyLinkedListIterator_Patch<T> inherited;

@@ -35,7 +35,8 @@ namespace   Stroika {
                         , _fItems (0)
                     {
                     }
-                    template    <typename T>    Array<T>::Array (const Array<T>& from)
+                    template    <typename T>
+                    Array<T>::Array (const Array<T>& from)
                         : _fLength (0)
                         , _fSlotsAllocated (0)
                         , _fItems (nullptr)
