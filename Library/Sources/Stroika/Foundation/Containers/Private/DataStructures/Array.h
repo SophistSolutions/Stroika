@@ -83,7 +83,7 @@ namespace   Stroika {
                 namespace   DataStructures {
 
 
-                    /*
+                    /**
                      *      This class is the main core of the implementation. It provides
                      *  an array abstraction, where the size can be set dynamically, and
                      *  extra sluff is maintained off the end to reduce copying from reallocs.
@@ -149,7 +149,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      _ArrayIteratorBase<T> is an un-advertised implementation
                      *  detail designed to help in source-code sharing among various
                      *  iterator implementations.
@@ -187,7 +187,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      Use this iterator to iterate forwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
                      *  since it is not safe. Use ForwardArrayIterator_Patch for those cases.
@@ -205,7 +205,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      ForwardArrayMutator<T> is the same as ForwardArrayIterator<T> but
                      *  adds the ability to update the contents of the array as you go along.
                      */
@@ -222,7 +222,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      Use this iterator to iterate backwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
                      *  since it is not safe. Use BackwardArrayIterator_Patch for those cases.
@@ -240,7 +240,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      BackwardArrayMutator<T> is the same as BackwardArrayIterator<T> but
                      *  adds the ability to update the contents of the array as you go along.
                      */

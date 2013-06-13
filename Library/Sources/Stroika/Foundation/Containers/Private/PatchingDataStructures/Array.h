@@ -102,8 +102,10 @@ namespace   Stroika {
                         ArrayIterator_PatchBase (const ArrayIterator_PatchBase& from);
                         ~ArrayIterator_PatchBase ();
 
+                    public:
                         nonvirtual  ArrayIterator_PatchBase& operator= (const ArrayIterator_PatchBase& rhs);
 
+                    public:
                         nonvirtual  size_t  CurrentIndex () const;  // shadow to avoid scope ambiguity
 
                         nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
