@@ -180,7 +180,7 @@ namespace   Stroika {
                             prevLink->fNext = victim->fNext;
                         }
 
-                        this->->fLength--;
+                        this->fLength--;
                         delete (victim);
 
                         it.Invariant ();
