@@ -191,7 +191,7 @@ namespace   Stroika {
                 {
                     Require (i < GetLength ());
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.SetAt (item, i);
+                        fData_.SetAt (i, item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

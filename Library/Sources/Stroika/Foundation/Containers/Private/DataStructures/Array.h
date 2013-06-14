@@ -116,7 +116,7 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  T       GetAt (size_t i) const;
-                        nonvirtual  void    SetAt (T item, size_t i);
+                        nonvirtual  void    SetAt (size_t i, T item);
                         nonvirtual  T&      operator[] (size_t i);
                         nonvirtual  T       operator[] (size_t i) const;
 

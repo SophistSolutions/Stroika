@@ -232,7 +232,7 @@ namespace   Stroika {
                         }
                         else {
                             tmp.fCount += count;
-                            fData_.SetAt (tmp, index);
+                            fData_.SetAt (index, tmp);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();
@@ -251,7 +251,7 @@ namespace   Stroika {
                                 fData_.RemoveAt (index);
                             }
                             else {
-                                fData_.SetAt (tmp, index);
+                                fData_.SetAt (index, tmp);
                             }
                         }
                     }

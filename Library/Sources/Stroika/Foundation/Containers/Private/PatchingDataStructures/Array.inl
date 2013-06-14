@@ -416,13 +416,13 @@ namespace   Stroika {
                     void    Array_Patch<T>::UpdateAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        SetAt (newValue, i.CurrentIndex ());
+                        SetAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
                     void    Array_Patch<T>::UpdateAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        SetAt (i.CurrentIndex (), newValue);
+                        SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
                     void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
