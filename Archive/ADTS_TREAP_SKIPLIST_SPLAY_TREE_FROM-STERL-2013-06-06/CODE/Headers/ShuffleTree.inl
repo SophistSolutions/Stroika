@@ -9,12 +9,13 @@
 #endif
 
 
+
 namespace   ADT {
     namespace   BinaryTree {
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::SplayTree () :
+ ShuffleTree<KEY,VALUE,TRAITS>::ShuffleTree () :
 	fHead (nullptr),
 	fLength (0)
   #if qKeepADTStatistics
@@ -25,7 +26,7 @@ SplayTree<KEY,VALUE,TRAITS>::SplayTree () :
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::SplayTree (const SplayTree& t) :
+ShuffleTree<KEY,VALUE,TRAITS>::ShuffleTree (const ShuffleTree& t) :
 	fHead (nullptr),
 	fLength (t.fLength)
   #if qKeepADTStatistics
@@ -37,7 +38,7 @@ SplayTree<KEY,VALUE,TRAITS>::SplayTree (const SplayTree& t) :
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>& SplayTree<KEY,VALUE,TRAITS>::operator= (const SplayTree& t)
+ShuffleTree<KEY,VALUE,TRAITS>& ShuffleTree<KEY,VALUE,TRAITS>::operator= (const ShuffleTree& t)
 {
 	RemoveAll ();
 	fLength = t.fLength;
@@ -48,29 +49,22 @@ SplayTree<KEY,VALUE,TRAITS>& SplayTree<KEY,VALUE,TRAITS>::operator= (const Splay
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::~SplayTree ()
+ShuffleTree<KEY,VALUE,TRAITS>::~ShuffleTree ()
 {
 	RemoveAll ();
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-bool	SplayTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)
+bool	ShuffleTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)
 {
 	int	comparisonResult;
-	size_t	height;
-	Node* n = FindNode (key, &comparisonResult, &height);
+	Node* n = FindNode (key, &comparisonResult);
 	if (n != nullptr) {
 		if (comparisonResult == 0) {
 			if (val != nullptr) {
 				*val = n->fEntry.GetValue ();
 			}
-			Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
-
 			return true;
-		}
-		else {
-			// maybe splay the one we found? Seems to work poorly in practice
-			Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
 		}
 	}
 	return false;
@@ -78,7 +72,7 @@ bool	SplayTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node* SplayTree<KEY,VALUE,TRAITS>::Rotate (Node* n, Direction rotateDir)
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node* ShuffleTree<KEY,VALUE,TRAITS>::Rotate (Node* n, Direction rotateDir)
 {
 	RequireNotNull (n);
 
@@ -106,125 +100,18 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node* SplayTree<KEY,VALUE,TRAITS>::Rotate 
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-const std::vector<size_t>&	SplayTree<KEY,VALUE,TRAITS>::GetHeightWeights (SplayType st)
-{
-	switch (st) {
-		case eAlwaysSplay:				return sAlwaysSplayDistribution;
-		case eUniformDistribution:		return sUniformDistribution;
-		case eNormalDistribution:		return sNormalDistribution;
-		case eZipfDistribution:			return sZipfDistribution;
-		case eCustomSplayType:			return sCustomSplayTypeDistribution;
-		default:	AssertNotReached ();
-	}
-	AssertNotReached (); return sCustomSplayTypeDistribution;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights)
-{
-	sCustomSplayTypeDistribution = newHeightWeights;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Prioritize (Node* n)
+void    ShuffleTree<KEY,VALUE,TRAITS>::Prioritize (Node* n)
 {
     RequireNotNull (n);
-    Splay (n, 0, true);
-}
 
-template <typename KEY, typename VALUE, typename TRAITS>
-void SplayTree<KEY,VALUE,TRAITS>::Splay (Node* n, size_t nodeHeight, bool forced)
-{
-	RequireNotNull (n);
-
-	if (TRAITS::kSplayType == eNeverSplay) {
-		return;
-	}
-	else if (TRAITS::kSplayType == eAlwaysSplay) {
-		forced = true;
-	}
-
-//	static	std::tr1::uniform_int<size_t> sDist (1, 10000);
-
-	const std::vector<size_t>&	kHeightBonus = GetHeightWeights (TRAITS::kSplayType);
-//	size_t	dieRoll = (forced) ? 1 : std::tr1::uniform_int<size_t> (1, 10000) (GetEngine ());
-//	size_t	dieRoll = (forced) ? 1 : rand () % 10000;
-
-	/*
-		Move upwards in the tree. In classic splay tree, move all the way to the top.
-		Splay trees do a slightly more complicated action than simple rotations. Whenever possible it does two rotations
-		at once: rotating the parent node and the grandparent node, making the node the new grandparent.
-		In cases where the node being played is on the same side of its parent as it's parent is to its grandparent,
-		if first rotates the grandparent, then the parent. If on opposite sides, it does the normal rotation sequence (parent, then grandparent);
-		It only does a single rotation if the node has no grandparent (its parent is the head)
-	 */
-	while (n->GetParent () != nullptr) {
-		Assert (n->GetParent ()->GetChild (kLeft) == n or n->GetParent ()->GetChild (kRight) == n);
-
-		Node*	ancestor = n->GetParent ()->GetParent ();
-		if (ancestor == nullptr) {
-			if (not forced) {
-				Assert (nodeHeight > 0);
-				--nodeHeight;
-				if (nodeHeight < kHeightBonus.size ()) {
- 				    size_t	cutoff = kHeightBonus[nodeHeight];
- 				    if ((cutoff == 0) or (size_t (rand () % 10000) > cutoff)) {
-                         return;
-                    }
-				}
-			}
-			Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
-		}
-		else {
-			if (not forced) {
-				Assert (nodeHeight > 1);
-				nodeHeight -= 2;
-				if (nodeHeight < kHeightBonus.size ()) {
- 				    size_t	cutoff = kHeightBonus[nodeHeight];
- 				    if ((cutoff == 0) or (size_t (rand () % 10000) > cutoff)) {
-                         return;
-                    }
-				}
-			}
-			Node*	parent = n->GetParent ();
-			if ((parent->GetChild (kLeft) == n and ancestor->GetChild (kLeft) == parent) or (parent->GetChild (kRight) == n and ancestor->GetChild (kRight) == parent)) {
-				// zig-zig
-				Rotate (ancestor, Node::OtherDir (Node::GetChildDir (n)));
-				Rotate (parent, Node::OtherDir (Node::GetChildDir (n)));
-			}
-			else {
-				// zig-zag
-				Rotate (parent, Node::OtherDir (Node::GetChildDir (n)));
-				Assert (ancestor->GetChild (kLeft) == n or ancestor->GetChild (kRight) == n);
-				Rotate (ancestor, Node::OtherDir (Node::GetChildDir (n)));
-			}
-		}
-
-	}
-	Ensure ((n->GetParent () == nullptr) == (fHead == n));
-	Ensure ((n->GetParent () == nullptr) or (n->GetParent ()->GetChild (kLeft) == n) or (n->GetParent ()->GetChild (kRight) == n));
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-size_t SplayTree<KEY,VALUE,TRAITS>::ForceToBottom (Node* n)
-{
-	RequireNotNull (n);
-	size_t rotations = 0;
-	while (n->GetChild (kLeft) != nullptr or n->GetChild (kRight) != nullptr) {
-	   Direction rotDir = (n->GetChild (kLeft) == nullptr) or (n->GetChild (kRight) != nullptr and FlipCoin ()) ? kLeft : kRight;
-		Rotate (n, rotDir);
-		++rotations;
+    while (n->GetParent () != nullptr) {
+        Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
     }
-
-
-	Ensure (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr);
-	Ensure (fHead->GetParent () == nullptr);
-
-	return rotations;
+    Assert (n == fHead);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
+void	ShuffleTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 {
  	Node* n = new Node (key, val);
  	try {
@@ -237,20 +124,19 @@ void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
+void	ShuffleTree<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
 {
     Add (keyAndValue, keyAndValue);
 }
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
+void	ShuffleTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 {
 	RequireNotNull (n);
 
 	int	comp;
-	size_t height;
-	Node* nearest =  FindNode (n->fEntry.GetKey (), &comp, &height);
+	Node* nearest =  FindNode (n->fEntry.GetKey (), &comp);
 	if (nearest == nullptr) {
 		Assert (fHead == nullptr);
 		fHead = n;
@@ -268,7 +154,6 @@ void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 			    n->SetChild (kRight, nearest->GetChild (kRight));
 				nearest->SetChild (kRight, n);
 			}
-			height++;
 		}
 		else if (comp < 0) {
 			Assert (nearest->GetChild (kLeft) == nullptr);
@@ -278,8 +163,6 @@ void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 			Assert (nearest->GetChild (kRight) == nullptr);
 			nearest->SetChild (kRight, n);
 		}
-
-		Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
 	}
 
 	fLength++;
@@ -288,10 +171,10 @@ void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
+void	ShuffleTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
 {
 	int	comp;
-	Node* n =  FindNode (key, &comp, nullptr);
+	Node* n =  FindNode (key, &comp);
 
 	if ((n == nullptr) or (comp != 0)) {
 		if (not (TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
@@ -305,7 +188,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
+void	ShuffleTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
 {
 	RequireNotNull (parent);
 
@@ -323,12 +206,9 @@ void	SplayTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
+void	ShuffleTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 {
 	RequireNotNull (n);
-
-	Splay (n, 0, true);
-	Assert (n == fHead);
 
 	if (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr) {
 	    SwapNodes (n, nullptr);
@@ -340,15 +220,19 @@ void	SplayTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 		SwapNodes (n, n->GetChild (kLeft));
 	}
 	else {
-	    Node* minNode = Node::GetFirst (n->GetChild (kRight));
+       Direction d = (FlipCoin ()) ? kRight : kLeft;
+
+		Node* minNode = (d == kRight)
+            ? Node::GetFirst (n->GetChild (d))
+            : Node::GetLast (n->GetChild (d));
 
 		AssertNotNull (minNode);
 		if (minNode->GetParent () != n) {
-			SwapNodes (minNode, minNode->GetChild (kRight));
-			minNode->SetChild (kRight, n->GetChild (kRight));
+			SwapNodes (minNode, minNode->GetChild (d));
+			minNode->SetChild (d, n->GetChild (d));
 		}
 		SwapNodes (n, minNode);
-		minNode->SetChild (kLeft, n->GetChild (kLeft));
+		minNode->SetChild (Node::OtherDir (d), n->GetChild (Node::OtherDir (d)));
 	}
 
 	delete n;
@@ -356,7 +240,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::RemoveAll ()
+void	ShuffleTree<KEY,VALUE,TRAITS>::RemoveAll ()
 {
 	// iterate rather than natural tail recursive version because splay trees get deep
 	std::stack<Node*> nodes;
@@ -381,84 +265,75 @@ void	SplayTree<KEY,VALUE,TRAITS>::RemoveAll ()
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t	SplayTree<KEY,VALUE,TRAITS>::GetLength () const
+size_t	ShuffleTree<KEY,VALUE,TRAITS>::GetLength () const
 {
 	Assert ((fLength == 0) == (fHead == nullptr));
 	return fLength;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::FindNode (const KeyType& key, int* comparisonResult, size_t* height)  const
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::FindNode (const KeyType& key, int* comparisonResult)
 {
 	RequireNotNull (comparisonResult);
 
+	bool    shuffled = (GetLength () == 0);
+	size_t  shuffleCounter = (shuffled) ? 0 : (rand () % GetLength ());
+
 	Node*	n = fHead;
 	Node*	nearest = n;
-	if (height != nullptr) {
-		*height = 0;
-	}
 	*comparisonResult = 0;
 	while (n != nullptr) {
+
 		#if qKeepADTStatistics
-			const_cast<SplayTree<KEY,VALUE,TRAITS> *> (this)->fCompares++;
+			const_cast<ShuffleTree<KEY,VALUE,TRAITS> *> (this)->fCompares++;
 		#endif
-		if (height != nullptr) {
-			*height += 1;
-		}
 		nearest = n;
 		*comparisonResult = TRAITS::Comparer::Compare (key, n->fEntry.GetKey ());
 		if (*comparisonResult == 0) {
 			return n;
 		}
-		n = (*comparisonResult < 0) ? n->GetChild (kLeft) : n->GetChild (kRight);
+
+		if (*comparisonResult < 0) {
+		    n = n->GetChild (kLeft);
+		    if ((not shuffled) and (shuffleCounter == 0) and (n != nullptr)) {
+		        nearest =   Rotate (nearest, kRight);
+		        shuffled = true;
+		    }
+
+		}
+		else {
+		    n = n->GetChild (kRight);
+		    if ((not shuffled) and (shuffleCounter == 0) and (n != nullptr)) {
+		        nearest =   Rotate (nearest, kLeft);
+		        shuffled = true;
+		    }
+		}
+
+	    if (not shuffled) {
+            shuffleCounter = (shuffleCounter-1)/2;
+	    }
 	}
 	return nearest;
 }
 
+
+
 template <typename KEY, typename VALUE, typename TRAITS>
-typename	SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::GetFirst (size_t* height) const
+typename	ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::GetFirst () const
 {
-	Node* n = fHead;
-	if (height != nullptr) {
-		*height = 0;
-	}
-	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		if (height != nullptr) {
-			*height += 1;
-		}
-		n = n->GetChild (kLeft);
-	}
-	return n;
+    return Node::GetFirst (fHead);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename	SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::GetLast (size_t* height) const
+typename	ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::GetLast () const
 {
-	Node* n = fHead;
-	if (height != nullptr) {
-		*height = 0;
-	}
-	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		if (height != nullptr) {
-			*height += 1;
-		}
-		n = n->GetChild (kRight);
-	}
-	return n;
+    return Node::GetLast (fHead);
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-SplayType	SplayTree<KEY,VALUE,TRAITS>::GetSplayType ()
-{
-	return TRAITS::kSplayType;
-}
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::DuplicateBranch (Node* n)
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::DuplicateBranch (Node* n)
 {
-	// sadly, SplayTrees get very deep, so they hate recursion
-
 	std::stack<Node*> nodes;
 	std::stack<Node*> parents;
 	std::stack<bool> childIsLeft;
@@ -503,7 +378,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Duplica
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::RebalanceBranch (Node* oldTop, size_t length)
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*   ShuffleTree<KEY,VALUE,TRAITS>::Node::RebalanceBranch (Node* oldTop, size_t length)
 {
     if (oldTop == nullptr) {
         Assert (length == 0);
@@ -562,14 +437,74 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node:
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ReBalance ()
+void	ShuffleTree<KEY,VALUE,TRAITS>::ReBalance ()
 {
     fHead = Node::RebalanceBranch (fHead, fLength);
 }
 
 
+// my old code for this, which works fine but takes N space rather than the log(N) space (from recursion) of the RebalanceBranch implementation
+#if 0
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
+void	ShuffleTree<KEY,VALUE,TRAITS>::ReBalance ()
+{
+   if (GetLength () == 0) {
+        return;
+    }
+
+	// better to build on the stack
+	Node**	nodeList = new Node* [GetLength ()];
+	int	curIndex = 0;
+
+	// stuff the array with the nodes. Better if have iterator support
+	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
+	{
+	    if (n != nullptr) {
+			AssignNodeToArray (n->GetChild (kLeft));
+            nodeList[curIndex++] = n;
+			AssignNodeToArray (n->GetChild (kRight));
+        }
+	};
+
+	AssignNodeToArray (fHead);
+
+	// from now on, working with an array (nodeList) that has all the tree nodes in sorted order
+	size_t	maxHeight = size_t (log (double (GetLength ()))/log (2.0))+1;
+
+	std::function<Node*(int startIndex, int endIndex, int curNodeHeight)>	BalanceNode = [&BalanceNode, &nodeList, &maxHeight] (int startIndex, int endIndex, size_t curNodeHeight) -> Node*
+	{
+		Require (startIndex <= endIndex);
+		Assert (curNodeHeight <= maxHeight);
+		if (startIndex == endIndex) {
+			Node* n = nodeList[startIndex];
+			n->SetChild (kLeft, nullptr);
+			n->SetChild (kRight, nullptr);
+			return n;
+		}
+
+		int curIdx = startIndex + (endIndex-startIndex)/2;
+		Assert (curIdx <= endIndex);
+		Assert (curIdx >= startIndex);
+
+		Node* n = nodeList[curIdx];
+		AssertNotNull (n);
+
+        n->SetChild (kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, curNodeHeight+1));
+        n->SetChild (kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, curNodeHeight+1));
+
+		return n;
+	};
+	if (fHead != nullptr) {
+		fHead = BalanceNode (0, GetLength ()-1, 1);
+		fHead->SetParent (nullptr);
+	}
+
+	delete[] nodeList;
+}
+#endif
+
+template <typename KEY, typename VALUE, typename TRAITS>
+ShuffleTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
 	fEntry (key, val),
 	fParent (nullptr)
 {
@@ -578,7 +513,7 @@ SplayTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& va
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
+ShuffleTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
 	fEntry (n.fEntry),
 	fParent (nullptr)
 {
@@ -588,26 +523,26 @@ SplayTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::GetParent () const
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*   ShuffleTree<KEY,VALUE,TRAITS>::Node::GetParent () const
 {
     return fParent;
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
+void    ShuffleTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
 {
     fParent = p;
 }
 
  template <typename KEY, typename VALUE, typename TRAITS>
- typename SplayTree<KEY,VALUE,TRAITS>::Node::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
+ typename ShuffleTree<KEY,VALUE,TRAITS>::Node::Node*   ShuffleTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
  {
     Require (direction == kLeft or direction == kRight);
     return (fChildren[direction]);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
- void   SplayTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
+ void   ShuffleTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
 {
     Require (direction == kLeft or direction == kRight);
     fChildren[direction] = n;
@@ -616,14 +551,14 @@ template <typename KEY, typename VALUE, typename TRAITS>
     }
 }
 template <typename KEY, typename VALUE, typename TRAITS>
-bool    SplayTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
+bool    ShuffleTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
 {
     Require (direction == kLeft or direction == kRight);
     return (fParent != nullptr and fParent->GetChild (direction) == this);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-Direction     SplayTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
+Direction     ShuffleTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
 {
     if (n != nullptr and n->GetParent () != nullptr) {
         if (n == n->GetParent ()->GetChild (kLeft)) {
@@ -637,14 +572,14 @@ Direction     SplayTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-Direction    SplayTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
+Direction    ShuffleTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
 {
     Require (dir == kLeft or dir == kRight);
     return ((dir == kLeft) ? kRight : kLeft);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
+void    ShuffleTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
 {
    Require (parent == nullptr or d == kLeft or d == kRight);
    if (parent == nullptr) {
@@ -658,7 +593,7 @@ void    SplayTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n,
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
 {
  	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
 		n = n->GetChild (kLeft);
@@ -667,7 +602,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::G
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
+typename ShuffleTree<KEY,VALUE,TRAITS>::Node*	ShuffleTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
 {
   	while (n != nullptr and n->GetChild (kRight) != nullptr) {
 		n = n->GetChild (kRight);
@@ -678,7 +613,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::G
 #if qDebug
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
+void	ShuffleTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 {
 	RequireNotNull (n);
 	++count;
@@ -696,7 +631,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ValidateAll () const
+void	ShuffleTree<KEY,VALUE,TRAITS>::ValidateAll () const
 {
 	size_t	count = 0;
 
@@ -707,7 +642,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ListAll () const
+void	ShuffleTree<KEY,VALUE,TRAITS>::ListAll () const
 {
 	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
 	{
@@ -732,7 +667,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ListAll () const
 
 #if qKeepADTStatistics
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t	SplayTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
+size_t	ShuffleTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
 {
 	size_t maxHeight = 0;
 
@@ -762,80 +697,41 @@ size_t	SplayTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
 }
 #endif
 
-const size_t kAlwaysWeights[] = {10000};
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof(kAlwaysWeights) / sizeof(kAlwaysWeights[0]));
-
-
-const size_t kUniformWeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  };
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof(kUniformWeights) / sizeof(kUniformWeights[0]));
-
-//const size_t kNormalWeights[] ={0, 0, 100, 100, 250, 250, 250, 250, 250, 250, 250};	//30.1401/30.0162/21.5254
-const size_t kNormalWeights[] = {2, 2, 6, 7, 7, 7, 7, 7, 3, 3, 3, 3, 19, 42, 47, 1463, 2000 };  //27.50
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sNormalDistribution (kNormalWeights, kNormalWeights + sizeof(kNormalWeights) / sizeof(kNormalWeights[0]));
-
-//const size_t kZifpWeights[] = {0, 5, 15, 30, 30, 60, 60, 125, 125, 250, 250};
-const size_t kZifpWeights[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 4, 7, 11, 24, 108, 202, 561, 1711  };
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sZipfDistribution (kZifpWeights, kZifpWeights + sizeof(kZifpWeights) / sizeof(kZifpWeights[0]));
-
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sCustomSplayTypeDistribution (SplayTree<KEY,VALUE,TRAITS>::sUniformDistribution);
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Engine&	SplayTree<KEY,VALUE,TRAITS>::GetEngine ()
-{
-    static	std::mt19937	sEngine;
-	static	bool	sFirstTime = true;
-	if (sFirstTime) {
-		sFirstTime = false;
-        sEngine.seed (static_cast<unsigned int> (time (NULL)));
-	}
-	return sEngine;
-}
-
-
 
 #if qDebug
 
-
 template <typename KEYTYPE>
-void    SplayTreeValidationSuite (size_t testDataLength, bool verbose)
+void    ShuffleTreeValidationSuite (size_t testDataLength, bool verbose)
 {
-    TestTitle   tt ("SplayTree Validation", 0, verbose);
+    TestTitle   tt ("ShuffleTree Validation", 0, verbose);
 
-    RunSuite<SplayTree<KEYTYPE, size_t>, KEYTYPE> (testDataLength, verbose, 1);
+    RunSuite<ShuffleTree<KEYTYPE, size_t>, KEYTYPE> (testDataLength, verbose, 1);
 
-    typedef SplayTree<int, int, SplayTraits<
+    typedef ShuffleTree<int, int, ADT::Traits<
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
-        ADT::eDuplicateAddThrowException,
-        SplayType::eDefaultSplayType> >  NoDupAddTree;
+        ADT::eDuplicateAddThrowException > >  NoDupAddTree;
 
-    DuplicateAddBehaviorTest<SplayTree<int, int>, NoDupAddTree> (testDataLength, verbose, 1);
+    DuplicateAddBehaviorTest<ShuffleTree<int, int>, NoDupAddTree> (testDataLength, verbose, 1);
 
-   typedef    SplayTree<int, int, SplayTraits<
+   typedef    ShuffleTree<int, int, ADT::Traits<
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
-        ADT::eInvalidRemoveIgnored,
-        SplayType::eDefaultSplayType> > InvalidRemoveIgnoredTree;
-    InvalidRemoveBehaviorTest<SplayTree<int, int>, InvalidRemoveIgnoredTree> (verbose, 1);
+        ADT::eInvalidRemoveIgnored > > InvalidRemoveIgnoredTree;
+    InvalidRemoveBehaviorTest<ShuffleTree<int, int>, InvalidRemoveIgnoredTree> (verbose, 1);
 
-    typedef    SplayTree<string, string, SplayTraits<
+    typedef    ShuffleTree<string, string, ADT::Traits<
         SharedStringKeyValue,
         CaseInsensitiveCompare,
-        ADT::eDefaultPolicy,
-        SplayType::eDefaultSplayType> > SharedCaseInsensitiveString;
+        ADT::eDefaultPolicy > > SharedCaseInsensitiveString;
     StringTraitOverrideTest<SharedCaseInsensitiveString> (verbose, 1);
 
-    typedef SplayTree<HashKey<string>, string>   HashedString;
+    typedef ShuffleTree<HashKey<string>, string>   HashedString;
     HashedStringTest<HashedString> (verbose, 1);
 }
 
 #endif
+
 
     }   // namespace BinaryTree
 }   // namespace ADT

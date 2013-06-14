@@ -1,6 +1,3 @@
-
-#include "../Shared/Headers/Config.h"
-
 #include <cstring>
 
 #include <algorithm>
@@ -8,91 +5,136 @@
 #include <iostream>
 #include <string>
 
-#include "../Shared/Headers/HashKey.h"
 
-#include "../Headers/SkipList.h"
-#include "../Headers/SplayTree.h"
-#include "../Headers/Treap.h"
+
+#include "../Shared/Headers/Config.h"
+#include "../Shared/Headers/ContainerValidation.h"
+#include "../Shared/Headers/HashKey.h"
 
 #include "../Shared/Headers/TestingData.h"
 #include "../Shared/Headers/Utils.h"
 
+#define	qTestTreap		0
+#define	qTestSplayTree  0
+#define	qTestSkipList	0
+#define qTestRedBlackTree  0
+#define qTestSortedBinaryTree   0
+#define qTestAVLTree    0
+#define qTestScapeGoatTree    0
+#define qTestShuffleTree    1
+
+#define	qTweakWeights	qTestSplayTree & 0
+
+
+#if qTestTreap
+    #include "../Headers/Treap.h"
+#endif
+
+#if qTestSplayTree
+    #include "../Headers/SplayTree.h"
+#endif
+
+#if qTestSkipList
+    #include "../Headers/SkipList.h"
+#endif
+
+#if qTestRedBlackTree
+    #include "../Headers/RedBlackTree.h"
+#endif
+
+#if qTestSortedBinaryTree
+    #include "../Headers/SortedBinaryTree.h"
+#endif
+
+#if qTestAVLTree
+    #include "../Headers/AVLTree.h"
+#endif
+
+#if qTestScapeGoatTree
+    #include "../Headers/ScapeGoatTree.h"
+#endif
+
+#if qTestShuffleTree
+    #include "../Headers/ShuffleTree.h"
+#endif
+
 using namespace std;
+using namespace ADT;
+using namespace ADT::BinaryTree;
 
 
-#define	qTweakWeights	0
-
-#define	qTestTreap		1
-#define	qTestSplayTree	1
-#define	qTestSkipList	1
 
 #if qDebug
-    const	size_t	kElementsToTest = 10000;
+    const	size_t	kElementsToTest = 1000;
 #else
     const	size_t	kElementsToTest = 1000000;
 #endif
     const	size_t kStringElementsToTest = kElementsToTest/10;
 
+static  const   int     kFindLoops = 10;
 static	const	bool	kInOrder = true;
 static	const	bool	kVerbose = true;
+static  const	bool	kFail = true;
 
 
-struct SharedStringKeyValue : public KeyValueInterface<string, string> {
-    SharedStringKeyValue (const string& /*k*/,const string& v) :
-        fValue (v)
-        {
-        }
-    SharedStringKeyValue (string v) :
-        fValue (v)
-        {
-        }
-    SharedStringKeyValue (const char* v) :
-        fValue (string (v))
-        {
-        }
 
-    string	GetKey () const
-    {
-        return fValue;
+TestSet<size_t>	sSizeTSet (kElementsToTest);
+TestSet<string>	sStringsSet (kStringElementsToTest);
+
+template <typename CONTAINER, typename TESTSET>
+void	RebuildTree (CONTAINER& t, const TESTSET& ts, bool inOrder)
+{
+    t.RemoveAll ();
+
+	const std::vector<size_t>&	indices = (inOrder) ? ts.GetOrderedIndices () : ts.GetScrambledIndices ();
+	//const vector<size_t>&   data = ts.GetData ();
+
+    for (size_t i = 0; i < ts.GetLength (); ++i) {
+        t.Add (ts.GetData ()[indices[i]], i);
     }
-    string	GetValue () const
-    {
-        return fValue;
+}
+
+
+template <typename CONTAINER, typename TESTSET>
+double	IntTimingTests (CONTAINER& sl, const TESTSET& ts, DataDistribution d, bool fail)
+{
+    #define	qUsePrecision 0
+    #if qUsePrecision
+        LARGE_INTEGER	startTime;
+        QueryPerformanceCounter (&startTime);
+    #else
+        double	timeNeeded = Timer::GetCurrentTimeInMilliseconds ();
+    #endif
+
+    size_t loopEnd = (fail) ? 1 : kFindLoops;
+    for (size_t i = 0; i < loopEnd; ++i) {
+        for (size_t j = 0; j < ts.GetLength (); ++j) {
+            if (fail) {
+                Verify (not sl.Find (ts.GetMissing (j, d)));
+            }
+            else {
+                Verify (sl.Find (ts.GetData (j, d)));
+            }
+        }
     }
-
-    string	fValue;
-
-};
-
-struct	CaseInsensitiveCompare : public Comparer<string> {
-    CaseInsensitiveCompare ()	{}
-
-    static	int	Compare (const std::string& v1, const std::string& v2)
-    {
-        return strcasecmp (v1.c_str (), v2.c_str ());
-    }
-};
+    #if qUsePrecision
+        LARGE_INTEGER	endTime;
+        QueryPerformanceCounter (&endTime);
+        __int64 c = endTime.QuadPart - startTime.QuadPart;
+        double	ticks = static_cast<size_t> (c) / 1000000.0;
+        return ticks;
+    #else
+        return Timer::GetCurrentTimeInMilliseconds () - timeNeeded;
+    #endif
+}
 
 
-
-
-TestSet<size_t>	sOrderedIntegers (kElementsToTest, false);
-TestSet<size_t>	sScrambledIntegers (kElementsToTest, true);
-TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
 
 #if qKeepADTStatistics
-    template <typename CONTAINER, typename DATA>
-    void	RebuildTree (CONTAINER& sl, const vector<DATA>& data)
-    {
-        sl.RemoveAll ();
-        for (auto it = data.begin (); it != data.end (); ++it) {
-            Assert (not sl.Find (*it));
-            sl.Add (*it, ComputeUniqueValue (it -data.begin (), false));
-        }
-    }
 
-    template <typename CONTAINER, typename DATA>
-    double	AdditionTest (CONTAINER* sl, const vector<size_t>& data, const vector<size_t>& indices, bool verbose)
+
+    template <typename CONTAINER, typename TESTSET>
+    double	AdditionTest (CONTAINER* sl, const TESTSET& ts, DataDistribution d, bool verbose)
     {
         RequireNotNull (sl);
 
@@ -102,10 +144,10 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         size_t compares = 0;
         size_t rotations = 0;
 
-        for (auto it = indices.begin (); it != indices.end (); ++it) {
-            Assert (*it < data.size ());
-
-            size_t v = data[*it];
+        for (size_t i = 0; i < ts.GetLength (); ++i) {
+   //     for (auto it = indices.begin (); it != indices.end (); ++it) {
+            size_t  v = ts.GetData (i, d);
+        //    size_t v = data[*it];
             size_t origCompares  = sl->fCompares;
             size_t	origRotations = sl->fRotations;
             size_t key = v+1;
@@ -116,8 +158,8 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         }
         Assert (sl->GetLength () == origLength);
 
-        double	avgComps = (compares)/double (indices.size ());
-        double	avgRotations = (rotations)/double (indices.size ());
+        double	avgComps = (compares)/double (ts.GetLength ());
+        double	avgRotations = (rotations)/double (ts.GetLength ());
 
         if (verbose) {
             cout << "  add  avg comparisons = " << avgComps << "; avg rotations = " << avgRotations << endl << flush;
@@ -126,8 +168,8 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         return avgComps + avgRotations;
     }
 
-    template <typename CONTAINER, typename DATA>
-    double	RemovalTest (CONTAINER* sl, const vector<size_t>& data, const vector<size_t>& indices, bool verbose)
+    template <typename CONTAINER, typename TESTSET>
+    double	RemovalTest (CONTAINER* sl, const TESTSET& ts, DataDistribution d, bool verbose)
     {
         RequireNotNull (sl);
 
@@ -138,12 +180,12 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         size_t compares = 0;
         size_t rotations = 0;
 
-        for (auto it = indices.begin (); it != indices.end (); ++it) {
-            Assert (*it < data.size ());
+       for (size_t i = 0; i < ts.GetLength (); ++i) {
+   //     for (auto it = indices.begin (); it != indices.end (); ++it) {
+            size_t  key = ts.GetData (i, d);
 
             size_t origCompares  = sl->fCompares;
             size_t	origRotations = sl->fRotations;
-            size_t key = data[*it];
             sl->Remove (key);
             compares += (sl->fCompares-origCompares);
             rotations += (sl->fRotations-origRotations);
@@ -151,8 +193,8 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         }
         Assert (sl->GetLength () == origLength);
 
-        double	avgComps = (compares)/double (indices.size ());
-        double	avgRotations = (rotations)/double (indices.size ());
+        double	avgComps = (compares)/double (ts.GetLength ());
+        double	avgRotations = (rotations)/double (ts.GetLength ());
 
         if (verbose) {
             cout << "  remove  avg comparisons = " << avgComps <<  "; avg rotations = " << avgRotations << endl << flush;
@@ -161,22 +203,29 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         return avgComps + avgRotations;
     }
 
-    template <typename CONTAINER, typename DATA>
-    double	TraversalTests (CONTAINER* sl, const vector<DATA>& data, const vector<size_t>& indices, bool fail, bool verbose)
+    template <typename CONTAINER, typename TESTSET>
+    double	TraversalTests (CONTAINER* sl, const TESTSET& ts, DataDistribution d, bool fail, bool verbose)
     {
         RequireNotNull (sl);
 
-        size_t origCompares = sl->fCompares;
+        size_t compares = sl->fCompares;
         size_t rotations  = sl->fRotations;
 
-        for (auto it = indices.begin (); it != indices.end (); ++it) {
-            Assert (*it < data.size ());
-            Verify (sl->Find (data[*it]) == not fail);
+        size_t loopEnd = (fail) ? 1 : kFindLoops;
+        for (size_t i = 0; i < loopEnd; ++i) {
+            for (size_t j = 0; j < ts.GetLength (); ++j) {
+                if (fail) {
+                    Verify (not sl->Find (ts.GetMissing (j, d)));
+                }
+                else {
+                    Verify (sl->Find (ts.GetData (j, d)));
+                }
+             }
         }
 
-        double	findCompares = double (sl->fCompares-origCompares);
-        double	findAvgCompares = findCompares/indices.size ();
-        double	findAvgRotations = double (sl->fRotations-rotations)/indices.size ();
+        size_t  totalFinds = loopEnd * ts.GetLength ();
+        double	findAvgCompares  = double (sl->fCompares-compares)/totalFinds;
+        double	findAvgRotations = double (sl->fRotations-rotations)/totalFinds;
 
         if (verbose) {
             if (fail) {
@@ -191,57 +240,64 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         return findAvgCompares + findAvgRotations;
     }
 
-    template <typename CONTAINER, typename DATA>
-    double	TestList (CONTAINER& sl, const vector<DATA> data, const vector<DATA> missing, const vector<size_t>& indices, bool verbose)
+    template <typename CONTAINER, typename TESTSET>
+    double	TestList (CONTAINER& sl, const CONTAINER& clean, const TESTSET& testset, DataDistribution d, bool verbose)
     {
         size_t totalHeight = 0;
         size_t maxHeight = sl.CalcHeight (&totalHeight) ;
 
-        const	bool	kFail = true;
         if (verbose) {
             cout << "  max height = " << maxHeight << ", average = " << double(totalHeight)/double (sl.GetLength ()) << endl;
         }
 
-        double	findFailWeight	= TraversalTests<CONTAINER, DATA> (&sl, missing, indices, kFail, verbose);	// do before find for real, because that will restructure the tree
-        double  findWeight		= TraversalTests<CONTAINER, DATA> (&sl, data, indices, not kFail, verbose);
+        double	findFailWeight	= TraversalTests (&sl, testset, d, kFail, verbose);
+        sl = clean;
+        double  findWeight		= TraversalTests (&sl, testset, d, not kFail, verbose);
+        sl = clean;
+        double	addWeight		= AdditionTest (&sl, testset, d, verbose);
+        sl = clean;
+        double	rmWeight		= RemovalTest (&sl, testset, d, verbose);
 
-        double	addWeight		= AdditionTest<CONTAINER, DATA> (&sl, data, indices, verbose);
-        double	rmWeight		= RemovalTest<CONTAINER, DATA> (&sl, data, indices, verbose);
-
+        double  weight = (findWeight*kFindLoops + findFailWeight + addWeight + rmWeight)/(kFindLoops + 3);
         if (verbose) {
-            cout << "  ***CRUDE WEIGHT*** = " << (findWeight*8 + addWeight + rmWeight)/10.0 << endl;
+            cout << "  ***CRUDE WEIGHT*** = " << weight << endl;
         }
-        return (findWeight*6 + findFailWeight*2 + addWeight + rmWeight)/10.0;
+        return weight;
     }
 
-
-
-
-    template <typename CONTAINER, typename DATA>
-    double	IntTimingTests (CONTAINER& sl, const vector<DATA>& data, const vector<size_t>& indices, bool find)
+    template <typename CONTAINER, typename TESTSET>
+    double	TimeStrings (CONTAINER& t, const TESTSET& ts, bool verbose)
     {
-        #define	qUsePrecision 0
-        #if qUsePrecision
-            LARGE_INTEGER	startTime;
-            QueryPerformanceCounter (&startTime);
-        #else
-            double	timeNeeded = Timer::GetCurrentTimeInMilliseconds ();
-        #endif
-        for (auto it = indices.begin (); it != indices.end (); ++it) {
-            Assert (*it < data.size ());
-
-            size_t v = data[*it];
-            Verify (sl.Find (v) == find);
+        if (t.GetLength () == 0) {
+            if (verbose) {
+                cout << "Creating Container of " <<  ts.GetLength () << " entries, random add:  ";
+            }
+            Timer timer;
+            RebuildTree<CONTAINER> (t, ts, not kInOrder);
         }
-        #if qUsePrecision
-            LARGE_INTEGER	endTime;
-            QueryPerformanceCounter (&endTime);
-            __int64 c = endTime.QuadPart - startTime.QuadPart;
-            double	ticks = static_cast<size_t> (c) / 1000000.0;
-            return ticks;
-        #else
-            return Timer::GetCurrentTimeInMilliseconds () - timeNeeded;
-        #endif
+        CONTAINER	sClean = t;
+
+        if (verbose) {
+            cout << endl << "Find timing: " << kFindLoops << " times find each element once, plus search for element not in list once for each entry, total finds = " <<
+               (ts.GetLength ()*(kFindLoops+1)) << endl;
+        }
+        double result = 0.0;
+
+        for (int st = eUniformDist; st <= eZipfDist; ++st) {
+            DataDistribution dd = DataDistribution (st);
+            if (verbose) {
+                cout << DisplayDistribution (dd) << " distribution" << endl;
+            }
+            {
+                Timer timer;
+                result += TraversalTests (&t, ts, dd, kFail, not kVerbose);
+                result += TraversalTests (&t, ts, dd, not kFail, not kVerbose);
+            }
+            cout << endl;
+            t = sClean;
+        }
+
+        return result;
     }
 
 
@@ -253,20 +309,43 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
             fWeight (weight),
             fTimingSuccess (timingSuccess),
             fTimingFail (timingFail),
-          fDescription (description)
+            fDescription (description)
         {
         }
 
+        ~TestResult ()
+        {
+        }
+
+        enum {
+            kFieldWidth = 14,
+        };
+
         static	void	DisplayHeader ()
         {
-            cout << "Length\tOrder\tFind Time\tFail Time\tDistribution\tDescription\tWeight\tTotal Time" <<  endl;
+//            cout << "Length\tOrder\tFind Time\tFail Time\tDistribution\tDescription\tWeight\tTotal Time" <<  endl;
+            cout << "Length"
+                << setw(kFieldWidth) << "Order"
+                << setw(kFieldWidth) << "Find Time"
+                << setw(kFieldWidth) << "Fail Time"
+                << setw(kFieldWidth) << "Distribution"
+                << setw(kFieldWidth) << "Description"
+                << setw(kFieldWidth) << "Weight"
+                << setw(kFieldWidth) << "Total Time"
+                << endl;
         }
 
         void	DisplayLine ()
         {
             cout << fLength
-                << ((fInOrder) ? "\tOrdered\t" : "\tRandom\t")
-                << fTimingSuccess << "\t\t" << fTimingFail << "\t\t" << DisplayDistribution (fDistribution) << "\t\t" << fDescription.c_str () << "\t\t" << fWeight << "\t"  << (fTimingSuccess+fTimingFail)<< endl;
+                 << setw (kFieldWidth) << ((fInOrder) ? "Ordered" : "Random")
+                 << setw (kFieldWidth) << fTimingSuccess
+                 << setw (kFieldWidth) << fTimingFail
+                 << setw (kFieldWidth) << DisplayDistribution (fDistribution)
+                 << setw (kFieldWidth) << fDescription.c_str ()
+                 << setw (kFieldWidth) << fWeight
+                 << setw (kFieldWidth) << (fTimingSuccess+fTimingFail)
+                 << endl;
         }
 
         bool			fInOrder;
@@ -284,35 +363,36 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         eTimingsOnly,
         eNoTimings,
         eTweaking,
-        eNoRebuild
+        eBalanceAfterRebuild,
     } TreeTestType;
 
-    template <typename CONTAINER, typename DATA>
-    TestResult	RunTreeTests (CONTAINER& sl, TestSet<DATA>& ts, bool inOrder, DataDistribution d, string description, bool verbose, TreeTestType testToRun = eAll)
+    template <typename CONTAINER>
+    TestResult	RunTreeTests (CONTAINER& sl, bool inOrder, DataDistribution d, string description, bool verbose, TreeTestType testToRun = eAll)
     {
-        const vector<size_t> data	 = ts.GetData ();
-        const vector<size_t> missing = ts.GetMissing ();
-        const vector<size_t> indices = ts.GetIndices (d);
+        const TestSet<size_t>&	testset = sSizeTSet;
 
-        if (testToRun != eTweaking and testToRun != eNoRebuild) {
-            RebuildTree (sl, data);
+        if (testToRun != eTweaking) {
+            RebuildTree (sl, testset, inOrder);
         }
+        if (testToRun == eBalanceAfterRebuild) {
+            sl.ReBalance ();
+        }
+        CONTAINER   clean = sl;
+
         if (verbose) {
             cout << "Testing Container of " << sl.GetLength () << " entries" << " with " << DisplayDistribution (d) << " DataDistribution. type = " << description.c_str ()  << endl;
         }
         double weight = 0;
         if (testToRun != eTimingsOnly/* and testToRun != eTweaking*/) {
-            weight = TestList<CONTAINER, DATA> (sl, data, missing, indices, verbose);
+            weight = TestList (sl, clean, testset, d, verbose);
         }
         double timingS = 0;
         double timingF = 0;
         if (testToRun != eNoTimings and testToRun != eTweaking) {
-            if (testToRun != eNoRebuild) {
-                RebuildTree (sl, data);
-            }
-            const	bool	kFind = true;
-            timingF = IntTimingTests (sl, missing, indices, not kFind);
-            timingS = IntTimingTests (sl, data, indices, kFind);
+            sl = clean;
+            timingF = IntTimingTests (sl, testset, d, kFail);
+            sl = clean;
+            timingS = IntTimingTests (sl, testset, d, not kFail);
         }
 
         return TestResult (inOrder, sl.GetLength (), d, description, weight, timingS, timingF);
@@ -354,234 +434,48 @@ TestSet<string>	sScrambledStrings (kStringElementsToTest, true);
         AssertNotReached (); return eUniformDist;
     }
 
-    template <typename CONTAINER, typename DATA>
-    double	TimeStrings (bool verbose)
+    template <typename CONTAINER>
+    double  TimeStringSplayTree (bool verbose)
     {
-        const vector<string>&	 data	 = sScrambledStrings.GetData ();
-        const vector<string>&	 missing = sScrambledStrings.GetMissing ();
+         CONTAINER	sl;
+         RebuildTree (sl, sStringsSet, not kInOrder);
 
-        CONTAINER	sl;
-
-        {
-            if (verbose) {
-                cout << "Creating Splay Tree of " <<  data.size () << " entries, random add:  ";
-            }
-            Timer t;
-            RebuildTree<CONTAINER> (sl, data);
-        }
-        CONTAINER	sClean = sl;
-
-        if (verbose) {
-            cout << endl << "Find timing: find each element once, plus do search for element not in list once for each entry, total finds = " << data.size () + missing.size () << endl;
-        }
         double result = 0.0;
-        for (int st = eUniformDistribution; st <= eZipfDistribution; ++st) {
-            sl.SetSplayType (SplayType (st));
-            if (verbose) {
-                cout << DisplaySplayType (sl.GetSplayType ()) << " distribution" << endl;
-            }
-            const vector<size_t> indices = sScrambledStrings.GetIndices (SplayTypeToDataDist (sl.GetSplayType ()));
-            {
-                Timer t;
-                result += TraversalTests<CONTAINER, DATA> (&sl, missing, indices, true, false);
-                result += TraversalTests<CONTAINER, DATA> (&sl, data, indices, false, false);
-            }
-            cout << endl;
-            sl = sClean;
+        if (verbose) {
+            cout << DisplaySplayType (sl.GetSplayType ()) << " distribution:\t";
         }
+        DataDistribution d = SplayTypeToDataDist (sl.GetSplayType ());
+        {
+            Timer t;
+            result += TraversalTests (&sl, sStringsSet, d, kFail, not kVerbose);
+            result += TraversalTests (&sl, sStringsSet, d, not kFail, not kVerbose);
+        }
+
+        cout << endl;
         return result;
     }
 
-
-#endif
-
-
-
-
-#if qDebug & qTestSplayTree
-    static	void	SplayTreeValidationTests ()
+    template <typename KEY>
+    void	TimeStrings (bool verbose)
     {
-        SplayTree<size_t, int>	tr;
+        typedef SplayTree<KEY, size_t, SplayTraits<KeyValue<KEY,size_t>, ADT::DefaultComp<KEY>, ADT::eDefaultPolicy, eAlwaysSplay> >           AlwaysSplayTree;
+        typedef SplayTree<KEY, size_t, SplayTraits<KeyValue<KEY,size_t>, ADT::DefaultComp<KEY>, ADT::eDefaultPolicy, eUniformDistribution> >   UniformSplayTree;
+        typedef SplayTree<KEY, size_t, SplayTraits<KeyValue<KEY,size_t>, ADT::DefaultComp<KEY>, ADT::eDefaultPolicy, eNormalDistribution> >    NormalSplayTree;
+        typedef SplayTree<KEY, size_t, SplayTraits<KeyValue<KEY,size_t>, ADT::DefaultComp<KEY>, ADT::eDefaultPolicy, eZipfDistribution> >      ZipfSplayTree;
 
-        Assert (tr.GetLength () == 0);
 
-        tr.SetSplayType (::eAlwaysSplay);
-        for (size_t i = 1; i <= 10; ++i) {
-            tr.Add (i, i);
-            Assert (tr.GetLength () == i);
-            Assert (tr.fHead->fEntry.GetKey () == i);
-            tr.ValidateAll ();
-            Assert (tr.GetFirst ()->fEntry.GetKey () == 1);
-            Assert (tr.GetLast ()->fEntry.GetKey () == i);
+        if (verbose) {
+            cout << endl << "Find timing: " << kFindLoops << " times find each element once, plus search for element not in list once for each entry, total finds = " <<
+                (sStringsSet.GetLength ()*(kFindLoops+1)) << endl;
         }
-        for (size_t i = 5; i <= 10; ++i) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-            tr.ValidateAll ();
-        }
-        for (size_t i = 1; i <= 4; ++i) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (size_t i = 10; i >= 1; --i) {
-            tr.Add (i, i);
-            Assert (tr.fHead->fEntry.GetKey () == i);
-            Assert (tr.Find (i));
-        }
-        tr.RemoveAll ();
-        tr.SetSplayType (::eNeverSplay);
-        for (size_t i = 1; i <= 10; ++i) {
-            tr.Add (i, i);
-            Assert (tr.GetLength () == i);
-            Assert (tr.fHead->fEntry.GetKey () == 1);
-            tr.ValidateAll ();
-        }
-        Assert (tr.CalcHeight () == 10);
-
-        tr.SetSplayType (::eNormalDistribution);
-        for (size_t i = 10; i-- > 0; ) {
-            tr.Add (1, 1);
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (size_t i = 10; i-- > 0; ) {
-            tr.Add (i, i);
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (size_t i = 0; i++ < 100; ) {
-            Assert (not tr.Find (i));
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-
-        {
-            SplayTree<size_t, int>	tr1 = tr;
-            tr1.ValidateAll ();
-            for (size_t i = 0; i++ < 100; ) {
-                tr1.Find (1);
-            }
-            tr1.ValidateAll ();
-        }
-
-        tr.RemoveAll ();
-
-        for (int i = 100; i < 200; ++i) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (int i = 0; i <= 10; i += 1) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 10; i > 0; i -= 2) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-        }
-        tr.ValidateAll ();
-
-        for (int i = 0; i <= 100; i += 5) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-
-        for (int i = 1; i <= 100; i += 2) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 99; i >= 1; i -= 3) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 1; i <= 100; i += 2) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-        }
-
-        bool	assertedBadRemove = false;
-        try {
-            tr.Remove (-1);
-        }
-        catch (...) {
-            assertedBadRemove = true;
-        }
-        Assert (assertedBadRemove);
-
-        tr.ValidateAll ();
-        {
-            SplayTree<HashKey<size_t>, int> tr1;
-            for (int i = 0; i <= 1000; ++i) {
-                tr1.Add (i, i);
-                int	v;
-                Assert (tr1.Find (i, &v) and (v == i));
-            }
-            tr1.ValidateAll ();
-        }
-        {
-            SplayTree<size_t, string> sl;
-            sl.Add (3, string ("fred"));
-            sl.ValidateAll ();
-            string val;
-            Assert (sl.Find (3, &val) and (val == "fred"));
-        }
-        {
-            SplayTree<int*,int*> sl;
-            int fred = 5;
-            sl.Add (&fred, &fred);
-        }
-        {
-            SplayTree<string, string>	sl;
-            sl.Add ("fred");
-            sl.ValidateAll ();
-            string val;
-            Assert (sl.Find ("fred", &val) and (val == "fred"));
-            sl.Add ("George", "George");
-            Assert (sl.GetFirst ()->fEntry.GetValue () == string ("George"));	// default to case sensitive compare
-            Assert (sl.GetLast ()->fEntry.GetValue () == string ("fred"));
-        }
-        {
-            SplayTree<string, string, TreeTraits::Traits<SharedStringKeyValue, CaseInsensitiveCompare> >	sl;
-            sl.Add ("fred");
-            sl.Add ("George");
-            sl.ValidateAll ();
-            string val;
-            Assert (sl.Find ("fred", &val) and (val == "fred"));
-            Assert (sl.GetFirst ()->fEntry.GetValue () == string ("fred"));
-            Assert (sl.GetLast ()->fEntry.GetValue () == string ("George"));
-        }
-        {
-            class MyTree : public SplayTree<HashKey<string>, string> {
-                public:
-                    MyTree () {}
-                    nonvirtual	void	Add (const string& s)
-                    {
-                        inherited::Add (HashKey<string> (s), s);
-                    }
-                private:
-                    typedef	SplayTree<HashKey<string>, string>	inherited;
-            } sl;
-            sl.Add ("fred");
-            sl.ValidateAll ();
-            string val;
-            Assert (Hash ("fred") == Hash ("fred"));
-            Assert (sl.Find (string ("fred"), &val) and (val == "fred"));
-        }
-    }
+        TimeStringSplayTree<AlwaysSplayTree> (verbose);
+        TimeStringSplayTree<UniformSplayTree> (verbose);
+        TimeStringSplayTree<NormalSplayTree> (verbose);
+        TimeStringSplayTree<ZipfSplayTree> (verbose);
+      }
 #endif
+
+
 
 
 #if qTestSplayTree
@@ -600,42 +494,54 @@ static	void	DumpVector (const vector<size_t>& v)
 
 static  void	TweakSplayTreeWeights ()
 {
+    typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eCustomSplayType> > TweakedSplayTree;
+
+ //   DataDistribution dType = eNormalizedDist;
     DataDistribution dType = eZipfDist;
+
     vector<size_t> splayTreeBonuses = SplayTree<size_t, int>::GetHeightWeights (eZipfDistribution);
 
-    const size_t kMyBestSetW[] = {1, 1, 11, 30, 30, 60, 66, 62, 174, 261, 278, 278, 278, 278 };
+   // const size_t kMyBestSetW[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
+
+#if 0
+0, 0, 0, 0, 0, 1, 1, 1, 1, 4, 7, 11, 24, 108, 202, 561, 1711
+#endif
+
+   const size_t kMyBestSetW[] = {5, 7, 7, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 94, 94, 696, 5000,}; // 27.71
     vector<size_t>	kOverrideSet(kMyBestSetW, kMyBestSetW + sizeof(kMyBestSetW) / sizeof(kMyBestSetW[0]));
     splayTreeBonuses = kOverrideSet;	// turn on if you want to restart without recompiling splay tree with new weights
 
     vector<size_t> currentBestEver = splayTreeBonuses;
-    SplayTree<size_t, int> sl;
-    sl.SetSplayType (eUniformDistribution);
-    RebuildTree (sl, sScrambledIntegers.GetData ());
-    SplayTree<size_t, int>	cleanT = sl;
 
-    sl.SetSplayType (eCustomSplayType);
+    TweakedSplayTree sl;
+    RebuildTree (sl, sSizeTSet, not kInOrder);
+    TweakedSplayTree	cleanT = sl;
+
     sl.SetCustomHeightWeights (splayTreeBonuses);
 
 
-    TestResult	tr = RunTreeTests (sl, sScrambledIntegers, not kInOrder, dType, "", not kVerbose, eTweaking);
+    TestResult	tr = RunTreeTests (sl, not kInOrder, dType, "", not kVerbose, eTweaking);
     //double timeNeeded = tr.fTimingSuccess + tr.fTimingFail;
     double timeNeeded = tr.fWeight;
     sl = cleanT;
 
     double bestResult = timeNeeded;
     double trueBest = bestResult;
-//bestResult *= 2;
+
     cout << "Starting tests for " << DisplayDistribution (dType) << " with ";
     DumpVector (currentBestEver);
     cout << " in " << trueBest << endl;
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 0; i < 3; ++i) {
         sl = cleanT;
-       tr = RunTreeTests (sl, sScrambledIntegers, not kInOrder, dType, "", not kVerbose, eTweaking);
+       tr = RunTreeTests (sl,not kInOrder, dType, "", not kVerbose, eTweaking);
 //		cout << tr1.fTimingSuccess + tr1.fTimingFail << endl;
         cout << tr.fWeight << endl;
     }
 
+    const   int kFailsCutoff = 10;
+    double  kBogusResult = 100000.0;
+    int  failsInaRow = 0;
     for (;;) {
         // pick a random weight to muck with
         size_t wIndex = RandomSize_t (0, splayTreeBonuses.size ()-1);
@@ -649,42 +555,56 @@ static  void	TweakSplayTreeWeights ()
         newValue = std::min (size_t (10000), newValue);
         if (newValue == curValue) continue;
 
-cout << "." << flush;
-        vector<size_t> restoreSnapShot = splayTreeBonuses;
-        splayTreeBonuses[wIndex] = newValue;
-        for (size_t ww = wIndex; ww-- > 0;) {
-            if (splayTreeBonuses[ww] > newValue) {
-                splayTreeBonuses[ww] = newValue;
-            }
+      vector<size_t> restoreSnapShot = splayTreeBonuses;
+        if (failsInaRow > kFailsCutoff) {
+            cout << "X" << flush;
+            splayTreeBonuses = currentBestEver;
+            sl.SetCustomHeightWeights (splayTreeBonuses);
+            bestResult = kBogusResult;
         }
-        for (size_t ww = wIndex+1; ww < splayTreeBonuses.size (); ++ww) {
-            if (splayTreeBonuses[ww] == curValue) {
-                splayTreeBonuses[ww] = newValue;
+        else {
+            cout << "." << flush;
+            splayTreeBonuses[wIndex] = newValue;
+            for (size_t ww = wIndex; ww-- > 0;) {
+                if (splayTreeBonuses[ww] > newValue) {
+                    splayTreeBonuses[ww] = newValue;
+                }
             }
+            for (size_t ww = wIndex+1; ww < splayTreeBonuses.size (); ++ww) {
+                if (splayTreeBonuses[ww] == curValue) {
+                    splayTreeBonuses[ww] = newValue;
+                }
+            }
+            sl.SetCustomHeightWeights (splayTreeBonuses);
         }
-        sl.SetCustomHeightWeights (splayTreeBonuses);
+
+
 
         sl = cleanT;
-        tr = RunTreeTests (sl, sScrambledIntegers, not kInOrder, dType, "", not kVerbose, eTweaking);
+        tr = RunTreeTests (sl, not kInOrder, dType, "", not kVerbose, eTweaking);
 //		double result = tr.fTimingSuccess + tr.fTimingFail;;
         double result = tr.fWeight;
         if (result < bestResult) {
-            cout << endl << "**Success!!**"<< " with score = " << result;
-            if (result < trueBest) {
-                cout << "  ***NEW RECORD***";
+            if (bestResult != kBogusResult) {
+                cout << endl << "**Success!!**"<< " with score = " << result;
+                if (result < trueBest) {
+                    cout << "  ***NEW RECORD***";
+                }
+                cout << endl << "new vector is ";
+                DumpVector (splayTreeBonuses);
+                cout << endl;
             }
-            cout << endl << "new vector is ";
-            DumpVector (splayTreeBonuses);
-            cout << endl;
             bestResult = result;
             if (trueBest > bestResult) {
                 currentBestEver = splayTreeBonuses;
                 trueBest = bestResult;
             }
+            failsInaRow = 0;
         }
         else {
             //cout << "**Failure** because " << result << " > " << bestResult << endl;
             splayTreeBonuses = restoreSnapShot;
+            failsInaRow++;
         }
     }
     cout << endl << endl << "Final reulst = " << endl;
@@ -692,288 +612,159 @@ cout << "." << flush;
 }
 #endif
 
+static  void    TestSplayTrees (bool inOrder, vector<TestResult>& testResults, bool verbose)
+{
+    if (inOrder) {
+         cout << endl << "*** In Order Adds *** " << endl;
+    }
+    else {
+        cout << endl << "*** Random Adds *** " << endl;
+    }
+
+    typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eAlwaysSplay> >           AlwaysSplayTree;
+    typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eUniformDistribution> >   UniformSplayTree;
+    typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eNormalDistribution> >    NormalSplayTree;
+    typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eZipfDistribution> >      ZipfSplayTree;
+
+    for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+        if (testDist == eUniformDist or not inOrder) {
+            AlwaysSplayTree splayTree;
+            testResults.push_back (RunTreeTests (splayTree, inOrder, static_cast<DataDistribution> (testDist), DisplaySplayType (splayTree.GetSplayType ()), verbose));
+        }
+        if (testDist == eUniformDist) {
+            UniformSplayTree splayTree;
+            testResults.push_back (RunTreeTests (splayTree, inOrder, static_cast<DataDistribution> (testDist), DisplaySplayType (splayTree.GetSplayType ()), verbose));
+        }
+        if (testDist == eUniformDist or not inOrder) {
+            NormalSplayTree splayTree;
+            testResults.push_back (RunTreeTests (splayTree,inOrder, static_cast<DataDistribution> (testDist), DisplaySplayType (splayTree.GetSplayType ()), verbose));
+        }
+        if (testDist == eUniformDist or not inOrder) {
+            ZipfSplayTree splayTree;
+            testResults.push_back (RunTreeTests (splayTree, inOrder, static_cast<DataDistribution> (testDist), DisplaySplayType (splayTree.GetSplayType ()), verbose));
+        }
+    }
+}
+
 static  void	TestSplayTree ()
 {
-#if qDebug
-    cout << "validating splaytree" << endl;
-    SplayTreeValidationTests ();
-    cout << "validated" << endl;
-#endif
-#if qKeepADTStatistics
-        // try to force loading before running any tests
-        sOrderedIntegers.PreLoad ();
-        sScrambledIntegers.PreLoad ();
-        sScrambledStrings.PreLoad ();
+    #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        SplayTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        SplayTreeValidationSuite<string> (kElementsToTest, true);
+        return;
+    #endif	/* qDebug */
 
+#if qKeepADTStatistics
         #if qTweakWeights
             TweakSplayTreeWeights ();
         #endif
 
-        SplayTree<size_t, int> sl;
         vector<TestResult>	testResults;
-
 #if 0
-        cout << endl << "*** In Order Adds *** " << endl;
-        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-            for (int testST = eAlwaysSplay; testST <= eZipfDistribution; ++testST) {
-                sl.SetSplayType (static_cast<SplayType> (testST));
-                testResults.push_back (RunTreeTests (sl, sOrderedIntegers, kInOrder, static_cast<DataDistribution> (testDist), kVerbose));
-            }
-        }
+        typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eUniformDistribution> >   UniformSplayTree;
+        UniformSplayTree splayTree;
+        testResults.push_back (RunTreeTests (splayTree, kInOrder, eUniformDist, DisplaySplayType (splayTree.GetSplayType ()), kVerbose));
+        testResults.push_back (RunTreeTests (splayTree, not kInOrder, eUniformDist, DisplaySplayType (splayTree.GetSplayType ()), kVerbose));
+#else
+        TestSplayTrees (kInOrder, testResults, kVerbose);
+        TestSplayTrees (not kInOrder, testResults, kVerbose);
 #endif
-
-        cout << endl << endl << "*** Random Adds *** " << endl;
-        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-    //	for (int testDist = eZipfDist; testDist <= eZipfDist; ++testDist) {
-            for (int testST = eAlwaysSplay; testST <= eZipfDistribution; ++testST) {
-    //		for (int testST = eZipfDistribution; testST <= eZipfDistribution; ++testST) {
-                sl.SetSplayType (static_cast<SplayType> (testST));
-                testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), DisplaySplayType (sl.GetSplayType ()), kVerbose));
-            }
-        }
-
+        cout << endl;
         TestResult::DisplayHeader ();
         for (auto it = testResults.begin (); it != testResults.end (); ++it) {
             it->DisplayLine ();
         }
         cout << endl << endl;
+//return;
+        cout << "Splay of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        TimeStrings<string> (kVerbose);
 
-        cout << "Splay of " <<  sl.GetLength () << " string keyed entries" << endl;
-        TimeStrings<SplayTree<string, size_t>, string> (kVerbose);
-
-        cout << endl << "Splay of " <<  sl.GetLength () << " hashed string keyed entries" << endl;
-        TimeStrings<SplayTree<HashKey<string>, size_t>, string> (kVerbose);
+        cout << endl << "Splay of " << sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        TimeStrings<HashKey<string> > (kVerbose);
         cout << endl << endl;
 #endif
 }
 #endif
 
-#if qDebug & qTestTreap
-    static	void	TreapValidationTests ()
-    {
-        Treap<size_t, int>	tr;
-
-        Assert (tr.GetLength () == 0);
-
-        for (size_t i = 1; i <= 10; ++i) {
-            tr.Add (i, i);
-            Assert (tr.GetLength () == i);
-            tr.ValidateAll ();
-            Assert (tr.GetFirst ()->fEntry.GetKey () == 1);
-            Assert (tr.GetLast ()->fEntry.GetKey () == i);
-        }
-        for (size_t i = 5; i <= 10; ++i) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-            tr.ValidateAll ();
-        }
-        for (size_t i = 1; i <= 4; ++i) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-        }
-        for (size_t i = 10; i >= 1; --i) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.RemoveAll ();
-
-        for (size_t i = 10; i-- > 0; ) {
-            tr.Add (1, 1);
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (size_t i = 10; i-- > 0; ) {
-            tr.Add (i, i);
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (size_t i = 0; i++ < 100; ) {
-            Assert (not tr.Find (i));
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        cout << "  height = " << tr.CalcHeight () << endl;
-        tr.Optimize ();
-        tr.ValidateAll ();
-        cout << "  after opt height = " << tr.CalcHeight () << endl;
-        tr.RemoveAll ();
-
-        for (int i = 100; i < 200; ++i) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        tr.RemoveAll ();
-
-        for (int i = 0; i <= 10; i += 1) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 10; i > 0; i -= 2) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-            Assert (not tr.Find (i));
-        }
-        tr.ValidateAll ();
-
-        for (int i = 0; i <= 100; i += 5) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-
-        for (int i = 1; i <= 100; i += 2) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 99; i >= 1; i -= 3) {
-            tr.Add (i, i);
-            Assert (tr.Find (i));
-        }
-        tr.ValidateAll ();
-        for (int i = 1; i <= 100; i += 2) {
-            Assert (tr.Find (i));
-            tr.Remove (i);
-        }
-        tr.ValidateAll ();
-
-        {
-            Treap<HashKey <size_t>, int> tr1;
-            for (int i = 0; i <= 1000; ++i) {
-                tr1.Add (i, i);
-                int	v;
-                Assert (tr1.Find (i, &v) and (v == i));
-            }
-            tr.ValidateAll ();
-        }
-        {
-            Treap<size_t, string> sl;
-            sl.Add (3, string ("fred"));
-            sl.ValidateAll ();
-            string val;
-            Assert (sl.Find (3, &val) and (val == "fred"));
-        }
-        {
-            Treap<string, string>	sl;
-            sl.Add ("fred", "fred");
-            sl.ValidateAll ();
-            string val;
-            Assert (sl.Find ("fred", &val) and (val == "fred"));
-        }
-        {
-            Treap<int*,int*> sl;
-            int fred = 5;
-            sl.Add (&fred, &fred);
-        }
-}
-#endif
-
-#if qKeepADTStatistics & qTestTreap
-
-    template <typename CONTAINER, typename DATA>
-    double	TimeStrings_Treap (bool verbose)
-    {
-        const vector<string>&	 data	 = sScrambledStrings.GetData ();
-        const vector<string>&	 missing = sScrambledStrings.GetMissing ();
-
-        CONTAINER	sl;
-
-        {
-            if (verbose) {
-                cout << "Creating Treap Tree of " <<  data.size () << " entries, random add:  ";
-            }
-            Timer t;
-            RebuildTree<CONTAINER> (sl, data);
-        }
-        CONTAINER	sClean = sl;
-
-        if (verbose) {
-            cout << endl << "Find timing: find each element once, plus do search for element not in list once for each entry, total finds = " << data.size () + missing.size () << endl;
-        }
-        double result = 0.0;
-
-        for (int st = eUniformDist; st <= eZipfDist; ++st) {
-            DataDistribution dd = DataDistribution (st);
-            if (verbose) {
-                cout << DisplayDistribution (dd) << " distribution" << endl;
-            }
-            const vector<size_t> indices = sScrambledStrings.GetIndices (dd);
-            {
-                Timer t;
-//size_t compare = sl.fCompares;
-                result += TraversalTests<CONTAINER, DATA> (&sl, missing, indices, true, false);
-                result += TraversalTests<CONTAINER, DATA> (&sl, data, indices, false, false);
-//cout << "comps = " << sl.fCompares - compare << endl;
-            }
-            cout << endl;
-            sl = sClean;
-        }
-
-        return result;
-    }
-
-#endif
 
 #if qTestTreap
 
-
-
 template <typename KEY, typename VALUE, size_t OPTFINDCHANCE>
-void	RunTests (vector<TestResult>& testResults)
+void	RunTests (vector<TestResult>& testResults, bool inOrder, bool balance)
 {
     Treap<KEY, VALUE, TreapTraits<
         KeyValue<KEY, VALUE>,
-        TreeTraits::DefaultComp<KEY>,
-        TreeTraits::eInvalidRemoveThrowException,
+        ADT::DefaultComp<KEY>,
+        ADT::eDefaultPolicy,
         OPTFINDCHANCE> > sl;
 
-    char buf [100];
-    sprintf(buf,"%lu Find Opt",(unsigned long)OPTFINDCHANCE);
-    string	description = string (buf);
+    string description;
+    switch (OPTFINDCHANCE) {
+        case kNoPrioritizeFinds:
+            description = (balance) ? "balanced" : "no priority";
+            break;
+        case kStandardPrioritizeFinds:
+            description = ".5";
+            break;
+        case kAlwaysPrioritizeOnFind:
+            description = "Always";
+            break;
+        default:
+            AssertNotReached ();
+    }
 
-    RebuildTree (sl, sScrambledIntegers.GetData ());
+    TreeTestType testToRun = (balance) ? eBalanceAfterRebuild : eAll;
     for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-        testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), description, kVerbose));
+        if ((not inOrder) or (testDist == eUniformDist)) {
+            testResults.push_back (RunTreeTests (sl, inOrder, static_cast<DataDistribution> (testDist), description, kVerbose, testToRun));
+        }
     }
 }
 
 static  void	TestTreap ()
 {
     #if qDebug
-        TreapValidationTests ();
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        TreapValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        TreapValidationSuite<string> (kElementsToTest, true);
+
+
+        Treap<size_t, size_t>   tt;
+        for (size_t i = 1; i <= 20; ++i) {
+            tt.Add (i, i);
+        }
+        for (size_t i = 1; i <= 20; ++i) {
+            int ignored;
+            Treap<size_t, size_t>::Node*	n = tt.FindNode (i, &ignored);
+            AssertNotNull (n);
+            if (n->GetParent () != nullptr) {
+                tt.Prioritize (n);
+                Assert (n->GetParent () == nullptr);
+                tt.ValidateAll ();
+            }
+        }
+
+        return;
     #endif	/* qDebug */
 
     #if qKeepADTStatistics
-        // try to force loading before running any tests
-        sOrderedIntegers.PreLoad ();
-        sScrambledIntegers.PreLoad ();
-        sScrambledStrings.PreLoad ();
+        static  const   bool    kRebalance = true;
 
-
-        Treap<size_t, int> sl;
         vector<TestResult>	testResults;
 
+        cout << endl << endl << "*** Ordered Adds *** " << endl;
+        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, kInOrder, not kRebalance);
+        RunTests<size_t, int, kStandardPrioritizeFinds> (testResults, kInOrder, not kRebalance);
+        RunTests<size_t, int, kAlwaysPrioritizeOnFind> (testResults, kInOrder, not kRebalance);
 
         cout << endl << endl << "*** Random Adds *** " << endl;
-        RebuildTree (sl, sScrambledIntegers.GetData ());
-        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-            testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), "unoptimized", kVerbose, eNoRebuild));
-        }
-        sl.Optimize ();
-        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-            testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), "optimized", kVerbose, eNoRebuild));
-        }
-
-        RunTests<size_t, int, 10> (testResults);
-        RunTests<size_t, int, 5> (testResults);
-        RunTests<size_t, int, 2> (testResults);
+        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, not kInOrder, not kRebalance);
+        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, not kInOrder, kRebalance);
+        RunTests<size_t, int, kStandardPrioritizeFinds> (testResults, not kInOrder, not kRebalance);
+        RunTests<size_t, int, kAlwaysPrioritizeOnFind> (testResults, not kInOrder, not kRebalance);
 
         TestResult::DisplayHeader ();
         for (auto it = testResults.begin (); it != testResults.end (); ++it) {
@@ -981,170 +772,33 @@ static  void	TestTreap ()
         }
         cout << endl << endl;
 
+        {
         cout << "Treap with string keyed entries" << endl;
-        TimeStrings_Treap<Treap<string, size_t>, string> (kVerbose);
+        Treap<string, size_t> t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
 
-        cout << endl << "Treap with hashed string keyed entries" << endl;
-        TimeStrings_Treap<Treap<HashKey<string>, size_t>, string> (kVerbose);
+        {
+             Treap<string, size_t, TreapTraits<
+                KeyValue<string, size_t>,
+                ADT::DefaultComp<string>,
+                ADT::eDefaultPolicy,
+                kStandardPrioritizeFinds> >t;
+
+            cout  << endl << "Treap Standard Prioritize with string keyed entries" << endl;
+            TimeStrings (t, sStringsSet, kVerbose);
+        }
+
+        {
+            cout << endl << "Treap with hashed string keyed entries" << endl;
+            Treap<HashKey<string>, size_t> t;
+            TimeStrings (t, sStringsSet, kVerbose);
+        }
 
         cout << endl << endl;
 
     #endif	/* qKeepADTStatistics */
 }
-#endif
-
-
-
-
-
-
-
-#if qDebug & qTestSkipList
-    static	void	ValidationTests ()
-    {
-        SkipList<int, int> sl;
-        for (size_t i = 1; i <= 10; ++i) {
-            sl.Add (i, i);
-            Assert (sl.GetLength () == i);
-            sl.ValidateAll ();
-        }
-        for (size_t i = 5; i <= 10; ++i) {
-            Assert (sl.Find (i));
-            sl.Remove (i);
-            Assert (not sl.Find (i));
-            sl.ValidateAll ();
-        }
-        for (size_t i = 1; i <= 4; ++i) {
-            Assert (sl.Find (i));
-            sl.Remove (i);
-            Assert (not sl.Find (i));
-        }
-        sl.RemoveAll ();
-
-        for (size_t i = 10; i-- > 0; ) {
-            sl.Add (1, 1);
-        }
-        sl.ValidateAll ();
-        sl.RemoveAll ();
-
-        for (size_t i = 10; i-- > 0; ) {
-            sl.Add (i, i);
-        }
-        sl.ValidateAll ();
-        sl.RemoveAll ();
-
-        for (size_t i = 0; i++ < 1000; ) {
-            Assert (not sl.Find (i));
-            sl.Add (i, i);
-            Assert (sl.Find (i));
-        }
-        sl.ValidateAll ();
-        sl.RemoveAll ();
-
-        for (int i = 100; i < 200; ++i) {
-            sl.Add (i, i);
-            Assert (sl.Find (i, nullptr));
-        }
-        sl.ValidateAll ();
-        sl.Optimize ();
-        sl.ValidateAll ();
-        sl.RemoveAll ();
-
-        for (int i = 0; i <= 10; i += 1) {
-            sl.Add (i, i);
-            Assert (sl.Find (i));
-        }
-        sl.ValidateAll ();
-        for (int i = 10; i > 0; i -= 2) {
-            Assert (sl.Find (i, nullptr));
-            sl.Remove (i);
-            Assert (not sl.Find (i));
-        }
-        sl.ValidateAll ();
-
-        for (int i = 0; i <= 100; i += 5) {
-            sl.Add (i, i);
-            Assert (sl.Find (i));
-        }
-        sl.ValidateAll ();
-        for (int i = 1; i <= 100; i += 2) {
-            sl.Add (i, i);
-            Assert (sl.Find (i));
-        }
-        sl.ValidateAll ();
-        for (int i = 99; i >= 1; i -= 3) {
-            sl.Add (i, i);
-            Assert (sl.Find (i));
-        }
-        sl.ValidateAll ();
-        for (int i = 1; i <= 100; i += 2) {
-            Assert (sl.Find (i));
-            sl.Remove (i);
-        }
-        sl.ValidateAll ();
-        {
-            SkipList<int, string> sl1;
-            sl1.Add (3, string ("fred"));
-            sl1.ValidateAll ();
-            string val;
-            Assert (sl1.Find (3, &val) and (val == "fred"));
-        }
-        {
-            SkipList<string, string>	sl1;
-            sl1.Add ("fred", "fred");
-            sl1.ValidateAll ();
-            string val;
-            Assert (sl1.Find ("fred", &val) and (val == "fred"));
-        }
-        {
-            SkipList<int*,int*> sl1;
-            int fred = 5;
-            sl1.Add (&fred, &fred);
-        }
-    }
-#endif
-
-#if qKeepADTStatistics & qTestSkipList
-    template <typename CONTAINER, typename DATA>
-    double	TimeStrings_SkipList (CONTAINER& sl, bool rebuild, bool verbose)
-    {
-        const vector<string>&	 data	 = sScrambledStrings.GetData ();
-        const vector<string>&	 missing = sScrambledStrings.GetMissing ();
-
-        if (rebuild) {
-            if (verbose) {
-                cout << "Creating SkipList of " <<  data.size () << " entries, random add:  ";
-            }
-            Timer t;
-            RebuildTree<CONTAINER> (sl, data);
-        }
-        CONTAINER	sClean = sl;
-
-        if (verbose) {
-            cout << endl << "Find timing: find each element once, plus do search for element not in list once for each entry, total finds = " << data.size () + missing.size () << endl;
-        }
-        double result = 0.0;
-
-        for (int st = eUniformDist; st <= eZipfDist; ++st) {
-            DataDistribution dd = DataDistribution (st);
-            if (verbose) {
-                cout << DisplayDistribution (dd) << " distribution" << endl;
-            }
-            const vector<size_t> indices = sScrambledStrings.GetIndices (dd);
-            {
-                Timer t;
-//size_t compare = sl.fCompares;
-                result += TraversalTests<CONTAINER, DATA> (&sl, missing, indices, true, false);
-                result += TraversalTests<CONTAINER, DATA> (&sl, data, indices, false, false);
-//cout << "comps = " << sl.fCompares - compare << endl;
-            }
-            cout << endl;
-            sl = sClean;
-        }
-
-
-        return result;
-    }
 #endif
 
 #if qTestSkipList
@@ -1153,27 +807,38 @@ static  void	TestSkipList ()
 //	Assert (sizeof (KeyValue<int, int>) == 4);	// make sure template specialization is working. If not size would be 8  (4 for value, 4 for key)
 
     #if qDebug
-        ValidationTests ();
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        SkipListValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        SkipListValidationSuite<string> (kElementsToTest, true);
+
+        {
+            SkipList<size_t, size_t>   tt;
+            for (size_t i = 1; i <= 20; ++i) {
+                tt.Add (i, i);
+            }
+            for (size_t i = 1; i <= 20; ++i) {
+                tt.Prioritize (i);
+                tt.ValidateAll ();
+            }
+
+        }
+        return;
     #endif	/* qDebug */
 
     #if qKeepADTStatistics
-        // try to force loading before running any tests
-        sOrderedIntegers.PreLoad ();
-        sScrambledIntegers.PreLoad ();
-        sScrambledStrings.PreLoad ();
-
-
         SkipList<size_t, int> sl;
         vector<TestResult>	testResults;
 
+        cout << endl << endl << "*** Ordered Adds *** " << endl;
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "unoptimized", kVerbose));
+
         cout << endl << endl << "*** Random Adds *** " << endl;
-        RebuildTree (sl, sScrambledIntegers.GetData ());
         for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-            testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), "unoptimized", kVerbose, eNoRebuild));
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "unoptimized", kVerbose));
         }
-        sl.Optimize ();
         for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
-            testResults.push_back (RunTreeTests (sl, sScrambledIntegers, not kInOrder, static_cast<DataDistribution> (testDist), "optimized", kVerbose, eNoRebuild));
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "balanced", kVerbose, eBalanceAfterRebuild));
         }
 
         TestResult::DisplayHeader ();
@@ -1182,25 +847,24 @@ static  void	TestSkipList ()
         }
         cout << endl << endl;
 
-        const	bool	kRebuild = true;
         {
             SkipList<string, size_t>	slT;
 
             cout << "Skiplist with string keyed entries" << endl;
-            TimeStrings_SkipList<SkipList<string, size_t>, string> (slT, kRebuild, kVerbose);
+            TimeStrings (slT, sStringsSet, kVerbose);
             {
-                cout << "Optimized SkipList  ";
+                cout << endl << endl << "Rebalance SkipList  ";
                 Timer t;
-                slT.Optimize ();
+                slT.ReBalance ();
             }
             cout << endl;
-            TimeStrings_SkipList<SkipList<string, size_t>, string> (slT, not kRebuild, kVerbose);
+            TimeStrings (slT, sStringsSet, kVerbose);
         }
 
         {
             SkipList<HashKey<string>, size_t>	slT;
             cout << endl << "Skiplist with hashed string keyed entries" << endl;
-            TimeStrings_SkipList<SkipList<HashKey<string>, size_t>, string> (slT, kRebuild, kVerbose);
+            TimeStrings (slT, sStringsSet, kVerbose);
         }
 
         cout << endl << endl;
@@ -1210,10 +874,369 @@ static  void	TestSkipList ()
 #endif /*qTestSkipList*/
 
 
+
+#if qTestRedBlackTree
+
+static  void	TestRedBlackTree ()
+{
+    #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        RedBlackTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        RedBlackTreeValidationSuite<string> (kElementsToTest, true);
+        return;
+    #endif	/* qDebug */
+
+    #if qKeepADTStatistics
+        vector<TestResult>	testResults;
+        RedBlackTree<size_t, int> sl;
+
+        cout << endl << "*** In Order Adds *** " << endl;
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Unoptimized", kVerbose));
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Balanced", kVerbose, eBalanceAfterRebuild));
+
+        cout << endl << endl << "*** Random Adds *** " << endl;
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Unoptimized", kVerbose));
+        }
+
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Balanced", kVerbose, eBalanceAfterRebuild));
+        }
+        cout << endl << endl;
+
+        TestResult::DisplayHeader ();
+        for (auto it = testResults.begin (); it != testResults.end (); ++it) {
+            it->DisplayLine ();
+        }
+        cout << endl << endl;
+
+        {
+        cout << "Red Black Tree of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        RedBlackTree<string, size_t> t;
+        TimeStrings(t, sStringsSet, kVerbose);
+        }
+
+        {
+        cout << endl << "Red Black Tree of " <<  sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        RedBlackTree<HashKey<string>, size_t>   t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
+
+        cout << endl << endl;
+    #endif
+}
+
+#endif
+
+
+#if qTestSortedBinaryTree
+
+static  void	TestSortedBinaryTree ()
+{
+     #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        SortedBinaryTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        SortedBinaryTreeValidationSuite<string> (kElementsToTest, true);
+        return;
+    #endif	/* qDebug */
+
+    #if qKeepADTStatistics
+        vector<TestResult>	testResults;
+        SortedBinaryTree<size_t, int> sl;
+
+ //       cout << endl << "*** In Order Adds *** " << endl;
+        //can't even test, would be unbearably slow
+      //  testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Unoptimized", kVerbose));
+      //  testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Balanced", kVerbose, eBalanceAfterRebuild));
+
+        cout << endl << endl << "*** Random Adds *** " << endl;
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Unoptimized", kVerbose));
+        }
+
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Balanced", kVerbose, eBalanceAfterRebuild));
+        }
+        cout << endl << endl;
+
+        TestResult::DisplayHeader ();
+        for (auto it = testResults.begin (); it != testResults.end (); ++it) {
+            it->DisplayLine ();
+        }
+        cout << endl << endl;
+
+        {
+        cout << "Sorted Binary Tree of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        SortedBinaryTree<string, size_t> t;
+        TimeStrings(t, sStringsSet, kVerbose);
+        }
+
+        {
+        cout << endl << "Sorted Binary Tree of " <<  sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        SortedBinaryTree<HashKey<string>, size_t>   t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
+
+        cout << endl << endl;
+    #endif
+}
+
+#endif
+
+
+
+#if qTestAVLTree
+
+#define   qTestDataDistribution   0
+#if     qTestDataDistribution
+
+static  size_t	ListAll (const AVLTree<size_t, size_t>& t)
+{
+    size_t  biggestValue = 0;
+	std::function<void(AVLTree<size_t, size_t>::Node*)>	ListNode = [&ListNode, &biggestValue] (AVLTree<size_t, size_t>::Node* n)
+	{
+		if (n->GetChild (kLeft) != nullptr) {
+			ListNode (n->GetChild (kLeft));
+		}
+	//	std::cout << n->fEntry.GetKey () << "\t" << n->fEntry.GetValue () << endl;
+		if (biggestValue < n->fEntry.GetValue ()) {
+		    biggestValue = n->fEntry.GetValue ();
+		}
+ 		if (n->GetChild (kRight) != nullptr) {
+			ListNode (n->GetChild (kRight));
+		}
+	};
+
+
+	if (t.fHead != nullptr) {
+		ListNode (t.fHead);
+	}
+	return biggestValue;
+}
+
+static  void    TestDistribution (DataDistribution dd)
+{
+    // but who will watch the watchmen?
+   AVLTree<size_t, size_t> t;
+
+    for (size_t j = 0; j < sSizeTSet.GetLength (); ++j) {
+        size_t  key = sSizeTSet.GetData (j, dd);
+
+        int  comp;
+        AVLTree<size_t, size_t>::Node*	n = t.FindNode (key, &comp);
+        if (n != nullptr and comp == 0) {
+            AssertNotNull (n);
+            n->fEntry.SetValue (n->fEntry.GetValue () + 1);
+        }
+        else {
+            t.Add (key, 1);
+        }
+     }
+     size_t biggest = ListAll (t);
+     cout << "fed " << sSizeTSet.GetLength () << "; unique = " << t.GetLength () << "; most common = " << biggest << endl;
+}
+#endif
+
+static  void	TestAVLTree ()
+{
+#if qTestDataDistribution
+        TestDistribution (eUniformDist);
+        TestDistribution (eNormalizedDist);
+        TestDistribution (eZipfDist);
+        return;
+#endif
+
+    #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        AVLTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        AVLTreeValidationSuite<string> (kElementsToTest, true);
+        return;
+    #endif	/* qDebug */
+
+    #if qKeepADTStatistics
+        vector<TestResult>	testResults;
+        AVLTree<size_t, int> sl;
+
+        cout << endl << "*** In Order Adds *** " << endl;
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Unoptimized", kVerbose));
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Balanced", kVerbose, eBalanceAfterRebuild));
+
+        cout << endl << endl << "*** Random Adds *** " << endl;
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Unoptimized", kVerbose));
+        }
+
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Balanced", kVerbose, eBalanceAfterRebuild));
+        }
+        cout << endl << endl;
+
+        TestResult::DisplayHeader ();
+        for (auto it = testResults.begin (); it != testResults.end (); ++it) {
+            it->DisplayLine ();
+        }
+        cout << endl << endl;
+
+        {
+        cout << "AVL Tree of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        AVLTree<string, size_t> t;
+        TimeStrings(t, sStringsSet, kVerbose);
+        }
+
+        {
+        cout << endl << "AVL Tree of " <<  sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        AVLTree<HashKey<string>, size_t>   t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
+        cout << endl << endl;
+    #endif
+}
+
+#endif
+
+#if qTestScapeGoatTree
+static  string  DisplayScapeGoatType (const double& alpha)
+{
+    char buffer[256];
+    snprintf(buffer, sizeof(buffer), "%g", alpha);
+    return string (buffer);
+}
+
+static  void    TestScapeGoatTrees (bool inOrder, vector<TestResult>& testResults, bool verbose)
+{
+    if (inOrder) {
+         cout << endl << "*** In Order Adds *** " << endl;
+    }
+    else {
+        cout << endl << "*** Random Adds *** " << endl;
+    }
+
+    typedef ScapeGoatTree<size_t, int, ScapeGoatTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, kMinimalScapeGoatBalance> >  MinimalBalanceScapGoatTree;
+    typedef ScapeGoatTree<size_t, int, ScapeGoatTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, kMaximalScapeGoatBalance> >  MaximalBalanceScapGoatTree;
+    typedef ScapeGoatTree<size_t, int, ScapeGoatTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, kDefaultScapeGoatBalance> >  DefaultBalanceScapGoatTree;
+
+
+    for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+        if (testDist == eUniformDist or not inOrder) {
+            MinimalBalanceScapGoatTree sgTree;
+            testResults.push_back (RunTreeTests (sgTree, inOrder, static_cast<DataDistribution> (testDist), DisplayScapeGoatType (sgTree.GetAlpha ()), verbose));
+        }
+        if (testDist == eUniformDist or not inOrder) {
+            MaximalBalanceScapGoatTree sgTree;
+            testResults.push_back (RunTreeTests (sgTree, inOrder, static_cast<DataDistribution> (testDist), DisplayScapeGoatType (sgTree.GetAlpha ()), verbose));
+        }
+        if (testDist == eUniformDist or not inOrder) {
+            DefaultBalanceScapGoatTree sgTree;
+            testResults.push_back (RunTreeTests (sgTree,inOrder, static_cast<DataDistribution> (testDist), DisplayScapeGoatType (sgTree.GetAlpha ()), verbose));
+        }
+    }
+}
+
+static  void	TestScapeGoatTree ()
+{
+   #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        ScapeGoatTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        ScapeGoatTreeValidationSuite<string> (kElementsToTest, true);
+        return;
+    #endif	/* qDebug */
+
+    #if qKeepADTStatistics
+
+        vector<TestResult>	testResults;
+        ScapeGoatTree<size_t, int> sl;;
+
+        cout << endl << "*** In Order Adds *** " << endl;
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Unoptimized", kVerbose));
+        testResults.push_back (RunTreeTests (sl, kInOrder, eUniformDist, "Balanced", kVerbose, eBalanceAfterRebuild));
+
+        TestScapeGoatTrees (not kInOrder, testResults, kVerbose);
+
+        cout << endl << endl;
+
+        TestResult::DisplayHeader ();
+        for (auto it = testResults.begin (); it != testResults.end (); ++it) {
+            it->DisplayLine ();
+        }
+        cout << endl << endl;
+
+        {
+        cout << "ScapeGoat Tree of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        ScapeGoatTree<string, size_t> t;
+        TimeStrings(t, sStringsSet, kVerbose);
+        }
+
+        {
+        cout << endl << "ScapeGoat Tree of " <<  sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        ScapeGoatTree<HashKey<string>, size_t>   t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
+        cout << endl << endl;
+    #endif
+}
+#endif
+
+
+#if qTestShuffleTree
+
+static  void	TestShuffleTree ()
+{
+     #if qDebug
+        cout << endl << "*** VALIDATING KEY OF size_t *** " << endl;
+        ShuffleTreeValidationSuite<size_t> (kElementsToTest, true);
+        cout << endl << "*** VALIDATING KEY OF string *** " << endl;
+        ShuffleTreeValidationSuite<string> (kElementsToTest, true);
+       // return;
+    #endif	/* qDebug */
+
+    #if qKeepADTStatistics
+        vector<TestResult>	testResults;
+        ShuffleTree<size_t, int> sl;
+
+        cout << endl << "*** In Order Adds *** " << endl;
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, kInOrder, static_cast<DataDistribution> (testDist), "Unoptimized", kVerbose));
+        }
+
+        cout << endl << endl << "*** Random Adds *** " << endl;
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Unoptimized", kVerbose));
+        }
+
+        for (int testDist = eUniformDist; testDist <= eZipfDist; ++testDist) {
+            testResults.push_back (RunTreeTests (sl, not kInOrder, static_cast<DataDistribution> (testDist), "Balanced", kVerbose, eBalanceAfterRebuild));
+        }
+        cout << endl << endl;
+
+        TestResult::DisplayHeader ();
+        for (auto it = testResults.begin (); it != testResults.end (); ++it) {
+            it->DisplayLine ();
+        }
+        cout << endl << endl;
+
+        {
+        cout << "Shuffle Tree of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
+        ShuffleTree<string, size_t> t;
+        TimeStrings(t, sStringsSet, kVerbose);
+        }
+
+        {
+        cout << endl << "Sorted Binary Tree of " <<  sStringsSet.GetLength () << " hashed string keyed entries" << endl;
+        ShuffleTree<HashKey<string>, size_t>   t;
+        TimeStrings (t, sStringsSet, kVerbose);
+        }
+
+        cout << endl << endl;
+    #endif
+}
+
+#endif
 int main()
 {
-    cout << "starting " << sScrambledStrings.GetData ().size () << endl;
-
  #if qTestTreap
     TestTreap ();
 #endif
@@ -1222,6 +1245,21 @@ int main()
 #endif
 #if qTestSkipList
     TestSkipList ();
+#endif
+#if qTestRedBlackTree
+    TestRedBlackTree ();
+#endif
+#if qTestSortedBinaryTree
+    TestSortedBinaryTree ();
+#endif
+#if qTestAVLTree
+    TestAVLTree ();
+#endif
+#if qTestScapeGoatTree
+    TestScapeGoatTree ();
+#endif
+#if qTestShuffleTree
+    TestShuffleTree ();
 #endif
 
     return 0;

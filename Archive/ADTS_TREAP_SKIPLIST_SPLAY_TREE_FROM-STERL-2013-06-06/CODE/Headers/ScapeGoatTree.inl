@@ -9,38 +9,46 @@
 #endif
 
 
+
 namespace   ADT {
     namespace   BinaryTree {
 
+template <typename KEY, typename VALUE, typename TRAITS>
+const   double  ScapeGoatTree<KEY,VALUE,TRAITS>::kBalanceFactor = log (100.0/TRAITS::kAlpha);
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::SplayTree () :
+ ScapeGoatTree<KEY,VALUE,TRAITS>::ScapeGoatTree () :
 	fHead (nullptr),
-	fLength (0)
+	fLength (0),
+	fLengthBounds (0)
   #if qKeepADTStatistics
       ,fCompares (0)
       ,fRotations (0)
   #endif
 {
+    Require (TRAITS::kAlpha >= 50);
+    Require (TRAITS::kAlpha <= 100);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::SplayTree (const SplayTree& t) :
+ScapeGoatTree<KEY,VALUE,TRAITS>::ScapeGoatTree (const ScapeGoatTree& t) :
 	fHead (nullptr),
-	fLength (t.fLength)
+	fLength (t.fLength),
+	fLengthBounds (fLength)
   #if qKeepADTStatistics
-      ,fCompares (t.fCompares)
-      ,fRotations (t.fRotations)
+      ,fCompares (0)
+      ,fRotations (0)
   #endif
 {
 	fHead = DuplicateBranch (t.fHead);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>& SplayTree<KEY,VALUE,TRAITS>::operator= (const SplayTree& t)
+ScapeGoatTree<KEY,VALUE,TRAITS>& ScapeGoatTree<KEY,VALUE,TRAITS>::operator= (const ScapeGoatTree& t)
 {
 	RemoveAll ();
 	fLength = t.fLength;
+	fLengthBounds = fLength;
 	fHead = DuplicateBranch (t.fHead);
 
 	return *this;
@@ -48,29 +56,28 @@ SplayTree<KEY,VALUE,TRAITS>& SplayTree<KEY,VALUE,TRAITS>::operator= (const Splay
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::~SplayTree ()
+ScapeGoatTree<KEY,VALUE,TRAITS>::~ScapeGoatTree ()
 {
 	RemoveAll ();
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-bool	SplayTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)
+double  ScapeGoatTree<KEY,VALUE,TRAITS>::GetAlpha () const
+{
+    return (double (TRAITS::kAlpha) / 100.0);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+bool	ScapeGoatTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val) const
 {
 	int	comparisonResult;
-	size_t	height;
-	Node* n = FindNode (key, &comparisonResult, &height);
+	Node* n = FindNode (key, &comparisonResult, nullptr);
 	if (n != nullptr) {
 		if (comparisonResult == 0) {
 			if (val != nullptr) {
 				*val = n->fEntry.GetValue ();
 			}
-			Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
-
 			return true;
-		}
-		else {
-			// maybe splay the one we found? Seems to work poorly in practice
-			Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
 		}
 	}
 	return false;
@@ -78,7 +85,7 @@ bool	SplayTree<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node* SplayTree<KEY,VALUE,TRAITS>::Rotate (Node* n, Direction rotateDir)
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node* ScapeGoatTree<KEY,VALUE,TRAITS>::Rotate (Node* n, Direction rotateDir)
 {
 	RequireNotNull (n);
 
@@ -106,125 +113,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node* SplayTree<KEY,VALUE,TRAITS>::Rotate 
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-const std::vector<size_t>&	SplayTree<KEY,VALUE,TRAITS>::GetHeightWeights (SplayType st)
-{
-	switch (st) {
-		case eAlwaysSplay:				return sAlwaysSplayDistribution;
-		case eUniformDistribution:		return sUniformDistribution;
-		case eNormalDistribution:		return sNormalDistribution;
-		case eZipfDistribution:			return sZipfDistribution;
-		case eCustomSplayType:			return sCustomSplayTypeDistribution;
-		default:	AssertNotReached ();
-	}
-	AssertNotReached (); return sCustomSplayTypeDistribution;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights)
-{
-	sCustomSplayTypeDistribution = newHeightWeights;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Prioritize (Node* n)
-{
-    RequireNotNull (n);
-    Splay (n, 0, true);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void SplayTree<KEY,VALUE,TRAITS>::Splay (Node* n, size_t nodeHeight, bool forced)
-{
-	RequireNotNull (n);
-
-	if (TRAITS::kSplayType == eNeverSplay) {
-		return;
-	}
-	else if (TRAITS::kSplayType == eAlwaysSplay) {
-		forced = true;
-	}
-
-//	static	std::tr1::uniform_int<size_t> sDist (1, 10000);
-
-	const std::vector<size_t>&	kHeightBonus = GetHeightWeights (TRAITS::kSplayType);
-//	size_t	dieRoll = (forced) ? 1 : std::tr1::uniform_int<size_t> (1, 10000) (GetEngine ());
-//	size_t	dieRoll = (forced) ? 1 : rand () % 10000;
-
-	/*
-		Move upwards in the tree. In classic splay tree, move all the way to the top.
-		Splay trees do a slightly more complicated action than simple rotations. Whenever possible it does two rotations
-		at once: rotating the parent node and the grandparent node, making the node the new grandparent.
-		In cases where the node being played is on the same side of its parent as it's parent is to its grandparent,
-		if first rotates the grandparent, then the parent. If on opposite sides, it does the normal rotation sequence (parent, then grandparent);
-		It only does a single rotation if the node has no grandparent (its parent is the head)
-	 */
-	while (n->GetParent () != nullptr) {
-		Assert (n->GetParent ()->GetChild (kLeft) == n or n->GetParent ()->GetChild (kRight) == n);
-
-		Node*	ancestor = n->GetParent ()->GetParent ();
-		if (ancestor == nullptr) {
-			if (not forced) {
-				Assert (nodeHeight > 0);
-				--nodeHeight;
-				if (nodeHeight < kHeightBonus.size ()) {
- 				    size_t	cutoff = kHeightBonus[nodeHeight];
- 				    if ((cutoff == 0) or (size_t (rand () % 10000) > cutoff)) {
-                         return;
-                    }
-				}
-			}
-			Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
-		}
-		else {
-			if (not forced) {
-				Assert (nodeHeight > 1);
-				nodeHeight -= 2;
-				if (nodeHeight < kHeightBonus.size ()) {
- 				    size_t	cutoff = kHeightBonus[nodeHeight];
- 				    if ((cutoff == 0) or (size_t (rand () % 10000) > cutoff)) {
-                         return;
-                    }
-				}
-			}
-			Node*	parent = n->GetParent ();
-			if ((parent->GetChild (kLeft) == n and ancestor->GetChild (kLeft) == parent) or (parent->GetChild (kRight) == n and ancestor->GetChild (kRight) == parent)) {
-				// zig-zig
-				Rotate (ancestor, Node::OtherDir (Node::GetChildDir (n)));
-				Rotate (parent, Node::OtherDir (Node::GetChildDir (n)));
-			}
-			else {
-				// zig-zag
-				Rotate (parent, Node::OtherDir (Node::GetChildDir (n)));
-				Assert (ancestor->GetChild (kLeft) == n or ancestor->GetChild (kRight) == n);
-				Rotate (ancestor, Node::OtherDir (Node::GetChildDir (n)));
-			}
-		}
-
-	}
-	Ensure ((n->GetParent () == nullptr) == (fHead == n));
-	Ensure ((n->GetParent () == nullptr) or (n->GetParent ()->GetChild (kLeft) == n) or (n->GetParent ()->GetChild (kRight) == n));
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-size_t SplayTree<KEY,VALUE,TRAITS>::ForceToBottom (Node* n)
-{
-	RequireNotNull (n);
-	size_t rotations = 0;
-	while (n->GetChild (kLeft) != nullptr or n->GetChild (kRight) != nullptr) {
-	   Direction rotDir = (n->GetChild (kLeft) == nullptr) or (n->GetChild (kRight) != nullptr and FlipCoin ()) ? kLeft : kRight;
-		Rotate (n, rotDir);
-		++rotations;
-    }
-
-
-	Ensure (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr);
-	Ensure (fHead->GetParent () == nullptr);
-
-	return rotations;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 {
  	Node* n = new Node (key, val);
  	try {
@@ -237,19 +126,21 @@ void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
 {
     Add (keyAndValue, keyAndValue);
 }
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 {
 	RequireNotNull (n);
 
+    size_t  newNodeSize = 1;
+
+    int height;
 	int	comp;
-	size_t height;
 	Node* nearest =  FindNode (n->fEntry.GetKey (), &comp, &height);
 	if (nearest == nullptr) {
 		Assert (fHead == nullptr);
@@ -268,7 +159,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 			    n->SetChild (kRight, nearest->GetChild (kRight));
 				nearest->SetChild (kRight, n);
 			}
-			height++;
+			newNodeSize = Node::GetNodeSize (n);
 		}
 		else if (comp < 0) {
 			Assert (nearest->GetChild (kLeft) == nullptr);
@@ -278,20 +169,72 @@ void	SplayTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 			Assert (nearest->GetChild (kRight) == nullptr);
 			nearest->SetChild (kRight, n);
 		}
-
-		Splay (n, height, bool ((height > 8) and height > GetLength ()/10));
 	}
 
 	fLength++;
+	fLengthBounds++;
+
+	int  allowedMaxHeight = log (double (fLength))/kBalanceFactor + 1;
+	if (height > allowedMaxHeight) {
+	    size_t  sgSize;
+	    Node* scapegoat = FindScapegoat (n, newNodeSize, &sgSize);
+	    if (scapegoat != nullptr) {
+	        Node*   sgParent = scapegoat->GetParent ();
+	        Direction   childDir = Node::GetChildDir (scapegoat);
+	        Node*   newTop = Node::RebalanceBranch (scapegoat, sgSize);
+#if qKeepADTStatistics
+    fRotations += sgSize;  // kinda
+#endif
+	        if (sgParent == nullptr) {
+	            fHead = newTop;
+	            newTop->SetParent (nullptr);
+	        }
+	        else {
+	            sgParent->SetChild (childDir, newTop);
+	        }
+	    }
+	}
 }
 
+template <typename KEY, typename VALUE, typename TRAITS>
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*   ScapeGoatTree<KEY,VALUE,TRAITS>::FindScapegoat (Node* n, size_t nSize, size_t* newTopSize) const
+{
+    RequireNotNull (n);
+    RequireNotNull (newTopSize);
 
+    while (n != nullptr) {
+        Node* parent = n->GetParent ();
+        if (parent != nullptr) {
+            size_t  sibSize = Node::GetNodeSize (parent->GetChild (Node::OtherDir (Node::GetChildDir (n))));
+#if qKeepADTStatistics
+    fRotations += sibSize;  // kinda
+#endif
+
+            size_t  pSize = 1 + nSize + sibSize;
+            size_t  cutoff = (pSize * TRAITS::kAlpha) / 100;
+            bool    bad = ((nSize > cutoff) or (sibSize > cutoff));
+           if (bad) {
+  //std::cout << "n Size = " << nSize << "; sib size = " << sibSize << "; p size = " << pSize << "; bad = " << bad << std::endl;
+              *newTopSize = pSize;
+               return parent;
+            }
+            nSize = pSize;
+            n = parent;
+        }
+        else {
+            break;
+        }
+    }
+//std::cout << "FAILED TO FIND SCAPEGOAT" << std:: endl;
+    return nullptr;
+}
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
 {
 	int	comp;
-	Node* n =  FindNode (key, &comp, nullptr);
+	int height = 0;
+	Node* n =  FindNode (key, &comp, &height);
 
 	if ((n == nullptr) or (comp != 0)) {
 		if (not (TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
@@ -305,7 +248,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
 {
 	RequireNotNull (parent);
 
@@ -323,12 +266,9 @@ void	SplayTree<KEY,VALUE,TRAITS>::SwapNodes (Node* parent, Node* child)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 {
 	RequireNotNull (n);
-
-	Splay (n, 0, true);
-	Assert (n == fHead);
 
 	if (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr) {
 	    SwapNodes (n, nullptr);
@@ -340,23 +280,34 @@ void	SplayTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 		SwapNodes (n, n->GetChild (kLeft));
 	}
 	else {
-	    Node* minNode = Node::GetFirst (n->GetChild (kRight));
+       Direction d = (FlipCoin ()) ? kRight : kLeft;
+
+		Node* minNode = (d == kRight)
+            ? Node::GetFirst (n->GetChild (d))
+            : Node::GetLast (n->GetChild (d));
 
 		AssertNotNull (minNode);
 		if (minNode->GetParent () != n) {
-			SwapNodes (minNode, minNode->GetChild (kRight));
-			minNode->SetChild (kRight, n->GetChild (kRight));
+			SwapNodes (minNode, minNode->GetChild (d));
+			minNode->SetChild (d, n->GetChild (d));
 		}
 		SwapNodes (n, minNode);
-		minNode->SetChild (kLeft, n->GetChild (kLeft));
+		minNode->SetChild (Node::OtherDir (d), n->GetChild (Node::OtherDir (d)));
 	}
 
 	delete n;
 	--fLength;
+
+	if (fLength < fLengthBounds/2) {
+	    ReBalance ();
+#if qKeepADTStatistics
+    fRotations += fLength;  // kinda
+#endif
+	}
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::RemoveAll ()
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::RemoveAll ()
 {
 	// iterate rather than natural tail recursive version because splay trees get deep
 	std::stack<Node*> nodes;
@@ -378,33 +329,33 @@ void	SplayTree<KEY,VALUE,TRAITS>::RemoveAll ()
 		fHead = nullptr;
 	}
 	fLength = 0;
+	fLengthBounds = 0;
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t	SplayTree<KEY,VALUE,TRAITS>::GetLength () const
+size_t	ScapeGoatTree<KEY,VALUE,TRAITS>::GetLength () const
 {
 	Assert ((fLength == 0) == (fHead == nullptr));
 	return fLength;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::FindNode (const KeyType& key, int* comparisonResult, size_t* height)  const
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::FindNode (const KeyType& key, int* comparisonResult, int* height)  const
 {
 	RequireNotNull (comparisonResult);
 
 	Node*	n = fHead;
 	Node*	nearest = n;
-	if (height != nullptr) {
-		*height = 0;
-	}
 	*comparisonResult = 0;
+    if (height != nullptr) {
+        *height = 0;
+    }
 	while (n != nullptr) {
 		#if qKeepADTStatistics
-			const_cast<SplayTree<KEY,VALUE,TRAITS> *> (this)->fCompares++;
+			const_cast<ScapeGoatTree<KEY,VALUE,TRAITS> *> (this)->fCompares++;
 		#endif
 		if (height != nullptr) {
-			*height += 1;
+		    (*height)++;
 		}
 		nearest = n;
 		*comparisonResult = TRAITS::Comparer::Compare (key, n->fEntry.GetKey ());
@@ -417,47 +368,22 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::FindNod
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename	SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::GetFirst (size_t* height) const
+typename	ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::GetFirst () const
 {
-	Node* n = fHead;
-	if (height != nullptr) {
-		*height = 0;
-	}
-	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		if (height != nullptr) {
-			*height += 1;
-		}
-		n = n->GetChild (kLeft);
-	}
-	return n;
+    return Node::GetFirst (fHead);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename	SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::GetLast (size_t* height) const
+typename	ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::GetLast () const
 {
-	Node* n = fHead;
-	if (height != nullptr) {
-		*height = 0;
-	}
-	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		if (height != nullptr) {
-			*height += 1;
-		}
-		n = n->GetChild (kRight);
-	}
-	return n;
+    return Node::GetLast (fHead);
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-SplayType	SplayTree<KEY,VALUE,TRAITS>::GetSplayType ()
-{
-	return TRAITS::kSplayType;
-}
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::DuplicateBranch (Node* n)
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::DuplicateBranch (Node* n)
 {
-	// sadly, SplayTrees get very deep, so they hate recursion
+	// sadly, ScapeGoatTrees get very deep, so they hate recursion
 
 	std::stack<Node*> nodes;
 	std::stack<Node*> parents;
@@ -503,7 +429,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Duplica
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::RebalanceBranch (Node* oldTop, size_t length)
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*   ScapeGoatTree<KEY,VALUE,TRAITS>::Node::RebalanceBranch (Node* oldTop, size_t length)
 {
     if (oldTop == nullptr) {
         Assert (length == 0);
@@ -561,15 +487,16 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node:
     return result;
 }
 
+
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ReBalance ()
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::ReBalance ()
 {
-    fHead = Node::RebalanceBranch (fHead, fLength);
+    fHead = Node::RebalanceBranch (fHead, GetLength ());
+    fLengthBounds = fLength;
 }
 
-
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
+ScapeGoatTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
 	fEntry (key, val),
 	fParent (nullptr)
 {
@@ -578,7 +505,7 @@ SplayTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& va
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-SplayTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
+ScapeGoatTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
 	fEntry (n.fEntry),
 	fParent (nullptr)
 {
@@ -588,26 +515,26 @@ SplayTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::GetParent () const
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*   ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetParent () const
 {
     return fParent;
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
+void    ScapeGoatTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
 {
     fParent = p;
 }
 
  template <typename KEY, typename VALUE, typename TRAITS>
- typename SplayTree<KEY,VALUE,TRAITS>::Node::Node*   SplayTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
+ typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node::Node*   ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
  {
     Require (direction == kLeft or direction == kRight);
     return (fChildren[direction]);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
- void   SplayTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
+ void   ScapeGoatTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
 {
     Require (direction == kLeft or direction == kRight);
     fChildren[direction] = n;
@@ -616,14 +543,14 @@ template <typename KEY, typename VALUE, typename TRAITS>
     }
 }
 template <typename KEY, typename VALUE, typename TRAITS>
-bool    SplayTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
+bool    ScapeGoatTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
 {
     Require (direction == kLeft or direction == kRight);
     return (fParent != nullptr and fParent->GetChild (direction) == this);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-Direction     SplayTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
+Direction     ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
 {
     if (n != nullptr and n->GetParent () != nullptr) {
         if (n == n->GetParent ()->GetChild (kLeft)) {
@@ -637,14 +564,14 @@ Direction     SplayTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-Direction    SplayTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
+Direction    ScapeGoatTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
 {
     Require (dir == kLeft or dir == kRight);
     return ((dir == kLeft) ? kRight : kLeft);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SplayTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
+void    ScapeGoatTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
 {
    Require (parent == nullptr or d == kLeft or d == kRight);
    if (parent == nullptr) {
@@ -658,7 +585,7 @@ void    SplayTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n,
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
 {
  	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
 		n = n->GetChild (kLeft);
@@ -667,7 +594,7 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::G
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
+typename ScapeGoatTree<KEY,VALUE,TRAITS>::Node*	ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
 {
   	while (n != nullptr and n->GetChild (kRight) != nullptr) {
 		n = n->GetChild (kRight);
@@ -675,10 +602,20 @@ typename SplayTree<KEY,VALUE,TRAITS>::Node*	SplayTree<KEY,VALUE,TRAITS>::Node::G
 	return n;
 }
 
+template <typename KEY, typename VALUE, typename TRAITS>
+size_t ScapeGoatTree<KEY,VALUE,TRAITS>::Node::GetNodeSize (Node* n)
+{
+    if (n == nullptr) {
+        return 0;
+    }
+    return (1 + GetNodeSize (n->GetChild (kLeft)) + GetNodeSize (n->GetChild (kRight)));
+}
+
+
 #if qDebug
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 {
 	RequireNotNull (n);
 	++count;
@@ -696,7 +633,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ValidateAll () const
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::ValidateAll () const
 {
 	size_t	count = 0;
 
@@ -707,7 +644,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SplayTree<KEY,VALUE,TRAITS>::ListAll () const
+void	ScapeGoatTree<KEY,VALUE,TRAITS>::ListAll () const
 {
 	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
 	{
@@ -732,7 +669,7 @@ void	SplayTree<KEY,VALUE,TRAITS>::ListAll () const
 
 #if qKeepADTStatistics
 template <typename KEY, typename VALUE, typename TRAITS>
-size_t	SplayTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
+size_t	ScapeGoatTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
 {
 	size_t maxHeight = 0;
 
@@ -762,80 +699,44 @@ size_t	SplayTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
 }
 #endif
 
-const size_t kAlwaysWeights[] = {10000};
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sAlwaysSplayDistribution (kAlwaysWeights, kAlwaysWeights + sizeof(kAlwaysWeights) / sizeof(kAlwaysWeights[0]));
-
-
-const size_t kUniformWeights[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  };
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sUniformDistribution (kUniformWeights, kUniformWeights + sizeof(kUniformWeights) / sizeof(kUniformWeights[0]));
-
-//const size_t kNormalWeights[] ={0, 0, 100, 100, 250, 250, 250, 250, 250, 250, 250};	//30.1401/30.0162/21.5254
-const size_t kNormalWeights[] = {2, 2, 6, 7, 7, 7, 7, 7, 3, 3, 3, 3, 19, 42, 47, 1463, 2000 };  //27.50
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sNormalDistribution (kNormalWeights, kNormalWeights + sizeof(kNormalWeights) / sizeof(kNormalWeights[0]));
-
-//const size_t kZifpWeights[] = {0, 5, 15, 30, 30, 60, 60, 125, 125, 250, 250};
-const size_t kZifpWeights[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 4, 7, 11, 24, 108, 202, 561, 1711  };
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sZipfDistribution (kZifpWeights, kZifpWeights + sizeof(kZifpWeights) / sizeof(kZifpWeights[0]));
-
-template <typename KEY, typename VALUE, typename TRAITS>
-std::vector<size_t>	SplayTree<KEY,VALUE,TRAITS>::sCustomSplayTypeDistribution (SplayTree<KEY,VALUE,TRAITS>::sUniformDistribution);
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename SplayTree<KEY,VALUE,TRAITS>::Engine&	SplayTree<KEY,VALUE,TRAITS>::GetEngine ()
-{
-    static	std::mt19937	sEngine;
-	static	bool	sFirstTime = true;
-	if (sFirstTime) {
-		sFirstTime = false;
-        sEngine.seed (static_cast<unsigned int> (time (NULL)));
-	}
-	return sEngine;
-}
-
-
 
 #if qDebug
 
-
 template <typename KEYTYPE>
-void    SplayTreeValidationSuite (size_t testDataLength, bool verbose)
+void    ScapeGoatTreeValidationSuite (size_t testDataLength, bool verbose)
 {
-    TestTitle   tt ("SplayTree Validation", 0, verbose);
+    TestTitle   tt ("ScapeGoatTree Validation", 0, verbose);
 
-    RunSuite<SplayTree<KEYTYPE, size_t>, KEYTYPE> (testDataLength, verbose, 1);
+    RunSuite<ScapeGoatTree<KEYTYPE, size_t>, KEYTYPE> (testDataLength, verbose, 1);
 
-    typedef SplayTree<int, int, SplayTraits<
+    typedef ScapeGoatTree<int, int, ScapeGoatTraits<
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
         ADT::eDuplicateAddThrowException,
-        SplayType::eDefaultSplayType> >  NoDupAddTree;
+        kDefaultScapeGoatBalance> >  NoDupAddTree;
 
-    DuplicateAddBehaviorTest<SplayTree<int, int>, NoDupAddTree> (testDataLength, verbose, 1);
+    DuplicateAddBehaviorTest<ScapeGoatTree<int, int>, NoDupAddTree> (testDataLength, verbose, 1);
 
-   typedef    SplayTree<int, int, SplayTraits<
+   typedef    ScapeGoatTree<int, int, ScapeGoatTraits<
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
         ADT::eInvalidRemoveIgnored,
-        SplayType::eDefaultSplayType> > InvalidRemoveIgnoredTree;
-    InvalidRemoveBehaviorTest<SplayTree<int, int>, InvalidRemoveIgnoredTree> (verbose, 1);
+        kDefaultScapeGoatBalance > > InvalidRemoveIgnoredTree;
+    InvalidRemoveBehaviorTest<ScapeGoatTree<int, int>, InvalidRemoveIgnoredTree> (verbose, 1);
 
-    typedef    SplayTree<string, string, SplayTraits<
+    typedef    ScapeGoatTree<string, string, ScapeGoatTraits<
         SharedStringKeyValue,
         CaseInsensitiveCompare,
         ADT::eDefaultPolicy,
-        SplayType::eDefaultSplayType> > SharedCaseInsensitiveString;
+        kDefaultScapeGoatBalance > > SharedCaseInsensitiveString;
     StringTraitOverrideTest<SharedCaseInsensitiveString> (verbose, 1);
 
-    typedef SplayTree<HashKey<string>, string>   HashedString;
+    typedef ScapeGoatTree<HashKey<string>, string>   HashedString;
     HashedStringTest<HashedString> (verbose, 1);
 }
 
 #endif
+
 
     }   // namespace BinaryTree
 }   // namespace ADT

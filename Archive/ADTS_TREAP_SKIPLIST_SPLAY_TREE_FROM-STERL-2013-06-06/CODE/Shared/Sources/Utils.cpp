@@ -22,7 +22,7 @@ size_t RandomSize_t (size_t first, size_t last)
 	size_t result = unif (eng);
 
 	Ensure (result >= first);
-	Ensure (result <= last);	
+	Ensure (result <= last);
 	return result;
 }
 
@@ -30,7 +30,7 @@ size_t RandomSize_t (size_t first, size_t last)
 size_t  NormallyDistributedRandomNumber (size_t first, size_t last)
 {
 	Require (last > first);
-	
+
 	double	range = (last-first);
 
 	std::mt19937& eng = GetRandomNumberEngine ();
@@ -38,7 +38,7 @@ size_t  NormallyDistributedRandomNumber (size_t first, size_t last)
 	Assert (eng.max () >= range);
 
 
-    std::normal_distribution<double> nDist (range/2, range/6);
+    std::normal_distribution<double> nDist (range/2, range/50);
 	double result = nDist (eng);
 
 	while (result > range or result < 0) {	// about 1% of the time we will get a number outside of our range, given the standard deviation we set
@@ -48,6 +48,6 @@ size_t  NormallyDistributedRandomNumber (size_t first, size_t last)
 	size_t results = size_t (result) + first;
 
 	Ensure (result >= first);
-	Ensure (result <= last);	
+	Ensure (result <= last);
 	return results;
 }

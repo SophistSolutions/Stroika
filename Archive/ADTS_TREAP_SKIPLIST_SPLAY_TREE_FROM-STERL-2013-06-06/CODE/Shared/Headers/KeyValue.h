@@ -8,10 +8,10 @@
 	use template specialization to make more space efficient. For example, a skiplist of strings, where the key and value are the
 	same, can be supported as follows:
 
-	template <>	
+	template <>
 	struct	KeyValue<string, string> {
-		KeyValue (string k,string v) : 
-			fValue (v)  
+		KeyValue (string k,string v) :
+			fValue (v)
 			{
 			}
 
@@ -34,14 +34,20 @@ class	KeyValueInterface {
 template <typename KEY, typename VALUE>
 class	KeyValue : public KeyValueInterface<KEY, VALUE> {
 	public:
-		KeyValue (const KEY& k, const VALUE& v);
+        typedef KEY     KeyType;
+        typedef VALUE   ValueType;
 
-		const KEY&		GetKey ()  const;
-		const VALUE&	GetValue ()  const;
+ 	public:
+		KeyValue (const KeyType& k, const ValueType& v);
+
+		const KeyType&		GetKey ()  const;
+		const ValueType&	GetValue ()  const;
+
+		void    SetValue (const ValueType& t);
 
 	private:
-		KEY		fKey;
-		VALUE	fValue;
+		KeyType		fKey;
+		ValueType	fValue;
 };
 
 

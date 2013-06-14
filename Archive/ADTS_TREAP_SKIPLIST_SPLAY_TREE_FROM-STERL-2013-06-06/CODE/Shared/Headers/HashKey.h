@@ -14,23 +14,23 @@
 
 	You can make things slightly nicer for the user by declaring an appropriate KeyValue overide. For example:
 		struct	HashedStringKeyValue : public KeyValueInterface<HashKey<string>, string> {
-			HashedStringKeyValue (HashKey<string> k,const string& v) : 
+			HashedStringKeyValue (HashKey<string> k,const string& v) :
 				fKey (k),
-				fValue (v)  
+				fValue (v)
 			{
 			}
-			HashedStringKeyValue (string v) : 
+			HashedStringKeyValue (string v) :
 				fKey (HashKey<string> (v)),
-				fValue (v)  
+				fValue (v)
 			{
 			}
 
-			HashedStringKeyValue (const char* v) : 
+			HashedStringKeyValue (const char* v) :
 				fKey (HashKey<string> (string (v))),
-				fValue (string (v))  
+				fValue (string (v))
 			{
 			}
-					
+
 			HashKey<string>	GetKey ()  const	{ return fKey; }
 			string			GetValue () const	{ return fValue; }
 
@@ -53,6 +53,7 @@
 template <typename KEY>
 struct	HashKey {
 	HashKey (const KEY& k);
+	~HashKey () {}
 
 	size_t	GetKey ()  const;
 

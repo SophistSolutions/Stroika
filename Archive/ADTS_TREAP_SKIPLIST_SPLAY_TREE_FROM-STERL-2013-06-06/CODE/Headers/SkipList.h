@@ -3,12 +3,12 @@
 #include <vector>
 
 #include "../Shared/Headers/BlockAllocated.h"
-#include "../Shared/Headers/TreeTraits.h"
+#include "../Shared/Headers/ADT.h"
 
 
 /*
 	From Wikipedia:
-	A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect increasingly sparse subsequences of the items. 
+	A skip list is a data structure for storing a sorted list of items using a hierarchy of linked lists that connect increasingly sparse subsequences of the items.
 	These auxiliary lists allow item lookup with efficiency comparable to balanced binary search trees (that is, with number of probes proportional to log n instead of n).
 	see http://en.wikipedia.org/wiki/Skip_list
 
@@ -21,17 +21,17 @@
 
 	ability to add more than one entry with the same key
 
-	ability to reorder links into nearly optimal configuration. You can optimize the node structure in a skip list in a single pass (order N). 
+	ability to reorder links into nearly optimal configuration. You can Balance the node structure in a skip list in a single pass (order N).
 	This reduces the total comparisons in a search by between 20 and 40%.
-  
-	possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list) 
+
+	possible to efficiently parallelize (not yet attempted -- see http://www.1024cores.net/home/parallel-computing/concurrent-skip-list)
 
 	SkipLists support fast forward iteration (linked list traversal). They do not support backwards iteration.
 
 	In principle you can use different probabilies for having more than one link. The optimal probability for finds is 1/4, and that also produces a list
 	that is more space efficient than a traditional binary tree, as it has only 1.33 nodes per entry, compared with a binary tree using 2.
-	
-	
+
+
 	Testing SkipList of 100000 entries, sorted add, link creation probability of 0.25
 	  Unoptimized SkipList
 	  total links = 133298; avg link height = 1.33298; max link height= 9
@@ -48,19 +48,21 @@
    The "expected" above is from wikipedia, and is calculated as (log base 1/p n)/p.
  */
 
+namespace   ADT {
 
-template <typename KEY, 
-		  typename VALUE, 
-		  typename TRAITS=TreeTraits::Traits<
-				KeyValue<KEY,VALUE>, 
-				TreeTraits::DefaultComp<KEY> > 
-		>
+
+template <typename KEY,
+		  typename VALUE,
+		  typename TRAITS=ADT::Traits<
+				KeyValue<KEY,VALUE>,
+				ADT::DefaultComp<KEY>,
+				ADT::eDefaultPolicy > >
 class SkipList {
 	public:
         typedef KEY	KeyType;
         typedef VALUE  ValueType;
 
-	public: 
+	public:
 		SkipList ();
 		SkipList (const SkipList& s);
 		~SkipList ();
@@ -69,7 +71,7 @@ class SkipList {
 
 		/*
 			Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
-			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for 
+			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
 			how to do this.
 		*/
 		bool	Find (const KeyType& key, ValueType* val = nullptr) const;
@@ -78,6 +80,7 @@ class SkipList {
 			You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
 		*/
 		void	Add (const KeyType& key, const ValueType& val);
+		void	Add (const KeyType& keyAndValue);	// convenient when key and value are the same, like a sorted list of names
 
 		void	Remove (const KeyType& key);
 		void	RemoveAll ();
@@ -90,8 +93,10 @@ class SkipList {
 		// calling this will result in maximal search performance until further adds or removes
 		// call when list is relatively stable in size, and it will set links to near classic log(n/2) search time
 		// relatively fast to call, as is order N (single list traversal)
-		void	Optimize ();	
+		void	ReBalance ();
 
+		// make the node faster on finds, possibly slowing other node searches down
+		void    Prioritize (const KeyType& key);
 
 		#if qDebug
 			void	ListAll () const;
@@ -103,9 +108,9 @@ class SkipList {
 			size_t	CalcHeight (size_t* totalHeight = nullptr) const;
 		#endif
 
-	public: 
+	public:
 		enum {
-			kMaxLinkHeight = sizeof (size_t)*8,	
+			kMaxLinkHeight = sizeof (size_t)*8,
 		};
 
         struct	Node {
@@ -130,6 +135,15 @@ class SkipList {
 		// all links that will need to be updated for the new element or the element to be removed
 		Node*	FindNearest (KeyType key, std::vector<Node*>& links)  const;
 
+		/*
+			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
+			iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
+		*/
+		Node*	GetFirst () const;
+		Node*	GetLast () const;
+
+
+
 	private:
 		void	ShrinkHeadLinksIfNeeded ();
 		void	GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
@@ -144,5 +158,13 @@ class SkipList {
 				mutable	size_t	fRotations;
 		#endif
   };
+
+#if qDebug
+template <typename KEYTYPE>
+void    SkipListValidationSuite (size_t testDataLength = 20, bool verbose = false);
+#endif
+
+
+}   // namespace ADT
 
 #include "SkipList.inl"

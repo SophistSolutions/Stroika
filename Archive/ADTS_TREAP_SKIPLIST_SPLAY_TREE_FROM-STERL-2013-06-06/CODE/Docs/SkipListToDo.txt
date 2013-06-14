@@ -1,83 +1,95 @@
-compile under gcc   
+*** Ordered Adds ***
+Testing Container of 1000000 entries with uniform DataDistribution. type = unoptimized
+  max height = 11, average = 1.33295
+  failed find avg comparisons = 35.0345; avg rotations = 0
+  find avg comparisons = 21.4029; avg rotations = 0
+  add  avg comparisons = 31.1407; avg rotations = 1.33368
+  remove  avg comparisons = 39.4165; avg rotations = 1.33333
+  ***CRUDE WEIGHT*** = 24.7913
+
 
 *** Random Adds ***
 Testing Container of 1000000 entries with uniform DataDistribution. type = unoptimized
-  max height = 11, average = 1.3336
-  failed find avg comparisons = 33.4635; avg rotations = 0
-  find avg comparisons = 32.4635; avg rotations = 0
-  add  avg comparisons = 43.1689; avg rotations = 1.33407
-  remove  avg comparisons = 43.2199; avg rotations = 1.3336
-  ***CRUDE WEIGHT*** = 34.8765
+  max height = 10, average = 1.33448
+  failed find avg comparisons = 34.6629; avg rotations = 0
+  find avg comparisons = 21.4029; avg rotations = 0
+  add  avg comparisons = 31.1407; avg rotations = 1.33378
+  remove  avg comparisons = 40.5641; avg rotations = 1.33333
+  ***CRUDE WEIGHT*** = 24.851
 Testing Container of 1000000 entries with normal DataDistribution. type = unoptimized
-  max height = 11, average = 1.33444
-  failed find avg comparisons = 32.9; avg rotations = 0
-  find avg comparisons = 31.8866; avg rotations = 0
-  add  avg comparisons = 42.6612; avg rotations = 1.33272
-  remove  avg comparisons = 43.2966; avg rotations = 1.33478
-  ***CRUDE WEIGHT*** = 34.3718
+  max height = 10, average = 1.33357
+  failed find avg comparisons = 34.6075; avg rotations = 0
+  find avg comparisons = 21.3961; avg rotations = 0
+  add  avg comparisons = 31.1279; avg rotations = 1.33274
+  remove  avg comparisons = 32.7408; avg rotations = 1.33254
+  ***CRUDE WEIGHT*** = 24.2386
 Testing Container of 1000000 entries with zipf DataDistribution. type = unoptimized
-  max height = 11, average = 1.33282
-  failed find avg comparisons = 35.3761; avg rotations = 0
-  find avg comparisons = 34.2325; avg rotations = 0
-  add  avg comparisons = 45.0476; avg rotations = 1.33336
-  remove  avg comparisons = 44.7935; avg rotations = 1.33362
-  ***CRUDE WEIGHT*** = 36.6368
-Testing Container of 1000000 entries with uniform DataDistribution. type = optimized
+  max height = 10, average = 1.33289
+  failed find avg comparisons = 37.2384; avg rotations = 0
+  find avg comparisons = 21.2389; avg rotations = 0
+  add  avg comparisons = 31.1007; avg rotations = 1.33229
+  remove  avg comparisons = 33.8626; avg rotations = 1.33482
+  ***CRUDE WEIGHT*** = 24.4044
+Testing Container of 1000000 entries with uniform DataDistribution. type = balanced
   max height = 10, average = 1.33333
   failed find avg comparisons = 22.4029; avg rotations = 0
   find avg comparisons = 21.4029; avg rotations = 0
-  add  avg comparisons = 31.1407; avg rotations = 1.33171
-  remove  avg comparisons = 41.0299; avg rotations = 1.33333
-  ***CRUDE WEIGHT*** = 24.6059
-Testing Container of 1000000 entries with normal DataDistribution. type = optimized
-  max height = 11, average = 1.33282
-  failed find avg comparisons = 35.9201; avg rotations = 0
-  find avg comparisons = 34.8971; avg rotations = 0
-  add  avg comparisons = 45.2359; avg rotations = 1.33298
-  remove  avg comparisons = 45.1701; avg rotations = 1.33411
-  ***CRUDE WEIGHT*** = 37.225
-Testing Container of 1000000 entries with zipf DataDistribution. type = optimized
-  max height = 10, average = 1.3324
-  failed find avg comparisons = 37.6322; avg rotations = 0
-  find avg comparisons = 34.0084; avg rotations = 0
-  add  avg comparisons = 44.0029; avg rotations = 1.33393
-  remove  avg comparisons = 45.062; avg rotations = 1.33314
-  ***CRUDE WEIGHT*** = 36.3799
-
-Length  Order   Find Time       Fail Time       Distribution    Description     Weight  Total Time
-1000000 Random  7.85568         8.6356          uniform         unoptimized             36.3961 16.4913
-1000000 Random  7.62438         8.22662         normal          unoptimized             36.6422 15.851
-1000000 Random  5.07789         6.26267         zipf            unoptimized             37.6671 11.3406
-1000000 Random  7.52919         8.65122         uniform         optimized               24.5882 16.1804
-1000000 Random  7.43811         8.11482         normal          optimized               36.1663 15.5529
-1000000 Random  5.21068         5.84028         zipf            optimized               35.4843 11.051
+  add  avg comparisons = 31.1407; avg rotations = 1.3332
+  remove  avg comparisons = 39.0644; avg rotations = 1.33333
+  ***CRUDE WEIGHT*** = 23.7926
+Testing Container of 1000000 entries with normal DataDistribution. type = balanced
+  max height = 10, average = 1.33333
+  failed find avg comparisons = 22.3943; avg rotations = 0
+  find avg comparisons = 21.3961; avg rotations = 0
+  add  avg comparisons = 31.1279; avg rotations = 1.33451
+  remove  avg comparisons = 33.243; avg rotations = 1.33314
+  ***CRUDE WEIGHT*** = 23.338
+Testing Container of 1000000 entries with zipf DataDistribution. type = balanced
+  max height = 10, average = 1.33333
+  failed find avg comparisons = 22.3494; avg rotations = 0
+  find avg comparisons = 21.2389; avg rotations = 0
+  add  avg comparisons = 31.1007; avg rotations = 1.33327
+  remove  avg comparisons = 33.8815; avg rotations = 1.33389
+  ***CRUDE WEIGHT*** = 23.2606
+Length         Order     Find Time     Fail Time  Distribution   Description        Weight    Total Time
+1000000       Ordered         14788          1574       uniform   unoptimized       24.7913         16362
+1000000        Random         20034          2116       uniform   unoptimized        24.851         22150
+1000000        Random         20294          2194        normal   unoptimized       24.2386         22488
+1000000        Random         13305          1534          zipf   unoptimized       24.4044         14839
+1000000        Random         17859          2066       uniform      balanced       23.7926         19925
+1000000        Random         18122          2121        normal      balanced        23.338         20243
+1000000        Random         12993          1503          zipf      balanced       23.2606         14496
 
 
 Skiplist with string keyed entries
-Creating SkipList of 100000 entries, random add:  2099 milliseconds (2.099 seconds)
-Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+Creating Container of 100000 entries, random add:  250 milliseconds (0.250 seconds)
+Find timing: 10 times find each element once, plus search for element not in list once for each entry, total finds = 1100000
 uniform distribution
-390 milliseconds (0.390 seconds)
+2650 milliseconds (2.650 seconds)
 normal distribution
-282 milliseconds (0.282 seconds)
+1578 milliseconds (1.578 seconds)
 zipf distribution
-196 milliseconds (0.196 seconds)
-Optimized SkipList  16 milliseconds (0.016 seconds)
+1337 milliseconds (1.337 seconds)
 
-Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+
+Rebalance SkipList  31 milliseconds (0.031 seconds)
+
+Find timing: 10 times find each element once, plus search for element not in list once for each entry, total finds = 1100000
 uniform distribution
-283 milliseconds (0.283 seconds)
+1805 milliseconds (1.805 seconds)
 normal distribution
-265 milliseconds (0.265 seconds)
+1574 milliseconds (1.574 seconds)
 zipf distribution
-170 milliseconds (0.170 seconds)
+1363 milliseconds (1.363 seconds)
 
 Skiplist with hashed string keyed entries
-Creating SkipList of 100000 entries, random add:  601 milliseconds (0.601 seconds)
-Find timing: find each element once, plus do search for element not in list once for each entry, total finds = 200000
+Creating Container of 100000 entries, random add:  202 milliseconds (0.202 seconds)
+Find timing: 10 times find each element once, plus search for element not in list once for each entry, total finds = 1100000
 uniform distribution
-196 milliseconds (0.196 seconds)
+1750 milliseconds (1.750 seconds)
 normal distribution
-110 milliseconds (0.110 seconds)
+948 milliseconds (0.948 seconds)
 zipf distribution
-87 milliseconds (0.087 seconds)
+819 milliseconds (0.819 seconds)
+
+

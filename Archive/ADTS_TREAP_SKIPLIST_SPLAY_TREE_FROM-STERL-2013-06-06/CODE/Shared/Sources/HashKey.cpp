@@ -1,14 +1,13 @@
 #include "../../Shared/Headers/HashKey.h"
 
 // quick modification of http://www.azillionmonkeys.com/qed/hash.html
-#if !defined (get16bits)
-#define get16bits(d) ((((unsigned short)(((const unsigned char *)(d))[1])) << 8)\
-                       +(unsigned short)(((const unsigned char *)(d))[0]) )
-#endif
+#define get16bits(d) ((((uint32_t)(((const uint8_t *)(d))[1])) << 8)\
+                       +(uint32_t)(((const uint8_t  *)(d))[0]) )
+
 
 unsigned int /*Hashing::*/HashMem (const char * data, int len)
 {
-	unsigned int hash = len, tmp;
+	uint32_t  hash = len, tmp;
 	int rem;
 
     if (len <= 0 || data == nullptr) return 0;
@@ -21,7 +20,7 @@ unsigned int /*Hashing::*/HashMem (const char * data, int len)
         hash  += get16bits (data);
         tmp    = (get16bits (data+2) << 11) ^ hash;
         hash   = (hash << 16) ^ tmp;
-        data  += 2*sizeof (unsigned short);
+        data  += 2*sizeof (uint16_t);
         hash  += hash >> 11;
     }
 
@@ -29,7 +28,7 @@ unsigned int /*Hashing::*/HashMem (const char * data, int len)
     switch (rem) {
         case 3: hash += get16bits (data);
                 hash ^= hash << 16;
-                hash ^= ((signed char)data[sizeof (unsigned short)]) << 18;
+                hash ^= ((signed char)data[sizeof (uint16_t)]) << 18;
                 hash += hash >> 11;
                 break;
         case 2: hash += get16bits (data);

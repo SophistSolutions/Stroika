@@ -69,30 +69,41 @@ template <typename T>
 class	TestSet
 {
 	public:
-		TestSet (size_t elementsToAdd, bool scrambled);
+		TestSet (size_t elementsToAdd);
 
 		const std::vector<T>&	GetData () const;
-		const std::vector<T>&	GetMissing () const	;
+		const std::vector<T>&	GetMissing () const;
 
-		const std::vector<size_t>&	GetUniformIndices ();
-		const std::vector<size_t>&	GetNormalIndices ();
-		const std::vector<size_t>&	GetZipfIndices ();
+		size_t  GetLength () const;
 
-		const std::vector<size_t>&	GetIndices (DataDistribution dd);
+        // used to contruct from data, these are separate from the Find indices
+		const std::vector<size_t>&	GetOrderedIndices () const;      // same as directly looping over data (i.e. directindices[0] == 0, etc
+		const std::vector<size_t>&	GetScrambledIndices () const;   // scrambled version of direct indices
 
-		const std::vector<size_t>&	GetMissingIndices ();
-
-		// when doing timings, want everything created ahead of time
-		void	PreLoad ();
+		const T&  GetData (size_t index, DataDistribution dd) const;
+		const T&  GetMissing (size_t index, DataDistribution dd) const;
 
 	private:
+#if 0
+       // Find Indices - these are all considered indices into indices into data (or missing)
+		const std::vector<size_t>&	GetUniformIndices () const;
+		const std::vector<size_t>&	GetNormalIndices () const;
+		const std::vector<size_t>&	GetZipfIndices () const;
+
+		const std::vector<size_t>&	GetIndices (DataDistribution dd) const;
+#endif
+		size_t     fLength;
+
 		std::vector<T>	fData;
 		std::vector<T>	fMissing;
+
+		std::vector<size_t>	fOrderedIndices;
+		std::vector<size_t>	fScrambledIndices;
 
 		std::vector<size_t>	fUniformIndices;
 		std::vector<size_t>	fNormalIndices;
 		std::vector<size_t>	fZipfIndices;
-		std::vector<size_t>	fMissingIndices;	// for now, just one to missing and that with uniform distribution
+//		std::vector<size_t>	fMissingIndices;	// for now, just one to missing and that with uniform distribution
 };
 
 /*

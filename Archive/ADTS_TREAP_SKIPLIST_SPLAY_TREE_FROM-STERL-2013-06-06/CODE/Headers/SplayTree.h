@@ -3,8 +3,11 @@
 #include <random>
 #include <vector>
 
+#include "../Shared/Headers/ADT.h"
+#include "../Shared/Headers/BinaryTree.h"
 #include "../Shared/Headers/BlockAllocated.h"
-#include "../Shared/Headers/TreeTraits.h"
+
+
 
 
 /*
@@ -12,7 +15,7 @@
 	a larger number or rotations, but with non-uniform requests, the reduction in average node lookup distance can make up the lost time.
 
 	SplayTree have the following desireable features
-	fast find, add and remove. 
+	fast find, add and remove.
 
 	ability to add more than one entry with the same key
 
@@ -26,20 +29,23 @@
 	somewhat sensitive to order of additions. This can temporarily make the height of a splay tree very large. But find will very quickly reduce the height, and its
 	average behavior is not particularly sensitive to addition order.
 
-	SplayTrees have less overhead than many tree structures. They require at least 2 extra links per node for children, and often additional pointer to parent 
-	(not necessary but  makes some routines simpler and easier to parallelize). Overhead is thus either 2 or 3 links per node, considerably higher than SkipList (1.33), 
+	SplayTrees have less overhead than many tree structures. They require at least 2 extra links per node for children, and often additional pointer to parent
+	(not necessary but  makes some routines simpler and easier to parallelize). Overhead is thus either 2 or 3 links per node, considerably higher than SkipList (1.33),
 	but less than other tree structures that record additional information with every node.
 
-	Splaying (restructuring to make a node be the top node) is controlled by SplayType, and can very from never (simple binary search tree) to always (classic splaytree). 
+	Splaying (restructuring to make a node be the top node) is controlled by SplayType, and can very from never (simple binary search tree) to always (classic splaytree).
 	In between SplayTree supports 3 built-in request distributions: uniform, normal, and Zipf. SplayTrees are usually not an optimal choice for uniform requests, but
 	they do better with tighter request frequencies, such as normal and especially zipf. You can also set custom weights tuned to your own user's characteristics.
 */
 
+namespace   ADT {
+    namespace   BinaryTree {
 
 
 typedef enum SplayType {
 	eNeverSplay = -1,
 	eAlwaysSplay = 0,
+
 	eUniformDistribution,
 	eNormalDistribution,
 	eZipfDistribution,
@@ -49,19 +55,25 @@ typedef enum SplayType {
 } SplayType;
 
 
+template    <typename KEYVALUE, typename COMP, int POLICY, SplayType SPLAYTYPE >
+struct	SplayTraits : ADT::Traits<KEYVALUE, COMP, POLICY> {
+    static	const SplayType	kSplayType = SPLAYTYPE;
+};
 
-template <typename KEY, 
-		  typename VALUE, 
-		  typename TRAITS=TreeTraits::Traits<
-				KeyValue<KEY,VALUE>, 
-				TreeTraits::DefaultComp<KEY> > 
+template <typename KEY,
+		  typename VALUE,
+		  typename TRAITS=SplayTraits<
+				KeyValue<KEY,VALUE>,
+				ADT::DefaultComp<KEY>,
+				ADT::eDefaultPolicy,
+				SplayType::eDefaultSplayType >
 		>
 class SplayTree {
 	public:
         typedef KEY	KeyType;
         typedef VALUE  ValueType;
 
-	public: 
+    public:
 		SplayTree ();
 		SplayTree (const SplayTree& t);
 		~SplayTree ();
@@ -70,7 +82,7 @@ class SplayTree {
 
 		/*
 			Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
-			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for 
+			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
 			how to do this.
 			Note that for a splay tree, unlike most containers, Find is not a const method
 		*/
@@ -88,15 +100,14 @@ class SplayTree {
  		nonvirtual	size_t	GetLength () const;		// always equal to total Add minus total Remove
 
 		/*
-			The chance that a node will splay to near the top of the tree. 
+			The chance that a node will splay to near the top of the tree.
 			100 is a classic splay tree, while zero is a sorted binary tree. Numbers in between
 			are used, along with the current height of the node, to decide whether to keep splaying.
 			Which number works best depends on users usage, in particular who normalized the key requests are.
 			A splay chance of 10% does a good job or guarding against randomly distributed requests. Very tightly bounded
 			requests may want to reduce the splay chance further, to avoid unnecessary rotations near the top of the tree.
 		*/
-		nonvirtual	SplayType	GetSplayType () const;			
-		nonvirtual	void		SetSplayType (SplayType newSplayType);
+		static	SplayType	GetSplayType ();
 
 		// for expert users. If you know the details of your distribution, you can set custom height weights optimal to usage. The weights
 		// represent the chance in 10000 that a node at a height one greater than the weight index will splay. The last weight
@@ -104,18 +115,42 @@ class SplayTree {
 		static	const std::vector<size_t>&	GetHeightWeights (SplayType st);
 		static	void	SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
 
-	public: 
-        struct	Node {
-			Node (const KeyType& key, const ValueType& val);
-			Node (const Node& n);
+        // note that for a SplayTree calling Balance will lose priority information and can be an anti-optimization
+		void	ReBalance ();
 
-			DECLARE_USE_BLOCK_ALLOCATION(Node);
+	public:
+        class	Node {
+            public:
+                Node (const KeyType& key, const ValueType& val);
+                Node (const Node& n);
 
-			typename	TRAITS::KeyValue	fEntry;
-			Node*		fLeft;
-			Node*		fRight;
-			Node*		fParent;
-		};
+                DECLARE_USE_BLOCK_ALLOCATION(Node);
+
+                // tree node core routines
+
+                Node*   GetParent () const;
+                void    SetParent (Node* p);
+
+                Node*   GetChild (Direction direction);
+                void    SetChild (Direction direction, Node* n);
+
+                bool    IsChild (Direction direction);
+
+                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
+                static  Direction     OtherDir (Direction dir);
+                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
+
+                static  Node*   GetFirst (Node* n);
+                static  Node*   GetLast (Node* n);
+
+                static  Node*   RebalanceBranch (Node* oldTop, size_t length); // returns new top. length = number of nodes in oldTop, including itself
+
+                typename	TRAITS::KeyValue	fEntry; // we look at this directly because we want to see internal fields be const reference rather than value
+
+            private:
+                Node*   fChildren[2];
+                Node*	fParent;
+        };
 		Node*	fHead;
 
 
@@ -135,23 +170,26 @@ class SplayTree {
 		nonvirtual	Node*	GetLast (size_t* height = nullptr) const;
 
 		/*
-			Potentially move the node nearer to the top of the tree. If specify forced always bring to top of tree. Otherwise movement is 
+			Potentially move the node nearer to the top of the tree. If specify forced always bring to top of tree. Otherwise movement is
 			determined by SplayType, with eNeverSplay never moving the node, eAlwaysSplay always moving to the top, and the others rolling
 			dice to decide how far, if any, to move up the node. Usually deeply nested nodes are more likely to move up than those that are
 			already near the top of the tree.
 		 */
 		nonvirtual	void Splay (Node* n, size_t nodeHeight, bool forced = false);
 
+        // move the node to the top of the tree, making future searches for it faster
+		nonvirtual	void    Prioritize (Node* n);
+
 		// force a node to be a leaf node via rotations, useful before delete
 		nonvirtual	size_t ForceToBottom (Node* n);
 
 		// swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
-		nonvirtual	Node* Rotate (Node* n, bool left);
+		nonvirtual	Node* Rotate (Node* n, Direction rotateDir);
 
 		nonvirtual	void	AddNode (Node* n);
 		nonvirtual	void	RemoveNode (Node* n);
 
-		nonvirtual	void	ReplaceWithChild (Node* parent, Node* child);
+		nonvirtual	void	SwapNodes (Node* parent, Node* child);
 
 	public:
 		#if qDebug
@@ -162,7 +200,6 @@ class SplayTree {
 
 	private:
 		size_t		fLength;
-		SplayType	fSplayType;
 
 		#if qKeepADTStatistics
 			public:
@@ -172,8 +209,6 @@ class SplayTree {
 				size_t	CalcHeight (size_t* totalHeight = nullptr) const;
 		#endif
 
-		static	bool	FlipCoin ();
-		
 		static	Node*	DuplicateBranch (Node* branchTop);
 
 		static	std::vector<size_t>	sAlwaysSplayDistribution;
@@ -186,5 +221,14 @@ class SplayTree {
         typedef	std::mt19937	Engine;
 		static	Engine&	GetEngine ();
 };
+
+#if qDebug
+template <typename KEYTYPE>
+void    SplayTreeTreeValidationSuite (size_t testDataLength = 20, bool verbose = false);
+#endif
+
+    }   // namespace BinaryTree
+}   // namespace ADT
+
 
 #include "SplayTree.inl"

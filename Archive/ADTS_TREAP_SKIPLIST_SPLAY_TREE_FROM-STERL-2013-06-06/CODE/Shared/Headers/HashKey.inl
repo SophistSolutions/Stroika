@@ -6,21 +6,21 @@ inline  size_t Hash (const KEY& k)
 }
 
 
-template <>	
+template <>
 inline  size_t /*Hashing::*/Hash<std::string> (const std::string& k)
 {
 	return (HashMem ((const char*)k.c_str (), k.size ()));
 }
 
 
-template <typename KEY>	
-HashKey<KEY>::HashKey (const KEY& k) : 
+template <typename KEY>
+HashKey<KEY>::HashKey (const KEY& k) :
     fKey (/*Hashing::*/Hash (k))
 {
 }
 
-template <typename KEY>	
-size_t	HashKey<KEY>::GetKey () const 
+template <typename KEY>
+size_t	HashKey<KEY>::GetKey () const
 {
 	return fKey;
 }

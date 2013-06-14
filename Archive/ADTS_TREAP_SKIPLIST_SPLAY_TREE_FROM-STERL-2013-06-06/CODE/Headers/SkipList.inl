@@ -8,8 +8,12 @@
 
 #if qDebug
 	#include <iostream>
+
+    #include "../Shared/Headers/ContainerValidation.h"
+    #include "../Shared/Headers/HashKey.h"
 #endif
 
+namespace   ADT {
 
 
 template <typename KEY, typename VALUE,typename TRAITS>
@@ -60,7 +64,7 @@ SkipList<KEY,VALUE,TRAITS>& SkipList<KEY,VALUE,TRAITS>::operator= (const SkipLis
 		prev->fNext.push_back (nullptr);
 
 		fLength = t.fLength;
-		Optimize ();	// this will give us a proper link structure
+		ReBalance ();	// this will give us a proper link structure
 	}
 	return *this;
 }
@@ -138,9 +142,20 @@ template <typename KEY, typename VALUE,typename TRAITS>
 void	SkipList<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 {
 	std::vector<Node*>	links;
-	FindNearest (key, links);
+
+	Node* n = FindNearest (key, links);
+    if ((n != nullptr) and (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
+        throw DuplicateAddException ();
+    }
 	AddNode (new Node (key, val), links);
 }
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void	SkipList<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
+{
+    Add (keyAndValue, keyAndValue);
+}
+
 
 template <typename KEY, typename VALUE,typename TRAITS>
 void	SkipList<KEY,VALUE,TRAITS>::AddNode (Node* node, const std::vector<Node*>& links)
@@ -182,8 +197,8 @@ void	SkipList<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
 		RemoveNode (n, links);
 	}
 	else {
-		if (TRAITS::kPolicy & TreeTraits::eInvalidRemoveThrowException) {
-			throw "attempt to remove missing item";	// need proper set of exceptions
+		if (not (TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
+		    throw InvalidRemovalException ();
 		}
 	}
 }
@@ -291,7 +306,7 @@ typename SkipList<KEY,VALUE,TRAITS>::Node*	SkipList<KEY,VALUE,TRAITS>::FindNeare
 				const_cast<SkipList<KEY,VALUE,TRAITS> *> (this)->fCompares++;
 			#endif
 
-			int comp =TRAITS::Comparer::Compare (n->fEntry.GetKey (), key);
+			int comp = TRAITS::Comparer::Compare (n->fEntry.GetKey (), key);
 			if (comp == 0) {
 				foundNode = n;
 				newOverShotNode = foundNode;
@@ -316,7 +331,83 @@ typename SkipList<KEY,VALUE,TRAITS>::Node*	SkipList<KEY,VALUE,TRAITS>::FindNeare
 }
 
 template <typename KEY, typename VALUE,typename TRAITS>
-void		SkipList<KEY,VALUE,TRAITS>::Optimize ()
+typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::GetFirst () const
+{
+    if (fHead.size () == 0) {
+        return nullptr;
+    }
+    return (fHead[0]);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::GetLast () const
+{
+    if (fHead.size () == 0) {
+        return nullptr;
+    }
+
+    size_t	linkIndex = fHead.size ()-1;
+    Node*	n = fHead[linkIndex];
+    if (n != nullptr) {
+        Node*   prev = n;
+        while (true) {
+            while (n != nullptr) {
+                prev = n;
+                n = n->fNext[linkIndex];
+            }
+            n = prev;
+            if (linkIndex == 0) {
+                break;
+            }
+            --linkIndex;
+        }
+    }
+    return n;
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void    SkipList<KEY,VALUE,TRAITS>::Prioritize (const KeyType& key)
+{
+	std::vector<Node*>	links;
+
+	Node* node = FindNearest (key, links);
+	if (node != nullptr and node->fNext.size () <= fHead.size ()) {
+	    if (node->fNext.size () == fHead.size ()) {
+            GrowHeadLinksIfNeeded (fHead.size ()+1, node);
+            links.resize (fHead.size (), node);
+	    }
+
+        size_t  oldLinkHeight = node->fNext.size ();
+        node->fNext.resize (fHead.size (), nullptr);
+        size_t  newLinkHeight = node->fNext.size ();
+        Assert (oldLinkHeight < newLinkHeight);
+
+        for (size_t i = oldLinkHeight; i <= newLinkHeight-1; ++i) {
+            if (links[i] == nullptr) {
+                fHead[i] = node;
+            }
+            else if (links[i] == node) {
+                break;
+            }
+            else {
+                #if qKeepADTStatistics
+                    const_cast<SkipList<KEY,VALUE,TRAITS> *> (this)->fRotations++;
+                #endif
+                Node*	oldLink = links[i];
+                AssertNotNull (oldLink);
+                Assert (oldLink->fNext.size () > i);
+                Node* nextL = oldLink->fNext[i];
+                oldLink->fNext[i] = node;
+                node->fNext[i] = nextL;
+            }
+        }
+	}
+}
+
+
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void	SkipList<KEY,VALUE,TRAITS>::ReBalance ()
 {
     if (GetLength () == 0) return;
 
@@ -420,6 +511,7 @@ SkipList<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val
 					Assert (newN == nullptr);
 				}
 				else {
+				    Assert (newN != n);
 					Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.GetKey ()) <= 0));
 				}
 			}
@@ -451,3 +543,41 @@ SkipList<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val
 
 #endif
 
+#if qDebug
+
+template <typename KEYTYPE>
+void    SkipListValidationSuite (size_t testDataLength, bool verbose)
+{
+    TestTitle   tt ("SkipList Validation", 0, verbose);
+
+    RunSuite<SkipList<KEYTYPE, size_t>, KEYTYPE> (testDataLength, verbose, 1);
+
+    typedef SkipList<int, int>  DefaultSkipList;
+    typedef SkipList<int, int, ADT::Traits<
+        KeyValue<int,int>,
+        ADT::DefaultComp<int>,
+        ADT::eDuplicateAddThrowException> >  NoDupAdd;
+    DuplicateAddBehaviorTest<DefaultSkipList, NoDupAdd> (testDataLength, verbose, 1);
+
+   typedef    SkipList<int, int, ADT::Traits<
+        KeyValue<int,int>,
+        ADT::DefaultComp<int>,
+        ADT::eInvalidRemoveIgnored> > InvalidRemoveIgnored;
+    InvalidRemoveBehaviorTest<DefaultSkipList, InvalidRemoveIgnored> (verbose, 1);
+
+
+    typedef    SkipList<string, string, ADT::Traits<
+        SharedStringKeyValue,
+        CaseInsensitiveCompare,
+        ADT::eDefaultPolicy> > SharedCaseInsensitiveString;
+    StringTraitOverrideTest<SharedCaseInsensitiveString> (verbose, 1);
+
+    typedef SkipList<HashKey<string>, string>   HashedString;
+    HashedStringTest<HashedString> (verbose, 1);
+}
+
+#endif
+
+
+
+}   // namespace ADT
