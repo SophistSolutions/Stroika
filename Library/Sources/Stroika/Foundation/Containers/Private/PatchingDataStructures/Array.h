@@ -77,6 +77,8 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAll ();
                         nonvirtual  void    RemoveAt (const ForwardIterator& i);
                         nonvirtual  void    RemoveAt (const BackwardIterator& i);
+                        nonvirtual  void    UpdateAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    UpdateAt (const BackwardIterator& i, T newValue);
                         nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
                         nonvirtual  void    AddBefore (const BackwardIterator& i, T item);
                         nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
@@ -86,8 +88,8 @@ namespace   Stroika {
 
                         // TO BE LOST/REPLACED
                     public:
-                        class  ForwardArrayMutator_Patch;
-                        class  BackwardArrayMutator_Patch;
+                        //class  ForwardArrayMutator_Patch;
+                        //class  BackwardArrayMutator_Patch;
 
                         /*
                          *  Check Invariants for this class, and all the iterators we own.

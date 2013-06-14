@@ -17,6 +17,7 @@ namespace   Stroika {
 
 
                     //// GET RID OF MUTATOR CODE SOON!!!
+#if 0
                     /*
                      *      ForwardArrayMutator_Patch<T> is the same as ForwardIterator<T> but
                      *  adds the ability to update the contents of the array as you go along.
@@ -35,7 +36,9 @@ namespace   Stroika {
                         nonvirtual  void    AddBefore (T item);             //  NB: Can be called if done
                         nonvirtual  void    AddAfter (T item);
                     };
+#endif
 
+#if 0
                     /*
                      *      BackwardArrayMutator_Patch<T> is the same as BackwardIterator<T> but
                      *  adds the ability to update the contents of the array as you go along.
@@ -54,6 +57,7 @@ namespace   Stroika {
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);              //  NB: Can be called if done
                     };
+#endif
                     /////////LOSE CRAP ABOVE
 
 
@@ -409,6 +413,18 @@ namespace   Stroika {
                         RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
+                    void    Array_Patch<T>::UpdateAt (const ForwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        SetAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::UpdateAt (const BackwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        SetAt (i.CurrentIndex (), newValue);
+                    }
+                    template    <typename T>
                     void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
@@ -518,7 +534,7 @@ namespace   Stroika {
                         this->_fSuppressMore = true;
                     }
 
-
+#if 0
                     /*
                     ********************************************************************************
                     ************************* ForwardArrayMutator_Patch<T> *************************
@@ -566,6 +582,7 @@ namespace   Stroika {
                         const_cast<Array_Patch<T>*> (this->fData)->InsertAt (newValue, this->CurrentIndex () + 1);
                         this->Invariant ();
                     }
+#endif
 
 
                     /*
@@ -632,7 +649,7 @@ namespace   Stroika {
                         this->_fSuppressMore = true;
                     }
 
-
+#if 0
                     /*
                     ********************************************************************************
                     ************************ BackwardArrayMutator_Patch<T> *************************
@@ -679,6 +696,7 @@ namespace   Stroika {
                         const_cast<Array_Patch<T>*>(this->fData)->InsertAt (newValue, this->CurrentIndex () + 1);
                         this->Invariant ();
                     }
+#endif
 
 
                 }

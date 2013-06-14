@@ -113,8 +113,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<pair<Key, T>>::ForwardArrayMutator_Patch  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::Array_Patch<pair<Key, T>>::ForwardIterator    fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -260,7 +260,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_Array<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_Array<Key, T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

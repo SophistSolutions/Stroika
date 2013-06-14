@@ -56,7 +56,7 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    Private::ContainerRepLockDataSupport_           fLockSupport_;
                     Private::PatchingDataStructures::Array_Patch<T> fData_;
                     friend  class Sequence_Array<T>::IteratorRep_;
                 };
@@ -97,8 +97,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                      fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<T>::ForwardArrayMutator_Patch fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::Array_Patch<T>::ForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -213,7 +213,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -224,7 +224,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.UpdateCurrent (newValue);
+                        fData_.UpdateAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

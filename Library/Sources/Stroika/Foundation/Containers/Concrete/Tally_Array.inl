@@ -122,8 +122,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<TallyEntry<T>>::ForwardArrayMutator_Patch fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::Array_Patch<TallyEntry<T>>::ForwardIterator   fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 
@@ -264,7 +264,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -284,12 +284,12 @@ namespace   Stroika {
                     const typename Tally_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_Array<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
-                            mir.fIterator_.RemoveCurrent ();
+                            fData_.RemoveAt (mir.fIterator_);
                         }
                         else {
                             TallyEntry<T>   c   =   mir.fIterator_.Current ();
                             c.fCount = newCount;
-                            mir.fIterator_.UpdateCurrent (c);
+                            fData_.UpdateAt (mir.fIterator_, c);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();
