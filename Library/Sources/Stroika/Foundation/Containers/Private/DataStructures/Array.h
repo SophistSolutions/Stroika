@@ -139,27 +139,31 @@ namespace   Stroika {
                         class   _ArrayIteratorBase;
 
                     public:
-                        class   ForwardArrayIterator;
+                        class   ForwardIterator;
+                        class   BackwardIterator;
+
+
+                        // TODO - LOSE MUTATORS
+                    public:
                         class   ForwardArrayMutator;
-                        class   BackwardArrayIterator;
                         class   BackwardArrayMutator;
 
                     public:
-                        nonvirtual  void    RemoveAt (const ForwardArrayIterator& i, T newValue);
-                        nonvirtual  void    RemoveAt (const BackwardArrayIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const BackwardIterator& i, T newValue);
 
                     public:
-                        nonvirtual  void    UpdateAt (const ForwardArrayIterator& i, T newValue);
-                        nonvirtual  void    UpdateAt (const BackwardArrayIterator& i, T newValue);
+                        nonvirtual  void    UpdateAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    UpdateAt (const BackwardIterator& i, T newValue);
 
                     public:
                         //  NB: Can be called if done
-                        nonvirtual  void    AddBefore (const ForwardArrayIterator& i, T item);
-                        nonvirtual  void    AddBefore (const BackwardArrayIterator& i, T item);
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
+                        nonvirtual  void    AddBefore (const BackwardIterator& i, T item);
 
                     public:
-                        nonvirtual  void    AddAfter (const ForwardArrayIterator& i, T item);
-                        nonvirtual  void    AddAfter (const BackwardArrayIterator& i, T item);
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
+                        nonvirtual  void    AddAfter (const BackwardIterator& i, T item);
 
                     public:
                         nonvirtual  void    Invariant () const;
@@ -217,15 +221,15 @@ namespace   Stroika {
                     /**
                      *      Use this iterator to iterate forwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
-                     *  since it is not safe. Use ForwardArrayIterator_Patch for those cases.
+                     *  since it is not safe. Use ForwardIterator_Patch for those cases.
                      */
                     template    <typename T>
-                    class   Array<T>::ForwardArrayIterator : public Array<T>::_ArrayIteratorBase {
+                    class   Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
                     private:
                         typedef typename Array<T>::_ArrayIteratorBase    inherited;
 
                     public:
-                        ForwardArrayIterator (const Array<T>& data);
+                        ForwardIterator (const Array<T>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -235,15 +239,15 @@ namespace   Stroika {
                     /**
                      *      Use this iterator to iterate backwards over the array. Be careful
                      *  not to add or remove things from the array while using this iterator,
-                     *  since it is not safe. Use BackwardArrayIterator_Patch for those cases.
+                     *  since it is not safe. Use BackwardIterator_Patch for those cases.
                      */
                     template    <typename T>
-                    class   Array<T>::BackwardArrayIterator : public Array<T>::_ArrayIteratorBase {
+                    class   Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
                     private:
                         typedef typename    Array<T>::_ArrayIteratorBase    inherited;
 
                     public:
-                        BackwardArrayIterator (const Array<T>& data);
+                        BackwardIterator (const Array<T>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

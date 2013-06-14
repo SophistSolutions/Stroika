@@ -214,7 +214,7 @@ namespace   Stroika {
                 bool    Mapping_Array<Key, T>::Rep_::Lookup (Key key, T* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardArrayIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
@@ -230,7 +230,7 @@ namespace   Stroika {
                 void    Mapping_Array<Key, T>::Rep_::Add (Key key, T newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardArrayIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 fData_[it.CurrentIndex ()].second = newElt;
                                 return;
@@ -244,7 +244,7 @@ namespace   Stroika {
                 void    Mapping_Array<Key, T>::Rep_::Remove (Key key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardArrayIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename Private::DataStructures::Array<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;

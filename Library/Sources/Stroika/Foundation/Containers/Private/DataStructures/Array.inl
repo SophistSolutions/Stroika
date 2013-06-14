@@ -341,49 +341,49 @@ namespace   Stroika {
                         SetCapacity (GetLength ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const ForwardArrayIterator& i, T newValue)
+                    inline  void    Array<T>::RemoveAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const BackwardArrayIterator& i, T newValue)
+                    inline  void    Array<T>::RemoveAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const ForwardArrayIterator& i, T newValue)
+                    inline  void    Array<T>::UpdateAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const BackwardArrayIterator& i, T newValue)
+                    inline  void    Array<T>::UpdateAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddBefore (const ForwardArrayIterator& i, T item)
+                    void    Array<T>::AddBefore (const ForwardIterator& i, T item)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddBefore (const BackwardArrayIterator& i, T item)
+                    void    Array<T>::AddBefore (const BackwardIterator& i, T item)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddAfter (const ForwardArrayIterator& i, T item)
+                    void    Array<T>::AddAfter (const ForwardIterator& i, T item)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
                     }
                     template    <typename T>
-                    void    Array<T>::AddAfter (const BackwardArrayIterator& i, T item)
+                    void    Array<T>::AddAfter (const BackwardIterator& i, T item)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
@@ -471,18 +471,18 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************* ForwardArrayIterator<T> ******************************
+                    *********************** Array<T>::ForwardIterator ******************************
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  Array<T>::ForwardArrayIterator::ForwardArrayIterator (const Array<T>& data)
+                    inline  Array<T>::ForwardIterator::ForwardIterator (const Array<T>& data)
                         : inherited (data)
                     {
                         this->_fCurrent = this->_fStart;
                         Invariant ();
                     }
                     template    <typename T>
-                    inline  bool    Array<T>::ForwardArrayIterator::More (T* current, bool advance)
+                    inline  bool    Array<T>::ForwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
                         if (advance) {
@@ -497,11 +497,11 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************** BackwardArrayIterator<T> ****************************
+                    ************************ Array<T>::BackwardIterator ****************************
                     ********************************************************************************
                     */
                     template    <typename T>
-                    inline  Array<T>::BackwardArrayIterator::BackwardArrayIterator (const Array<T>& data)
+                    inline  Array<T>::BackwardIterator::BackwardIterator (const Array<T>& data)
                         : inherited (data)
                     {
                         if (data.GetLength () == 0) {
@@ -513,7 +513,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
-                    inline  bool    Array<T>::BackwardArrayIterator::More (T* current, bool advance)
+                    inline  bool    Array<T>::BackwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
                         if (advance) {

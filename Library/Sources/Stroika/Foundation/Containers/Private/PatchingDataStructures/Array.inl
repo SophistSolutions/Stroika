@@ -397,37 +397,37 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::RemoveAt (const ForwardArrayIterator& i, T newValue)
+                    void    Array_Patch<T>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::RemoveAt (const BackwardArrayIterator& i, T newValue)
+                    void    Array_Patch<T>::RemoveAt (const BackwardIterator& i)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddBefore (const ForwardArrayIterator& i, T item)
+                    void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T item)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddBefore (const BackwardArrayIterator& i, T item)
+                    void    Array_Patch<T>::AddBefore (const BackwardIterator& i, T item)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddAfter (const ForwardArrayIterator& i, T item)
+                    void    Array_Patch<T>::AddAfter (const ForwardIterator& i, T item)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddAfter (const BackwardArrayIterator& i, T item)
+                    void    Array_Patch<T>::AddAfter (const BackwardIterator& i, T item)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
@@ -622,11 +622,11 @@ namespace   Stroika {
                     template    <typename T>
                     inline  void    Array_Patch<T>::BackwardIterator::PatchRemoveCurrent ()
                     {
-                        if (this->_fCurrent == this->fStart) {
+                        if (this->_fCurrent == this->_fStart) {
                             this->_fCurrent = this->_fEnd;    // magic to indicate done
                         }
                         else {
-                            Assert (this->_fCurrent > this->fStart);
+                            Assert (this->_fCurrent > this->_fStart);
                             this->_fCurrent--;
                         }
                         this->_fSuppressMore = true;
