@@ -255,9 +255,9 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
-                    inline  Array_Patch<T>::Array_Patch (const Array_Patch<T>& from) :
-                        inherited (from),
-                        fIterators_ (nullptr)  // Don't copy the list of iterators - would be trouble with backpointers!
+                    inline  Array_Patch<T>::Array_Patch (const Array_Patch<T>& from)
+                        : inherited (from)
+                        , fIterators_ (nullptr)  // Don't copy the list of iterators - would be trouble with backpointers!
                         // Could clone but that would do no good, since nobody else would have pointers to them
                     {
                         Invariant ();

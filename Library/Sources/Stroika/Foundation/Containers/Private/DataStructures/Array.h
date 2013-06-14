@@ -69,6 +69,11 @@
  *
  *  TODO:
  *
+ *      @todo   For each class (Array/Array_Patchikng, and all iteraotrs, add explicit
+ *              declares about COPY CTORs etc. NOT safe (generally) to use default (esp for patching iterators)
+ *
+ *      @todo   Alot of implemenation uses 'last' paradim. Switch to modern C++ / STL begin/end style.
+ *
  *      @todo   ADD DATA MEMBERS TO ARRAYITERATORBASE WHCI ALLOW MANIP OF NEEDED STUFF IN ARRAY
  *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely
  *              WRT type safety / protected!!!
