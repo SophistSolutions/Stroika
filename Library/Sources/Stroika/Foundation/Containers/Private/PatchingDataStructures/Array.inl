@@ -397,6 +397,42 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
+                    void    Array_Patch<T>::RemoveAt (const ForwardArrayIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        this->RemoveAt (i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::RemoveAt (const BackwardArrayIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        this->RemoveAt (i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::AddBefore (const ForwardArrayIterator& i, T item)
+                    {
+                        // i CAN BE DONE OR NOT
+                        InsertAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::AddBefore (const BackwardArrayIterator& i, T item)
+                    {
+                        // i CAN BE DONE OR NOT
+                        InsertAt (newValue, i.CurrentIndex ());
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::AddAfter (const ForwardArrayIterator& i, T item)
+                    {
+                        Require (not i.Done ());
+                        InsertAt (newValue, i.CurrentIndex () + 1);
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::AddAfter (const BackwardArrayIterator& i, T item)
+                    {
+                        Require (not i.Done ());
+                        InsertAt (newValue, i.CurrentIndex () + 1);
+                    }
+                    template    <typename T>
                     inline  void    Array_Patch<T>::SetCapacity (size_t slotsAlloced)
                     {
                         Invariant ();

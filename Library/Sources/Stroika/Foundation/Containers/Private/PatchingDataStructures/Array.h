@@ -68,6 +68,12 @@ namespace   Stroika {
                         nonvirtual  void    InsertAt (T item, size_t index);
                         nonvirtual  void    RemoveAt (size_t index);
                         nonvirtual  void    RemoveAll ();
+                        nonvirtual  void    RemoveAt (const ForwardArrayIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const BackwardArrayIterator& i, T newValue);
+                        nonvirtual  void    AddBefore (const ForwardArrayIterator& i, T item);
+                        nonvirtual  void    AddBefore (const BackwardArrayIterator& i, T item);
+                        nonvirtual  void    AddAfter (const ForwardArrayIterator& i, T item);
+                        nonvirtual  void    AddAfter (const BackwardArrayIterator& i, T item);
                         nonvirtual  void    SetCapacity (size_t slotsAlloced);
                         nonvirtual  void    Compact ();
 
