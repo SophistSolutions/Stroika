@@ -365,16 +365,21 @@ namespace   Stroika {
                         RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::UpdateAt (const ForwardIterator& i, T newValue)
+                    void    Array_Patch<T>::SetAt (size_t i, T newValue)
                     {
-                        Require (not i.Done ());
-                        SetAt (i.CurrentIndex (), newValue);
+                        inherited::SetAt (i, newValue);
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::UpdateAt (const BackwardIterator& i, T newValue)
+                    void    Array_Patch<T>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        SetAt (newValue, i.CurrentIndex ());
+                        inherited::SetAt (i.CurrentIndex (), newValue);
+                    }
+                    template    <typename T>
+                    void    Array_Patch<T>::SetAt (const BackwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        inherited::SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
                     void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)

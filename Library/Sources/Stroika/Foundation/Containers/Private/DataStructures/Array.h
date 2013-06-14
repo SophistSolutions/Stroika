@@ -151,8 +151,8 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAt (const BackwardIterator& i, T newValue);
 
                     public:
-                        nonvirtual  void    UpdateAt (const ForwardIterator& i, T newValue);
-                        nonvirtual  void    UpdateAt (const BackwardIterator& i, T newValue);
+                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    SetAt (const BackwardIterator& i, T newValue);
 
                     public:
                         //  NB: Can be called if done

@@ -289,7 +289,7 @@ namespace   Stroika {
                         else {
                             TallyEntry<T>   c   =   mir.fIterator_.Current ();
                             c.fCount = newCount;
-                            fData_.UpdateAt (mir.fIterator_, c);
+                            fData_.SetAt (mir.fIterator_, c);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();

@@ -224,7 +224,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_Array<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.UpdateAt (mir.fIterator_, newValue);
+                        fData_.SetAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

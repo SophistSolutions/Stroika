@@ -14,6 +14,11 @@
  *
  *  TODO
  *
+ *      @todo   Redo Array_Patch<T>::ForwardIterator - so ut uses Array<T>::ForwardIterator- where
+ *              Array_Patch<T>::opatchiteraorbase - is a mixin class! Instead of
+ *              DataStructures::Array<T>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
+ *              PERHAPS EXPERIMETNT...
+ *
  *      @todo   Update this patching code to use the same new UpdateAt/RemoveAt paradigm used in base class Array
  *              And update code that uses these iterators - patching arrays - to replace that for RemoveCurrnet()
  *
@@ -77,19 +82,15 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAll ();
                         nonvirtual  void    RemoveAt (const ForwardIterator& i);
                         nonvirtual  void    RemoveAt (const BackwardIterator& i);
-                        nonvirtual  void    UpdateAt (const ForwardIterator& i, T newValue);
-                        nonvirtual  void    UpdateAt (const BackwardIterator& i, T newValue);
+                        nonvirtual  void    SetAt (size_t i, T item);
+                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    SetAt (const BackwardIterator& i, T newValue);
                         nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
                         nonvirtual  void    AddBefore (const BackwardIterator& i, T item);
                         nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
                         nonvirtual  void    AddAfter (const BackwardIterator& i, T item);
                         nonvirtual  void    SetCapacity (size_t slotsAlloced);
                         nonvirtual  void    Compact ();
-
-                        // TO BE LOST/REPLACED
-                    public:
-                        //class  ForwardArrayMutator_Patch;
-                        //class  BackwardArrayMutator_Patch;
 
                         /*
                          *  Check Invariants for this class, and all the iterators we own.

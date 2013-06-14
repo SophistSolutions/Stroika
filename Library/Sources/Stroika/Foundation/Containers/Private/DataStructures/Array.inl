@@ -353,13 +353,13 @@ namespace   Stroika {
                         this->RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const ForwardIterator& i, T newValue)
+                    inline  void    Array<T>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
-                    inline  void    Array<T>::UpdateAt (const BackwardIterator& i, T newValue)
+                    inline  void    Array<T>::SetAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (i.CurrentIndex (), newValue);
