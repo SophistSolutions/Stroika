@@ -203,7 +203,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         // Appending is fastest
-                        fData_.InsertAt (item, fData_.GetLength ());
+                        fData_.InsertAt (fData_.GetLength (), item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

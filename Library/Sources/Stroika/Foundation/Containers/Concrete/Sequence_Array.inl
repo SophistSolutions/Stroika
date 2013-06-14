@@ -238,7 +238,7 @@ namespace   Stroika {
                         }
                         // quickie poor impl
                         for (auto i = from; i != to; ++i) {
-                            fData_.InsertAt (*i, at++);
+                            fData_.InsertAt (at++, *i);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();

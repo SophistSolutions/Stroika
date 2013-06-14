@@ -228,7 +228,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t index = Find_ (tmp);
                         if (index == kNotFound_) {
-                            fData_.InsertAt (tmp, fData_.GetLength ());
+                            fData_.InsertAt (fData_.GetLength (), tmp);
                         }
                         else {
                             tmp.fCount += count;

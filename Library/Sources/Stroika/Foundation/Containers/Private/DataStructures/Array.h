@@ -123,7 +123,7 @@ namespace   Stroika {
                         nonvirtual  size_t  GetLength () const;
                         nonvirtual  void    SetLength (size_t newLength, T fillValue);
 
-                        nonvirtual  void    InsertAt (T item, size_t index);
+                        nonvirtual  void    InsertAt (size_t index, T item);
                         nonvirtual  void    RemoveAt (size_t index);
                         nonvirtual  void    RemoveAll ();
 

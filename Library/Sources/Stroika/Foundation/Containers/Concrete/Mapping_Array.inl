@@ -236,7 +236,7 @@ namespace   Stroika {
                                 return;
                             }
                         }
-                        fData_.InsertAt (pair<Key, T> (key, newElt), fData_.GetLength ());
+                        fData_.InsertAt (fData_.GetLength (), pair<Key, T> (key, newElt));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

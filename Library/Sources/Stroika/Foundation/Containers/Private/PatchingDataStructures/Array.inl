@@ -374,10 +374,10 @@ namespace   Stroika {
                         AssertNotReached ();
                     }
                     template    <typename T>
-                    inline  void    Array_Patch<T>::InsertAt (T item, size_t index)
+                    inline  void    Array_Patch<T>::InsertAt (size_t index, T item)
                     {
                         Invariant ();
-                        inherited::InsertAt (item, index);
+                        inherited::InsertAt (index, item);
                         PatchViewsAdd (index);          // PatchRealloc done in PatchViewsAdd()
                         Invariant ();
                     }
@@ -428,25 +428,25 @@ namespace   Stroika {
                     void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
-                        InsertAt (newValue, i.CurrentIndex ());
+                        InsertAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
                     void    Array_Patch<T>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
-                        InsertAt (newValue, i.CurrentIndex ());
+                        InsertAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
                     void    Array_Patch<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        InsertAt (newValue, i.CurrentIndex () + 1);
+                        InsertAt (i.CurrentIndex () + 1, newValue);
                     }
                     template    <typename T>
                     void    Array_Patch<T>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        InsertAt (newValue, i.CurrentIndex () + 1);
+                        InsertAt (i.CurrentIndex () + 1, newValue);
                     }
                     template    <typename T>
                     inline  void    Array_Patch<T>::SetCapacity (size_t slotsAlloced)

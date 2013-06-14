@@ -61,7 +61,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename T>
-                    void    Array<T>::InsertAt (T item, size_t index)
+                    void    Array<T>::InsertAt (size_t index, T item)
                     {
                         Require (index >= 0);
                         Require (index <= _fLength);
@@ -368,25 +368,25 @@ namespace   Stroika {
                     void    Array<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
-                        InsertAt (newValue, i.CurrentIndex ());
+                        InsertAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
                     void    Array<T>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
-                        InsertAt (newValue, i.CurrentIndex ());
+                        InsertAt (i.CurrentIndex (), newValue);
                     }
                     template    <typename T>
                     void    Array<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        InsertAt (newValue, i.CurrentIndex () + 1);
+                        InsertAt (i.CurrentIndex () + 1, newValue);
                     }
                     template    <typename T>
                     void    Array<T>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        InsertAt (newValue, i.CurrentIndex () + 1);
+                        InsertAt (i.CurrentIndex () + 1, newValue);
                     }
 
 

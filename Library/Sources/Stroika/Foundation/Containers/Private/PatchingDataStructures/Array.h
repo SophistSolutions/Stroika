@@ -72,7 +72,7 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  void    SetLength (size_t newLength, T fillValue);
-                        nonvirtual  void    InsertAt (T item, size_t index);
+                        nonvirtual  void    InsertAt (size_t index, T item);
                         nonvirtual  void    RemoveAt (size_t index);
                         nonvirtual  void    RemoveAll ();
                         nonvirtual  void    RemoveAt (const ForwardIterator& i);
