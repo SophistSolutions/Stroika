@@ -146,13 +146,6 @@ namespace   Stroika {
                         class   ForwardIterator;
                         class   BackwardIterator;
 
-#if 0
-                        // TODO - LOSE MUTATORS
-                    public:
-                        class   ForwardArrayMutator;
-                        class   BackwardArrayMutator;
-#endif
-
                     public:
                         nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
                         nonvirtual  void    RemoveAt (const BackwardIterator& i, T newValue);

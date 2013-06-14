@@ -400,34 +400,34 @@ namespace   Stroika {
                     void    Array_Patch<T>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
-                        this->RemoveAt (i.CurrentIndex ());
+                        RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
                     void    Array_Patch<T>::RemoveAt (const BackwardIterator& i)
                     {
                         Require (not i.Done ());
-                        this->RemoveAt (i.CurrentIndex ());
+                        RemoveAt (i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T item)
+                    void    Array_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddBefore (const BackwardIterator& i, T item)
+                    void    Array_Patch<T>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddAfter (const ForwardIterator& i, T item)
+                    void    Array_Patch<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
                     }
                     template    <typename T>
-                    void    Array_Patch<T>::AddAfter (const BackwardIterator& i, T item)
+                    void    Array_Patch<T>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);

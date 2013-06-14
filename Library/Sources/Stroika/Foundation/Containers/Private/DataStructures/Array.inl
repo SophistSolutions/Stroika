@@ -365,25 +365,25 @@ namespace   Stroika {
                         SetAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddBefore (const ForwardIterator& i, T item)
+                    void    Array<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddBefore (const BackwardIterator& i, T item)
+                    void    Array<T>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (newValue, i.CurrentIndex ());
                     }
                     template    <typename T>
-                    void    Array<T>::AddAfter (const ForwardIterator& i, T item)
+                    void    Array<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
                     }
                     template    <typename T>
-                    void    Array<T>::AddAfter (const BackwardIterator& i, T item)
+                    void    Array<T>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (newValue, i.CurrentIndex () + 1);
