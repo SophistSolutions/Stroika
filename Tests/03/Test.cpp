@@ -48,7 +48,7 @@ namespace   {
         VerifyTestResult(someArray [55] == 55);
         VerifyTestResult(someArray [55] != 56);
 
-        someArray.InsertAt(1, 100);
+        someArray.InsertAt(100, 1);
         VerifyTestResult(someArray.GetLength() == kBigSize + 1);
         VerifyTestResult(someArray [100] == 1);
 
@@ -65,13 +65,13 @@ namespace   {
     {
         {
             Array<SimpleClass>  someArray;
-            someArray.InsertAt(100, 0);
+            someArray.InsertAt(0, 100);
 // for (size_t i = 0; i < someArray.GetLength (); ++i) { cerr << "someArray[" << i << "] = " << someArray[i].GetValue () << endl; }
             someArray.RemoveAt(0);
-            someArray.InsertAt(2, 0);
-            someArray.InsertAt(1, 0);
-            someArray.InsertAt(3, 0);
-            someArray.InsertAt(4, someArray.GetLength ());
+            someArray.InsertAt(0, 2);
+            someArray.InsertAt(0, 1);
+            someArray.InsertAt(0, 3);
+            someArray.InsertAt(someArray.GetLength (), 4);
             someArray.RemoveAt(someArray.GetLength () - 1);
             someArray.RemoveAt(1);
         }
@@ -99,10 +99,10 @@ namespace   {
             someArray.RemoveAt(0);
         }
         while(someArray.GetLength() < kBigSize) {
-            someArray.InsertAt(1, someArray.GetLength());
+            someArray.InsertAt(someArray.GetLength(), 1);
         }
 
-        someArray.InsertAt(1, 100);
+        someArray.InsertAt(100, 1);
         VerifyTestResult(someArray.GetLength() == kBigSize + 1);
         VerifyTestResult(someArray [100] == 1);
         someArray [101] = 1 + someArray [100].GetValue();
