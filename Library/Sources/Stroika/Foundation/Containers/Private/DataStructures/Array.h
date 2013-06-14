@@ -73,6 +73,10 @@
  *              SO NOT COPIED!!! - like fLength, fPtr etc. THEN - we can do stuff safely
  *              WRT type safety / protected!!!
  *
+ *              RETHINK. Above may not be a problem. Real issue is array stores base and length
+ *              and iterators use start/end. Maybe THATs what we really need to change in the
+ *              array class (probably).
+ *
  *      @todo   FIX realloc() stuff. We probably need to get rid of realloc altogether. Look at what
  *              std::vector<> does for hints about most efficient way..
  *
@@ -142,11 +146,12 @@ namespace   Stroika {
                         class   ForwardIterator;
                         class   BackwardIterator;
 
-
+#if 0
                         // TODO - LOSE MUTATORS
                     public:
                         class   ForwardArrayMutator;
                         class   BackwardArrayMutator;
+#endif
 
                     public:
                         nonvirtual  void    RemoveAt (const ForwardIterator& i, T newValue);
