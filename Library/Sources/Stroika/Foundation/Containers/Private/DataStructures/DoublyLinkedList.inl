@@ -247,7 +247,7 @@ namespace   Stroika {
                         return (cur->fItem);
                     }
                     template    <typename   T>
-                    void    DoublyLinkedList<T>::SetAt (T item, size_t i)
+                    void    DoublyLinkedList<T>::SetAt (size_t i, T item)
                     {
                         Require (i >= 0);
                         Require (i < GetLength ());
