@@ -33,23 +33,23 @@ namespace   Stroika {
                      *      Here we provide Patching Versions of each iterator, and for convienience
                      *  versions of DoublyLinkedList that maintain a list of all Patching iterators.
                      *
-                     *      DoublyLinkedList_Patch<T> is a DoublyLinkedList<T> with the ability to keep track of
+                     *      PatchingDataStructures::DoublyLinkedList<T> is a DoublyLinkedList<T> with the ability to keep track of
                      *  owned patching iterators. These patching iterators will automatically be
                      *  adjusted when the link list is adjusted. This is the class of DoublyLinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedList_Patch : public DataStructures::DoublyLinkedList<T> {
+                    class   DoublyLinkedList : public DataStructures::DoublyLinkedList<T> {
                     private:
                         typedef typename DataStructures::DoublyLinkedList<T> inherited;
 
                     public:
-                        DoublyLinkedList_Patch ();
-                        DoublyLinkedList_Patch (const DoublyLinkedList_Patch<T>& from);
-                        ~DoublyLinkedList_Patch ();
+                        DoublyLinkedList ();
+                        DoublyLinkedList (const DoublyLinkedList<T>& from);
+                        ~DoublyLinkedList ();
 
                     public:
-                        nonvirtual  DoublyLinkedList_Patch<T>& operator= (const DoublyLinkedList_Patch<T>& list);
+                        nonvirtual  DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
 
                     public:
                         typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
@@ -114,16 +114,16 @@ namespace   Stroika {
                     /*
                      *      ForwardIterator is a .... that allows
                      *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the DoublyLinkedList_Patch<T>, and takes care
+                     *  link list of iterators headed by the DoublyLinkedList<T>, and takes care
                      *  of all patching details.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedList_Patch<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
+                    class   DoublyLinkedList<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
                     private:
                         typedef typename DataStructures::DoublyLinkedList<T>::ForwardIterator inherited;
 
                     public:
-                        ForwardIterator (const DoublyLinkedList_Patch<T>& data);
+                        ForwardIterator (const DoublyLinkedList<T>& data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
 
@@ -147,13 +147,13 @@ namespace   Stroika {
                         void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     protected:
-                        const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
+                        const DoublyLinkedList<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
                         ForwardIterator*      fNext;
                         const Link*                             fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 
-                        friend  class   DoublyLinkedList_Patch<T>;
+                        friend  class   DoublyLinkedList<T>;
 #if     qDebug
                         virtual void    Invariant_ () const override;
 #endif

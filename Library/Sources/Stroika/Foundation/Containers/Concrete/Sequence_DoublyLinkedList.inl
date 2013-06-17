@@ -56,8 +56,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::PatchingDataStructures::DoublyLinkedList_Patch<T>  fData_;
+                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
+                    Private::PatchingDataStructures::DoublyLinkedList<T>    fData_;
                     friend  class Sequence_DoublyLinkedList<T>::IteratorRep_;
                 };
 
@@ -97,8 +97,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                      fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator      fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -252,7 +252,7 @@ namespace   Stroika {
                         else {
                             size_t index = at;
                             T tmphack;
-                            for (typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
+                            for (typename Private::PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         fData_.AddBefore (it, *p);
@@ -275,7 +275,7 @@ namespace   Stroika {
                     size_t amountToRemove = (to - from);
                     T tmphack;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
+                        for (typename Private::PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     fData_.RemoveAt (it);

@@ -43,7 +43,7 @@ namespace   Stroika {
                      *  no public means to access the links themselves.
                      *
                      *      Since this class provides no patching support, it is not generally
-                     *  used - more likely you want to use DoublyLinkedList_Patch<T>. Use this if you
+                     *  used - more likely you want to use DoublyLinkedList<T>. Use this if you
                      *  will manage all patching, or know that none is necessary.
                      */
                     template    <typename   T>
@@ -186,7 +186,7 @@ namespace   Stroika {
                         static  void        _SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink);
 
                     protected:
-                    public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN DoublyLinkedList_Patch<> - until those cleaned up a bit
+                    public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN ``<> - until those cleaned up a bit
 
                         const DoublyLinkedList<T>*  _fData;
                         const Link*                 _fCurrent;
