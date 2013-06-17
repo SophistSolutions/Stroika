@@ -24,7 +24,6 @@
  *      @todo   Could add iteartor subclass (or use traits to control) which tracks index internally, as with Stroika v1
  *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
  *
- *
  * Notes:
  *
  */
@@ -135,7 +134,7 @@ namespace   Stroika {
 
 
                     /**
-                     *  for now public... but soon protected - just for helper iterator classes...
+                     *  Just an implementation detail. Don't use directly except in helper classes.
                      */
                     template    <typename   T>
                     class   DoublyLinkedList<T>::Link {

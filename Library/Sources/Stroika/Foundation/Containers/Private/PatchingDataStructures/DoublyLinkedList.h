@@ -98,7 +98,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        ForwardIterator*    fIterators;
+                        ForwardIterator*    fActiveIteratorsListHead_;
 
                     protected:
                         friend  class   ForwardIterator;
@@ -143,18 +143,21 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
-                        void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
-                        void    TwoPhaseIteratorPatcherPass2 (Link* newI);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
-                    protected:
-                        const DoublyLinkedList<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
-                        ForwardIterator*      fNext;
-                        const Link*                             fPrev;      // keep extra previous link for fast patchremove
-                        // Nil implies fCurrent == fData->fFirst or its invalid,
-                        // and must be recomputed (it was removed itself)...
+                    private:
+                        nonvirtual  const DoublyLinkedList<T>&  GetPatchingContainer_ () const;
+                        nonvirtual  DoublyLinkedList<T>&    GetPatchingContainer_ ();
 
+                    private:
+                        ForwardIterator*                fNextActiveIterator_;
+
+                    private:
                         friend  class   DoublyLinkedList<T>;
+
 #if     qDebug
+                    protected:
                         virtual void    Invariant_ () const override;
 #endif
                     };
