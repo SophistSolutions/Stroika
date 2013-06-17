@@ -79,9 +79,9 @@ namespace   Stroika {
                         nonvirtual  void    Append (T item);
 
                     public:
-                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
-                        nonvirtual  void    AddBefore (const ForwardIterator& i, T newValue);
-                        nonvirtual  void    AddAfter (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const typename inherited::ForwardIterator& i);
+                        nonvirtual  void    AddBefore (const typename inherited::ForwardIterator& i, T newValue);
+                        nonvirtual  void    AddAfter (const typename inherited::ForwardIterator& i, T newValue);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -168,36 +168,6 @@ namespace   Stroika {
                         virtual void    Invariant_ () const override;
 #endif
                     };
-
-#if 0
-                    /*
-                     *      DoublyLinkedListMutator_Patch<T> is a DoublyLinkedListIterator_Patch<T> that allows
-                     *  for changes to the DoublyLinkedList<T> relative to the position we are at
-                     *  currently in the iteration. This is be used most commonly in
-                     *  implementing concrete iterators for Stroika containers.
-                     */
-                    template    <typename   T>
-                    class   DoublyLinkedListMutator_Patch : public DoublyLinkedListIterator_Patch<T> {
-                    private:
-                        typedef DoublyLinkedListIterator_Patch<T> inherited;
-
-                    public:
-                        DoublyLinkedListMutator_Patch (DoublyLinkedList_Patch<T>& data);
-                        DoublyLinkedListMutator_Patch (const DoublyLinkedListMutator_Patch<T>& from);
-
-                    public:
-                        nonvirtual  DoublyLinkedListMutator_Patch<T>& operator= (DoublyLinkedListMutator_Patch<T>& rhs);
-
-                    public:
-                        typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
-
-                    public:
-                        //nonvirtual  void    RemoveCurrent ();
-                        //nonvirtual  void    UpdateCurrent (T newValue);
-//                        nonvirtual  void    AddBefore (T item);
-                        //nonvirtual  void    AddAfter (T item);
-                    };
-#endif
 
 
                 }

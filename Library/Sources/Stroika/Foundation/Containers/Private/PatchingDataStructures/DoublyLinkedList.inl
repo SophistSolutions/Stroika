@@ -156,7 +156,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    void    DoublyLinkedList_Patch<T>::RemoveAt (const ForwardIterator& i)
+                    void    DoublyLinkedList_Patch<T>::RemoveAt (const typename inherited::ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         Invariant ();
@@ -168,7 +168,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    void    DoublyLinkedList_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    void    DoublyLinkedList_Patch<T>::AddBefore (const typename inherited::ForwardIterator& i, T newValue)
                     {
                         Invariant ();
 
@@ -192,7 +192,7 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    void    DoublyLinkedList_Patch<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    void    DoublyLinkedList_Patch<T>::AddAfter (const typename inherited::ForwardIterator& i, T newValue)
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
@@ -420,118 +420,6 @@ namespace   Stroika {
                          */
                         Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
                     }
-#endif
-
-
-
-#if 0
-
-                    /*
-                    ********************************************************************************
-                    ************************ DoublyLinkedListMutator_Patch<T> **********************
-                    ********************************************************************************
-                    */
-                    template    <typename   T>
-                    inline  DoublyLinkedListMutator_Patch<T>::DoublyLinkedListMutator_Patch (DoublyLinkedList_Patch<T>& data) :
-                        inherited ((const DoublyLinkedList_Patch<T>&)data)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  DoublyLinkedListMutator_Patch<T>::DoublyLinkedListMutator_Patch (const DoublyLinkedListMutator_Patch<T>& from) :
-                        inherited ((const DoublyLinkedListIterator_Patch<T>&)from)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  DoublyLinkedListMutator_Patch<T>& DoublyLinkedListMutator_Patch<T>::operator= (DoublyLinkedListMutator_Patch<T>& rhs)
-                    {
-                        inherited::operator= ((const DoublyLinkedListIterator_Patch<T>&)rhs);
-                        return *this;
-                    }
-#if 0
-                    template    <typename   T>
-                    inline  void    DoublyLinkedListMutator_Patch<T>::RemoveCurrent ()
-                    {
-                        Require (not this->Done ());
-                        this->Invariant ();
-                        Link*    victim  = const_cast<Link*> (this->_fCurrent);
-                        AssertNotNull (this->fData);
-                        this->fData->PatchViewsRemove (victim);
-                        Assert (this->_fCurrent != victim);              // patching should  have guaranteed this
-                        /*
-                         *      At this point we need the fPrev pointer. But it may have been lost
-                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                         *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                         *  is still nullptr, that means update fFirst.
-                         */
-
-                        const Link*     firstDataLink = this->_GetFirstDataLink  (this->fData);
-                        if ((this->fPrev == nullptr) and (firstDataLink != victim)) {
-                            AssertNotNull (firstDataLink);    // cuz there must be something to remove current
-                            for (this->fPrev = firstDataLink; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean victim not in DoublyLinkedList!!!
-                            }
-                        }
-                        if (this->fPrev == nullptr) {
-                            this->_SetFirstDataLink (const_cast<DoublyLinkedList_Patch<T>*> (this->fData), victim->fNext);
-                        }
-                        else {
-                            Assert (this->fPrev->fNext == victim);
-                            const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
-                        }
-                        delete (victim);
-                        this->Invariant ();
-                        this->fData->Invariant ();  // calls by invariant
-                    }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedListMutator_Patch<T>::UpdateCurrent (T newValue)
-                    {
-                        RequireNotNull (this->_fCurrent);
-                        const_cast<Link*> (this->_fCurrent)->fItem = newValue;
-                    }
-#endif
-#if 0
-                    template    <typename   T>
-                    inline  void    DoublyLinkedListMutator_Patch<T>::AddBefore (T newValue)
-                    {
-                        /*
-                         * NB: This code works fine, even if we are done!!!
-                         */
-
-                        /*
-                         *      At this point we need the fPrev pointer. But it may have been lost
-                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                         *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                         *  is still nullptr, that means update fFirst.
-                         */
-                        AssertNotNull (this->fData);
-                        const Link*     firstDataLink = this->_GetFirstDataLink  (this->fData);
-                        if ((this->fPrev == nullptr) and (firstDataLink != nullptr) and (firstDataLink != this->_fCurrent)) {
-                            for (this->fPrev = firstDataLink; this->fPrev->fNext != this->_fCurrent; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
-                            }
-                        }
-                        if (this->fPrev == nullptr) {
-                            Assert (firstDataLink == this->_fCurrent);     // could be nullptr, or not...
-                            this->_SetFirstDataLink (const_cast<DoublyLinkedList_Patch<T>*> (this->fData), new Link (newValue, const_cast<Link*> (firstDataLink)));
-                            firstDataLink = this->_GetFirstDataLink  (this->fData);
-                            this->fData->PatchViewsAdd (firstDataLink);       // Will adjust fPrev
-                        }
-                        else {
-                            Assert (this->fPrev->fNext == this->_fCurrent);
-                            const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
-                            this->fData->PatchViewsAdd (this->fPrev->fNext);        // Will adjust fPrev
-                        }
-                        this->fData->Invariant ();  // will call this's Invariant()
-                    }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedListMutator_Patch<T>::AddAfter (T newValue)
-                    {
-                        Require (not this->Done ());
-                        AssertNotNull (this->_fCurrent); // since not done...
-                        const_cast<Link*>(this->_fCurrent)->fNext = new Link (newValue, this->_fCurrent->fNext);
-                        this->fData->PatchViewsAdd (this->_fCurrent->fNext);
-                    }
-#endif
 #endif
 
 
