@@ -150,11 +150,6 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    inline  void    DoublyLinkedList_Patch<T>::SetAt (const ForwardIterator& i, T newValue)
-                    {
-                        inherited::SetAt (i, newValue);
-                    }
-                    template    <typename   T>
                     void    DoublyLinkedList_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();

@@ -75,7 +75,6 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  void    RemoveAt (const ForwardIterator& i);
-                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
                         nonvirtual  void    AddBefore (const ForwardIterator& i, T newValue);
                         nonvirtual  void    AddAfter (const ForwardIterator& i, T newValue);
 
