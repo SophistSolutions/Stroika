@@ -16,14 +16,6 @@
 /*
  *
  * TODO:
- *          NEXT TODO LOSE DoublyLinkedListMutator_Patch
- *
- *      @todo   LOSE DoublyLinkedListMutator_Patch (move mutation methods to DoublyLinkedList itself or DoublyLinkedList_Patch for now
- *              Started work on this - AddBefore/AddAfter etc methods. But patching logic is a GUESS at best.
- *              not well done!
- *
- *      @todo   Move DoublyLinkedListIterator_Patch to nested.
- *
  */
 
 
@@ -47,8 +39,6 @@ namespace   Stroika {
                      *  most likely to be used in implementing a concrete container class.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedListIterator_Patch;
-                    template    <typename   T>
                     class   DoublyLinkedList_Patch : public DataStructures::DoublyLinkedList<T> {
                     private:
                         typedef typename DataStructures::DoublyLinkedList<T> inherited;
@@ -63,6 +53,9 @@ namespace   Stroika {
 
                     public:
                         typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
+
+                    public:
+                        class   ForwardIterator;
 
                         /*
                          * Methods we shadow so that patching is done. If you want to circumvent the
@@ -79,9 +72,9 @@ namespace   Stroika {
                         nonvirtual  void    Append (T item);
 
                     public:
-                        nonvirtual  void    RemoveAt (const typename inherited::ForwardIterator& i);
-                        nonvirtual  void    AddBefore (const typename inherited::ForwardIterator& i, T newValue);
-                        nonvirtual  void    AddAfter (const typename inherited::ForwardIterator& i, T newValue);
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T newValue);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -95,23 +88,20 @@ namespace   Stroika {
 
 
                     public:
-                        //typedef   DoublyLinkedListIterator_Patch<T>   ForwardIterator;
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI);
+
                     public:
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch) const;
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch, Link* newI);
-
-
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
                          */
-                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        DoublyLinkedListIterator_Patch<T>*    fIterators;
+                        ForwardIterator*    fIterators;
 
                     protected:
-                        friend  class   DoublyLinkedListIterator_Patch<T>;
+                        friend  class   ForwardIterator;
 
 #if     qDebug
                     protected:
@@ -122,23 +112,23 @@ namespace   Stroika {
 
 
                     /*
-                     *      DoublyLinkedListIterator_Patch<T> is a DoublyLinkedListIterator_Patch<T> that allows
+                     *      ForwardIterator is a .... that allows
                      *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
                      *  link list of iterators headed by the DoublyLinkedList_Patch<T>, and takes care
                      *  of all patching details.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
+                    class   DoublyLinkedList_Patch<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
                     private:
                         typedef typename DataStructures::DoublyLinkedList<T>::ForwardIterator inherited;
 
                     public:
-                        DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data);
-                        DoublyLinkedListIterator_Patch (const DoublyLinkedListIterator_Patch<T>& from);
-                        ~DoublyLinkedListIterator_Patch ();
+                        ForwardIterator (const DoublyLinkedList_Patch<T>& data);
+                        ForwardIterator (const ForwardIterator& from);
+                        ~ForwardIterator ();
 
                     public:
-                        nonvirtual  DoublyLinkedListIterator_Patch<T>&    operator= (const DoublyLinkedListIterator_Patch<T>& rhs);
+                        nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
                         typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
@@ -153,12 +143,12 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
-                        void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch);
+                        void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     protected:
                         const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
-                        DoublyLinkedListIterator_Patch<T>*      fNext;
+                        ForwardIterator*      fNext;
                         const Link*                             fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...

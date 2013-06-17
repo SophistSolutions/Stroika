@@ -98,7 +98,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
-                    mutable Private::PatchingDataStructures::DoublyLinkedListIterator_Patch<T>   fIterator_;
+                    mutable typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -252,7 +252,7 @@ namespace   Stroika {
                         else {
                             size_t index = at;
                             T tmphack;
-                            for (Private::PatchingDataStructures::DoublyLinkedListIterator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                            for (typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         fData_.AddBefore (it, *p);
@@ -275,7 +275,7 @@ namespace   Stroika {
                     size_t amountToRemove = (to - from);
                     T tmphack;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::PatchingDataStructures::DoublyLinkedListIterator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
+                        for (typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     fData_.RemoveAt (it);

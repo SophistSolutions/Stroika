@@ -95,7 +95,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                      fLockSupport_;
-                    mutable Private::PatchingDataStructures::DoublyLinkedListIterator_Patch<T>   fIterator_;
+                    mutable typename Private::PatchingDataStructures::DoublyLinkedList_Patch<T>::ForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
