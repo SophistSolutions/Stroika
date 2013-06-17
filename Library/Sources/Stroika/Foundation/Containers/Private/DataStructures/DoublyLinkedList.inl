@@ -51,9 +51,9 @@ namespace   Stroika {
                          *  case is handled outside, before the loop.
                          */
                         if (from._fFirst != nullptr) {
-                            fFirst = new Link (from.fFirst->fItem, nullptr);
+                            _fFirst = new Link (from._fFirst->fItem, nullptr);
                             Link*    newCur  =   fFirst;
-                            for (const Link* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                            for (const Link* cur = from._fFirst->fNext; cur != nullptr; cur = cur->fNext) {
                                 Link*    newPrev =   newCur;
                                 newCur = new Link (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
@@ -264,7 +264,7 @@ namespace   Stroika {
                         Require (not i.Done ());
                         this->Invariant ();
 
-                        Link*    victim  = i._fCurrent;
+                        Link*    victim  = const_cast<Link*> (i._fCurrent);
 
                         /*
                          *      At this point we need the fPrev pointer. But it may have been lost
@@ -272,18 +272,19 @@ namespace   Stroika {
                          *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
                          *  is still nullptr, that means update fFirst.
                          */
-                        if ((victim->fPrev == nullptr) and (this->fData->_fFirst != victim)) {
-                            AssertNotNull (this->fData->_fFirst);    // cuz there must be something to remove current
-                            for (this->fPrev = this->fData->_fFirst; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean victim not in DoublyLinkedList!!!
+						Link*		prev	=	nullptr;
+                        if (this->_fFirst != victim) {
+                            AssertNotNull (this->_fFirst);    // cuz there must be something to remove current
+                            for (prev = this->_fFirst; prev->fNext != victim; prev = prev->fNext) {
+                                AssertNotNull (prev);    // cuz that would mean victim not in DoublyLinkedList!!!
                             }
                         }
-                        if (this->fPrev == nullptr) {
-                            this->fData->_fFirst = victim->fNext
+                        if (prev == nullptr) {
+                            this->_fFirst = victim->fNext;
                         }
                         else {
-                            Assert (this->fPrev->fNext == victim);
-                            const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
+                            Assert (prev->fNext == victim);
+                            prev->fNext = victim->fNext;
                         }
                         delete (victim);
                         this->Invariant ();
@@ -294,7 +295,7 @@ namespace   Stroika {
                     {
                         Require (not i.Done ());
                         this->Invariant ();
-                        *i = newValue;
+                        const_cast<Link*> (i._fCurrent)->fItem = newValue;
                         this->Invariant ();
                     }
                     template    <typename   T>

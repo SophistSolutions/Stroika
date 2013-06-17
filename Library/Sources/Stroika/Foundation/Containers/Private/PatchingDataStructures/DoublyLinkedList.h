@@ -97,8 +97,11 @@ namespace   Stroika {
                     protected:
                         DoublyLinkedListIterator_Patch<T>*    fIterators;
 
+                    protected:
                         friend  class   DoublyLinkedListIterator_Patch<T>;
+
 #if     qDebug
+                    protected:
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
 #endif
@@ -141,7 +144,7 @@ namespace   Stroika {
                     protected:
                         const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
                         DoublyLinkedListIterator_Patch<T>*      fNext;
-                        const Link*                    fPrev;      // keep extra previous link for fast patchremove
+                        const Link*								fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 
@@ -174,8 +177,8 @@ namespace   Stroika {
                         typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
 
                     public:
-                        nonvirtual  void    RemoveCurrent ();
-                        nonvirtual  void    UpdateCurrent (T newValue);
+                        //nonvirtual  void    RemoveCurrent ();
+                        //nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);
                     };

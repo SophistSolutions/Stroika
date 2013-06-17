@@ -145,7 +145,7 @@ namespace   Stroika {
                     void    DoublyLinkedList_Patch<T>::RemoveAt (const ForwardIterator& i)
                     {
                         Invariant ();
-                        this->PatchViewsRemove (i.fCurrent);
+                        this->PatchViewsRemove (i._fCurrent);
                         inherited::RemoveAt (i);
                         Invariant ();
                     }
@@ -404,6 +404,7 @@ namespace   Stroika {
                         inherited::operator= ((const DoublyLinkedListIterator_Patch<T>&)rhs);
                         return *this;
                     }
+#if 0
                     template    <typename   T>
                     inline  void    DoublyLinkedListMutator_Patch<T>::RemoveCurrent ()
                     {
@@ -444,6 +445,7 @@ namespace   Stroika {
                         RequireNotNull (this->_fCurrent);
                         const_cast<Link*> (this->_fCurrent)->fItem = newValue;
                     }
+#endif
                     template    <typename   T>
                     inline  void    DoublyLinkedListMutator_Patch<T>::AddBefore (T newValue)
                     {

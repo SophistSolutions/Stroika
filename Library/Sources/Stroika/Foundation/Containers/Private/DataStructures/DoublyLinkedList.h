@@ -20,7 +20,7 @@
  *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
  *              part got lost.
  *
- *  Long-Term TOD:
+ *  Long-Term TODO:
  *      @todo   Could add iteartor subclass (or use traits to control) which tracks index internally, as with Stroika v1
  *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
  *
@@ -186,6 +186,8 @@ namespace   Stroika {
                         static  void        _SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink);
 
                     protected:
+					public:	/// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN DoublyLinkedList_Patch<> - until those cleaned up a bit
+
                         const DoublyLinkedList<T>*  _fData;
                         const Link*                 _fCurrent;
                         bool                        _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
