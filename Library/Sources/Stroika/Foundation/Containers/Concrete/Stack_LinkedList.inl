@@ -167,7 +167,7 @@ namespace   Stroika {
                 bool  Stack_LinkedList<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return (fData_.GetLength () == 0);
+                        return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

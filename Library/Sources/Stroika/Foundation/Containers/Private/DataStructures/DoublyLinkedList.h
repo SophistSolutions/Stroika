@@ -62,6 +62,9 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
 
                     public:
+                        nonvirtual  bool    IsEmpty () const;
+
+                    public:
                         nonvirtual  size_t  GetLength () const;
 
                         /*
@@ -106,9 +109,6 @@ namespace   Stroika {
                     public:
                         class   DoublyLinkedListIterator;
 
-                    protected:
-                    public:         // To make this protected we need to write (without patch stuff) a mutator
-                        size_t              fLength;
                     protected:
                     public:         // To make this protected we need to write (without patch stuff) a mutator
                         Link*      fFirst;

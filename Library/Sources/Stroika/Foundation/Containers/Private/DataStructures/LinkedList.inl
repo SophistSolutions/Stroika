@@ -34,9 +34,8 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
-                    LinkedList<T>::LinkedList (const LinkedList<T>& from) :
-                        fLength (from.fLength),
-                        fFirst (nullptr)
+                    LinkedList<T>::LinkedList (const LinkedList<T>& from)
+                        : fFirst (nullptr)
                     {
                         /*
                          *      Copy the link list by keeping a point to the new current and new
@@ -65,9 +64,8 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename   T>
-                    inline  LinkedList<T>::LinkedList () :
-                        fLength (0),
-                        fFirst (nullptr)
+                    inline  LinkedList<T>::LinkedList ()
+                        : fFirst (nullptr)
                     {
                         Invariant ();
                     }
@@ -85,18 +83,25 @@ namespace   Stroika {
                         Invariant ();
                         RemoveAll ();
                         Invariant ();
-                        Ensure (fLength == 0);
                         Ensure (fFirst == nullptr);
+                    }
+                    template    <typename   T>
+                    bool    LinkedList<T>::IsEmpty () const
+                    {
+                        return fFirst == nullptr;
                     }
                     template    <typename   T>
                     inline  size_t  LinkedList<T>::GetLength () const
                     {
-                        return (fLength);
+                        size_t  n   =   0;
+                        for (const Link* i = fFirst; i != nullptr; i = i->fNext) {
+                            n++;
+                        }
+                        return n;
                     }
                     template    <typename   T>
                     inline  T   LinkedList<T>::GetFirst () const
                     {
-                        Require (fLength > 0);
                         AssertNotNull (fFirst);
                         return (fFirst->fItem);
                     }
@@ -105,7 +110,6 @@ namespace   Stroika {
                     {
                         Invariant ();
                         fFirst = new Link (item, fFirst);
-                        fLength++;
                         Invariant ();
                     }
                     template    <typename   T>
@@ -117,7 +121,6 @@ namespace   Stroika {
                         Link* victim = fFirst;
                         fFirst = victim->fNext;
                         delete (victim);
-                        fLength--;
 
                         Invariant ();
                     }
@@ -144,8 +147,6 @@ namespace   Stroika {
                                 newPrev->fNext = newCur;
                             }
                         }
-
-                        fLength = list.fLength;
 
                         Invariant ();
 
@@ -180,7 +181,6 @@ namespace   Stroika {
                             prevLink->fNext = victim->fNext;
                         }
 
-                        this->fLength--;
                         delete (victim);
 
                         it.Invariant ();
@@ -189,8 +189,6 @@ namespace   Stroika {
                     template    <typename   T>
                     void    LinkedList<T>::Remove (T item)
                     {
-                        Require (fLength >= 1);
-
                         Invariant ();
 
                         if (item == fFirst->fItem) {
@@ -203,7 +201,6 @@ namespace   Stroika {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
                                     delete (link);
-                                    fLength--;
                                     break;
                                 }
                             }
@@ -230,13 +227,12 @@ namespace   Stroika {
                             delete (deleteMe);
                         }
                         fFirst = nullptr;
-                        fLength = 0;
                     }
                     template    <typename   T>
                     T   LinkedList<T>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
-                        Require (i < fLength);
+                        Require (i < GetLength ());
                         const Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
@@ -248,7 +244,7 @@ namespace   Stroika {
                     void    LinkedList<T>::SetAt (T item, size_t i)
                     {
                         Require (i >= 0);
-                        Require (i < fLength);
+                        Require (i < GetLength ());
                         Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
@@ -263,12 +259,9 @@ namespace   Stroika {
                         /*
                          * Check we are properly linked together.
                          */
-                        size_t  counter =   0;
                         for (Link* i = fFirst; i != nullptr; i = i->fNext) {
-                            counter++;
-                            Assert (counter <= fLength);    // to this test in the loop so we detect circularities...
+                            // at least make sure no currupted links and no infinite loops
                         }
-                        Assert (counter == fLength);
                     }
 #endif
 

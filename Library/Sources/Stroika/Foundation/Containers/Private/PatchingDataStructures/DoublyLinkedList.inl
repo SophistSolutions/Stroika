@@ -99,7 +99,7 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::Append (T item)
                     {
-                        if (this->fLength == 0) {
+                        if (this->IsEmpty ()) {
                             Prepend (item);
                         }
                         else {
@@ -109,7 +109,6 @@ namespace   Stroika {
                             Assert (last != nullptr);
                             Assert (last->fNext == nullptr);
                             last->fNext = new Link (item, nullptr);
-                            this->fLength++;
                             PatchViewsAdd (last->fNext);
                         }
                     }
@@ -132,8 +131,6 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList_Patch<T>::Remove (T item)
                     {
-                        Require (this->fLength >= 1);
-
                         Invariant ();
                         T current;
                         for (DoublyLinkedListMutator_Patch<T> it (*this); it.More (&current, true); ) {
@@ -142,7 +139,6 @@ namespace   Stroika {
                                 break;
                             }
                         }
-
                         Invariant ();
                     }
 #if     qDebug
@@ -406,7 +402,6 @@ namespace   Stroika {
                             Assert (this->fPrev->fNext == victim);
                             const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
                         }
-                        const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fLength--;
                         delete (victim);
                         this->Invariant ();
                         this->fData->Invariant ();  // calls by invariant
@@ -439,13 +434,11 @@ namespace   Stroika {
                         if (this->fPrev == nullptr) {
                             Assert (this->fData->fFirst == this->fCurrent);     // could be nullptr, or not...
                             const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fFirst = new Link (newValue, this->fData->fFirst);
-                            const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fLength++;
                             this->fData->PatchViewsAdd (this->fData->fFirst);       // Will adjust fPrev
                         }
                         else {
                             Assert (this->fPrev->fNext == this->fCurrent);
                             const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
-                            const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fLength++;
                             this->fData->PatchViewsAdd (this->fPrev->fNext);        // Will adjust fPrev
                         }
                         this->fData->Invariant ();  // will call this's Invariant()
@@ -456,7 +449,6 @@ namespace   Stroika {
                         Require (not this->Done ());
                         AssertNotNull (this->fCurrent); // since not done...
                         const_cast<Link*>(this->fCurrent)->fNext = new Link (newValue, this->fCurrent->fNext);
-                        const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fLength++;
                         this->fData->PatchViewsAdd (this->fCurrent->fNext);
                     }
 

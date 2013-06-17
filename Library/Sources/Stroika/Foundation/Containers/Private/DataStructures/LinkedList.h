@@ -75,6 +75,9 @@ namespace   Stroika {
                         class   ForwardIterator;
 
                     public:
+                        nonvirtual  bool    IsEmpty () const;
+
+                    public:
                         nonvirtual  size_t  GetLength () const;
 
                         /*
@@ -97,6 +100,7 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAt (const ForwardIterator& it);
 
                     public:
+                        ////@todo - change name of Remove() to clearly document if it fails if not present, or at least docs!!!
                         nonvirtual  void    Remove (T item);
                         nonvirtual  void    RemoveAll ();
 
@@ -119,7 +123,6 @@ namespace   Stroika {
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
                         //protected:
-                        size_t      fLength;
                         Link*       fFirst;
 
 #if     qDebug
@@ -170,7 +173,7 @@ namespace   Stroika {
                     protected:
                         const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
                         const typename LinkedList<T>::Link*     fCurrent;
-                        bool                                    fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                        bool                                    fSuppressMore;      // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
                         virtual void    Invariant_ () const;

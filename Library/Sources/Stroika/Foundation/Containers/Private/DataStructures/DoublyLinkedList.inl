@@ -35,8 +35,7 @@ namespace   Stroika {
                     */
                     template    <typename   T>
                     DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
-                        : fLength (from.fLength)
-                        , fFirst (nullptr)
+                        : fFirst (nullptr)
                     {
                         /*
                          *      Copy the link list by keeping a point to the new current and new
@@ -66,8 +65,7 @@ namespace   Stroika {
                     }
                     template    <typename   T>
                     inline  DoublyLinkedList<T>::DoublyLinkedList ()
-                        : fLength (0)
-                        , fFirst (nullptr)
+                        : fFirst (nullptr)
                     {
                         Invariant ();
                     }
@@ -75,9 +73,9 @@ namespace   Stroika {
                     inline  DoublyLinkedList<T>::~DoublyLinkedList ()
                     {
                         /*
-                         * This could be a little cheaper - we could avoid setting fLength field,
-                         * and fFirst pointer, but we must worry more about codeSize/re-use.
-                         * That would involve a new function that COULD NOT BE INLINED.
+                         * This could be a little cheaper - we could avoid setting fFirst pointer,
+                         *  but we must worry more about codeSize/re-use.
+                         *  That would involve a new function that COULD NOT BE INLINED.
                          *
                          * < I guess  I could add a hack method - unadvertised - but has to be
                          *   at least protected - and call it here to do what I've mentioned above >
@@ -85,18 +83,26 @@ namespace   Stroika {
                         Invariant ();
                         RemoveAll ();
                         Invariant ();
-                        Ensure (fLength == 0);
+                        Ensure (GetLength () == 0);
                         Ensure (fFirst == nullptr);
+                    }
+                    template    <typename   T>
+                    bool    DoublyLinkedList<T>::IsEmpty () const
+                    {
+                        return fFirst == nullptr;
                     }
                     template    <typename   T>
                     inline  size_t  DoublyLinkedList<T>::GetLength () const
                     {
-                        return (fLength);
+                        size_t  n   =   0;
+                        for (const Link* i = fFirst; i != nullptr; i = i->fNext) {
+                            n++;
+                        }
+                        return n;
                     }
                     template    <typename   T>
                     inline  T   DoublyLinkedList<T>::GetFirst () const
                     {
-                        Require (fLength > 0);
                         AssertNotNull (fFirst);
                         return (fFirst->fItem);
                     }
@@ -105,15 +111,18 @@ namespace   Stroika {
                     {
                         // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
                         // maybe irrelevant if we swtich to usting STL list class
-                        Require (fLength > 0);
-                        return GetAt (fLength - 1);
+                        for (const Link* i = fFirst; i != nullptr; i = i->fNext) {
+                            if (i->fNext == nullptr) {
+                                return i->fItem;
+                            }
+                        }
+                        RequireNotReached ();
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
                         fFirst = new Link (item, fFirst);
-                        fLength++;
                         Invariant ();
                     }
                     template    <typename   T>
@@ -125,7 +134,6 @@ namespace   Stroika {
                         Link* victim = fFirst;
                         fFirst = victim->fNext;
                         delete (victim);
-                        fLength--;
 
                         Invariant ();
                     }
@@ -135,19 +143,24 @@ namespace   Stroika {
                         RequireNotNull (fFirst);
                         Invariant ();
 
-                        // HACK - SEE OLD 1992 Stroika code - or abandom this impl - and use STL?
-                        Link* i = fFirst;
-                        AssertNotNull (i);
-                        for (; i->fNext != nullptr; i = i->fNext)
+                        Link*   i       = fFirst;
+                        Link*   prev    = nullptr;
+                        AssertNotNull (i);  // because must be at least one
+                        for (; i->fNext != nullptr; prev = i, i = i->fNext)
                             ;
                         AssertNotNull (i);
                         Link* victim = i;
+                        Assert (victim->fNext == nullptr);
                         if (victim == fFirst) {
                             fFirst = nullptr;
+                            Assert (prev == nullptr);
                         }
-                        Assert (victim->fNext == nullptr);
-                        delete (victim);
-                        fLength--;
+                        else {
+                            AssertNotNull (prev);
+                            Assert (prev->fNext == victim);
+                            prev->fNext = nullptr;
+                        }
+                        delete victim;
 
                         Invariant ();
                     }
@@ -175,8 +188,6 @@ namespace   Stroika {
                             }
                         }
 
-                        fLength = list.fLength;
-
                         Invariant ();
 
                         return (*this);
@@ -184,8 +195,6 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList<T>::Remove (T item)
                     {
-                        Require (fLength >= 1);
-
                         Invariant ();
 
                         if (item == fFirst->fItem) {
@@ -198,7 +207,6 @@ namespace   Stroika {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
                                     delete (link);
-                                    fLength--;
                                     break;
                                 }
                             }
@@ -225,13 +233,12 @@ namespace   Stroika {
                             delete (deleteMe);
                         }
                         fFirst = nullptr;
-                        fLength = 0;
                     }
                     template    <typename   T>
                     T   DoublyLinkedList<T>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
-                        Require (i < fLength);
+                        Require (i < GetLength ());
                         const Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
@@ -243,7 +250,7 @@ namespace   Stroika {
                     void    DoublyLinkedList<T>::SetAt (T item, size_t i)
                     {
                         Require (i >= 0);
-                        Require (i < fLength);
+                        Require (i < GetLength ());
                         Link* cur = fFirst;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
@@ -258,12 +265,9 @@ namespace   Stroika {
                         /*
                          * Check we are properly linked together.
                          */
-                        size_t  counter =   0;
                         for (Link* i = fFirst; i != nullptr; i = i->fNext) {
-                            counter++;
-                            Assert (counter <= fLength);    // to this test in the loop so we detect circularities...
+                            // just check no invalid pointers - or loops - at least can walk link listed
                         }
-                        Assert (counter == fLength);
                     }
 #endif
 
