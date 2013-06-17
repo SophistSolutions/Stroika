@@ -52,7 +52,7 @@ namespace   Stroika {
                          */
                         if (from._fFirst != nullptr) {
                             _fFirst = new Link (from._fFirst->fItem, nullptr);
-                            Link*    newCur  =   fFirst;
+                            Link*    newCur  =   _fFirst;
                             for (const Link* cur = from._fFirst->fNext; cur != nullptr; cur = cur->fNext) {
                                 Link*    newPrev =   newCur;
                                 newCur = new Link (cur->fItem, nullptr);
