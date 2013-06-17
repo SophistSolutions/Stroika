@@ -86,7 +86,6 @@ namespace   Stroika {
                         nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
-
                     public:
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI);
@@ -139,6 +138,7 @@ namespace   Stroika {
                          */
                         nonvirtual  bool    More (T* current, bool advance);
 
+                    public:
                         nonvirtual  void    PatchAdd (const Link* link);     //  call after add
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
