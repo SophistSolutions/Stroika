@@ -121,7 +121,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        Link*      _fFirst;
+                        Link*      _fHead;
 
 #if     qDebug
                     protected:

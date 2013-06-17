@@ -106,7 +106,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         inherited::Prepend (item);
-                        PatchViewsAdd (this->_fFirst);
+                        PatchViewsAdd (this->_fHead);
                         Invariant ();
                     }
                     //tmphack - must fix for oduble linked list
@@ -117,7 +117,7 @@ namespace   Stroika {
                             Prepend (item);
                         }
                         else {
-                            Link* last = this->_fFirst;
+                            Link* last = this->_fHead;
                             for (; last->fNext != nullptr; last = last->fNext)
                                 ;
                             Assert (last != nullptr);
@@ -130,7 +130,7 @@ namespace   Stroika {
                     inline  void    DoublyLinkedList<T>::RemoveFirst ()
                     {
                         Invariant ();
-                        PatchViewsRemove (this->_fFirst);
+                        PatchViewsRemove (this->_fHead);
                         inherited::RemoveFirst ();
                         Invariant ();
                     }
@@ -174,8 +174,8 @@ namespace   Stroika {
 
                         //tmphack
                         const Link*     prev = nullptr;
-                        if ((this->_fFirst != nullptr) and (this->_fFirst != i._fCurrent)) {
-                            for (prev = this->_fFirst; prev->fNext != i._fCurrent; prev = prev->fNext) {
+                        if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
+                            for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
                                 AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
@@ -184,7 +184,7 @@ namespace   Stroika {
                         inherited::AddBefore (i, newValue);
                         /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
                         if (isPrevNull) {
-                            this->PatchViewsAdd (this->_fFirst);       // Will adjust fPrev
+                            this->PatchViewsAdd (this->_fHead);       // Will adjust fPrev
                         }
                         else {
                             this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
@@ -280,18 +280,16 @@ namespace   Stroika {
                          *      If the fData field has not changed, then we can leave alone our iterator linkage.
                          *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
                          */
-                        if (fData != rhs.fData) {
-                            AssertNotNull (fData);
-                            AssertNotNull (rhs.fData);
+                        if (&GetPatchingContainer_ () != &rhs.GetPatchingContainer_ ()) {
 
                             /*
                              * Remove from old.
                              */
-                            if (fData->fActiveIteratorsListHead_ == this) {
-                                const_cast<DoublyLinkedList<T>*>(fData)->fActiveIteratorsListHead_ = fNextActiveIterator_;
+                            if (GetPatchingContainer_ ().fActiveIteratorsListHead_ == this) {
+                                GetPatchingContainer_ ().fActiveIteratorsListHead_ = fNextActiveIterator_;
                             }
                             else {
-                                auto v = fData->fActiveIteratorsListHead_;
+                                auto v = GetPatchingContainer_ ().fActiveIteratorsListHead_;
                                 for (; v->fNextActiveIterator_ != this; v = v->fNextActiveIterator_) {
                                     AssertNotNull (v);
                                     AssertNotNull (v->fNextActiveIterator_);
@@ -304,12 +302,9 @@ namespace   Stroika {
                             /*
                              * Add to new.
                              */
-                            fData = rhs.fData;
-                            fNextActiveIterator_ = rhs.fData->fActiveIteratorsListHead_;
-                            const_cast<DoublyLinkedList<T>*> (fData)->fActiveIteratorsListHead_ = this;
+                            fNextActiveIterator_ = rhs.GetPatchingContainer_ ().fActiveIteratorsListHead_;
+                            GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
                         }
-
-                        fData = rhs.fData;
 
                         inherited::operator= (rhs);
 

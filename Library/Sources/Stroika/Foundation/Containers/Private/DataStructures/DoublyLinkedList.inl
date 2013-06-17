@@ -35,13 +35,13 @@ namespace   Stroika {
                     */
                     template    <typename   T>
                     inline  DoublyLinkedList<T>::DoublyLinkedList ()
-                        : _fFirst (nullptr)
+                        : _fHead (nullptr)
                     {
                         Invariant ();
                     }
                     template    <typename   T>
                     DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
-                        : _fFirst (nullptr)
+                        : _fHead (nullptr)
                     {
                         /*
                          *      Copy the link list by keeping a point to the new current and new
@@ -50,10 +50,10 @@ namespace   Stroika {
                          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
                          *  case is handled outside, before the loop.
                          */
-                        if (from._fFirst != nullptr) {
-                            _fFirst = new Link (from._fFirst->fItem, nullptr);
-                            Link*    newCur  =   _fFirst;
-                            for (const Link* cur = from._fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                        if (from._fHead != nullptr) {
+                            _fHead = new Link (from._fHead->fItem, nullptr);
+                            Link*    newCur  =   _fHead;
+                            for (const Link* cur = from._fHead->fNext; cur != nullptr; cur = cur->fNext) {
                                 Link*    newPrev =   newCur;
                                 newCur = new Link (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
@@ -77,7 +77,7 @@ namespace   Stroika {
                         RemoveAll ();
                         Invariant ();
                         Ensure (GetLength () == 0);
-                        Ensure (_fFirst == nullptr);
+                        Ensure (_fHead == nullptr);
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::Invariant () const
@@ -89,13 +89,13 @@ namespace   Stroika {
                     template    <typename   T>
                     bool    DoublyLinkedList<T>::IsEmpty () const
                     {
-                        return _fFirst == nullptr;
+                        return _fHead == nullptr;
                     }
                     template    <typename   T>
                     inline  size_t  DoublyLinkedList<T>::GetLength () const
                     {
                         size_t  n   =   0;
-                        for (const Link* i = _fFirst; i != nullptr; i = i->fNext) {
+                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                             n++;
                         }
                         return n;
@@ -103,15 +103,15 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  T   DoublyLinkedList<T>::GetFirst () const
                     {
-                        AssertNotNull (_fFirst);
-                        return _fFirst->fItem;
+                        AssertNotNull (_fHead);
+                        return _fHead->fItem;
                     }
                     template    <typename   T>
                     inline  T   DoublyLinkedList<T>::GetLast () const
                     {
                         // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
                         // maybe irrelevant if we swtich to usting STL list class
-                        for (const Link* i = _fFirst; i != nullptr; i = i->fNext) {
+                        for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
                             if (i->fNext == nullptr) {
                                 return i->fItem;
                             }
@@ -122,17 +122,17 @@ namespace   Stroika {
                     inline  void    DoublyLinkedList<T>::Prepend (T item)
                     {
                         Invariant ();
-                        _fFirst = new Link (item, _fFirst);
+                        _fHead = new Link (item, _fHead);
                         Invariant ();
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::RemoveFirst ()
                     {
-                        RequireNotNull (_fFirst);
+                        RequireNotNull (_fHead);
                         Invariant ();
 
-                        Link* victim = _fFirst;
-                        _fFirst = victim->fNext;
+                        Link* victim = _fHead;
+                        _fHead = victim->fNext;
                         delete (victim);
 
                         Invariant ();
@@ -140,10 +140,10 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::RemoveLast ()
                     {
-                        RequireNotNull (_fFirst);
+                        RequireNotNull (_fHead);
                         Invariant ();
 
-                        Link*   i       =   _fFirst;
+                        Link*   i       =   _fHead;
                         Link*   prev    =   nullptr;
                         AssertNotNull (i);  // because must be at least one
                         for (; i->fNext != nullptr; prev = i, i = i->fNext)
@@ -151,8 +151,8 @@ namespace   Stroika {
                         AssertNotNull (i);
                         Link* victim = i;
                         Assert (victim->fNext == nullptr);
-                        if (victim == _fFirst) {
-                            _fFirst = nullptr;
+                        if (victim == _fHead) {
+                            _fHead = nullptr;
                             Assert (prev == nullptr);
                         }
                         else {
@@ -178,10 +178,10 @@ namespace   Stroika {
                          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
                          *  case is handled outside, before the loop.
                          */
-                        if (rhs._fFirst != nullptr) {
-                            _fFirst = new Link (rhs._fFirst->fItem, nullptr);
-                            Link*    newCur  =   _fFirst;
-                            for (const Link* cur = rhs._fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                        if (rhs._fHead != nullptr) {
+                            _fHead = new Link (rhs._fHead->fItem, nullptr);
+                            Link*    newCur  =   _fHead;
+                            for (const Link* cur = rhs._fHead->fNext; cur != nullptr; cur = cur->fNext) {
                                 Link*    newPrev =   newCur;
                                 newCur = new Link (cur->fItem, nullptr);
                                 newPrev->fNext = newCur;
@@ -197,12 +197,12 @@ namespace   Stroika {
                     {
                         Invariant ();
 
-                        if (item == _fFirst->fItem) {
+                        if (item == _fHead->fItem) {
                             RemoveFirst ();
                         }
                         else {
                             Link*    prev    =   nullptr;
-                            for (Link* link = _fFirst; link != nullptr; prev = link, link = link->fNext) {
+                            for (Link* link = _fHead; link != nullptr; prev = link, link = link->fNext) {
                                 if (link->fItem == item) {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
@@ -217,7 +217,7 @@ namespace   Stroika {
                     template    <typename   T>
                     bool    DoublyLinkedList<T>::Contains (T item) const
                     {
-                        for (const Link* current = _fFirst; current != nullptr; current = current->fNext) {
+                        for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
                             if (current->fItem == item) {
                                 return true;
                             }
@@ -227,19 +227,19 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList<T>::RemoveAll ()
                     {
-                        for (Link* i = _fFirst; i != nullptr;) {
+                        for (Link* i = _fHead; i != nullptr;) {
                             Link*    deleteMe    =   i;
                             i = i->fNext;
                             delete (deleteMe);
                         }
-                        _fFirst = nullptr;
+                        _fHead = nullptr;
                     }
                     template    <typename   T>
                     T   DoublyLinkedList<T>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
                         Require (i < GetLength ());
-                        const Link* cur = _fFirst;
+                        const Link* cur = _fHead;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -251,7 +251,7 @@ namespace   Stroika {
                     {
                         Require (i >= 0);
                         Require (i < GetLength ());
-                        Link* cur = _fFirst;
+                        Link* cur = _fHead;
                         for (; i != 0; cur = cur->fNext, --i) {
                             AssertNotNull (cur);    // cuz i <= fLength
                         }
@@ -273,14 +273,14 @@ namespace   Stroika {
                          *  is still nullptr, that means update fFirst.
                          */
                         Link*       prev    =   nullptr;
-                        if (this->_fFirst != victim) {
-                            AssertNotNull (this->_fFirst);    // cuz there must be something to remove current
-                            for (prev = this->_fFirst; prev->fNext != victim; prev = prev->fNext) {
+                        if (this->_fHead != victim) {
+                            AssertNotNull (this->_fHead);    // cuz there must be something to remove current
+                            for (prev = this->_fHead; prev->fNext != victim; prev = prev->fNext) {
                                 AssertNotNull (prev);    // cuz that would mean victim not in DoublyLinkedList!!!
                             }
                         }
                         if (prev == nullptr) {
-                            this->_fFirst = victim->fNext;
+                            this->_fHead = victim->fNext;
                         }
                         else {
                             Assert (prev->fNext == victim);
@@ -307,15 +307,15 @@ namespace   Stroika {
                         this->Invariant ();
 
                         Link*     prev = nullptr;
-                        if ((this->_fFirst != nullptr) and (this->_fFirst != i._fCurrent)) {
-                            for (prev = this->_fFirst; prev->fNext != i._fCurrent; prev = prev->fNext) {
+                        if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
+                            for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
                                 AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
 
                         if (prev == nullptr) {
-                            Assert (this->_fFirst == i._fCurrent);     // could be nullptr, or not...
-                            this->_fFirst = new Link (newValue, const_cast<Link*> (this->_fFirst));
+                            Assert (this->_fHead == i._fCurrent);     // could be nullptr, or not...
+                            this->_fHead = new Link (newValue, const_cast<Link*> (this->_fHead));
                         }
                         else {
                             Assert (prev->fNext == i._fCurrent);
@@ -338,7 +338,7 @@ namespace   Stroika {
                         /*
                          * Check we are properly linked together.
                          */
-                        for (Link* i = _fFirst; i != nullptr; i = i->fNext) {
+                        for (Link* i = _fHead; i != nullptr; i = i->fNext) {
                             // just check no invalid pointers - or loops - at least can walk link listed
                         }
                     }
@@ -353,7 +353,7 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>& data)
                         : _fData (&data)
-                        , _fCurrent (data._fFirst)
+                        , _fCurrent (data._fHead)
                         , _fSuppressMore (true)
                     {
                     }
@@ -422,7 +422,7 @@ namespace   Stroika {
                         Require (not (Done ()));
                         Invariant ();
                         size_t n = 0;
-                        for (const Link* l = _fData->_fFirst; l != this->_fCurrent; l = l->fNext, ++n) {
+                        for (const Link* l = _fData->_fHead; l != this->_fCurrent; l = l->fNext, ++n) {
                             AssertNotNull (l);
                         }
                         return n;
@@ -431,19 +431,19 @@ namespace   Stroika {
                     inline    typename DoublyLinkedList<T>::Link*   DoublyLinkedList<T>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T>* data)
                     {
                         RequireNotNull (data);
-                        return data->_fFirst;
+                        return data->_fHead;
                     }
                     template    <typename   T>
                     inline const typename DoublyLinkedList<T>::Link* DoublyLinkedList<T>::ForwardIterator::_GetFirstDataLink (const DoublyLinkedList<T>* data)
                     {
                         RequireNotNull (data);
-                        return data->_fFirst;
+                        return data->_fHead;
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::ForwardIterator::_SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink)
                     {
                         RequireNotNull (data);
-                        data->_fFirst = newFirstLink;
+                        data->_fHead = newFirstLink;
                     }
 #if     qDebug
                     template    <typename   T>
