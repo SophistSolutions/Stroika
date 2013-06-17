@@ -22,16 +22,10 @@
  *              THen mask in Patching:::LinkedList<T> - and do patching there. Then get rid of
  *              mutator objects!
  *
- *
- *      @todo   Consider losing fSize data member - and storing it just as needed in things like Sequence_LinkedList (not even sure there - dont use LL
- *              if you want to know the size!!!)
- *
-
  *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
  *
- *
- *          +   Consider adding LinkedListMutator<T> since otherwise we cannot do InsertAt,
- *              / AddAfter() etc without using a LinkedList_Patch.
+ *      @todo   Consider adding InsertAt,
+ *              / AddAfter() etc without using a LinkedList_Patch, using iteartor params as reference.
  *
  * Notes:
  *
@@ -100,8 +94,12 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAt (const ForwardIterator& it);
 
                     public:
-                        ////@todo - change name of Remove() to clearly document if it fails if not present, or at least docs!!!
+                        /**
+                         *  Note - does nothing if item not found.
+                         */
                         nonvirtual  void    Remove (T item);
+
+                    public:
                         nonvirtual  void    RemoveAll ();
 
 

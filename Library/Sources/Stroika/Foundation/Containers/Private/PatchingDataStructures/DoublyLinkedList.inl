@@ -21,14 +21,6 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
-                    inline  void    DoublyLinkedList_Patch<T>::Invariant () const
-                    {
-#if     qDebug
-                        Invariant_ ();
-                        InvariantOnIterators_ ();
-#endif
-                    }
-                    template    <typename   T>
                     inline  DoublyLinkedList_Patch<T>::DoublyLinkedList_Patch ()
                         : inherited ()
                         , fIterators (nullptr)
@@ -49,9 +41,28 @@ namespace   Stroika {
                         Require (fIterators == nullptr);
                     }
                     template    <typename   T>
+                    inline  void    DoublyLinkedList_Patch<T>::Invariant () const
+                    {
+#if     qDebug
+                        Invariant_ ();
+                        InvariantOnIterators_ ();
+#endif
+                    }
+                    template    <typename   T>
+                    inline  DoublyLinkedList_Patch<T>& DoublyLinkedList_Patch<T>::operator= (const DoublyLinkedList_Patch<T>& rhs)
+                    {
+                        /*
+                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
+                         * If this is to be supported at some future date, well need to work on our patching.
+                         */
+                        Assert (not (HasActiveIterators ()));   // cuz copy of DoublyLinkedList does not copy iterators...
+                        inherited::operator= (rhs);
+                        return *this;
+                    }
+                    template    <typename   T>
                     inline  bool    DoublyLinkedList_Patch<T>::HasActiveIterators () const
                     {
-                        return bool (fIterators != nullptr);
+                        return fIterators != nullptr;
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::PatchViewsAdd (const Link* link) const
@@ -77,22 +88,11 @@ namespace   Stroika {
                         }
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedList_Patch<T>& DoublyLinkedList_Patch<T>::operator= (const DoublyLinkedList_Patch<T>& rhs)
-                    {
-                        /*
-                         * Don't copy the rhs iterators, and don't do assignments when we have active iterators.
-                         * If this is to be supported at some future date, well need to work on our patching.
-                         */
-                        Assert (not (HasActiveIterators ()));   // cuz copy of DoublyLinkedList does not copy iterators...
-                        inherited::operator= (rhs);
-                        return *this;
-                    }
-                    template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::Prepend (T item)
                     {
                         Invariant ();
                         inherited::Prepend (item);
-                        PatchViewsAdd (this->fFirst);
+                        PatchViewsAdd (this->_fFirst);
                         Invariant ();
                     }
                     //tmphack - must fix for oduble linked list
@@ -103,7 +103,7 @@ namespace   Stroika {
                             Prepend (item);
                         }
                         else {
-                            Link* last = this->fFirst;
+                            Link* last = this->_fFirst;
                             for (; last->fNext != nullptr; last = last->fNext)
                                 ;
                             Assert (last != nullptr);
@@ -116,7 +116,7 @@ namespace   Stroika {
                     inline  void    DoublyLinkedList_Patch<T>::RemoveFirst ()
                     {
                         Invariant ();
-                        PatchViewsRemove (this->fFirst);
+                        PatchViewsRemove (this->_fFirst);
                         inherited::RemoveFirst ();
                         Invariant ();
                     }
@@ -180,7 +180,7 @@ namespace   Stroika {
                     */
                     template    <typename   T>
                     inline  DoublyLinkedListIterator_Patch<T>::DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data)
-                        :                        inherited (data)
+                        : inherited (data)
                         , fData (&data)
                         , fNext (data.fIterators)
                         , fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
@@ -389,14 +389,15 @@ namespace   Stroika {
                          *  is still nullptr, that means update fFirst.
                          */
 
-                        if ((this->fPrev == nullptr) and (this->fData->fFirst != victim)) {
-                            AssertNotNull (this->fData->fFirst);    // cuz there must be something to remove current
-                            for (this->fPrev = this->fData->fFirst; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
+                        const Link*     firstDataLink = this->_GetFirstDataLink  (this->fData);
+                        if ((this->fPrev == nullptr) and (firstDataLink != victim)) {
+                            AssertNotNull (firstDataLink);    // cuz there must be something to remove current
+                            for (this->fPrev = firstDataLink; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
                                 AssertNotNull (this->fPrev);    // cuz that would mean victim not in DoublyLinkedList!!!
                             }
                         }
                         if (this->fPrev == nullptr) {
-                            const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fFirst = victim->fNext;
+                            this->_SetFirstDataLink (const_cast<DoublyLinkedList_Patch<T>*> (this->fData), victim->fNext);
                         }
                         else {
                             Assert (this->fPrev->fNext == victim);
@@ -426,15 +427,17 @@ namespace   Stroika {
                          *  is still nullptr, that means update fFirst.
                          */
                         AssertNotNull (this->fData);
-                        if ((this->fPrev == nullptr) and (this->fData->fFirst != nullptr) and (this->fData->fFirst != this->fCurrent)) {
-                            for (this->fPrev = this->fData->fFirst; this->fPrev->fNext != this->fCurrent; this->fPrev = this->fPrev->fNext) {
+                        const Link*     firstDataLink = this->_GetFirstDataLink  (this->fData);
+                        if ((this->fPrev == nullptr) and (firstDataLink != nullptr) and (firstDataLink != this->fCurrent)) {
+                            for (this->fPrev = firstDataLink; this->fPrev->fNext != this->fCurrent; this->fPrev = this->fPrev->fNext) {
                                 AssertNotNull (this->fPrev);    // cuz that would mean fCurrent not in DoublyLinkedList!!!
                             }
                         }
                         if (this->fPrev == nullptr) {
-                            Assert (this->fData->fFirst == this->fCurrent);     // could be nullptr, or not...
-                            const_cast<DoublyLinkedList_Patch<T>*> (this->fData)->fFirst = new Link (newValue, this->fData->fFirst);
-                            this->fData->PatchViewsAdd (this->fData->fFirst);       // Will adjust fPrev
+                            Assert (firstDataLink == this->fCurrent);     // could be nullptr, or not...
+                            this->_SetFirstDataLink (const_cast<DoublyLinkedList_Patch<T>*> (this->fData), new Link (newValue, const_cast<Link*> (firstDataLink)));
+                            firstDataLink = this->_GetFirstDataLink  (this->fData);
+                            this->fData->PatchViewsAdd (firstDataLink);       // Will adjust fPrev
                         }
                         else {
                             Assert (this->fPrev->fNext == this->fCurrent);

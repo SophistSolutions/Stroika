@@ -20,17 +20,11 @@
  *      @todo   Add MUTATOR object - (or similar) - so we can make fLength/fFirst protected below!!!
  *              (NO MUTATOR OBJECT - INSTEAD - UPDATECURRENT (ITERATOR) MEHTOD ON OBJECT ITSELF.
  *
- *      @todo   Somheow when this got ported from old code - we lost fLast??? Maybe irrelevant if we switch to
- *              using STL list??? But ..??
- *
- *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
- *
- *      @todo   WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL
+ *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
+ *              part got lost.
  *
  *
  * Notes:
- *
- *          <<< WARNING - NOT REAL DOUBLE LINKED LIST IMPL - REALLY SINGLE - SEE STROIKA CODE FOR REAL DOUBLE LINK LIST IMPL>>>>
  *
  */
 
@@ -75,18 +69,24 @@ namespace   Stroika {
                         nonvirtual  T       GetFirst () const;
                         nonvirtual  T       GetLast () const;
 
+                    public:
                         nonvirtual  void    Prepend (T item);
                         nonvirtual  void    RemoveFirst ();
                         nonvirtual  void    RemoveLast ();
 
+                    public:
                         /*
                          *  Utility to search the list for the given item using operator==
                          */
-                    public:
                         nonvirtual  bool    Contains (T item) const;
 
                     public:
+                        /**
+                         *  Note - does nothing if item not found.
+                         */
                         nonvirtual  void    Remove (T item);
+
+                    public:
                         nonvirtual  void    RemoveAll ();
 
                         /*
@@ -100,18 +100,15 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    Invariant () const;
 
-
-
                     public:
                         // for now public... but soon protected - just for helper iterator classes...
                         class   Link;
 
                     public:
-                        class   DoublyLinkedListIterator;
+                        class   ForwardIterator;
 
                     protected:
-                    public:         // To make this protected we need to write (without patch stuff) a mutator
-                        Link*      fFirst;
+                        Link*      _fFirst;
 
 #if     qDebug
                     protected:
@@ -119,10 +116,13 @@ namespace   Stroika {
 #endif
 
                     private:
-                        friend  class   DoublyLinkedListIterator;
+                        friend  class   ForwardIterator;
                     };
 
-                    // for now public... but soon protected - just for helper iterator classes...
+
+                    /*
+                     *  for now public... but soon protected - just for helper iterator classes...
+                     */
                     template    <typename   T>
                     class   DoublyLinkedList<T>::Link {
                     public:
@@ -131,38 +131,44 @@ namespace   Stroika {
                         Link (T item, Link* next);
 
                     public:
-                        T           fItem;
-                        Link* fNext;
+                        T       fItem;
+                        Link*   fNext;
                     };
 
 
                     /*
-                     *      DoublyLinkedListIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
+                     *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListMutator_Patch<T>
                      *  for that.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedList<T>::DoublyLinkedListIterator {
+                    class   DoublyLinkedList<T>::ForwardIterator {
                     public:
-                        DoublyLinkedListIterator (const DoublyLinkedListIterator& from);
-                        DoublyLinkedListIterator (const DoublyLinkedList<T>& data);
+                        ForwardIterator (const ForwardIterator& from);
+                        ForwardIterator (const DoublyLinkedList<T>& data);
 
                     public:
                         typedef typename DoublyLinkedList<T>::Link    Link;
 
                     public:
-                        nonvirtual  DoublyLinkedListIterator& operator= (const DoublyLinkedListIterator& list);
+                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& list);
 
                     public:
                         nonvirtual  bool    Done () const;
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  T       Current () const;
 
+                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const Link*  fCurrent;
+                        static  Link*       _GetFirstDataLink (DoublyLinkedList<T>* data);
+                        static  const Link* _GetFirstDataLink (const DoublyLinkedList<T>* data);
+                        static  void        _SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink);
+
+                    protected:
+                        const Link*     fCurrent;
                         bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug

@@ -13,6 +13,9 @@
 /*
  *
  * TODO:
+ *      @todo   LOSE DoublyLinkedListMutator_Patch (move mutation methods to DoublyLinkedList itself or DoublyLinkedList_Patch for now
+ *
+ *      @todo   Move DoublyLinkedListIterator_Patch to nested.
  *
  */
 
@@ -102,9 +105,9 @@ namespace   Stroika {
                      *  of all patching details.
                      */
                     template    <typename   T>
-                    class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedList<T>::DoublyLinkedListIterator {
+                    class   DoublyLinkedListIterator_Patch : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
                     private:
-                        typedef typename DataStructures::DoublyLinkedList<T>::DoublyLinkedListIterator inherited;
+                        typedef typename DataStructures::DoublyLinkedList<T>::ForwardIterator inherited;
 
                     public:
                         DoublyLinkedListIterator_Patch (const DoublyLinkedList_Patch<T>& data);
@@ -133,7 +136,7 @@ namespace   Stroika {
                             RequireNotNull (fData);
                             RequireNotNull (this->fCurrent);
                             size_t i = 0;
-                            for (const Link* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
+                            for (const Link* l = fData->_fFirst; l != this->fCurrent; l = l->fNext, ++i) {
                                 AssertNotNull (l);
                             }
                             return i;
