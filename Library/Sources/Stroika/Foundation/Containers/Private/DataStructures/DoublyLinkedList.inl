@@ -41,7 +41,7 @@ namespace   Stroika {
                     }
                     template    <typename   T>
                     DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
-                        : fFirst (nullptr)
+                        : _fFirst (nullptr)
                     {
                         /*
                          *      Copy the link list by keeping a point to the new current and new
@@ -50,7 +50,7 @@ namespace   Stroika {
                          *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
                          *  case is handled outside, before the loop.
                          */
-                        if (from.fFirst != nullptr) {
+                        if (from._fFirst != nullptr) {
                             fFirst = new Link (from.fFirst->fItem, nullptr);
                             Link*    newCur  =   fFirst;
                             for (const Link* cur = from.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
@@ -258,6 +258,82 @@ namespace   Stroika {
                         AssertNotNull (cur);        // cuz i <= fLength
                         cur->fItem = item;
                     }
+                    template    <typename   T>
+                    void    DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i)
+                    {
+                        Require (not i.Done ());
+                        this->Invariant ();
+
+                        Link*    victim  = i._fCurrent;
+
+                        /*
+                         *      At this point we need the fPrev pointer. But it may have been lost
+                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
+                         *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
+                         *  is still nullptr, that means update fFirst.
+                         */
+                        if ((victim->fPrev == nullptr) and (this->fData->_fFirst != victim)) {
+                            AssertNotNull (this->fData->_fFirst);    // cuz there must be something to remove current
+                            for (this->fPrev = this->fData->_fFirst; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
+                                AssertNotNull (this->fPrev);    // cuz that would mean victim not in DoublyLinkedList!!!
+                            }
+                        }
+                        if (this->fPrev == nullptr) {
+                            this->fData->_fFirst = victim->fNext
+                        }
+                        else {
+                            Assert (this->fPrev->fNext == victim);
+                            const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
+                        }
+                        delete (victim);
+                        this->Invariant ();
+                        this->Invariant ();  // calls by invariant
+                    }
+                    template    <typename   T>
+                    void    DoublyLinkedList<T>::SetAt (const ForwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        this->Invariant ();
+                        *i = newValue;
+                        this->Invariant ();
+                    }
+                    template    <typename   T>
+                    void    DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    {
+                        /*
+                         * NB: This code works fine, even if we are done!!!
+                         */
+                        this->Invariant ();
+
+                        /*
+                         *      At this point we need the fPrev pointer. But it may have been lost
+                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
+                         *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
+                         *  is still nullptr, that means update fFirst.
+                         */
+                        if ((this->fPrev == nullptr) and (this->_fFirst != nullptr) and (this->_fFirst != this->_fCurrent)) {
+                            for (this->fPrev = this->_fFirst; this->fPrev->fNext != this->_fCurrent; this->fPrev = this->fPrev->fNext) {
+                                AssertNotNull (this->fPrev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
+                            }
+                        }
+                        if (this->fPrev == nullptr) {
+                            Assert (this->_fFirst == this->_fCurrent);     // could be nullptr, or not...
+                            this->_fFirst = new Link (newValue, const_cast<Link*> (firstDataLink));
+                        }
+                        else {
+                            Assert (this->fPrev->fNext == this->_fCurrent);
+                            const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
+                        }
+                        this->Invariant ();
+                    }
+                    template    <typename   T>
+                    void    DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        AssertNotNull (this->_fCurrent); // since not done...
+                        this->_fCurrent->fNext = new Link (newValue, this->_fCurrent->fNext);
+                    }
+
 #if     qDebug
                     template    <typename   T>
                     void    DoublyLinkedList<T>::Invariant_ () const
@@ -278,6 +354,30 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
+                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>& data)
+                        : _fData (&data)
+                        , _fCurrent (data._fFirst)
+                        , _fSuppressMore (true)
+                    {
+                    }
+                    template    <typename   T>
+                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                        : _fData (from._fData)
+                        , _fCurrent (from._fCurrent)
+                        , _fSuppressMore (from._fSuppressMore)
+                    {
+                    }
+                    template    <typename   T>
+                    inline  typename DoublyLinkedList<T>::ForwardIterator&  DoublyLinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
+                    {
+                        Invariant ();
+                        _fData = rhs._fData;
+                        _fCurrent = rhs._fCurrent;
+                        _fSuppressMore = rhs._fSuppressMore;
+                        Invariant ();
+                        return *this;
+                    }
+                    template    <typename   T>
                     inline  void    DoublyLinkedList<T>::ForwardIterator::Invariant () const
                     {
 #if     qDebug
@@ -285,31 +385,10 @@ namespace   Stroika {
 #endif
                     }
                     template    <typename   T>
-                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>& data)
-                        : fCurrent (data._fFirst)
-                        , fSuppressMore (true)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
-                        : fCurrent (from.fCurrent)
-                        , fSuppressMore (from.fSuppressMore)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  typename DoublyLinkedList<T>::ForwardIterator&  DoublyLinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
-                    {
-                        Invariant ();
-                        fCurrent = rhs.fCurrent;
-                        fSuppressMore = rhs.fSuppressMore;
-                        Invariant ();
-                        return *this;
-                    }
-                    template    <typename   T>
                     inline  bool    DoublyLinkedList<T>::ForwardIterator::Done () const
                     {
                         Invariant ();
-                        return bool (fCurrent == nullptr);
+                        return bool (_fCurrent == nullptr);
                     }
                     template    <typename   T>
                     inline  bool    DoublyLinkedList<T>::ForwardIterator::More (T* current, bool advance)
@@ -321,14 +400,14 @@ namespace   Stroika {
                              * We could already be done since after the last Done() call, we could
                              * have done a removeall.
                              */
-                            if (not fSuppressMore and fCurrent != nullptr) {
-                                fCurrent = fCurrent->fNext;
+                            if (not _fSuppressMore and _fCurrent != nullptr) {
+                                _fCurrent = _fCurrent->fNext;
                             }
-                            fSuppressMore = false;
+                            _fSuppressMore = false;
                         }
                         Invariant ();
                         if (current != nullptr and not Done ()) {
-                            *current = fCurrent->fItem;
+                            *current = _fCurrent->fItem;
                         }
                         return (not Done ());
                     }
@@ -337,8 +416,19 @@ namespace   Stroika {
                     {
                         Require (not (Done ()));
                         Invariant ();
-                        AssertNotNull (fCurrent);
-                        return (fCurrent->fItem);
+                        AssertNotNull (_fCurrent);
+                        return _fCurrent->fItem;
+                    }
+                    template    <typename   T>
+                    size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex () const
+                    {
+                        Require (not (Done ()));
+                        Invariant ();
+                        size_t n = 0;
+                        for (const Link* l = _fData->_fFirst; l != this->_fCurrent; l = l->fNext, ++n) {
+                            AssertNotNull (l);
+                        }
+                        return n;
                     }
                     template    <typename   T>
                     inline    typename DoublyLinkedList<T>::Link*   DoublyLinkedList<T>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T>* data)

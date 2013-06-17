@@ -14,6 +14,8 @@
  *
  * TODO:
  *      @todo   LOSE DoublyLinkedListMutator_Patch (move mutation methods to DoublyLinkedList itself or DoublyLinkedList_Patch for now
+ *              Started work on this - AddBefore/AddAfter etc methods. But patching logic is a GUESS at best.
+ *              not well done!
  *
  *      @todo   Move DoublyLinkedListIterator_Patch to nested.
  *
@@ -71,14 +73,20 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    Append (T item);
 
+                    public:
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
+                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T newValue);
+
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
                          * perfrom patching.
                          */
                     public:
                         nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (const Link* link) const;      //  call after add
-                        nonvirtual  void    PatchViewsRemove (const Link* link) const;   //  call before remove
+                        nonvirtual  void    PatchViewsAdd (const Link* link) const;         //  call after add
+                        nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
                         /*
@@ -130,20 +138,9 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
-                        // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
-                        // and maybe best (depending on frequency of calls to current index
-                        nonvirtual size_t CurrentIndex () const {
-                            RequireNotNull (fData);
-                            RequireNotNull (this->fCurrent);
-                            size_t i = 0;
-                            for (const Link* l = fData->_fFirst; l != this->fCurrent; l = l->fNext, ++i) {
-                                AssertNotNull (l);
-                            }
-                            return i;
-                        }
 
                     protected:
-                        const DoublyLinkedList_Patch<T>*        fData;
+                        const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
                         DoublyLinkedListIterator_Patch<T>*      fNext;
                         const Link*                    fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,

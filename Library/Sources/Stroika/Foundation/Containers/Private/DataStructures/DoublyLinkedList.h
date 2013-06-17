@@ -17,11 +17,12 @@
  *
  * TODO:
  *
- *      @todo   Add MUTATOR object - (or similar) - so we can make fLength/fFirst protected below!!!
- *              (NO MUTATOR OBJECT - INSTEAD - UPDATECURRENT (ITERATOR) MEHTOD ON OBJECT ITSELF.
- *
  *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
  *              part got lost.
+ *
+ *  Long-Term TOD:
+ *      @todo   Could add iteartor subclass (or use traits to control) which tracks index internally, as with Stroika v1
+ *              but this will do for and maybe best (depending on frequency of calls to CurrentIndex ()
  *
  *
  * Notes:
@@ -98,14 +99,27 @@ namespace   Stroika {
                         nonvirtual  void    SetAt (size_t i, T item);
 
                     public:
+                        class   ForwardIterator;
+
+                    public:
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
+
+                    public:
+                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+
+                    public:
+                        //  NB: Can be called if done
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
+
+                    public:
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
+
+                    public:
                         nonvirtual  void    Invariant () const;
 
                     public:
                         // for now public... but soon protected - just for helper iterator classes...
                         class   Link;
-
-                    public:
-                        class   ForwardIterator;
 
                     protected:
                         Link*      _fFirst;
@@ -120,7 +134,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *  for now public... but soon protected - just for helper iterator classes...
                      */
                     template    <typename   T>
@@ -136,7 +150,7 @@ namespace   Stroika {
                     };
 
 
-                    /*
+                    /**
                      *      ForwardIterator<T> allows you to iterate over a DoublyLinkedList<T>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use DoublyLinkedListIterator_Patch<T> or DoublyLinkedListMutator_Patch<T>
@@ -160,6 +174,10 @@ namespace   Stroika {
                         nonvirtual  T       Current () const;
 
                     public:
+                        // Warning - intrinsically slow
+                        nonvirtual  size_t  CurrentIndex () const;
+
+                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:
@@ -168,10 +186,12 @@ namespace   Stroika {
                         static  void        _SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink);
 
                     protected:
-                        const Link*     fCurrent;
-                        bool            fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
+                        const DoublyLinkedList<T>*  _fData;
+                        const Link*                 _fCurrent;
+                        bool                        _fSuppressMore;  // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
+                    protected:
                         virtual void    Invariant_ () const;
 #endif
                     };
