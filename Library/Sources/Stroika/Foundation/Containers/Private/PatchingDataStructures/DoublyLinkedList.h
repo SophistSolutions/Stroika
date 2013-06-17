@@ -6,7 +6,10 @@
 
 #include    "../../../StroikaPreComp.h"
 
+#include    "../../../Memory/SmallStackBuffer.h"
+
 #include    "../DataStructures/DoublyLinkedList.h"
+
 
 
 
@@ -90,6 +93,14 @@ namespace   Stroika {
                         nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
+
+                    public:
+                        //typedef   DoublyLinkedListIterator_Patch<T>   ForwardIterator;
+                    public:
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch, Link* newI);
+
+
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
                          */
@@ -142,6 +153,8 @@ namespace   Stroika {
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
+                        void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch);
+                        void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     protected:
                         const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS

@@ -57,6 +57,10 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
 
                     public:
+                        // for now public... but soon protected - just for helper iterator classes...
+                        class   Link;
+
+                    public:
                         nonvirtual  bool    IsEmpty () const;
 
                     public:
@@ -116,10 +120,6 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  void    Invariant () const;
-
-                    public:
-                        // for now public... but soon protected - just for helper iterator classes...
-                        class   Link;
 
                     protected:
                         Link*      _fFirst;

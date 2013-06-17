@@ -88,6 +88,20 @@ namespace   Stroika {
                         }
                     }
                     template    <typename   T>
+                    inline  void    DoublyLinkedList_Patch<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch) const
+                    {
+                        for (auto ai = fIterators; ai != nullptr; ai = ai->fNext) {
+                            ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
+                        }
+                    }
+                    template    <typename   T>
+                    inline  void    DoublyLinkedList_Patch<T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch, Link* newI)
+                    {
+                        for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
+                            (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
+                        }
+                    }
+                    template    <typename   T>
                     inline  void    DoublyLinkedList_Patch<T>::Prepend (T item)
                     {
                         Invariant ();
@@ -146,8 +160,11 @@ namespace   Stroika {
                     {
                         Require (not i.Done ());
                         Invariant ();
-                        this->PatchViewsRemove (i._fCurrent);
-                        inherited::RemoveAt (i);
+                        Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>   items2Patch (0);
+                        TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i._fCurrent), &items2Patch);
+                        Link*   next = i._fCurrent->fNext;
+                        this->inherited::RemoveAt (i);
+                        TwoPhaseIteratorPatcherPass2 (&items2Patch, next);
                         Invariant ();
                     }
                     template    <typename   T>
@@ -369,6 +386,19 @@ namespace   Stroika {
                         this->_fCurrent = nullptr;
                         fPrev = nullptr;
                         Ensure (this->Done ());
+                    }
+                    template    <typename T>
+                    void    DoublyLinkedListIterator_Patch<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<DoublyLinkedListIterator_Patch<T>*>* items2Patch)
+                    {
+                        if (this->_fCurrent == oldI) {
+                            items2Patch->push_back (this);
+                        }
+                    }
+                    template    <typename T>
+                    void    DoublyLinkedListIterator_Patch<T>::TwoPhaseIteratorPatcherPass2 (Link* newI)
+                    {
+                        this->_fSuppressMore = true;
+                        this->_fCurrent = newI;
                     }
 #if     qDebug
                     template    <typename   T>

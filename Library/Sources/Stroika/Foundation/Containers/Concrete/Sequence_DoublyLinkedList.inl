@@ -277,7 +277,6 @@ namespace   Stroika {
                         for (Private::PatchingDataStructures::DoublyLinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
-                                    //it.RemoveCurrent ();
                                     fData_.RemoveAt (it);
                                 }
                                 break;
