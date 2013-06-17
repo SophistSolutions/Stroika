@@ -213,7 +213,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_DoublyLinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_DoublyLinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-						fData_.RemoveAt (mir.fIterator_);
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -224,7 +224,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_DoublyLinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_DoublyLinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-						fData_.SetAt (mir.fIterator_, newValue);
+                        fData_.SetAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -278,7 +278,7 @@ namespace   Stroika {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     //it.RemoveCurrent ();
-									fData_.RemoveAt (it);
+                                    fData_.RemoveAt (it);
                                 }
                                 break;
                             }

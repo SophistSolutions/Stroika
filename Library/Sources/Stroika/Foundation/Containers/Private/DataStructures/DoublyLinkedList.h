@@ -186,7 +186,7 @@ namespace   Stroika {
                         static  void        _SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink);
 
                     protected:
-					public:	/// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN DoublyLinkedList_Patch<> - until those cleaned up a bit
+                    public: /// TEMPORARILY MAKE PUBLIC SO ACCESSIBLE IN DoublyLinkedList_Patch<> - until those cleaned up a bit
 
                         const DoublyLinkedList<T>*  _fData;
                         const Link*                 _fCurrent;

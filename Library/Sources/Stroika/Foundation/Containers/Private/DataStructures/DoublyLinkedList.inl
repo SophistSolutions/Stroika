@@ -272,7 +272,7 @@ namespace   Stroika {
                          *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
                          *  is still nullptr, that means update fFirst.
                          */
-						Link*		prev	=	nullptr;
+                        Link*       prev    =   nullptr;
                         if (this->_fFirst != victim) {
                             AssertNotNull (this->_fFirst);    // cuz there must be something to remove current
                             for (prev = this->_fFirst; prev->fNext != victim; prev = prev->fNext) {

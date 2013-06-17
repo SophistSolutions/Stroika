@@ -13,6 +13,8 @@
 /*
  *
  * TODO:
+ *          NEXT TODO LOSE DoublyLinkedListMutator_Patch
+ *
  *      @todo   LOSE DoublyLinkedListMutator_Patch (move mutation methods to DoublyLinkedList itself or DoublyLinkedList_Patch for now
  *              Started work on this - AddBefore/AddAfter etc methods. But patching logic is a GUESS at best.
  *              not well done!
@@ -144,7 +146,7 @@ namespace   Stroika {
                     protected:
                         const DoublyLinkedList_Patch<T>*        fData;  //? SHOULD BE ABLE TO INHERIT - @todo - LOSE THIS
                         DoublyLinkedListIterator_Patch<T>*      fNext;
-                        const Link*								fPrev;      // keep extra previous link for fast patchremove
+                        const Link*                             fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 

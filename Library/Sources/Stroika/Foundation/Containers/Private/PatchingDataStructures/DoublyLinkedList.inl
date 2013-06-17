@@ -133,9 +133,9 @@ namespace   Stroika {
                     {
                         Invariant ();
                         T current;
-                        for (DoublyLinkedListMutator_Patch<T> it (*this); it.More (&current, true); ) {
+                        for (ForwardIterator<T> it (*this); it.More (&current, true); ) {
                             if (current == item) {
-                                it.RemoveCurrent ();
+                                RemoveAt (it);
                                 break;
                             }
                         }
@@ -144,6 +144,7 @@ namespace   Stroika {
                     template    <typename   T>
                     void    DoublyLinkedList_Patch<T>::RemoveAt (const ForwardIterator& i)
                     {
+                        Require (not i.Done ());
                         Invariant ();
                         this->PatchViewsRemove (i._fCurrent);
                         inherited::RemoveAt (i);

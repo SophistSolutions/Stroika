@@ -54,7 +54,7 @@ namespace   {
         VerifyTestResult(someLL.GetLength() == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1);                                                                                 //  VerifyTestResult(someArray [100] == 1);
 
-        someLL.SetAt (someLL.GetAt (100) + 5, 101);
+        someLL.SetAt (101, someLL.GetAt (100) + 5);
 
         VerifyTestResult (someLL.GetAt (101) == 6);
         someLL.RemoveFirst ();
