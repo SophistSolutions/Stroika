@@ -49,7 +49,7 @@ namespace   {
         someLL.SetAt (55, 55);                                                                                                      //  someLL [55] = 55;
         VerifyTestResult (someLL.GetAt (55) == 55);                                                                                 //  VerifyTestResult(someArray [55] == 55);
         VerifyTestResult (someLL.GetAt (55) != 56);                                                                                 //  VerifyTestResult(someArray [55] != 56);
-        { size_t i = 1; size_t cur; for (DoublyLinkedListMutator_Patch<size_t> it (someLL); it.More(&cur, true); i++) { if (i == 100) {it.AddAfter (1); break;} } } //   someLL.InsertAt(1, 100);
+        { size_t i = 1; size_t cur; for (DoublyLinkedListIterator_Patch<size_t> it (someLL); it.More(&cur, true); i++) { if (i == 100) {someLL.AddAfter (it, 1); break;} } } //   someLL.InsertAt(1, 100);
 
         VerifyTestResult(someLL.GetLength() == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1);                                                                                 //  VerifyTestResult(someArray [100] == 1);

@@ -171,14 +171,23 @@ namespace   Stroika {
                     void    DoublyLinkedList_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
-                        bool    isPrevNull = i.fPrev == nullptr;
+
+                        //tmphack
+                        const Link*     prev = nullptr;
+                        if ((this->_fFirst != nullptr) and (this->_fFirst != i._fCurrent)) {
+                            for (prev = this->_fFirst; prev->fNext != i._fCurrent; prev = prev->fNext) {
+                                AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
+                            }
+                        }
+
+                        bool    isPrevNull = (prev == nullptr);
                         inherited::AddBefore (i, newValue);
                         /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
                         if (isPrevNull) {
-                            this->fData->PatchViewsAdd (this->_fFirst);       // Will adjust fPrev
+                            this->PatchViewsAdd (this->_fFirst);       // Will adjust fPrev
                         }
                         else {
-                            this->fData->PatchViewsAdd (i._fCurrent->fPrev->fNext);       // Will adjust fPrev
+                            this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
                         }
                         Invariant ();
                     }
@@ -187,7 +196,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
-                        this->PatchViewsAdd (i_fCurrent->fNext);
+                        this->PatchViewsAdd (i._fCurrent->fNext);
                         Invariant ();
                     }
 #if     qDebug
@@ -414,6 +423,9 @@ namespace   Stroika {
 #endif
 
 
+
+#if 0
+
                     /*
                     ********************************************************************************
                     ************************ DoublyLinkedListMutator_Patch<T> **********************
@@ -477,6 +489,7 @@ namespace   Stroika {
                         const_cast<Link*> (this->_fCurrent)->fItem = newValue;
                     }
 #endif
+#if 0
                     template    <typename   T>
                     inline  void    DoublyLinkedListMutator_Patch<T>::AddBefore (T newValue)
                     {
@@ -518,6 +531,8 @@ namespace   Stroika {
                         const_cast<Link*>(this->_fCurrent)->fNext = new Link (newValue, this->_fCurrent->fNext);
                         this->fData->PatchViewsAdd (this->_fCurrent->fNext);
                     }
+#endif
+#endif
 
 
                 }

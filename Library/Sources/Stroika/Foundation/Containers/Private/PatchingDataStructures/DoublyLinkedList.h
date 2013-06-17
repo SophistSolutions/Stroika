@@ -169,7 +169,7 @@ namespace   Stroika {
 #endif
                     };
 
-
+#if 0
                     /*
                      *      DoublyLinkedListMutator_Patch<T> is a DoublyLinkedListIterator_Patch<T> that allows
                      *  for changes to the DoublyLinkedList<T> relative to the position we are at
@@ -194,9 +194,10 @@ namespace   Stroika {
                     public:
                         //nonvirtual  void    RemoveCurrent ();
                         //nonvirtual  void    UpdateCurrent (T newValue);
-                        nonvirtual  void    AddBefore (T item);
-                        nonvirtual  void    AddAfter (T item);
+//                        nonvirtual  void    AddBefore (T item);
+                        //nonvirtual  void    AddAfter (T item);
                     };
+#endif
 
 
                 }

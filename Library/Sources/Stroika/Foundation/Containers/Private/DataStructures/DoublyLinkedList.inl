@@ -306,24 +306,20 @@ namespace   Stroika {
                          */
                         this->Invariant ();
 
-                        /*
-                         *      At this point we need the fPrev pointer. But it may have been lost
-                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                         *  _fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                         *  is still nullptr, that means update fFirst.
-                         */
-                        if ((this->fPrev == nullptr) and (this->_fFirst != nullptr) and (this->_fFirst != this->_fCurrent)) {
-                            for (this->fPrev = this->_fFirst; this->fPrev->fNext != this->_fCurrent; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
+                        Link*     prev = nullptr;
+                        if ((this->_fFirst != nullptr) and (this->_fFirst != i._fCurrent)) {
+                            for (prev = this->_fFirst; prev->fNext != i._fCurrent; prev = prev->fNext) {
+                                AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
-                        if (this->fPrev == nullptr) {
-                            Assert (this->_fFirst == this->_fCurrent);     // could be nullptr, or not...
-                            this->_fFirst = new Link (newValue, const_cast<Link*> (firstDataLink));
+
+                        if (prev == nullptr) {
+                            Assert (this->_fFirst == i._fCurrent);     // could be nullptr, or not...
+                            this->_fFirst = new Link (newValue, const_cast<Link*> (this->_fFirst));
                         }
                         else {
-                            Assert (this->fPrev->fNext == this->_fCurrent);
-                            const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
+                            Assert (prev->fNext == i._fCurrent);
+                            prev->fNext = new Link (newValue, prev->fNext);
                         }
                         this->Invariant ();
                     }
@@ -331,8 +327,8 @@ namespace   Stroika {
                     void    DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
-                        AssertNotNull (this->_fCurrent); // since not done...
-                        this->_fCurrent->fNext = new Link (newValue, this->_fCurrent->fNext);
+                        AssertNotNull (i._fCurrent); // since not done...
+                        const_cast<Link*> (i._fCurrent)->fNext = new Link (newValue, i._fCurrent->fNext);
                     }
 
 #if     qDebug
