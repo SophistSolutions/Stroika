@@ -62,8 +62,8 @@ namespace   Stroika {
                          */
                     public:
                         nonvirtual  bool    HasActiveIterators () const;                    //  are there any iterators to be patched?
-                        nonvirtual  void    PatchViewsAdd (const Link* link) const;      //  call after add
-                        nonvirtual  void    PatchViewsRemove (const Link* link) const;   //  call before remove
+                        nonvirtual  void    PatchViewsAdd (const Link* link) const;         //  call after add
+                        nonvirtual  void    PatchViewsRemove (const Link* link) const;      //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
                     public:

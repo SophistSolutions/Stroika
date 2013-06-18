@@ -139,8 +139,8 @@ namespace   Stroika {
                         nonvirtual  bool    More (T* current, bool advance);
 
                     public:
-                        nonvirtual  void    PatchAdd (const Link* link);     //  call after add
-                        nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
+                        nonvirtual  void    PatchAdd (const Link* link);        //  call after add
+                        nonvirtual  void    PatchRemove (const Link* link);     //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
 
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
@@ -151,7 +151,7 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList<T>&    GetPatchingContainer_ ();
 
                     private:
-                        ForwardIterator*                fNextActiveIterator_;
+                        ForwardIterator*    fNextActiveIterator_;
 
                     private:
                         friend  class   DoublyLinkedList<T>;

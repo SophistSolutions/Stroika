@@ -21,14 +21,6 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
-                    inline  void    LinkedList_Patch<T>::Invariant () const
-                    {
-#if     qDebug
-                        Invariant_ ();
-                        InvariantOnIterators_ ();
-#endif
-                    }
-                    template    <typename   T>
                     inline  LinkedList_Patch<T>::LinkedList_Patch ()
                         : inherited ()
                         , fActiveIteratorsListHead_ (nullptr)
@@ -47,6 +39,14 @@ namespace   Stroika {
                     inline  LinkedList_Patch<T>::~LinkedList_Patch ()
                     {
                         Require (fActiveIteratorsListHead_ == nullptr);
+                    }
+                    template    <typename   T>
+                    inline  void    LinkedList_Patch<T>::Invariant () const
+                    {
+#if     qDebug
+                        Invariant_ ();
+                        InvariantOnIterators_ ();
+#endif
                     }
                     template    <typename   T>
                     inline  bool    LinkedList_Patch<T>::HasActiveIterators () const
