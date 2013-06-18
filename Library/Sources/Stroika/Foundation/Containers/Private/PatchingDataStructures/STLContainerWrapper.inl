@@ -17,11 +17,9 @@ namespace   Stroika {
                 namespace   PatchingDataStructures {
 
 
-
-
                     /*
                      ********************************************************************************
-                     ************** STLContainerWrapper<STL_CONTAINER_OF_T> ***************
+                     ******************* STLContainerWrapper<STL_CONTAINER_OF_T> ********************
                      ********************************************************************************
                      */
                     template    <typename STL_CONTAINER_OF_T>
@@ -76,7 +74,7 @@ namespace   Stroika {
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::erase_WithPatching (typename STL_CONTAINER_OF_T::iterator i)
                     {
                         Invariant ();
-                        Memory::SmallStackBuffer<BasicForwardIterator*>   items2Patch (0);
+                        Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
                         TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                         auto newI = this->erase (i);
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
@@ -93,14 +91,14 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch) const
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const
                     {
                         for (auto ai = fActiveIteratorsListHead_; ai != nullptr; ai = ai->fNextActiveIterator) {
                             ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
                         }
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
@@ -126,11 +124,11 @@ namespace   Stroika {
 
                     /*
                      ********************************************************************************
-                     **** STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator ***
+                     ************ STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator **********
                      ********************************************************************************
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::BasicForwardIterator (CONTAINER_TYPE* data)
+                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (CONTAINER_TYPE* data)
                         : inherited (data)
                         , fData (data)
                         , fNextActiveIterator (data->fActiveIteratorsListHead_)
@@ -140,7 +138,7 @@ namespace   Stroika {
                         fData->fActiveIteratorsListHead_ = this;
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::BasicForwardIterator (const BasicForwardIterator& from)
+                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited (from)
                         , fData (from.fData)
                         , fNextActiveIterator (from.fData->fActiveIteratorsListHead_)
@@ -150,7 +148,7 @@ namespace   Stroika {
                         fData->fActiveIteratorsListHead_ = this;
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::~BasicForwardIterator ()
+                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::~ForwardIterator ()
                     {
                         AssertNotNull (fData);
                         if (fData->fActiveIteratorsListHead_ == this) {
@@ -168,7 +166,7 @@ namespace   Stroika {
                         }
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    typename  STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::operator= (const BasicForwardIterator& rhs)
+                    typename  STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator&   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
                         /*
                          *      If the fData field has not changed, then we can leave alone our iterator linkage.
@@ -207,7 +205,7 @@ namespace   Stroika {
                     }
                     template    <typename STL_CONTAINER_OF_T>
                     template    <typename VALUE_TYPE>
-                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::More (VALUE_TYPE* current, bool advance)
+                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (VALUE_TYPE* current, bool advance)
                     {
                         if (advance and fSuppressMore) {
                             advance = false;
@@ -216,26 +214,26 @@ namespace   Stroika {
                         return inherited::More (current, advance);
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::RemoveCurrent ()
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {
                         AssertNotNull (fData);
                         fData->erase_WithPatching (this->fStdIterator);
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch)
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
                         if (this->fStdIterator == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI)
                     {
                         fSuppressMore = true;
                         this->fStdIterator = newI;
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::Invariant () const
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::Invariant () const
                     {
 #if     qDebug
                         _Invariant ();
@@ -243,7 +241,7 @@ namespace   Stroika {
                     }
 #if     qDebug
                     template    <typename STL_CONTAINER_OF_T>
-                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator::_Invariant () const
+                    void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::_Invariant () const
                     {
                         AssertNotNull (fData);
                         // apparently pointless test is just to force triggering any check code in iterator classes for valid iterators

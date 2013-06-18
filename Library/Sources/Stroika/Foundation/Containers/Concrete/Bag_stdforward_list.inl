@@ -111,8 +111,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                                      fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator     fIterator_;
 
                 private:
                     friend  class   Bag_stdforward_list<T>::Rep_;
@@ -235,7 +235,7 @@ namespace   Stroika {
                         auto ei = fData_.before_begin ();
                         for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                             if (*i == item) {
-                                Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
+                                Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator*>   items2Patch (0);
                                 fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                 auto newI = fData_.erase_after (ei);
                                 fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
@@ -260,7 +260,7 @@ namespace   Stroika {
                             auto ei = fData_.before_begin ();
                             for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                                 if (i == mir.fIterator_.fStdIterator) {
-                                    Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::BasicForwardIterator*>   items2Patch (0);
+                                    Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator*>   items2Patch (0);
                                     fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                     auto newI = fData_.erase_after (ei);
                                     fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);

@@ -108,8 +108,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<set<T>>::BasicForwardIterator     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                              fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<set<T>>::ForwardIterator      fIterator_;
 
                 private:
                     friend  class   Rep_;

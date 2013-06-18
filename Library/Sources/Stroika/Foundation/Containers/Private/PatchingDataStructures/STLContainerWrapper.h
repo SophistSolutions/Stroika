@@ -22,7 +22,7 @@
  *  @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
  *          cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
  *
- *  @todo   Add specail subclass of BasicForwardIterator that tracks PREVPTR - and use to cleanup stuff
+ *  @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *          that uses forward_list code...
  *
  *  @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
@@ -65,7 +65,7 @@ namespace   Stroika {
                         nonvirtual  STLContainerWrapper<STL_CONTAINER_OF_T>& operator= (const STLContainerWrapper<STL_CONTAINER_OF_T>& rhs);
 
                     public:
-                        class   BasicForwardIterator;
+                        class   ForwardIterator;
 
                     public:
                         /**
@@ -91,8 +91,8 @@ namespace   Stroika {
                     public:
                         /**
                          */
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch) const;
-                        static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
+                        static      void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
                         nonvirtual  void    Invariant () const;
@@ -102,21 +102,21 @@ namespace   Stroika {
 #endif
 
                     private:
-                        BasicForwardIterator*   fActiveIteratorsListHead_;
+                        ForwardIterator*   fActiveIteratorsListHead_;
 
                     private:
-                        friend  class   BasicForwardIterator;
+                        friend  class   ForwardIterator;
                     };
 
 
                     /**
-                     *      STLContainerWrapper::BasicForwardIterator is a private utility class designed
+                     *      STLContainerWrapper::ForwardIterator is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator {
+                    class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
                     private:
-                        typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::BasicForwardIterator   inherited;
+                        typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator   inherited;
 
                     public:
                         typedef typename inherited::value_type value_type;
@@ -125,14 +125,14 @@ namespace   Stroika {
                         typedef Foundation::Containers::Private::PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>   CONTAINER_TYPE;
 
                     public:
-                        BasicForwardIterator (CONTAINER_TYPE* data);
-                        BasicForwardIterator (const BasicForwardIterator& from);
+                        ForwardIterator (CONTAINER_TYPE* data);
+                        ForwardIterator (const ForwardIterator& from);
 
                     public:
-                        ~BasicForwardIterator ();
+                        ~ForwardIterator ();
 
                     public:
-                        nonvirtual  BasicForwardIterator& operator= (const BasicForwardIterator& rhs);
+                        nonvirtual  ForwardIterator& operator= (const ForwardIterator& rhs);
 
                     public:
                         template    <typename VALUE_TYPE>
@@ -147,7 +147,7 @@ namespace   Stroika {
                         /*
                          * OK to be private cuz CONTAINER_TYPE is a friend.
                          */
-                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<BasicForwardIterator*>* items2Patch);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
                     public:
@@ -158,9 +158,9 @@ namespace   Stroika {
 #endif
 
                     public:
-                        CONTAINER_TYPE*         fData;
-                        BasicForwardIterator*   fNextActiveIterator;
-                        bool                    fSuppressMore;  // for removealls
+                        CONTAINER_TYPE*     fData;
+                        ForwardIterator*    fNextActiveIterator;
+                        bool                fSuppressMore;  // for removealls
 
                     private:
                         friend  CONTAINER_TYPE;

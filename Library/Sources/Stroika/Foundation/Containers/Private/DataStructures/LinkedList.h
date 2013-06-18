@@ -74,19 +74,38 @@ namespace   Stroika {
                     public:
                         nonvirtual  size_t  GetLength () const;
 
-                        /*
-                         *      Basic access to the head of the list. This is what is most
-                         *  commonly used, and is most efficient.
-                         */
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         *      Average Case: O(1)
+                         */
                         nonvirtual  T       GetFirst () const;
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         *      Average Case: O(1)
+                         */
                         nonvirtual  void    Prepend (T item);
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         *      Average Case: O(1)
+                         */
                         nonvirtual  void    RemoveFirst ();
 
+                    public:
                         /*
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         *
                          *  Utility to search the list for the given item using operator==
                          */
-                    public:
                         nonvirtual  bool    Contains (T item) const;
 
 
@@ -103,12 +122,26 @@ namespace   Stroika {
                         nonvirtual  void    RemoveAll ();
 
 
+                    public:
                         /*
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         *
                          *      Not alot of point in having these, as they are terribly slow,
                          *  but the could be convienient.
                          */
-                    public:
                         nonvirtual  T       GetAt (size_t i) const;
+
+                    public:
+                        /*
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         *
+                         *      Not alot of point in having these, as they are terribly slow,
+                         *  but the could be convienient.
+                         */
                         nonvirtual  void    SetAt (T item, size_t i);
 
 
