@@ -107,7 +107,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<T>     fIterator_;
+                    mutable Private::PatchingDataStructures::LinkedListIterator_Patch<T>     fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -220,7 +220,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (nullptr, true);) {
+                        for (Private::PatchingDataStructures::LinkedListIterator_Patch<T> it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
                                 fData_.RemoveAt (it);
                                 return;

@@ -147,13 +147,12 @@ namespace   Stroika {
                     {
                         Invariant ();
                         T current;
-                        for (LinkedListMutator_Patch<T> it (*this); it.More (&current, true); ) {
+                        for (LinkedListIterator_Patch<T> it (*this); it.More (&current, true); ) {
                             if (current == item) {
                                 this->RemoveAt (it);
                                 break;
                             }
                         }
-
                         Invariant ();
                     }
                     template    <typename   T>
@@ -420,116 +419,6 @@ namespace   Stroika {
                          *  fPrev could be nullptr, but if it isn't then its next must be fCurrent.
                          */
                         Assert ((fPrev == nullptr) or (fPrev->fNext == this->fCurrent));
-                    }
-#endif
-
-
-                    /*
-                    ********************************************************************************
-                    ****************************** LinkedListMutator_Patch<T> **********************
-                    ********************************************************************************
-                    */
-                    template    <typename   T>
-                    inline  LinkedListMutator_Patch<T>::LinkedListMutator_Patch (LinkedList_Patch<T>& data) :
-                        LinkedListIterator_Patch<T> ((const LinkedList_Patch<T>&)data)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  LinkedListMutator_Patch<T>::LinkedListMutator_Patch (const LinkedListMutator_Patch<T>& from) :
-                        LinkedListIterator_Patch<T> ((const LinkedListIterator_Patch<T>&)from)
-                    {
-                    }
-                    template    <typename   T>
-                    inline  LinkedListMutator_Patch<T>& LinkedListMutator_Patch<T>::operator= (LinkedListMutator_Patch<T>& rhs)
-                    {
-                        LinkedListIterator_Patch<T>::operator= ((const LinkedListIterator_Patch<T>&)rhs);
-                        return (*this);
-                    }
-#if 0
-                    template    <typename   T>
-                    inline  void    LinkedListMutator_Patch<T>::RemoveCurrent ()
-                    {
-                        Require (not this->Done ());
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
-
-                        this->Invariant ();
-                        Link*    victim  = const_cast<Link*> (this->fCurrent);
-                        AssertNotNull (this->fData);
-                        this->fData->PatchViewsRemove (victim);
-                        Assert (this->fCurrent != victim);              // patching should  have guaranteed this
-                        /*
-                         *      At this point we need the fPrev pointer. But it may have been lost
-                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                         *  fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                         *  is still nullptr, that means update fFirst.
-                         */
-
-                        if ((this->fPrev == nullptr) and (this->fData->fFirst != victim)) {
-                            AssertNotNull (this->fData->fFirst);    // cuz there must be something to remove current
-                            for (this->fPrev = this->fData->fFirst; this->fPrev->fNext != victim; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean victim not in LinkedList!!!
-                            }
-                        }
-                        if (this->fPrev == nullptr) {
-                            const_cast<LinkedList_Patch<T>*> (this->fData)->fFirst = victim->fNext;
-                        }
-                        else {
-                            Assert (this->fPrev->fNext == victim);
-                            const_cast<Link*> (this->fPrev)->fNext = victim->fNext;
-                        }
-                        delete (victim);
-                        this->Invariant ();
-                        this->fData->Invariant ();  // calls by invariant
-                    }
-                    template    <typename   T>
-                    inline  void    LinkedListMutator_Patch<T>::UpdateCurrent (T newValue)
-                    {
-                        RequireNotNull (this->fCurrent);
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
-                        const_cast<Link*> (this->fCurrent)->fItem = newValue;
-                    }
-#endif
-#if 0
-                    template    <typename   T>
-                    inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue)
-                    {
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
-                        /*
-                         * NB: This code works fine, even if we are done!!!
-                         */
-
-                        /*
-                         *      At this point we need the fPrev pointer. But it may have been lost
-                         *  in a patch. If it was, its value will be nullptr (NB: nullptr could also mean
-                         *  fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
-                         *  is still nullptr, that means update fFirst.
-                         */
-                        AssertNotNull (this->fData);
-                        if ((this->fPrev == nullptr) and (this->fData->fFirst != nullptr) and (this->fData->fFirst != this->fCurrent)) {
-                            for (this->fPrev = this->fData->fFirst; this->fPrev->fNext != this->fCurrent; this->fPrev = this->fPrev->fNext) {
-                                AssertNotNull (this->fPrev);    // cuz that would mean fCurrent not in LinkedList!!!
-                            }
-                        }
-                        if (this->fPrev == nullptr) {
-                            Assert (this->fData->fFirst == this->fCurrent);     // could be nullptr, or not...
-                            const_cast<LinkedList_Patch<T>*> (this->fData)->fFirst = new Link (newValue, this->fData->fFirst);
-                            this->fData->PatchViewsAdd (this->fData->fFirst);       // Will adjust fPrev
-                        }
-                        else {
-                            Assert (this->fPrev->fNext == this->fCurrent);
-                            const_cast<Link*>(this->fPrev)->fNext = new Link (newValue, this->fPrev->fNext);
-                            this->fData->PatchViewsAdd (this->fPrev->fNext);        // Will adjust fPrev
-                        }
-                        this->fData->Invariant ();  // will call this's Invariant()
-                    }
-                    template    <typename   T>
-                    inline  void    LinkedListMutator_Patch<T>::AddAfter (T newValue)
-                    {
-                        Require (not this->Done ());
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
-                        AssertNotNull (this->fCurrent); // since not done...
-                        const_cast<Link*>(this->fCurrent)->fNext = new Link (newValue, this->fCurrent->fNext);
-                        this->fData->PatchViewsAdd (this->fCurrent->fNext);
                     }
 #endif
 

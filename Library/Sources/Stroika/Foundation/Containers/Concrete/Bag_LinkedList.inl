@@ -111,7 +111,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable Private::PatchingDataStructures::LinkedListMutator_Patch<T>     fIterator_;
+                    mutable Private::PatchingDataStructures::LinkedListIterator_Patch<T>     fIterator_;
 
                 private:
                     friend  class   Bag_LinkedList<T>::Rep_;

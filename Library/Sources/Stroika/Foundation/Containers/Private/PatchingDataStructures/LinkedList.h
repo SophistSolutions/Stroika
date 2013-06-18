@@ -15,8 +15,6 @@
 /**
  *
  * TODO:
- *      @todo   GET RID OF LinkedListMutator_Patch - as we did for DoublyLinkedList..
- *
  *      @todo   THEN - redo LinkedList_Patching<T>::ForwardIterator as nested... then more cleanups...
  */
 
@@ -164,31 +162,6 @@ namespace   Stroika {
                         friend  class   LinkedList_Patch<T>;
 #if     qDebug
                         virtual void    Invariant_ () const override;
-#endif
-                    };
-
-
-                    /*
-                     *      LinkedListMutator_Patch<T> is a LinkedListIterator_Patch<T> that allows
-                     *  for changes to the LinkedList<T> relative to the position we are at
-                     *  currently in the iteration. This is be used most commonly in
-                     *  implementing concrete iterators for Stroika containers.
-                     */
-                    template    <typename   T>
-                    class   LinkedListMutator_Patch : public LinkedListIterator_Patch<T> {
-                    public:
-                        LinkedListMutator_Patch (LinkedList_Patch<T>& data);
-                        LinkedListMutator_Patch (const LinkedListMutator_Patch<T>& from);
-
-                    public:
-                        nonvirtual  LinkedListMutator_Patch<T>& operator= (LinkedListMutator_Patch<T>& rhs);
-
-                    public:
-#if 0
-                        nonvirtual  void    RemoveCurrent ();
-                        nonvirtual  void    UpdateCurrent (T newValue);
-                        nonvirtual  void    AddBefore (T item);
-                        nonvirtual  void    AddAfter (T item);
 #endif
                     };
 
