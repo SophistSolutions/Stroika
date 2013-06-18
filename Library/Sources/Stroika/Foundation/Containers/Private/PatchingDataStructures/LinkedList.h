@@ -140,27 +140,20 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
-                        // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
-                        // and maybe best (depending on frequency of calls to current index
-                        nonvirtual size_t CurrentIndex () const {
-                            RequireNotNull (fData);
-                            RequireNotNull (this->fCurrent);
-                            size_t i = 0;
-                            for (const Link* l = fData->fFirst; l != this->fCurrent; l = l->fNext, ++i) {
-                                AssertNotNull (l);
-                            }
-                            return i;
-                        }
+                    private:
+                        nonvirtual  const LinkedList_Patch<T>&  GetPatchingContainer_ () const;
+                        nonvirtual  LinkedList_Patch<T>&    GetPatchingContainer_ ();
 
                     protected:
-                        const LinkedList_Patch<T>*  fData;
-                        ForwardIterator*    _fNextActiveIterator;
+                        ForwardIterator*            _fNextActiveIterator;
                         //const Link*              fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 
+                    private:
                         friend  class   LinkedList_Patch<T>;
 #if     qDebug
+                    protected:
                         virtual void    Invariant_ () const override;
 #endif
                     };

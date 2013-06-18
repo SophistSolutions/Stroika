@@ -179,7 +179,7 @@ namespace   Stroika {
 
                     public://////WORKRARBOUND - NEED MUTATOR TO ACCESS THIS SO OUR PROTECTED STUFF NOT NEEDED BY PATCHING CODE
                         //protected:
-                        Link*       fFirst;
+                        Link*       _fHead;
 
 #if     qDebug
                     protected:
@@ -224,16 +224,22 @@ namespace   Stroika {
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  T       Current () const;
 
+                        nonvirtual size_t CurrentIndex () const;
+
+                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
+                        const LinkedList<T>*  _fData;
+
+                    protected:
+                        //const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
                     protected:
                     public:
                         ///@todo - tmphack - this SB protected probably???
-                        const typename LinkedList<T>::Link*     fCurrent;
+                        const typename LinkedList<T>::Link*     _fCurrent;
                     protected:
-                        bool                                    fSuppressMore;      // Indicates if More should do anything, or if were already Mored...
+                        bool                                    _fSuppressMore;      // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug
                         virtual void    Invariant_ () const;

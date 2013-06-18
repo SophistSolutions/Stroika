@@ -411,7 +411,6 @@ namespace   Stroika {
                         AssertMember (this->_fData, DoublyLinkedList<T>);
                         return *static_cast<DoublyLinkedList<T>*> (const_cast<DataStructures::DoublyLinkedList<T>*> (this->_fData));
                     }
-
 #if     qDebug
                     template    <typename   T>
                     void    DoublyLinkedList<T>::ForwardIterator::Invariant_ () const

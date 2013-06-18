@@ -106,18 +106,18 @@ namespace   Stroika {
                     {
                         Invariant ();
                         inherited::Prepend (item);
-                        PatchViewsAdd (this->fFirst);
+                        PatchViewsAdd (this->_fHead);
                         Invariant ();
                     }
                     //tmphack - must fix to have in  base class and just hook for patch here
                     template    <typename   T>
                     inline  void    LinkedList_Patch<T>::Append (T item)
                     {
-                        if (this->fFirst == nullptr) {
+                        if (this->_fHead == nullptr) {
                             Prepend (item);
                         }
                         else {
-                            Link* last = this->fFirst;
+                            Link* last = this->_fHead;
                             for (; last->fNext != nullptr; last = last->fNext)
                                 ;
                             Assert (last != nullptr);
@@ -130,7 +130,7 @@ namespace   Stroika {
                     inline  void    LinkedList_Patch<T>::RemoveFirst ()
                     {
                         Invariant ();
-                        PatchViewsRemove (this->fFirst);
+                        PatchViewsRemove (this->_fHead);
                         inherited::RemoveFirst ();
                         Invariant ();
                     }
@@ -161,8 +161,8 @@ namespace   Stroika {
                         Require (not i.Done ());
                         Invariant ();
                         Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
-                        TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i.fCurrent), &items2Patch);
-                        Link*   next = i.fCurrent->fNext;
+                        TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i._fCurrent), &items2Patch);
+                        Link*   next = i._fCurrent->fNext;
                         this->inherited::RemoveAt (i);
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, next);
                         Invariant ();
@@ -174,8 +174,8 @@ namespace   Stroika {
 
                         //tmphack
                         const Link*     prev = nullptr;
-                        if ((this->fFirst != nullptr) and (this->fFirst != i.fCurrent)) {
-                            for (prev = this->fFirst; prev->fNext != i.fCurrent; prev = prev->fNext) {
+                        if ((this->_fHead != nullptr) and (this->_fHead != i._fCurrent)) {
+                            for (prev = this->_fHead; prev->fNext != i._fCurrent; prev = prev->fNext) {
                                 AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
@@ -184,7 +184,7 @@ namespace   Stroika {
                         inherited::AddBefore (i, newValue);
                         /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
                         if (isPrevNull) {
-                            this->PatchViewsAdd (this->fFirst);       // Will adjust fPrev
+                            this->PatchViewsAdd (this->_fHead);       // Will adjust fPrev
                         }
                         else {
                             this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
@@ -196,7 +196,7 @@ namespace   Stroika {
                     {
                         Invariant ();
                         inherited::AddAfter (i, newValue);
-                        this->PatchViewsAdd (i.fCurrent->fNext);
+                        this->PatchViewsAdd (i._fCurrent->fNext);
                         Invariant ();
                     }
 #if     qDebug
@@ -213,7 +213,7 @@ namespace   Stroika {
                          *  so only called when WE call Invariant().
                          */
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            Assert (v->fData == this);
+                            Assert (v->_fData == this);
                         }
                     }
                     template    <typename   T>
@@ -224,7 +224,7 @@ namespace   Stroika {
                          *  since now we've completed any needed patching.
                          */
                         for (auto v = fActiveIteratorsListHead_; v != nullptr; v = v->_fNextActiveIterator) {
-                            Assert (v->fData == this);
+                            Assert (v->_fData == this);
                             v->Invariant ();
                         }
                     }
@@ -239,9 +239,8 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  LinkedList_Patch<T>::ForwardIterator::ForwardIterator (const LinkedList_Patch<T>& data)
                         : inherited (data)
-                        , fData (&data)
                         , _fNextActiveIterator (data.fActiveIteratorsListHead_)
-                        //, fPrev (nullptr)         // means invalid or fData->fFirst == fCurrent ...
+                        //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
                         const_cast<LinkedList_Patch<T>*> (&data)->fActiveIteratorsListHead_ = this;
                         this->Invariant ();
@@ -249,24 +248,22 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  LinkedList_Patch<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : inherited (from)
-                        , fData (from.fData)
-                        , _fNextActiveIterator (from.fData->fActiveIteratorsListHead_)
+                        , _fNextActiveIterator (from.GetPatchingContainer_ ().fActiveIteratorsListHead_)
                         //, fPrev (from.fPrev)
                     {
                         from.Invariant ();
-                        const_cast<LinkedList_Patch<T>*> (fData)->fActiveIteratorsListHead_ = this;
+                        GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
                         this->Invariant ();
                     }
                     template    <typename   T>
                     inline  LinkedList_Patch<T>::ForwardIterator::~ForwardIterator ()
                     {
                         this->Invariant ();
-                        AssertNotNull (fData);
-                        if (fData->fActiveIteratorsListHead_ == this) {
-                            const_cast<LinkedList_Patch<T>*> (fData)->fActiveIteratorsListHead_ = _fNextActiveIterator;
+                        if (GetPatchingContainer_ ().fActiveIteratorsListHead_ == this) {
+                            GetPatchingContainer_ ().fActiveIteratorsListHead_ = _fNextActiveIterator;
                         }
                         else {
-                            auto    v = fData->fActiveIteratorsListHead_;
+                            auto    v = GetPatchingContainer_ ().fActiveIteratorsListHead_;
                             for (; v->_fNextActiveIterator != this; v = v->_fNextActiveIterator) {
                                 AssertNotNull (v);
                                 AssertNotNull (v->_fNextActiveIterator);
@@ -285,18 +282,16 @@ namespace   Stroika {
                          *      If the fData field has not changed, then we can leave alone our iterator linkage.
                          *  Otherwise, we must remove ourselves from the old, and add ourselves to the new.
                          */
-                        if (fData != rhs.fData) {
-                            AssertNotNull (fData);
-                            AssertNotNull (rhs.fData);
+                        if (&GetPatchingContainer_ () != &rhs.GetPatchingContainer_ ()) {
 
                             /*
                              * Remove from old.
                              */
-                            if (fData->fActiveIteratorsListHead_ == this) {
-                                const_cast<LinkedList_Patch<T>*>(fData)->fActiveIteratorsListHead_ = _fNextActiveIterator;
+                            if (GetPatchingContainer_ ().fActiveIteratorsListHead_ == this) {
+                                GetPatchingContainer_ ().fActiveIteratorsListHead_ = _fNextActiveIterator;
                             }
                             else {
-                                auto v = fData->fActiveIteratorsListHead_;
+                                auto v = GetPatchingContainer_ ().fActiveIteratorsListHead_;
                                 for (; v->_fNextActiveIterator != this; v = v->_fNextActiveIterator) {
                                     AssertNotNull (v);
                                     AssertNotNull (v->_fNextActiveIterator);
@@ -310,8 +305,8 @@ namespace   Stroika {
                              * Add to new.
                              */
                             fData = rhs.fData;
-                            fNext = rhs.fData->fActiveIteratorsListHead_;
-                            const_cast<LinkedList_Patch<T>*> (fData)->fActiveIteratorsListHead_ = this;
+                            _fNextActiveIterator = rhs.GetPatchingContainer_ ().fActiveIteratorsListHead_;
+                            GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
                         }
 
                         fData = rhs.fData;
@@ -320,7 +315,7 @@ namespace   Stroika {
                         inherited::operator= (rhs);
 
                         this->Invariant ();
-                        return (*this);
+                        return *this;
                     }
                     template    <typename   T>
                     inline  bool    LinkedList_Patch<T>::ForwardIterator::More (T* current, bool advance)
@@ -332,16 +327,16 @@ namespace   Stroika {
                              * We could already be done since after the last Done() call, we could
                              * have done a removeall.
                              */
-                            if (not this->fSuppressMore and this->fCurrent != nullptr) {
-                                //fPrev = this->fCurrent;
-                                this->fCurrent = this->fCurrent->fNext;
+                            if (not this->_fSuppressMore and this->_fCurrent != nullptr) {
+                                //fPrev = this->_fCurrent;
+                                this->_fCurrent = this->_fCurrent->fNext;
 
                             }
-                            this->fSuppressMore = false;
+                            this->_fSuppressMore = false;
                         }
                         this->Invariant ();
                         if ((current != nullptr) and (not this->Done ())) {
-                            *current = this->fCurrent->fItem;
+                            *current = this->_fCurrent->fItem;
                         }
                         return (not this->Done ());
                     }
@@ -355,7 +350,7 @@ namespace   Stroika {
                          *  previous, we just adjust our previous.
                          */
                         RequireNotNull (link);
-                        if (link->fNext == this->fCurrent) {
+                        if (link->fNext == this->_fCurrent) {
                             //fPrev = link;
                         }
                     }
@@ -368,7 +363,7 @@ namespace   Stroika {
                          *  There are basicly three cases:
                          *
                          *  (1)     We remove the current. In this case, we just advance current to the next
-                         *          item (prev is already all set), and set fSuppressMore since we are advanced
+                         *          item (prev is already all set), and set _fSuppressMore since we are advanced
                          *          to the next item.
                          *  (2)     We remove our previous. Technically this poses no problems, except then
                          *          our previos pointer is invalid. We could recompute it, but that would
@@ -378,12 +373,12 @@ namespace   Stroika {
                          *          It will be recomputed if needed.
                          *  (3)     We are deleting some other value. No probs.
                          */
-                        if (this->fCurrent == link) {
-                            this->fCurrent = this->fCurrent->fNext;
+                        if (this->_fCurrent == link) {
+                            this->_fCurrent = this->_fCurrent->fNext;
                             // fPrev remains the same - right now it points to a bad item, since
                             // PatchRemove() called before the actual removal, but right afterwards
-                            // it will point to our new fCurrent.
-                            this->fSuppressMore = true;         // Since we advanced cursor...
+                            // it will point to our new _fCurrent.
+                            this->_fSuppressMore = true;         // Since we advanced cursor...
                         }
                         //else if (fPrev == link) {
                         //    fPrev = nullptr;                    // real value recomputed later, if needed
@@ -392,22 +387,34 @@ namespace   Stroika {
                     template    <typename   T>
                     inline  void    LinkedList_Patch<T>::ForwardIterator::PatchRemoveAll ()
                     {
-                        this->fCurrent = nullptr;
+                        this->_fCurrent = nullptr;
                         //fPrev = nullptr;
                         Ensure (this->Done ());
                     }
                     template    <typename T>
                     void    LinkedList_Patch<T>::ForwardIterator::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch)
                     {
-                        if (this->fCurrent == oldI) {
+                        if (this->_fCurrent == oldI) {
                             items2Patch->push_back (this);
                         }
                     }
                     template    <typename T>
                     void    LinkedList_Patch<T>::ForwardIterator::TwoPhaseIteratorPatcherPass2 (Link* newI)
                     {
-                        this->fSuppressMore = true;
-                        this->fCurrent = newI;
+                        this->_fSuppressMore = true;
+                        this->_fCurrent = newI;
+                    }
+                    template    <typename T>
+                    inline  const LinkedList_Patch<T>&  LinkedList_Patch<T>::ForwardIterator::GetPatchingContainer_ () const
+                    {
+                        AssertMember (this->_fData, LinkedList_Patch<T>);
+                        return *static_cast<const LinkedList_Patch<T>*> (this->_fData);
+                    }
+                    template    <typename T>
+                    inline  LinkedList_Patch<T>&    LinkedList_Patch<T>::ForwardIterator::GetPatchingContainer_ ()
+                    {
+                        AssertMember (this->_fData, LinkedList_Patch<T>);
+                        return *static_cast<LinkedList_Patch<T>*> (const_cast<DataStructures::LinkedList<T>*> (this->_fData));
                     }
 #if     qDebug
                     template    <typename   T>
@@ -416,9 +423,9 @@ namespace   Stroika {
                         inherited::Invariant_ ();
 
                         /*
-                         *  fPrev could be nullptr, but if it isn't then its next must be fCurrent.
+                         *  fPrev could be nullptr, but if it isn't then its next must be _fCurrent.
                          */
-                        //Assert ((fPrev == nullptr) or (fPrev->fNext == this->fCurrent));
+                        //Assert ((fPrev == nullptr) or (fPrev->fNext == this->_fCurrent));
                     }
 #endif
 
