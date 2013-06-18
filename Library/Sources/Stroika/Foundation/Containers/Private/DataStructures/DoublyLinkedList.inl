@@ -288,7 +288,6 @@ namespace   Stroika {
                         }
                         delete (victim);
                         this->Invariant ();
-                        this->Invariant ();  // calls by invariant
                     }
                     template    <typename   T>
                     void    DoublyLinkedList<T>::SetAt (const ForwardIterator& i, T newValue)
@@ -330,7 +329,6 @@ namespace   Stroika {
                         AssertNotNull (i._fCurrent); // since not done...
                         const_cast<Link*> (i._fCurrent)->fNext = new Link (newValue, i._fCurrent->fNext);
                     }
-
 #if     qDebug
                     template    <typename   T>
                     void    DoublyLinkedList<T>::Invariant_ () const

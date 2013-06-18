@@ -90,7 +90,6 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch) const;
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI);
 
-
                     public:
                         /*
                          *  Check Invariants for this class, and all the iterators we own.

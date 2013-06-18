@@ -222,7 +222,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (nullptr, true);) {
                             if (it.Current () == item) {
-                                it.RemoveCurrent ();
+                                fData_.RemoveAt (it);
                                 return;
                             }
                         }
@@ -236,7 +236,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Set_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Set_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

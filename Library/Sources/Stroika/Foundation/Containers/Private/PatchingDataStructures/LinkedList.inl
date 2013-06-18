@@ -77,6 +77,20 @@ namespace   Stroika {
                         }
                     }
                     template    <typename   T>
+                    inline  void    LinkedList_Patch<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch) const
+                    {
+                        for (auto ai = fIterators; ai != nullptr; ai = ai->fNext) {
+                            ai->TwoPhaseIteratorPatcherPass1 (oldI, items2Patch);
+                        }
+                    }
+                    template    <typename   T>
+                    inline  void    LinkedList_Patch<T>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch, Link* newI)
+                    {
+                        for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
+                            (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
+                        }
+                    }
+                    template    <typename   T>
                     inline  LinkedList_Patch<T>& LinkedList_Patch<T>::operator= (const LinkedList_Patch<T>& rhs)
                     {
                         /*
@@ -135,11 +149,55 @@ namespace   Stroika {
                         T current;
                         for (LinkedListMutator_Patch<T> it (*this); it.More (&current, true); ) {
                             if (current == item) {
-                                it.RemoveCurrent ();
+                                this->RemoveAt (it);
                                 break;
                             }
                         }
 
+                        Invariant ();
+                    }
+                    template    <typename   T>
+                    void    LinkedList_Patch<T>::RemoveAt (const ForwardIterator& i)
+                    {
+                        Require (not i.Done ());
+                        Invariant ();
+                        Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>   items2Patch (0);
+                        TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i.fCurrent), &items2Patch);
+                        Link*   next = i.fCurrent->fNext;
+                        this->inherited::RemoveAt (i);
+                        TwoPhaseIteratorPatcherPass2 (&items2Patch, next);
+                        Invariant ();
+                    }
+                    template    <typename   T>
+                    void    LinkedList_Patch<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    {
+                        Invariant ();
+
+                        //tmphack
+                        const Link*     prev = nullptr;
+                        if ((this->fFirst != nullptr) and (this->fFirst != i.fCurrent)) {
+                            for (prev = this->fFirst; prev->fNext != i.fCurrent; prev = prev->fNext) {
+                                AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
+                            }
+                        }
+
+                        bool    isPrevNull = (prev == nullptr);
+                        inherited::AddBefore (i, newValue);
+                        /// WAG - VERY LIKELY WRONG BELOIW - MUST CLENAUP - LGP -2013-06-17
+                        if (isPrevNull) {
+                            this->PatchViewsAdd (this->fFirst);       // Will adjust fPrev
+                        }
+                        else {
+                            this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
+                        }
+                        Invariant ();
+                    }
+                    template    <typename   T>
+                    void    LinkedList_Patch<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    {
+                        Invariant ();
+                        inherited::AddAfter (i, newValue);
+                        this->PatchViewsAdd (i.fCurrent->fNext);
                         Invariant ();
                     }
 #if     qDebug
@@ -339,6 +397,19 @@ namespace   Stroika {
                         fPrev = nullptr;
                         Ensure (this->Done ());
                     }
+                    template    <typename T>
+                    void    LinkedListIterator_Patch<T>::TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch)
+                    {
+                        if (this->fCurrent == oldI) {
+                            items2Patch->push_back (this);
+                        }
+                    }
+                    template    <typename T>
+                    void    LinkedListIterator_Patch<T>::TwoPhaseIteratorPatcherPass2 (Link* newI)
+                    {
+                        this->fSuppressMore = true;
+                        this->fCurrent = newI;
+                    }
 #if     qDebug
                     template    <typename   T>
                     void    LinkedListIterator_Patch<T>::Invariant_ () const
@@ -374,6 +445,7 @@ namespace   Stroika {
                         LinkedListIterator_Patch<T>::operator= ((const LinkedListIterator_Patch<T>&)rhs);
                         return (*this);
                     }
+#if 0
                     template    <typename   T>
                     inline  void    LinkedListMutator_Patch<T>::RemoveCurrent ()
                     {
@@ -416,6 +488,8 @@ namespace   Stroika {
                         typedef typename DataStructures::LinkedList<T>::Link    Link;
                         const_cast<Link*> (this->fCurrent)->fItem = newValue;
                     }
+#endif
+#if 0
                     template    <typename   T>
                     inline  void    LinkedListMutator_Patch<T>::AddBefore (T newValue)
                     {
@@ -457,6 +531,7 @@ namespace   Stroika {
                         const_cast<Link*>(this->fCurrent)->fNext = new Link (newValue, this->fCurrent->fNext);
                         this->fData->PatchViewsAdd (this->fCurrent->fNext);
                     }
+#endif
 
 
                 }

@@ -110,7 +110,34 @@ namespace   Stroika {
 
 
                     public:
-                        nonvirtual  void    RemoveAt (const ForwardIterator& it);
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
+                        nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         *
+                         *  NB: Can be called if done
+                         */
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
 
                     public:
                         /**
@@ -203,7 +230,11 @@ namespace   Stroika {
 
                     protected:
                         const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
+                    protected:
+                    public:
+                        ///@todo - tmphack - this SB protected probably???
                         const typename LinkedList<T>::Link*     fCurrent;
+                    protected:
                         bool                                    fSuppressMore;      // Indicates if More should do anything, or if were already Mored...
 
 #if     qDebug

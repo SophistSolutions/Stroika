@@ -219,7 +219,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.UpdateCurrent (newValue);
+                        fData_.SetAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -238,7 +238,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

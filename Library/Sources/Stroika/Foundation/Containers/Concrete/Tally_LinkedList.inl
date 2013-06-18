@@ -219,7 +219,7 @@ namespace   Stroika {
                             for (Private::PatchingDataStructures::LinkedListMutator_Patch<TallyEntry<T> > it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     current.fCount += count;
-                                    it.UpdateCurrent (current);
+                                    fData_.SetAt (it, current);
                                     return;
                                 }
                             }
@@ -243,10 +243,10 @@ namespace   Stroika {
                                         current.fCount = 0;     // Should this be an underflow excpetion, assertion???
                                     }
                                     if (current.fCount == 0) {
-                                        it.RemoveCurrent ();
+                                        fData_.RemoveAt (it);
                                     }
                                     else {
-                                        it.UpdateCurrent (current);
+                                        fData_.SetAt (it, current);
                                     }
                                     break;
                                 }
@@ -262,7 +262,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Tally_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -282,12 +282,12 @@ namespace   Stroika {
                     const typename Tally_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Tally_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
-                            mir.fIterator_.RemoveCurrent ();
+                            fData_.RemoveAt (mir.fIterator_);
                         }
                         else {
                             TallyEntry<T>   c   =   mir.fIterator_.Current ();
                             c.fCount = newCount;
-                            mir.fIterator_.UpdateCurrent (c);
+                            fData_.SetAt (mir.fIterator_, c);
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();

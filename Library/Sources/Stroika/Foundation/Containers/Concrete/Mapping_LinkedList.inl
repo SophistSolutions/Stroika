@@ -230,7 +230,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::PatchingDataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
-                                it.UpdateCurrent (pair<Key, T> (key, newElt));
+                                fData_.SetAt (it, pair<Key, T> (key, newElt));
                                 return;
                             }
                         }
@@ -244,7 +244,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (Private::PatchingDataStructures::LinkedListMutator_Patch<pair<Key, T>> it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
-                                it.RemoveCurrent ();
+                                fData_.RemoveAt (it);
                                 return;
                             }
                         }
@@ -258,7 +258,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Mapping_LinkedList<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_LinkedList<Key, T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

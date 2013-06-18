@@ -34,6 +34,12 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template    <typename   T>
+                    inline  LinkedList<T>::LinkedList ()
+                        : fFirst (nullptr)
+                    {
+                        Invariant ();
+                    }
+                    template    <typename   T>
                     LinkedList<T>::LinkedList (const LinkedList<T>& from)
                         : fFirst (nullptr)
                     {
@@ -57,19 +63,6 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    inline  void    LinkedList<T>::Invariant () const
-                    {
-#if     qDebug
-                        Invariant_ ();
-#endif
-                    }
-                    template    <typename   T>
-                    inline  LinkedList<T>::LinkedList ()
-                        : fFirst (nullptr)
-                    {
-                        Invariant ();
-                    }
-                    template    <typename   T>
                     inline  LinkedList<T>::~LinkedList ()
                     {
                         /*
@@ -84,6 +77,41 @@ namespace   Stroika {
                         RemoveAll ();
                         Invariant ();
                         Ensure (fFirst == nullptr);
+                    }
+                    template    <typename   T>
+                    LinkedList<T>& LinkedList<T>::operator= (const LinkedList<T>& list)
+                    {
+                        Invariant ();
+
+                        RemoveAll ();
+
+                        /*
+                         *      Copy the link list by keeping a point to the new current and new
+                         *  previous, and sliding them along in parallel as we construct the
+                         *  new list. Only do this if we have at least one element - then we
+                         *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
+                         *  case is handled outside, before the loop.
+                         */
+                        if (list.fFirst != nullptr) {
+                            fFirst = new Link (list.fFirst->fItem, nullptr);
+                            Link*    newCur  =   fFirst;
+                            for (const Link* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
+                                Link*    newPrev =   newCur;
+                                newCur = new Link (cur->fItem, nullptr);
+                                newPrev->fNext = newCur;
+                            }
+                        }
+
+                        Invariant ();
+
+                        return *this;
+                    }
+                    template    <typename   T>
+                    inline  void    LinkedList<T>::Invariant () const
+                    {
+#if     qDebug
+                        Invariant_ ();
+#endif
                     }
                     template    <typename   T>
                     bool    LinkedList<T>::IsEmpty () const
@@ -125,32 +153,44 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    LinkedList<T>& LinkedList<T>::operator= (const LinkedList<T>& list)
+                    void    LinkedList<T>::SetAt (const ForwardIterator& i, T newValue)
                     {
-                        Invariant ();
-
-                        RemoveAll ();
-
+                        Require (not i.Done ());
+                        this->Invariant ();
+                        const_cast<Link*> (i.fCurrent)->fItem = newValue;
+                        this->Invariant ();
+                    }
+                    template    <typename   T>
+                    void    LinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    {
                         /*
-                         *      Copy the link list by keeping a point to the new current and new
-                         *  previous, and sliding them along in parallel as we construct the
-                         *  new list. Only do this if we have at least one element - then we
-                         *  don't have to worry about the head of the list, or nullptr ptrs, etc - that
-                         *  case is handled outside, before the loop.
+                         * NB: This code works fine, even if we are done!!!
                          */
-                        if (list.fFirst != nullptr) {
-                            fFirst = new Link (list.fFirst->fItem, nullptr);
-                            Link*    newCur  =   fFirst;
-                            for (const Link* cur = list.fFirst->fNext; cur != nullptr; cur = cur->fNext) {
-                                Link*    newPrev =   newCur;
-                                newCur = new Link (cur->fItem, nullptr);
-                                newPrev->fNext = newCur;
+                        this->Invariant ();
+
+                        Link*     prev = nullptr;
+                        if ((this->fFirst != nullptr) and (this->fFirst != i.fCurrent)) {
+                            for (prev = this->fFirst; prev->fNext != i.fCurrent; prev = prev->fNext) {
+                                AssertNotNull (prev);    // cuz that would mean _fCurrent not in DoublyLinkedList!!!
                             }
                         }
 
-                        Invariant ();
-
-                        return (*this);
+                        if (prev == nullptr) {
+                            Assert (this->fFirst == i.fCurrent);     // could be nullptr, or not...
+                            this->fFirst = new Link (newValue, const_cast<Link*> (this->fFirst));
+                        }
+                        else {
+                            Assert (prev->fNext == i.fCurrent);
+                            prev->fNext = new Link (newValue, prev->fNext);
+                        }
+                        this->Invariant ();
+                    }
+                    template    <typename   T>
+                    void    LinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    {
+                        Require (not i.Done ());
+                        AssertNotNull (i.fCurrent); // since not done...
+                        const_cast<Link*> (i.fCurrent)->fNext = new Link (newValue, i.fCurrent->fNext);
                     }
                     template    <typename   T>
                     void    LinkedList<T>::RemoveAt (const ForwardIterator& it)
@@ -165,11 +205,11 @@ namespace   Stroika {
                          *  fCurrent == fData->fFirst). If it is nullptr, recompute. Be careful if it
                          *  is still nullptr, that means update fFirst.
                          */
-                        Link*    prevLink  = it.fCachedPrev;
-                        if ((prevLink == nullptr) and (this->fFirst != victim)) {
+                        Link*       prevLink    =   nullptr;
+                        if (this->fFirst != victim) {
                             AssertNotNull (this->fFirst);    // cuz there must be something to remove current
                             for (prevLink = this->fFirst; prevLink->fNext != victim; prevLink = prevLink->fNext) {
-                                AssertNotNull (prevLink);    // cuz that would mean victim not in LinkedList!!!
+                                AssertNotNull (prevLink);    // cuz that would mean victim not in DoublyLinkedList!!!
                             }
                         }
                         if (prevLink == nullptr) {

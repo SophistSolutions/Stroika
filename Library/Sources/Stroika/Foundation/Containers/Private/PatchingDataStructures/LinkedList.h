@@ -6,7 +6,10 @@
 
 #include    "../../../StroikaPreComp.h"
 
+#include    "../../../Memory/SmallStackBuffer.h"
+
 #include    "../DataStructures/LinkedList.h"
+
 
 
 /**
@@ -49,22 +52,11 @@ namespace   Stroika {
                         LinkedList_Patch (const LinkedList_Patch<T>& from);
                         ~LinkedList_Patch ();
 
+                    public:
                         nonvirtual  LinkedList_Patch<T>& operator= (const LinkedList_Patch<T>& list);
 
                     public:
                         typedef typename DataStructures::LinkedList<T>::Link    Link;
-
-                        /*
-                         * Methods we shadow so that patching is done. If you want to circumvent the
-                         * patching, thats fine - use scope resolution operator to call this's base
-                         * class version.
-                         */
-                    public:
-                        nonvirtual  void    Prepend (T item);
-                        nonvirtual  void    Remove (T item);
-                        nonvirtual  void    RemoveFirst ();
-                        nonvirtual  void    RemoveAll ();
-                        nonvirtual  void    Append (T item);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -76,17 +68,40 @@ namespace   Stroika {
                         nonvirtual  void    PatchViewsRemove (const Link* link) const;   //  call before remove
                         nonvirtual  void    PatchViewsRemoveAll () const;                   //  call after removeall
 
+                    public:
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch) const;
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch, Link* newI);
+
+                    public:
+                        /*
+                         * Methods we shadow so that patching is done. If you want to circumvent the
+                         * patching, thats fine - use scope resolution operator to call this's base
+                         * class version.
+                         */
+                    public:
+                        nonvirtual  void    Prepend (T item);
+                        nonvirtual  void    Remove (T item);
+                        nonvirtual  void    RemoveFirst ();
+                        nonvirtual  void    RemoveAll ();
+                        nonvirtual  void    Append (T item);
+                        nonvirtual  void    RemoveAt (const ForwardIterator& i);
+                        nonvirtual  void    AddBefore (const ForwardIterator& i, T newValue);
+                        nonvirtual  void    AddAfter (const ForwardIterator& i, T newValue);
+
+                    public:
                         /*
                          *  Check Invariants for this class, and all the iterators we own.
                          */
-                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:
                         LinkedListIterator_Patch<T>*    fIterators;
 
+                    private:
                         friend  class   LinkedListIterator_Patch<T>;
+
 #if     qDebug
+                    protected:
                         virtual     void    Invariant_ () const override;
                         nonvirtual  void    InvariantOnIterators_ () const;
 #endif
@@ -123,6 +138,9 @@ namespace   Stroika {
                         nonvirtual  void    PatchAdd (const Link* link);     //  call after add
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
+
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass1 (Link* oldI, Memory::SmallStackBuffer<LinkedListIterator_Patch<T>*>* items2Patch);
+                        nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                         // Probably create subclass which tracks index internally, as with Stroika v1 but this will do for now
                         // and maybe best (depending on frequency of calls to current index
@@ -166,10 +184,12 @@ namespace   Stroika {
                         nonvirtual  LinkedListMutator_Patch<T>& operator= (LinkedListMutator_Patch<T>& rhs);
 
                     public:
+#if 0
                         nonvirtual  void    RemoveCurrent ();
                         nonvirtual  void    UpdateCurrent (T newValue);
                         nonvirtual  void    AddBefore (T item);
                         nonvirtual  void    AddAfter (T item);
+#endif
                     };
 
 

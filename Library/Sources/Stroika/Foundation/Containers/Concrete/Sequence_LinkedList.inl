@@ -213,7 +213,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -224,7 +224,7 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename Sequence_LinkedList<T>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_LinkedList<T>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.UpdateCurrent (newValue);
+                        fData_.SetAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -255,7 +255,7 @@ namespace   Stroika {
                             for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
-                                        it.AddBefore (*p);
+                                        fData_.AddBefore (it, *p);
                                     }
                                     break;
                                 }
@@ -277,7 +277,7 @@ namespace   Stroika {
                         for (Private::PatchingDataStructures::LinkedListMutator_Patch<T> it (fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
-                                    it.RemoveCurrent ();
+                                    fData_.RemoveAt (it);
                                 }
                                 break;
                             }
