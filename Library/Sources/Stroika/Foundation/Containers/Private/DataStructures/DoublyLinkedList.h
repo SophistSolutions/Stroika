@@ -56,7 +56,6 @@ namespace   Stroika {
                         nonvirtual  DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
 
                     public:
-                        // for now public... but soon protected - just for helper iterator classes...
                         class   Link;
 
                     public:
@@ -65,56 +64,119 @@ namespace   Stroika {
                     public:
                         nonvirtual  size_t  GetLength () const;
 
-                        /*
-                         *      Basic access to the head of the list. This is what is most
-                         *  commonly used, and is most efficient.
-                         */
                     public:
+                        /**
+                         *  Efficient.
+                         *
+                         *  \req not IsEmpty ()
+                         */
                         nonvirtual  T       GetFirst () const;
+
+                    public:
+                        /**
+                         *  Efficient.
+                         *
+                         *  \req not IsEmpty ()
+                         */
                         nonvirtual  T       GetLast () const;
 
                     public:
+                        /**
+                         *  Efficient.
+                         */
                         nonvirtual  void    Prepend (T item);
+
+                    public:
+                        /**
+                         *  Efficient.
+                         *
+                         *  \req not IsEmpty ()
+                         */
                         nonvirtual  void    RemoveFirst ();
+
+                    public:
+                        /**
+                         *  Efficient.
+                         *
+                         *  \req not IsEmpty ()
+                         */
                         nonvirtual  void    RemoveLast ();
 
                     public:
                         /*
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         *
                          *  Utility to search the list for the given item using operator==
                          */
                         nonvirtual  bool    Contains (T item) const;
 
                     public:
                         /**
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         *
                          *  Note - does nothing if item not found.
                          */
                         nonvirtual  void    Remove (T item);
 
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         */
                         nonvirtual  void    RemoveAll ();
 
-                        /*
-                         *      Not alot of point in having these, as they are terribly slow,
-                         *  but the could be convienient.
-                         */
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         */
                         nonvirtual  T       GetAt (size_t i) const;
+
+                    public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(N)
+                         *      Average Case: O(N)
+                         */
                         nonvirtual  void    SetAt (size_t i, T item);
 
                     public:
                         class   ForwardIterator;
 
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
                         nonvirtual  void    RemoveAt (const ForwardIterator& i);
 
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
                         nonvirtual  void    SetAt (const ForwardIterator& i, T newValue);
 
                     public:
-                        //  NB: Can be called if done
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         *
+                         *  NB: Can be called if done
+                         */
                         nonvirtual  void    AddBefore (const ForwardIterator& i, T item);
 
                     public:
+                        /**
+                         *  Performance:
+                         *      Worst Case: O(1)
+                         */
                         nonvirtual  void    AddAfter (const ForwardIterator& i, T item);
 
                     public:
