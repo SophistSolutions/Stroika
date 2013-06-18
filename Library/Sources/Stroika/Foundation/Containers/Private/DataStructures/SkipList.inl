@@ -16,8 +16,8 @@ namespace   Stroika {
 
 
                     template <typename KEY, typename VALUE, typename TRAITS>
-                    SkipList<KEY, VALUE, TRAITS>::Node::Node (const KeyType& key, const ValueType& val)   :
-                        fEntry (key, val)
+                    SkipList<KEY, VALUE, TRAITS>::Node::Node (const KeyType& key, const ValueType& val)
+                        : fEntry (key, val)
                     {
                     }
 
@@ -34,7 +34,6 @@ namespace   Stroika {
                     {
                         GrowHeadLinksIfNeeded (1, nullptr);
                     }
-
                     template <typename KEY, typename VALUE, typename TRAITS>
                     SkipList<KEY, VALUE, TRAITS>::SkipList (const SkipList& s)
                         : fLength (0)
@@ -45,8 +44,6 @@ namespace   Stroika {
                     {
                         operator= (s);
                     }
-
-
                     template <typename KEY, typename VALUE, typename TRAITS>
                     SkipList<KEY, VALUE, TRAITS>& SkipList<KEY, VALUE, TRAITS>::operator= (const SkipList& t)
                     {
@@ -450,13 +447,7 @@ namespace   Stroika {
 
                         ShrinkHeadLinksIfNeeded ();
                     }
-
-
-
-
-
-
-#if qDebug
+#if     qDebug
                     template <typename KEY, typename VALUE, typename TRAITS>
                     void    SkipList<KEY, VALUE, TRAITS>::ListAll () const
                     {
@@ -478,7 +469,6 @@ namespace   Stroika {
                         }
                         std::cout << std::endl << std::flush;
                     }
-
                     template <typename KEY, typename VALUE, typename TRAITS>
                     void    SkipList<KEY, VALUE, TRAITS>::ValidateAll () const
                     {
@@ -501,8 +491,7 @@ namespace   Stroika {
                         }
                     }
 #endif
-
-#if qKeepADTStatistics
+#if     qKeepADTStatistics
                     template <typename KEY, typename VALUE, typename TRAITS>
                     size_t  SkipList<KEY, VALUE, TRAITS>::CalcHeight (size_t* totalHeight) const
                     {
@@ -521,7 +510,6 @@ namespace   Stroika {
 
                         return fHead.size ();
                     }
-
 #endif
 
 
