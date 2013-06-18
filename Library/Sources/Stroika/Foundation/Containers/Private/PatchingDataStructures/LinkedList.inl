@@ -304,12 +304,10 @@ namespace   Stroika {
                             /*
                              * Add to new.
                              */
-                            fData = rhs.fData;
                             _fNextActiveIterator = rhs.GetPatchingContainer_ ().fActiveIteratorsListHead_;
                             GetPatchingContainer_ ().fActiveIteratorsListHead_ = this;
                         }
 
-                        fData = rhs.fData;
                         //fPrev = rhs.fPrev;
 
                         inherited::operator= (rhs);
