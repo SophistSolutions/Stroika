@@ -1257,6 +1257,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.h">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\SkipList.h">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1871,6 +1874,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\PatchingDataStructures\STLContainerWrapper.inl">
       <Filter>Sources\Containers\Private\PatchingDataStructures</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\SkipList.inl">
+      <Filter>Sources\Containers\Private\DataStructures</Filter>
     </None>
   </ItemGroup>
 </Project>
