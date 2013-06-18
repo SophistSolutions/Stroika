@@ -110,7 +110,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                              fLockSupport_;
-                    mutable Private::PatchingDataStructures::LinkedListIterator_Patch<T> fIterator_;
+                    mutable typename Private::PatchingDataStructures::LinkedList_Patch<T>::ForwardIterator fIterator_;
 
                 private:
                     friend  class   SortedBag_LinkedList<T>::Rep_;
