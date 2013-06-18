@@ -17,15 +17,13 @@
  * TODO:
  *
  *
+ *      @todo   In ForwardIterator object - maintain cached prev - so as we navigate - we can often
+ *              avoid the back nav. Maybe make this a configurable class option? Anyhow - mostly include
+ *              and use as cahce. ALready there mostly - but commented out (fPrev)
  *
- *      @todo   Do RemoveAt(ForwardIterator), and other mutator methods as method of LinkedList<T>
- *              THen mask in Patching:::LinkedList<T> - and do patching there. Then get rid of
- *              mutator objects!
+ *      @todo   Review and simplify patching code
  *
- *      @todo   MAJOR cleanup needed - nearly an entire rewrite. This code is very old and worn...
- *
- *      @todo   Consider adding InsertAt,
- *              / AddAfter() etc without using a LinkedList_Patch, using iteartor params as reference.
+ *      @todo   Include Performance numbers for each operation (done for many).
  *
  * Notes:
  *

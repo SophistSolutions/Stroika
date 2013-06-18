@@ -15,7 +15,6 @@
 /**
  *
  * TODO:
- *      @todo   THEN - redo LinkedList_Patching<T>::ForwardIterator as nested... then more cleanups...
  */
 
 
@@ -94,7 +93,7 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        ForwardIterator*    fIterators;
+                        ForwardIterator*    fActiveIteratorsListHead_;
 
                     private:
                         friend  class   ForwardIterator;
@@ -155,8 +154,8 @@ namespace   Stroika {
 
                     protected:
                         const LinkedList_Patch<T>*  fData;
-                        ForwardIterator*    fNext;
-                        const Link*              fPrev;      // keep extra previous link for fast patchremove
+                        ForwardIterator*    _fNextActiveIterator;
+                        //const Link*              fPrev;      // keep extra previous link for fast patchremove
                         // Nil implies fCurrent == fData->fFirst or its invalid,
                         // and must be recomputed (it was removed itself)...
 
