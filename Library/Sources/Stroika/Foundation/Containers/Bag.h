@@ -24,6 +24,11 @@
  *
  * TODO:
  *
+ *      @todo   ADD EQUALS_COMPARER .. and make Bag<T> depend on THAT! We ONLY require == for
+ *              Bag.
+ *              !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PRIORITY - NEXT !!!!!
+ *
+ *
  *      @todo   Cleaup and actually use properly the TRAITS code. Not actually used yet.
  *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
