@@ -130,6 +130,9 @@
     <Filter Include="Sources\Containers\Private\PatchingDataStructures">
       <UniqueIdentifier>{596f19b2-ffd9-4849-95c3-2690b52e1603}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Common">
+      <UniqueIdentifier>{390cc25d-660b-4ffd-9038-965fc642e03f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -548,6 +551,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp">
+      <Filter>Sources\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp">
+      <Filter>Sources\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1272,6 +1281,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h">
+      <Filter>Sources\Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1895,6 +1910,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.inl">
       <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl">
+      <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl">
+      <Filter>Sources\Common</Filter>
     </None>
   </ItemGroup>
 </Project>
