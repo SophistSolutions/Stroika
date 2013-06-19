@@ -62,14 +62,20 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            template    <typename T>
+            struct   Bag_DefaultTraits {
+                ///
+            };
+
+
             /**
-             *  \brief  A Bag<T> is a container to manage an un-ordered collection of items.
+             *  \brief  A Bag<T,BAG_TRAITS> is a container to manage an un-ordered collection of items.
              *
-             *  A Bag<T> is a container pattern to manage an un-ordered collection of items.
-             *  This is both an abstract interface, but the Bag<T> class it actually concrete because
+             *  A Bag<T,BAG_TRAITS> is a container pattern to manage an un-ordered collection of items.
+             *  This is both an abstract interface, but the Bag<T,BAG_TRAITS> class it actually concrete because
              *  it automatically binds to a default implementation.
              *
-             *  A Bag<T> is the simplest kind of collection. It allows addition and
+             *  A Bag<T,BAG_TRAITS> is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
              *  bags are considered equal if they contain the same items, even if iteration
              *  order is different.
@@ -93,7 +99,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            template    <typename T>
+            template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
             class   Bag : public Iterable<T> {
             public:
                 RequireElementTraitsInClass(RequireOperatorEquals, T);
@@ -107,7 +113,7 @@ namespace   Stroika {
 
             public:
                 Bag ();
-                Bag (const Bag<T>& b);
+                Bag (const Bag<T, BAG_TRAITS>& b);
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& b);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -117,7 +123,7 @@ namespace   Stroika {
                 explicit Bag (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Bag<T>& operator= (const Bag<T>& src);
+                nonvirtual  Bag<T, BAG_TRAITS>& operator= (const Bag<T, BAG_TRAITS>& rhs);
 
             public:
                 /**
@@ -127,7 +133,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Add the given item(s) to this Bag<T>. Note - if the given items are already present, another
+                 * Add the given item(s) to this Bag<T,BAG_TRAITS>. Note - if the given items are already present, another
                  * copy will be added.
                  */
                 nonvirtual  void    Add (T item);
@@ -152,7 +158,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Bag<T> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Bag<T,BAG_TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  * SECOND OVERLOAD:
                  * This function requires that the iterator 'i' came from this container.
@@ -166,7 +172,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Bag<T> after teh remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Bag<T,BAG_TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  *  The no-argument verison Produces an empty bag.
                  */
@@ -198,7 +204,7 @@ namespace   Stroika {
                  *
                  *  Equals is commutative().
                  */
-                nonvirtual  bool    Equals (const Bag<T>& rhs) const;
+                nonvirtual  bool    Equals (const Bag<T, BAG_TRAITS>& rhs) const;
 
             public:
                 /**
@@ -214,12 +220,12 @@ namespace   Stroika {
                  *
                  *  *DEVELOPER NOTE*
                  *      Note - we use an overload
-                 *      of Bag<T> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      of Bag<T,BAG_TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Bag<T>& operator+= (T item);
-                nonvirtual  Bag<T>& operator+= (const Bag<T>& items);
+                nonvirtual  Bag<T, BAG_TRAITS>& operator+= (T item);
+                nonvirtual  Bag<T, BAG_TRAITS>& operator+= (const Bag<T, BAG_TRAITS>& items);
 
             public:
                 /**
@@ -227,24 +233,24 @@ namespace   Stroika {
                  *
                  *  *DEVELOPER NOTE*
                  *      Note - we use an overload
-                 *      of Bag<T> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      of Bag<T,BAG_TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Bag<T>& operator-= (T item);
-                nonvirtual  Bag<T>& operator-= (const Bag<T>& items);
+                nonvirtual  Bag<T, BAG_TRAITS>& operator-= (T item);
+                nonvirtual  Bag<T, BAG_TRAITS>& operator-= (const Bag<T, BAG_TRAITS>& items);
 
             public:
                 /**
                  *      Syntactic sugar on Equals()
                  */
-                nonvirtual  bool    operator== (const Bag<T>& rhs) const;
+                nonvirtual  bool    operator== (const Bag<T, BAG_TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar on not Equals()
                  */
-                nonvirtual  bool    operator!= (const Bag<T>& rhs) const;
+                nonvirtual  bool    operator!= (const Bag<T, BAG_TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -253,13 +259,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Bag<T> implementors.
+             *  \brief  Implementation detail for Bag<T,BAG_TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Bag<T> container API.
+             *  the Bag<T,BAG_TRAITS> container API.
              */
-            template    <typename T>
-            class   Bag<T>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T, typename BAG_TRAITS>
+            class   Bag<T, BAG_TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 
