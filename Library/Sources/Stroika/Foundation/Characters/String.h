@@ -47,8 +47,8 @@
  *
  * TODO:
  *
- *		@todo	Add #include of Comparer and template specialize Comparer for String??? Maybe
- *				Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
+ *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
+ *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
  *
  *      @todo   NEED
  *              struct  HELPER_ : String {

@@ -23,21 +23,21 @@ namespace   Stroika {
         namespace   Common {
 
 
-			/**
-			 *	Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements (when used for mappings, or other
-			 *	key/value pairs).
-			 */
-			template	<typename KEY_TYPE, typename VALUE_TYPE>
-			struct KeyValuePair {
-				typedef	KEY_TYPE	KeyType;
-				typedef	VALUE_TYPE	ValueType;
+            /**
+             *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements (when used for mappings, or other
+             *  key/value pairs).
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            struct KeyValuePair {
+                typedef KEY_TYPE    KeyType;
+                typedef VALUE_TYPE  ValueType;
 
-				KeyValuePair ();
-				KeyValuePair (const KeyType& key, const ValueType& value);
+                KeyValuePair ();
+                KeyValuePair (const KeyType& key, const ValueType& value);
 
-				KeyType		fKey;
-				ValueType	fValue;
-			};
+                KeyType     fKey;
+                ValueType   fValue;
+            };
 
 
         }

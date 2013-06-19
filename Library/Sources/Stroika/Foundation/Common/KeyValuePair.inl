@@ -17,23 +17,23 @@ namespace   Stroika {
         namespace   Common {
 
 
-			/*
-			 ********************************************************************************
-			 ******************** Common::KeyValuePair<KEY_TYPE,VALUE_TYPE> *****************
-			 ********************************************************************************
-			 */
-			template	<typename KEY_TYPE, typename VALUE_TYPE>
-				inline	KeyValuePair<KEY_TYPE,VALUE_TYPE>::KeyValuePair ()
-					: fKey ()
-					, fValue ()
-				{
-				}
-			template	<typename KEY_TYPE, typename VALUE_TYPE>
-				KeyValuePair<KEY_TYPE,VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
-					: fKey (key)
-					, fValue (value)
-				{
-				}
+            /*
+             ********************************************************************************
+             ******************** Common::KeyValuePair<KEY_TYPE,VALUE_TYPE> *****************
+             ********************************************************************************
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair ()
+                : fKey ()
+                , fValue ()
+            {
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+                : fKey (key)
+                , fValue (value)
+            {
+            }
 
 
         }
