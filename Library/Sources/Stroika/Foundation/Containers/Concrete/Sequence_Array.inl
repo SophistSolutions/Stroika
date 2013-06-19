@@ -279,7 +279,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
-                    InsertAll (0, s);
+                    this->AppendAll (s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -287,7 +287,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
-                    Append (start, end);
+                    this->AppendAll (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_Array<T>&   Sequence_Array<T>::operator= (const Sequence_Array<T>& s)

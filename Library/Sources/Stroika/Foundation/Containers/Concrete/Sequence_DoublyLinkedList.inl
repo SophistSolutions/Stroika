@@ -308,14 +308,14 @@ namespace   Stroika {
                 inline  Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    InsertAll (0, s);
+                    this->AppendAll (s);
                 }
                 template    <typename T>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Sequence_DoublyLinkedList<T>::Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    Append (start, end);
+                    this->AppendAll (start, end);
                 }
                 template    <typename T>
                 inline  Sequence_DoublyLinkedList<T>&   Sequence_DoublyLinkedList<T>::operator= (const Sequence_DoublyLinkedList<T>& s)
