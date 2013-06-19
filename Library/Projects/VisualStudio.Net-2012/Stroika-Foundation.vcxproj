@@ -561,7 +561,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
@@ -813,7 +812,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\ElementTraits.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
