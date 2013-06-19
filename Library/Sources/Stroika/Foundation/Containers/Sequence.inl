@@ -59,6 +59,12 @@ namespace   Stroika {
                 Append (start, end);
             }
             template    <typename T>
+            inline  Sequence<T>& Sequence<T>::operator= (const Sequence<T>& rhs)
+            {
+                inherited::operator= (rhs);
+                return *this;
+            }
+            template    <typename T>
             inline  const typename  Sequence<T>::_IRep&    Sequence<T>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // static_cast more efficient, but assert to verify safe
@@ -197,11 +203,6 @@ namespace   Stroika {
             {
                 _GetRep ().Remove (i);
             }
-            template    <typename T>
-            inline  void    Sequence<T>::push_back (T item)
-            {
-                Append (item);
-            }
             template    <typename   T>
             template    <typename   CONTAINER_OF_T>
             inline  CONTAINER_OF_T  Sequence<T>::As () const
@@ -214,6 +215,11 @@ namespace   Stroika {
             {
                 RequireNotNull (into);
                 *into = CONTAINER_OF_T (this->begin (), this->end ());
+            }
+            template    <typename T>
+            inline  void    Sequence<T>::push_back (T item)
+            {
+                Append (item);
             }
             template    <typename T>
             inline  T    Sequence<T>::back () const

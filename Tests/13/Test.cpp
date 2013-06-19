@@ -446,6 +446,27 @@ namespace {
     }
 
 
+    template <typename SequenceOfT>
+    void    SimpleSequenceTest_11_ToFromSTLVector_ (SequenceOfT s)
+    {
+        typedef typename SequenceOfT::ElementType T;
+        VerifyTestResult (s.empty ());
+
+        {
+            vector<T>   n;
+            n.push_back (3);
+            n.push_back (5);
+            n.push_back (9);
+            s = SequenceOfT (n);
+            vector<T>   nn = s.As<vector<T>> ();
+            VerifyTestResult (nn == n);
+        }
+
+
+        s.RemoveAll ();
+        VerifyTestResult (s.empty ());
+    }
+
 
 }
 
@@ -468,6 +489,8 @@ namespace   {
         SimpleSequenceTest_8_Update_ (s);
         SimpleSequenceTest_9_Remove_ (s);
         SimpleSequenceTest_10_STLCompatWrappers_ (s);
+        SimpleSequenceTest_11_ToFromSTLVector_<SequenceOfT> (s);
+
     }
 
     void    DoRegressionTests_ ()
