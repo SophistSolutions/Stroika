@@ -64,6 +64,11 @@ namespace   Stroika {
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
+                typedef Key     KeyType;
+            public:
+                typedef T       ValueType;
+
+            public:
                 /**
                  */
                 Mapping ();
@@ -152,6 +157,16 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+
+            public:
+                /**
+                 *  Only supported value(s) for CONTAINER_OF_Key_T are:
+                 *      o   std::map<Key,T>
+                 */
+                template    <typename   CONTAINER_OF_Key_T>
+                nonvirtual  CONTAINER_OF_Key_T   As () const;
+                template    <typename   CONTAINER_OF_Key_T>
+                nonvirtual  void   As (CONTAINER_OF_Key_T* into) const;
 
             public:
                 /*

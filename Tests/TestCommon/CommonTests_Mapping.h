@@ -147,6 +147,35 @@ namespace CommonTests {
         }
 
 
+        namespace Test5_ToFromSTLMap {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_MAPPING_CONTAINER m;
+                USING_MAPPING_CONTAINER m2 = m;
+                m.Add (1, 88);
+                m.Add (2, 101);
+
+                typedef typename USING_MAPPING_CONTAINER::KeyType KeyType;
+                typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
+
+                {
+                    map<KeyType, ValueType>      n   =   m.As<map<KeyType, ValueType>> ();
+                    VerifyTestResult (n.size () == 2);
+#if 0
+                    /// THIS fails for Mapping_stdmap - because of the kludgy way I put that together.
+                    // TFIX
+                    USING_MAPPING_CONTAINER     tmp =   USING_MAPPING_CONTAINER (n);
+                    VerifyTestResult (*tmp.Lookup (1) == 88);
+                    map<KeyType, ValueType>      nn  =   tmp.As<map<KeyType, ValueType>> ();
+                    VerifyTestResult (nn == n);
+#endif
+                }
+            }
+        }
+
+
+
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void    SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
@@ -154,6 +183,7 @@ namespace CommonTests {
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+            Test5_ToFromSTLMap::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
 

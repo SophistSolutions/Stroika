@@ -16,7 +16,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */

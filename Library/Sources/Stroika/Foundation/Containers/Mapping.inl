@@ -169,6 +169,19 @@ namespace   Stroika {
                 }
             }
             template    <typename Key, typename T>
+            template    <typename   CONTAINER_OF_Key_T>
+            inline  CONTAINER_OF_Key_T  Mapping<Key, T>::As () const
+            {
+                return CONTAINER_OF_Key_T (this->begin (), this->end ());
+            }
+            template    <typename Key, typename T>
+            template    <typename   CONTAINER_OF_Key_T>
+            inline  void    Mapping<Key, T>::As (CONTAINER_OF_Key_T* into) const
+            {
+                RequireNotNull (into);
+                *into = CONTAINER_OF_Key_T (this->begin (), this->end ());
+            }
+            template    <typename Key, typename T>
             inline  bool  Mapping<Key, T>::Equals (const Mapping<Key, T>& rhs) const
             {
                 return (_GetRep ().Equals (rhs._GetRep ()));

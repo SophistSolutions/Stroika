@@ -15,9 +15,15 @@
 /**
  *  \file
  *
- *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+ *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
+ *
+ *      @todo   Fix  this code so
+ *        namespace Test5_ToFromSTLMap {
+ *            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+ *            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+                can be re-enabled...
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
@@ -53,7 +59,7 @@ namespace   Stroika {
                 public:
                     Mapping_stdmap ()
                     // static cast to select right base class CTOR (that wont copy)
-                        : inherited (static_cast<Mapping<Key, T>&> (SortedMapping_stdmap<Key, T> ())) {
+                        : inherited (static_cast<inherited&> (SortedMapping_stdmap<Key, T> ())) {
                     }
 #if 0
                     // support/enabel these as needed - all SB there
