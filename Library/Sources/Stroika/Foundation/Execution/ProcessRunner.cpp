@@ -678,8 +678,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
     Characters::TString thisEXEPath =   executable.AsTString ();
-    pid_t   pid =   fork ();
-    Execution::ThrowErrNoIfNegative (pid);
+    pid_t   pid =   Execution::ThrowErrNoIfNegative (fork ());
     if (pid == 0) {
         /*
          * Very primitive code to detatch the console. No error checking cuz frankly we dont care.

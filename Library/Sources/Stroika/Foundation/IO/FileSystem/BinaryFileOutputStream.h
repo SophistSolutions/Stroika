@@ -17,6 +17,8 @@
  *  \file
  *
  * TODO:
+ *      @todo   Use Exeuction??xx?? - caller - handler for thread interupts..
+ *
  *      @todo   Unclear if we need the mutexes here. Probably yes (necause our API promises re-entrancy but I'm unclear
  *              on filessytem reads/writes).
  *

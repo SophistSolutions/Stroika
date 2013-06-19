@@ -29,11 +29,12 @@ namespace   Stroika {
 
 
             template    <typename INT_TYPE>
-            inline  void    ThrowErrNoIfNegative (INT_TYPE returnCode)
+            inline  INT_TYPE    ThrowErrNoIfNegative (INT_TYPE returnCode)
             {
                 if (returnCode < 0) {
                     errno_ErrorException::DoThrow (errno);
                 }
+                return returnCode;
             }
 
 
@@ -47,8 +48,7 @@ namespace   Stroika {
                     Execution::CheckForThreadAborting ();
                 }
                 while (ret < 0 && errno == EINTR);
-                ThrowErrNoIfNegative (ret);
-                return ret;
+                return ThrowErrNoIfNegative (ret);
             }
 #else
             template    <typename CALL>
@@ -60,8 +60,7 @@ namespace   Stroika {
                     Execution::CheckForThreadAborting ();
                 }
                 while (ret < 0 && errno == EINTR);
-                ThrowErrNoIfNegative (ret);
-                return ret;
+                return ThrowErrNoIfNegative (ret);
             }
 #endif
 

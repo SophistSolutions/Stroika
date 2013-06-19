@@ -142,16 +142,14 @@ namespace   {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr    sa;
                 socklen_t   salen   =   sizeof(sa);
-                int         result  =   0;
 #if     qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                Execution::ThrowErrNoIfNegative (result = ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen));
+                return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
 #elif   qPlatform_POSIX
-                Execution::ThrowErrNoIfNegative (result = Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); }));
+                return static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
 #else
                 AssertNotImplemented ();
 #endif
-                return static_cast<size_t> (result);
             }
             virtual void    Listen (unsigned int backlog) override {
                 Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
@@ -185,10 +183,10 @@ AGAIN:
                 }
 #if     qPlatform_Windows
                 AssertNotImplemented ();
-#elif   qPlatform_POSIX
-                Execution::ThrowErrNoIfNegative (r);
-#endif
                 return Socket::Attach (r);
+#elif   qPlatform_POSIX
+                return Socket::Attach (Execution::ThrowErrNoIfNegative (r));
+#endif
             }
             virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
                 ip_mreq m;
@@ -445,11 +443,12 @@ namespace Stroika {
         namespace Execution {
             // this specialization needed because the winsock type for SOCKET is UNSIGNED so < 0 test doesn't work
             template    <>
-            inline  void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
+            inline  IO::Network::Socket::PlatformNativeHandle    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode)
             {
                 if (returnCode == kINVALID_NATIVE_HANDLE_) {
                     Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
                 }
+                return returnCode;
             }
         }
     }

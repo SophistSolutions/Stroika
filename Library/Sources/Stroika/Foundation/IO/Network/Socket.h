@@ -295,7 +295,7 @@ namespace Stroika {
     namespace Foundation {
         namespace Execution {
             template    <>
-            void    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
+            IO::Network::Socket::PlatformNativeHandle    ThrowErrNoIfNegative (IO::Network::Socket::PlatformNativeHandle returnCode);
         }
     }
 }

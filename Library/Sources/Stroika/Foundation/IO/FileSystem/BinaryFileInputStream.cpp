@@ -52,7 +52,10 @@ public:
         : fCriticalSection_ ()
         , fFD_ (-1) {
 #if     qPlatform_Windows
-        Execution::ThrowErrNoIfNegative (fFD_ = _tsopen_s (&fFD_, fileName.AsTString ().c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0));
+        errno_t e = _tsopen_s (&fFD_, fileName.AsTString ().c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+        if (e != 0) {
+            Execution::errno_ErrorException::DoThrow (e);
+        }
         ThrowIfFalseGetLastError (fFD_ != -1);
 #else
         Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
@@ -67,15 +70,11 @@ public:
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
         lock_guard<mutex>  critSec (fCriticalSection_);
-        int r = ::_read (fFD_, intoStart, nRequested);
-        Execution::ThrowErrNoIfNegative (r);
-        return static_cast<size_t> (r);
+        static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, nRequested)));
     }
     virtual Streams::SeekOffsetType  GetOffset () const override {
         lock_guard<mutex>  critSec (fCriticalSection_);
-        off_t n =  _lseek (fFD_, 0, SEEK_CUR);
-        Execution::ThrowErrNoIfNegative (n);
-        return static_cast<Streams::SeekOffsetType> (n);
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, 0, SEEK_CUR)));
     }
     virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override {
         using namespace Streams;
@@ -85,21 +84,15 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    off_t n =  _lseek (fFD_, offset, SEEK_SET);
-                    Execution::ThrowErrNoIfNegative (n);
-                    return static_cast<Streams::SeekOffsetType> (n);
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_SET)));
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    off_t n =  _lseek (fFD_, offset, SEEK_CUR);
-                    Execution::ThrowErrNoIfNegative (n);
-                    return static_cast<Streams::SeekOffsetType> (n);
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_CUR)));
                 }
                 break;
             case    Whence::eFromEnd: {
-                    off_t n =  _lseek (fFD_, offset, SEEK_END);
-                    Execution::ThrowErrNoIfNegative (n);
-                    return static_cast<Streams::SeekOffsetType> (n);
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_END)));
                 }
                 break;
         }
