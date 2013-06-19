@@ -70,7 +70,7 @@ public:
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
         lock_guard<mutex>  critSec (fCriticalSection_);
-        static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, nRequested)));
+        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, nRequested)));
     }
     virtual Streams::SeekOffsetType  GetOffset () const override {
         lock_guard<mutex>  critSec (fCriticalSection_);
