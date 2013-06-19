@@ -93,6 +93,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
+                 *  a default value on Lookup (so for case where not present) - as in:
+                 *      returm m.Lookup (key).Value (putDefaultValueHere);
                  */
                 nonvirtual  Memory::Optional<T> Lookup (Key key) const;
                 nonvirtual  bool                Lookup (Key key, T* item) const;
