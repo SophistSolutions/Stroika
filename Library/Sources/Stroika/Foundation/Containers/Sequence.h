@@ -25,6 +25,8 @@
  *
  *  TODO:
  *
+ *      @todo       Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
  *                  random-access iterators. (FOLLOW RULES OF RANDOM ACCESS ITERAOTRS)

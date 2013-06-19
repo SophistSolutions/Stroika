@@ -21,6 +21,8 @@
  *
  *
  *  TODO:
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Fixup constructors (templated by value and iterator ctors)
  *
  *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.

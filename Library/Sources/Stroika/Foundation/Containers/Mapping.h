@@ -22,6 +22,8 @@
  *
  *  TODO:
  *
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Replace pair<Key,T> with KeyValuePair<Key,T>
  *              Documentent advantages (clearer naming .fKey versus .first, and .fValue versus .second)
  *              and easy mapping to/from pair<> stuff (can be methods of KeyValuePair<>).

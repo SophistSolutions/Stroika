@@ -19,6 +19,8 @@
  *
  *
  *  TODO:
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Fix constructors to work better/more flexibly like other containers (copy from iterator etc)
  *
  */

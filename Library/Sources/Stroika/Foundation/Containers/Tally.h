@@ -22,6 +22,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *

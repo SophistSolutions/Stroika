@@ -18,6 +18,8 @@
  *
  *  TODO:
  *
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
  *      @todo   Review

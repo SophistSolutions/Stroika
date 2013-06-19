@@ -6,7 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Configuration/Common.h"
+#include    "../Common/Compare.h"
+#include    "../Configuration/Concepts.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
 
@@ -23,9 +24,9 @@
  *
  * TODO:
  *
- *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
+ *      @todo   Cleaup and actually use properly the TRAITS code. Not actually used yet.
  *
- *      @todo   DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
+ *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
  *
@@ -64,7 +65,14 @@ namespace   Stroika {
 
             template    <typename T>
             struct   Bag_DefaultTraits {
-                ///
+                /**
+                 *  @todo DOCUMENT WHAT GOES HERE. CAN A LAMBDA GO HERE? HOW TODO WITH LAMBDAS?
+                 *          MAYBE to use a lamnda - use soemthing LIKE? Not quite - maybe ???.... THINK OUT
+                 *          typedef std::function<int(T,T)> CompareFunctionType;
+                 *
+                 *  NB: NOT USED YET - JUST PLAYING WITH HOW WE WANT TODO THIS...
+                 */
+                typedef typename    Common::Comparer<T> CompareFunctionType;
             };
 
 

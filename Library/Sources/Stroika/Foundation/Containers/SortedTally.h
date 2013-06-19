@@ -18,6 +18,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *
  */
 

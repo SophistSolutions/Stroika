@@ -16,6 +16,8 @@
  *
  *
  *  TODO:
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
  *      @todo   Actual implmeentaitons incomplete - especailly cuz CTOR with params arg ambiguious -
  *              clarify... and implement copy
  *

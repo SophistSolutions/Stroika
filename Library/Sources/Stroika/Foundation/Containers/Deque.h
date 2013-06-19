@@ -17,7 +17,9 @@
  *
  *  TODO:
  *
- *      @todo         Implement first draft of code based on
+ *      @todo   Use TRAITS mechanism - like with Bag<>
+ *
+ *      @todo   Implement first draft of code based on
  *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Deque.hh
  *
  *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
