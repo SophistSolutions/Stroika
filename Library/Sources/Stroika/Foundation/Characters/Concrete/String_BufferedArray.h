@@ -36,6 +36,9 @@ namespace   Stroika {
                  *  is more efficient if you are going to resize your string.
                  */
                 class   String_BufferedArray  : public String {
+                private:
+                    typedef String  inherited;
+
                 public:
                     /*
                      * Note for the meaning of the reserve parameter, see String_BufferedArray::reserve()

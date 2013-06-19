@@ -76,6 +76,9 @@ namespace   Stroika {
                  *          real optimized implemenation >>
                  */
                 class   String_ExternalMemoryOwnership_StackLifetime_ReadWrite : public String {
+                private:
+                    typedef String  inherited;
+
                 public:
                     explicit String_ExternalMemoryOwnership_StackLifetime_ReadWrite (wchar_t* cString);
 // DOCUMENT THESE NEW EXTRA CTORS!!! NYI

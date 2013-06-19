@@ -21,13 +21,13 @@ namespace   Stroika {
                 ********************************************************************************
                 */
                 inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
-                    : String (s)
+                    : inherited (s)
                 {
                 }
                 inline  String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::operator= (const String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly& s)
                 {
-                    String::operator= (s);
-                    return (*this);
+                    inherited::operator= (s);
+                    return *this;
                 }
 
 

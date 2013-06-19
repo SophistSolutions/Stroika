@@ -132,6 +132,9 @@ namespace   Stroika {
                 *       THATS THE PLAN ANYHOW....
                  */
                 class   String_ExternalMemoryOwnership_StackLifetime_ReadOnly : public String {
+                private:
+                    typedef String  inherited;
+
                 public:
                     explicit String_ExternalMemoryOwnership_StackLifetime_ReadOnly (const wchar_t* cString);
 // DOCUMENT THESE NEW EXTRA CTORS!!! NYI
