@@ -20,6 +20,10 @@
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
+ *
+ *      @todo   Be sure can move-semantics into and out of Sequence_stdvector() - with vector<T> -
+ *              so can go back and forth between reps efficiently. This COULD use used to avoid
+ *              any performance overhead with Stroika Sequences.
  */
 
 

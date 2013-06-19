@@ -219,7 +219,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
      * when called within HealthFrameWorks - for example.
      *
      */
-    String      userAgent = String_Constant (L"Stroika/2.0");
+    String      userAgent = Concrete::String_Constant (L"Stroika/2.0");
     Mapping<String, String>  useHeadersMap   =   request.fOverrideHeaders;
     {
         // We must have an empty 'accept-encoding' to prevent being sent stuff in gzip/deflate format, which WinHTTP

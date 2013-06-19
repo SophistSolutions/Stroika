@@ -19,6 +19,9 @@
  *              (what about ‘into no-malloc semantics – I guess taken care of perhaps by this? Maybe not… THINKOUT –
  *              but pretty sure we want some sort of String_stdwstring().
  *
+ *      @todo   Be sure can move-semantics into and out of String_stdwstring() - so can go back and forth between
+ *              reps efficiently. This COULD use used to avoid any performance overhead with Stroika strings.
+ *
  */
 
 

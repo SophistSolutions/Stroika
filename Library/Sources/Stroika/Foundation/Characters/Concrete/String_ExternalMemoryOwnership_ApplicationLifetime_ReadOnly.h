@@ -13,11 +13,7 @@
  *  \file
  *
  * TODO:
- *      @todo   Decide what todo about String_Constant
- *              > delete it and use String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly directly
- *              > leave it here
- *              > Move it to separate file
- *              > Decide if it SB in Concrete or top-level characters namespace.
+ *      @todo
  *
  */
 
@@ -55,6 +51,7 @@ namespace   Stroika {
                  *      These ALL do essentially the same thing, and are all equally safe. The 'tmp3' implementation
                  * maybe slightly more efficent, but all are equally safe.
                  *
+                 *  \em WARNING - BE VERY CAREFUL - be sure arguments have application lifetime.
                  */
                 class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly : public String {
                 public:
@@ -75,22 +72,14 @@ namespace   Stroika {
                  *      String_Constant can safely be used to initilaize constant C-strings as Stroika strings,
                  * with a minimum of cost.
                  *
-                 *      &&&&
-                 *      @todo - THIS NAME MAYBE UNSAFE AND MISLEADING - MAYBE BETTER TO FORCE USE OF
-                 *          String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly
+                 *  \em WARNING - BE VERY CAREFUL - this is just an alias for String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly - so be
+                 *      sure arguments have application lifetime.
                  *
                  */
                 typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
 
 
             }
-
-
-            /**
-            &&&& UNSURE ABOUT TYPEDEF
-             */
-            typedef Concrete::String_Constant String_Constant;
-
         }
     }
 }
