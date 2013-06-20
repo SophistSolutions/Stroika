@@ -47,6 +47,12 @@ namespace   {
     }
     void    Test1_VariantValue ()
     {
+		{
+			VariantValue v;
+			VerifyTestResult (v.empty ());
+			v = String (L"hi");
+			VerifyTestResult (v == L"hi");
+		}
     }
 }
 
