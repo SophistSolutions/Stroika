@@ -160,7 +160,7 @@ namespace CommonTests {
                 typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
 
                 {
-                    map<KeyType, ValueType>      n   =   m.As<map<KeyType, ValueType>> ();
+                    map<KeyType, ValueType>      n   =   m.template As<map<KeyType, ValueType>> ();
                     VerifyTestResult (n.size () == 2);
 #if 0
                     /// THIS fails for Mapping_stdmap - because of the kludgy way I put that together.

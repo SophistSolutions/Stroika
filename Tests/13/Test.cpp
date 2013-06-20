@@ -458,10 +458,9 @@ namespace {
             n.push_back (5);
             n.push_back (9);
             s = SequenceOfT (n);
-            vector<T>   nn = s.As<vector<T>> ();
+            vector<T>   nn = s.template As<vector<T>> ();
             VerifyTestResult (nn == n);
         }
-
 
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
