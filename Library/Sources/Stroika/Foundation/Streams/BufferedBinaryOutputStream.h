@@ -38,10 +38,10 @@ namespace   Stroika {
              *  A BufferedBinaryOutputStream wraps an argument stream
              *  (which must have lifetime > this BufferedBinaryOutputStream) and will buffer up writes to it.
              *
-             *  NOTE - its is REQUIRED to call Flush before destruction if any pending data has not
-             *  yet been flushed. It is NOT done in the BufferedBinaryOutputStream::DTOR -
-             *  because the underlying stream could have an exceptin writing, and its illegal to propagate
-             *  exceptions through destructors.
+             *      \note   its is REQUIRED to call Flush before destruction if any pending data has not
+             *              yet been flushed. It is NOT done in the BufferedBinaryOutputStream::DTOR -
+             *              because the underlying stream could have an exception writing, and its illegal
+             *              to propagate exceptions through destructors.
              */
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             private:
