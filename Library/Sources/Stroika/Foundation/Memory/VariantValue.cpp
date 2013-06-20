@@ -69,13 +69,37 @@ VariantValue::VariantValue (const wstring& val)
 {
 }
 
+VariantValue::VariantValue (const String& val)
+    : fVal_ (DEBUG_NEW TIRep_<wstring, Type::eString> (val.As<wstring> ()))
+{
+}
+
 VariantValue::VariantValue (const map<wstring, VariantValue>& val)
     : fVal_ (DEBUG_NEW TIRep_<map<wstring, VariantValue>, Type::eMap> (val))
+{
+}
+namespace {
+    map<wstring, VariantValue> cvt_(const Mapping<String, VariantValue>& val)
+    {
+        map<wstring, VariantValue>   tmp;
+        for (auto i : val) {
+            tmp.insert (map<wstring, VariantValue>::value_type (i.first.As<wstring> (), i.second));
+        }
+        return tmp;
+    }
+}
+VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
+    : fVal_ (DEBUG_NEW TIRep_<map<wstring, VariantValue>, Type::eMap> (cvt_ (val)))
 {
 }
 
 VariantValue::VariantValue (const vector<VariantValue>& val)
     : fVal_ (DEBUG_NEW TIRep_<vector<VariantValue>, Type::eArray> (val))
+{
+}
+
+VariantValue::VariantValue (const Sequence<VariantValue>& val)
+    : fVal_ (DEBUG_NEW TIRep_<vector<VariantValue>, Type::eArray> (val.As<vector<VariantValue>> ()))
 {
 }
 
@@ -341,6 +365,12 @@ wstring VariantValue::As () const
 }
 
 template    <>
+String VariantValue::As () const
+{
+    return As<wstring> ();
+}
+
+template    <>
 map<wstring, VariantValue>   VariantValue::As () const
 {
     if (fVal_.get () == nullptr) {
@@ -359,6 +389,12 @@ map<wstring, VariantValue>   VariantValue::As () const
 }
 
 template    <>
+Mapping<String, VariantValue>   VariantValue::As () const
+{
+    return Mapping<String, VariantValue> (As<map<wstring, VariantValue>> ());
+}
+
+template    <>
 vector<VariantValue> VariantValue::As () const
 {
     if (fVal_.get () == nullptr) {
@@ -374,6 +410,12 @@ vector<VariantValue> VariantValue::As () const
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
+}
+
+template    <>
+Sequence<VariantValue> VariantValue::As () const
+{
+    return Sequence<VariantValue> (As<vector<VariantValue>> ());
 }
 
 bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly)

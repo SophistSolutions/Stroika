@@ -9,8 +9,11 @@
 #include    <map>
 #include    <vector>
 
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Enumeration.h"
+#include    "../Containers/Mapping.h"
+#include    "../Containers/Sequence.h"
 #include    "../Time/DateTime.h"
 
 
@@ -21,6 +24,9 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
+ *              continue to make it easy to use this with vector/map/wstring
+ *
  *      @todo   Consider moving this class to DataExcahngeFormat module.
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
@@ -37,6 +43,9 @@ namespace   Stroika {
         namespace   Memory {
 
 
+            using   Characters::String;
+            using   Containers::Mapping;
+            using   Containers::Sequence;
             using   Time::Date;
             using   Time::DateTime;
 
@@ -64,7 +73,7 @@ namespace   Stroika {
              */
             class   VariantValue {
             public:
-                /*
+                /**
                  *  There are several floating point types - float, double, long double (and others?).
                  *  This selects which we use to represent a VariantValue internally, but either double
                  *  or float (maybe more) can be used to access
@@ -84,7 +93,7 @@ namespace   Stroika {
                     eDateTime,
                     eString,
                     eArray,
-                    eMap,           // string to variant
+                    eMap,           // Mapping<String,VariantValue>
 
                     Define_Start_End_Count(eNull, eMap)
                 };
@@ -99,8 +108,11 @@ namespace   Stroika {
                 VariantValue (const DateTime& val);
                 VariantValue (const wstring& val);
                 VariantValue (const wchar_t* val);
+                VariantValue (const String& val);
                 VariantValue (const map<wstring, VariantValue>& val);
+                VariantValue (const Mapping<String, VariantValue>& val);
                 VariantValue (const vector<VariantValue>& val);
+                VariantValue (const Sequence<VariantValue>& val);
 
             private:
                 VariantValue (const string& val);       // not implemented - declared to avoid confusing automatic type conversions - use wstring/wchar_t*
@@ -168,9 +180,15 @@ namespace   Stroika {
             template    <>
             wstring VariantValue::As () const;
             template    <>
+            String VariantValue::As () const;
+            template    <>
             map<wstring, VariantValue> VariantValue::As () const;
             template    <>
+            Mapping<String, VariantValue> VariantValue::As () const;
+            template    <>
             vector<VariantValue> VariantValue::As () const;
+            template    <>
+            Sequence<VariantValue> VariantValue::As () const;
 
 
         }
