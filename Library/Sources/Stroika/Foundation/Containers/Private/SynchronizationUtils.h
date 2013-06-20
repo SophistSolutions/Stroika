@@ -17,6 +17,9 @@
  *  Private utilities to support building subtypes of Containers::Iterable<T>
  *
  * TODO:
+ *      @todo   Consider somehow getting rid of this (or moving it) so thats a TRAIT object
+ *              usable in backends. That way - it should  be easier todo differnt locking strategies
+ *              within a concrete object type.
  *
  * Notes:
  *
