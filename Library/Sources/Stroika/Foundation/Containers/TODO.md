@@ -178,14 +178,14 @@ Notes from obsolete Collection.h
 		>	TRIED:
 			#define DEAULT_MAPPING_FACTORY()\
                 template    <typename Key, typename T>
-                inline  Mapping<Key, T>  mkMapping_Default ()
+                inline  Mapping<Key,T>  mkMapping_Default ()
                 {
-                    return SortedMapping_stdmap<Key, T> ();
+                    return SortedMapping_stdmap<Key,T> ();
                 }
 		>	OR
                 template    <typename Key, typename T>
-                Mapping<Key, T>  mkMapping_Default ();
+                Mapping<Key,T>  mkMapping_Default ();
                 template    <typename Key, typename T>
-                void    RegisterFactory_Mapping (Mapping<Key, T> (*factory) () = nullptr);
+                void    RegisterFactory_Mapping (Mapping<Key,T> (*factory) () = nullptr);
 
 

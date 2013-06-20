@@ -23,6 +23,7 @@
  *  TODO:
  *
  *      @todo   Use TRAITS mechanism - like with Bag<>
+ *              PUT RequireElementTraitsInClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
  *
  *      @todo   Replace pair<Key,T> with KeyValuePair<Key,T>
  *              Documentent advantages (clearer naming .fKey versus .first, and .fValue versus .second)

@@ -23,7 +23,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* Mapping_Array<Key, T>::Rep_ ******************************
+                 ********************** Mapping_Array<Key,T>::Rep_ ******************************
                  ********************************************************************************
                  */
                 template    <typename Key, typename T>
@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<pair<Key, T>>                              ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Mapping<Key, T>::_IRep overrides
+                    // Mapping<Key,T>::_IRep overrides
                 public:
                     virtual bool            Equals (const typename Mapping<Key, T>::_IRep& rhs) const override;
                     virtual void            RemoveAll () override;
@@ -75,7 +75,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************* Mapping_Array<Key, T>::IteratorRep_ **********************
+                 ********************** Mapping_Array<Key,T>::IteratorRep_ **********************
                  ********************************************************************************
                  */
                 template    <typename Key, typename T>
@@ -123,7 +123,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************* Mapping_Array<Key, T>::Rep_ ******************************
+                ********************** Mapping_Array<Key,T>::Rep_ ******************************
                 ********************************************************************************
                 */
                 template    <typename Key, typename T>
@@ -268,7 +268,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ***************************** Mapping_Array<Key, T> ****************************
+                ****************************** Mapping_Array<Key,T> ****************************
                 ********************************************************************************
                 */
                 template    <typename Key, typename T>

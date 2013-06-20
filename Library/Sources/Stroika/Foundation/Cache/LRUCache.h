@@ -168,7 +168,7 @@ namespace   Stroika {
                 * template more easily - for second argument. Otherwise, its really not needed and must agree with
                 * the elemnt in TRAITS::ElementType;
             */
-            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT> >
+            template    <typename   ELEMENT, typename TRAITS = LRUCacheSupport::DefaultTraits<ELEMENT>>
             class   LRUCache {
             public:
                 typedef typename TRAITS::ElementType    ElementType;

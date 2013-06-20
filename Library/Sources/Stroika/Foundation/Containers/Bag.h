@@ -27,6 +27,7 @@
  *      @todo   ADD EQUALS_COMPARER .. and make Bag<T> depend on THAT! We ONLY require == for
  *              Bag.
  *              !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PRIORITY - NEXT !!!!!
+ *              PUT RequireElementTraitsInClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
  *
  *
  *      @todo   Cleaup and actually use properly the TRAITS code. Not actually used yet.

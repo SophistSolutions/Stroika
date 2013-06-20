@@ -132,7 +132,7 @@ private:
 
 /*
  ********************************************************************************
- ******************* Streams::iostream::BasicBinaryOutputStream ******************
+ ******************* Streams::iostream::BasicBinaryOutputStream *****************
  ********************************************************************************
  */
 BasicBinaryOutputStream::BasicBinaryOutputStream ()

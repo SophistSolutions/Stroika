@@ -39,7 +39,7 @@ namespace   Stroika {
              *  It is not the most efficient approach (since it stores an actual pointer for the
              *  copy function. But its very simple and usually adequate.
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>>
             struct  SharedByValue_CopyByFunction {
 #if     qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
                 SharedByValue_CopyByFunction (SHARED_IMLP (*copier) (const T&) = [](const T& t) -> SHARED_IMLP  { return SHARED_IMLP (new T (t)); });
@@ -58,7 +58,7 @@ namespace   Stroika {
              * SharedByValue_CopyByDefault is the a simple copying mechanism used by SharedByValue<>.
              * It simply hardwires use of new T() - the default T(T&) constructor to copy elements of type T.
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T> >
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>>
             struct  SharedByValue_CopyByDefault {
                 static  SHARED_IMLP  Copy (const T& t);
             };
@@ -70,7 +70,7 @@ namespace   Stroika {
              *
              *  This class should allow SHARED_IMLP to be std::shared_ptr (or another sharedptr implementation).
              */
-            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP > >
+            template    <typename   T, typename SHARED_IMLP = shared_ptr<T>, typename COPIER = SharedByValue_CopyByDefault<T, SHARED_IMLP>>
             struct   SharedByValue_Traits {
                 typedef T               element_type;
                 typedef COPIER          copier_type;
