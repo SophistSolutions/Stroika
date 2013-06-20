@@ -117,6 +117,7 @@ namespace   Stroika {
                             }
                         }
                         RequireNotReached ();
+						return *(T*)nullptr;
                     }
                     template    <typename   T>
                     inline  void    DoublyLinkedList<T>::Prepend (T item)
