@@ -16,6 +16,11 @@
 /**
  *  \file
  *
+ *      @todo   SEE BinaryOutputStream::Flush () documetnation. Implies flush is optional.
+ *              THAT IS SMARTER!!!!
+ *              CHANGE docs and impl for this class so you CAN Flush if you want excpetion prop peroperly,
+ *              but if you fail to - not error - exceptions just get 'eaten' - but autoflush in DTOR!!!
+ *
  *      @todo   make threadsafe
  *
  *      @todo   Think out Seekable. Probably MUST mixin Seekable, and properly handle
