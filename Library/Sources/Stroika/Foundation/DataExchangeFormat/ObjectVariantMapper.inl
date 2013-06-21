@@ -15,9 +15,23 @@ namespace   Stroika {
         namespace   DataExchangeFormat {
 
 
+
             /*
              ********************************************************************************
-             ***************************** Implementation Details ***************************
+             ********************** ObjectVariantMapper::TYPEINFO ***************************
+             ********************************************************************************
+             */
+            inline  ObjectVariantMapper::TYPEINFO::TYPEINFO (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName)
+                : fOffset (fieldOffset)
+                , fTypeInfo (typeInfo)
+                , fSerializedFieldName (serializedFieldName)
+            {
+            }
+
+
+            /*
+             ********************************************************************************
+             ******************************** ObjectVariantMapper ***************************
              ********************************************************************************
              */
             template    <typename CLASS>
@@ -42,6 +56,7 @@ namespace   Stroika {
             {
                 return Serialize  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
+
 
         }
     }

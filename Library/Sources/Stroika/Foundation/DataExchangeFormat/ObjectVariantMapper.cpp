@@ -4,6 +4,8 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Time/Date.h"
+#include    "../Time/DateTime.h"
 
 #include    "ObjectVariantMapper.h"
 
@@ -11,7 +13,22 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchangeFormat;
 
+using   Time::Date;
+using   Time::DateTime;
 
+
+
+/*
+ ********************************************************************************
+ ******* DataExchangeFormat::ObjectVariantMapper::SerializerInfo ****************
+ ********************************************************************************
+ */
+ObjectVariantMapper::SerializerInfo::SerializerInfo (const type_index& forTypeInfo, const std::function<VariantValue(const Byte* objOfType)>& serializer, const std::function<void(const VariantValue& d, Byte* into)>& deserializer)
+    : fForType (forTypeInfo)
+    , fSerializer (serializer)
+    , fDeserializer (deserializer)
+{
+}
 
 
 /*
@@ -60,6 +77,9 @@ void    ObjectVariantMapper::RegisterCommonSerializers ()
     RegisterSerializer (mkSerializerInfo_<int, int> ());
     RegisterSerializer (mkSerializerInfo_<float, VariantValue::FloatType> ());
     RegisterSerializer (mkSerializerInfo_<double, VariantValue::FloatType> ());
+    RegisterSerializer (mkSerializerInfo_<Date, Date> ());
+    RegisterSerializer (mkSerializerInfo_<DateTime, DateTime> ());
+    /// TODO - ARRAY??? Maybe using Sequence???
     RegisterSerializer (mkSerializerInfo_<String, String> ());
 }
 
