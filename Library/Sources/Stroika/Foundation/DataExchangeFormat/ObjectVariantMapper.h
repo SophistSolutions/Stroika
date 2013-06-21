@@ -189,8 +189,10 @@ namespace   Stroika {
 
 
             /**
-             *  Greatly regred adding Macro, but it just seems SO HELPFUL (makes things much more terse). No need to use - but some may
+             *  Greatly regret adding Macro, but it just seems SO HELPFUL (makes things much more terse). No need to use - but some may
              *  find it helpfull...
+             *
+             *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype thing and offsetof()).
              */
 #define     ObjectVariantMapper_TYPEINFO_Construction_Helper(CLASS,MEMBER,NAME)\
     DataExchangeFormat::ObjectVariantMapper::TYPEINFO (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
