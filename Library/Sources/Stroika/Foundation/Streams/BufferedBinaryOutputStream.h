@@ -16,11 +16,6 @@
 /**
  *  \file
  *
- *      @todo   SEE BinaryOutputStream::Flush () documetnation. Implies flush is optional.
- *              THAT IS SMARTER!!!!
- *              CHANGE docs and impl for this class so you CAN Flush if you want excpetion prop peroperly,
- *              but if you fail to - not error - exceptions just get 'eaten' - but autoflush in DTOR!!!
- *
  *      @todo   make threadsafe
  *
  *      @todo   Think out Seekable. Probably MUST mixin Seekable, and properly handle
@@ -43,10 +38,8 @@ namespace   Stroika {
              *  A BufferedBinaryOutputStream wraps an argument stream
              *  (which must have lifetime > this BufferedBinaryOutputStream) and will buffer up writes to it.
              *
-             *      \note   its is REQUIRED to call Flush before destruction if any pending data has not
-             *              yet been flushed. It is NOT done in the BufferedBinaryOutputStream::DTOR -
-             *              because the underlying stream could have an exception writing, and its illegal
-             *              to propagate exceptions through destructors.
+             *      \note   If you fail to Flush() this object before it is destroyed, exceptions in flushing
+             *              the data may be suppressed.
              */
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             private:

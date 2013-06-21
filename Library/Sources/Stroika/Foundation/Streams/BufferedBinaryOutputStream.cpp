@@ -6,6 +6,7 @@
 #include    <mutex>
 
 #include    "../Containers/Common.h"
+#include    "../Execution/Exceptions.h"
 
 #include    "BufferedBinaryOutputStream.h"
 
@@ -37,7 +38,8 @@ public:
         fBuffer_.reserve (kDefaultBufSize);
     }
     ~IRep_ () {
-        Require (fBuffer_.size () == 0);        // require FLUSHED
+        IgnoreExceptionsForCall (Flush ());
+        Ensure (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
     }
 
 public:
@@ -72,6 +74,7 @@ public:
             fRealOut_.Write (Containers::Start (fBuffer_), Containers::End (fBuffer_));
             fBuffer_.clear ();
         }
+        fRealOut_.Flush ();
         Ensure (fBuffer_.empty ());
     }
 
