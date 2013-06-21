@@ -270,7 +270,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (bag.GetLength ());
-                    AddAll (bag);
+                    this->AddAll (bag);
                 }
                 template    <typename T>
                 Bag_Array<T>::Bag_Array (const T* start, const T* end)
@@ -279,7 +279,7 @@ namespace   Stroika {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     if (start != end) {
                         SetCapacity (end - start);
-                        AddAll (start, end);
+                        this->AddAll (start, end);
                     }
                 }
                 template    <typename T>
