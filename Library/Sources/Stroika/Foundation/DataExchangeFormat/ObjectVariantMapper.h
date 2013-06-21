@@ -77,8 +77,7 @@ namespace   Stroika {
              *  // THEN deserialized
              *
              *  Then mapped back to C++ object form
-             *  tmp = mapper.Deserialize (
-             *  mapper.Deserialize  (v, &tmp);
+             *  tmp = mapper.Deserialize (v);
              *
              *
              */
@@ -116,6 +115,8 @@ namespace   Stroika {
                 void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
                 template    <typename CLASS>
                 void    Deserialize (const Memory::VariantValue& v, CLASS* into);
+                template    <typename CLASS>
+                CLASS    Deserialize (const Memory::VariantValue& v);
 
                 /**
                  */

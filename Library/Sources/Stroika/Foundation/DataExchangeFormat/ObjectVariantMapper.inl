@@ -25,11 +25,17 @@ namespace   Stroika {
             {
                 RegisterSerializer (mkSerializerForStruct (typeid (CLASS), typeInfo));
             }
-
             template    <typename CLASS>
             void    ObjectVariantMapper::Deserialize (const Memory::VariantValue& v, CLASS* into)
             {
                 Deserialize  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
+            }
+            template    <typename CLASS>
+            CLASS    ObjectVariantMapper::Deserialize (const Memory::VariantValue& v)
+            {
+                CLASS tmp;
+                Deserialize  (v, &tmp);
+                return tmp;
             }
             template    <typename CLASS>
             VariantValue    ObjectVariantMapper::Serialize (const CLASS& from)
