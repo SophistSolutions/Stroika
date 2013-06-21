@@ -49,122 +49,87 @@ namespace   Stroika {
              * CLASS IS COPYABLE. Make one instance, register your types into it and use this to
              *  serialized/deserialize
              */
-            class   Serailizion {
-                struct SerializerInfo {
-                    type_index fForType;
-                    std::function<VariantValue(const Byte* objOfType)>  fSerializer;
-                    std::function<void(const VariantValue& d, Byte* into)>  fDeserializer;
+            class   ObjectVariantMapper {
 
-                    SerializerInfo (const type_index& forTypeInfo, const std::function<VariantValue(const Byte* objOfType)>& serializer, const std::function<void(const VariantValue& d, Byte* into)>& deserializer)
-                        : fForType (forTypeInfo)
-                        , fSerializer (serializer)
-                        , fDeserializer (deserializer) {
-                    }
-                    bool operator< (const SerializerInfo& rhs) const {
-                        return (fForType < rhs.fForType);
-                    }
-                };
+            public:
+
+                /**
+                 *  Defaults to installing basic serializers.
+                 */
+                ObjectVariantMapper ();
+
+                struct SerializerInfo;
 
                 void    ClearRegistry ();
                 void    ResetToDefaultRegistry ();
 
-                set<SerializerInfo> s_Serializers;  // need Stroika set with separate traits-based key extractor/compare function
-
-                void    RegisterSerializer (const SerializerInfo& serializerInfo) {
-                    s_Serializers.insert (serializerInfo);
-                }
-                void    RegisterCommonSerializers () {
-                    RegisterSerializer (SerializerInfo (
-                                            typeid (bool),
-                    [] (const Byte * objOfType) -> VariantValue {
-                        return VariantValue (*reinterpret_cast<const bool*> (objOfType));
-                    },
-                    [] (const VariantValue & d, Byte * into) -> void {
-                        *reinterpret_cast<bool*> (into) = d.As<bool> ();
-                    }
-                                        )
-                                       );
-                    RegisterSerializer (SerializerInfo (
-                                            typeid (Characters::String),
-                    [] (const Byte * objOfType) -> VariantValue {
-                        return VariantValue (*reinterpret_cast<const Characters::String*> (objOfType));
-                    },
-                    [] (const VariantValue & d, Byte * into) -> void {
-                        *reinterpret_cast<Characters::String*> (into) =  d.As<Characters::String> ();
-                    }
-                                        )
-                                       );
-                }
-
-                SerializerInfo  Lookup_(const type_index& forTypeInfo) {
-                    SerializerInfo  foo (forTypeInfo, nullptr, nullptr);
-                    auto i  = s_Serializers.find (foo);
-                    if (i == s_Serializers.end ()) {
-                        throw "OOPS";
-                    }
-                    return *i;
-                }
-
-                VariantValue    Serialize (const type_index& forTypeInfo, const Byte* objOfType) {
-                    return Lookup_ (forTypeInfo).fSerializer (objOfType);
-                }
-                void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into) {
-                    Lookup_ (forTypeInfo).fDeserializer (d, into);
-                }
+                void    RegisterSerializer (const SerializerInfo& serializerInfo);
+                void    RegisterCommonSerializers ();
 
 
-                struct TYPEINFO {
-                    size_t      fOffset;
-                    type_index  fTypeInfo;
-                    String      fSerializedFieldName;
+                struct TYPEINFO;
 
+                /**
+                 */
+                SerializerInfo  mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields);
 
-                    TYPEINFO(size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String () )
-                        : fOffset (fieldOffset)
-                        , fTypeInfo (typeInfo)
-                        , fSerializedFieldName (serializedFieldName) {
-                    }
-                };
-                SerializerInfo  mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields) {
-                    struct foo {
-                        Sequence<TYPEINFO> fields;
-                    };
-                    shared_ptr<foo> fooptr (new foo ());
-                    fooptr->fields = fields;
-                    return SerializerInfo (
-                               forTypeInfo,
-                    [fooptr, this] (const Byte * objOfType) -> VariantValue {
-                        Mapping<String, VariantValue> m;
-                        for (auto i : fooptr->fields) {
-                            const Byte* fieldObj = objOfType + i.fOffset;
-                            m.Add (i.fSerializedFieldName, Serialize (i.fTypeInfo, objOfType + i.fOffset));
-                        }
-                        return VariantValue (m);
-                    },
-                    [fooptr, this] (const VariantValue & d, Byte * into) -> void {
-                        Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-                        for (auto i : fooptr->fields) {
-                            Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-                            if (not o.empty ()) {
-                                Deserialize (i.fTypeInfo, *o, into + i.fOffset);
-                            }
-                        }
-                    }
-                           );
-                }
-
+                /**
+                 */
                 template    <typename CLASS>
-                void    RegisterClass (Sequence<TYPEINFO> typeInfo) {
-                    RegisterSerializer (mkSerializerForStruct (typeid (CLASS), typeInfo));
-                }
+                void    RegisterClass (Sequence<TYPEINFO> typeInfo);
 
+                /**
+                 */
+                void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
                 template    <typename CLASS>
-                void    Deserialize (const Memory::VariantValue& v, CLASS* into) {
-                    Deserialize  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
+                void    Deserialize (const Memory::VariantValue& v, CLASS* into);
+
+                /**
+                 */
+                VariantValue    Serialize (const type_index& forTypeInfo, const Byte* objOfType);
+                template    <typename CLASS>
+                VariantValue    Serialize (const CLASS& from);
+
+
+            private:
+                SerializerInfo  Lookup_(const type_index& forTypeInfo) const;
+
+            private:
+                set<SerializerInfo> fSerializers_;  // need Stroika set with separate traits-based key extractor/compare function
+
+            };
+
+
+            /**
+             * RENAME - not calling serializaiton anynore???
+             */
+            struct ObjectVariantMapper::SerializerInfo {
+                type_index fForType;
+                std::function<VariantValue(const Byte* objOfType)>  fSerializer;
+                std::function<void(const VariantValue& d, Byte* into)>  fDeserializer;
+
+                SerializerInfo (const type_index& forTypeInfo, const std::function<VariantValue(const Byte* objOfType)>& serializer, const std::function<void(const VariantValue& d, Byte* into)>& deserializer)
+                    : fForType (forTypeInfo)
+                    , fSerializer (serializer)
+                    , fDeserializer (deserializer) {
                 }
-                template    <typename CLASS>
-                VariantValue    Serialize (const CLASS& from) {
-                    return Serialize  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
+                bool operator< (const SerializerInfo& rhs) const {
+                    return (fForType < rhs.fForType);
+                }
+            };
+            /**
+             * RENAME - JUST FOR ELTS OF A STRUCT
+             */
+            struct ObjectVariantMapper::TYPEINFO {
+                size_t      fOffset;
+                type_index  fTypeInfo;
+                String      fSerializedFieldName;
+
+
+                TYPEINFO(size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String () )
+                    : fOffset (fieldOffset)
+                    , fTypeInfo (typeInfo)
+                    , fSerializedFieldName (serializedFieldName) {
                 }
             };
 
