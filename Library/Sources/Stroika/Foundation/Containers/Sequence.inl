@@ -35,7 +35,7 @@ namespace   Stroika {
             inline  Sequence<T>::Sequence (const std::initializer_list<T>& s)
                 : inherited (Concrete::mkSequence_Default<T> ())
             {
-                InsertAll (0, s);
+                AppendAll (s);
             }
 #endif
             template    <typename T>
@@ -43,7 +43,7 @@ namespace   Stroika {
             inline  Sequence<T>::Sequence (const CONTAINER_OF_T& s)
                 : inherited (Concrete::mkSequence_Default<T> ())
             {
-                InsertAll (0, s);
+                AppendAll (s);
             }
             template    <typename T>
             inline  Sequence<T>::Sequence (const _SharedPtrIRep& rep)
@@ -56,7 +56,7 @@ namespace   Stroika {
             inline Sequence<T>::Sequence (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
                 : inherited (Concrete::mkSequence_Default<T> ())
             {
-                Append (start, end);
+                AppendAll (start, end);
             }
             template    <typename T>
             inline  Sequence<T>& Sequence<T>::operator= (const Sequence<T>& rhs)
@@ -169,6 +169,12 @@ namespace   Stroika {
                 InsertAll (0, s);
             }
             template    <typename T>
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline void Sequence<T>::PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            {
+                InsertAll (0, start, end);
+            }
+            template    <typename T>
             inline  void    Sequence<T>::Append (T item)
             {
                 _GetRep ().Insert (kBadSequenceIndex, &item, &item + 1);
@@ -179,6 +185,14 @@ namespace   Stroika {
             {
                 for (auto i : s) {
                     _GetRep ().Insert (kBadSequenceIndex, &i, &i + 1);
+                }
+            }
+            template    <typename T>
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline void Sequence<T>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            {
+                for (auto i = start; i != end; ++i) {
+                    _GetRep ().Insert (kBadSequenceIndex, &*i, (&*i) + 1);
                 }
             }
             template    <typename T>

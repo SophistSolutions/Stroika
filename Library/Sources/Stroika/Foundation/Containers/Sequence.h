@@ -270,6 +270,8 @@ namespace   Stroika {
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    PrependAll (const CONTAINER_OF_T& s);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    PrependAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 /**
@@ -286,6 +288,8 @@ namespace   Stroika {
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    AppendAll (const CONTAINER_OF_T& s);
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                nonvirtual  void    AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
                 /**
