@@ -18,6 +18,11 @@
  *
  *  \file
  *
+ *  @todo   SERIOUSLY CONSIDER HAVING MORE() return Memory::Optional<T> (taking as arg I mean)
+ *          THAT WAY - we can get rid of requirement for default CTOR - I BELIEVE. LITTLE performance
+ *          cost since we wont copy (careful to use move semantics????) - or maybe that not even needed
+ *          for how we use - and we may get away with cheap. But test that!
+ *
  *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
