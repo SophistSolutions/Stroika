@@ -13,6 +13,7 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)BadFormatException.o\
 	$(ObjDir)InternetMediaType.o\
+	$(ObjDir)ObjectVariantMapper.o\
 
 SubDirs	=	\
 	JSON \

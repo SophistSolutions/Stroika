@@ -558,6 +558,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp">
       <Filter>Sources\Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.cpp">
+      <Filter>Sources\DataExchangeFormat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1284,6 +1287,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h">
       <Filter>Sources\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.h">
+      <Filter>Sources\DataExchangeFormat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1910,6 +1916,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl">
       <Filter>Sources\Common</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ToDo.md">
+      <Filter>Sources\DataExchangeFormat</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.inl">
+      <Filter>Sources\DataExchangeFormat</Filter>
     </None>
   </ItemGroup>
 </Project>

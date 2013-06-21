@@ -243,6 +243,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.o</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.o</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.cpp">
@@ -605,6 +606,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.h" />
@@ -854,6 +856,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl" />
