@@ -108,16 +108,16 @@ namespace   Stroika {
                 struct SerializerInfo;
 
             public:
-                void    ClearRegistry ();
-            public:
-                void    ResetToDefaultRegistry ();
+                nonvirtual  void    ClearRegistry ();
 
             public:
-                void    RegisterSerializer (const SerializerInfo& serializerInfo);
+                nonvirtual  void    ResetToDefaultRegistry ();
 
             public:
-                void    RegisterCommonSerializers ();
+                nonvirtual  void    RegisterSerializer (const SerializerInfo& serializerInfo);
 
+            public:
+                nonvirtual  void    RegisterCommonSerializers ();
 
             public:
                 struct TYPEINFO;
@@ -126,33 +126,32 @@ namespace   Stroika {
                 /**
                 * @todo - add sizeof class - for assert checking... just  in CTOR arg - no need in serializer itself
                  */
-                SerializerInfo  mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields);
+                nonvirtual  SerializerInfo  mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields);
 
             public:
                 /**
                  */
                 template    <typename CLASS>
-                void    RegisterClass (Sequence<TYPEINFO> typeInfo);
+                nonvirtual  void    RegisterClass (Sequence<TYPEINFO> typeInfo);
 
             public:
                 /**
                  */
-                void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
+                nonvirtual  void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
                 template    <typename CLASS>
-                void    Deserialize (const Memory::VariantValue& v, CLASS* into);
+                nonvirtual  void    Deserialize (const Memory::VariantValue& v, CLASS* into);
                 template    <typename CLASS>
-                CLASS    Deserialize (const Memory::VariantValue& v);
+                nonvirtual  CLASS    Deserialize (const Memory::VariantValue& v);
 
             public:
                 /**
                  */
-                VariantValue    Serialize (const type_index& forTypeInfo, const Byte* objOfType);
+                nonvirtual  VariantValue    Serialize (const type_index& forTypeInfo, const Byte* objOfType);
                 template    <typename CLASS>
-                VariantValue    Serialize (const CLASS& from);
-
+                nonvirtual  VariantValue    Serialize (const CLASS& from);
 
             private:
-                SerializerInfo  Lookup_(const type_index& forTypeInfo) const;
+                nonvirtual  SerializerInfo  Lookup_(const type_index& forTypeInfo) const;
 
             private:
                 set<SerializerInfo> fSerializers_;  // need Stroika set with separate traits-based key extractor/compare function
@@ -162,7 +161,7 @@ namespace   Stroika {
             /**
              * RENAME - not calling serializaiton anynore???
              */
-            struct ObjectVariantMapper::SerializerInfo {
+            struct  ObjectVariantMapper::SerializerInfo {
                 type_index                                              fForType;
                 std::function<VariantValue(const Byte* objOfType)>      fSerializer;
                 std::function<void(const VariantValue& d, Byte* into)>  fDeserializer;
@@ -179,12 +178,12 @@ namespace   Stroika {
             /**
              * RENAME - JUST FOR ELTS OF A STRUCT
              */
-            struct ObjectVariantMapper::TYPEINFO {
+            struct  ObjectVariantMapper::TYPEINFO {
                 size_t      fOffset;
                 type_index  fTypeInfo;
                 String      fSerializedFieldName;
 
-                TYPEINFO(size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
+                TYPEINFO (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
             };
 
 
@@ -194,7 +193,7 @@ namespace   Stroika {
              *  find it helpfull...
              */
 #define     ObjectVariantMapper_TYPEINFO_Construction_Helper(CLASS,MEMBER,NAME)\
-    DataExchangeFormat::ObjectVariantMapper::TYPEINFO (offsetof (CLASS, MEMBER), typeid (CLASS::MEMBER), NAME)
+    DataExchangeFormat::ObjectVariantMapper::TYPEINFO (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
 
 
         }
