@@ -29,6 +29,17 @@
  *
  *      @todo   Just a draft - think through what we really want here...
  *
+ *      @todo   EFFICIENCY NOTES AND TODO MAYBE IMPROVE?
+ *
+ *              This can be moderately efficient, but it is not highly efficient. The use of std::function
+ *              for the serializer/desearizers adds costs.
+ *
+ *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
+ *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
+ *
+ *      @todo   NOTE and TODO
+ *              The cast to Byte* loses some type safety (we may want to store the class size htrough template magic)
+ *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
  */
 
 
