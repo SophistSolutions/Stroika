@@ -48,6 +48,39 @@ namespace   Stroika {
             /**
              * CLASS IS COPYABLE. Make one instance, register your types into it and use this to
              *  serialized/deserialize
+             *
+             *
+             * EXAMPLE USAGE:
+             *      struct SharedContactsConfig_
+             *      {
+             *          bool    fEnabled;
+             *
+             *          SharedContactsConfig_ ()
+             *              : fEnabled (false)
+             *          {
+             *          }
+             *      };
+             *...
+             *
+             *  ObjectVariantMapper mapper;
+             *
+             *  // register each of your proivate types
+             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<TYPEINFO> ({ TYPEINFO (offsetof (SharedContactsConfig_, fEnabled), typeid (bool), L"Enabled"), }));
+             *
+             *  SharedContactsConfig_   tmp;
+             *  tmp.fEnabled = enabled;
+             *  VariantValue v = mapper.Serialize  (tmp);
+             *  // at this point - we should have VariantValue object with "Enabled" field.
+             *  // This can then be serialized using
+             *  JSON::Serialize....
+             *
+             *  // THEN deserialized
+             *
+             *  Then mapped back to C++ object form
+             *  tmp = mapper.Deserialize (
+             *  mapper.Deserialize  (v, &tmp);
+             *
+             *
              */
             class   ObjectVariantMapper {
 
