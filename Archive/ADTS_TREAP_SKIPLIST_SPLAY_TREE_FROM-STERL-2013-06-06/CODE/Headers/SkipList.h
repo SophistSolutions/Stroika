@@ -68,6 +68,7 @@ class SkipList {
         typedef KEY	KeyType;
         typedef VALUE  ValueType;
         typedef typename TRAITS::KeyValue    KeyValue;
+        typedef SkipListIterator<KEY,VALUE,TRAITS> Iterator;
 
 	public:
 		SkipList ();
@@ -78,8 +79,6 @@ class SkipList {
 
 		/*
 			Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
-			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
-			how to do this.
 		*/
 		nonvirtual	bool	Find (const KeyType& key, ValueType* val = nullptr) const;
 
@@ -98,25 +97,25 @@ class SkipList {
             Iterator support
         */
 
- 		nonvirtual	SkipListIterator<KEY,VALUE,TRAITS> MakeIterator () const;
+ 		nonvirtual	Iterator Iterate () const;
 
  		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
- 		nonvirtual	SkipListIterator<KEY,VALUE,TRAITS> MakeIterator (const KeyType& key) const;
+ 		nonvirtual	Iterator Iterate (const KeyType& key) const;
 
-        nonvirtual  SkipListIterator<KEY,VALUE,TRAITS>  begin () const;
-        nonvirtual  SkipListIterator<KEY,VALUE,TRAITS>  end () const;
+        nonvirtual  Iterator  begin () const;
+        nonvirtual  Iterator  end () const;
 
-		nonvirtual	SkipListIterator<KEY,VALUE,TRAITS>	GetFirst () const;  // synonym for begin (), MakeIterator ()
-		nonvirtual	SkipListIterator<KEY,VALUE,TRAITS>	GetLast () const;   // returns iterator to largest key
+		nonvirtual	Iterator	GetFirst () const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast () const;   // returns iterator to largest key
 
-        nonvirtual  void    Update (const SkipListIterator<KEY,VALUE,TRAITS>& it, const ValueType& newValue);
-        nonvirtual	void	Remove (const SkipListIterator<KEY,VALUE,TRAITS>& it);
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
 
 
 		// calling this will result in maximal search performance until further adds or removes
 		// call when list is relatively stable in size, and it will set links to near classic log(n/2) search time
 		// relatively fast to call, as is order N (single list traversal)
-		nonvirtual	void	ReBalance ();
+		nonvirtual	void	Balance ();
 
 		// make the node faster on finds, possibly slowing other node searches down
 		nonvirtual	void    Prioritize (const KeyType& key);
@@ -125,7 +124,6 @@ class SkipList {
 
 		#if qDebug
 			nonvirtual	void	ListAll () const;
-			nonvirtual	void	ValidateAll () const;
 		#endif
 
 		#if qKeepADTStatistics
@@ -149,8 +147,6 @@ class SkipList {
 			KeyValue	            fEntry;
 			std::vector<Node*>		fNext;		// for a skiplist, you have an array of next pointers, rather than just one
 		};
-		std::vector<Node*>	fHead;
-
 
 		/*
 			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
@@ -167,8 +163,9 @@ class SkipList {
 		// this is specialized for the case of adding or removing elements, as it caches
 		// all links that will need to be updated for the new element or the element to be removed
 		nonvirtual	Node*	FindNearest (KeyType key, std::vector<Node*>& links)  const;
+		nonvirtual	Node*	FindNearest (const Iterator& it, std::vector<Node*>& links)  const;
 
-		nonvirtual	void	AddNode (Node* n, const std::vector<Node*>&  linksToPatch);
+		nonvirtual	void	AddNode (Node* n, const std::vector<Node*>&  linksToPatch, size_t minLinkHeight = 0);
 		nonvirtual	void	RemoveNode (Node* n, const std::vector<Node*>& linksToPatch);
 
 		#if		qDebug
@@ -180,7 +177,7 @@ class SkipList {
 		nonvirtual	void	GrowHeadLinksIfNeeded (size_t newSize, Node* nodeToPointTo);
 		nonvirtual	size_t	DetermineLinkHeight ()  const;
 
-
+		std::vector<Node*>	fHead;
 		size_t	fLength;
 
 		#if qKeepADTStatistics
@@ -208,6 +205,7 @@ class   SkipList_Patch : public SkipList<KEY, VALUE, TRAITS> {
         typedef KEY	KeyType;
         typedef VALUE  ValueType;
         typedef typename TRAITS::KeyValue    KeyValue;
+        typedef SkipListIterator_Patch<KEY,VALUE,TRAITS> Iterator;
 
    public:
 		SkipList_Patch ();
@@ -216,18 +214,18 @@ class   SkipList_Patch : public SkipList<KEY, VALUE, TRAITS> {
 
 		SkipList_Patch&	operator= (const SkipList_Patch& t);
 
-  		nonvirtual	SkipListIterator_Patch<KEY,VALUE,TRAITS> MakeIterator () const;
- 		nonvirtual	SkipListIterator_Patch<KEY,VALUE,TRAITS> MakeIterator (const KeyType& key) const;
+  		nonvirtual	Iterator Iterate () const;
+ 		nonvirtual	Iterator Iterate (const KeyType& key) const;
 
-        nonvirtual  SkipListIterator_Patch<KEY,VALUE,TRAITS>  begin () const;
-        nonvirtual  SkipListIterator_Patch<KEY,VALUE,TRAITS>  end () const;
+        nonvirtual  Iterator  begin () const;
+        nonvirtual  Iterator  end () const;
 
-		nonvirtual	SkipListIterator_Patch<KEY,VALUE,TRAITS>	GetFirst () const;
-		nonvirtual	SkipListIterator_Patch<KEY,VALUE,TRAITS>	GetLast () const;
+		nonvirtual	Iterator	GetFirst () const;
+		nonvirtual	Iterator	GetLast () const;
 
         // these are the routines that call patch code in the iterator
 		nonvirtual	void	Remove (const KeyType& key);
-        nonvirtual	void	Remove (const SkipListIterator<KEY,VALUE,TRAITS>& it);
+        nonvirtual	void	Remove (const Iterator& it);
 		nonvirtual	void	RemoveAll ();
 
 		nonvirtual  void    Invariant () const;
@@ -240,7 +238,7 @@ class   SkipList_Patch : public SkipList<KEY, VALUE, TRAITS> {
    private:
         typedef SkipList<KEY, VALUE, TRAITS> inherited;
 
-        SkipListIterator_Patch<KEY, VALUE, TRAITS>*    fIterators;
+        Iterator*    fIterators;
 
         friend  class    SkipListIterator_Patch<KEY, VALUE, TRAITS>;
 };
@@ -264,9 +262,6 @@ class	SkipListIterator : public std::iterator<std::forward_iterator_tag, KEY>  {
 		nonvirtual	bool	Done () const;
 		nonvirtual	bool	More (KeyValue* current = nullptr, bool advance = true);
 		nonvirtual	const KeyValue&	Current () const;
-
-		nonvirtual	VALUE	CurrentValue () const;
-		nonvirtual  KEY     CurrentKey () const;
 
 		nonvirtual	void	Invariant () const;
 
@@ -317,7 +312,9 @@ class   SkipListIterator_Patch : public SkipListIterator<KEY, VALUE, TRAITS>
 		nonvirtual	void	Invariant () const;
 
     protected:
-        #if		qDebug
+         nonvirtual  void    RemoveFromChain ();
+
+       #if		qDebug
             nonvirtual	void	Invariant_ () const;
         #endif
 
@@ -327,7 +324,7 @@ class   SkipListIterator_Patch : public SkipListIterator<KEY, VALUE, TRAITS>
 		bool    fSuppressAdvance;   // set when patching
 
     private:
-       typedef SkipListIterator<KEY, VALUE, TRAITS> inherited;
+        typedef SkipListIterator<KEY, VALUE, TRAITS> inherited;
 
         friend  class   SkipList_Patch<KEY, VALUE, TRAITS>;
 };

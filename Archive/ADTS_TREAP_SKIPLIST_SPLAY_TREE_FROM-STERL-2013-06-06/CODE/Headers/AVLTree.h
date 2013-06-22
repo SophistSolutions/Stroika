@@ -16,6 +16,10 @@
 namespace   ADT {
     namespace   BinaryTree {
 
+template  <typename KEYVALUE>  class  AVLNode;    // need to forward declare when you subclass from TreeNode
+
+
+
 
 template <typename KEY,
 		  typename VALUE,
@@ -26,8 +30,11 @@ template <typename KEY,
 		>
 class AVLTree {
 	public:
-        typedef KEY	   KeyType;
-        typedef VALUE  ValueType;
+        typedef KEY	    KeyType;
+        typedef VALUE   ValueType;
+        typedef typename TRAITS::KeyValue    KeyValue;
+        typedef AVLNode<KeyValue>  Node;
+        typedef TreeIterator<Node> Iterator;
 
     public:
 		AVLTree ();
@@ -52,52 +59,36 @@ class AVLTree {
 		nonvirtual	void	Remove (const KeyType& key);
 		nonvirtual	void	RemoveAll ();
 
- 		nonvirtual	size_t	GetLength () const;		// always equal to total Add minus total Remove
 
-		nonvirtual  void	ReBalance ();
+        /*
+            Iterator support
+        */
+ 		nonvirtual	Iterator Iterate (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
 
-	public:
-        class	Node {
-            public:
-                Node (const KeyType& key, const ValueType& val);
-                Node (const Node& n);
+ 		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
+ 		nonvirtual	Iterator Iterate (const KeyType& key, TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
 
-                DECLARE_USE_BLOCK_ALLOCATION(Node);
+        nonvirtual  Iterator  begin (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+        nonvirtual  Iterator  end () const;
 
-                // tree node core routines
+		nonvirtual	Iterator	GetFirst (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;   // returns iterator to largest key
 
-                Node*   GetParent () const;
-                void    SetParent (Node* p);
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
 
-                Node*   GetChild (Direction direction);
-                void    SetChild (Direction direction, Node* n);
+        nonvirtual	size_t	GetLength () const;		// always equal to total Add minus total Remove
 
-                bool    IsChild (Direction direction);
+		nonvirtual  void	Balance ();
 
-                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
-                static  Direction     OtherDir (Direction dir);
-                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
+        nonvirtual	void	Invariant () const;
 
-                static  Node*   GetFirst (Node* n);
-                static  Node*   GetLast (Node* n);
+        #if qDebug
+            nonvirtual	void	Invariant_ () const;
+			nonvirtual	void	ListAll (Iterator it) const;
+		#endif
 
-                typename	TRAITS::KeyValue	fEntry; // we look at this directly because we want to see internal fields be const reference rather than value
-
-                // AVL Additions
-                short   GetBalance () const;
-                void    SetBalance (short b);
-                bool    IsUnbalanced () const;
-
-                void    CalcBalanceStateInBalancedBranch (bool recurse);
-
-            private:
-                Node*   fChildren[2];
-                Node*	fParent;
-                short   fBalance;
-        };
-		Node*	fHead;
-
-
+	protected:
 		/*
 			Find node with matching key. In cases of duplicate values, return first found if ignoreMatch is false, otherwise
 			treat matching keys as if the comparison returned <
@@ -106,33 +97,30 @@ class AVLTree {
 
 		/*
 			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
-			iteration, assuming other users did not alter the tree. Note that these routines require no key compares, and are thus very fast.
+			in-order iteration, assuming other users did not alter the tree. Note that these routines require no key compares, and are thus very fast.
 		*/
 		nonvirtual	Node*	GetFirst () const;
 		nonvirtual	Node*	GetLast () const;
 
-    private:
         // swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
 		nonvirtual	Node*   Rotate (Node* n, Direction rotateDir);
-		nonvirtual	Node*    DoubleRotate (Node* n, Direction rotateDir);
+		nonvirtual	Node*   DoubleRotate (Node* n, Direction rotateDir);
 
 		nonvirtual  void    SwapNodes (Node* parent, Node* child);
 
 		nonvirtual	void	AddNode (Node* n);
 		nonvirtual	void	RemoveNode (Node* n);
 
-
         nonvirtual Node*    RebalanceNode (Node* n, Direction leanDir, int mod);    // mod is -1 for removal, +1 for insertion
 
-	public:
 		#if qDebug
-			nonvirtual	void	ListAll () const;
 			static		int 	ValidateBranch (Node* n, size_t& count);
-			nonvirtual	void	ValidateAll () const;
 		#endif
 
+
 	private:
-		size_t		fLength;
+		Node*	fHead;
+		size_t  fLength;
 
 		#if qKeepADTStatistics
 			public:

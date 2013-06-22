@@ -71,6 +71,7 @@
 		<Unit filename="../Docs/AVLTreeToDo.txt" />
 		<Unit filename="../Docs/RedBlackTreeToDo.txt" />
 		<Unit filename="../Docs/ScapeGoatTree.txt" />
+		<Unit filename="../Docs/ShuffleTreeToDo.txt" />
 		<Unit filename="../Docs/SkipListToDo.txt" />
 		<Unit filename="../Docs/SortedBinaryTree.txt" />
 		<Unit filename="../Docs/SplayTreeToDo.txt" />
@@ -116,6 +117,7 @@
 		<Unit filename="../Shared/Sources/TestingData.cpp" />
 		<Unit filename="../Shared/Sources/Utils.cpp" />
 		<Unit filename="../Sources/RedBlackTree.cpp" />
+		<Unit filename="../Sources/ShuffleTree.cpp" />
 		<Unit filename="../Sources/SkipList.cpp" />
 		<Unit filename="../Sources/SortedBinaryTree.cpp" />
 		<Unit filename="../Sources/SplayTree.cpp" />

@@ -64,7 +64,7 @@ SkipList<KEY,VALUE,TRAITS>& SkipList<KEY,VALUE,TRAITS>::operator= (const SkipLis
 		prev->fNext.push_back (nullptr);
 
 		fLength = t.fLength;
-		ReBalance ();	// this will give us a proper link structure
+		Balance ();	// this will give us a proper link structure
 	}
 	return *this;
 }
@@ -143,11 +143,17 @@ void	SkipList<KEY,VALUE,TRAITS>::Add (const KeyType& key, const ValueType& val)
 {
 	std::vector<Node*>	links;
 
-	Node* n = FindNearest (key, links);
-    if ((n != nullptr) and (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
-        throw DuplicateAddException ();
-    }
-	AddNode (new Node (key, val), links);
+	size_t     minLinkHeight = 0;
+ 	Node* n = FindNearest (key, links);
+ 	if (n != nullptr) {
+ 	    if (TRAITS::kPolicy & ADT::eDuplicateAddThrowException) {
+ 	        throw DuplicateAddException ();;
+ 	    }
+ 	    else {
+ 	        minLinkHeight = n->fNext.size ();   // trick to make sure new node is found first (it is already inserted first)
+ 	    }
+ 	}
+	AddNode (new Node (key, val), links, minLinkHeight);
 }
 
 template <typename KEY, typename VALUE,typename TRAITS>
@@ -158,10 +164,10 @@ void	SkipList<KEY,VALUE,TRAITS>::Add (const KeyType& keyAndValue)
 
 
 template <typename KEY, typename VALUE,typename TRAITS>
-void	SkipList<KEY,VALUE,TRAITS>::AddNode (Node* node, const std::vector<Node*>& links)
+void	SkipList<KEY,VALUE,TRAITS>::AddNode (Node* node, const std::vector<Node*>& links, size_t minLinkHeight)
 {
 	RequireNotNull (node);
-	size_t	newLinkHeight = DetermineLinkHeight ();
+	size_t	newLinkHeight = std::max (DetermineLinkHeight (), minLinkHeight);
 	node->fNext.resize (newLinkHeight);
 
     size_t	linksToPatch = std::min (fHead.size (), newLinkHeight);
@@ -331,7 +337,36 @@ typename SkipList<KEY,VALUE,TRAITS>::Node*	SkipList<KEY,VALUE,TRAITS>::FindNeare
 }
 
 template <typename KEY, typename VALUE,typename TRAITS>
-typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::GetFirst () const
+typename SkipList<KEY,VALUE,TRAITS>::Node*	SkipList<KEY,VALUE,TRAITS>::FindNearest (const Iterator& it, std::vector<Node*>& links) const
+{
+    Node*   n = FindNearest (it->GetKey (), links);
+    AssertNotNull (n);
+    Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (),it->GetKey ())  == 0);
+
+    if (not (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) {
+        // not necessarily the correct node, just one that has the same key
+        // however, it should at least be the first in the list, so can scan forwards for correct one
+        while (n != it.fCurrent) {
+            Node* next = n->fNext[0];
+            Assert (TRAITS::Comparer::Compare (next->fEntry.GetKey (),it->GetKey ())  == 0); // else we were passed in a node not in the list
+            for (size_t i = 0; i < links.size (); ++i) {
+                if (links[i] != nullptr and links[i]->fNext[i] == n) {
+                    links[i] = n;
+                }
+                else {
+                    break;
+                }
+            }
+            n = next;
+        }
+    }
+    Assert (n == it.fCurrent);
+
+    return n;
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::FirstNode () const
 {
     if (fHead.size () == 0) {
         return nullptr;
@@ -340,7 +375,7 @@ typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::GetFirst
 }
 
 template <typename KEY, typename VALUE,typename TRAITS>
-typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::GetLast () const
+typename SkipList<KEY,VALUE,TRAITS>::Node*		SkipList<KEY,VALUE,TRAITS>::LastNode () const
 {
     if (fHead.size () == 0) {
         return nullptr;
@@ -405,9 +440,66 @@ void    SkipList<KEY,VALUE,TRAITS>::Prioritize (const KeyType& key)
 }
 
 
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Iterator	SkipList<KEY,VALUE,TRAITS>::Iterate () const
+{
+    return Iterator (FirstNode ());
+}
 
 template <typename KEY, typename VALUE,typename TRAITS>
-void	SkipList<KEY,VALUE,TRAITS>::ReBalance ()
+typename SkipList<KEY,VALUE,TRAITS>::Iterator SkipList<KEY,VALUE,TRAITS>::Iterate (const KeyType& key) const
+{
+    std::vector<Node*>  links;
+    Node* n = FindNearest (key, links);
+    return Iterator ((n == nullptr) ? links[0] : n);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void    SkipList<KEY,VALUE,TRAITS>::Update (const SkipListIterator<KEY,VALUE,TRAITS>& it, const ValueType& newValue)
+{
+    Require (not it.Done ());
+    const_cast<SkipList<KEY, VALUE, TRAITS>::Node*> (it.fCurrent)->fEntry.SetValue (newValue);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void	SkipList<KEY,VALUE,TRAITS>::Remove (const SkipListIterator<KEY,VALUE,TRAITS>& it)
+{
+    Require (not it.Done ());
+
+    // we need the links to reset, so have to refind
+	std::vector<Node*>	links;
+	Node*	n = FindNearest (it, links);
+    AssertNotNull (n);  // else not it.Done ()
+    RemoveNode (n, links);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Iterator SkipList<KEY,VALUE,TRAITS>::begin () const
+{
+    return Iterate ();
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Iterator  SkipList<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator (nullptr);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Iterator	SkipList<KEY,VALUE,TRAITS>::GetFirst () const
+{
+    return Iterate ();
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList<KEY,VALUE,TRAITS>::Iterator	SkipList<KEY,VALUE,TRAITS>::GetLast () const
+{
+    return Iterator (LastNode ());
+}
+
+
+template <typename KEY, typename VALUE,typename TRAITS>
+void	SkipList<KEY,VALUE,TRAITS>::Balance ()
 {
     if (GetLength () == 0) return;
 
@@ -437,17 +529,27 @@ void	SkipList<KEY,VALUE,TRAITS>::ReBalance ()
 		patchNodes[i] = &fHead[i];
 	}
 
+    Node*   prev = nullptr;
 	size_t	index = 1;
 	while (node != nullptr) {
 		Node*	next = node->fNext[0];
 		node->fNext.clear ();
+
+        size_t  maxHeight = lastValidHeight;
+ 	    if ((not (TRAITS::kPolicy & ADT::eDuplicateAddThrowException)) and (prev != nullptr)) {
+            // expensive, but for identical nodes we must make sure the first node is highest
+            if (TRAITS::Comparer::Compare (prev->fEntry.GetKey (), node->fEntry.GetKey ()) == 0) {
+                maxHeight = prev->fNext.size ();
+            }
+ 	    }
 
 #if qDebug
 		bool	patched = false;
 #endif
 		for (size_t hIndex = lastValidHeight+1; hIndex-- > 0;) {
 			if (index >= height[hIndex] and (index % height[hIndex] == 0)) {
-				node->fNext.resize (hIndex+1, nullptr);
+			    size_t  newHeight = std::min (hIndex+1, maxHeight);
+				node->fNext.resize (newHeight, nullptr);
 				for (size_t patchIndex = node->fNext.size (); patchIndex-- > 0;) {
 					*patchNodes[patchIndex] = node;
 					patchNodes[patchIndex] = &node->fNext[patchIndex];
@@ -461,6 +563,7 @@ void	SkipList<KEY,VALUE,TRAITS>::ReBalance ()
 		Assert (patched);
 
 		++index;
+		prev = node;
 		node = next;
 	}
 	Assert (index == GetLength ()+1);
@@ -469,13 +572,38 @@ void	SkipList<KEY,VALUE,TRAITS>::ReBalance ()
 }
 
 template <typename KEY, typename VALUE,typename TRAITS>
-SkipList<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
-	fEntry (key, val)
+void    SkipList<KEY,VALUE,TRAITS>::Invariant () const
 {
+    #if qDebug
+        Invariant_ ();
+    #endif
 }
 
 
+
 #if qDebug
+    template <typename KEY, typename VALUE,typename TRAITS>
+    void	SkipList<KEY,VALUE,TRAITS>::Invariant_ () const
+    {
+		Node* n = fHead[0];
+
+		while (n != nullptr) {
+			KEY	oldKey = n->fEntry.GetKey ();
+			for (size_t i = 1; i < n->fNext.size (); ++i) {
+				Node* newN = n->fNext[i];
+				if (n == nullptr) {
+					Assert (newN == nullptr);
+				}
+				else {
+				    Assert (newN != n);
+					Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.GetKey ()) <= 0));
+				}
+			}
+			n = n->fNext[0];
+			Assert (n == nullptr or (TRAITS::Comparer::Compare (n->fEntry.GetKey (), oldKey) >= 0));
+		}
+    }
+
 	template <typename KEY, typename VALUE,typename TRAITS>
 	void	SkipList<KEY,VALUE,TRAITS>::ListAll () const
 	{
@@ -496,28 +624,6 @@ SkipList<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val
 			n = n->fNext[0];
 		}
         std::cout << std::endl << std::flush;
-	}
-
-	template <typename KEY, typename VALUE,typename TRAITS>
-	void	SkipList<KEY,VALUE,TRAITS>::ValidateAll () const
-	{
-		Node* n = fHead[0];
-
-		while (n != nullptr) {
-			KEY	oldKey = n->fEntry.GetKey ();
-			for (size_t i = 1; i < n->fNext.size (); ++i) {
-				Node* newN = n->fNext[i];
-				if (n == nullptr) {
-					Assert (newN == nullptr);
-				}
-				else {
-				    Assert (newN != n);
-					Assert (newN == nullptr or (TRAITS::Comparer::Compare (oldKey, newN->fEntry.GetKey ()) <= 0));
-				}
-			}
-			n = n->fNext[0];
-			Assert (n == nullptr or (TRAITS::Comparer::Compare (n->fEntry.GetKey (), oldKey) >= 0));
-		}
 	}
 #endif
 
@@ -576,6 +682,451 @@ void    SkipListValidationSuite (size_t testDataLength, bool verbose)
     HashedStringTest<HashedString> (verbose, 1);
 }
 
+#endif
+
+/*
+SkipListNode
+*/
+template <typename KEY, typename VALUE,typename TRAITS>
+SkipList<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
+	fEntry (key, val)
+{
+}
+
+
+/*
+SkipListIterator
+*/
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator<KEY, VALUE, TRAITS>::SkipListIterator (const SkipListIterator<KEY, VALUE, TRAITS>& from) :
+    fCurrent (from.fCurrent),
+    fSuppressMore (from.fSuppressMore)
+{
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator<KEY, VALUE, TRAITS>::SkipListIterator (SkipListNode* node) :
+    fCurrent (node),
+    fSuppressMore (true)
+{
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipListIterator<KEY, VALUE, TRAITS>::Invariant () const
+{
+#if     qDebug
+    Invariant_ ();
+#endif
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator<KEY, VALUE, TRAITS>&  SkipListIterator<KEY, VALUE, TRAITS>::operator= (const SkipListIterator<KEY, VALUE, TRAITS>& rhs)
+{
+    Invariant ();
+
+    fCurrent = rhs.fCurrent;
+    fSuppressMore = rhs.fSuppressMore;
+
+    Invariant ();
+    return (*this);
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+bool    SkipListIterator<KEY, VALUE, TRAITS>::Done () const
+{
+    Invariant ();
+    return bool (fCurrent == nullptr);
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+bool    SkipListIterator<KEY, VALUE, TRAITS>::More (KeyValue* current, bool advance)
+{
+    Invariant ();
+
+    if (advance and fCurrent != nullptr) {
+        if (fSuppressMore) {
+            fSuppressMore = false;
+        }
+        else {
+            Assert (fCurrent->fNext.size () > 0);
+            fCurrent = fCurrent->fNext[0];
+        }
+    }
+    Invariant ();
+    if (current != nullptr and not Done ()) {
+        *current = fCurrent->fEntry;
+    }
+    return (not Done ());
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+const   typename  SkipListIterator<KEY, VALUE, TRAITS>::KeyValue&   SkipListIterator<KEY, VALUE, TRAITS>::Current () const
+{
+    Require (not Done ());
+    Invariant ();
+    AssertNotNull (fCurrent);
+    return (fCurrent->fEntry);
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+const typename SkipListIterator<KEY, VALUE, TRAITS>::KeyValue&  SkipListIterator<KEY, VALUE, TRAITS>::operator* () const
+{
+     Require (not Done ());
+     Invariant ();
+
+     return Current ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+const typename SkipListIterator<KEY, VALUE, TRAITS>::KeyValue* SkipListIterator<KEY, VALUE, TRAITS>::operator-> () const
+{
+    Require (not Done ());
+    Invariant ();
+
+    return &fCurrent->fEntry;
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator<KEY, VALUE, TRAITS>&    SkipListIterator<KEY, VALUE, TRAITS>::operator++ ()
+{
+    Invariant ();
+
+    if (fCurrent != nullptr) {
+        Assert (fCurrent->fNext.size () > 0);
+        fCurrent = fCurrent->fNext[0];
+        fSuppressMore = true;
+   }
+
+    return *this;
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+bool    SkipListIterator<KEY, VALUE, TRAITS>::operator== (const SkipListIterator<KEY, VALUE, TRAITS>& rhs) const
+{
+     Invariant ();
+     return (fCurrent == rhs.fCurrent);
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+bool    SkipListIterator<KEY, VALUE, TRAITS>::operator!= (const SkipListIterator<KEY, VALUE, TRAITS>&rhs) const
+{
+    Invariant ();
+    return (fCurrent != rhs.fCurrent);
+}
+
+#if     qDebug
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipListIterator<KEY, VALUE, TRAITS>::Invariant_ () const
+{
+}
+#endif
+
+
+
+/*
+SkipList_Patch
+*/
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipList_Patch<KEY, VALUE, TRAITS>::SkipList_Patch () :
+    fIterators (nullptr)
+{
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipList_Patch<KEY, VALUE, TRAITS>::SkipList_Patch (const SkipList_Patch& s) :
+    SkipList<KEY, VALUE, TRAITS> (s),
+    fIterators (nullptr)
+{
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipList_Patch<KEY, VALUE, TRAITS>::~SkipList_Patch ()
+{
+    Require (fIterators == nullptr);
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipList_Patch<KEY, VALUE, TRAITS>&	SkipList_Patch<KEY, VALUE, TRAITS>::operator= (const SkipList_Patch<KEY, VALUE, TRAITS>& t)
+{
+    Require (fIterators == nullptr);   // perhaps could support by letting iterators do a find after the assignment, based on their old KEY
+    SkipList<KEY, VALUE, TRAITS>::operator= (t);
+    return *this;
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY, VALUE, TRAITS>::Iterate () const
+{
+    return Iterator (*const_cast<SkipList_Patch*>(this), this->FirstNode ());
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY, VALUE, TRAITS>::Iterate (const KeyType& key) const
+{
+    std::vector<typename SkipList_Patch<KEY, VALUE, TRAITS>::Node*>  links;
+    typename SkipList_Patch<KEY, VALUE, TRAITS>::Node* n = this->FindNearest (key, links);
+    return Iterator (*const_cast<SkipList_Patch*>(this), (n == nullptr) ? links[0] : n);
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY,VALUE,TRAITS>::begin () const
+{
+    return Iterate ();
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator ();
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY,VALUE,TRAITS>::GetFirst () const
+{
+    return Iterate ();
+}
+
+template <typename KEY, typename VALUE,typename TRAITS>
+typename SkipList_Patch<KEY, VALUE, TRAITS>::Iterator SkipList_Patch<KEY,VALUE,TRAITS>::GetLast () const
+{
+    return Iterate (this->GetLast ());
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void	SkipList_Patch<KEY, VALUE, TRAITS>::Remove (const KeyType& key)
+{
+    typedef typename SkipList<KEY, VALUE, TRAITS>::Node Node;
+	std::vector<Node*>	links;
+	Node*	n = this->FindNearest (key, links);
+	if (n != nullptr) {
+        for (auto it = fIterators; it != nullptr; it = it->fNext) {
+            it->RemovePatch (n);
+        }
+    	this->RemoveNode (n, links);
+	}
+	else {
+		if (not (TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
+		    throw InvalidRemovalException ();
+		}
+	}
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void	SkipList_Patch<KEY, VALUE, TRAITS>::Remove (const Iterator& remIt)
+{
+    typedef typename SkipList<KEY, VALUE, TRAITS>::Node Node;
+    Require (not remIt.Done ());
+    // we need the links to reset, so have to refind
+	std::vector<Node*>	links;
+	Node*	n = this->FindNearest (remIt, links);
+    AssertNotNull (n);  // else not it.Done ()
+	if (n != nullptr) {
+        for (auto it = fIterators; it != nullptr; it = it->fNext) {
+            it->RemovePatch (n);
+        }
+    	this->RemoveNode (n, links);
+	}
+	else {
+		if (not (TRAITS::kPolicy & ADT::eInvalidRemoveIgnored)) {
+		    throw InvalidRemovalException ();
+		}
+	}
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void	SkipList_Patch<KEY, VALUE, TRAITS>::RemoveAll ()
+{
+    for (auto it = fIterators; it != nullptr; it = it->fNext) {
+        it->RemoveAllPatch ();
+    }
+    inherited::RemoveAll ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipList_Patch<KEY, VALUE, TRAITS>::Invariant () const
+{
+    #if		qDebug
+        Invariant_ ();
+    #endif
+}
+
+#if		qDebug
+    template <typename KEY,  typename VALUE, typename TRAITS>
+    void	SkipList_Patch<KEY, VALUE, TRAITS>::Invariant_ () const
+    {
+        inherited::Invariant_ ();
+        for (auto it = fIterators; it != nullptr; it = it->fNext) {
+            Assert (it->fData == this);
+         }
+    }
+#endif
+
+
+/*
+*/
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>::SkipListIterator_Patch () :
+    SkipListIterator<KEY, VALUE, TRAITS> (),
+    fData (nullptr),
+    fNext (nullptr),
+    fSuppressAdvance (false)
+{
+    Assert (this->Done ());
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>::SkipListIterator_Patch (const SkipListIterator_Patch<KEY, VALUE, TRAITS>& from) :
+    SkipListIterator<KEY, VALUE, TRAITS> (from),
+    fData (from.fData),
+    fNext ((from.fData == nullptr) ? nullptr : from.fData->fIterators),
+    fSuppressAdvance (from.fSuppressAdvance)
+{
+    if (fData != nullptr) {
+        fData->fIterators = this;
+    }
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>::SkipListIterator_Patch (SkipList_Patch<KEY, VALUE, TRAITS>& data, SkipListNode* node) :
+    SkipListIterator<KEY, VALUE, TRAITS> (node),
+    fData (&data),
+    fNext (data.fIterators),
+    fSuppressAdvance (false)
+{
+    AssertNotNull (fData);
+    fData->fIterators = this;
+
+    Invariant ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>& SkipListIterator_Patch<KEY, VALUE, TRAITS>::operator= (const SkipListIterator_Patch<KEY, VALUE, TRAITS>& from)
+{
+    RemoveFromChain ();
+
+    inherited::operator= (from);
+    fSuppressAdvance = from.fSuppressAdvance;
+
+    fData = from.fData;
+    if (fData == nullptr) {
+        fNext = nullptr;
+    }
+    else {
+        fNext = fData->fIterators;
+        fData->fIterators = this;
+    }
+
+    Invariant ();
+
+    return (*this);
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>::~SkipListIterator_Patch ()
+{
+    RemoveFromChain ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipListIterator_Patch<KEY, VALUE, TRAITS>::RemoveFromChain ()
+{
+    if (fData != nullptr) {
+        if (fData->fIterators == this) {
+            fData->fIterators = fNext;
+        }
+        else {
+            for (auto it = fData->fIterators; it != nullptr; it = it->fNext) {
+                 if (it->fNext == this) {
+                    it->fNext = fNext;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+bool    SkipListIterator_Patch<KEY, VALUE, TRAITS>::More (KeyValue* current, bool advance)
+{
+    Invariant ();
+
+    if (advance and (this->fCurrent != nullptr) and fSuppressAdvance) {
+        this->fSuppressMore = true;
+        inherited::More (current, advance);
+        fSuppressAdvance = false;
+    }
+    else {
+        inherited::More (current, advance);
+   }
+
+    return (not this->Done ());
+}
+
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+SkipListIterator_Patch<KEY, VALUE, TRAITS>&    SkipListIterator_Patch<KEY, VALUE, TRAITS>::operator++()
+{
+    Invariant ();
+
+    if (this->fCurrent != nullptr) {
+        if (fSuppressAdvance) {
+            fSuppressAdvance = false;
+        }
+        else {
+            inherited::operator++ ();
+        }
+    }
+
+    return *this;
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipListIterator_Patch<KEY, VALUE, TRAITS>::RemovePatch (typename SkipList<KEY, VALUE, TRAITS>::Node* n)
+{
+    RequireNotNull (n);
+    if (this->fCurrent == n) {
+         this->fCurrent = this->fCurrent->fNext[0];
+         this->fSuppressAdvance = true;
+    }
+
+    Invariant ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    SkipListIterator_Patch<KEY, VALUE, TRAITS>::RemoveAllPatch ()
+{
+    this->fCurrent = nullptr;
+
+    Invariant ();
+}
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void	SkipListIterator_Patch<KEY, VALUE, TRAITS>::Invariant () const
+{
+    #if		qDebug
+        Invariant_ ();
+    #endif
+}
+
+
+#if		qDebug
+template <typename KEY,  typename VALUE, typename TRAITS>
+void	SkipListIterator_Patch<KEY, VALUE, TRAITS>::Invariant_ () const
+{
+    inherited::Invariant_ ();
+
+    Assert ((fData != nullptr) or (fNext == nullptr));
+    if (fData != nullptr) {
+        auto it = fData->fIterators;
+        for (; (it != nullptr and it != this); it = it->fNext)  ;
+        Assert (it == this);
+    }
+}
 #endif
 
 

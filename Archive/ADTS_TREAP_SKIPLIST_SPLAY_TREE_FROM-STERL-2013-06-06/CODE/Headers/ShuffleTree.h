@@ -15,6 +15,7 @@
 namespace   ADT {
     namespace   BinaryTree {
 
+
 template <typename KEY,
 		  typename VALUE,
 		  typename TRAITS = ADT::Traits<
@@ -26,6 +27,10 @@ class ShuffleTree {
 	public:
         typedef KEY	    KeyType;
         typedef VALUE   ValueType;
+        typedef typename TRAITS::KeyValue    KeyValue;
+        typedef TreeNode<KeyValue>  Node;
+        typedef TreeIterator<Node> Iterator;
+
 
     public:
 		ShuffleTree ();
@@ -40,7 +45,7 @@ class ShuffleTree {
 			how to do this.
 			Note that Find is not a const method for a shuffle tree, as it can reorder the tree
 		*/
-		nonvirtual	bool	Find (const KeyType& key, ValueType* val = nullptr);
+		nonvirtual	bool	Find (const KeyType& key, ValueType* val = nullptr) const;
 
 		/*
 			You can add more than one item with the same key. If you add different values with the same key, but it is unspecified which item will be returned on subsequent Find or Remove calls.
@@ -50,51 +55,47 @@ class ShuffleTree {
 
 		nonvirtual	void	Remove (const KeyType& key);
 		nonvirtual	void	RemoveAll ();
+        /*
+            Iterator support
+        */
+ 		nonvirtual	Iterator Iterate (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+ 		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
+ 		nonvirtual	Iterator Iterate (const KeyType& key, TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+        nonvirtual  Iterator  begin (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+        nonvirtual  Iterator  end () const;
+
+		nonvirtual	Iterator	GetFirst (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;   // returns iterator to largest key
+
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
+
+
+        // move the node to the top of the tree, making future searches for it faster
+		nonvirtual	void    Prioritize (const Iterator& it);
 
  		nonvirtual	size_t	GetLength () const;		// always equal to total Add minus total Remove
 
-		nonvirtual  void	ReBalance ();
+		nonvirtual  void	Balance ();
+
+
+
+        nonvirtual	void	Invariant () const;
+
 
 	public:
-        class	Node  {
-            public:
-                Node (const KeyType& key, const ValueType& val);
-                Node (const Node& n);
+		#if qDebug
+            nonvirtual	void	Invariant_ () const;
+			nonvirtual	void	ListAll (Iterator it) const;
+		#endif
 
-                DECLARE_USE_BLOCK_ALLOCATION(Node);
-
-                // tree node core routines
-
-                Node*   GetParent () const;
-                void    SetParent (Node* p);
-
-                Node*   GetChild (Direction direction);
-                void    SetChild (Direction direction, Node* n);
-
-                bool    IsChild (Direction direction);
-
-                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
-                static  Direction     OtherDir (Direction dir);
-                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
-
-                static  Node*   GetFirst (Node* n);
-                static  Node*   GetLast (Node* n);
-
-                static  Node*   RebalanceBranch (Node* oldTop, size_t length); // returns new top. length = number of nodes in oldTop, including itself
-
-                typename	TRAITS::KeyValue	fEntry; // we look at this directly because we want to see internal fields be const reference rather than value
-
-            private:
-                Node*   fChildren[2];
-                Node*	fParent;
-        };
-		Node*	fHead;
-
-
+    protected:
 		/*
 			Find node with matching key. In cases of duplicate values, return first found.
 		 */
-		nonvirtual	Node*	FindNode (const KeyType& key, int* comparisonResult);
+		nonvirtual	Node*	FindNode (const KeyType& key, int* comparisonResult) const;
 
 		/*
 			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
@@ -102,9 +103,6 @@ class ShuffleTree {
 		*/
 		nonvirtual	Node*	GetFirst () const;
 		nonvirtual	Node*	GetLast () const;
-
-        // move the node to the top of the tree, making future searches for it faster
-		nonvirtual	void    Prioritize (Node* n);
 
 		// swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
 		nonvirtual	Node*   Rotate (Node* n, Direction rotateDir);
@@ -114,15 +112,15 @@ class ShuffleTree {
 		nonvirtual	void	AddNode (Node* n);
 		nonvirtual	void	RemoveNode (Node* n);
 
-	public:
+		static	Node*	DuplicateBranch (Node* branchTop);
+
 		#if qDebug
-			nonvirtual	void	ListAll () const;
 			static		void	ValidateBranch (Node* n, size_t& count);
-			nonvirtual	void	ValidateAll () const;
 		#endif
 
 	private:
-		size_t		fLength;
+		Node*	fHead;
+		size_t	fLength;
 
 		#if qKeepADTStatistics
 			public:
@@ -131,9 +129,8 @@ class ShuffleTree {
 
 				size_t	CalcHeight (size_t* totalHeight = nullptr) const;
 		#endif
-
-		static	Node*	DuplicateBranch (Node* branchTop);
 };
+
 
 #if qDebug
 template <typename KEYTYPE>

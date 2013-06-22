@@ -12,6 +12,113 @@ namespace   ADT {
     namespace   BinaryTree {
 
 
+
+template  <typename KEYVALUE>
+ class	AVLNode : public TreeNode<KEYVALUE> {
+    public:
+        typedef KEYVALUE    KeyValue;
+        typedef typename KEYVALUE::KeyType  KeyType;
+        typedef typename KEYVALUE::ValueType  ValueType;
+        typedef TreeNode<KEYVALUE>  inherited;
+
+    public:
+        AVLNode (const KeyType& key, const ValueType& val) :
+            inherited (key, val),
+            fBalance (0)
+        {
+        }
+
+        AVLNode (const AVLNode& n) :
+            inherited (n),
+            fBalance (0)
+        {
+        }
+
+        DECLARE_USE_BLOCK_ALLOCATION(AVLNode);
+
+        // dumb shadowing
+        nonvirtual  AVLNode*   GetParent () const
+        {
+            return static_cast<AVLNode*> (inherited::GetParent ());
+        }
+
+        AVLNode*   GetChild (Direction direction)
+        {
+              return static_cast<AVLNode*> (inherited::GetChild (direction));
+        }
+
+        static  AVLNode*   GetFirst (AVLNode* n)
+        {
+            return static_cast<AVLNode*> (inherited::GetFirst (n));
+        }
+
+        static  AVLNode*   GetLast (AVLNode* n)
+        {
+            return static_cast<AVLNode*> (inherited::GetLast (n));
+        }
+
+        nonvirtual  AVLNode*   GetSibling () const
+        {
+             return static_cast<AVLNode*> (inherited::GetSibling ());
+        }
+
+        nonvirtual  AVLNode*   Traverse (TraversalType t, Direction d) const
+        {
+              return static_cast<AVLNode*> (inherited::Traverse (t, d));
+        }
+
+        static      AVLNode*   GetFirstTraversal (const AVLNode* n, TraversalType t, Direction d, size_t* height)
+        {
+               return static_cast<AVLNode*> (inherited::GetFirstTraversal (n, t, d, height));
+       }
+
+        static      AVLNode*   Descend (AVLNode* n, int height, Direction d)
+        {
+            return static_cast<AVLNode*> (inherited::Descend (n, height, d));
+        }
+
+
+        static  void    Apply (const AVLNode* node, TraversalType t, Direction d,  const  std::function<void(const AVLNode& n)>& func)
+        {
+            inherited::Apply (node, t, d, [func] (const TreeNode<KEYVALUE>& n) { func (static_cast<const AVLNode&> (n)); });
+        }
+
+        static  const   AVLNode*   Find (const AVLNode* node, TraversalType t, Direction d,  const std::function<bool(const AVLNode& n)>& func)
+        {
+            return static_cast<const AVLNode*> (inherited::Find (node, t, d, [func] (const TreeNode<KEYVALUE>& n)->bool  {  return func (static_cast<const AVLNode&> (n)); }));
+        }
+
+        void    Inspect () const
+        {
+            std::cout << "(" << this->fEntry.GetKey () << "," << this->fEntry.GetValue () << "," << this->GetBalance () << ")";
+        }
+
+
+        // AVL Additions
+        nonvirtual  short   GetBalance () const
+        {
+            return fBalance;
+        }
+
+        nonvirtual  void    SetBalance (short b)
+        {
+            Require (b >= -1 and b <= 1);
+            fBalance = b;
+        }
+
+        nonvirtual  bool    IsUnbalanced () const
+        {
+            return (fBalance < -1 or fBalance > 1);
+        }
+
+    //   nonvirtual  void    CalcBalanceStateInBalancedBranch (bool recurse);
+
+
+   private:
+        short	fBalance;
+};
+
+
 template <typename KEY, typename VALUE, typename TRAITS>
 AVLTree<KEY,VALUE,TRAITS>::AVLTree () :
 	fHead (nullptr),
@@ -74,13 +181,13 @@ template <typename KEY, typename VALUE, typename TRAITS>
 typename AVLTree<KEY,VALUE,TRAITS>::Node* AVLTree<KEY,VALUE,TRAITS>::Rotate (Node* n, Direction rotateDir)
 {
 	RequireNotNull (n);
-    Require (rotateDir == kLeft or rotateDir == kRight);
+    Require (rotateDir == Direction::kLeft or rotateDir == Direction::kRight);
 
 	#if qKeepADTStatistics
 		++fRotations;
 	#endif
 
-    Direction otherDir = Node::OtherDir (rotateDir);
+    Direction otherDir = OtherDir (rotateDir);
 	Node* newTop = n->GetChild (otherDir);
 	RequireNotNull (newTop);
 
@@ -104,9 +211,9 @@ template <typename KEY, typename VALUE, typename TRAITS>
 typename AVLTree<KEY,VALUE,TRAITS>::Node*  AVLTree<KEY,VALUE,TRAITS>::DoubleRotate (Node* n, Direction rotateDir)
 {
 	RequireNotNull (n);
-    Require (rotateDir == kLeft or rotateDir == kRight);
+    Require (rotateDir == Direction::kLeft or rotateDir == Direction::kRight);
 
-    Direction   otherDir = Node::OtherDir (rotateDir);
+    Direction   otherDir = OtherDir (rotateDir);
 
     Node*   child = n->GetChild (rotateDir);
     AssertNotNull (child);
@@ -122,7 +229,7 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*  AVLTree<KEY,VALUE,TRAITS>::DoubleRota
         n->SetBalance (0);
         child->SetBalance (0);
     }
-    else if ((grandkid->GetBalance () == -1) == (rotateDir == kLeft)) {
+    else if ((grandkid->GetBalance () == -1) == (rotateDir == Direction::kLeft)) {
         n->SetBalance ((grandkid->GetBalance () == -1) ? 1 : -1);
         child->SetBalance (0);
     }
@@ -169,33 +276,33 @@ void	AVLTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
 		fHead = n;
 	}
 	else {
-	    Direction childDir = kBadDir;
+	    Direction childDir = Direction::kBadDir;
 		if (comp == 0) {
             if (TRAITS::kPolicy & ADT::eDuplicateAddThrowException) {
                 throw DuplicateAddException ();
             }
-            childDir = kLeft;
+            childDir = Direction::kLeft;
 		}
 		else if (comp < 0) {
-            childDir = kLeft;
+            childDir = Direction::kLeft;
 		}
 		else {
-            childDir = kRight;
+            childDir = Direction::kRight;
 		}
 
-		Assert (childDir != kBadDir);
+		Assert (childDir != Direction::kBadDir);
 		Assert (nearest->GetChild (childDir) == nullptr);
 		nearest->SetChild (childDir, n);
 
 		Node*   current = nearest;
 		while (current != nullptr) {
 		    if (current->GetBalance () == 0) {
-		        current->SetBalance (current->GetBalance () + (childDir == kLeft) ? -1 : 1);
+		        current->SetBalance (current->GetBalance () + (childDir == Direction::kLeft) ? -1 : 1);
 		        childDir = Node::GetChildDir (current);
 		        current = current->GetParent ();
 		    }
 		    else {
-		        bool    doubleLean = ((current->GetBalance () < 0) == (childDir == kLeft));
+		        bool    doubleLean = ((current->GetBalance () < 0) == (childDir == Direction::kLeft));
 		        if (doubleLean) {
                     RebalanceNode (current, childDir, 1);
 		            break;
@@ -221,8 +328,8 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*    AVLTree<KEY,VALUE,TRAITS>::Rebalanc
 
     if (mod == 1) {
         Assert (child->GetBalance () == -1 or child->GetBalance () == 1);
-        if ((child->GetBalance () == -1) == (leanDir == kLeft)) {
-            Rotate (n, Node::OtherDir (leanDir));
+        if ((child->GetBalance () == -1) == (leanDir == Direction::kLeft)) {
+            Rotate (n, OtherDir (leanDir));
             n->SetBalance (0);
             child->SetBalance (0);
         }
@@ -232,13 +339,13 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*    AVLTree<KEY,VALUE,TRAITS>::Rebalanc
     }
     else {
         if (child->GetBalance () == 0) {
-             Node* newTop = Rotate (n, Node::OtherDir (leanDir));
+             Node* newTop = Rotate (n, OtherDir (leanDir));
              newTop->SetBalance (newTop->GetBalance ());
              Assert (child == newTop);
-             child->SetBalance ((leanDir == kLeft) ? 1 : -1);
+             child->SetBalance ((leanDir == Direction::kLeft) ? 1 : -1);
         }
         else if (n->GetBalance () == child->GetBalance ()) {
-           Node* newTop = Rotate (n, Node::OtherDir (leanDir));
+           Node* newTop = Rotate (n, OtherDir (leanDir));
            n->SetBalance (0);
            child->SetBalance (0);
            Assert (child == newTop);
@@ -296,24 +403,24 @@ void	AVLTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
     Node*   parent = n->GetParent ();
     Direction   childDir = Node::GetChildDir (n);
 
-	if (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr) {
+	if (n->GetChild (Direction::kLeft) == nullptr and n->GetChild (Direction::kRight) == nullptr) {
 	    SwapNodes (n, nullptr);
 	}
-	else if (n->GetChild (kLeft) == nullptr) {
-		SwapNodes (n, n->GetChild (kRight));
+	else if (n->GetChild (Direction::kLeft) == nullptr) {
+		SwapNodes (n, n->GetChild (Direction::kRight));
 		if (parent == nullptr) {
             fHead->SetBalance (n->GetBalance () -1);
 		}
 	}
-	else if (n->GetChild (kRight) == nullptr) {
-		SwapNodes (n, n->GetChild (kLeft));
+	else if (n->GetChild (Direction::kRight) == nullptr) {
+		SwapNodes (n, n->GetChild (Direction::kLeft));
 		if (parent == nullptr) {
             fHead->SetBalance (n->GetBalance () +1);
 		}
 	}
 	else {
-        Direction d = (FlipCoin ()) ? kRight : kLeft;
-        Node* minNode = (d == kRight)
+        Direction d = (FlipCoin ()) ? Direction::kRight : Direction::kLeft;
+        Node* minNode = (d == Direction::kRight)
             ? Node::GetFirst (n->GetChild (d))
             : Node::GetLast (n->GetChild (d));
 
@@ -332,20 +439,20 @@ void	AVLTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 		}
 
 		SwapNodes (n, minNode);
-		minNode->SetChild (Node::OtherDir (d), n->GetChild (Node::OtherDir (d)));
+		minNode->SetChild (OtherDir (d), n->GetChild (OtherDir (d)));
 	}
 
-	if (childDir != kBadDir) {
+	if (childDir != Direction::kBadDir) {
 		Node*   current = parent;
 		while (current != nullptr) {
 		    if (current->GetBalance () == 0) {
-		        current->SetBalance ((childDir == kLeft) ? 1 : -1);
+		        current->SetBalance ((childDir == Direction::kLeft) ? 1 : -1);
 		        break;
 		    }
 		    else {
-		        bool    doubleLean = ((current->GetBalance () > 0) == (childDir == kLeft));
+		        bool    doubleLean = ((current->GetBalance () > 0) == (childDir == Direction::kLeft));
 		        if (doubleLean) {
-                    current = RebalanceNode (current, Node::OtherDir (childDir), -1);
+                    current = RebalanceNode (current, OtherDir (childDir), -1);
                     if (current != nullptr) {
                        childDir = Node::GetChildDir (current);
                        current = current->GetParent ();
@@ -376,11 +483,11 @@ void	AVLTree<KEY,VALUE,TRAITS>::RemoveAll ()
 			Node* curNode = nodes.top (); nodes.pop ();
 
 			AssertNotNull (curNode);
-			if (curNode->GetChild (kLeft) != nullptr) {
-				nodes.push (curNode->GetChild (kLeft));
+			if (curNode->GetChild (Direction::kLeft) != nullptr) {
+				nodes.push (curNode->GetChild (Direction::kLeft));
 			}
-			if (curNode->GetChild (kRight) != nullptr) {
-				nodes.push (curNode->GetChild (kRight));
+			if (curNode->GetChild (Direction::kRight) != nullptr) {
+				nodes.push (curNode->GetChild (Direction::kRight));
 			}
 			delete curNode;
 		}
@@ -388,6 +495,58 @@ void	AVLTree<KEY,VALUE,TRAITS>::RemoveAll ()
 		fHead = nullptr;
 	}
 	fLength = 0;
+}
+
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename AVLTree<KEY,VALUE,TRAITS>::Iterator AVLTree<KEY,VALUE,TRAITS>::Iterate (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename AVLTree<KEY,VALUE,TRAITS>::Iterator AVLTree<KEY,VALUE,TRAITS>::Iterate (const KeyType& key, TraversalType t, Direction d) const
+{
+    int	comp;
+    return Iterator (Node::GetFirstTraversal (FindNode (key, &comp), t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename AVLTree<KEY,VALUE,TRAITS>::Iterator  AVLTree<KEY,VALUE,TRAITS>::begin (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    AVLTree<KEY,VALUE,TRAITS>::Iterator  AVLTree<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator (nullptr);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    AVLTree<KEY,VALUE,TRAITS>::Iterator	AVLTree<KEY,VALUE,TRAITS>::GetFirst (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    AVLTree<KEY,VALUE,TRAITS>::Iterator	AVLTree<KEY,VALUE,TRAITS>::GetLast (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, OtherDir (d), nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void    AVLTree<KEY,VALUE,TRAITS>::Update (const Iterator& it, const ValueType& newValue)
+{
+    Require (not it.Done ());
+    const_cast<AVLTree<KEY, VALUE, TRAITS>::Node*> (it.GetNode ())->fEntry.SetValue (newValue);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void	AVLTree<KEY,VALUE,TRAITS>::Remove (const Iterator& it)
+{
+    Require (not it.Done ());
+    RemoveNode (const_cast<AVLTree<KEY,VALUE,TRAITS>::Node*> (it.GetNode ()));
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
@@ -415,7 +574,7 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*	AVLTree<KEY,VALUE,TRAITS>::FindNode (c
 		if (*comparisonResult == 0 and (not ignoreMatch)) {
 			return n;
 		}
-		n = (*comparisonResult <= 0) ? n->GetChild (kLeft) : n->GetChild (kRight);
+		n = (*comparisonResult <= 0) ? n->GetChild (Direction::kLeft) : n->GetChild (Direction::kRight);
 	}
 	return nearest;
 }
@@ -459,19 +618,19 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*	AVLTree<KEY,VALUE,TRAITS>::DuplicateBr
 			}
 			else {
 				if (isLeft) {
-					newParent->SetChild (kLeft, newNode);
+					newParent->SetChild (Direction::kLeft, newNode);
 				}
 				else {
-					newParent->SetChild (kRight, newNode);
+					newParent->SetChild (Direction::kRight, newNode);
 				}
 			}
-			if (branchTop->GetChild (kLeft) != nullptr) {
-				nodes.push (branchTop->GetChild (kLeft));
+			if (branchTop->GetChild (Direction::kLeft) != nullptr) {
+				nodes.push (branchTop->GetChild (Direction::kLeft));
 				parents.push (newNode);
 				childIsLeft.push (true);
 			}
-			if (branchTop->GetChild (kRight) != nullptr) {
-				nodes.push (branchTop->GetChild (kRight));
+			if (branchTop->GetChild (Direction::kRight) != nullptr) {
+				nodes.push (branchTop->GetChild (Direction::kRight));
 				parents.push (newNode);
 				childIsLeft.push (false);
 			}
@@ -481,7 +640,7 @@ typename AVLTree<KEY,VALUE,TRAITS>::Node*	AVLTree<KEY,VALUE,TRAITS>::DuplicateBr
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	AVLTree<KEY,VALUE,TRAITS>::ReBalance ()
+void	AVLTree<KEY,VALUE,TRAITS>::Balance ()
 {
    if (GetLength () == 0) {
         return;
@@ -495,9 +654,9 @@ void	AVLTree<KEY,VALUE,TRAITS>::ReBalance ()
 	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
 	{
 	    if (n != nullptr) {
-			AssignNodeToArray (n->GetChild (kLeft));
+			AssignNodeToArray (n->GetChild (Direction::kLeft));
             nodeList[curIndex++] = n;
-			AssignNodeToArray (n->GetChild (kRight));
+			AssignNodeToArray (n->GetChild (Direction::kRight));
         }
 	};
 
@@ -509,8 +668,8 @@ void	AVLTree<KEY,VALUE,TRAITS>::ReBalance ()
 
 		if (startIndex == endIndex) {
 			Node* n = nodeList[startIndex];
-			n->SetChild (kLeft, nullptr);
-			n->SetChild (kRight, nullptr);
+			n->SetChild (Direction::kLeft, nullptr);
+			n->SetChild (Direction::kRight, nullptr);
             n->SetBalance (0);
 			curNodeHeight = 1;
 			return n;
@@ -525,8 +684,8 @@ void	AVLTree<KEY,VALUE,TRAITS>::ReBalance ()
 
         int lht = 0;
         int rht = 0;
-        n->SetChild (kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, lht));
-        n->SetChild (kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, rht));
+        n->SetChild (Direction::kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, lht));
+        n->SetChild (Direction::kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, rht));
 
         curNodeHeight = std::max (lht, rht) + 1;
         n->SetBalance (rht-lht);
@@ -542,131 +701,13 @@ void	AVLTree<KEY,VALUE,TRAITS>::ReBalance ()
 	delete[] nodeList;
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-AVLTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
-	fEntry (key, val),
-	fParent (nullptr),
-	fBalance (0)
-{
-    fChildren[kLeft] = nullptr;
-    fChildren[kRight] = nullptr;
-}
 
 template <typename KEY, typename VALUE, typename TRAITS>
-AVLTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
-	fEntry (n.fEntry),
-	fParent (nullptr),
-	fBalance (0)
+void	AVLTree<KEY,VALUE,TRAITS>::Invariant () const
 {
-    fChildren[kLeft] = nullptr;
-    fChildren[kRight] = nullptr;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-short   AVLTree<KEY,VALUE,TRAITS>::Node::GetBalance () const
-{
-    return fBalance;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    AVLTree<KEY,VALUE,TRAITS>::Node::SetBalance (short b)
-{
-    Require (b >= -1 and b <= 1);
-    fBalance = b;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    AVLTree<KEY,VALUE,TRAITS>::Node::IsUnbalanced () const
-{
-   return (fBalance < -1 or fBalance > 1);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename AVLTree<KEY,VALUE,TRAITS>::Node*   AVLTree<KEY,VALUE,TRAITS>::Node::GetParent () const
-{
-    return fParent;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    AVLTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
-{
-    fParent = p;
-}
-
- template <typename KEY, typename VALUE, typename TRAITS>
- typename AVLTree<KEY,VALUE,TRAITS>::Node::Node*   AVLTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
- {
-    Require (direction == kLeft or direction == kRight);
-    return (fChildren[direction]);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
- void   AVLTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
-{
-    Require (direction == kLeft or direction == kRight);
-    fChildren[direction] = n;
-    if (n != nullptr) {
-        n->fParent = this;
-    }
-}
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    AVLTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
-{
-    Require (direction == kLeft or direction == kRight);
-    return (fParent != nullptr and fParent->GetChild (direction) == this);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction     AVLTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
-{
-    if (n != nullptr and n->GetParent () != nullptr) {
-        if (n == n->GetParent ()->GetChild (kLeft)) {
-            return kLeft;
-        }
-        if (n == n->GetParent ()->GetChild (kRight)) {
-            return kRight;
-        }
-    }
-    return kBadDir;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction    AVLTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
-{
-    Require (dir == kLeft or dir == kRight);
-    return ((dir == kLeft) ? kRight : kLeft);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    AVLTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
-{
-   Require (parent == nullptr or d == kLeft or d == kRight);
-   if (parent == nullptr) {
-       if (n != nullptr) {
-           n->fParent = nullptr;
-       }
-   }
-   else {
-       parent->SetChild (d, n);
-   }
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename AVLTree<KEY,VALUE,TRAITS>::Node*	AVLTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
-{
- 	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		n = n->GetChild (kLeft);
-	}
-	return n;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename AVLTree<KEY,VALUE,TRAITS>::Node*	AVLTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
-{
-  	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		n = n->GetChild (kRight);
-	}
-	return n;
+    #if qDebug
+        Invariant_ ();
+    #endif
 }
 
 #if qDebug
@@ -678,16 +719,16 @@ int	AVLTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 	++count;
 	int lHeight = 0;
 	int rHeight = 0;
-	if (n->GetChild (kLeft) != nullptr) {
-		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (kLeft)->fEntry.GetKey ()) >= 0);
-		Assert (n->GetChild (kLeft)->GetParent () == n);
-		lHeight = ValidateBranch (n->GetChild (kLeft), count);
+	if (n->GetChild (Direction::kLeft) != nullptr) {
+		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (Direction::kLeft)->fEntry.GetKey ()) >= 0);
+		Assert (n->GetChild (Direction::kLeft)->GetParent () == n);
+		lHeight = ValidateBranch (n->GetChild (Direction::kLeft), count);
 	}
-	if (n->GetChild (kRight) != nullptr) {
+	if (n->GetChild (Direction::kRight) != nullptr) {
 		// we cannot do strict < 0, because rotations can put on either side
-		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (kRight)->fEntry.GetKey ()) <= 0);
-		Assert (n->GetChild (kRight)->GetParent () == n);
-		rHeight = ValidateBranch (n->GetChild (kRight), count);
+		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (Direction::kRight)->fEntry.GetKey ()) <= 0);
+		Assert (n->GetChild (Direction::kRight)->GetParent () == n);
+		rHeight = ValidateBranch (n->GetChild (Direction::kRight), count);
 	}
 
 	Assert (std::abs (rHeight-lHeight) <= 1);
@@ -700,8 +741,9 @@ std::cout << "for " << n->fEntry.GetValue () << "; balance = " << n->GetBalance 
 	return 1 + std::max (lHeight, rHeight);
 }
 
+
 template <typename KEY, typename VALUE, typename TRAITS>
-void	AVLTree<KEY,VALUE,TRAITS>::ValidateAll () const
+void	AVLTree<KEY,VALUE,TRAITS>::Invariant_ () const
 {
 	size_t	count = 0;
 
@@ -712,27 +754,12 @@ void	AVLTree<KEY,VALUE,TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	AVLTree<KEY,VALUE,TRAITS>::ListAll () const
+void	AVLTree<KEY,VALUE,TRAITS>::ListAll (Iterator it) const
 {
-	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
-	{
-		if (n->GetChild (kLeft) != nullptr) {
-			ListNode (n->GetChild (kLeft));
-		}
-        int cCount = 0;
-        if (n->GetChild (kLeft) != nullptr) cCount++;
-        if (n->GetChild (kRight) != nullptr) cCount++;
-        std::cout << "(" << n->fEntry.GetKey () << ", " << cCount << ", " << n->GetBalance () << ")";
-		if (n->GetChild (kRight) != nullptr) {
-			ListNode (n->GetChild (kRight));
-		}
-	};
-
     std::cout << "[";
-	if (fHead != nullptr) {
-	    std::cout << "H = " << fHead->fEntry.GetKey () << " :";
-		ListNode (fHead);
-	}
+    for (; it.More (); ) {
+        it.GetNode ()->Inspect ();
+    }
     std::cout << "]" << std::endl;
 }
 
@@ -762,9 +789,9 @@ size_t	AVLTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) const
 		}
 		else {
 			heights.push (height+1);
-			nodes.push (curNode->GetChild (kLeft));
+			nodes.push (curNode->GetChild (Direction::kLeft));
 			heights.push (height+1);
-			nodes.push (curNode->GetChild (kRight));
+			nodes.push (curNode->GetChild (Direction::kRight));
 		}
 	}
 	return maxHeight;
@@ -802,7 +829,11 @@ void    AVLTreeValidationSuite (size_t testDataLength, bool verbose)
     StringTraitOverrideTest<SharedCaseInsensitiveString> (verbose, 1);
 
     typedef AVLTree<HashKey<string>, string>   HashedString;
-   HashedStringTest<HashedString> (verbose, 1);
+    HashedStringTest<HashedString> (verbose, 1);
+
+
+    SimpleIteratorTest< AVLTree<size_t, size_t> > (testDataLength, verbose, 1);
+    PatchingIteratorTest<Tree_Patching<AVLTree<size_t, size_t> > > (testDataLength, verbose, 1);
 }
 
 #endif

@@ -16,6 +16,114 @@
 namespace   ADT {
     namespace   BinaryTree {
 
+
+
+
+template  <typename KEYVALUE>
+ class	RedBlackTreeNode : public TreeNode<KEYVALUE> {
+    public:
+        typedef KEYVALUE    KeyValue;
+        typedef typename KEYVALUE::KeyType  KeyType;
+        typedef typename KEYVALUE::ValueType  ValueType;
+        typedef TreeNode<KEYVALUE>  inherited;
+
+    public:
+        RedBlackTreeNode (const KeyType& key, const ValueType& val) :
+            inherited (key, val),
+            fColor (Color::kBlack)
+        {
+        }
+
+        RedBlackTreeNode (const RedBlackTreeNode& n) :
+            inherited (n),
+            fColor (n.fColor)
+        {
+        }
+
+        DECLARE_USE_BLOCK_ALLOCATION(RedBlackTreeNode);
+
+        // dumb shadowing
+        nonvirtual  RedBlackTreeNode*   GetParent () const
+        {
+            return static_cast<RedBlackTreeNode*> (inherited::GetParent ());
+        }
+
+        RedBlackTreeNode*   GetChild (Direction direction)
+        {
+              return static_cast<RedBlackTreeNode*> (inherited::GetChild (direction));
+        }
+
+        static  RedBlackTreeNode*   GetFirst (RedBlackTreeNode* n)
+        {
+            return static_cast<RedBlackTreeNode*> (inherited::GetFirst (n));
+        }
+
+        static  RedBlackTreeNode*   GetLast (RedBlackTreeNode* n)
+        {
+            return static_cast<RedBlackTreeNode*> (inherited::GetLast (n));
+        }
+
+        nonvirtual  RedBlackTreeNode*   GetSibling () const
+        {
+             return static_cast<RedBlackTreeNode*> (inherited::GetSibling ());
+        }
+
+        nonvirtual  RedBlackTreeNode*   Traverse (TraversalType t, Direction d) const
+        {
+              return static_cast<RedBlackTreeNode*> (inherited::Traverse (t, d));
+        }
+
+        static      RedBlackTreeNode*   GetFirstTraversal (const RedBlackTreeNode* n, TraversalType t, Direction d, size_t* height)
+        {
+               return static_cast<RedBlackTreeNode*> (inherited::GetFirstTraversal (n, t, d, height));
+       }
+
+        static      RedBlackTreeNode*   Descend (RedBlackTreeNode* n, int height, Direction d)
+        {
+            return static_cast<RedBlackTreeNode*> (inherited::Descend (n, height, d));
+        }
+
+        static  void    Apply (const RedBlackTreeNode* node, TraversalType t, Direction d,  const  std::function<void(const RedBlackTreeNode& n)>& func)
+        {
+            inherited::Apply (node, t, d, [func] (const TreeNode<KEYVALUE>& n) { func (static_cast<const RedBlackTreeNode&> (n)); });
+        }
+
+        static  const   RedBlackTreeNode*   Find (const RedBlackTreeNode* node, TraversalType t, Direction d,  const std::function<bool(const RedBlackTreeNode& n)>& func)
+        {
+            return static_cast<const RedBlackTreeNode*> (inherited::Find (node, t, d, [func] (const TreeNode<KEYVALUE>& n)->bool  {  return func (static_cast<const RedBlackTreeNode&> (n)); }));
+        }
+
+        void    Inspect () const
+        {
+            std::cout << "(" << this->fEntry.GetKey () << "," << this->fEntry.GetValue () << "," << ((GetColor () == Color::kRed) ? "R" : "B") << ")";
+        }
+
+        // Red-Black Tree additions
+        nonvirtual  Color   GetColor () const
+        {
+            return fColor;
+        }
+
+        nonvirtual  void    SetColor (Color c)
+        {
+            fColor = c;
+        }
+
+        // NOTE: any leaf (nullptr) is kBlack
+        static  bool   IsRed (RedBlackTreeNode* n)
+        {
+            return (n != nullptr and n->GetColor () == Color::kRed);
+        }
+
+
+   private:
+        Color       fColor;
+};
+
+
+
+
+
 template <typename KEY, typename VALUE, typename TRAITS>
 RedBlackTree<KEY,VALUE,TRAITS>::RedBlackTree () :
 	fHead (nullptr),
@@ -93,7 +201,7 @@ typename RedBlackTree<KEY,VALUE,TRAITS>::Node* RedBlackTree<KEY,VALUE,TRAITS>::R
 		++fRotations;
 	#endif
 
-    Direction otherDir = Node::OtherDir (rotateDir);
+    Direction otherDir = OtherDir (rotateDir);
 	Node* newTop = n->GetChild (otherDir);
 	RequireNotNull (newTop);
 
@@ -123,7 +231,7 @@ typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::A
 	if (nearest == nullptr) {
 	    Assert (fHead == nullptr);
 	    fHead = n;
-	    n->SetColor (kBlack);
+	    n->SetColor (Color::kBlack);
     }
 	else {
 		n->SetParent (nearest);
@@ -131,16 +239,16 @@ typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::A
 		    if (not allowDuplicateAdds) {
 		        throw DuplicateAddException ();
 		    }
-			Assert (nearest->GetChild (kLeft) == nullptr);
-		    nearest->SetChild (kLeft, n);
+			Assert (nearest->GetChild (Direction::kLeft) == nullptr);
+		    nearest->SetChild (Direction::kLeft, n);
 		}
 		else if (comp < 0) {
-			Assert (nearest->GetChild (kLeft) == nullptr);
-		    nearest->SetChild (kLeft, n);
+			Assert (nearest->GetChild (Direction::kLeft) == nullptr);
+		    nearest->SetChild (Direction::kLeft, n);
 		}
 		else {
-			Assert (nearest->GetChild (kRight) == nullptr);
-		    nearest->SetChild (kRight, n);
+			Assert (nearest->GetChild (Direction::kRight) == nullptr);
+		    nearest->SetChild (Direction::kRight, n);
 		}
 	}
 
@@ -159,40 +267,40 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::FixAfterInsert (Node* node)
 
     if (parent == nullptr) {
  		Assert (fHead == node);
- 		Assert (node->GetColor () == kBlack);
+ 		Assert (node->GetColor () == Color::kBlack);
         return;
     }
 
-    node->SetColor (kRed);
+    node->SetColor (Color::kRed);
     while (Node::IsRed (parent)) {
         Node* grandparent = parent->GetParent ();
         if (grandparent == nullptr) {
             parent = fHead;
-            parent->SetColor (kBlack);
+            parent->SetColor (Color::kBlack);
             break;
         }
         Direction parentDir = Node::GetChildDir (parent);
-        Node* uncle = grandparent->GetChild (Node::OtherDir (parentDir));
+        Node* uncle = grandparent->GetChild (OtherDir (parentDir));
         if (Node::IsRed (uncle)) {
-            parent->SetColor (kBlack);
-            uncle->SetColor (kBlack);
+            parent->SetColor (Color::kBlack);
+            uncle->SetColor (Color::kBlack);
             node = grandparent;
             parent = node->GetParent ();
-            grandparent->SetColor ((parent == nullptr) ? kBlack : kRed);
+            grandparent->SetColor ((parent == nullptr) ? Color::kBlack : Color::kRed);
        }
         else {
-            if (node->IsChild (Node::OtherDir (parentDir))) {
+            if (node->IsChild (OtherDir (parentDir))) {
                 node = parent;
                 Rotate (node, parentDir);
             }
             parent = node->GetParent ();
             AssertNotNull (parent);
-            parent->SetColor (kBlack);
+            parent->SetColor (Color::kBlack);
 
             grandparent = parent->GetParent ();
             if (grandparent != nullptr) {
-                grandparent->SetColor (kRed);
-                Rotate (grandparent, Node::OtherDir (parentDir));
+                grandparent->SetColor (Color::kRed);
+                Rotate (grandparent, OtherDir (parentDir));
             }
         }
     }
@@ -221,23 +329,23 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 	RequireNotNull (n);
 
 	Node*   sub = nullptr;
-	if (n->GetChild (kLeft) == nullptr or n->GetChild (kRight) == nullptr) {
+	if (n->GetChild (Direction::kLeft) == nullptr or n->GetChild (Direction::kRight) == nullptr) {
 	    sub = n;
 	}
 	else {
-	    sub = Node::GetFirst (n->GetChild (kRight));
+	    sub = Node::GetFirst (n->GetChild (Direction::kRight));
 	}
 	AssertNotNull (sub);
-	Node* x = (sub->GetChild (kLeft) != nullptr) ? sub->GetChild (kLeft) : sub->GetChild (kRight);
+	Node* x = (sub->GetChild (Direction::kLeft) != nullptr) ? sub->GetChild (Direction::kLeft) : sub->GetChild (Direction::kRight);
 	Direction yDir = Node::GetChildDir (sub);
 
-	if (yDir == kBadDir) {
-        Assert (n->GetChild (kLeft) == nullptr or n->GetChild (kRight) == nullptr);
+	if (yDir == Direction::kBadDir) {
+        Assert (n->GetChild (Direction::kLeft) == nullptr or n->GetChild (Direction::kRight) == nullptr);
 	    Assert (sub == fHead);
 	    Assert (sub == n);
 	    fHead = x;
 	    if (fHead != nullptr) {
-	        fHead->SetColor (kBlack);
+	        fHead->SetColor (Color::kBlack);
 	        fHead->SetParent (nullptr);
 	    }
 	}
@@ -248,7 +356,7 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
             n->fEntry = sub->fEntry;
         }
         if (x == nullptr) {
-            if (sub->GetColor () == kBlack) {
+            if (sub->GetColor () == Color::kBlack) {
                 // here comes trickery. Still need to patch things up, and patch routine needs to be
                 // sent a node that is black, and that has the proper parent set. Fortunately, the sub
                 // node is out of the chain and about to be deleted, so play with it
@@ -259,7 +367,7 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
                 Node::SetChild_Safe (parent, nullptr, yDir);
             }
         }
-        else if (sub->GetColor () == kBlack) {
+        else if (sub->GetColor () == Color::kBlack) {
             FixAfterRemove (x);
         }
     }
@@ -276,48 +384,48 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::FixAfterRemove (Node* n)
 {
     RequireNotNull (n);
 
-    while (n != fHead and n->GetColor () == kBlack) {
+    while (n != fHead and n->GetColor () == Color::kBlack) {
         AssertNotNull (n->GetParent ());     // else n == fHead
 
         Direction dir = Node::GetChildDir (n);
-        if (dir == kBadDir) {
+        if (dir == Direction::kBadDir) {
             fHead = n;
             break;
         }
-        Direction oDir = Node::OtherDir (dir);
+        Direction oDir = OtherDir (dir);
         Node* sibling = n->GetParent ()->GetChild (oDir);
         AssertNotNull (sibling);    // reasons this is true are subtle, but otherwise we would be 2 off in our black node count, which cannot be
 
         if (Node::IsRed (sibling)) {
-            sibling->SetColor (kBlack);
-            n->GetParent ()->SetColor (kRed);
+            sibling->SetColor (Color::kBlack);
+            n->GetParent ()->SetColor (Color::kRed);
             Rotate (n->GetParent (), dir);
             sibling = n->GetParent ()->GetChild (oDir);
        }
 
-        if (not Node::IsRed (sibling->GetChild (kLeft)) and not Node::IsRed (sibling->GetChild (kRight))) {
-            sibling->SetColor (kRed);
+        if (not Node::IsRed (sibling->GetChild (Direction::kLeft)) and not Node::IsRed (sibling->GetChild (Direction::kRight))) {
+            sibling->SetColor (Color::kRed);
            n = n->GetParent ();
         }
         else {
             if (not Node::IsRed (sibling->GetChild (oDir))) {
                 AssertNotNull (sibling->GetChild (dir));
-                sibling->GetChild (dir)->SetColor (kBlack);
-                sibling->SetColor (kRed);
+                sibling->GetChild (dir)->SetColor (Color::kBlack);
+                sibling->SetColor (Color::kRed);
                 Rotate (sibling, oDir);
                 sibling = n->GetParent ()->GetChild (oDir);
             }
             sibling->SetColor (n->GetParent ()->GetColor ());
-            n->GetParent ()->SetColor (kBlack);
+            n->GetParent ()->SetColor (Color::kBlack);
             if (sibling->GetChild (oDir) != nullptr) {
-                sibling->GetChild (oDir)->SetColor (kBlack);
+                sibling->GetChild (oDir)->SetColor (Color::kBlack);
             }
             Rotate (n->GetParent (), dir);
             n = fHead;
         }
 
     }
-    n->SetColor (kBlack);
+    n->SetColor (Color::kBlack);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
@@ -326,8 +434,8 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::RemoveAll ()
 	std::function<void(Node*)>	DeleteANode = [&DeleteANode] (Node* n)
 	{
 		if (n != nullptr) {
-			DeleteANode (n->GetChild (kLeft));
-			DeleteANode (n->GetChild (kRight));
+			DeleteANode (const_cast<Node*> (n->GetChild (Direction::kLeft)));
+			DeleteANode (const_cast<Node*> (n->GetChild (Direction::kRight)));
 			delete n;
 		}
 	};
@@ -336,6 +444,58 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::RemoveAll ()
 
 	fHead = nullptr;
 	fLength = 0;
+}
+
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename RedBlackTree<KEY,VALUE,TRAITS>::Iterator RedBlackTree<KEY,VALUE,TRAITS>::Iterate (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename RedBlackTree<KEY,VALUE,TRAITS>::Iterator RedBlackTree<KEY,VALUE,TRAITS>::Iterate (const KeyType& key, TraversalType t, Direction d) const
+{
+    int	comp;
+    return Iterator (Node::GetFirstTraversal (FindNode (key, &comp), t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename RedBlackTree<KEY,VALUE,TRAITS>::Iterator  RedBlackTree<KEY,VALUE,TRAITS>::begin (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    RedBlackTree<KEY,VALUE,TRAITS>::Iterator  RedBlackTree<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator (nullptr);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    RedBlackTree<KEY,VALUE,TRAITS>::Iterator	RedBlackTree<KEY,VALUE,TRAITS>::GetFirst (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    RedBlackTree<KEY,VALUE,TRAITS>::Iterator	RedBlackTree<KEY,VALUE,TRAITS>::GetLast (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, OtherDir (d), nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void    RedBlackTree<KEY,VALUE,TRAITS>::Update (const Iterator& it, const ValueType& newValue)
+{
+    Require (not it.Done ());
+    const_cast<RedBlackTree<KEY, VALUE, TRAITS>::Node*> (it.GetNode ())->fEntry.SetValue (newValue);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void	RedBlackTree<KEY,VALUE,TRAITS>::Remove (const Iterator& it)
+{
+    Require (not it.Done ());
+    RemoveNode (const_cast<RedBlackTree<KEY,VALUE,TRAITS>::Node*> (it.GetNode ()));
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
@@ -362,7 +522,7 @@ typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::F
 		if (*comparisonResult == 0 and (not ignoreMatch)) {
 			return n;
 		}
-		n = (*comparisonResult <= 0) ? n->GetChild (kLeft): n->GetChild (kRight);
+		n = (*comparisonResult <= 0) ? n->GetChild (Direction::kLeft): n->GetChild (Direction::kRight);
 	}
 	return nearest;
 }
@@ -380,41 +540,9 @@ typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::G
 	return Node::GetLast (fHead);
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
-{
- 	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		n = n->GetChild (kLeft);
-	}
-	return n;
-}
-
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
-{
-  	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		n = n->GetChild (kRight);
-	}
-	return n;
-}
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename RedBlackTree<KEY,VALUE,TRAITS>::Node*	RedBlackTree<KEY,VALUE,TRAITS>::DuplicateBranch (Node* branchTop)
-{
-	Node* newNode = nullptr;
-	if (branchTop != nullptr) {
-		newNode = new Node (*branchTop);
-		newNode->SetChild (kLeft,  DuplicateBranch (branchTop->GetChild (kLeft)));
-		newNode->SetChild (kRight, DuplicateBranch (branchTop->GetChild (kRight)));
-	}
-	return newNode;
-}
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void	RedBlackTree<KEY,VALUE,TRAITS>::ReBalance ()
+void	RedBlackTree<KEY,VALUE,TRAITS>::Balance ()
 {
     if (GetLength () == 0) {
         return;
@@ -428,9 +556,9 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ReBalance ()
 	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
 	{
 	    if (n != nullptr) {
-			AssignNodeToArray (n->GetChild (kLeft));
+			AssignNodeToArray (n->GetChild (Direction::kLeft));
             nodeList[curIndex++] = n;
-			AssignNodeToArray (n->GetChild (kRight));
+			AssignNodeToArray (n->GetChild (Direction::kRight));
         }
 	};
 
@@ -446,9 +574,9 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ReBalance ()
 		if (startIndex == endIndex) {
 			Node* n = nodeList[startIndex];
 	//		n->SetColor ((curNodeHeight == maxHeight or (not (curNodeHeight & 1))) ? kRed : kBlack);
-			n->SetColor ((curNodeHeight == maxHeight) ? kRed : kBlack);
-			n->SetChild (kLeft, nullptr);
-			n->SetChild (kRight, nullptr);
+			n->SetColor ((curNodeHeight == maxHeight) ? Color::kRed : Color::kBlack);
+			n->SetChild (Direction::kLeft, nullptr);
+			n->SetChild (Direction::kRight, nullptr);
 			return n;
 		}
 
@@ -459,130 +587,30 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ReBalance ()
 		Node* n = nodeList[curIdx];
 		AssertNotNull (n);
 
-        n->SetChild (kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, curNodeHeight+1));
-        n->SetChild (kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, curNodeHeight+1));
-        n->SetColor (kBlack);
+        n->SetChild (Direction::kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, curNodeHeight+1));
+        n->SetChild (Direction::kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, curNodeHeight+1));
+        n->SetColor (Color::kBlack);
 
 		return n;
 	};
 	if (fHead != nullptr) {
 		fHead = BalanceNode (0, GetLength ()-1, 1);
 		fHead->SetParent (nullptr);
-		fHead->SetColor (kBlack);
+		fHead->SetColor (Color::kBlack);
 	}
 
 	delete[] nodeList;
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-RedBlackTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
-	fEntry (key, val),
- 	fParent (nullptr),
-    fColor (kBlack)
-{
-    SetChild (kLeft, nullptr);
-    SetChild (kRight, nullptr);
-}
+
 
 template <typename KEY, typename VALUE, typename TRAITS>
-RedBlackTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
-	fEntry (n.fEntry),
-	fParent (nullptr),
-    fColor (n.fColor)
+void	RedBlackTree<KEY,VALUE,TRAITS>::Invariant () const
 {
-    SetChild (kLeft, nullptr);
-    SetChild (kRight, nullptr);
+    #if qDebug
+        Invariant_ ();
+    #endif
 }
-
- template <typename KEY, typename VALUE, typename TRAITS>
- typename RedBlackTree<KEY,VALUE,TRAITS>::Node::Node*   RedBlackTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
- {
-    Require (direction == kLeft or direction == kRight);
-    return (fChildren[direction]);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
- void   RedBlackTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
-{
-    Require (direction == kLeft or direction == kRight);
-    fChildren[direction] = n;
-    if (n != nullptr) {
-        n->fParent = this;
-    }
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    RedBlackTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
-{
-   Require (parent == nullptr or d == kLeft or d == kRight);
-   if (parent == nullptr) {
-       if (n != nullptr) {
-           n->fParent = nullptr;
-       }
-   }
-   else {
-       parent->SetChild (d, n);
-   }
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    RedBlackTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
-{
-    Require (direction == kLeft or direction == kRight);
-    return (fParent != nullptr and fParent->GetChild (direction) == this);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction     RedBlackTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
-{
-    if (n != nullptr and n->GetParent () != nullptr) {
-        if (n == n->fParent->GetChild (kLeft)) {
-            return kLeft;
-        }
-        if (n == n->fParent->GetChild (kRight)) {
-            return kRight;
-        }
-    }
-    return kBadDir;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename RedBlackTree<KEY,VALUE,TRAITS>::Node*   RedBlackTree<KEY,VALUE,TRAITS>::Node::GetParent () const
-{
-    return fParent;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    RedBlackTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
-{
-    fParent = p;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename RedBlackTree<KEY,VALUE,TRAITS>::Color    RedBlackTree<KEY,VALUE,TRAITS>::Node::GetColor () const
-{
-    return fColor;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    RedBlackTree<KEY,VALUE,TRAITS>::Node::SetColor (Color c)
-{
-    fColor = c;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction    RedBlackTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
-{
-    Require (dir == kLeft or dir == kRight);
-    return ((dir == kLeft) ? kRight : kLeft);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    RedBlackTree<KEY,VALUE,TRAITS>::Node::IsRed (Node* n)
-{
-    return (n != nullptr and n->GetColor () == kRed);
-}
-
 
 #if qDebug
 
@@ -606,7 +634,7 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count, siz
         RequireNotNull (nn);
         size_t blackNodeCount = 0;
         while (nn->GetParent ()!= nullptr) {
-            if (nn->GetColor () == kBlack) {
+            if (nn->GetColor () == Color::kBlack) {
                 blackNodeCount++;
             }
             nn = nn->GetParent ();
@@ -614,16 +642,17 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count, siz
         return blackNodeCount;
     };
 
-    if (n->GetColor () == kRed) {
-        Assert (not Node::IsRed (n->GetChild (kLeft)));
-        Assert (not Node::IsRed (n->GetChild (kRight)));
+    if (n->GetColor () == Color::kRed) {
+        Assert (not Node::IsRed (n->GetChild (Direction::kLeft)));
+        Assert (not Node::IsRed (n->GetChild (Direction::kRight)));
    }
 
-    for (int i = kFirstChild; i <= kLastChild; ++i) {
-        Node* child = n->GetChild (Direction (i));
+
+     for (Direction d  : { Direction::kLeft, Direction::kRight} ) {
+        Node* child = n->GetChild (d);
         if (child != nullptr) {
             int comp = TRAITS::Comparer::Compare (n->fEntry.GetKey (), child->fEntry.GetKey ());
-            Assert ((comp == 0) or ((comp > 0) == (i == kLeft)));
+            Assert ((comp == 0) or ((comp > 0) == (d == Direction::kLeft)));
             Assert (child->GetParent () == n);
 
             ValidateBranch (child, count, blackNodesToHead);
@@ -643,8 +672,9 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count, siz
     }
 }
 
+
 template <typename KEY, typename VALUE, typename TRAITS>
-void	RedBlackTree<KEY,VALUE,TRAITS>::ValidateAll () const
+void	RedBlackTree<KEY,VALUE,TRAITS>::Invariant_ () const
 {
 	size_t	count = 0;
 	size_t  blackNodesToHead = 0;
@@ -652,32 +682,19 @@ void	RedBlackTree<KEY,VALUE,TRAITS>::ValidateAll () const
 
 	if (fHead != nullptr) {
  //std::cout << "Validating, count = " << fLength << std::endl << std::flush;
-	    Assert (fHead->GetColor () == kBlack);
+	    Assert (fHead->GetColor () == Color::kBlack);
 		ValidateBranch (fHead, count, blackNodesToHead);
 	}
 	Assert (count == fLength);
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	RedBlackTree<KEY,VALUE,TRAITS>::ListAll () const
+void	RedBlackTree<KEY,VALUE,TRAITS>::ListAll (Iterator it) const
 {
-	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
-	{
-	    if (n != nullptr) {
- 			ListNode (n->GetChild (kLeft));
-            int cCount = 0;
-            if (n->GetChild (kLeft) != nullptr) cCount++;
-            if (n->GetChild (kRight) != nullptr) cCount++;
-            std::cout << "(" << n->fEntry.GetKey () << "," << ((n->GetColor () == kRed) ? "R" : "B") << "," << cCount << ")";
- 			ListNode (n->GetChild (kRight));
-       }
-	};
-
     std::cout << "[";
-	if (fHead != nullptr) {
-	    std::cout << "H = " << fHead->fEntry.GetKey () << " :";
-		ListNode (fHead);
-	}
+    for (; it.More (); ) {
+        it.GetNode ()->Inspect ();
+    }
     std::cout << "]" << std::endl;
 }
 
@@ -697,8 +714,8 @@ size_t	RedBlackTree<KEY,VALUE,TRAITS>::CalcNodeHeight (Node* n, size_t height, s
 	}
 
 	size_t	newHeight = std::max (
-		CalcNodeHeight (n->GetChild (kLeft), height+1, totalHeight),
-		CalcNodeHeight (n->GetChild (kRight), height+1, totalHeight));
+		CalcNodeHeight (n->GetChild (Direction::kLeft), height+1, totalHeight),
+		CalcNodeHeight (n->GetChild (Direction::kRight), height+1, totalHeight));
 
 	return newHeight;
 }
@@ -743,6 +760,10 @@ void    RedBlackTreeValidationSuite (size_t testDataLength, bool verbose)
 
     typedef RedBlackTree<HashKey<string>, string>   HashedString;
     HashedStringTest<HashedString> (verbose, 1);
+
+
+    SimpleIteratorTest< RedBlackTree<size_t, size_t> > (testDataLength, verbose, 1);
+    PatchingIteratorTest<Tree_Patching<RedBlackTree<size_t, size_t> > > (testDataLength, verbose, 1);
 }
 
 #endif

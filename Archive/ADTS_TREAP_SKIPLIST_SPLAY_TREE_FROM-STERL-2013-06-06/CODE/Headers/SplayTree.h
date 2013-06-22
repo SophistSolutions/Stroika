@@ -70,8 +70,11 @@ template <typename KEY,
 		>
 class SplayTree {
 	public:
-        typedef KEY	KeyType;
-        typedef VALUE  ValueType;
+        typedef KEY	    KeyType;
+        typedef VALUE   ValueType;
+        typedef typename TRAITS::KeyValue    KeyValue;
+        typedef TreeNode<KeyValue>  Node;
+        typedef TreeIterator<Node> Iterator;
 
     public:
 		SplayTree ();
@@ -97,6 +100,23 @@ class SplayTree {
 		nonvirtual	void	Remove (const KeyType& key);
 		nonvirtual	void	RemoveAll ();
 
+        /*
+            Iterator support
+        */
+ 		nonvirtual	Iterator Iterate (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+ 		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
+ 		nonvirtual	Iterator Iterate (const KeyType& key, TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+        nonvirtual  Iterator  begin (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+        nonvirtual  Iterator  end () const;
+
+		nonvirtual	Iterator	GetFirst (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;   // returns iterator to largest key
+
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
+
  		nonvirtual	size_t	GetLength () const;		// always equal to total Add minus total Remove
 
 		/*
@@ -116,44 +136,17 @@ class SplayTree {
 		static	void	SetCustomHeightWeights (const std::vector<size_t>& newHeightWeights);
 
         // note that for a SplayTree calling Balance will lose priority information and can be an anti-optimization
-		void	ReBalance ();
+		void	Balance ();
+
+        nonvirtual	void	Invariant () const;
 
 	public:
-        class	Node {
-            public:
-                Node (const KeyType& key, const ValueType& val);
-                Node (const Node& n);
+		#if qDebug
+            nonvirtual	void	Invariant_ () const;
+			nonvirtual	void	ListAll (Iterator it) const;
+		#endif
 
-                DECLARE_USE_BLOCK_ALLOCATION(Node);
-
-                // tree node core routines
-
-                Node*   GetParent () const;
-                void    SetParent (Node* p);
-
-                Node*   GetChild (Direction direction);
-                void    SetChild (Direction direction, Node* n);
-
-                bool    IsChild (Direction direction);
-
-                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
-                static  Direction     OtherDir (Direction dir);
-                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
-
-                static  Node*   GetFirst (Node* n);
-                static  Node*   GetLast (Node* n);
-
-                static  Node*   RebalanceBranch (Node* oldTop, size_t length); // returns new top. length = number of nodes in oldTop, including itself
-
-                typename	TRAITS::KeyValue	fEntry; // we look at this directly because we want to see internal fields be const reference rather than value
-
-            private:
-                Node*   fChildren[2];
-                Node*	fParent;
-        };
-		Node*	fHead;
-
-
+	protected:
 		/*
 			Find node with matching key in treap. In cases of duplicate values, return first found.
 			Note that FindNode is const: it does not alter the tree structure. You can optionally pass in the height parameter, which returns
@@ -178,7 +171,7 @@ class SplayTree {
 		nonvirtual	void Splay (Node* n, size_t nodeHeight, bool forced = false);
 
         // move the node to the top of the tree, making future searches for it faster
-		nonvirtual	void    Prioritize (Node* n);
+		nonvirtual	void    Prioritize (const Iterator& it);
 
 		// force a node to be a leaf node via rotations, useful before delete
 		nonvirtual	size_t ForceToBottom (Node* n);
@@ -191,14 +184,12 @@ class SplayTree {
 
 		nonvirtual	void	SwapNodes (Node* parent, Node* child);
 
-	public:
 		#if qDebug
-			nonvirtual	void	ListAll () const;
 			static		void	ValidateBranch (Node* n, size_t& count);
-			nonvirtual	void	ValidateAll () const;
 		#endif
 
 	private:
+		Node*	fHead;
 		size_t		fLength;
 
 		#if qKeepADTStatistics

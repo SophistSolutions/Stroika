@@ -1,13 +1,13 @@
+Terminal Settings:
+Debug:      xterm -T $TITLE -e
+Release:    gnome-terminal -x
+
+
 Distribution Information (1,000,000 entries)
 
 Uniform;    unique = 1000000; most common = 1
 Normalized; unique = 105338; most common = 40
 Zipf;       unique = 217201; most common = 69331
-
-
-Terminal Settings:
-Debug:      xterm -T $TITLE -e
-Release:    gnome-terminal -x
 
 Standings (not rebalanced):
 Uniform:    RedBlack (10506) < AVL(11148) < ScapeGoat (13278) < Treap_No (13490) < SortedBinaryTree (13840) < ShuffleTree (14673)  < SplayTree_Uniform (18131) < SkipList (22150)
@@ -23,7 +23,7 @@ Note: disallowed ScapeGoat (.5) results, as rebuilds would be prohibitive, and i
 
 
 
-Support ReBalance: all (not nec. good idea in Treap or SplayTree)
+Support Balance: all (not nec. good idea in Treap or SplayTree)
 Support Prioritize: all but AVL, RedBlackTree and ScapeGoatTree(weak in SkipList)
 
 Self-Balancing vs Self-Tuning
@@ -32,6 +32,5 @@ Interesting test data ideas in shuffle article
 
 To Do:
 Iterators?
-shuffletree
 
 

@@ -18,6 +18,12 @@ cons: can't prioritize
 namespace   ADT {
     namespace   BinaryTree {
 
+template  <typename KEYVALUE>  class  RedBlackTreeNode;    // need to forward declare when you subclass from TreeNode
+
+enum class  Color {
+    kBlack = false,
+    kRed = true
+};
 
 template <typename KEY,
 		  typename VALUE,
@@ -27,13 +33,11 @@ template <typename KEY,
 				ADT::eDefaultPolicy> >
 class RedBlackTree {
 	public:
-        typedef  KEY	KeyType;
-        typedef  VALUE  ValueType;
-
-        typedef enum Color {
-            kBlack = false,
-            kRed = true
-        } Color;
+        typedef KEY	    KeyType;
+        typedef VALUE   ValueType;
+        typedef typename TRAITS::KeyValue    KeyValue;
+        typedef RedBlackTreeNode<KeyValue>  Node;
+        typedef TreeIterator<Node> Iterator;
 
 	public:
 		RedBlackTree ();
@@ -58,86 +62,70 @@ class RedBlackTree {
 		void	Remove (const KeyType& key);
 		void	RemoveAll ();
 
+        /*
+            Iterator support
+        */
+ 		nonvirtual	Iterator Iterate (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+ 		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
+ 		nonvirtual	Iterator Iterate (const KeyType& key, TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+
+        nonvirtual  Iterator  begin (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+        nonvirtual  Iterator  end () const;
+
+		nonvirtual	Iterator	GetFirst (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;   // returns iterator to largest key
+
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
+
+
  		size_t	GetLength () const;		// always equal to total Add minus total Remove
 
-		void	ReBalance ();
+		void	Balance ();
 
+        nonvirtual	void	Invariant () const;
 
-	public:
-        class	Node {
-            public:
-                Node (const KeyType& key, const ValueType& val);
-                Node (const Node& n);
+        #if qDebug
+            nonvirtual	void	Invariant_ () const;
+            nonvirtual	void	ListAll (Iterator it) const;
+		#endif
 
-                // tree node core routines
-                Node*   GetParent () const;
-                void    SetParent (Node* p);
-
-                Node*   GetChild (Direction direction);
-                void    SetChild (Direction direction, Node* n);
-
-                bool    IsChild (Direction direction);
-
-                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
-                static  Direction     OtherDir (Direction dir);
-                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
-
-                static  Node*   GetFirst (Node* n);
-                static  Node*   GetLast (Node* n);
-
-                // Red-Black Tree additions
-                Color   GetColor () const;
-                void    SetColor (Color c);
-                static  bool   IsRed (Node* n);   // NOTE: any leaf (nullptr) is kBlack
-
-               DECLARE_USE_BLOCK_ALLOCATION(Node);
-
-                 typename	TRAITS::KeyValue	fEntry;
-           private:
-                static  const   size_t  kMask = ((size_t) -1)-1;
-
-                Node*	    fParent;
-                Node*       fChildren[2];
-                Color       fColor;
-		};
-		Node*	fHead;
-
+	protected:
 		/*
 			Find closest node for key. In cases of duplicate values, return first found.
 			If not found return the node that is smaller than key by the least amount. For cases that did
 			not match, the returned node will always an external node (at least one nullptr leaf). Returns
 			nullptr if tree is empty.
 		 */
-		Node*	FindNode (const KeyType& key, int* comparisonResult, bool ignoreMatch = false)  const;
+		nonvirtual  Node*	FindNode (const KeyType& key, int* comparisonResult, bool ignoreMatch = false)  const;
 
 		/*
 			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
 			iteration, assuming other users did not alter the tree.  Note that these routines require no key compares, and are thus very fast.
 		*/
-		Node*	GetFirst () const;
-		Node*	GetLast () const;
+		nonvirtual  Node*	GetFirst () const;
+		nonvirtual  Node*	GetLast () const;
 
 
 		// swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
-		Node* Rotate (Node* n, Direction rotateDir);
+		nonvirtual  Node* Rotate (Node* n, Direction rotateDir);
 
 		static	Node*	DuplicateBranch (Node* branchTop);
 
         // returns the parent of the added node.
-		Node*	AddNode (Node* n);
-		void	RemoveNode (Node* n);
+		nonvirtual  Node*	AddNode (Node* n);
+		nonvirtual  void	RemoveNode (Node* n);
 
-		void	FixAfterInsert (Node* n);
-		void    FixAfterRemove (Node* n);
+		nonvirtual  void	FixAfterInsert (Node* n);
+		nonvirtual  void    FixAfterRemove (Node* n);
 
-	public:
 		#if qDebug
-			void	ListAll () const;
 			static	void	ValidateBranch (Node* n, size_t& count, size_t& blackNodesToHead);
-			void	ValidateAll () const;
 		#endif
 
 	private:
+		Node*	fHead;
 		size_t	fLength;
 
 		#if qKeepADTStatistics

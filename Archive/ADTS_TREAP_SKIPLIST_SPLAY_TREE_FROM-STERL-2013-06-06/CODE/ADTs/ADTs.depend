@@ -57,7 +57,8 @@
 1370455023 source:/home/sterlingwight/work/ADT/Sources/SkipList.cpp
 	"../Headers/SkipList.h"
 
-1371149229 /home/sterlingwight/work/ADT/Headers/SkipList.h
+1371742101 /home/sterlingwight/work/ADT/Headers/SkipList.h
+	<iterator>
 	<vector>
 	"../Shared/Headers/BlockAllocated.h"
 	"../Shared/Headers/ADT.h"
@@ -68,13 +69,13 @@
 	"../../Shared/Headers/Exception.h"
 	"../../Shared/Headers/KeyValue.h"
 
-1371079747 /home/sterlingwight/work/ADT/Shared/Headers/KeyValue.h
+1371661368 /home/sterlingwight/work/ADT/Shared/Headers/KeyValue.h
 	"Config.h"
 	"KeyValue.inl"
 
 1371079794 /home/sterlingwight/work/ADT/Shared/Headers/KeyValue.inl
 
-1371149229 /home/sterlingwight/work/ADT/Headers/SkipList.inl
+1371742101 /home/sterlingwight/work/ADT/Headers/SkipList.inl
 	<math.h>
 	<random>
 	"../Shared/Headers/Utils.h"
@@ -85,7 +86,7 @@
 1370455023 source:/home/sterlingwight/work/ADT/Sources/SplayTree.cpp
 	"../Headers/SplayTree.h"
 
-1371231500 /home/sterlingwight/work/ADT/Headers/SplayTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/SplayTree.h
 	<random>
 	<vector>
 	"../Shared/Headers/ADT.h"
@@ -93,7 +94,7 @@
 	"../Shared/Headers/BlockAllocated.h"
 	"SplayTree.inl"
 
-1371231737 /home/sterlingwight/work/ADT/Headers/SplayTree.inl
+1371749765 /home/sterlingwight/work/ADT/Headers/SplayTree.inl
 	<algorithm>
 	<stack>
 	<iostream>
@@ -102,7 +103,7 @@
 1370454609 source:/home/sterlingwight/work/ADT/Sources/Treap.cpp
 	"../Headers/Treap.h"
 
-1371231765 /home/sterlingwight/work/ADT/Headers/Treap.h
+1371742101 /home/sterlingwight/work/ADT/Headers/Treap.h
 	<vector>
 	"../Shared/Headers/Config.h"
 	"../Shared/Headers/BlockAllocated.h"
@@ -110,19 +111,20 @@
 	"../Shared/Headers/BinaryTree.h"
 	"Treap.inl"
 
-1371231380 /home/sterlingwight/work/ADT/Headers/Treap.inl
+1371749777 /home/sterlingwight/work/ADT/Headers/Treap.inl
 	<algorithm>
 	<math.h>
 	<iostream>
 	"../Shared/Headers/ContainerValidation.h"
 	"../Shared/Headers/Utils.h"
 
-1371236595 source:/home/sterlingwight/work/ADT/ADTs/main.cpp
+1371749302 source:/home/sterlingwight/work/ADT/ADTs/main.cpp
 	<cstring>
 	<algorithm>
 	<functional>
 	<iostream>
 	<string>
+	<sstream>
 	"../Shared/Headers/Config.h"
 	"../Shared/Headers/ContainerValidation.h"
 	"../Shared/Headers/HashKey.h"
@@ -150,7 +152,7 @@
 	<iostream>
 	"../Shared/Headers/Utils.h"
 
-1371231772 /home/sterlingwight/work/ADT/Headers/RedBlackTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/RedBlackTree.h
 	<vector>
 	"../Shared/Headers/Config.h"
 	"../Shared/Headers/BlockAllocated.h"
@@ -158,7 +160,7 @@
 	"../Shared/Headers/BinaryTree.h"
 	"RedBlackTree.inl"
 
-1371231381 /home/sterlingwight/work/ADT/Headers/RedBlackTree.inl
+1371749842 /home/sterlingwight/work/ADT/Headers/RedBlackTree.inl
 	<algorithm>
 	<math.h>
 	<iostream>
@@ -182,31 +184,34 @@
 	"../../Shared/Headers/KeyValue.h"
 	"ContainerValidation.inl"
 
-1371238813 /home/sterlingwight/work/ADT/Shared/Headers/ContainerValidation.inl
+1371749944 /home/sterlingwight/work/ADT/Shared/Headers/ContainerValidation.inl
 	<algorithm>
+	<sstream>
+	<string>
 	"../../Shared/Headers/HashKey.h"
 	"../Headers/ADT.h"
+	"../Headers/BinaryTree.h"
 
 1370882593 source:/home/sterlingwight/work/ADT/Shared/Sources/ContainerValidation.cpp
 	"../Headers/ContainerValidation.h"
 
-1371231434 /home/sterlingwight/work/ADT/Headers/SortedBinaryTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/SortedBinaryTree.h
 	<vector>
 	"../Shared/Headers/ADT.h"
 	"../Shared/Headers/BinaryTree.h"
 	"../Shared/Headers/BlockAllocated.h"
 	"SortedBinaryTree.inl"
 
-1371231629 /home/sterlingwight/work/ADT/Headers/SortedBinaryTree.inl
+1371749813 /home/sterlingwight/work/ADT/Headers/SortedBinaryTree.inl
 	<algorithm>
 	<stack>
 	<iostream>
 	"../Shared/Headers/ContainerValidation.h"
 
-1371147733 source:/home/sterlingwight/work/ADT/Sources/SortedBinaryTree.cpp
+1371662386 source:/home/sterlingwight/work/ADT/Sources/SortedBinaryTree.cpp
 	"../Headers/SortedBinaryTree.h"
 
-1371234804 /home/sterlingwight/work/ADT/Headers/AVLTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/AVLTree.h
 	<random>
 	<vector>
 	"../Shared/Headers/BlockAllocated.h"
@@ -214,47 +219,62 @@
 	"../Shared/Headers/BinaryTree.h"
 	"AVLTree.inl"
 
-1371234790 /home/sterlingwight/work/ADT/Headers/AVLTree.inl
+1371749813 /home/sterlingwight/work/ADT/Headers/AVLTree.inl
 	<algorithm>
 	<stack>
 	<iostream>
 	"../Shared/Headers/ContainerValidation.h"
 
-1371149049 /home/sterlingwight/work/ADT/Shared/Headers/BinaryTree.h
+1371749725 /home/sterlingwight/work/ADT/Shared/Headers/BinaryTree.h
+	<algorithm>
 	"Config.h"
 	"ADT.h"
+	"BlockAllocated.h"
 	"BinaryTree.inl"
 
-1371147721 /home/sterlingwight/work/ADT/Shared/Headers/BinaryTree.inl
+1371749717 /home/sterlingwight/work/ADT/Shared/Headers/BinaryTree.inl
+	<algorithm>
+	<stack>
+	<iostream>
+	<vector>
 
 1371148071 /home/sterlingwight/work/ADT/Shared/Headers/ADT.h
 	"../../Shared/Headers/Comparer.h"
 	"../../Shared/Headers/Exception.h"
 	"../../Shared/Headers/KeyValue.h"
 
-1371231500 /home/sterlingwight/work/ADT/Headers/ScapeGoatTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/ScapeGoatTree.h
 	<vector>
 	"../Shared/Headers/ADT.h"
 	"../Shared/Headers/BinaryTree.h"
 	"../Shared/Headers/BlockAllocated.h"
 	"ScapeGoatTree.inl"
 
-1371231381 /home/sterlingwight/work/ADT/Headers/ScapeGoatTree.inl
+1371749813 /home/sterlingwight/work/ADT/Headers/ScapeGoatTree.inl
 	<algorithm>
 	<stack>
 	<iostream>
 	"../Shared/Headers/ContainerValidation.h"
 
-1371237732 /home/sterlingwight/work/ADT/Headers/ShuffleTree.h
+1371742101 /home/sterlingwight/work/ADT/Headers/ShuffleTree.h
 	<vector>
 	"../Shared/Headers/ADT.h"
 	"../Shared/Headers/BinaryTree.h"
 	"../Shared/Headers/BlockAllocated.h"
 	"ShuffleTree.inl"
 
-1371238017 /home/sterlingwight/work/ADT/Headers/ShuffleTree.inl
+1371749813 /home/sterlingwight/work/ADT/Headers/ShuffleTree.inl
 	<algorithm>
 	<stack>
 	<iostream>
 	"../Shared/Headers/ContainerValidation.h"
+
+1371410784 /home/sterlingwight/work/ADT/Shared/Headers/Iterator.h
+	"Config.h"
+	"Iterator.inl"
+
+1371410765 /home/sterlingwight/work/ADT/Shared/Headers/Iterator.inl
+
+1371664478 source:/home/sterlingwight/work/ADT/Sources/ShuffleTree.cpp
+	"../Headers/ShuffleTree.h"
 

@@ -53,16 +53,18 @@
 namespace   ADT {
     namespace   BinaryTree {
 
-typedef enum {
-	kNoPrioritizeFinds = 0,
-	kStandardPrioritizeFinds = 1,
-	kAlwaysPrioritizeOnFind = 2,
-	kDefaultPrioritizeFinds = kNoPrioritizeFinds,
-}   FindPrioritization;
+template  <typename KEYVALUE>  class  TreapNode;    // need to forward declare when you subclass from TreeNode
 
-template    <typename KEYVALUE, typename COMP,int POLICY, int OPTFINDCHANCE>
+enum class FindPrioritization {
+	kNever,
+	kStandard,
+	kAlways,
+	kDefault = kNever,
+};
+
+template    <typename KEYVALUE, typename COMP,int POLICY, FindPrioritization OPTFINDCHANCE>
 struct	TreapTraits : ADT::Traits<KEYVALUE, COMP, POLICY> {
-    static	const unsigned short	kPrioritizeOnFind = OPTFINDCHANCE;
+    static	const FindPrioritization	kPrioritizeOnFind = OPTFINDCHANCE;
 };
 
 template <typename KEY,
@@ -71,93 +73,79 @@ template <typename KEY,
 				KeyValue<KEY,VALUE>,
 				ADT::DefaultComp<KEY>,
 				ADT::eDefaultPolicy,
-				kDefaultPrioritizeFinds> >
+				FindPrioritization::kDefault> >
 class Treap {
 	public:
-        typedef  KEY	KeyType;
-        typedef  VALUE  ValueType;
+        typedef KEY	    KeyType;
+        typedef VALUE   ValueType;
+        typedef typename TRAITS::KeyValue    KeyValue;
+        typedef TreapNode<KeyValue>  Node;
+        typedef TreeIterator<Node> Iterator;
 
 	public:
 		Treap ();
 		Treap (const Treap& t);
 		~Treap ();
 
-		Treap&	operator= (const Treap& t);
+		nonvirtual  Treap&	operator= (const Treap& t);
 
 		/*
 			Basic find operation. If pass in nullptr for val then only tests inclusion, otherwise fills val with value linked to key.
 			In some cases (such as using a counter) you want full Node information rather than just the value -- see FindNode below for
 			how to do this.
-			Notet at if Find prioritization is set to anything other than kNoPrioritizeFinds, then Find is not really a const method
+			Notet at if Find prioritization is set to anything other than kNever, then Find is not really a const method
 		*/
-		bool	Find (const KeyType& key, ValueType* val = nullptr) const;
+		nonvirtual  bool	Find (const KeyType& key, ValueType* val = nullptr) const;
 
 		/*
 			You can add more than one item with the same key. If you add different values with the same key, it is unspecified which item will be returned on subsequent Find or Remove calls.
 		*/
-		void	Add (const KeyType& key, ValueType val);
-		void	Add (const KeyType& keyAndValue);	// convenient when key and value are the same, like a sorted list of names
+		nonvirtual  void	Add (const KeyType& key, ValueType val);
+		nonvirtual  void	Add (const KeyType& keyAndValue);	// convenient when key and value are the same, like a sorted list of names
 
-		void	Remove (const KeyType& key);
-		void	RemoveAll ();
+		nonvirtual  void	Remove (const KeyType& key);
+		nonvirtual  void	RemoveAll ();
 
- 		size_t	GetLength () const;		// always equal to total Add minus total Remove
+        /*
+            Iterator support
+        */
+ 		nonvirtual	Iterator Iterate (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
 
-		void	ReBalance ();
+ 		// returns the first entry equal to, or the smallest entry with key larger than the passed in key
+ 		nonvirtual	Iterator Iterate (const KeyType& key, TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
 
-		static  FindPrioritization	GetFindPrioritization ();   // one of kNoPrioritizeFinds, kStandardPrioritizeFinds, kAlwaysPrioritizeOnFind
+        nonvirtual  Iterator  begin (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;
+        nonvirtual  Iterator  end () const;
 
-	public:
-        struct	Node {
-            public:
-                Node (const KeyType& key, const ValueType& val);
-                Node (const Node& n);
+		nonvirtual	Iterator	GetFirst (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;  // synonym for begin (), Iterate ()
+		nonvirtual	Iterator	GetLast (TraversalType t = TraversalType::kInOrder, Direction d = Direction::kLeft) const;   // returns iterator to largest key
 
-                DECLARE_USE_BLOCK_ALLOCATION(Node);
+        nonvirtual  void    Update (const Iterator& it, const ValueType& newValue);
+        nonvirtual	void	Remove (const Iterator& it);
 
-                // tree node core routines
-                const KEY&		GetKey ()  const;
-                const VALUE&	GetValue ()  const;
+ 		nonvirtual  size_t	GetLength () const;		// always equal to total Add minus total Remove
 
-                const typename TRAITS::KeyValue& GetEntry () const;
-                void    SetEntry (const typename TRAITS::KeyValue& e);
+		nonvirtual  void	Balance ();
 
-                Node*   GetParent () const;
-                void    SetParent (Node* p);
+		nonvirtual  void    Prioritize (const Iterator& it);
 
-                Node*   GetChild (Direction direction);
-                void    SetChild (Direction direction, Node* n);
-
-                bool    IsChild (Direction direction);
-
-                static  Direction     GetChildDir (Node* n);  // returns which side of parent node is on, or kBadDir if node is null or parent is null
-                static  Direction     OtherDir (Direction dir);
-                static  void          SetChild_Safe (Node* parent, Node* n, Direction d);
-
-                static  Node*   GetFirst (Node* n);
-                static  Node*   GetLast (Node* n);
-
-                // treap additions
-                size_t  GetPriority () const;
-                void    SetPriority (size_t newP);
-
-                static  void    SwapPriorities (Node* n1, Node* n2);
+		static  FindPrioritization	GetFindPrioritization ();   // one of kNever, kStandard, kAlways
 
 
-                typename	TRAITS::KeyValue	fEntry;
-           private:
-                Node*	fParent;
-                Node*   fChildren[2];
-                size_t	fPriority;
-		};
+        nonvirtual	void	Invariant () const;
+		#if qDebug
+			void	ListAll (Iterator it) const;
+			nonvirtual  void	Invariant_ () const;
+		#endif
 
+	protected:
 		/*
 			Find closest node for key in treap. In cases of duplicate values, return first found.
 			If not found return the node that is smaller than key by the least amount. For cases that did
 			not match, the returned node will always an external node (at least one nullptr leaf). Returns
 			nullptr if tree is empty.
 		 */
-		Node*	FindNode (const KeyType& key, int* comparisonResult)  const;
+		nonvirtual  Node*	FindNode (const KeyType& key, int* comparisonResult)  const;
 
 		/*
 			These return the first and last entries in the tree (defined as the first and last entries that would be returned via
@@ -166,37 +154,31 @@ class Treap {
 		nonvirtual	Node*	GetFirst () const;
 		nonvirtual	Node*	GetLast () const;
 
-		void    Prioritize (Node* n);
-
 		/*
 			After insertions, a node will be in correct sort order, but not in correct heap order (parents must have
 			higher priority than their children. This routine will do node rotations upwards until the tree is in proper heap order
 		*/
-		void BubbleUp (Node* n);
+		nonvirtual  void BubbleUp (Node* n);
 
 		// the symmetrical case for removal, here we force to bottom of tree before removing, using rotations to keep tree in proper heap order
-		void ForceToBottom (Node* n);
-		// swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
-		Node* Rotate (Node* n, Direction rotateDir);
+		nonvirtual  void ForceToBottom (Node* n);
 
-		void    SwapPrioritiesIfNeeded (Node* n);
+		// swap places of left or right child with n. A left rotation makes the right child the new parent, and a right rotation makes the left child the new parent
+		nonvirtual  Node* Rotate (Node* n, Direction rotateDir);
+
+		nonvirtual  void    SwapPrioritiesIfNeeded (Node* n);
 
 		static	Node*	DuplicateBranch (Node* branchTop);
 
-		void	AddNode (Node* n);
-		void	RemoveNode (Node* n);
+		nonvirtual  void	AddNode (Node* n);
+		nonvirtual  void	RemoveNode (Node* n);
 
-		static	bool	FlipCoin ();
-	public:
-		#if qDebug
-			void	ListAll () const;
-			static	void	ValidateBranch (Node* n, size_t& count);
-			void	ValidateAll () const;
-		#endif
+    #if qDebug
+        static	void	ValidateBranch (Node* n, size_t& count);
+    #endif
 
-	public: // until I put in interation have to write recursive routines from head
+   private:
 		Node*	fHead;
-    private:
 		size_t	fLength;
 
 		#if qKeepADTStatistics
@@ -213,6 +195,8 @@ class Treap {
 template <typename KEYTYPE>
 void    TreapValidationSuite (size_t testDataLength = 20, bool verbose = false);
 #endif
+
+
 
     }   // namespace BinaryTree
 }   // namespace ADT

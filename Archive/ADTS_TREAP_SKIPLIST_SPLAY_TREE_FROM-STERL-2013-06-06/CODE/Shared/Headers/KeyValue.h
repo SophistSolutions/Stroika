@@ -26,6 +26,10 @@
 template <typename KEY, typename VALUE>
 class	KeyValueInterface {
 	public:
+        typedef KEY     KeyType;
+        typedef VALUE   ValueType;
+
+	public:
 		const KEY&		GetKey ()  const;
 		const VALUE&	GetValue ()  const;
 };

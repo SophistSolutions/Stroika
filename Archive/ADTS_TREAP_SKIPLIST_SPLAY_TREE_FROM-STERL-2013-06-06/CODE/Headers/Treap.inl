@@ -15,6 +15,126 @@
 namespace   ADT {
     namespace   BinaryTree {
 
+
+template  <typename KEYVALUE>
+ class	TreapNode : public TreeNode<KEYVALUE> {
+    public:
+        typedef KEYVALUE    KeyValue;
+        typedef typename KEYVALUE::KeyType  KeyType;
+        typedef typename KEYVALUE::ValueType  ValueType;
+        typedef TreeNode<KEYVALUE>  inherited;
+
+    public:
+        TreapNode (const KeyType& key, const ValueType& val) :
+            inherited (key, val)
+        {
+        }
+
+        TreapNode (const TreapNode& n) :
+            inherited (n),
+            fPriority (n.fPriority)
+        {
+        }
+
+        DECLARE_USE_BLOCK_ALLOCATION(TreapNode);
+
+        // dumb shadowing
+        nonvirtual  TreapNode*   GetParent () const
+        {
+            return static_cast<TreapNode*> (inherited::GetParent ());
+        }
+
+        TreapNode*   GetChild (Direction direction)
+        {
+              return static_cast<TreapNode*> (inherited::GetChild (direction));
+        }
+
+        static  TreapNode*   GetFirst (TreapNode* n)
+        {
+            return static_cast<TreapNode*> (inherited::GetFirst (n));
+        }
+
+        static  TreapNode*   GetLast (TreapNode* n)
+        {
+            return static_cast<TreapNode*> (inherited::GetLast (n));
+        }
+
+        nonvirtual  TreapNode*   GetSibling () const
+        {
+             return static_cast<TreapNode*> (inherited::GetSibling ());
+        }
+
+        nonvirtual  TreapNode*   Traverse (TraversalType t, Direction d) const
+        {
+              return static_cast<TreapNode*> (inherited::Traverse (t, d));
+        }
+
+        static      TreapNode*   GetFirstTraversal (const TreapNode* n, TraversalType t, Direction d, size_t* height)
+        {
+               return static_cast<TreapNode*> (inherited::GetFirstTraversal (n, t, d, height));
+       }
+
+        static      TreapNode*   Descend (TreapNode* n, int height, Direction d)
+        {
+            return static_cast<TreapNode*> (inherited::Descend (n, height, d));
+        }
+
+        static  void    Apply (const TreapNode* node, TraversalType t, Direction d,  const  std::function<void(const TreapNode& n)>& func)
+        {
+            inherited::Apply (node, t, d, [func] (const TreeNode<KEYVALUE>& n) { func (static_cast<const TreapNode&> (n)); });
+        }
+
+        static  const   TreapNode*   Find (const TreapNode* node, TraversalType t, Direction d,  const std::function<bool(const TreapNode& n)>& func)
+        {
+            return static_cast<const TreapNode*> (inherited::Find (node, t, d, [func] (const TreeNode<KEYVALUE>& n)->bool  {  return func (static_cast<const TreapNode&> (n)); }));
+        }
+
+        void    Inspect () const
+        {
+            std::cout << "(" << this->fEntry.GetKey () << "," << this->fEntry.GetValue () << "," << this->GetPriority () << ")";
+        }
+
+        // treap additions
+        nonvirtual  size_t  GetPriority () const
+        {
+            return fPriority;
+        }
+
+        nonvirtual  void    SetPriority (size_t newP)
+        {
+            fPriority = newP;
+        }
+
+        static  void    SwapPriorities (TreapNode* n1, TreapNode* n2)
+        {
+            RequireNotNull (n1);
+            RequireNotNull (n2);
+
+            size_t  tmp = n1->GetPriority ();
+            n1->SetPriority (n2->GetPriority ());
+            n2->SetPriority (tmp);
+       }
+
+   private:
+        size_t	fPriority;
+};
+
+#if 0
+template  <typename KEYVALUE>
+void        TreapNode<KEYVALUE>::Apply (const TreapNode* node, TraversalType t, Direction d,  const  std::function<void(const TreapNode& n)>& func)
+{
+    inherited::Apply (node, t, d, [func] (const TreeNode<KEYVALUE>& n) { func (static_cast<const TreapNode&> (n)); });
+}
+
+
+template  <typename KEYVALUE>
+const TreapNode<KEYVALUE>*   TreapNode<KEYVALUE>::Find (const TreapNode* node, TraversalType t, Direction d,  const std::function<bool(const TreapNode& n)>& func)
+{
+    return inherited::Find (node, t, d, [func] (const TreeNode<KEYVALUE>& n)->bool { return func (static_cast<const TreapNode&> (n)); });
+}
+#endif
+
+
 template <typename KEY, typename VALUE, typename TRAITS>
 Treap<KEY,VALUE,TRAITS>::Treap () :
 	fHead (nullptr),
@@ -24,7 +144,6 @@ Treap<KEY,VALUE,TRAITS>::Treap () :
     ,fRotations (0)
 #endif
 {
-    Require (TRAITS::kPrioritizeOnFind == kNoPrioritizeFinds or TRAITS::kPrioritizeOnFind == kStandardPrioritizeFinds or TRAITS::kPrioritizeOnFind == kAlwaysPrioritizeOnFind);
 }
 
 
@@ -37,8 +156,6 @@ Treap<KEY,VALUE,TRAITS>::Treap (const Treap& t) :
       ,fRotations (t.fRotations)
   #endif
 {
-    Require (TRAITS::kPrioritizeOnFind == kNoPrioritizeFinds or TRAITS::kPrioritizeOnFind == kStandardPrioritizeFinds or TRAITS::kPrioritizeOnFind == kAlwaysPrioritizeOnFind);
-
 	fHead = DuplicateBranch (t.fHead);
 }
 
@@ -67,7 +184,7 @@ bool	Treap<KEY,VALUE,TRAITS>::Find (const KeyType& key, ValueType* val)  const
 			*val = n->fEntry.GetValue ();
 		}
 
-		if ((TRAITS::kPrioritizeOnFind == kAlwaysPrioritizeOnFind) or ((TRAITS::kPrioritizeOnFind == kStandardPrioritizeFinds) and (FlipCoin () == 1))) {
+		if ((TRAITS::kPrioritizeOnFind == FindPrioritization::kAlways) or ((TRAITS::kPrioritizeOnFind == FindPrioritization::kStandard) and (FlipCoin () == 1))) {
 			// still only move if get higher priority
 			size_t	newPriority = RandomSize_t ();
 			if (newPriority > n->GetPriority ()) {
@@ -90,7 +207,7 @@ typename Treap<KEY,VALUE,TRAITS>::Node* Treap<KEY,VALUE,TRAITS>::Rotate (Node* n
 		++fRotations;
 	#endif
 
-    Direction otherDir = Node::OtherDir (rotateDir);
+    Direction otherDir = OtherDir (rotateDir);
 	Node* newTop = n->GetChild (otherDir);
 	RequireNotNull (newTop);
 
@@ -122,12 +239,12 @@ void Treap<KEY,VALUE,TRAITS>::BubbleUp (Node* n)
 		if (ancestor != nullptr and (ancestor->GetPriority () < n->GetPriority ())) {
 			Node*	parent = n->GetParent ();
 			if (Node::GetChildDir (n) == Node::GetChildDir (parent)) {
-		//	if ((parent->GetChild (kLeft) == n and ancestor->GetChild (kLeft) == parent) or (parent->GetChild (kRight) == n and ancestor->GetChild (kRight) == parent)) {
-				Node* uncle = ancestor->GetChild (Node::OtherDir (Node::GetChildDir (parent)));
+		//	if ((parent->GetChild (Direction::kLeft) == n and ancestor->GetChild (Direction::kLeft) == parent) or (parent->GetChild (Direction::kRight) == n and ancestor->GetChild (Direction::kRight) == parent)) {
+				Node* uncle = ancestor->GetChild (OtherDir (Node::GetChildDir (parent)));
 				if (uncle != nullptr and parent->GetPriority () >= uncle->GetPriority ()) {
 					// zig-zig
 					SwapPriorities (parent, ancestor);
-					Direction rotateDir = Node::OtherDir (Node::GetChildDir (n));
+					Direction rotateDir = OtherDir (Node::GetChildDir (n));
 					Rotate (ancestor, rotateDir);
 					Rotate (parent, rotateDir);
 					continue;
@@ -135,23 +252,23 @@ void Treap<KEY,VALUE,TRAITS>::BubbleUp (Node* n)
 			}
 			else {
 				// zig-zag
- 				Node* uncle = ancestor->GetChild (Node::OtherDir (Node::GetChildDir (parent)));
+ 				Node* uncle = ancestor->GetChild (OtherDir (Node::GetChildDir (parent)));
 				if (uncle != nullptr and parent->GetPriority () >= uncle->GetPriority ()) {
 				    SwapPriorities (parent, ancestor);
-                    Rotate (parent, Node::OtherDir (Node::GetChildDir (n)));
-                    Assert (ancestor->GetChild (kLeft) == n or ancestor->GetChild (kRight) == n);
-                    Rotate (ancestor, Node::OtherDir (Node::GetChildDir (n)));
+                    Rotate (parent, OtherDir (Node::GetChildDir (n)));
+                    Assert (ancestor->GetChild (Direction::kLeft) == n or ancestor->GetChild (Direction::kRight) == n);
+                    Rotate (ancestor, OtherDir (Node::GetChildDir (n)));
                     continue;
 				}
 			}
 		}
 #endif
 
-		Assert (n->GetParent ()->GetChild (kLeft) == n or n->GetParent ()->GetChild (kRight) == n);
-		Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
+		Assert (n->GetParent ()->GetChild (Direction::kLeft) == n or n->GetParent ()->GetChild (Direction::kRight) == n);
+		Rotate (n->GetParent (), OtherDir (Node::GetChildDir (n)));
 	}
 	Ensure ((n->GetParent () == nullptr) == (fHead == n));
-	Ensure ((n->GetParent () == nullptr) or (n->GetParent ()->GetChild (kLeft) == n) or (n->GetParent ()->GetChild (kRight) == n));
+	Ensure ((n->GetParent () == nullptr) or (n->GetParent ()->GetChild (Direction::kLeft) == n) or (n->GetParent ()->GetChild (Direction::kRight) == n));
 }
 
 
@@ -195,17 +312,17 @@ void	Treap<KEY,VALUE,TRAITS>::AddNode (Node* n)
 		    if (TRAITS::kPolicy & ADT::eDuplicateAddThrowException) {
 		        throw DuplicateAddException ();
 		    }
-			n->SetChild (kLeft, nearest->GetChild (kLeft));
-			nearest->SetChild (kLeft, n);
+			n->SetChild (Direction::kLeft, nearest->GetChild (Direction::kLeft));
+			nearest->SetChild (Direction::kLeft, n);
 			ForceToBottom (n);
 		}
 		else if (comp < 0) {
-			Assert (nearest->GetChild (kLeft) == nullptr);
-			nearest->SetChild (kLeft, n);
+			Assert (nearest->GetChild (Direction::kLeft) == nullptr);
+			nearest->SetChild (Direction::kLeft, n);
 		}
 		else {
-			Assert (nearest->GetChild (kRight) == nullptr);
-			nearest->SetChild (kRight, n);
+			Assert (nearest->GetChild (Direction::kRight) == nullptr);
+			nearest->SetChild (Direction::kRight, n);
 		}
 		BubbleUp (n);
 	}
@@ -218,8 +335,8 @@ template <typename KEY, typename VALUE, typename TRAITS>
 void Treap<KEY,VALUE,TRAITS>::ForceToBottom (Node* n)
 {
 	RequireNotNull (n);
-	while (n->GetChild (kLeft) != nullptr or n->GetChild (kRight) != nullptr) {
-	    Direction rotateDir = (n->GetChild (kLeft) == nullptr) or ((n->GetChild (kRight) != nullptr) and (n->GetChild (kLeft)->GetPriority () <= n->GetChild (kRight)->GetPriority ())) ? kLeft : kRight;
+	while (n->GetChild (Direction::kLeft) != nullptr or n->GetChild (Direction::kRight) != nullptr) {
+	    Direction rotateDir = (n->GetChild (Direction::kLeft) == nullptr) or ((n->GetChild (Direction::kRight) != nullptr) and (n->GetChild (Direction::kLeft)->GetPriority () <= n->GetChild (Direction::kRight)->GetPriority ())) ? Direction::kLeft : Direction::kRight;
 		Rotate (n, rotateDir);
     }
 
@@ -227,12 +344,15 @@ void Treap<KEY,VALUE,TRAITS>::ForceToBottom (Node* n)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void Treap<KEY,VALUE,TRAITS>::Prioritize (Node* n)
+void Treap<KEY,VALUE,TRAITS>::Prioritize (const Iterator& it)
 {
+    Require (not it.Done ());
+    Node*   n = const_cast<Node*> (it.GetNode ());
+
     RequireNotNull (n);
 
     while (n->GetParent () != nullptr) {
-        Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
+        Rotate (n->GetParent (), OtherDir (Node::GetChildDir (n)));
         SwapPrioritiesIfNeeded (n);
     }
     Assert (n->GetParent () == nullptr);
@@ -243,26 +363,16 @@ template <typename KEY, typename VALUE, typename TRAITS>
 void Treap<KEY,VALUE,TRAITS>::SwapPrioritiesIfNeeded (Node* n)
 {
     RequireNotNull (n);
-    if (n->GetChild (kLeft) != nullptr and n->GetChild (kLeft)->GetPriority () > n->GetPriority ()) {
-        Node::SwapPriorities (n, n->GetChild (kLeft));
-        SwapPrioritiesIfNeeded (n->GetChild (kLeft));
+    if (n->GetChild (Direction::kLeft) != nullptr and n->GetChild (Direction::kLeft)->GetPriority () > n->GetPriority ()) {
+        Node::SwapPriorities (n, n->GetChild (Direction::kLeft));
+        SwapPrioritiesIfNeeded (n->GetChild (Direction::kLeft));
     }
-    if (n->GetChild (kRight) != nullptr and n->GetChild (kRight)->GetPriority () > n->GetPriority ()) {
-        Node::SwapPriorities (n, n->GetChild (kRight));
-        SwapPrioritiesIfNeeded (n->GetChild (kRight));
+    if (n->GetChild (Direction::kRight) != nullptr and n->GetChild (Direction::kRight)->GetPriority () > n->GetPriority ()) {
+        Node::SwapPriorities (n, n->GetChild (Direction::kRight));
+        SwapPrioritiesIfNeeded (n->GetChild (Direction::kRight));
     }
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-void    Treap<KEY,VALUE,TRAITS>::Node::SwapPriorities (Node* n1, Node* n2)
-{
-    RequireNotNull (n1);
-    RequireNotNull (n2);
-
-    size_t  tmp = n1->GetPriority ();
-    n1->SetPriority (n2->GetPriority ());
-    n2->SetPriority (tmp);
-}
 
 template <typename KEY, typename VALUE, typename TRAITS>
 void	Treap<KEY,VALUE,TRAITS>::Remove (const KeyType& key)
@@ -306,8 +416,8 @@ void	Treap<KEY,VALUE,TRAITS>::RemoveAll ()
 	std::function<void(Node*)>	DeleteANode = [&DeleteANode] (Node* n)
 	{
 		if (n != nullptr) {
-			DeleteANode (n->GetChild (kLeft));
-			DeleteANode (n->GetChild (kRight));
+			DeleteANode (n->GetChild (Direction::kLeft));
+			DeleteANode (n->GetChild (Direction::kRight));
 			delete n;
 		}
 	};
@@ -316,6 +426,59 @@ void	Treap<KEY,VALUE,TRAITS>::RemoveAll ()
 
 	fHead = nullptr;
 	fLength = 0;
+}
+
+
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename Treap<KEY,VALUE,TRAITS>::Iterator Treap<KEY,VALUE,TRAITS>::Iterate (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename Treap<KEY,VALUE,TRAITS>::Iterator Treap<KEY,VALUE,TRAITS>::Iterate (const KeyType& key, TraversalType t, Direction d) const
+{
+    int	comp;
+    return Iterator (Node::GetFirstTraversal (FindNode (key, &comp), t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename Treap<KEY,VALUE,TRAITS>::Iterator  Treap<KEY,VALUE,TRAITS>::begin (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    Treap<KEY,VALUE,TRAITS>::Iterator  Treap<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator (nullptr);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    Treap<KEY,VALUE,TRAITS>::Iterator	Treap<KEY,VALUE,TRAITS>::GetFirst (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    Treap<KEY,VALUE,TRAITS>::Iterator	Treap<KEY,VALUE,TRAITS>::GetLast (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, OtherDir (d), nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void    Treap<KEY,VALUE,TRAITS>::Update (const Iterator& it, const ValueType& newValue)
+{
+    Require (not it.Done ());
+    const_cast<Treap<KEY, VALUE, TRAITS>::Node*> (it.GetNode ())->fEntry.SetValue (newValue);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void	Treap<KEY,VALUE,TRAITS>::Remove (const Iterator& it)
+{
+    Require (not it.Done ());
+    RemoveNode (const_cast<Treap<KEY,VALUE,TRAITS>::Node*> (it.GetNode ()));
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
@@ -342,7 +505,7 @@ typename Treap<KEY,VALUE,TRAITS>::Node*	Treap<KEY,VALUE,TRAITS>::FindNode (const
 		if (*comparisonResult == 0) {
 			return n;
 		}
-		n = (*comparisonResult < 0) ? n->GetChild (kLeft) : n->GetChild (kRight);
+		n = (*comparisonResult < 0) ? n->GetChild (Direction::kLeft) : n->GetChild (Direction::kRight);
 	}
 	return nearest;
 }
@@ -366,15 +529,15 @@ typename Treap<KEY,VALUE,TRAITS>::Node*	Treap<KEY,VALUE,TRAITS>::DuplicateBranch
 	Node* newNode = nullptr;
 	if (branchTop != nullptr) {
 		newNode = new Node (*branchTop);
-		newNode->SetChild (kLeft, DuplicateBranch (branchTop->GetChild (kLeft)));
-		newNode->SetChild (kRight, DuplicateBranch (branchTop->GetChild (kRight)));
+		newNode->SetChild (Direction::kLeft, DuplicateBranch (branchTop->GetChild (Direction::kLeft)));
+		newNode->SetChild (Direction::kRight, DuplicateBranch (branchTop->GetChild (Direction::kRight)));
 	}
 	return newNode;
 }
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
+void	Treap<KEY,VALUE,TRAITS>::Balance ()
 {
 	// better to build on the stack
 	Node**	nodeList = new Node* [GetLength ()];
@@ -384,9 +547,9 @@ void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
 	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
 	{
 	    if (n != nullptr) {
-			AssignNodeToArray (n->GetChild (kLeft));
+			AssignNodeToArray (n->GetChild (Direction::kLeft));
             nodeList[curIndex++] = n;
-			AssignNodeToArray (n->GetChild (kRight));
+			AssignNodeToArray (n->GetChild (Direction::kRight));
         }
 	};
 
@@ -402,8 +565,8 @@ void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
 		Require (startIndex <= endIndex);
 		if (startIndex == endIndex) {
 			Node* n = nodeList[startIndex];
-			n->SetChild (kLeft, nullptr);
-			n->SetChild (kRight, nullptr);
+			n->SetChild (Direction::kLeft, nullptr);
+			n->SetChild (Direction::kRight, nullptr);
 			return n;
 		}
 
@@ -415,32 +578,32 @@ void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
 		AssertNotNull (n);
 
 		if (curIdx == startIndex) {
-			n->SetChild (kLeft, nullptr);
+			n->SetChild (Direction::kLeft, nullptr);
 		}
 		else {
-			n->SetChild (kLeft, BalanceNode (startIndex, curIdx-1, curHeight+1));
+			n->SetChild (Direction::kLeft, BalanceNode (startIndex, curIdx-1, curHeight+1));
 
             size_t  priorLow =  bucketSize*(maxHeight - curHeight -1);
             size_t  priorHigh = bucketSize*(maxHeight - curHeight) -1;
 
-			n->GetChild (kLeft)->SetPriority (RandomSize_t (priorLow,  priorHigh));
+			n->GetChild (Direction::kLeft)->SetPriority (RandomSize_t (priorLow,  priorHigh));
 
-			Assert (n->GetChild (kLeft)->GetChild (kLeft) == nullptr or n->GetChild (kLeft)->GetPriority () >  n->GetChild (kLeft)->GetChild (kLeft)->GetPriority ());
-			Assert (n->GetChild (kLeft)->GetChild (kRight) == nullptr or n->GetChild (kLeft)->GetPriority () > n->GetChild (kLeft)->GetChild (kRight)->GetPriority ());
+			Assert (n->GetChild (Direction::kLeft)->GetChild (Direction::kLeft) == nullptr or n->GetChild (Direction::kLeft)->GetPriority () >  n->GetChild (Direction::kLeft)->GetChild (Direction::kLeft)->GetPriority ());
+			Assert (n->GetChild (Direction::kLeft)->GetChild (Direction::kRight) == nullptr or n->GetChild (Direction::kLeft)->GetPriority () > n->GetChild (Direction::kLeft)->GetChild (Direction::kRight)->GetPriority ());
 		}
 		if (curIdx == endIndex) {
-			n->SetChild (kRight, nullptr);
+			n->SetChild (Direction::kRight, nullptr);
 		}
 		else {
-			n->SetChild (kRight, BalanceNode (curIdx+1, endIndex, curHeight+1));
+			n->SetChild (Direction::kRight, BalanceNode (curIdx+1, endIndex, curHeight+1));
 
             size_t  priorLow =  bucketSize*(maxHeight - curHeight -1);
             size_t  priorHigh = bucketSize*(maxHeight - curHeight) -1;
 
-			n->GetChild (kRight)->SetPriority (RandomSize_t (priorLow,  priorHigh));
+			n->GetChild (Direction::kRight)->SetPriority (RandomSize_t (priorLow,  priorHigh));
 
-			Assert (n->GetChild (kRight)->GetChild (kLeft) == nullptr or n->GetChild (kRight)->GetPriority () >  n->GetChild (kRight)->GetChild (kLeft)->GetPriority ());
-			Assert (n->GetChild (kRight)->GetChild (kRight) == nullptr or n->GetChild (kRight)->GetPriority () > n->GetChild (kRight)->GetChild (kRight)->GetPriority ());
+			Assert (n->GetChild (Direction::kRight)->GetChild (Direction::kLeft) == nullptr or n->GetChild (Direction::kRight)->GetPriority () >  n->GetChild (Direction::kRight)->GetChild (Direction::kLeft)->GetPriority ());
+			Assert (n->GetChild (Direction::kRight)->GetChild (Direction::kRight) == nullptr or n->GetChild (Direction::kRight)->GetPriority () > n->GetChild (Direction::kRight)->GetChild (Direction::kRight)->GetPriority ());
 		}
 
 		return n;
@@ -448,8 +611,8 @@ void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
 	if (fHead != nullptr) {
 		fHead = BalanceNode (0, GetLength ()-1, 1);
 		fHead->SetPriority (RandomSize_t (bucketSize*(maxHeight-1), bucketSize*maxHeight -1));
-		Assert (fHead->GetChild (kLeft) == nullptr or fHead->GetPriority () > fHead->GetChild (kLeft)->GetPriority ());
-		Assert (fHead->GetChild (kRight) == nullptr or fHead->GetPriority () > fHead->GetChild (kRight)->GetPriority ());
+		Assert (fHead->GetChild (Direction::kLeft) == nullptr or fHead->GetPriority () > fHead->GetChild (Direction::kLeft)->GetPriority ());
+		Assert (fHead->GetChild (Direction::kRight) == nullptr or fHead->GetPriority () > fHead->GetChild (Direction::kRight)->GetPriority ());
 		fHead->SetParent (nullptr);
 	}
 
@@ -459,139 +622,17 @@ void	Treap<KEY,VALUE,TRAITS>::ReBalance ()
 template <typename KEY, typename VALUE, typename TRAITS>
 FindPrioritization	Treap<KEY,VALUE,TRAITS>::GetFindPrioritization ()
 {
-    Require (TRAITS::kOptimizeOnFindChance == kNoPrioritizeFinds or TRAITS::kOptimizeOnFindChance == kStandardPrioritizeFinds or TRAITS::kOptimizeOnFindChance == kAlwaysPrioritizeOnFind);
-	return FindPrioritization (TRAITS::kOptimizeOnFindChance);
+ 	return TRAITS::kOptimizeOnFindChance;
 }
 
-template <typename KEY, typename VALUE, typename TRAITS>
-Treap<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
-	fEntry (key, val),
-	fParent (nullptr),
-	fPriority (0)
+
+template <typename KEY,  typename VALUE, typename TRAITS>
+void    Treap<KEY, VALUE, TRAITS>::Invariant () const
 {
-    SetChild (kLeft, nullptr);
-    SetChild (kRight, nullptr);
+#if     qDebug
+    Invariant_ ();
+#endif
 }
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Treap<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
-	fEntry (n.fEntry),
-	fParent (nullptr),
-	fPriority (n.fPriority)
-{
-    SetChild (kLeft, nullptr);
-    SetChild (kRight, nullptr);
-}
-
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename Treap<KEY,VALUE,TRAITS>::Node*   Treap<KEY,VALUE,TRAITS>::Node::GetParent () const
-{
-    return fParent;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    Treap<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
-{
-    fParent = p;
-}
-
- template <typename KEY, typename VALUE, typename TRAITS>
- typename Treap<KEY,VALUE,TRAITS>::Node::Node*   Treap<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
- {
-    Require (direction == kLeft or direction == kRight);
-    return (fChildren[direction]);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
- void   Treap<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
-{
-    Require (direction == kLeft or direction == kRight);
-    fChildren[direction] = n;
-    if (n != nullptr) {
-        n->fParent = this;
-    }
-}
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    Treap<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
-{
-    Require (direction == kLeft or direction == kRight);
-    return (fParent != nullptr and fParent->GetChild (direction) == this);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction     Treap<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
-{
-    if (n != nullptr and n->GetParent () != nullptr) {
-        if (n == n->GetParent ()->GetChild (kLeft)) {
-            return kLeft;
-        }
-        if (n == n->GetParent ()->GetChild (kRight)) {
-            return kRight;
-        }
-    }
-    return kBadDir;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction    Treap<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
-{
-    Require (dir == kLeft or dir == kRight);
-    return ((dir == kLeft) ? kRight : kLeft);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    Treap<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
-{
-   Require (parent == nullptr or d == kLeft or d == kRight);
-   if (parent == nullptr) {
-       if (n != nullptr) {
-           n->fParent = nullptr;
-       }
-   }
-   else {
-       parent->SetChild (d, n);
-   }
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename Treap<KEY,VALUE,TRAITS>::Node*	Treap<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
-{
- 	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		n = n->GetChild (kLeft);
-	}
-	return n;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename Treap<KEY,VALUE,TRAITS>::Node*	Treap<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
-{
-  	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		n = n->GetChild (kRight);
-	}
-	return n;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-size_t  Treap<KEY,VALUE,TRAITS>::Node::GetPriority () const
-{
-    return fPriority;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    Treap<KEY,VALUE,TRAITS>::Node::SetPriority (size_t newP)
-{
-    fPriority = newP;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-bool	Treap<KEY,VALUE,TRAITS>::FlipCoin ()
-{
-	static	size_t	sCounter = 0;
-	return (++sCounter & 1);
-}
-
 
 
 #if qDebug
@@ -602,11 +643,11 @@ void	Treap<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 	RequireNotNull (n);
 	++count;
 
-	for (int i = kFirstChild; i <= kLastChild; ++i) {
-	    Node* child = n->GetChild (Direction (i));
+     for (Direction d  : { Direction::kLeft, Direction::kRight} ) {
+	    Node* child = n->GetChild (d);
         if (child != nullptr) {
             int comp = TRAITS::Comparer::Compare (n->fEntry.GetKey (), child->fEntry.GetKey ());
-            Assert ((comp == 0) or ((comp > 0) == (i == kLeft)));
+            Assert ((comp == 0) or ((comp > 0) == (d == Direction::kLeft)));
             Assert (n->GetPriority () >= child->GetPriority ());
             Assert (child->GetParent () == n);
             ValidateBranch (child, count);
@@ -615,7 +656,7 @@ void	Treap<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	Treap<KEY,VALUE,TRAITS>::ValidateAll () const
+void	Treap<KEY,VALUE,TRAITS>::Invariant_ () const
 {
 	size_t	count = 0;
 
@@ -626,21 +667,12 @@ void	Treap<KEY,VALUE,TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	Treap<KEY,VALUE,TRAITS>::ListAll () const
+void	Treap<KEY,VALUE,TRAITS>::ListAll (Iterator it) const
 {
-	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
-	{
-	    if (n != nullptr) {
- 			ListNode (n->GetChild (kLeft));
-            std::cout << "(" << n->fEntry.GetKey () << "," << n->GetPriority () << ")";
- 			ListNode (n->GetChild (kRight));
-       }
-	};
-
     std::cout << "[";
-	if (fHead != nullptr) {
-		ListNode (fHead);
-	}
+    for (; it.More (); ) {
+        it.GetNode ()->Inspect ();
+    }
     std::cout << "]" << std::endl;
 }
 
@@ -660,8 +692,8 @@ size_t	Treap<KEY,VALUE,TRAITS>::CalcNodeHeight (Node* n, size_t height, size_t* 
 	}
 
 	size_t	newHeight = std::max (
-		CalcNodeHeight (n->GetChild (kLeft), height+1, totalHeight),
-		CalcNodeHeight (n->GetChild (kRight), height+1, totalHeight));
+		CalcNodeHeight (n->GetChild (Direction::kLeft), height+1, totalHeight),
+		CalcNodeHeight (n->GetChild (Direction::kRight), height+1, totalHeight));
 
 	return newHeight;
 }
@@ -689,25 +721,30 @@ void    TreapValidationSuite (size_t testDataLength, bool verbose)
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
         ADT::eDuplicateAddThrowException,
-        kDefaultPrioritizeFinds> >  NoDupAddTree;
+        FindPrioritization::kDefault> >  NoDupAddTree;
     DuplicateAddBehaviorTest<Treap<int, int>, NoDupAddTree> (testDataLength, verbose, 1);
 
    typedef    Treap<int, int, TreapTraits<
         KeyValue<int,int>,
         ADT::DefaultComp<int>,
         ADT::eInvalidRemoveIgnored,
-        kDefaultPrioritizeFinds> > InvalidRemoveIgnoredTree;
+        FindPrioritization::kDefault> > InvalidRemoveIgnoredTree;
     InvalidRemoveBehaviorTest<Treap<int, int>, InvalidRemoveIgnoredTree> (verbose, 1);
 
     typedef    Treap<string, string, TreapTraits<
         SharedStringKeyValue,
         CaseInsensitiveCompare,
         ADT::eDefaultPolicy,
-        kDefaultPrioritizeFinds> > SharedCaseInsensitiveString;
+        FindPrioritization::kDefault> > SharedCaseInsensitiveString;
     StringTraitOverrideTest<SharedCaseInsensitiveString> (verbose, 1);
 
     typedef Treap<HashKey<string>, string>   HashedString;
-    HashedStringTest<HashedString> (verbose, 1);}
+    HashedStringTest<HashedString> (verbose, 1);
+
+
+    SimpleIteratorTest< Treap<size_t, size_t> > (testDataLength, verbose, 1);
+    PatchingIteratorTest<Tree_Patching<Treap<size_t, size_t> > > (testDataLength, verbose, 1);
+}
 
 #endif
 

@@ -4,7 +4,7 @@
 #include <functional>
 #include <iostream>
 #include <string>
-
+#include <sstream>
 
 
 #include "../Shared/Headers/Config.h"
@@ -14,14 +14,14 @@
 #include "../Shared/Headers/TestingData.h"
 #include "../Shared/Headers/Utils.h"
 
-#define	qTestTreap		0
+#define	qTestTreap		1
 #define	qTestSplayTree  0
 #define	qTestSkipList	0
 #define qTestRedBlackTree  0
 #define qTestSortedBinaryTree   0
 #define qTestAVLTree    0
 #define qTestScapeGoatTree    0
-#define qTestShuffleTree    1
+#define qTestShuffleTree    0
 
 #define	qTweakWeights	qTestSplayTree & 0
 
@@ -36,6 +36,12 @@
 
 #if qTestSkipList
     #include "../Headers/SkipList.h"
+// quick hack: define this namespace so can just include SkipList, which doesn't actually care about this namespace
+namespace ADT {
+    namespace BinaryTree {
+    }   // namespace BinaryTree
+}   // namespace ADT
+
 #endif
 
 #if qTestRedBlackTree
@@ -69,7 +75,7 @@ using namespace ADT::BinaryTree;
 #else
     const	size_t	kElementsToTest = 1000000;
 #endif
-    const	size_t kStringElementsToTest = kElementsToTest/10;
+const	size_t kStringElementsToTest = kElementsToTest/10;
 
 static  const   int     kFindLoops = 10;
 static	const	bool	kInOrder = true;
@@ -145,9 +151,7 @@ double	IntTimingTests (CONTAINER& sl, const TESTSET& ts, DataDistribution d, boo
         size_t rotations = 0;
 
         for (size_t i = 0; i < ts.GetLength (); ++i) {
-   //     for (auto it = indices.begin (); it != indices.end (); ++it) {
-            size_t  v = ts.GetData (i, d);
-        //    size_t v = data[*it];
+             size_t  v = ts.GetData (i, d);
             size_t origCompares  = sl->fCompares;
             size_t	origRotations = sl->fRotations;
             size_t key = v+1;
@@ -181,8 +185,7 @@ double	IntTimingTests (CONTAINER& sl, const TESTSET& ts, DataDistribution d, boo
         size_t rotations = 0;
 
        for (size_t i = 0; i < ts.GetLength (); ++i) {
-   //     for (auto it = indices.begin (); it != indices.end (); ++it) {
-            size_t  key = ts.GetData (i, d);
+             size_t  key = ts.GetData (i, d);
 
             size_t origCompares  = sl->fCompares;
             size_t	origRotations = sl->fRotations;
@@ -375,7 +378,7 @@ double	IntTimingTests (CONTAINER& sl, const TESTSET& ts, DataDistribution d, boo
             RebuildTree (sl, testset, inOrder);
         }
         if (testToRun == eBalanceAfterRebuild) {
-            sl.ReBalance ();
+            sl.Balance ();
         }
         CONTAINER   clean = sl;
 
@@ -496,18 +499,18 @@ static  void	TweakSplayTreeWeights ()
 {
     typedef SplayTree<size_t, int, SplayTraits<KeyValue<size_t,int>, ADT::DefaultComp<size_t>, ADT::eDefaultPolicy, eCustomSplayType> > TweakedSplayTree;
 
- //   DataDistribution dType = eNormalizedDist;
-    DataDistribution dType = eZipfDist;
+   DataDistribution dType = eNormalizedDist;
+ //    DataDistribution dType = eZipfDist;
 
     vector<size_t> splayTreeBonuses = SplayTree<size_t, int>::GetHeightWeights (eZipfDistribution);
 
    // const size_t kMyBestSetW[] = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192 };
 
 #if 0
-0, 0, 0, 0, 0, 1, 1, 1, 1, 4, 7, 11, 24, 108, 202, 561, 1711
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 45, 47, 685, 685
 #endif
 
-   const size_t kMyBestSetW[] = {5, 7, 7, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 94, 94, 696, 5000,}; // 27.71
+   const size_t kMyBestSetW[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 45, 47, 685, 685}; // 27.71
     vector<size_t>	kOverrideSet(kMyBestSetW, kMyBestSetW + sizeof(kMyBestSetW) / sizeof(kMyBestSetW[0]));
     splayTreeBonuses = kOverrideSet;	// turn on if you want to restart without recompiling splay tree with new weights
 
@@ -677,7 +680,7 @@ static  void	TestSplayTree ()
             it->DisplayLine ();
         }
         cout << endl << endl;
-//return;
+
         cout << "Splay of " <<  sStringsSet.GetLength () << " string keyed entries" << endl;
         TimeStrings<string> (kVerbose);
 
@@ -691,7 +694,7 @@ static  void	TestSplayTree ()
 
 #if qTestTreap
 
-template <typename KEY, typename VALUE, size_t OPTFINDCHANCE>
+template <typename KEY, typename VALUE, FindPrioritization OPTFINDCHANCE>
 void	RunTests (vector<TestResult>& testResults, bool inOrder, bool balance)
 {
     Treap<KEY, VALUE, TreapTraits<
@@ -702,13 +705,13 @@ void	RunTests (vector<TestResult>& testResults, bool inOrder, bool balance)
 
     string description;
     switch (OPTFINDCHANCE) {
-        case kNoPrioritizeFinds:
+        case FindPrioritization::kNever:
             description = (balance) ? "balanced" : "no priority";
             break;
-        case kStandardPrioritizeFinds:
+        case FindPrioritization::kStandard:
             description = ".5";
             break;
-        case kAlwaysPrioritizeOnFind:
+        case FindPrioritization::kAlways:
             description = "Always";
             break;
         default:
@@ -737,16 +740,37 @@ static  void	TestTreap ()
             tt.Add (i, i);
         }
         for (size_t i = 1; i <= 20; ++i) {
-            int ignored;
-            Treap<size_t, size_t>::Node*	n = tt.FindNode (i, &ignored);
-            AssertNotNull (n);
+            Treap<size_t, size_t>::Iterator    it = tt.Iterate (i);
+
+            Assert (not it.Done ());
+            auto n = it.GetNode ();
             if (n->GetParent () != nullptr) {
-                tt.Prioritize (n);
+                tt.Prioritize (it);
                 Assert (n->GetParent () == nullptr);
-                tt.ValidateAll ();
+                tt.Invariant ();
             }
         }
 
+        // move this to the test suite
+struct  NoDefaultArgClass {
+    NoDefaultArgClass (int i) :
+        fValue (i)
+    {
+    }
+
+    bool    operator== (const NoDefaultArgClass& rhs)
+    {
+        return fValue == rhs.fValue;
+    }
+    bool    operator< (const NoDefaultArgClass& rhs)
+    {
+        return (fValue < rhs.fValue);
+    }
+    int fValue;
+};
+Treap<size_t, NoDefaultArgClass> tr1;   tr1.Add (1, NoDefaultArgClass (1));
+
+Treap<NoDefaultArgClass, NoDefaultArgClass> tr2;    tr2.Add (NoDefaultArgClass (1), NoDefaultArgClass (1));
         return;
     #endif	/* qDebug */
 
@@ -756,15 +780,15 @@ static  void	TestTreap ()
         vector<TestResult>	testResults;
 
         cout << endl << endl << "*** Ordered Adds *** " << endl;
-        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, kInOrder, not kRebalance);
-        RunTests<size_t, int, kStandardPrioritizeFinds> (testResults, kInOrder, not kRebalance);
-        RunTests<size_t, int, kAlwaysPrioritizeOnFind> (testResults, kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kNever> (testResults, kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kStandard> (testResults, kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kAlways> (testResults, kInOrder, not kRebalance);
 
         cout << endl << endl << "*** Random Adds *** " << endl;
-        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, not kInOrder, not kRebalance);
-        RunTests<size_t, int, kNoPrioritizeFinds> (testResults, not kInOrder, kRebalance);
-        RunTests<size_t, int, kStandardPrioritizeFinds> (testResults, not kInOrder, not kRebalance);
-        RunTests<size_t, int, kAlwaysPrioritizeOnFind> (testResults, not kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kNever> (testResults, not kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kNever> (testResults, not kInOrder, kRebalance);
+        RunTests<size_t, int, FindPrioritization::kStandard> (testResults, not kInOrder, not kRebalance);
+        RunTests<size_t, int, FindPrioritization::kAlways> (testResults, not kInOrder, not kRebalance);
 
         TestResult::DisplayHeader ();
         for (auto it = testResults.begin (); it != testResults.end (); ++it) {
@@ -783,7 +807,7 @@ static  void	TestTreap ()
                 KeyValue<string, size_t>,
                 ADT::DefaultComp<string>,
                 ADT::eDefaultPolicy,
-                kStandardPrioritizeFinds> >t;
+                FindPrioritization::kStandard> >t;
 
             cout  << endl << "Treap Standard Prioritize with string keyed entries" << endl;
             TimeStrings (t, sStringsSet, kVerbose);
@@ -811,18 +835,51 @@ static  void	TestSkipList ()
         SkipListValidationSuite<size_t> (kElementsToTest, true);
         cout << endl << "*** VALIDATING KEY OF string *** " << endl;
         SkipListValidationSuite<string> (kElementsToTest, true);
-
+#if 0
         {
-            SkipList<size_t, size_t>   tt;
+            SkipList_Patch<size_t, size_t>   tt;
             for (size_t i = 1; i <= 20; ++i) {
                 tt.Add (i, i);
             }
             for (size_t i = 1; i <= 20; ++i) {
                 tt.Prioritize (i);
-                tt.ValidateAll ();
+                tt.Invariant ();
             }
 
+            for (auto it : tt) {
+cout << "(" << it.GetKey () << ", " << it.GetValue () << ")";
+            }
+
+            for (auto it = tt.Iterate (); it.More (); ) {
+cout << "(" << it->GetKey () << ", " << it->GetValue () << ")";
+            }
+cout << endl;
+#if 1
+            auto it = tt.Iterate ();
+ cout << endl << "(" << it->GetKey () << ", " << it->GetValue () << ")" << endl;
+            tt.Remove (it);
+cout << endl << "(" << it->GetKey () << ", " << it->GetValue () << ")" << endl;
+            tt.Update (it, 99);
+cout << endl << "(" << it->GetKey () << ", " << it->GetValue ()  << ")" << endl;
+#endif
+++it;
+cout << endl << "(" << it->GetKey () << ", " << it->GetValue ()  << ")" << endl;
+++it;
+cout << endl << "(" << it->GetKey () << ", " << it->GetValue () << ")" << endl;
+
+             for (; it.More (); ) {
+cout << "(" << it->GetKey () << ", " << it->GetValue () << ")";
+            }
+cout << endl;
+            for (auto it1 = tt.Iterate (5); it1.More () and (it1->GetKey () < 11); ) {
+ cout << "(" << it1->GetKey () << ", " << it1->GetValue () << ")";
+            }
+cout << endl;
         }
+#endif
+
+
+
         return;
     #endif	/* qDebug */
 
@@ -855,7 +912,7 @@ static  void	TestSkipList ()
             {
                 cout << endl << endl << "Rebalance SkipList  ";
                 Timer t;
-                slT.ReBalance ();
+                slT.Balance ();
             }
             cout << endl;
             TimeStrings (slT, sStringsSet, kVerbose);
@@ -1039,6 +1096,8 @@ static  void    TestDistribution (DataDistribution dd)
 }
 #endif
 
+
+
 static  void	TestAVLTree ()
 {
 #if qTestDataDistribution
@@ -1190,7 +1249,7 @@ static  void	TestShuffleTree ()
         ShuffleTreeValidationSuite<size_t> (kElementsToTest, true);
         cout << endl << "*** VALIDATING KEY OF string *** " << endl;
         ShuffleTreeValidationSuite<string> (kElementsToTest, true);
-       // return;
+        return;
     #endif	/* qDebug */
 
     #if qKeepADTStatistics
@@ -1234,9 +1293,22 @@ static  void	TestShuffleTree ()
     #endif
 }
 
+
+
+
+
+
+
 #endif
 int main()
 {
+#if 0
+    extern  void    CurrentTesting ();
+    CurrentTesting ();
+    cout << endl << endl << endl << "FINISHED" << endl << flush;
+    return 0;
+#endif
+
  #if qTestTreap
     TestTreap ();
 #endif

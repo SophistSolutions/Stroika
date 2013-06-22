@@ -80,7 +80,7 @@ typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node* SortedBinaryTree<KEY,VALUE,TR
 		++fRotations;
 	#endif
 
-    Direction otherDir = Node::OtherDir (rotateDir);
+    Direction otherDir = OtherDir (rotateDir);
 	Node* newTop = n->GetChild (otherDir);
 	RequireNotNull (newTop);
 
@@ -100,12 +100,13 @@ typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node* SortedBinaryTree<KEY,VALUE,TR
 
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void    SortedBinaryTree<KEY,VALUE,TRAITS>::Prioritize (Node* n)
+void    SortedBinaryTree<KEY,VALUE,TRAITS>::Prioritize (const Iterator& it)
 {
+    Node*   n = const_cast<Node*> (it.GetNode ());
     RequireNotNull (n);
 
     while (n->GetParent () != nullptr) {
-        Rotate (n->GetParent (), Node::OtherDir (Node::GetChildDir (n)));
+        Rotate (n->GetParent (), OtherDir (Node::GetChildDir (n)));
     }
     Assert (n == fHead);
 }
@@ -147,21 +148,21 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::AddNode (Node* n)
                 throw DuplicateAddException ();
             }
 			if (FlipCoin ()) {
-			    n->SetChild (kLeft, nearest->GetChild (kLeft));
-				nearest->SetChild (kLeft, n);
+			    n->SetChild (Direction::kLeft, nearest->GetChild (Direction::kLeft));
+				nearest->SetChild (Direction::kLeft, n);
 			}
 			else {
-			    n->SetChild (kRight, nearest->GetChild (kRight));
-				nearest->SetChild (kRight, n);
+			    n->SetChild (Direction::kRight, nearest->GetChild (Direction::kRight));
+				nearest->SetChild (Direction::kRight, n);
 			}
 		}
 		else if (comp < 0) {
-			Assert (nearest->GetChild (kLeft) == nullptr);
-			nearest->SetChild (kLeft, n);
+			Assert (nearest->GetChild (Direction::kLeft) == nullptr);
+			nearest->SetChild (Direction::kLeft, n);
 		}
 		else {
-			Assert (nearest->GetChild (kRight) == nullptr);
-			nearest->SetChild (kRight, n);
+			Assert (nearest->GetChild (Direction::kRight) == nullptr);
+			nearest->SetChild (Direction::kRight, n);
 		}
 	}
 
@@ -210,19 +211,19 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 {
 	RequireNotNull (n);
 
-	if (n->GetChild (kLeft) == nullptr and n->GetChild (kRight) == nullptr) {
+	if (n->GetChild (Direction::kLeft) == nullptr and n->GetChild (Direction::kRight) == nullptr) {
 	    SwapNodes (n, nullptr);
 	}
-	else if (n->GetChild (kLeft) == nullptr) {
-		SwapNodes (n, n->GetChild (kRight));
+	else if (n->GetChild (Direction::kLeft) == nullptr) {
+		SwapNodes (n, n->GetChild (Direction::kRight));
 	}
-	else if (n->GetChild (kRight) == nullptr) {
-		SwapNodes (n, n->GetChild (kLeft));
+	else if (n->GetChild (Direction::kRight) == nullptr) {
+		SwapNodes (n, n->GetChild (Direction::kLeft));
 	}
 	else {
-       Direction d = (FlipCoin ()) ? kRight : kLeft;
+        Direction d = (FlipCoin ()) ? Direction::kRight : Direction::kLeft;
 
-		Node* minNode = (d == kRight)
+        Node* minNode = (d == Direction::kRight)
             ? Node::GetFirst (n->GetChild (d))
             : Node::GetLast (n->GetChild (d));
 
@@ -232,7 +233,7 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::RemoveNode (Node* n)
 			minNode->SetChild (d, n->GetChild (d));
 		}
 		SwapNodes (n, minNode);
-		minNode->SetChild (Node::OtherDir (d), n->GetChild (Node::OtherDir (d)));
+		minNode->SetChild (OtherDir (d), n->GetChild (OtherDir (d)));
 	}
 
 	delete n;
@@ -250,11 +251,11 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::RemoveAll ()
 			Node* curNode = nodes.top (); nodes.pop ();
 
 			AssertNotNull (curNode);
-			if (curNode->GetChild (kLeft) != nullptr) {
-				nodes.push (curNode->GetChild (kLeft));
+			if (curNode->GetChild (Direction::kLeft) != nullptr) {
+				nodes.push (curNode->GetChild (Direction::kLeft));
 			}
-			if (curNode->GetChild (kRight) != nullptr) {
-				nodes.push (curNode->GetChild (kRight));
+			if (curNode->GetChild (Direction::kRight) != nullptr) {
+				nodes.push (curNode->GetChild (Direction::kRight));
 			}
 			delete curNode;
 		}
@@ -288,7 +289,7 @@ typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TR
 		if (*comparisonResult == 0) {
 			return n;
 		}
-		n = (*comparisonResult < 0) ? n->GetChild (kLeft) : n->GetChild (kRight);
+		n = (*comparisonResult < 0) ? n->GetChild (Direction::kLeft) : n->GetChild (Direction::kRight);
 	}
 	return nearest;
 }
@@ -303,6 +304,63 @@ template <typename KEY, typename VALUE, typename TRAITS>
 typename	SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TRAITS>::GetLast () const
 {
     return Node::GetLast (fHead);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::Balance ()
+{
+    fHead = Node::RebalanceBranch (fHead, fLength);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator SortedBinaryTree<KEY,VALUE,TRAITS>::Iterate (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator SortedBinaryTree<KEY,VALUE,TRAITS>::Iterate (const KeyType& key, TraversalType t, Direction d) const
+{
+    int	comp;
+    return Iterator (Node::GetFirstTraversal (FindNode (key, &comp), t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator  SortedBinaryTree<KEY,VALUE,TRAITS>::begin (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator  SortedBinaryTree<KEY,VALUE,TRAITS>::end () const
+{
+    return Iterator (nullptr);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator	SortedBinaryTree<KEY,VALUE,TRAITS>::GetFirst (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, d, nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+typename    SortedBinaryTree<KEY,VALUE,TRAITS>::Iterator	SortedBinaryTree<KEY,VALUE,TRAITS>::GetLast (TraversalType t, Direction d) const
+{
+    return Iterator (Node::GetFirstTraversal (fHead, t, OtherDir (d), nullptr), t, d);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void    SortedBinaryTree<KEY,VALUE,TRAITS>::Update (const Iterator& it, const ValueType& newValue)
+{
+    Require (not it.Done ());
+    const_cast<SortedBinaryTree<KEY, VALUE, TRAITS>::Node*> (it.GetNode ())->fEntry.SetValue (newValue);
+}
+
+template <typename KEY, typename VALUE, typename TRAITS>
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::Remove (const Iterator& it)
+{
+    Require (not it.Done ());
+    RemoveNode (const_cast<SortedBinaryTree<KEY,VALUE,TRAITS>::Node*> (it.GetNode ()));
 }
 
 
@@ -331,19 +389,19 @@ typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TR
 			}
 			else {
 				if (isLeft) {
-					newParent->SetChild (kLeft, newNode);
+					newParent->SetChild (Direction::kLeft, newNode);
 				}
 				else {
-					newParent->SetChild (kRight, newNode);
+					newParent->SetChild (Direction::kRight, newNode);
 				}
 			}
-			if (branchTop->GetChild (kLeft) != nullptr) {
-				nodes.push (branchTop->GetChild (kLeft));
+			if (branchTop->GetChild (Direction::kLeft) != nullptr) {
+				nodes.push (branchTop->GetChild (Direction::kLeft));
 				parents.push (newNode);
 				childIsLeft.push (true);
 			}
-			if (branchTop->GetChild (kRight) != nullptr) {
-				nodes.push (branchTop->GetChild (kRight));
+			if (branchTop->GetChild (Direction::kRight) != nullptr) {
+				nodes.push (branchTop->GetChild (Direction::kRight));
 				parents.push (newNode);
 				childIsLeft.push (false);
 			}
@@ -353,236 +411,11 @@ typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TR
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*   SortedBinaryTree<KEY,VALUE,TRAITS>::Node::RebalanceBranch (Node* oldTop, size_t length)
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::Invariant () const
 {
-    if (oldTop == nullptr) {
-        Assert (length == 0);
-        return nullptr;
-    }
-
-    // technique discussed in Galperin and Rivest, see http://www.akira.ruc.dk/~keld/teaching/algoritmedesign_f07/Artikler/03/Galperin93.pdf
-
-
-    // turns the tree into a linked list (by fRight pointers) in sort order
-    // currently slightly slower than building an array, but no mallocs
-    // conceptually, flatten is just plain old iteration, but tree iteration is naturally recursive, unfortunately
-	std::function<Node*(Node*,Node*)>	Flatten = [&Flatten] (Node* x, Node* y)
-	{
-        x->fParent = nullptr;
-
-        Node* cRight = x->fChildren[kRight];
-        Node* cLeft = x->fChildren[kLeft];
-
-        x->SetChild (kLeft, nullptr);
-
-        x->fChildren[kRight] = (cRight == nullptr) ? y : Flatten (cRight, y);
-        return (cLeft == nullptr) ? x :  Flatten (cLeft, x);
-	};
-
-    // takes the results of flatten (ordered linked list, by right child pointers) and constructs the proper
-    // balanced tree out of it
-	std::function<Node*(size_t,Node*)>	RebuildBranch = [&RebuildBranch] (size_t n, Node* x)
-	{
-	    RequireNotNull (x);
-	    Require (n > 0);
-
-        size_t  tmp = (n-1)/2;
-        Node* r = (tmp == 0) ? x : RebuildBranch (tmp, x);
-        AssertNotNull (r);
-
-        tmp = n/2;
-        Node* s = (tmp == 0) ? r->GetChild (kRight) : RebuildBranch (tmp, r->GetChild (kRight));
-        AssertNotNull (s);
-
-        r->SetChild (kRight, s->GetChild (kLeft));
-        s->SetChild (kLeft, r);
-        return s;
-	};
-
-    Node*   oldParent = oldTop->GetParent ();
-    Direction   oldDir = GetChildDir (oldTop);
-
-	Node    dummy = *oldTop;
-    Node* result = RebuildBranch (length, Flatten (oldTop, &dummy));
-    result = result->GetChild (kLeft);  // original result was our dummy last
-    AssertNotNull (result);
-
-    SetChild_Safe (oldParent, result, oldDir);
-    return result;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void	SortedBinaryTree<KEY,VALUE,TRAITS>::ReBalance ()
-{
-    fHead = Node::RebalanceBranch (fHead, fLength);
-}
-
-
-// my old code for this, which works fine but takes N space rather than the log(N) space (from recursion) of the RebalanceBranch implementation
-#if 0
-template <typename KEY, typename VALUE, typename TRAITS>
-void	SortedBinaryTree<KEY,VALUE,TRAITS>::ReBalance ()
-{
-   if (GetLength () == 0) {
-        return;
-    }
-
-	// better to build on the stack
-	Node**	nodeList = new Node* [GetLength ()];
-	int	curIndex = 0;
-
-	// stuff the array with the nodes. Better if have iterator support
-	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
-	{
-	    if (n != nullptr) {
-			AssignNodeToArray (n->GetChild (kLeft));
-            nodeList[curIndex++] = n;
-			AssignNodeToArray (n->GetChild (kRight));
-        }
-	};
-
-	AssignNodeToArray (fHead);
-
-	// from now on, working with an array (nodeList) that has all the tree nodes in sorted order
-	size_t	maxHeight = size_t (log (double (GetLength ()))/log (2.0))+1;
-
-	std::function<Node*(int startIndex, int endIndex, int curNodeHeight)>	BalanceNode = [&BalanceNode, &nodeList, &maxHeight] (int startIndex, int endIndex, size_t curNodeHeight) -> Node*
-	{
-		Require (startIndex <= endIndex);
-		Assert (curNodeHeight <= maxHeight);
-		if (startIndex == endIndex) {
-			Node* n = nodeList[startIndex];
-			n->SetChild (kLeft, nullptr);
-			n->SetChild (kRight, nullptr);
-			return n;
-		}
-
-		int curIdx = startIndex + (endIndex-startIndex)/2;
-		Assert (curIdx <= endIndex);
-		Assert (curIdx >= startIndex);
-
-		Node* n = nodeList[curIdx];
-		AssertNotNull (n);
-
-        n->SetChild (kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, curNodeHeight+1));
-        n->SetChild (kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, curNodeHeight+1));
-
-		return n;
-	};
-	if (fHead != nullptr) {
-		fHead = BalanceNode (0, GetLength ()-1, 1);
-		fHead->SetParent (nullptr);
-	}
-
-	delete[] nodeList;
-}
-#endif
-
-template <typename KEY, typename VALUE, typename TRAITS>
-SortedBinaryTree<KEY,VALUE,TRAITS>::Node::Node (const KeyType& key, const ValueType& val)	:
-	fEntry (key, val),
-	fParent (nullptr)
-{
-    fChildren[kLeft] = nullptr;
-    fChildren[kRight] = nullptr;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-SortedBinaryTree<KEY,VALUE,TRAITS>::Node::Node (const Node& n)	:
-	fEntry (n.fEntry),
-	fParent (nullptr)
-{
-    fChildren[kLeft] = nullptr;
-    fChildren[kRight] = nullptr;
-}
-
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*   SortedBinaryTree<KEY,VALUE,TRAITS>::Node::GetParent () const
-{
-    return fParent;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    SortedBinaryTree<KEY,VALUE,TRAITS>::Node::SetParent (Node* p)
-{
-    fParent = p;
-}
-
- template <typename KEY, typename VALUE, typename TRAITS>
- typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node::Node*   SortedBinaryTree<KEY,VALUE,TRAITS>::Node::GetChild (Direction direction)
- {
-    Require (direction == kLeft or direction == kRight);
-    return (fChildren[direction]);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
- void   SortedBinaryTree<KEY,VALUE,TRAITS>::Node::SetChild (Direction direction, Node* n)
-{
-    Require (direction == kLeft or direction == kRight);
-    fChildren[direction] = n;
-    if (n != nullptr) {
-        n->fParent = this;
-    }
-}
-template <typename KEY, typename VALUE, typename TRAITS>
-bool    SortedBinaryTree<KEY,VALUE,TRAITS>::Node::IsChild (Direction direction)
-{
-    Require (direction == kLeft or direction == kRight);
-    return (fParent != nullptr and fParent->GetChild (direction) == this);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction     SortedBinaryTree<KEY,VALUE,TRAITS>::Node::GetChildDir (Node* n)
-{
-    if (n != nullptr and n->GetParent () != nullptr) {
-        if (n == n->GetParent ()->GetChild (kLeft)) {
-            return kLeft;
-        }
-        if (n == n->GetParent ()->GetChild (kRight)) {
-            return kRight;
-        }
-    }
-    return kBadDir;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-Direction    SortedBinaryTree<KEY,VALUE,TRAITS>::Node::OtherDir (Direction dir)
-{
-    Require (dir == kLeft or dir == kRight);
-    return ((dir == kLeft) ? kRight : kLeft);
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-void    SortedBinaryTree<KEY,VALUE,TRAITS>::Node::SetChild_Safe (Node* parent, Node* n, Direction d)
-{
-   Require (parent == nullptr or d == kLeft or d == kRight);
-   if (parent == nullptr) {
-       if (n != nullptr) {
-           n->fParent = nullptr;
-       }
-   }
-   else {
-       parent->SetChild (d, n);
-   }
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TRAITS>::Node::GetFirst (Node* n)
-{
- 	while (n != nullptr and n->GetChild (kLeft) != nullptr) {
-		n = n->GetChild (kLeft);
-	}
-	return n;
-}
-
-template <typename KEY, typename VALUE, typename TRAITS>
-typename SortedBinaryTree<KEY,VALUE,TRAITS>::Node*	SortedBinaryTree<KEY,VALUE,TRAITS>::Node::GetLast (Node* n)
-{
-  	while (n != nullptr and n->GetChild (kRight) != nullptr) {
-		n = n->GetChild (kRight);
-	}
-	return n;
+    #if qDebug
+        Invariant_ ();
+    #endif
 }
 
 #if qDebug
@@ -592,21 +425,21 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::ValidateBranch (Node* n, size_t& count)
 {
 	RequireNotNull (n);
 	++count;
-	if (n->GetChild (kLeft) != nullptr) {
-		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (kLeft)->fEntry.GetKey ()) >= 0);
-		Assert (n->GetChild (kLeft)->GetParent () == n);
-		ValidateBranch (n->GetChild (kLeft), count);
+	if (n->GetChild (Direction::kLeft) != nullptr) {
+		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (Direction::kLeft)->fEntry.GetKey ()) >= 0);
+		Assert (n->GetChild (Direction::kLeft)->GetParent () == n);
+		ValidateBranch (n->GetChild (Direction::kLeft), count);
 	}
-	if (n->GetChild (kRight) != nullptr) {
+	if (n->GetChild (Direction::kRight) != nullptr) {
 		// we cannot do strict < 0, because rotations can put on either side
-		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (kRight)->fEntry.GetKey ()) <= 0);
-		Assert (n->GetChild (kRight)->GetParent () == n);
-		ValidateBranch (n->GetChild (kRight), count);
+		Assert (TRAITS::Comparer::Compare (n->fEntry.GetKey (), n->GetChild (Direction::kRight)->fEntry.GetKey ()) <= 0);
+		Assert (n->GetChild (Direction::kRight)->GetParent () == n);
+		ValidateBranch (n->GetChild (Direction::kRight), count);
 	}
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SortedBinaryTree<KEY,VALUE,TRAITS>::ValidateAll () const
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::Invariant_ () const
 {
 	size_t	count = 0;
 
@@ -617,23 +450,12 @@ void	SortedBinaryTree<KEY,VALUE,TRAITS>::ValidateAll () const
 }
 
 template <typename KEY, typename VALUE, typename TRAITS>
-void	SortedBinaryTree<KEY,VALUE,TRAITS>::ListAll () const
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::ListAll (Iterator it) const
 {
-	std::function<void(Node*)>	ListNode = [&ListNode] (Node* n)
-	{
-		if (n->GetChild (kLeft) != nullptr) {
-			ListNode (n->GetChild (kLeft));
-		}
-        std::cout << "(" << n->fEntry.GetKey () << ")";
-		if (n->GetChild (kRight) != nullptr) {
-			ListNode (n->GetChild (kRight));
-		}
-	};
-
     std::cout << "[";
-	if (fHead != nullptr) {
-		ListNode (fHead);
-	}
+    for (; it.More (); ) {
+        it.GetNode ()->Inspect ();
+    }
     std::cout << "]" << std::endl;
 }
 
@@ -663,9 +485,9 @@ size_t	SortedBinaryTree<KEY,VALUE,TRAITS>::CalcHeight (size_t* totalHeight) cons
 		}
 		else {
 			heights.push (height+1);
-			nodes.push (curNode->GetChild (kLeft));
+			nodes.push (curNode->GetChild (Direction::kLeft));
 			heights.push (height+1);
-			nodes.push (curNode->GetChild (kRight));
+			nodes.push (curNode->GetChild (Direction::kRight));
 		}
 	}
 	return maxHeight;
@@ -703,10 +525,75 @@ void    SortedBinaryTreeValidationSuite (size_t testDataLength, bool verbose)
 
     typedef SortedBinaryTree<HashKey<string>, string>   HashedString;
     HashedStringTest<HashedString> (verbose, 1);
+
+
+    SimpleIteratorTest< SortedBinaryTree<size_t, size_t> > (testDataLength, verbose, 1);
+    PatchingIteratorTest<Tree_Patching<SortedBinaryTree<size_t, size_t> > > (testDataLength, verbose, 1);
 }
 
 #endif
 
+
+
+// my old code for this, which works fine but takes N space rather than the log(N) space (from recursion) of the RebalanceBranch implementation
+#if 0
+template <typename KEY, typename VALUE, typename TRAITS>
+void	SortedBinaryTree<KEY,VALUE,TRAITS>::Balance ()
+{
+   if (GetLength () == 0) {
+        return;
+    }
+
+	// better to build on the stack
+	Node**	nodeList = new Node* [GetLength ()];
+	int	curIndex = 0;
+
+	// stuff the array with the nodes. Better if have iterator support
+	std::function<void(Node*)>	AssignNodeToArray = [&AssignNodeToArray, &nodeList, &curIndex] (Node* n)
+	{
+	    if (n != nullptr) {
+			AssignNodeToArray (n->GetChild (Direction::kLeft));
+            nodeList[curIndex++] = n;
+			AssignNodeToArray (n->GetChild (Direction::kRight));
+        }
+	};
+
+	AssignNodeToArray (fHead);
+
+	// from now on, working with an array (nodeList) that has all the tree nodes in sorted order
+	size_t	maxHeight = size_t (log (double (GetLength ()))/log (2.0))+1;
+
+	std::function<Node*(int startIndex, int endIndex, int curNodeHeight)>	BalanceNode = [&BalanceNode, &nodeList, &maxHeight] (int startIndex, int endIndex, size_t curNodeHeight) -> Node*
+	{
+		Require (startIndex <= endIndex);
+		Assert (curNodeHeight <= maxHeight);
+		if (startIndex == endIndex) {
+			Node* n = nodeList[startIndex];
+			n->SetChild (Direction::kLeft, nullptr);
+			n->SetChild (Direction::kRight, nullptr);
+			return n;
+		}
+
+		int curIdx = startIndex + (endIndex-startIndex)/2;
+		Assert (curIdx <= endIndex);
+		Assert (curIdx >= startIndex);
+
+		Node* n = nodeList[curIdx];
+		AssertNotNull (n);
+
+        n->SetChild (Direction::kLeft, (curIdx == startIndex) ? nullptr : BalanceNode (startIndex, curIdx-1, curNodeHeight+1));
+        n->SetChild (Direction::kRight, (curIdx == endIndex) ? nullptr : BalanceNode (curIdx+1, endIndex, curNodeHeight+1));
+
+		return n;
+	};
+	if (fHead != nullptr) {
+		fHead = BalanceNode (0, GetLength ()-1, 1);
+		fHead->SetParent (nullptr);
+	}
+
+	delete[] nodeList;
+}
+#endif
 
     }   // namespace BinaryTree
 }   // namespace ADT
