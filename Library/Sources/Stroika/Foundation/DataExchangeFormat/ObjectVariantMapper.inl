@@ -18,10 +18,10 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************** ObjectVariantMapper::TYPEINFO ***************************
+             ******************* ObjectVariantMapper::StructureFieldInfo ********************
              ********************************************************************************
              */
-            inline  ObjectVariantMapper::TYPEINFO::TYPEINFO (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName)
+            inline  ObjectVariantMapper::StructureFieldInfo::StructureFieldInfo (size_t fieldOffset, type_index typeInfo, const String& serializedFieldName)
                 : fOffset (fieldOffset)
                 , fTypeInfo (typeInfo)
                 , fSerializedFieldName (serializedFieldName)
@@ -35,7 +35,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename CLASS>
-            void    ObjectVariantMapper::RegisterClass (Sequence<TYPEINFO> typeInfo)
+            void    ObjectVariantMapper::RegisterClass (Sequence<StructureFieldInfo> typeInfo)
             {
                 RegisterSerializer (mkSerializerForStruct (typeid (CLASS), typeInfo));
             }

@@ -6,13 +6,13 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <set>           // just temporarily til I finish traits / compare customiztion support
 #include    <type_traits>
 #include    <typeindex>
 
 #include    "../Characters/String.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
+#include    "../Containers/Set.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/VariantValue.h"
 
@@ -57,6 +57,7 @@ namespace   Stroika {
             using   Characters::String;
             using   Containers::Mapping;
             using   Containers::Sequence;
+            using   Containers::Set;
             using   Memory::Byte;
             using   Memory::VariantValue;
 
@@ -81,7 +82,7 @@ namespace   Stroika {
              *  ObjectVariantMapper mapper;
              *
              *  // register each of your proivate types
-             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<TYPEINFO> ({ TYPEINFO (offsetof (SharedContactsConfig_, fEnabled), typeid (bool), L"Enabled"), }));
+             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({ StructureFieldInfo (offsetof (SharedContactsConfig_, fEnabled), typeid (bool), L"Enabled"), }));
              *
              *  SharedContactsConfig_   tmp;
              *  tmp.fEnabled = enabled;
@@ -105,7 +106,7 @@ namespace   Stroika {
                 ObjectVariantMapper ();
 
             public:
-                struct SerializerInfo;
+                struct  TypeMappingDetails;
 
             public:
                 nonvirtual  void    ClearRegistry ();
@@ -114,25 +115,25 @@ namespace   Stroika {
                 nonvirtual  void    ResetToDefaultRegistry ();
 
             public:
-                nonvirtual  void    RegisterSerializer (const SerializerInfo& serializerInfo);
+                nonvirtual  void    RegisterSerializer (const TypeMappingDetails& serializerInfo);
 
             public:
                 nonvirtual  void    RegisterCommonSerializers ();
 
             public:
-                struct TYPEINFO;
+                struct  StructureFieldInfo;
 
             public:
                 /**
                 * @todo - add sizeof class - for assert checking... just  in CTOR arg - no need in serializer itself
                  */
-                nonvirtual  SerializerInfo  mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields);
+                nonvirtual  TypeMappingDetails  mkSerializerForStruct (const type_index& forTypeInfo, const Sequence<StructureFieldInfo>& fields);
 
             public:
                 /**
                  */
                 template    <typename CLASS>
-                nonvirtual  void    RegisterClass (Sequence<TYPEINFO> typeInfo);
+                nonvirtual  void    RegisterClass (Sequence<StructureFieldInfo> typeInfo);
 
             public:
                 /**
@@ -151,25 +152,34 @@ namespace   Stroika {
                 nonvirtual  VariantValue    Serialize (const CLASS& from);
 
             private:
-                nonvirtual  SerializerInfo  Lookup_(const type_index& forTypeInfo) const;
+                nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
 
             private:
-                set<SerializerInfo> fSerializers_;  // need Stroika set with separate traits-based key extractor/compare function
+                Set<TypeMappingDetails> fSerializers_;  // need Stroika set with separate traits-based key extractor/compare function
             };
 
 
             /**
              * RENAME - not calling serializaiton anynore???
              */
-            struct  ObjectVariantMapper::SerializerInfo {
-                type_index                                              fForType;
-                std::function<VariantValue(const Byte* objOfType)>      fSerializer;
-                std::function<void(const VariantValue& d, Byte* into)>  fDeserializer;
+            struct  ObjectVariantMapper::TypeMappingDetails {
+                type_index                                                                          fForType;
+                std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>     fSerializer;
+                std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)> fDeserializer;
 
-                SerializerInfo (const type_index& forTypeInfo, const std::function<VariantValue(const Byte* objOfType)>& serializer, const std::function<void(const VariantValue& d, Byte* into)>& deserializer);
+                TypeMappingDetails (const type_index& forTypeInfo, const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& serializer, const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& deserializer);
 
-                //tmphack - so I can use set<> - but later fix so this is gone - and use Stroika Set<> code with smarter field extraction etc..
-                bool operator< (const SerializerInfo& rhs) const {
+
+                //tmphack - so I can use Stroika Set<> code with smarter field extraction etc.., and fix to default CTOR issue
+                TypeMappingDetails ()
+                    : fForType (typeid(void))
+                    , fSerializer (nullptr)
+                    , fDeserializer (nullptr) {
+                }
+                bool operator== (const TypeMappingDetails& rhs) const {
+                    return (fForType == rhs.fForType);
+                }
+                bool operator< (const TypeMappingDetails& rhs) const {
                     return (fForType < rhs.fForType);
                 }
             };
@@ -178,12 +188,12 @@ namespace   Stroika {
             /**
              * RENAME - JUST FOR ELTS OF A STRUCT
              */
-            struct  ObjectVariantMapper::TYPEINFO {
+            struct  ObjectVariantMapper::StructureFieldInfo {
                 size_t      fOffset;
                 type_index  fTypeInfo;
                 String      fSerializedFieldName;
 
-                TYPEINFO (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
+                StructureFieldInfo (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
             };
 
 
@@ -194,8 +204,8 @@ namespace   Stroika {
              *
              *  I don't know of any way in C++ without macro - to capture a member name (for use in decltype thing and offsetof()).
              */
-#define     ObjectVariantMapper_TYPEINFO_Construction_Helper(CLASS,MEMBER,NAME)\
-    DataExchangeFormat::ObjectVariantMapper::TYPEINFO (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
+#define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
+    DataExchangeFormat::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
 
 
         }

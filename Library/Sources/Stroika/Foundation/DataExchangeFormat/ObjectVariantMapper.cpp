@@ -20,10 +20,10 @@ using   Time::DateTime;
 
 /*
  ********************************************************************************
- ******* DataExchangeFormat::ObjectVariantMapper::SerializerInfo ****************
+ ******* DataExchangeFormat::ObjectVariantMapper::TypeMappingDetails ************
  ********************************************************************************
  */
-ObjectVariantMapper::SerializerInfo::SerializerInfo (const type_index& forTypeInfo, const std::function<VariantValue(const Byte* objOfType)>& serializer, const std::function<void(const VariantValue& d, Byte* into)>& deserializer)
+ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& serializer, const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& deserializer)
     : fForType (forTypeInfo)
     , fSerializer (serializer)
     , fDeserializer (deserializer)
@@ -41,9 +41,9 @@ ObjectVariantMapper::ObjectVariantMapper ()
     RegisterCommonSerializers ();
 }
 
-void    ObjectVariantMapper::RegisterSerializer (const SerializerInfo& serializerInfo)
+void    ObjectVariantMapper::RegisterSerializer (const TypeMappingDetails& serializerInfo)
 {
-    fSerializers_.insert (serializerInfo);
+    fSerializers_.Add (serializerInfo);
 }
 
 void    ObjectVariantMapper::ClearRegistry ()
@@ -59,15 +59,15 @@ void    ObjectVariantMapper::ResetToDefaultRegistry ()
 
 namespace {
     template    <typename T, typename UseVariantType>
-    ObjectVariantMapper::SerializerInfo mkSerializerInfo_ ()
+    ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
     {
-        auto serializer = [] (const Byte * objOfType) -> VariantValue {
+        auto serializer = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
             return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (objOfType)));
         };
-        auto deserializer = [] (const VariantValue & d, Byte * into) -> void {
+        auto deserializer = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
             *reinterpret_cast<T*> (into) = static_cast<T> (d.As<UseVariantType> ());
         };
-        return ObjectVariantMapper::SerializerInfo (typeid (T), serializer, deserializer);
+        return ObjectVariantMapper::TypeMappingDetails (typeid (T), serializer, deserializer);
     }
 }
 
@@ -85,46 +85,47 @@ void    ObjectVariantMapper::RegisterCommonSerializers ()
 
 VariantValue    ObjectVariantMapper::Serialize (const type_index& forTypeInfo, const Byte* objOfType)
 {
-    return Lookup_ (forTypeInfo).fSerializer (objOfType);
-}
-void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
-{
-    Lookup_ (forTypeInfo).fDeserializer (d, into);
+    return Lookup_ (forTypeInfo).fSerializer (this, objOfType);
 }
 
-ObjectVariantMapper::SerializerInfo  ObjectVariantMapper::mkSerializerForStruct (const type_index& forTypeInfo, Sequence<TYPEINFO> fields)
+void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
+{
+    Lookup_ (forTypeInfo).fDeserializer (this, d, into);
+}
+
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStruct (const type_index& forTypeInfo, const Sequence<StructureFieldInfo>& fields)
 {
     // foo magic (could do cleaner?) to assure lifetime for whats captured in lambda
     struct foo {
-        Sequence<TYPEINFO> fields;
+        Sequence<StructureFieldInfo> fields;
     };
     shared_ptr<foo> fooptr (new foo ());
     fooptr->fields = fields;
-    auto serializer = [fooptr, this] (const Byte * objOfType) -> VariantValue {
+    auto serializer = [fooptr] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
         Mapping<String, VariantValue> m;
         for (auto i : fooptr->fields) {
             const Byte* fieldObj = objOfType + i.fOffset;
-            m.Add (i.fSerializedFieldName, Serialize (i.fTypeInfo, objOfType + i.fOffset));
+            m.Add (i.fSerializedFieldName, mapper->Serialize (i.fTypeInfo, objOfType + i.fOffset));
         }
         return VariantValue (m);
     };
-    auto deserializer = [fooptr, this] (const VariantValue & d, Byte * into) -> void {
+    auto deserializer = [fooptr] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
         for (auto i : fooptr->fields) {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.empty ()) {
-                Deserialize (i.fTypeInfo, *o, into + i.fOffset);
+                mapper->Deserialize (i.fTypeInfo, *o, into + i.fOffset);
             }
         }
     };
-    return SerializerInfo (forTypeInfo, serializer, deserializer);
+    return TypeMappingDetails (forTypeInfo, serializer, deserializer);
 }
 
-ObjectVariantMapper::SerializerInfo  ObjectVariantMapper::Lookup_(const type_index& forTypeInfo) const
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_(const type_index& forTypeInfo) const
 {
-    SerializerInfo  foo (forTypeInfo, nullptr, nullptr);
-    auto i  = fSerializers_.find (foo);
-    if (i == fSerializers_.end ()) {
+    TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
+    auto i  = fSerializers_.Lookup (foo);
+    if (i.empty ()) {
         throw "OOPS";
     }
     return *i;
