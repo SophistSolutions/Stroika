@@ -27,6 +27,8 @@
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
  *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
  *
+ *      @todo   Add r-value reference -- && -- overloads for CTORs (and more) - as performance hack
+ *
  *      @todo   Consider moving this class to DataExcahngeFormat module.
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
