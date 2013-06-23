@@ -23,10 +23,14 @@ using   Time::DateTime;
  ******* DataExchangeFormat::ObjectVariantMapper::TypeMappingDetails ************
  ********************************************************************************
  */
-ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& serializer, const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& deserializer)
+ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
+    const type_index& forTypeInfo,
+    const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+    const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+)
     : fForType (forTypeInfo)
-    , fSerializer (serializer)
-    , fDeserializer (deserializer)
+    , fToVariantMapper (toVariantMapper)
+    , fFromVariantMapper (fromVariantMapper)
 {
 }
 
@@ -61,13 +65,13 @@ namespace {
     template    <typename T, typename UseVariantType>
     ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
     {
-        auto serializer = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+        auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
             return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (objOfType)));
         };
-        auto deserializer = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+        auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
             *reinterpret_cast<T*> (into) = static_cast<T> (d.As<UseVariantType> ());
         };
-        return ObjectVariantMapper::TypeMappingDetails (typeid (T), serializer, deserializer);
+        return ObjectVariantMapper::TypeMappingDetails (typeid (T), toVariantMapper, fromVariantMapper);
     }
 }
 
@@ -85,23 +89,29 @@ void    ObjectVariantMapper::RegisterCommonSerializers ()
 
 VariantValue    ObjectVariantMapper::Serialize (const type_index& forTypeInfo, const Byte* objOfType)
 {
-    return Lookup_ (forTypeInfo).fSerializer (this, objOfType);
+    return Lookup_ (forTypeInfo).fToVariantMapper (this, objOfType);
 }
 
 void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
 {
-    Lookup_ (forTypeInfo).fDeserializer (this, d, into);
+    Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
 }
 
-ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStruct (const type_index& forTypeInfo, const Sequence<StructureFieldInfo>& fields)
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStruct (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields)
 {
+#if     qDebug
+    for (auto i : fields) {
+        Require (i.fOffset < n);
+    }
+#endif
+
     // foo magic (could do cleaner?) to assure lifetime for whats captured in lambda
     struct foo {
         Sequence<StructureFieldInfo> fields;
     };
     shared_ptr<foo> fooptr (new foo ());
     fooptr->fields = fields;
-    auto serializer = [fooptr] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+    auto toVariantMapper = [fooptr] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
         Mapping<String, VariantValue> m;
         for (auto i : fooptr->fields) {
             const Byte* fieldObj = objOfType + i.fOffset;
@@ -109,7 +119,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStr
         }
         return VariantValue (m);
     };
-    auto deserializer = [fooptr] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+    auto fromVariantMapper = [fooptr] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
         for (auto i : fooptr->fields) {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
@@ -118,7 +128,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStr
             }
         }
     };
-    return TypeMappingDetails (forTypeInfo, serializer, deserializer);
+    return TypeMappingDetails (forTypeInfo, toVariantMapper, fromVariantMapper);
 }
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_(const type_index& forTypeInfo) const
@@ -130,4 +140,3 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_(const type
     }
     return *i;
 }
-

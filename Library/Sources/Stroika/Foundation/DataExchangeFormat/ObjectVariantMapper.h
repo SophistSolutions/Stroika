@@ -127,13 +127,13 @@ namespace   Stroika {
                 /**
                 * @todo - add sizeof class - for assert checking... just  in CTOR arg - no need in serializer itself
                  */
-                nonvirtual  TypeMappingDetails  mkSerializerForStruct (const type_index& forTypeInfo, const Sequence<StructureFieldInfo>& fields);
+                nonvirtual  TypeMappingDetails  mkSerializerForStruct (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 
             public:
                 /**
                  */
                 template    <typename CLASS>
-                nonvirtual  void    RegisterClass (Sequence<StructureFieldInfo> typeInfo);
+                nonvirtual  void    RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
 
             public:
                 /**
@@ -142,7 +142,7 @@ namespace   Stroika {
                 template    <typename CLASS>
                 nonvirtual  void    Deserialize (const Memory::VariantValue& v, CLASS* into);
                 template    <typename CLASS>
-                nonvirtual  CLASS    Deserialize (const Memory::VariantValue& v);
+                nonvirtual  CLASS Deserialize (const Memory::VariantValue& v);
 
             public:
                 /**
@@ -164,17 +164,22 @@ namespace   Stroika {
              */
             struct  ObjectVariantMapper::TypeMappingDetails {
                 type_index                                                                          fForType;
-                std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>     fSerializer;
-                std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)> fDeserializer;
+                std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>     fToVariantMapper;
+                std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)> fFromVariantMapper;
 
-                TypeMappingDetails (const type_index& forTypeInfo, const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& serializer, const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& deserializer);
+                TypeMappingDetails (
+                    const type_index& forTypeInfo,
+                    const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+                    const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+                );
 
-
+                // @todo
                 //tmphack - so I can use Stroika Set<> code with smarter field extraction etc.., and fix to default CTOR issue
+                // --LGP 2013-06-23
                 TypeMappingDetails ()
                     : fForType (typeid(void))
-                    , fSerializer (nullptr)
-                    , fDeserializer (nullptr) {
+                    , fToVariantMapper (nullptr)
+                    , fFromVariantMapper (nullptr) {
                 }
                 bool operator== (const TypeMappingDetails& rhs) const {
                     return (fForType == rhs.fForType);
