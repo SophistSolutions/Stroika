@@ -102,10 +102,12 @@ namespace   Stroika {
                          *      Worst Case: O(N)
                          *      Average Case: O(N)
                          *
-                         *  Utility to search the list for the given item using operator==
+                         *  Returns pointer to T (or nullptr if not found). Lifetime of T* only til next call on this.
+                         *
+                         *  Contains(T item) == Lookup (item) != nullptr;
                          */
-                        nonvirtual  bool    Contains (T item) const;
-
+                        nonvirtual  const T*    Lookup (T item) const;
+                        nonvirtual  T*          Lookup (T item);
 
                     public:
                         /**

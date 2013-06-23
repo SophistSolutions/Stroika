@@ -249,14 +249,24 @@ namespace   Stroika {
                         Invariant ();
                     }
                     template    <typename   T>
-                    bool    LinkedList<T>::Contains (T item) const
+                    T*    LinkedList<T>::Lookup (T item)
+                    {
+                        for (Link* current = _fHead; current != nullptr; current = current->fNext) {
+                            if (current->fItem == item) {
+                                return &current->fItem;
+                            }
+                        }
+                        return nullptr;
+                    }
+                    template    <typename   T>
+                    const T*    LinkedList<T>::Lookup (T item) const
                     {
                         for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
                             if (current->fItem == item) {
-                                return (true);
+                                return &current->fItem;
                             }
                         }
-                        return (false);
+                        return nullptr;
                     }
                     template    <typename   T>
                     void    LinkedList<T>::RemoveAll ()

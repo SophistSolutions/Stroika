@@ -191,7 +191,7 @@ namespace   Stroika {
                 bool    Set_LinkedList<T>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return fData_.Contains (item);
+                        return fData_.Lookup (item) != nullptr;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

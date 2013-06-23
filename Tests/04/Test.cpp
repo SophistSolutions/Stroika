@@ -89,15 +89,15 @@ namespace   {
         VerifyTestResult(someLL.GetLength() == 0);
 
         for (size_t i = kBigSize; i >= 1; --i) {
-            VerifyTestResult(not someLL.Contains(i));
+            VerifyTestResult(someLL.Lookup(i) == nullptr);
             someLL.Prepend(i);
             VerifyTestResult(someLL.GetFirst () == i);
-            VerifyTestResult(someLL.Contains(i));
+            VerifyTestResult(someLL.Lookup(i) != nullptr);
         }
         for (size_t i = 1; i <= kBigSize; ++i) {
             VerifyTestResult(someLL.GetFirst () == i);
             someLL.RemoveFirst ();
-            VerifyTestResult(not someLL.Contains(i));
+            VerifyTestResult(someLL.Lookup(i) == nullptr);
         }
         VerifyTestResult(someLL.GetLength() == 0);
 
