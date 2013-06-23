@@ -25,7 +25,7 @@
  *
  *  TODO:
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
- *              continue to make it easy to use this with vector/map/wstring
+ *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
  *
  *      @todo   Consider moving this class to DataExcahngeFormat module.
  *

@@ -60,17 +60,17 @@ VariantValue::VariantValue (const DateTime& val)
 }
 
 VariantValue::VariantValue (const wchar_t* val)
-    : fVal_ (DEBUG_NEW TIRep_<wstring, Type::eString> (val))
+    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
 {
 }
 
 VariantValue::VariantValue (const wstring& val)
-    : fVal_ (DEBUG_NEW TIRep_<wstring, Type::eString> (val))
+    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
 {
 }
 
 VariantValue::VariantValue (const String& val)
-    : fVal_ (DEBUG_NEW TIRep_<wstring, Type::eString> (val.As<wstring> ()))
+    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
 {
 }
 
@@ -129,7 +129,7 @@ bool    VariantValue::empty () const
                 return v->fVal.empty ();
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -192,7 +192,7 @@ int VariantValue::As () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::String2Int (v->fVal);
             }
@@ -226,7 +226,7 @@ double VariantValue::As () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 // NB. this may return NAN if string not a well-formed number (including empty string case)
                 return Characters::String2Float (v->fVal);
@@ -255,7 +255,7 @@ Date VariantValue::As() const
                 return v->fVal.GetDate ();
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
@@ -283,7 +283,7 @@ DateTime VariantValue::As () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
                 return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
@@ -311,9 +311,9 @@ wstring VariantValue::As () const
                 return v->fVal.Format (DateTime::PrintFormat::eISO8601).As<wstring> ();
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<wstring, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal;
+                return v->fVal.As<wstring> ();
             }
         case    Type::eBoolean: {
                 auto    v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
