@@ -50,12 +50,13 @@ namespace   Stroika {
 
                     // Set<T>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Set<T>::_IRep& rhs) const override;
-                    virtual bool    Contains (T item) const override;
-                    virtual void    RemoveAll () override;
-                    virtual void    Add (T item) override;
-                    virtual void    Remove (T item) override;
-                    virtual void    Remove (const Iterator<T>& i) override;
+                    virtual bool                Equals (const typename Set<T>::_IRep& rhs) const override;
+                    virtual bool                Contains (T item) const override;
+                    virtual Memory::Optional<T> Lookup (T item) const override;
+                    virtual void                RemoveAll () override;
+                    virtual void                Add (T item) override;
+                    virtual void                Remove (T item) override;
+                    virtual void                Remove (const Iterator<T>& i) override;
 
                 private:
                     Private::ContainerRepLockDataSupport_                   fLockSupport_;
@@ -192,6 +193,15 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.Lookup (item) != nullptr;
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T>
+                Memory::Optional<T> Set_LinkedList<T>::Rep_::Lookup (T item) const
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        const T*    l = fData_.Lookup (item);
+                        return (l == nullptr) ? Memory::Optional<T> () : Memory::Optional<T> (*l);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

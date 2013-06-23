@@ -8,6 +8,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
+#include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 
 #include    "Iterable.h"
@@ -23,6 +24,7 @@
  *  TODO:
  *
  *      @todo   Use TRAITS mechanism - like with Bag<>
+ *              putting RequireElementTraitsInClass(RequireOperatorEquals, T) into the default traits object
  *
  *      @todo   Implement first draft of code based on
  *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Set.hh
@@ -90,6 +92,13 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  bool Contains (T item) const;
+
+            public:
+                /**
+                 *  Like Contains - but a Set<> can use a comparison that only examines a part of T, making it useful to be able to return
+                 *  the rest of T.
+                 */
+                nonvirtual  Memory::Optional<T> Lookup (T item) const;
 
             public:
                 /**
@@ -172,7 +181,6 @@ namespace   Stroika {
                 template    <typename   CONTAINER_OF_T>
                 nonvirtual  void    As (CONTAINER_OF_T* into) const;
 
-
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
@@ -194,12 +202,13 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool    Equals (const _IRep& rhs) const    =   0;
-                virtual bool    Contains (T item) const            =   0;
-                virtual void    RemoveAll ()                       =   0;
-                virtual void    Add (T item)                       =   0;
-                virtual void    Remove (T item)                    =   0;
-                virtual void    Remove (const Iterator<T>& i)      =   0;
+                virtual bool                Equals (const _IRep& rhs) const    =   0;
+                virtual bool                Contains (T item) const            =   0;
+                virtual Memory::Optional<T> Lookup (T item) const              =   0;
+                virtual void                RemoveAll ()                       =   0;
+                virtual void                Add (T item)                       =   0;
+                virtual void                Remove (T item)                    =   0;
+                virtual void                Remove (const Iterator<T>& i)      =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

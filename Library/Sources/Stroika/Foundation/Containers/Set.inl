@@ -72,6 +72,11 @@ namespace   Stroika {
                 return _GetRep ().Contains (item);
             }
             template    <typename T>
+            inline  Memory::Optional<T>    Set<T>::Lookup (T item) const
+            {
+                return _GetRep ().Lookup (item);
+            }
+            template    <typename T>
             inline  void    Set<T>::Add (T item)
             {
                 _GetRep ().Add (item);
