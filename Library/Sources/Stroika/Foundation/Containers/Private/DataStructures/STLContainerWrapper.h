@@ -22,15 +22,17 @@
  *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
- *  @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
- *          cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
+ *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
  *
- *  @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
- *          that uses forward_list code...
+ *      @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
+ *              cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
  *
- *  @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
- *          some methods only called by array impls, and some only by returing iteratore on erase impls, etc,
- *          or perhaps with template specialization.
+ *      @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
+ *              that uses forward_list code...
+ *
+ *      @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using
+ *              some methods only called by array impls, and some only by returing iteratore on erase impls, etc,
+ *              or perhaps with template specialization.
  *
  */
 

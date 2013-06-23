@@ -17,6 +17,8 @@
  *
  * TODO:
  *
+ *      @todo   Replace Contains() with Lookup () - as we did for LinkedList<T>
+ *
  *      @todo   Major cleanup needed - not doubly-linked list. Look at old Stroika code. Somehow the double link
  *              part got lost.
  *
