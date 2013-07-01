@@ -10,6 +10,8 @@
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
@@ -40,6 +42,8 @@ namespace   {
 namespace   {
     void    DoRegressionTests_SimpleMapToFromJSON_2_ ()
     {
+        const bool kWrite2FileAsWell_ = false;      // just for debugging
+
         struct SharedContactsConfig_ {
             bool                    fEnabled;
             DateTime                fLastSynchronizedAt;
@@ -80,15 +84,26 @@ namespace   {
         bool newEnabled = true;
         SharedContactsConfig_   tmp;
         tmp.fEnabled = newEnabled;
-        VariantValue v = mapper.Serialize  (tmp);
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
         tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+
+        VariantValue v = mapper.Serialize  (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
 
         Streams::BasicBinaryInputOutputStream   tmpStream;
         DataExchangeFormat::JSON::PrettyPrint (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            IO::FileSystem::BinaryFileOutputStream tmp (L"t.txt");
+            DataExchangeFormat::JSON::PrettyPrint (v, tmp);
+        }
+
+        if (kWrite2FileAsWell_) {
+            IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
+            SharedContactsConfig_    tmp2 = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
+        }
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_    tmp2 = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
@@ -98,7 +113,6 @@ namespace   {
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
         DoRegressionTests_SimpleRegisterEtc_1_ ();
