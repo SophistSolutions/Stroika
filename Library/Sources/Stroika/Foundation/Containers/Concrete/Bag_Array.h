@@ -15,6 +15,9 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *
+ *      @todo   Change the default traits to contain info about realloc / array size stuff (maybe initial size?)
+ *
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
@@ -35,19 +38,19 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename   T>
-                class   Bag_Array : public Bag<T> {
+                template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
+                class   Bag_Array : public Bag<T, BAG_TRAITS> {
                 private:
-                    typedef     Bag<T>  inherited;
+                    typedef     Bag<T, BAG_TRAITS>  inherited;
 
                 public:
                     Bag_Array ();
-                    Bag_Array (const Bag<T>& bag);
-                    Bag_Array (const Bag_Array<T>& bag);
+                    Bag_Array (const Bag<T, BAG_TRAITS>& bag);
+                    Bag_Array (const Bag_Array<T, BAG_TRAITS>& bag);
                     Bag_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Bag_Array<T>& operator= (const Bag_Array<T>& bag);
+                    nonvirtual  Bag_Array<T, BAG_TRAITS>& operator= (const Bag_Array<T, BAG_TRAITS>& bag);
 
                 public:
                     /**
@@ -57,7 +60,6 @@ namespace   Stroika {
                      *  the concrete bag, calling this may save memory.
                      */
                     nonvirtual  void    Compact ();
-
 
                 public:
                     /*

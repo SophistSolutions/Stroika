@@ -27,8 +27,12 @@ namespace   Stroika {
         namespace   Common {
 
 
-
+#if 0
             /**
+            **************** obsolete&&&&&&&&&&&
+            **************** obsolete&&&&&&&&&&&
+            **************** obsolete&&&&&&&&&&&
+            **************** obsolete&&&&&&&&&&&
              *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
              *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
              */
@@ -44,6 +48,36 @@ namespace   Stroika {
                  *  replace these, but they must remain consistent.
                  */
                 static  bool    Equals (T v1, T v2);
+            };
+#endif
+
+
+            /**
+             *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
+             *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
+             */
+            template <typename T>
+            struct  ComparerWithEquals {
+                /**
+                 *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
+                 *  replace these, but they must remain consistent.
+                 */
+                static  bool    Equals (T v1, T v2);
+            };
+
+
+            /**
+             *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
+             *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
+             *
+             *  @todo - writeup !!! NOTE - ASSERTS ComparerWithOrder and ComparerWithEquals compatible - namely a < b and b > a iff .... writeup!!!
+             */
+            template <typename T>
+            struct  ComparerWithOrder : ComparerWithEquals<T> {
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                 */
+                static  int Compare (T v1, T v2);
             };
 
 

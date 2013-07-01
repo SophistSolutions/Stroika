@@ -77,8 +77,15 @@ namespace   Stroika {
                  *          typedef std::function<int(T,T)> CompareFunctionType;
                  *
                  *  NB: NOT USED YET - JUST PLAYING WITH HOW WE WANT TODO THIS...
+                 *
+                 *  Note - this comparer is NOT required - and not actually used except for certain specific methods:
+                 *      o   Bag<T, BAG_TRAITS>::Contains (T)
+                 *      o   Bag<T, BAG_TRAITS>::Remove (T)
+                 *      o   Bag<T, BAG_TRAITS>::UniqueElements ()
+                 *      o   Bag<T, BAG_TRAITS>::TallyOf()
+                 *      o   Bag<T, BAG_TRAITS>::Equals()
                  */
-                typedef typename    Common::Comparer<T> CompareFunctionType;
+                typedef typename    Common::ComparerWithEquals<T> EqualsCompareFunctionType;
             };
 
 
@@ -94,12 +101,13 @@ namespace   Stroika {
              *  bags are considered equal if they contain the same items, even if iteration
              *  order is different.
              *
-             *  Bags are typically designed to optimize item addition and iteration.
-             *  They are fairly slow at item access (as they have no keys). Removing items
-             *  is usually slow, except in the context of an Iterator<T>, where it is usually
-             *  very fast. Bag comparison (operator==) is often very slow in the worst
-             *  case (n^2) and this worst case is the relatively common case of identical
-             *  bags.
+             *  \em Performance
+             *      Bags are typically designed to optimize item addition and iteration.
+             *      They are fairly slow at item access (as they have no keys). Removing items
+             *      is usually slow, except in the context of an Iterator<T>, where it is usually
+             *      very fast. Bag comparison (operator==) is often very slow in the worst
+             *      case (n^2) and this worst case is the relatively common case of identical
+             *      bags.
              *
              *  Although Bag has an TallyOf () method, it is nonvirtual, and therefore
              *  not optimized for the various backends. There is a separate class, Tally,
