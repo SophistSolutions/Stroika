@@ -177,11 +177,6 @@ void    ObjectVariantMapper::RegisterTypeMapper (const TypeMappingDetails& seria
     fSerializers_.Add (serializerInfo);
 }
 
-void    ObjectVariantMapper::ClearTypeRegistry ()
-{
-    fSerializers_.clear ();
-}
-
 void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
 {
     fSerializers_ = GetDefaultTypeMappers_ ();

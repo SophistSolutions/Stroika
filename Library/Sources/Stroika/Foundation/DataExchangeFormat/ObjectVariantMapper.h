@@ -29,7 +29,7 @@
  *
  *      @todo   Just a draft - think through what we really want here...
  *
- *      @todo   Add support for array to RegisterCommonSerializers - like we have for struct - using Sequence<>
+ *      @todo   Add support for array to ResetToDefaultTypeRegistry - like we have for struct - using Sequence<>
  *              as the C++ type (maybe others too, vector, more?).
  *
  *              But unclear how todo ArrayOfWhat?? Maybe the CTOR takes to typeids - not sure how well that works?
@@ -115,7 +115,7 @@ namespace   Stroika {
             class   ObjectVariantMapper {
             public:
                 /**
-                 *  Defaults to installing basic serializers.
+                 *  Defaults to installing basic type mappers (@see ResetToDefaultTypeRegistry).
                  */
                 ObjectVariantMapper ();
 
@@ -124,11 +124,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  This clears the registry of type mappers.
-                 *
-                 *  @see ResetToDefaultTypeRegistry();
+                 *  Returns the current set of type mappers.
                  */
-                nonvirtual  void    ClearTypeRegistry ();
+                nonvirtual  Set<TypeMappingDetails>    GetTypeMappingRegistry () const;
+
+            public:
+                /**
+                 *  Sets the current set of type mappers.
+                 */
+                nonvirtual  void    SetTypeMappingRegistry (const Set<TypeMappingDetails>& s);
 
             public:
                 /**
@@ -151,7 +155,8 @@ namespace   Stroika {
                  *  Note - to include any of your user-defined types (structs) - you must use RegisterTypeMapper() or
                  *  RegisterClass ().
                  *
-                 *  @see ClearTypeRegistry
+                 *  @see GetTypeMappingRegistry
+                 *  @see SetTypeMappingRegistry
                  *  @see RegisterClass
                  *  @see RegisterTypeMapper
                  */
@@ -178,7 +183,7 @@ namespace   Stroika {
                 template    <typename CLASS>
                 nonvirtual  void    ToObject (const Memory::VariantValue& v, CLASS* into);
                 template    <typename CLASS>
-                nonvirtual  CLASS ToObject (const Memory::VariantValue& v);
+                nonvirtual  CLASS   ToObject (const Memory::VariantValue& v);
 
             public:
                 /**

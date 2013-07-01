@@ -34,6 +34,14 @@ namespace   Stroika {
              ******************************** ObjectVariantMapper ***************************
              ********************************************************************************
              */
+            inline  Set<ObjectVariantMapper::TypeMappingDetails>    ObjectVariantMapper::GetTypeMappingRegistry () const
+            {
+                return fSerializers_;
+            }
+            inline  void    ObjectVariantMapper::SetTypeMappingRegistry (const Set<TypeMappingDetails>& s)
+            {
+                fSerializers_ = s;
+            }
             template    <typename CLASS>
             void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
