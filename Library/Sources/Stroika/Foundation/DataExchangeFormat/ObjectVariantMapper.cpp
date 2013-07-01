@@ -89,11 +89,13 @@ void    ObjectVariantMapper::RegisterCommonSerializers ()
 
 VariantValue    ObjectVariantMapper::Serialize (const type_index& forTypeInfo, const Byte* objOfType)
 {
+    Require (Lookup_ (forTypeInfo).fToVariantMapper);
     return Lookup_ (forTypeInfo).fToVariantMapper (this, objOfType);
 }
 
 void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
 {
+    Require (Lookup_ (forTypeInfo).fFromVariantMapper);
     Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
 }
 
@@ -131,12 +133,10 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStr
     return TypeMappingDetails (forTypeInfo, toVariantMapper, fromVariantMapper);
 }
 
-ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_(const type_index& forTypeInfo) const
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
     TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
     auto i  = fSerializers_.Lookup (foo);
-    if (i.empty ()) {
-        throw "OOPS";
-    }
+    Require (i.IsPresent ());   // if not present, this is a usage error - only use types which are registered
     return *i;
 }
