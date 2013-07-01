@@ -87,7 +87,7 @@ namespace   {
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
         tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
 
-        VariantValue v = mapper.Serialize  (tmp);
+        VariantValue v = mapper.FromObject  (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -102,11 +102,11 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }

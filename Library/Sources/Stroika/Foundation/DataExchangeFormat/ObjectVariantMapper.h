@@ -66,7 +66,7 @@ namespace   Stroika {
              *  \brief  ObjectVariantMapper can be used to map C++ types to variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
              *
              *  ObjectVariantMapper IS COPYABLE. Make one instance, register your types into it and use this to
-             *  serialized/deserialize
+             *  serialized/ToObject
              *
              *
              * EXAMPLE USAGE:
@@ -105,7 +105,7 @@ namespace   Stroika {
              *  DataExchangeFormat::JSON::PrettyPrint (v, tmpStream);
              *
              *  // THEN deserialized, and mapped back to C++ object form
-             *  tmp = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
+             *  tmp = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
              *  if (tmp.fEnabled) {
              *  ...
              *  }
@@ -123,12 +123,43 @@ namespace   Stroika {
                 struct  TypeMappingDetails;
 
             public:
+                /**
+                 *  This clears the registry of type mappers.
+                 *
+                 *  @see ResetToDefaultTypeRegistry();
+                 */
                 nonvirtual  void    ClearTypeRegistry ();
 
             public:
+                /**
+                 *  This clears the registry of type mappers, and resets it to the defaults - a set of builtin types,
+                 *  like String, int, etc.
+                 *
+                 *  Builtin types include:
+                 *      o   bool
+                 *      o   int
+                 *      o   float
+                 *      o   double
+                 *      o   Date
+                 *      o   DateTime
+                 *      o   String
+                 *      o   Mapping<String, String>
+                 *      o   Mapping<String, VariantValue>
+                 *
+                 *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
+                 *
+                 *  Note - to include any of your user-defined types (structs) - you must use RegisterTypeMapper() or
+                 *  RegisterClass ().
+                 *
+                 *  @see ClearTypeRegistry
+                 *  @see RegisterClass
+                 *  @see RegisterTypeMapper
+                 */
                 nonvirtual  void    ResetToDefaultTypeRegistry ();
 
             public:
+                /**
+                 */
                 nonvirtual  void    RegisterTypeMapper (const TypeMappingDetails& serializerInfo);
 
             public:
@@ -143,18 +174,18 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  void    Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
+                nonvirtual  void    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
                 template    <typename CLASS>
-                nonvirtual  void    Deserialize (const Memory::VariantValue& v, CLASS* into);
+                nonvirtual  void    ToObject (const Memory::VariantValue& v, CLASS* into);
                 template    <typename CLASS>
-                nonvirtual  CLASS Deserialize (const Memory::VariantValue& v);
+                nonvirtual  CLASS ToObject (const Memory::VariantValue& v);
 
             public:
                 /**
                  */
-                nonvirtual  VariantValue    Serialize (const type_index& forTypeInfo, const Byte* objOfType);
+                nonvirtual  VariantValue    FromObject (const type_index& forTypeInfo, const Byte* objOfType);
                 template    <typename CLASS>
-                nonvirtual  VariantValue    Serialize (const CLASS& from);
+                nonvirtual  VariantValue    FromObject (const CLASS& from);
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;

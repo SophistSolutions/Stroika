@@ -40,21 +40,21 @@ namespace   Stroika {
                 RegisterTypeMapper (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
-            void    ObjectVariantMapper::Deserialize (const Memory::VariantValue& v, CLASS* into)
+            void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into)
             {
-                Deserialize  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
+                ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename CLASS>
-            CLASS    ObjectVariantMapper::Deserialize (const Memory::VariantValue& v)
+            CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v)
             {
                 CLASS tmp;
-                Deserialize  (v, &tmp);
+                ToObject (v, &tmp);
                 return tmp;
             }
             template    <typename CLASS>
-            VariantValue    ObjectVariantMapper::Serialize (const CLASS& from)
+            VariantValue    ObjectVariantMapper::FromObject (const CLASS& from)
             {
-                return Serialize  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
+                return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
 
 

@@ -70,7 +70,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
         Mapping<String, VariantValue> m;
         for (auto i : fields) {
             const Byte* fieldObj = objOfType + i.fOffset;
-            m.Add (i.fSerializedFieldName, mapper->Serialize (i.fTypeInfo, objOfType + i.fOffset));
+            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, objOfType + i.fOffset));
         }
         return VariantValue (m);
     };
@@ -79,7 +79,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
         for (auto i : fields) {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.empty ()) {
-                mapper->Deserialize (i.fTypeInfo, *o, into + i.fOffset);
+                mapper->ToObject (i.fTypeInfo, *o, into + i.fOffset);
             }
         }
     };
@@ -132,7 +132,7 @@ namespace {
                 actualInto->clear ();
                 for (auto i : m) {
                     // really could do either way - but second more efficient
-                    //actualInto->Add (i.first, mapper->Deserialize<String> (i.second));
+                    //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
                     actualInto->Add (i.first, i.second.As<String> ());
                 }
             };
@@ -187,13 +187,13 @@ void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
     fSerializers_ = GetDefaultTypeMappers_ ();
 }
 
-VariantValue    ObjectVariantMapper::Serialize (const type_index& forTypeInfo, const Byte* objOfType)
+VariantValue    ObjectVariantMapper::FromObject (const type_index& forTypeInfo, const Byte* objOfType)
 {
     Require (Lookup_ (forTypeInfo).fToVariantMapper);
     return Lookup_ (forTypeInfo).fToVariantMapper (this, objOfType);
 }
 
-void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
+void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into)
 {
     Require (Lookup_ (forTypeInfo).fFromVariantMapper);
     Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
