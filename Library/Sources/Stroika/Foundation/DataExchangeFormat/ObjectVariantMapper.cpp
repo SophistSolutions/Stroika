@@ -4,6 +4,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Format.h"
+#include    "../Containers/Tally.h"
 #include    "../Time/Date.h"
 #include    "../Time/DateTime.h"
 
@@ -104,6 +105,23 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStr
 #if     qDebug
     for (auto i : fields) {
         Require (i.fOffset < n);
+    }
+    {
+        // assure each field unique
+        Containers::Tally<size_t> t;
+        for (auto i : fields) {
+            t.Add (i.fOffset);
+        }
+        for (auto i : t) {
+            Require (i.fCount == 1);
+        }
+    }
+    {
+        // Assure for each field type is registered
+        for (auto i : fields) {
+            Require (Lookup_ (i.fTypeInfo).fFromVariantMapper);
+            Require (Lookup_ (i.fTypeInfo).fToVariantMapper);
+        }
     }
 #endif
 
