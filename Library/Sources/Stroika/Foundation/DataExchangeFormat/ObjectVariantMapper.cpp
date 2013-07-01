@@ -125,23 +125,17 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStr
     }
 #endif
 
-    // foo magic (could do cleaner?) to assure lifetime for whats captured in lambda
-    struct foo {
-        Sequence<StructureFieldInfo> fields;
-    };
-    shared_ptr<foo> fooptr (new foo ());
-    fooptr->fields = fields;
-    auto toVariantMapper = [fooptr] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+    auto toVariantMapper = [fields] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
         Mapping<String, VariantValue> m;
-        for (auto i : fooptr->fields) {
+        for (auto i : fields) {
             const Byte* fieldObj = objOfType + i.fOffset;
             m.Add (i.fSerializedFieldName, mapper->Serialize (i.fTypeInfo, objOfType + i.fOffset));
         }
         return VariantValue (m);
     };
-    auto fromVariantMapper = [fooptr] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+    auto fromVariantMapper = [fields] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-        for (auto i : fooptr->fields) {
+        for (auto i : fields) {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.empty ()) {
                 mapper->Deserialize (i.fTypeInfo, *o, into + i.fOffset);
