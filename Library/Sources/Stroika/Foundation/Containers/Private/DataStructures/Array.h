@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Common/Compare.h"
 
 #include    "../../Common.h"
 
@@ -16,14 +17,14 @@
  *
  *  Description:
  *
- *      Array<T> is a backend implementation. It is not intended to be directly
+ *      Array<T,TRAITS> is a backend implementation. It is not intended to be directly
  *  used by programmers, except in implementing concrete container reps.
  *
- *      Array<T> is a template which provides a dynamic array class. Elements
+ *      Array<T,TRAITS> is a template which provides a dynamic array class. Elements
  *  of type T can be assigned, and accessed much like a normal array, except
  *  that when debug is on, accesses are range-checked.
  *
- *      Array<T> also provides a dynamic sizing capability. It reallocs its
+ *      Array<T,TRAITS> also provides a dynamic sizing capability. It reallocs its
  *  underlying storgage is such a ways as to keep a buffer of n(currently 5)%
  *  extra, so that reallocs on resizes only occur logn times on n appends.
  *  To save even this space, you can call Compact().
@@ -103,6 +104,20 @@ namespace   Stroika {
 
 
                     /**
+                     * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
+                     */
+                    template    <typename T>
+                    struct   Array_DefaultTraits {
+                        typedef typename    Common::ComparerWithEquals<T> EqualsCompareFunctionType;
+                    };
+
+                    template    <typename T, typename EQUALS_COMPARER>
+                    struct   Array_TraitsWithEqualsComparer {
+                        typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                    };
+
+
+                    /**
                      *      This class is the main core of the implementation. It provides
                      *  an array abstraction, where the size can be set dynamically, and
                      *  extra sluff is maintained off the end to reduce copying from reallocs.
@@ -111,15 +126,15 @@ namespace   Stroika {
                      *  it means you can count on DTORs of your T being called when you
                      *  remove them from contains, not when the caches happen to empty.
                      */
-                    template      <typename  T>
+                    template      <typename  T, typename TRAITS = Array_DefaultTraits<T>>
                     class   Array {
                     public:
                         Array ();
-                        Array (const Array<T>& from);
+                        Array (const Array<T, TRAITS>& from);
                         ~Array ();
 
                     public:
-                        nonvirtual  Array<T>& operator= (const Array<T>& rhs);
+                        nonvirtual  Array<T, TRAITS>& operator= (const Array<T, TRAITS>& rhs);
 
                     public:
                         nonvirtual  T       GetAt (size_t i) const;
@@ -190,13 +205,13 @@ namespace   Stroika {
                      *  detail designed to help in source-code sharing among various
                      *  iterator implementations.
                      */
-                    template    <typename T>
-                    class   Array<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
                         _ArrayIteratorBase ();       // not defined - do not call.
 
                     public:
-                        _ArrayIteratorBase (const Array<T>& data);
+                        _ArrayIteratorBase (const Array<T, TRAITS>& data);
 
                         nonvirtual  T       Current () const;           //  Error to call if Done (), otherwise OK
                         nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
@@ -208,7 +223,7 @@ namespace   Stroika {
 
 #if     qDebug
                     protected:
-                        const Array<T>*     _fData;
+                        const Array<T, TRAITS>*     _fData;
 #endif
                     protected:
                         const T*            _fStart;         // points to FIRST elt
@@ -228,13 +243,13 @@ namespace   Stroika {
                      *  not to add or remove things from the array while using this iterator,
                      *  since it is not safe. Use ForwardIterator_Patch for those cases.
                      */
-                    template    <typename T>
-                    class   Array<T>::ForwardIterator : public Array<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array<T>::_ArrayIteratorBase    inherited;
+                        typedef typename Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        ForwardIterator (const Array<T>& data);
+                        ForwardIterator (const Array<T, TRAITS>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -246,13 +261,13 @@ namespace   Stroika {
                      *  not to add or remove things from the array while using this iterator,
                      *  since it is not safe. Use BackwardIterator_Patch for those cases.
                      */
-                    template    <typename T>
-                    class   Array<T>::BackwardIterator : public Array<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename    Array<T>::_ArrayIteratorBase    inherited;
+                        typedef typename    Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        BackwardIterator (const Array<T>& data);
+                        BackwardIterator (const Array<T, TRAITS>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

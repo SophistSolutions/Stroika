@@ -8,7 +8,6 @@
 
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
-#include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
 
 #include    "Iterable.h"

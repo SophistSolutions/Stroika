@@ -20,6 +20,8 @@
  *
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  *
+ *      @todo   Fix Bag_Array<T, BAG_TRAITS>::Rep_::Remove() to use BackwardIterator
+ *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */

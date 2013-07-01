@@ -18,25 +18,25 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    *********************************** Array<T> ***********************************
+                    **************************** Array<T,TRAITS> ***********************************
                     ********************************************************************************
                     */
-                    template    <typename  T>
-                    inline  void    Array<T>::Invariant () const
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <typename  T>
-                    inline  Array<T>::Array ()
+                    template      <typename  T, typename TRAITS>
+                    inline  Array<T, TRAITS>::Array ()
                         : _fLength (0)
                         , _fSlotsAllocated (0)
                         , _fItems (0)
                     {
                     }
-                    template    <typename T>
-                    Array<T>::Array (const Array<T>& from)
+                    template      <typename  T, typename TRAITS>
+                    Array<T, TRAITS>::Array (const Array<T, TRAITS>& from)
                         : _fLength (0)
                         , _fSlotsAllocated (0)
                         , _fItems (nullptr)
@@ -60,8 +60,8 @@ namespace   Stroika {
                         _fLength = newLength;
                         Invariant ();
                     }
-                    template    <typename T>
-                    void    Array<T>::InsertAt (size_t index, T item)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::InsertAt (size_t index, T item)
                     {
                         Require (index >= 0);
                         Require (index <= _fLength);
@@ -91,8 +91,8 @@ namespace   Stroika {
                         }
                         Invariant ();
                     }
-                    template    <typename T>
-                    void    Array<T>::RemoveAt (size_t index)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::RemoveAt (size_t index)
                     {
                         Require (index >= 0);
                         Require (index < _fLength);
@@ -114,8 +114,8 @@ namespace   Stroika {
                         _fItems [--_fLength].T::~T ();
                         Invariant ();
                     }
-                    template    <typename T>
-                    void    Array<T>::RemoveAll ()
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::RemoveAll ()
                     {
                         Invariant ();
                         T*   p   =   &_fItems[0];
@@ -125,23 +125,23 @@ namespace   Stroika {
                         _fLength = 0;
                         Invariant ();
                     }
-                    template    <typename T>
-                    bool    Array<T>::Contains (T item) const
+                    template      <typename  T, typename TRAITS>
+                    bool    Array<T, TRAITS>::Contains (T item) const
                     {
                         Invariant ();
                         if (_fLength > 0) {
                             const   T*   current =   &_fItems [0];
                             const   T*   last    =   &_fItems [_fLength - 1];  // safe to -1 since _fLength>0
                             for (; current <= last; current++) {
-                                if (*current == item) {
+                                if (typename TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                     return (true);
                                 }
                             }
                         }
                         return (false);
                     }
-                    template    <typename T>
-                    void    Array<T>::SetCapacity (size_t slotsAlloced)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
                     {
                         Require (GetLength () <= slotsAlloced);
                         Invariant ();
@@ -166,8 +166,8 @@ namespace   Stroika {
                         }
                         Invariant ();
                     }
-                    template    <typename T>
-                    Array<T>& Array<T>::operator= (const Array<T>& list)
+                    template      <typename  T, typename TRAITS>
+                    Array<T, TRAITS>& Array<T, TRAITS>::operator= (const Array<T, TRAITS>& list)
                     {
                         Invariant ();
                         size_t  newLength       =   list.GetLength ();
@@ -217,8 +217,8 @@ namespace   Stroika {
                         Invariant ();
                         return *this;
                     }
-                    template    <typename T>
-                    void    Array<T>::SetLength (size_t newLength, T fillValue)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::SetLength (size_t newLength, T fillValue)
                     {
                         Invariant ();
 
@@ -284,106 +284,106 @@ namespace   Stroika {
                         Invariant ();
                     }
 #if     qDebug
-                    template    <typename T>
-                    void    Array<T>::Invariant_ () const
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::Invariant_ () const
                     {
                         Assert ((_fSlotsAllocated == 0) == (_fItems == nullptr));     // always free iff slots alloced = 0
                         Assert (_fLength <= _fSlotsAllocated);
                     }
 #endif
-                    template    <typename  T>
-                    inline  Array<T>::~Array ()
+                    template      <typename  T, typename TRAITS>
+                    inline  Array<T, TRAITS>::~Array ()
                     {
                         RemoveAll ();
                         delete (char*)_fItems;
                     }
-                    template    <typename  T>
-                    inline  T   Array<T>::GetAt (size_t i) const
+                    template      <typename  T, typename TRAITS>
+                    inline  T   Array<T, TRAITS>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
                         Require (i < _fLength);
                         return _fItems [i];
                     }
-                    template    <typename  T>
-                    inline  void    Array<T>::SetAt (size_t i, T item)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::SetAt (size_t i, T item)
                     {
                         Require (i >= 0);
                         Require (i < _fLength);
                         _fItems [i] = item;
                     }
-                    template    <typename  T>
-                    inline  T&  Array<T>::operator[] (size_t i)
+                    template      <typename  T, typename TRAITS>
+                    inline  T&  Array<T, TRAITS>::operator[] (size_t i)
                     {
                         Require (i >= 0);
                         Require (i < _fLength);
                         return _fItems [i];
                     }
-                    template    <typename  T>
-                    inline  T   Array<T>::operator[] (size_t i) const
+                    template      <typename  T, typename TRAITS>
+                    inline  T   Array<T, TRAITS>::operator[] (size_t i) const
                     {
                         Require (i >= 0);
                         Require (i < _fLength);
                         return _fItems [i];
                     }
-                    template    <typename T>
-                    inline  size_t  Array<T>::GetLength () const
+                    template      <typename  T, typename TRAITS>
+                    inline  size_t  Array<T, TRAITS>::GetLength () const
                     {
                         return _fLength;
                     }
-                    template    <typename T>
-                    inline  size_t  Array<T>::GetCapacity () const
+                    template      <typename  T, typename TRAITS>
+                    inline  size_t  Array<T, TRAITS>::GetCapacity () const
                     {
                         return _fSlotsAllocated;
                     }
-                    template    <typename T>
-                    inline  void    Array<T>::Compact ()
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::Compact ()
                     {
                         SetCapacity (GetLength ());
                     }
-                    template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::RemoveAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
-                    template    <typename T>
-                    inline  void    Array<T>::RemoveAt (const BackwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::RemoveAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         this->RemoveAt (i.CurrentIndex ());
                     }
-                    template    <typename T>
-                    inline  void    Array<T>::SetAt (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (i.CurrentIndex (), newValue);
                     }
-                    template    <typename T>
-                    inline  void    Array<T>::SetAt (const BackwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::SetAt (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         SetAt (i.CurrentIndex (), newValue);
                     }
-                    template    <typename T>
-                    void    Array<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (i.CurrentIndex (), newValue);
                     }
-                    template    <typename T>
-                    void    Array<T>::AddBefore (const BackwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::AddBefore (const BackwardIterator& i, T newValue)
                     {
                         // i CAN BE DONE OR NOT
                         InsertAt (i.CurrentIndex (), newValue);
                     }
-                    template    <typename T>
-                    void    Array<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (i.CurrentIndex () + 1, newValue);
                     }
-                    template    <typename T>
-                    void    Array<T>::AddAfter (const BackwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::AddAfter (const BackwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         InsertAt (i.CurrentIndex () + 1, newValue);
@@ -392,12 +392,12 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************ Array<T>::_ArrayIteratorBase **************************
+                    ***************** Array<T,TRAITS>::_ArrayIteratorBase **************************
                     ********************************************************************************
                     */
 #if     qDebug
-                    template    <typename T>
-                    void    Array<T>::_ArrayIteratorBase::Invariant_ () const
+                    template      <typename  T, typename TRAITS>
+                    void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant_ () const
                     {
                         AssertNotNull (_fData);
                         Assert (_fStart == _fData->_fItems);
@@ -405,15 +405,15 @@ namespace   Stroika {
                         Assert ((_fCurrent >= _fStart) and (_fCurrent <= _fEnd));   // ANSI C requires this is always TRUE
                     }
 #endif
-                    template    <typename T>
-                    inline  void    Array<T>::_ArrayIteratorBase::Invariant () const
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::_ArrayIteratorBase::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <typename T>
-                    inline  Array<T>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T>& data) :
+                    template      <typename  T, typename TRAITS>
+                    inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>& data) :
 #if     qDebug
                         _fData (&data),
 #endif
@@ -429,8 +429,8 @@ namespace   Stroika {
                          * Cannot call invariant () here since _fCurrent not yet setup.
                          */
                     }
-                    template    <typename T>
-                    bool    Array<T>::_ArrayIteratorBase::More (T* current, bool advance)
+                    template      <typename  T, typename TRAITS>
+                    bool    Array<T, TRAITS>::_ArrayIteratorBase::More (T* current, bool advance)
                     {
                         if (advance) {
                             this->_fSuppressMore = false;
@@ -445,14 +445,14 @@ namespace   Stroika {
 
                         return (false);
                     }
-                    template    <typename T>
-                    inline  bool    Array<T>::_ArrayIteratorBase::Done () const
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::_ArrayIteratorBase::Done () const
                     {
                         Invariant ();
                         return bool (_fCurrent == _fEnd);
                     }
-                    template    <typename T>
-                    inline  size_t  Array<T>::_ArrayIteratorBase::CurrentIndex () const
+                    template      <typename  T, typename TRAITS>
+                    inline  size_t  Array<T, TRAITS>::_ArrayIteratorBase::CurrentIndex () const
                     {
                         /*
                          * NB: This can be called if we are done - if so, it returns GetLength().
@@ -460,10 +460,10 @@ namespace   Stroika {
                         Invariant ();
                         return _fCurrent - _fStart;
                     }
-                    template    <typename T>
-                    inline  T       Array<T>::_ArrayIteratorBase::Current () const
+                    template      <typename  T, typename TRAITS>
+                    inline  T       Array<T, TRAITS>::_ArrayIteratorBase::Current () const
                     {
-                        Ensure (_fData->GetAt (CurrentIndex ()) == *_fCurrent);
+                        Ensure (typename TRAITS::EqualsCompareFunctionType::Equals (_fData->GetAt (CurrentIndex ()), *_fCurrent));
                         Invariant ();
                         return *_fCurrent;
                     }
@@ -471,18 +471,18 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    *********************** Array<T>::ForwardIterator ******************************
+                    *********************** Array<T,TRAITS>::ForwardIterator ***********************
                     ********************************************************************************
                     */
-                    template    <typename T>
-                    inline  Array<T>::ForwardIterator::ForwardIterator (const Array<T>& data)
+                    template      <typename  T, typename TRAITS>
+                    inline  Array<T, TRAITS>::ForwardIterator::ForwardIterator (const Array<T, TRAITS>& data)
                         : inherited (data)
                     {
                         this->_fCurrent = this->_fStart;
                         Invariant ();
                     }
-                    template    <typename T>
-                    inline  bool    Array<T>::ForwardIterator::More (T* current, bool advance)
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
                         if (advance) {
@@ -497,11 +497,11 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************ Array<T>::BackwardIterator ****************************
+                    ********************** Array<T,TRAITS>::BackwardIterator ***********************
                     ********************************************************************************
                     */
-                    template    <typename T>
-                    inline  Array<T>::BackwardIterator::BackwardIterator (const Array<T>& data)
+                    template      <typename  T, typename TRAITS>
+                    inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>& data)
                         : inherited (data)
                     {
                         if (data.GetLength () == 0) {
@@ -512,8 +512,8 @@ namespace   Stroika {
                         }
                         Invariant ();
                     }
-                    template    <typename T>
-                    inline  bool    Array<T>::BackwardIterator::More (T* current, bool advance)
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    Array<T, TRAITS>::BackwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
                         if (advance) {

@@ -15,9 +15,9 @@
  *  TODO
  *
  *  (GOOD TODO NEXT)
- *      @todo   Redo Array_Patch<T>::ForwardIterator - so ut uses Array<T>::ForwardIterator- where
- *              Array_Patch<T>::opatchiteraorbase - is a mixin class! Instead of
- *              DataStructures::Array<T>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
+ *      @todo   Redo Array_Patch<T,TRAITS>::ForwardIterator - so ut uses Array<T,TRAITS>::ForwardIterator- where
+ *              Array_Patch<T,TRAITS>::opatchiteraorbase - is a mixin class! Instead of
+ *              DataStructures::Array<T,TRAITS>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
  *              PERHAPS EXPERIMETNT...
  *
  *
@@ -28,7 +28,7 @@
  *      @todo   Update this patching code to use the same new UpdateAt/RemoveAt paradigm used in base class Array
  *              And update code that uses these iterators - patching arrays - to replace that for RemoveCurrnet()
  *
- *      @todo   Possibly replace Array_Patch with just Array<T> (in this new namespcae)
+ *      @todo   Possibly replace Array_Patch with just Array<T,TRAITS> (in this new namespcae)
  *
  */
 
@@ -42,21 +42,21 @@ namespace   Stroika {
 
 
                     /**
-                     *      Array_Patch<T> is an array implemantion that keeps a list of patchable
+                     *      Array_Patch<T,TRAITS> is an array implemantion that keeps a list of patchable
                      *  iterators, and handles the patching automatically for you. Use this if
                      *  you ever plan to use patchable iterators.
                      */
-                    template    <typename T>
-                    class   Array_Patch : public DataStructures::Array<T> {
+                    template      <typename  T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
+                    class   Array_Patch : public DataStructures::Array<T, TRAITS> {
                     private:
-                        typedef typename DataStructures::Array<T> inherited;
+                        typedef typename DataStructures::Array<T, TRAITS> inherited;
 
                     public:
                         Array_Patch ();
-                        Array_Patch (const Array_Patch<T>& from);
+                        Array_Patch (const Array_Patch<T, TRAITS>& from);
                         ~Array_Patch ();
 
-                        nonvirtual  Array_Patch<T>& operator= (const Array_Patch<T>& rhs);
+                        nonvirtual  Array_Patch<T, TRAITS>& operator= (const Array_Patch<T, TRAITS>& rhs);
 
                         /*
                          * Methods to do the patching yourself. Iterate over all the iterators and
@@ -118,13 +118,13 @@ namespace   Stroika {
                      *      _ArrayIteratorBase<T> is a private utility class designed
                      *  to promote source code sharing among the patched iterator implementations.
                      */
-                    template    <typename T>
-                    class   Array_Patch<T>::_ArrayIteratorBase : public DataStructures::Array<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array_Patch<T, TRAITS>::_ArrayIteratorBase : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename DataStructures::Array<T>::_ArrayIteratorBase    inherited;
+                        typedef typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        _ArrayIteratorBase (const Array_Patch<T>& data);
+                        _ArrayIteratorBase (const Array_Patch<T, TRAITS>& data);
                         _ArrayIteratorBase (const _ArrayIteratorBase& from);
                         ~_ArrayIteratorBase ();
 
@@ -143,8 +143,8 @@ namespace   Stroika {
                         nonvirtual  void    PatchRealloc ();                //  call after realloc could have happened
 
                     protected:
-                        const Array_Patch<T>*       fData;
-                        _ArrayIteratorBase*         fNext;
+                        const Array_Patch<T, TRAITS>*    fData;
+                        _ArrayIteratorBase*             fNext;
 
 #if     qDebug
                         virtual void    Invariant_ () const override;
@@ -152,24 +152,24 @@ namespace   Stroika {
 
                         virtual     void    PatchRemoveCurrent ()   =   0;  // called from patchremove if patching current item...
 
-                        friend  class   Array_Patch<T>;
+                        friend  class   Array_Patch<T, TRAITS>;
                     };
 
 
                     /*
-                     *      Array_Patch<T>::ForwardIterator is forwards iterator that can be used
-                     *  while modifing its owned array. It can only be used with Array_Patch<T>
+                     *      Array_Patch<T,TRAITS>::ForwardIterator is forwards iterator that can be used
+                     *  while modifing its owned array. It can only be used with Array_Patch<T,TRAITS>
                      *  since the classes know about each other, and keep track of each other.
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template    <typename T>
-                    class   Array_Patch<T>::ForwardIterator : public Array_Patch<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class   Array_Patch<T, TRAITS>::ForwardIterator : public Array_Patch<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array_Patch<T>::_ArrayIteratorBase    inherited;
+                        typedef typename Array_Patch<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        ForwardIterator (const Array_Patch<T>& data);
+                        ForwardIterator (const Array_Patch<T, TRAITS>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -180,19 +180,19 @@ namespace   Stroika {
 
 
                     /*
-                     *      Array_Patch<T>::BackwardIterator is backwards iterator that can be used
-                     *  while modifing its owned array. It can only be used with Array_Patch<T>
+                     *      Array_Patch<T,TRAITS>::BackwardIterator is backwards iterator that can be used
+                     *  while modifing its owned array. It can only be used with Array_Patch<T,TRAITS>
                      *  since the classes know about each other, and keep track of each other.
                      *  This is intended to be a convienience in implementing concrete container
                      *  mixins.
                      */
-                    template    <typename T>
-                    class  Array_Patch<T>::BackwardIterator : public Array_Patch<T>::_ArrayIteratorBase {
+                    template      <typename  T, typename TRAITS>
+                    class  Array_Patch<T, TRAITS>::BackwardIterator : public Array_Patch<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array_Patch<T>::_ArrayIteratorBase    inherited;
+                        typedef typename Array_Patch<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        BackwardIterator (const Array_Patch<T>& data);
+                        BackwardIterator (const Array_Patch<T, TRAITS>& data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

@@ -23,7 +23,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ***************************** Bag_Array<T,BAG_TRAITS>::Rep_ *******************************
+                 ************************ Bag_Array<T,BAG_TRAITS>::Rep_ *************************
                  ********************************************************************************
                  */
                 template    <typename T, typename BAG_TRAITS>
@@ -60,15 +60,18 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_               fLockSupport_;
-                    Private::PatchingDataStructures::Array_Patch<T>     fData_;
+                    //typedef Private::PatchingDataStructures::Array_Patch<T> ImplArrayType_;
+                    typedef Private::DataStructures::Array_TraitsWithEqualsComparer<T, typename BAG_TRAITS::EqualsCompareFunctionType>   UseArrayComparerType_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayComparerType_>                                       ImplArrayType_;
+                    Private::ContainerRepLockDataSupport_                                                                               fLockSupport_;
+                    ImplArrayType_     fData_;
                     friend  class Bag_Array<T, BAG_TRAITS>::IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ********************* Bag_Array<T,BAG_TRAITS>::IteratorRep_ *******************************
+                 ********************* Bag_Array<T,BAG_TRAITS>::IteratorRep_ ********************
                  ********************************************************************************
                  */
                 template    <typename T, typename BAG_TRAITS>
@@ -105,8 +108,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<T>::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                   fLockSupport_;
+                    mutable typename Rep_::ImplArrayType_::ForwardIterator   fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -115,7 +118,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************************** Bag_Array<T,BAG_TRAITS>::Rep_ ******************************
+                ******************* Bag_Array<T,BAG_TRAITS>::Rep_ ******************************
                 ********************************************************************************
                 */
                 template    <typename T, typename BAG_TRAITS>
@@ -225,8 +228,11 @@ namespace   Stroika {
                         /*
                          *  Iterate backwards since removing from the end of an array will be faster.
                          */
-                        for (typename Private::DataStructures::Array<T>::BackwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current () == item) {
+                        // DEBUG WHY USING BACKWARD ITERATOR GENERATES ERROR ON MSVC - COMPILE ERROR ABOUT TYPE MISMATCH-- WHEN I SWITCHED TO USING ImplArrayType_...
+                        // NOT IMPORTANT NOW _ SO DEFER
+                        //for (typename ImplArrayType_::BackwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename ImplArrayType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                            if (typename BAG_TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
                             }
@@ -257,7 +263,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************************* Bag_Array<T,BAG_TRAITS> *********************************
+                ********************** Bag_Array<T,BAG_TRAITS> *********************************
                 ********************************************************************************
                 */
                 template    <typename T, typename BAG_TRAITS>
