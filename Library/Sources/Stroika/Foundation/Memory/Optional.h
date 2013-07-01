@@ -134,6 +134,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Returns true iff the Optional<T> has a valid value ( not empty ());
+                 */
+                nonvirtual  bool    IsPresent () const;
+
+            public:
+                /**
                  *  Always safe to call. If empty, returns argument 'default' or 'sentinal' value.
                  */
                 nonvirtual  T   Value (T defaultValue = T ()) const;
@@ -151,7 +157,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \pre (not empty ())
+                 *  \pre (IsPresent ())
                  *
                  *  \warning
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
@@ -166,7 +172,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \pre (not empty ())
+                 *  \pre (IsPresent ())
                  *
                  *  \warning
                  *      This method returns a pointer internal to (owned by) Optional<T>, and its lifetime
