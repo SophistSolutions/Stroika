@@ -86,7 +86,7 @@ namespace   Stroika {
                 explicit Set (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Set<T>& operator= (const Set<T>& src);
+                nonvirtual  Set<T>& operator= (const Set<T>& rhs);
 
             public:
                 /**

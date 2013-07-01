@@ -55,6 +55,12 @@ namespace   Stroika {
                 AddAll (start, end);
             }
             template    <typename T>
+            inline  Set<T>& Set<T>::operator= (const Set<T>& rhs)
+            {
+                inherited::operator= (rhs);
+                return *this;
+            }
+            template    <typename T>
             inline  const typename  Set<T>::_IRep&    Set<T>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
