@@ -148,7 +148,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \brief Compares items with operator==, and returns true if any match.
+                 * \brief Compares items with BAG_TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
                 nonvirtual  bool    Contains (T item) const;
 
@@ -229,8 +229,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Since items can appear more than once, this function traverses the bag and returns the
-                 * count of times the given item appears.
+                 *  Since items can appear more than once, this function traverses the bag and returns the
+                 *  count of times the given item appears. Note that TallyOf (T) returns zero if the item
+                 *  is not present. For TallyOf (T), the BAG_TRAITS::EqualsCompareFunctionType::Equals() function
+                 *  is used to compare.
                  */
                 nonvirtual  size_t  TallyOf (const Iterator<T>& i) const;
                 nonvirtual  size_t  TallyOf (T item) const;

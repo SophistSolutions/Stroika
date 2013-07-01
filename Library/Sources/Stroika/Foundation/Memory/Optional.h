@@ -17,6 +17,7 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Redo TRAITS for Optional using new Common/Compare trait code
  *
  */
 
