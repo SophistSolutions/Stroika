@@ -35,6 +35,56 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
 {
 }
 
+ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields)
+    : fForType (forTypeInfo)
+    , fToVariantMapper ()
+    , fFromVariantMapper ()
+{
+#if     qDebug
+    for (auto i : fields) {
+        Require (i.fOffset < n);
+    }
+    {
+        // assure each field unique
+        Containers::Tally<size_t> t;
+        for (auto i : fields) {
+            t.Add (i.fOffset);
+        }
+        for (auto i : t) {
+            Require (i.fCount == 1);
+        }
+    }
+#if 0
+    // GOOD TODO but cannot since no longer a member of the ObjectMapper class...
+    {
+        // Assure for each field type is registered
+        for (auto i : fields) {
+            Require (Lookup_ (i.fTypeInfo).fFromVariantMapper);
+            Require (Lookup_ (i.fTypeInfo).fToVariantMapper);
+        }
+    }
+#endif
+#endif
+
+    fToVariantMapper = [fields] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+        Mapping<String, VariantValue> m;
+        for (auto i : fields) {
+            const Byte* fieldObj = objOfType + i.fOffset;
+            m.Add (i.fSerializedFieldName, mapper->Serialize (i.fTypeInfo, objOfType + i.fOffset));
+        }
+        return VariantValue (m);
+    };
+    fFromVariantMapper = [fields] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+        Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
+        for (auto i : fields) {
+            Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
+            if (not o.empty ()) {
+                mapper->Deserialize (i.fTypeInfo, *o, into + i.fOffset);
+            }
+        }
+    };
+}
+
 
 /*
  ********************************************************************************
@@ -139,51 +189,6 @@ void    ObjectVariantMapper::Deserialize (const type_index& forTypeInfo, const V
 {
     Require (Lookup_ (forTypeInfo).fFromVariantMapper);
     Lookup_ (forTypeInfo).fFromVariantMapper (this, d, into);
-}
-
-ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::mkSerializerForStruct (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields)
-{
-#if     qDebug
-    for (auto i : fields) {
-        Require (i.fOffset < n);
-    }
-    {
-        // assure each field unique
-        Containers::Tally<size_t> t;
-        for (auto i : fields) {
-            t.Add (i.fOffset);
-        }
-        for (auto i : t) {
-            Require (i.fCount == 1);
-        }
-    }
-    {
-        // Assure for each field type is registered
-        for (auto i : fields) {
-            Require (Lookup_ (i.fTypeInfo).fFromVariantMapper);
-            Require (Lookup_ (i.fTypeInfo).fToVariantMapper);
-        }
-    }
-#endif
-
-    auto toVariantMapper = [fields] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
-        Mapping<String, VariantValue> m;
-        for (auto i : fields) {
-            const Byte* fieldObj = objOfType + i.fOffset;
-            m.Add (i.fSerializedFieldName, mapper->Serialize (i.fTypeInfo, objOfType + i.fOffset));
-        }
-        return VariantValue (m);
-    };
-    auto fromVariantMapper = [fields] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
-        Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-        for (auto i : fields) {
-            Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-            if (not o.empty ()) {
-                mapper->Deserialize (i.fTypeInfo, *o, into + i.fOffset);
-            }
-        }
-    };
-    return TypeMappingDetails (forTypeInfo, toVariantMapper, fromVariantMapper);
 }
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const

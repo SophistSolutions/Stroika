@@ -29,10 +29,8 @@
  *
  *      @todo   Just a draft - think through what we really want here...
  *
- *      @todo   Add to ObjectVariantMapper::RegisterCommonSerializers - support for Array/Sequence/etc...
- *
- *      @todo   So support for array - like we have for struct - using Sequence<> as the C++ type (maybe others too)
- *              and then auto-map that. Maybe also support vector<T> as a builtin / registered type as well - and others?
+ *      @todo   Add support for array to RegisterCommonSerializers - like we have for struct - using Sequence<>
+ *              as the C++ type (maybe others too, vector, more?).
  *
  *              But unclear how todo ArrayOfWhat?? Maybe the CTOR takes to typeids - not sure how well that works?
  *
@@ -65,17 +63,23 @@ namespace   Stroika {
 
 
             /**
-             * CLASS IS COPYABLE. Make one instance, register your types into it and use this to
+             *  \brief  ObjectVariantMapper can be used to map C++ types to variant-union types, which can be transparently mapped into and out of XML, JSON, etc.
+             *
+             *  ObjectVariantMapper IS COPYABLE. Make one instance, register your types into it and use this to
              *  serialized/deserialize
              *
              *
              * EXAMPLE USAGE:
              *      struct SharedContactsConfig_
              *      {
-             *          bool    fEnabled;
+             *          bool                    fEnabled;
+             *          DateTime                fLastSynchronizedAt;
+             *          Mapping<String,String>  fThisPHRsIDToSharedContactID;
              *
              *          SharedContactsConfig_ ()
              *              : fEnabled (false)
+             *              , fLastSynchronizedAt ()
+             *              , fThisPHRsIDToSharedContactID ()
              *          {
              *          }
              *      };
@@ -86,19 +90,25 @@ namespace   Stroika {
              *  // register each of your mappable (even private) types
              *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
+             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
+             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
              *  }));
              *
              *  SharedContactsConfig_   tmp;
              *  tmp.fEnabled = enabled;
              *  VariantValue v = mapper.Serialize  (tmp);
+             *
              *  // at this point - we should have VariantValue object with "Enabled" field.
              *  // This can then be serialized using
-             *  JSON::Serialize....
              *
-             *  // THEN deserialized
+             *  Streams::BasicBinaryInputOutputStream   tmpStream;
+             *  DataExchangeFormat::JSON::PrettyPrint (v, tmpStream);
              *
-             *  Then mapped back to C++ object form
-             *  tmp = mapper.Deserialize (v);
+             *  // THEN deserialized, and mapped back to C++ object form
+             *  tmp = mapper.Deserialize<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
+             *  if (tmp.fEnabled) {
+             *  ...
+             *  }
              *
              *
              */
@@ -126,12 +136,6 @@ namespace   Stroika {
 
             public:
                 struct  StructureFieldInfo;
-
-            public:
-                /**
-                * @todo - add sizeof class - for assert checking... just  in CTOR arg - no need in serializer itself
-                 */
-                nonvirtual  TypeMappingDetails  mkSerializerForStruct (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 
             public:
                 /**
@@ -175,6 +179,8 @@ namespace   Stroika {
                     const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
                     const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
                 );
+                TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
+
 
                 // @todo
                 //tmphack - so I can use Stroika Set<> code with smarter field extraction etc.., and fix to default CTOR issue
