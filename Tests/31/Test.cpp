@@ -1,78 +1,138 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
+ * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
  */
-//  TEST    Foundation::Math
+//  TEST    Foundation::IO::Network::Transfer
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Debug/Trace.h"
+#include    <iostream>
 
-#include    "Stroika/Foundation/Math/Angle.h"
-#include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Math/Overlap.h"
+#include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
+#if     qHasFeature_libcurl
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
+#endif
+#if     qHasFeature_WinHTTP
+#include    "Stroika/Foundation/IO/Network/Transfer/Client_WinHTTP.h"
+#endif
 
-#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
 
 
-using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Math;
+using   namespace   Stroika::Foundation::IO;
+using   namespace   Stroika::Foundation::IO::Network;
+using   namespace   Stroika::Foundation::IO::Network::Transfer;
+
+
+
 
 
 namespace {
-    // test helper to assure answer for (A,B) is same as (B,A) - commutative
-    template    <typename T>
-    bool    VerifyOverlapIsCommutative_ (const pair<T, T>& p1, const pair<T, T>& p2)
+    void    TestURLParsing_ ()
     {
-        bool r  = Overlaps<T> (p1, p2);
-        VerifyTestResult (r == Overlaps<T> (p2, p1));
-        return r;
+        {
+            URL url (L"http:/StyleSheet.css?ThemeName=Cupertino");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.GetQueryString () == L"ThemeName=Cupertino");
+            VerifyTestResult (url.GetHost ().empty ());
+            VerifyTestResult (url.GetHostRelativePath () == L"StyleSheet.css");
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetProtocol () == L"http");
+        }
+        {
+            URL url (L"http://www.recordsforliving.com/");
+            VerifyTestResult (url.GetEffectivePortNumber () == 80);
+            VerifyTestResult (url.GetQueryString ().empty ());
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetHostRelativePath ().empty ());
+            VerifyTestResult (url.GetHost () == L"www.recordsforliving.com");
+            VerifyTestResult (url.GetProtocol () == L"http");
+            VerifyTestResult (not url.IsSecure ());
+        }
+        {
+            URL url (L"https://xxx.recordsforliving.com/");
+            VerifyTestResult (url.GetEffectivePortNumber () == 443);
+            VerifyTestResult (url.GetQueryString ().empty ());
+            VerifyTestResult (url.GetFragment ().empty ());
+            VerifyTestResult (url.GetHostRelativePath ().empty ());
+            VerifyTestResult (url.GetHost () == L"xxx.recordsforliving.com");
+            VerifyTestResult (url.GetProtocol () == L"https");
+            VerifyTestResult (url.IsSecure ());
+        }
     }
 }
 
 
+
 namespace   {
-    void    Test1_Overlap_ ()
+    void    Test_1_SimpleFetch_Google_C_ (Connection c)
     {
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (2, 2)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (3, 4)));
-        VerifyTestResult (not VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (0, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 3), pair<int, int> (1, 1)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 4)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (1, 10), pair<int, int> (3, 3)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (3, 7)));
-        VerifyTestResult (VerifyOverlapIsCommutative_<int> (pair<int, int> (5, 10), pair<int, int> (5, 5)));
+        c.SetURL (URL (L"http://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
     }
-    void    Test2_Round_ ()
+    void    Test_2_SimpleFetch_SSL_Google_C_ (Connection c)
     {
-        // really could use more cases!!!
-        VerifyTestResult (RoundUpTo (2, 10) == 10);
-        VerifyTestResult (RoundDownTo (2, 10) == 0);
-        VerifyTestResult (RoundUpTo (2, 2) == 2);
-        VerifyTestResult (RoundDownTo (2, 2) == 2);
-    }
-    void    Test3_Angle_ ()
-    {
-        // really could use more cases!!!
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (2.3));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (360, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
-        VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
+        c.SetURL (URL (L"https://www.google.com"));
+        Response    r   =   c.Get ();
+        VerifyTestResult (r.GetSucceeded ());
+        VerifyTestResult (r.fData.size () > 1);
     }
 }
 
 
+
+
+//// CREATE TEMPLATE THAT ITERATES OVER ALL USEFUL CONNECTION TYPES (default one, and special chosen depending on available defines - so eventually
+// on windows, we test BTOH win32 and curl (if avaialble).
+
 namespace   {
+    void    DoRegressionTests_ForConnectionFactory_ (Connection (*factory) ())
+    {
+        Test_1_SimpleFetch_Google_C_ ((factory) ());
+        Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
+    }
+
+#if     !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     qHasFeature_WinHTTP
+    Connection  mk_WinHTTP_ ()
+    {
+        return Connection_WinHTTP ();
+    }
+#endif
+#if     qHasFeature_libcurl
+    Connection  mk_LIBCURL_ ()
+    {
+        return Connection_LibCurl ();
+    }
+#endif
+#endif
     void    DoRegressionTests_ ()
     {
-        Test1_Overlap_ ();
-        Test2_Round_ ();
-        Test3_Angle_ ();
+        TestURLParsing_ ();
+
+        DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
+
+#if     qHasFeature_libcurl
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_LIBCURL_);
+#endif
+#endif
+#if     qHasFeature_WinHTTP
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+        DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
+#else
+        DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
+#endif
+#endif
     }
 }
+
+
 
 
 
@@ -82,6 +142,3 @@ int main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-
-
-

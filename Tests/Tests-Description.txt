@@ -20,15 +20,16 @@
 [20]	Foundation::Containers::Tally
 [21]	Foundation::Cryptography
 [22]	Foundation::DataExchangeFormat::JSON
-[23]	Foundation::DataExchangeFormat::XML::SaxParser
-[24]	Foundation::Execution::Exceptions
-[25]	Foundation::Execution::ProcessRunner
-[26]	Foundation::Execution::Signals
-[27]	Foundation::Execution::Threads		[Note - includes atomics]
-[28]	Foundation::IO::Network
-[29]	Foundation::IO::Network::HTTP
-[30]	Foundation::IO::Network::Transfer
-[31]	Foundation::Math
-[32]	Foundation::Memory
-[33]	Foundation::Streams
-[34]	Foundation::Time
+[23]	Foundation::DataExchangeFormat::ObjectVariantMapper
+[24]	Foundation::DataExchangeFormat::XML::SaxParser
+[25]	Foundation::Execution::Exceptions
+[26]	Foundation::Execution::ProcessRunner
+[27]	Foundation::Execution::Signals
+[28]	Foundation::Execution::Threads		[Note - includes atomics]
+[29]	Foundation::IO::Network
+[30]	Foundation::IO::Network::HTTP
+[31]	Foundation::IO::Network::Transfer
+[32]	Foundation::Math
+[33]	Foundation::Memory
+[34]	Foundation::Streams
+[35]	Foundation::Time
