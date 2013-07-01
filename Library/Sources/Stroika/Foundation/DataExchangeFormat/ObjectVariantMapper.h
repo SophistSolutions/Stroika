@@ -29,6 +29,8 @@
  *
  *      @todo   Just a draft - think through what we really want here...
  *
+ *      @todo   Add to ObjectVariantMapper::RegisterCommonSerializers - support for Array/Sequence/etc...
+ *
  *      @todo   So support for array - like we have for struct - using Sequence<> as the C++ type (maybe others too)
  *              and then auto-map that. Maybe also support vector<T> as a builtin / registered type as well - and others?
  *
