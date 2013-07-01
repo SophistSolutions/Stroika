@@ -128,7 +128,7 @@ namespace   Stroika {
             public:
                 /**
                  *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
-                 *  an Optional<T> (eg. through operator T ()) will result in an error.
+                 *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
                  */
                 nonvirtual  bool    empty () const; // means no value (it is optional!)
 
