@@ -52,6 +52,12 @@ namespace   Stroika {
                 this->AddAll (b);
             }
             template    <typename T, typename BAG_TRAITS>
+            inline  Bag<T, BAG_TRAITS>& Bag<T, BAG_TRAITS>::operator= (const Bag<T, BAG_TRAITS>& rhs)
+            {
+                inherited::operator= (rhs);
+                return *this;
+            }
+            template    <typename T, typename BAG_TRAITS>
             inline  const typename  Bag<T, BAG_TRAITS>::_IRep&    Bag<T, BAG_TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);   // static_cast<> should perform better, but assert to verify safe
