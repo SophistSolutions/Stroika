@@ -81,8 +81,10 @@ namespace   Stroika {
              *
              *  ObjectVariantMapper mapper;
              *
-             *  // register each of your proivate types
-             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({ StructureFieldInfo (offsetof (SharedContactsConfig_, fEnabled), typeid (bool), L"Enabled"), }));
+             *  // register each of your mappable (even private) types
+             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({
+             *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
+             *  }));
              *
              *  SharedContactsConfig_   tmp;
              *  tmp.fEnabled = enabled;
@@ -160,7 +162,6 @@ namespace   Stroika {
 
 
             /**
-             * RENAME - not calling serializaiton anynore???
              */
             struct  ObjectVariantMapper::TypeMappingDetails {
                 type_index                                                                          fForType;
@@ -191,7 +192,6 @@ namespace   Stroika {
 
 
             /**
-             * RENAME - JUST FOR ELTS OF A STRUCT
              */
             struct  ObjectVariantMapper::StructureFieldInfo {
                 size_t      fOffset;
@@ -200,7 +200,6 @@ namespace   Stroika {
 
                 StructureFieldInfo (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ());
             };
-
 
 
             /**
