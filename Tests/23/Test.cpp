@@ -67,18 +67,18 @@ namespace   {
 
         // register each of your mappable (even private) types
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ( {
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
         }));
 #else
-        DataExchangeFormat::ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<DataExchangeFormat::ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
 #endif
 
         bool newEnabled = true;
@@ -93,20 +93,20 @@ namespace   {
         // This can then be serialized using
 
         Streams::BasicBinaryInputOutputStream   tmpStream;
-        DataExchangeFormat::JSON::PrettyPrint (v, tmpStream);
+        JSON::PrettyPrint (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileOutputStream tmp (L"t.txt");
-            DataExchangeFormat::JSON::PrettyPrint (v, tmp);
+            JSON::PrettyPrint (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader   (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }
