@@ -91,27 +91,6 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
  ****************** DataExchangeFormat::ObjectVariantMapper *********************
  ********************************************************************************
  */
-ObjectVariantMapper::ObjectVariantMapper ()
-{
-    RegisterCommonSerializers ();
-}
-
-void    ObjectVariantMapper::RegisterSerializer (const TypeMappingDetails& serializerInfo)
-{
-    fSerializers_.Add (serializerInfo);
-}
-
-void    ObjectVariantMapper::ClearRegistry ()
-{
-    fSerializers_.clear ();
-}
-
-void    ObjectVariantMapper::ResetToDefaultRegistry ()
-{
-    ClearRegistry ();
-    RegisterCommonSerializers ();
-}
-
 namespace {
     template    <typename T, typename UseVariantType>
     ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
@@ -124,59 +103,88 @@ namespace {
         };
         return ObjectVariantMapper::TypeMappingDetails (typeid (T), toVariantMapper, fromVariantMapper);
     }
+    Set<ObjectVariantMapper::TypeMappingDetails>    mkCommonSerializers_ ()
+    {
+        Set<ObjectVariantMapper::TypeMappingDetails>    result;
+        result.Add (mkSerializerInfo_<bool, bool> ());
+        result.Add (mkSerializerInfo_<int, int> ());
+        result.Add (mkSerializerInfo_<float, VariantValue::FloatType> ());
+        result.Add (mkSerializerInfo_<double, VariantValue::FloatType> ());
+        result.Add (mkSerializerInfo_<Date, Date> ());
+        result.Add (mkSerializerInfo_<DateTime, DateTime> ());
+        result.Add (mkSerializerInfo_<String, String> ());
+
+        {
+            typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
+            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                Mapping<String, VariantValue> m;
+                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
+                for (auto i : *actualMember) {
+                    // really could do either way - but second more efficient
+                    //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
+                    m.Add (i.first, i.second);
+                }
+                return VariantValue (m);
+            };
+            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
+                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
+                actualInto->clear ();
+                for (auto i : m) {
+                    // really could do either way - but second more efficient
+                    //actualInto->Add (i.first, mapper->Deserialize<String> (i.second));
+                    actualInto->Add (i.first, i.second.As<String> ());
+                }
+            };
+            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
+        }
+
+        {
+            typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
+            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
+                return VariantValue (*actualMember);
+            };
+            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
+                *actualInto = d.As<Mapping<String, VariantValue>> ();
+            };
+            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
+        }
+
+        // TODO - ARRAY??? Maybe using Sequence???
+        {
+        }
+        return result;
+    }
+
+    // Construct the default map once, so that it never needs be re-created (though it could easily get cloned when modified)
+    Set<ObjectVariantMapper::TypeMappingDetails>    GetDefaultTypeMappers_ ()
+    {
+        static  Set<ObjectVariantMapper::TypeMappingDetails>    sDefaults_ = mkCommonSerializers_ ();
+        return sDefaults_;
+    }
 }
 
-void    ObjectVariantMapper::RegisterCommonSerializers ()
+
+ObjectVariantMapper::ObjectVariantMapper ()
+    : fSerializers_ (GetDefaultTypeMappers_ ())
 {
-    RegisterSerializer (mkSerializerInfo_<bool, bool> ());
-    RegisterSerializer (mkSerializerInfo_<int, int> ());
-    RegisterSerializer (mkSerializerInfo_<float, VariantValue::FloatType> ());
-    RegisterSerializer (mkSerializerInfo_<double, VariantValue::FloatType> ());
-    RegisterSerializer (mkSerializerInfo_<Date, Date> ());
-    RegisterSerializer (mkSerializerInfo_<DateTime, DateTime> ());
-    RegisterSerializer (mkSerializerInfo_<String, String> ());
+}
 
-    {
-        typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
-        auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
-            Mapping<String, VariantValue> m;
-            const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
-            for (auto i : *actualMember) {
-                // really could do either way - but second more efficient
-                //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
-                m.Add (i.first, i.second);
-            }
-            return VariantValue (m);
-        };
-        auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
-            Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-            ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
-            actualInto->clear ();
-            for (auto i : m) {
-                // really could do either way - but second more efficient
-                //actualInto->Add (i.first, mapper->Deserialize<String> (i.second));
-                actualInto->Add (i.first, i.second.As<String> ());
-            }
-        };
-        RegisterSerializer (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
-    }
+void    ObjectVariantMapper::RegisterTypeMapper (const TypeMappingDetails& serializerInfo)
+{
+    fSerializers_.Add (serializerInfo);
+}
 
-    {
-        typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
-        auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
-            const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
-            return VariantValue (*actualMember);
-        };
-        auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
-            ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
-            *actualInto = d.As<Mapping<String, VariantValue>> ();
-        };
-        RegisterSerializer (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
-    }
+void    ObjectVariantMapper::ClearTypeRegistry ()
+{
+    fSerializers_.clear ();
+}
 
-    // TODO - ARRAY??? Maybe using Sequence???
-    {
-    }
+void    ObjectVariantMapper::ResetToDefaultTypeRegistry ()
+{
+    fSerializers_ = GetDefaultTypeMappers_ ();
 }
 
 VariantValue    ObjectVariantMapper::Serialize (const type_index& forTypeInfo, const Byte* objOfType)

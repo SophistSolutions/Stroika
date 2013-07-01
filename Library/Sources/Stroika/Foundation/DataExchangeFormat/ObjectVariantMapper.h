@@ -123,16 +123,13 @@ namespace   Stroika {
                 struct  TypeMappingDetails;
 
             public:
-                nonvirtual  void    ClearRegistry ();
+                nonvirtual  void    ClearTypeRegistry ();
 
             public:
-                nonvirtual  void    ResetToDefaultRegistry ();
+                nonvirtual  void    ResetToDefaultTypeRegistry ();
 
             public:
-                nonvirtual  void    RegisterSerializer (const TypeMappingDetails& serializerInfo);
-
-            public:
-                nonvirtual  void    RegisterCommonSerializers ();
+                nonvirtual  void    RegisterTypeMapper (const TypeMappingDetails& serializerInfo);
 
             public:
                 struct  StructureFieldInfo;

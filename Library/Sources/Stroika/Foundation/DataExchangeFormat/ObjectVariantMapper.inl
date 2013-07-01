@@ -37,7 +37,7 @@ namespace   Stroika {
             template    <typename CLASS>
             void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
-                RegisterSerializer (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
+                RegisterTypeMapper (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
             void    ObjectVariantMapper::Deserialize (const Memory::VariantValue& v, CLASS* into)
