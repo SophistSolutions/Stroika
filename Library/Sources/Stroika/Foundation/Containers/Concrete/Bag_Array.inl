@@ -232,7 +232,7 @@ namespace   Stroika {
                         // NOT IMPORTANT NOW _ SO DEFER
                         //for (typename ImplArrayType_::BackwardIterator it (fData_); it.More (nullptr, true);) {
                         for (typename ImplArrayType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (typename BAG_TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
+                            if (BAG_TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
                             }

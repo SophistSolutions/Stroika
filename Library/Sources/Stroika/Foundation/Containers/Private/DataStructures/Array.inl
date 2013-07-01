@@ -133,7 +133,7 @@ namespace   Stroika {
                             const   T*   current =   &_fItems [0];
                             const   T*   last    =   &_fItems [_fLength - 1];  // safe to -1 since _fLength>0
                             for (; current <= last; current++) {
-                                if (typename TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                     return (true);
                                 }
                             }
@@ -463,7 +463,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  T       Array<T, TRAITS>::_ArrayIteratorBase::Current () const
                     {
-                        Ensure (typename TRAITS::EqualsCompareFunctionType::Equals (_fData->GetAt (CurrentIndex ()), *_fCurrent));
+                        Ensure (TRAITS::EqualsCompareFunctionType::Equals (_fData->GetAt (CurrentIndex ()), *_fCurrent));
                         Invariant ();
                         return *_fCurrent;
                     }
