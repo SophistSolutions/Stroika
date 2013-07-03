@@ -9,6 +9,7 @@
 #include    <memory>
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Concepts.h"
 
 
 
@@ -27,37 +28,12 @@ namespace   Stroika {
         namespace   Common {
 
 
-#if 0
             /**
-            **************** obsolete&&&&&&&&&&&
-            **************** obsolete&&&&&&&&&&&
-            **************** obsolete&&&&&&&&&&&
-            **************** obsolete&&&&&&&&&&&
-             *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
-             *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
-             */
-            template <typename T>
-            struct  Comparer {
-                /**
-                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
-                 */
-                static  int Compare (T v1, T v2);
-
-                /**
-                 *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
-                 *  replace these, but they must remain consistent.
-                 */
-                static  bool    Equals (T v1, T v2);
-            };
-#endif
-
-
-            /**
-             *  Utility you can specialize to define how two types are to be compared for ordering (and how that fits with equality)
-             *  The default implementation only requires you define operator< (T,T) - and it fiugres out other cases from just that.
+             *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
              */
             template <typename T>
             struct  ComparerWithEquals {
+                RequireElementTraitsInClass(RequireOperatorEquals, T);
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
                  *  replace these, but they must remain consistent.
@@ -74,6 +50,7 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithOrder : ComparerWithEquals<T> {
+                RequireElementTraitsInClass(RequireOperatorLess, T);
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */

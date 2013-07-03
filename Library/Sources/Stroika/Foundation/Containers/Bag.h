@@ -68,7 +68,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T>
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
             struct   Bag_DefaultTraits {
                 /**
                  *  @todo DOCUMENT WHAT GOES HERE. CAN A LAMBDA GO HERE? HOW TODO WITH LAMBDAS?
@@ -84,7 +84,7 @@ namespace   Stroika {
                  *      o   Bag<T, BAG_TRAITS>::TallyOf()
                  *      o   Bag<T, BAG_TRAITS>::Equals()
                  */
-                typedef typename    Common::ComparerWithEquals<T> EqualsCompareFunctionType;
+                typedef EQUALS_COMPARER EqualsCompareFunctionType;
             };
 
 
@@ -122,9 +122,6 @@ namespace   Stroika {
              */
             template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
             class   Bag : public Iterable<T> {
-            public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T);
-
             private:
                 typedef Iterable<T> inherited;
 

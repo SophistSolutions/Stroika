@@ -63,6 +63,21 @@ namespace   {
 }
 
 
+#if 1
+namespace {
+    struct X {
+        X() {}
+        // no op== or other ops
+    };
+    struct  MyXComparerWithEquals {
+        static  bool    Equals (X v1, X v2) {
+            return true;
+        }
+    };
+    Bag_Array<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f;
+}
+#endif
+
 
 int main (int argc, const char* argv[])
 {

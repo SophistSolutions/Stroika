@@ -242,7 +242,7 @@ namespace   Stroika {
             {
                 size_t  count = 0;
                 for (Iterator<T> i = this->MakeIterator (); not i.Done (); ++i) {
-                    if (*i == item) {
+                    if (BAG_TRAITS::EqualsCompareFunctionType::Equals (*i, item)) {
                         count++;
                     }
                 }
