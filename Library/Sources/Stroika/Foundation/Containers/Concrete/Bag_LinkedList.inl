@@ -61,18 +61,12 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-#if 0
-                    //typedef Private::PatchingDataStructures::Array_Patch<T> ImplArrayType_;
-                    typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>     UseArrayComparerType_;
-                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayComparerType_>                              ImplArrayType_;
-                    Private::ContainerRepLockDataSupport_                                                                       fLockSupport_;
-                    ImplArrayType_                                                                                              fData_;
-#endif
-//                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>     UseLinkedListTraitsType_;
-                    typedef Private::PatchingDataStructures::LinkedList_Patch<T> ImplArrayType_;
+                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    UseLinkedListTraitsType_;
+                    typedef Private::PatchingDataStructures::LinkedList_Patch<T, UseLinkedListTraitsType_>                      ImplArrayType_;
 
-                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
-                    ImplArrayType_    fData_;
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    ImplArrayType_                          fData_;
 
                 private:
                     friend  class   Bag_LinkedList<T, TRAITS>::IteratorRep_;

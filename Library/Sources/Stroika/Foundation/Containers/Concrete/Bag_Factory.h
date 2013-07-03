@@ -40,8 +40,8 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                Bag<T>  mkBag_Default ();
+                template    <typename T, typename TRAITS>
+                Bag<T, TRAITS>  mkBag_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED

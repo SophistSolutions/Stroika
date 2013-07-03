@@ -74,7 +74,9 @@ namespace {
             return true;
         }
     };
-    Bag_Array<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f;
+    Bag<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_xxx;
+    Bag_Array<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ar;
+    Bag_LinkedList<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ll;
 }
 #endif
 
