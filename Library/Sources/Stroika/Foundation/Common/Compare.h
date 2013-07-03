@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <functional>
 #include    <memory>
 
 #include    "../Configuration/Common.h"
@@ -55,6 +56,26 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
                 static  int Compare (T v1, T v2);
+            };
+
+
+            // @todo - TRY CHANGING USE OF ComparerWithEquals so instance copied around. Verify no perofrmance (size/time)
+            //          costs!!!!
+            //
+            ///EXPERIMENTAL - MIMICS API/CONCEPT of ComparerWithEquals<T> - but without requirement on T
+            /// BUT - to make it it work - we need all places that use
+            // ComparerWithEquals to keep an instance - and we have t to test/verify that has no codesize/object
+            // size implications when used with the above default case (ok that this costs)
+            template <typename T>
+            struct  ComparerWithEquals_XXX  {
+                std::function<bool(T, T)> fEq;
+
+                ComparerWithEquals_XXX (std::function<bool(T, T)> e)
+                    : fEq (e) {
+                }
+                bool    Equals (T v1, T v2) {
+                    return fEq (v1, v2);
+                }
             };
 
 
