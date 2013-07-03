@@ -23,6 +23,15 @@
  *
  * TODO:
  *
+ *      @todo   Seriously consider adding
+ *              template CONTAINER_OF_T As<> () const
+ *                  return CONTAINER_OF_T (begin (), end ());
+ *              method ... so you can say:
+ *                  Bag<T> n;
+ *                  vector<T> nn = n.As<vector<T>> ();
+ *
+ *              If I do this - add to EACH of the other containers - and perhaps this could even be added to the Iterable<> base class!
+ *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
