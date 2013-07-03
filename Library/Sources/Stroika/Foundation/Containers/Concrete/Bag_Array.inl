@@ -61,10 +61,10 @@ namespace   Stroika {
 
                 private:
                     //typedef Private::PatchingDataStructures::Array_Patch<T> ImplArrayType_;
-                    typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>     UseArrayComparerType_;
-                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayComparerType_>                              ImplArrayType_;
-                    Private::ContainerRepLockDataSupport_                                                                       fLockSupport_;
-                    ImplArrayType_                                                                                              fData_;
+                    typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType> UseArrayTraitsType_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayTraitsType_>                        ImplArrayType_;
+                    Private::ContainerRepLockDataSupport_                                                               fLockSupport_;
+                    ImplArrayType_                                                                                      fData_;
 
                 private:
                     friend  class Bag_Array<T, TRAITS>::IteratorRep_;
