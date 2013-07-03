@@ -37,18 +37,18 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class  Bag_LinkedList : public Bag<T> {
+                template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
+                class  Bag_LinkedList : public Bag<T, BAG_TRAITS> {
                 private:
-                    typedef     Bag<T>  inherited;
+                    typedef     Bag<T, BAG_TRAITS>  inherited;
 
                 public:
                     Bag_LinkedList ();
                     Bag_LinkedList (const T* start, const T* end);
-                    Bag_LinkedList (const Bag<T>& bag);
-                    Bag_LinkedList (const Bag_LinkedList<T>& bag);
+                    Bag_LinkedList (const Bag<T, BAG_TRAITS>& bag);
+                    Bag_LinkedList (const Bag_LinkedList<T, BAG_TRAITS>& bag);
 
-                    nonvirtual  Bag_LinkedList<T>&  operator= (const Bag_LinkedList<T>& bag);
+                    nonvirtual  Bag_LinkedList<T, BAG_TRAITS>&  operator= (const Bag_LinkedList<T, BAG_TRAITS>& rhs);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

@@ -24,13 +24,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************* Bag_LinkedList<T>::Rep_ ************************
+                 ******************************* Bag_LinkedList<T, BAG_TRAITS>::Rep_ ************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class   Bag_LinkedList<T>::Rep_ : public Bag<T>::_IRep {
+                template    <typename T, typename BAG_TRAITS>
+                class   Bag_LinkedList<T, BAG_TRAITS>::Rep_ : public Bag<T, BAG_TRAITS>::_IRep {
                 private:
-                    typedef typename    Bag<T>::_IRep   inherited;
+                    typedef typename    Bag<T, BAG_TRAITS>::_IRep   inherited;
 
                 public:
                     Rep_ ();
@@ -49,9 +49,9 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Bag<T>::_IRep overrides
+                    // Bag<T, BAG_TRAITS>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Bag<T>::_IRep& rhs) const override;
+                    virtual bool    Equals (const typename Bag<T, BAG_TRAITS>::_IRep& rhs) const override;
                     virtual bool    Contains (T item) const override;
                     virtual size_t  TallyOf (T item) const override;
                     virtual void    Add (T item) override;
@@ -61,27 +61,37 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
+#if 0
+                    //typedef Private::PatchingDataStructures::Array_Patch<T> ImplArrayType_;
+                    typedef Private::DataStructures::Array_DefaultTraits<T, typename BAG_TRAITS::EqualsCompareFunctionType>     UseArrayComparerType_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayComparerType_>                              ImplArrayType_;
+                    Private::ContainerRepLockDataSupport_                                                                       fLockSupport_;
+                    ImplArrayType_                                                                                              fData_;
+#endif
+//                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename BAG_TRAITS::EqualsCompareFunctionType>     UseLinkedListTraitsType_;
+                    typedef Private::PatchingDataStructures::LinkedList_Patch<T> ImplArrayType_;
+
                     Private::ContainerRepLockDataSupport_                   fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList_Patch<T>    fData_;
+                    ImplArrayType_    fData_;
 
                 private:
-                    friend  class   Bag_LinkedList<T>::IteratorRep_;
+                    friend  class   Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ************************* Bag_LinkedList<T>::IteratorRep_ **********************
+                 ************************* Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_ **********************
                  ********************************************************************************
                  */
                 // One rep for BOTH iterator and mutator - to save code - mutator just adds invisible functionality
-                template    <typename T>
-                class  Bag_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
+                template    <typename T, typename BAG_TRAITS>
+                class  Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_ : public Iterator<T>::IRep {
                 private:
                     typedef typename    Iterator<T>::IRep   inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Bag_LinkedList<T>::Rep_& owner)
+                    explicit IteratorRep_ (typename Bag_LinkedList<T, BAG_TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
@@ -110,28 +120,28 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList_Patch<T>::ForwardIterator     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                  fLockSupport_;
+                    mutable typename Rep_::ImplArrayType_::ForwardIterator  fIterator_;
 
                 private:
-                    friend  class   Bag_LinkedList<T>::Rep_;
+                    friend  class   Bag_LinkedList<T, BAG_TRAITS>::Rep_;
                 };
 
 
                 /*
                 ********************************************************************************
-                ****************************** Bag_LinkedList<T>::Rep_ *************************
+                ****************************** Bag_LinkedList<T, BAG_TRAITS>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                inline  Bag_LinkedList<T>::Rep_::Rep_ ()
+                template    <typename T, typename BAG_TRAITS>
+                inline  Bag_LinkedList<T, BAG_TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T>
-                inline  Bag_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T, typename BAG_TRAITS>
+                inline  Bag_LinkedList<T, BAG_TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -141,14 +151,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                typename Iterable<T>::_SharedPtrIRep  Bag_LinkedList<T>::Rep_::Clone () const
+                template    <typename T, typename BAG_TRAITS>
+                typename Iterable<T>::_SharedPtrIRep  Bag_LinkedList<T, BAG_TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T>
-                Iterator<T>  Bag_LinkedList<T>::Rep_::MakeIterator () const
+                template    <typename T, typename BAG_TRAITS>
+                Iterator<T>  Bag_LinkedList<T, BAG_TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -160,90 +170,90 @@ namespace   Stroika {
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename T>
-                size_t  Bag_LinkedList<T>::Rep_::GetLength () const
+                template    <typename T, typename BAG_TRAITS>
+                size_t  Bag_LinkedList<T, BAG_TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                bool  Bag_LinkedList<T>::Rep_::IsEmpty () const
+                template    <typename T, typename BAG_TRAITS>
+                bool  Bag_LinkedList<T, BAG_TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void      Bag_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T, typename BAG_TRAITS>
+                void      Bag_LinkedList<T, BAG_TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T>
-                Iterator<T>     Bag_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T, typename BAG_TRAITS>
+                Iterator<T>     Bag_LinkedList<T, BAG_TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T>
-                bool    Bag_LinkedList<T>::Rep_::Equals (const typename Bag<T>::_IRep& rhs) const
+                template    <typename T, typename BAG_TRAITS>
+                bool    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Equals (const typename Bag<T, BAG_TRAITS>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
-                template    <typename  T>
-                bool    Bag_LinkedList<T>::Rep_::Contains (T item) const
+                template    <typename T, typename BAG_TRAITS>
+                bool    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.Lookup (item) != nullptr;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                size_t    Bag_LinkedList<T>::Rep_::TallyOf (T item) const
+                template    <typename T, typename BAG_TRAITS>
+                size_t    Bag_LinkedList<T, BAG_TRAITS>::Rep_::TallyOf (T item) const
                 {
                     return this->_TallyOf_Reference_Implementation (item);
                 }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Add (T item)
+                template    <typename T, typename BAG_TRAITS>
+                void    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Prepend (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                template    <typename T, typename BAG_TRAITS>
+                void    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
+                    const typename Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.SetAt (mir.fIterator_, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Remove (T item)
+                template    <typename T, typename BAG_TRAITS>
+                void    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Remove (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T, typename BAG_TRAITS>
+                void    Bag_LinkedList<T, BAG_TRAITS>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Bag_LinkedList<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T>::IteratorRep_&> (ir);
+                    const typename Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_LinkedList<T, BAG_TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAt (mir.fIterator_);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_LinkedList<T>::Rep_::RemoveAll ()
+                template    <typename T, typename BAG_TRAITS>
+                void    Bag_LinkedList<T, BAG_TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
@@ -254,36 +264,36 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************************* Bag_LinkedList<T> ****************************
+                ********************************* Bag_LinkedList<T, BAG_TRAITS> ****************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                Bag_LinkedList<T>::Bag_LinkedList ()
+                template    <typename T, typename BAG_TRAITS>
+                Bag_LinkedList<T, BAG_TRAITS>::Bag_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T>
-                Bag_LinkedList<T>::Bag_LinkedList (const T* start, const T* end)
+                template    <typename T, typename BAG_TRAITS>
+                Bag_LinkedList<T, BAG_TRAITS>::Bag_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                 }
-                template    <typename T>
-                Bag_LinkedList<T>::Bag_LinkedList (const Bag<T>& src)
+                template    <typename T, typename BAG_TRAITS>
+                Bag_LinkedList<T, BAG_TRAITS>::Bag_LinkedList (const Bag<T, BAG_TRAITS>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    inherited::operator+= (src);
+                    this->AddAll (src);
                 }
-                template    <typename T>
-                Bag_LinkedList<T>::Bag_LinkedList (const Bag_LinkedList<T>& src)
+                template    <typename T, typename BAG_TRAITS>
+                Bag_LinkedList<T, BAG_TRAITS>::Bag_LinkedList (const Bag_LinkedList<T, BAG_TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                 }
-                template    <typename T>
-                inline  Bag_LinkedList<T>& Bag_LinkedList<T>::operator= (const Bag_LinkedList<T>& bag)
+                template    <typename T, typename BAG_TRAITS>
+                inline  Bag_LinkedList<T, BAG_TRAITS>& Bag_LinkedList<T, BAG_TRAITS>::operator= (const Bag_LinkedList<T, BAG_TRAITS>& rhs)
                 {
-                    inherited::operator= (bag);
+                    inherited::operator= (rhs);
                     return *this;
                 }
 
