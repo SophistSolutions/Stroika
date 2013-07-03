@@ -134,11 +134,11 @@ namespace   Stroika {
                             const   T*   last    =   &_fItems [_fLength - 1];  // safe to -1 since _fLength>0
                             for (; current <= last; current++) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
-                                    return (true);
+                                    return true;
                                 }
                             }
                         }
-                        return (false);
+                        return false;
                     }
                     template      <typename  T, typename TRAITS>
                     void    Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
