@@ -32,26 +32,26 @@ namespace   Stroika {
                      *      Here we provide Patching Versions of each iterator, and for convienience
                      *  versions of LinkedList that maintain a list of all Patching iterators.
                      *
-                     *      LinkedList_Patch<T> is a LinkedList<T> with the ability to keep track of
+                     *      LinkedList_Patch<T, TRAITS> is a LinkedList<T,TRAITS> with the ability to keep track of
                      *  owned patching iterators. These patching iterators will automatically be
                      *  adjusted when the link list is adjusted. This is the class of LinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <typename   T>
-                    class   LinkedList_Patch : public DataStructures::LinkedList<T> {
+                    template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
+                    class   LinkedList_Patch : public DataStructures::LinkedList<T, TRAITS> {
                     private:
-                        typedef typename DataStructures::LinkedList<T>  inherited;
+                        typedef typename DataStructures::LinkedList<T, TRAITS>  inherited;
 
                     public:
                         LinkedList_Patch ();
-                        LinkedList_Patch (const LinkedList_Patch<T>& from);
+                        LinkedList_Patch (const LinkedList_Patch<T, TRAITS>& from);
                         ~LinkedList_Patch ();
 
                     public:
-                        nonvirtual  LinkedList_Patch<T>& operator= (const LinkedList_Patch<T>& list);
+                        nonvirtual  LinkedList_Patch<T, TRAITS>& operator= (const LinkedList_Patch<T, TRAITS>& list);
 
                     public:
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+                        typedef typename DataStructures::LinkedList<T, TRAITS>::Link    Link;
 
                     public:
                         class   ForwardIterator;
@@ -107,25 +107,26 @@ namespace   Stroika {
 
 
                     /*
-                     *      LinkedList_Patch<T>::ForwardIterator is a ForwardIterator that allows
-                     *  for updates to the LinkedList<T> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the LinkedList_Patch<T>, and takes care
+                     *      LinkedList_Patch<T, TRAITS>::ForwardIterator is a ForwardIterator that allows
+                     *  for updates to the LinkedList<T,TRAITS> to be dealt with properly. It maintains a
+                     *  link list of iterators headed by the LinkedList_Patch<T, TRAITS>, and takes care
                      *  of all patching details.
                      */
-                    template    <typename   T>
-                    class   LinkedList_Patch<T>::ForwardIterator : public DataStructures::LinkedList<T>::ForwardIterator {
+                    template      <typename  T, typename TRAITS>
+                    class   LinkedList_Patch<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator {
                     private:
-                        typedef typename DataStructures::LinkedList<T>::ForwardIterator   inherited;
+                        typedef typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator   inherited;
 
                     public:
-                        ForwardIterator (const LinkedList_Patch<T>& data);
+                        ForwardIterator (const LinkedList_Patch<T, TRAITS>& data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
 
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        typedef typename DataStructures::LinkedList<T>::Link    Link;
+                        typedef typename DataStructures::LinkedList<T, TRAITS>::Link    Link;
+                        typedef LinkedList_Patch<T, TRAITS>                             ContainerType;
 
                     public:
                         /*
@@ -141,8 +142,8 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     private:
-                        nonvirtual  const LinkedList_Patch<T>&  GetPatchingContainer_ () const;
-                        nonvirtual  LinkedList_Patch<T>&    GetPatchingContainer_ ();
+                        nonvirtual  const ContainerType&  GetPatchingContainer_ () const;
+                        nonvirtual  ContainerType&    GetPatchingContainer_ ();
 
                     protected:
                         ForwardIterator*            _fNextActiveIterator;
@@ -151,7 +152,7 @@ namespace   Stroika {
                         // and must be recomputed (it was removed itself)...
 
                     private:
-                        friend  class   LinkedList_Patch<T>;
+                        friend  class   LinkedList_Patch<T, TRAITS>;
 #if     qDebug
                     protected:
                         virtual void    Invariant_ () const override;
