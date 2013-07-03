@@ -145,10 +145,17 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    LinkedList_Patch<T, TRAITS>::Remove (T item)
                     {
+                        /*
+                         *  Base class impl is fine, but doesn't do patching, and doesn't
+                         *  provide the hooks so I can do the patching from here.
+                         *
+                         *  @todo   We may want to correct that (see STL container impl -
+                         *  returning ptr to next node would do it).
+                         */
                         Invariant ();
                         T current;
                         for (ForwardIterator it (*this); it.More (&current, true); ) {
-                            if (current == item) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
                                 this->RemoveAt (it);
                                 break;
                             }
@@ -160,11 +167,13 @@ namespace   Stroika {
                     {
                         Require (not i.Done ());
                         Invariant ();
+
                         Memory::SmallStackBuffer<ForwardIterator*>   items2Patch (0);
                         TwoPhaseIteratorPatcherPass1 (const_cast<Link*> (i._fCurrent), &items2Patch);
                         Link*   next = i._fCurrent->fNext;
                         this->inherited::RemoveAt (i);
                         TwoPhaseIteratorPatcherPass2 (&items2Patch, next);
+
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
@@ -189,14 +198,17 @@ namespace   Stroika {
                         else {
                             this->PatchViewsAdd (prev->fNext);       // Will adjust fPrev
                         }
+
                         Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     void    LinkedList_Patch<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Invariant ();
+
                         inherited::AddAfter (i, newValue);
                         this->PatchViewsAdd (i._fCurrent->fNext);
+
                         Invariant ();
                     }
 #if     qDebug
