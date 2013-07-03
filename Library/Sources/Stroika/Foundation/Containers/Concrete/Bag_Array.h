@@ -20,7 +20,7 @@
  *
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  *
- *      @todo   Fix Bag_Array<T, BAG_TRAITS>::Rep_::Remove() to use BackwardIterator
+ *      @todo   Fix Bag_Array<T, TRAITS>::Rep_::Remove() to use BackwardIterator
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
@@ -40,19 +40,19 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
-                class   Bag_Array : public Bag<T, BAG_TRAITS> {
+                template    <typename T, typename TRAITS = Bag_DefaultTraits<T>>
+                class   Bag_Array : public Bag<T, TRAITS> {
                 private:
-                    typedef     Bag<T, BAG_TRAITS>  inherited;
+                    typedef     Bag<T, TRAITS>  inherited;
 
                 public:
                     Bag_Array ();
-                    Bag_Array (const Bag<T, BAG_TRAITS>& bag);
-                    Bag_Array (const Bag_Array<T, BAG_TRAITS>& bag);
+                    Bag_Array (const Bag<T, TRAITS>& bag);
+                    Bag_Array (const Bag_Array<T, TRAITS>& bag);
                     Bag_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Bag_Array<T, BAG_TRAITS>& operator= (const Bag_Array<T, BAG_TRAITS>& bag);
+                    nonvirtual  Bag_Array<T, TRAITS>& operator= (const Bag_Array<T, TRAITS>& bag);
 
                 public:
                     /**

@@ -78,24 +78,24 @@ namespace   Stroika {
                  *  NB: NOT USED YET - JUST PLAYING WITH HOW WE WANT TODO THIS...
                  *
                  *  Note - this comparer is NOT required - and not actually used except for certain specific methods:
-                 *      o   Bag<T, BAG_TRAITS>::Contains (T)
-                 *      o   Bag<T, BAG_TRAITS>::Remove (T)
-                 *      o   Bag<T, BAG_TRAITS>::UniqueElements ()
-                 *      o   Bag<T, BAG_TRAITS>::TallyOf()
-                 *      o   Bag<T, BAG_TRAITS>::Equals()
+                 *      o   Bag<T, TRAITS>::Contains (T)
+                 *      o   Bag<T, TRAITS>::Remove (T)
+                 *      o   Bag<T, TRAITS>::UniqueElements ()
+                 *      o   Bag<T, TRAITS>::TallyOf()
+                 *      o   Bag<T, TRAITS>::Equals()
                  */
                 typedef EQUALS_COMPARER EqualsCompareFunctionType;
             };
 
 
             /**
-             *  \brief  A Bag<T,BAG_TRAITS> is a container to manage an un-ordered collection of items.
+             *  \brief  A Bag<T, TRAITS> is a container to manage an un-ordered collection of items.
              *
-             *  A Bag<T,BAG_TRAITS> is a container pattern to manage an un-ordered collection of items.
-             *  This is both an abstract interface, but the Bag<T,BAG_TRAITS> class it actually concrete because
+             *  A Bag<T, TRAITS> is a container pattern to manage an un-ordered collection of items.
+             *  This is both an abstract interface, but the Bag<T, TRAITS> class it actually concrete because
              *  it automatically binds to a default implementation.
              *
-             *  A Bag<T,BAG_TRAITS> is the simplest kind of collection. It allows addition and
+             *  A Bag<T, TRAITS> is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
              *  bags are considered equal if they contain the same items, even if iteration
              *  order is different.
@@ -120,7 +120,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            template    <typename T, typename BAG_TRAITS = Bag_DefaultTraits<T>>
+            template    <typename T, typename TRAITS = Bag_DefaultTraits<T>>
             class   Bag : public Iterable<T> {
             private:
                 typedef Iterable<T> inherited;
@@ -131,7 +131,7 @@ namespace   Stroika {
 
             public:
                 Bag ();
-                Bag (const Bag<T, BAG_TRAITS>& b);
+                Bag (const Bag<T, TRAITS>& b);
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& b);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -141,17 +141,17 @@ namespace   Stroika {
                 explicit Bag (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Bag<T, BAG_TRAITS>& operator= (const Bag<T, BAG_TRAITS>& rhs);
+                nonvirtual  Bag<T, TRAITS>& operator= (const Bag<T, TRAITS>& rhs);
 
             public:
                 /**
-                 * \brief Compares items with BAG_TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
+                 * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
                 nonvirtual  bool    Contains (T item) const;
 
             public:
                 /**
-                 * Add the given item(s) to this Bag<T,BAG_TRAITS>. Note - if the given items are already present, another
+                 * Add the given item(s) to this Bag<T,TRAITS>. Note - if the given items are already present, another
                  * copy will be added.
                  */
                 nonvirtual  void    Add (T item);
@@ -176,7 +176,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Bag<T,BAG_TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Bag<T, TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  * SECOND OVERLOAD:
                  * This function requires that the iterator 'i' came from this container.
@@ -190,7 +190,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Bag<T,BAG_TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Bag<T, TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  *  The no-argument verison Produces an empty bag.
                  */
@@ -222,13 +222,13 @@ namespace   Stroika {
                  *
                  *  Equals is commutative().
                  */
-                nonvirtual  bool    Equals (const Bag<T, BAG_TRAITS>& rhs) const;
+                nonvirtual  bool    Equals (const Bag<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *  Since items can appear more than once, this function traverses the bag and returns the
                  *  count of times the given item appears. Note that TallyOf (T) returns zero if the item
-                 *  is not present. For TallyOf (T), the BAG_TRAITS::EqualsCompareFunctionType::Equals() function
+                 *  is not present. For TallyOf (T), the TRAITS::EqualsCompareFunctionType::Equals() function
                  *  is used to compare.
                  */
                 nonvirtual  size_t  TallyOf (const Iterator<T>& i) const;
@@ -240,12 +240,12 @@ namespace   Stroika {
                  *
                  *  *DEVELOPER NOTE*
                  *      Note - we use an overload
-                 *      of Bag<T,BAG_TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      of Bag<T, TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Bag<T, BAG_TRAITS>& operator+= (T item);
-                nonvirtual  Bag<T, BAG_TRAITS>& operator+= (const Bag<T, BAG_TRAITS>& items);
+                nonvirtual  Bag<T, TRAITS>& operator+= (T item);
+                nonvirtual  Bag<T, TRAITS>& operator+= (const Bag<T, TRAITS>& items);
 
             public:
                 /**
@@ -253,24 +253,24 @@ namespace   Stroika {
                  *
                  *  *DEVELOPER NOTE*
                  *      Note - we use an overload
-                 *      of Bag<T,BAG_TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      of Bag<T,TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Bag<T, BAG_TRAITS>& operator-= (T item);
-                nonvirtual  Bag<T, BAG_TRAITS>& operator-= (const Bag<T, BAG_TRAITS>& items);
+                nonvirtual  Bag<T, TRAITS>& operator-= (T item);
+                nonvirtual  Bag<T, TRAITS>& operator-= (const Bag<T, TRAITS>& items);
 
             public:
                 /**
                  *      Syntactic sugar on Equals()
                  */
-                nonvirtual  bool    operator== (const Bag<T, BAG_TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const Bag<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar on not Equals()
                  */
-                nonvirtual  bool    operator!= (const Bag<T, BAG_TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Bag<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -279,13 +279,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Bag<T,BAG_TRAITS> implementors.
+             *  \brief  Implementation detail for Bag<T,TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Bag<T,BAG_TRAITS> container API.
+             *  the Bag<T,TRAITS> container API.
              */
-            template    <typename T, typename BAG_TRAITS>
-            class   Bag<T, BAG_TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   Bag<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

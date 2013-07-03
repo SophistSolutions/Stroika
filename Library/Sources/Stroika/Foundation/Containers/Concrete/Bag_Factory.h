@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T, typename BAG_TRAITS>
+            template    <typename T, typename TRAITS>
             class   Bag;
 
 
