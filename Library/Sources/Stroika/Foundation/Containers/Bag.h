@@ -23,14 +23,6 @@
  *
  * TODO:
  *
- *      @todo   ADD EQUALS_COMPARER .. and make Bag<T> depend on THAT! We ONLY require == for
- *              Bag.
- *              !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!PRIORITY - NEXT !!!!!
- *              PUT RequireElementTraitsInClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
- *
- *
- *      @todo   Cleaup and actually use properly the TRAITS code. Not actually used yet.
- *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Bag_Difference/Union/Interesection??? methods/?? Do research....
@@ -75,7 +67,14 @@ namespace   Stroika {
                  *          MAYBE to use a lamnda - use soemthing LIKE? Not quite - maybe ???.... THINK OUT
                  *          typedef std::function<int(T,T)> CompareFunctionType;
                  *
+                 *          (working on this as of 2013-07-03 in Comparer.h code - though alot todo here as well)
+                 *
                  *  NB: NOT USED YET - JUST PLAYING WITH HOW WE WANT TODO THIS...
+                 *
+                 *  (TODO - DOC WHAT THIS MEANS - CUZ IT APPEARS TO BE ACTUALLY REQUIRED - cuz virtual methods. Maybe shouldbt but hard to
+                 *      AVOID FOR this class. Maybe should have more abstract thing - or maybe should ahve this be such - so
+                 *      these things not implementated virtually - and bag can eb something that doesnt require operator== or any comparer???
+                 *      @todo - think about above!!! And clarify these docs
                  *
                  *  Note - this comparer is NOT required - and not actually used except for certain specific methods:
                  *      o   Bag<T, TRAITS>::Contains (T)
@@ -152,7 +151,7 @@ namespace   Stroika {
             public:
                 /**
                  * Add the given item(s) to this Bag<T,TRAITS>. Note - if the given items are already present, another
-                 * copy will be added.
+                 * copy will be added. No promises are made about where the added value will appear in iteration.
                  */
                 nonvirtual  void    Add (T item);
 
@@ -169,6 +168,12 @@ namespace   Stroika {
                  * This function requires that the iterator 'i' came from this container.
                  *
                  * The value pointed to by 'i' is updated - replaced with the value 'newValue'.
+                 *
+                 *      @todo DOCUMENT SEMANTICS MORE CLEARLY - THINKING THROUGH SUBCLASS SORTEDBAG - DEFINE SO STILL MAKES SENSE THERE!!!
+                 *      LIKE EQUIV TO REMOVE(i) and ADD newValue - but more efficient? No - maybe just does remove(i) and add (newValue?))
+                 *      and document promised semantics about if you will encounter newvalue again when you continue iterating!
+                 *
+                 *      MAYBE best answer is to LOSE this Update() method for bag<> - useful for Sequence<> - but maybe not here!
                  */
                 nonvirtual  void    Update (const Iterator<T>& i, T newValue);
 
