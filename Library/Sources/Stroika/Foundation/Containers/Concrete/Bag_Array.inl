@@ -60,7 +60,6 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    //typedef Private::PatchingDataStructures::Array_Patch<T> ImplArrayType_;
                     typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType> UseArrayTraitsType_;
                     typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayTraitsType_>                        ImplArrayType_;
                     Private::ContainerRepLockDataSupport_                                                               fLockSupport_;
