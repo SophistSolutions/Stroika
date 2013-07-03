@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Common/Compare.h"
 #include    "../../../Memory/BlockAllocated.h"
 
 #include    "../../Common.h"
@@ -44,8 +45,16 @@ namespace   Stroika {
                 namespace   DataStructures {
 
 
+                    /**
+                     * VERY PRELIMINARY DRAFT OF HOW TO HANDLE THIS - UNSURE ABOUT ISSUE OF FORWARDABILITY AND COPYABILIUTY OF COMPARERES!!!!
+                     */
+                    template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals <T>>
+                    struct   LinkedList_DefaultTraits {
+                        typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                    };
+
                     /*
-                     *      LinkedList<T> is a generic link (non-intrusive) list implementation.
+                     *      LinkedList<T,TRAITS> is a generic link (non-intrusive) list implementation.
                      *  It keeps a length count so access to its length is rapid. We provide
                      *  no public means to access the links themselves.
                      *
@@ -53,15 +62,15 @@ namespace   Stroika {
                      *  used - more likely you want to use LinkedList_Patch<T>. Use this if you
                      *  will manage all patching, or know that none is necessary.
                      */
-                    template    <typename   T>
+                    template      <typename  T, typename TRAITS = LinkedList_DefaultTraits<T>>
                     class   LinkedList {
                     public:
                         LinkedList ();
-                        LinkedList (const LinkedList<T>& from);
+                        LinkedList (const LinkedList<T, TRAITS>& from);
                         ~LinkedList ();
 
                     public:
-                        nonvirtual  LinkedList<T>& operator= (const LinkedList<T>& list);
+                        nonvirtual  LinkedList<T, TRAITS>& operator= (const LinkedList<T, TRAITS>& list);
 
                     public:
                         class   ForwardIterator;
@@ -148,7 +157,6 @@ namespace   Stroika {
                     public:
                         nonvirtual  void    RemoveAll ();
 
-
                     public:
                         /*
                          *  Performance:
@@ -193,8 +201,8 @@ namespace   Stroika {
                     };
 
 
-                    template    <typename   T>
-                    class   LinkedList<T>::Link {
+                    template      <typename  T, typename TRAITS>
+                    class   LinkedList<T, TRAITS>::Link {
                     public:
                         DECLARE_USE_BLOCK_ALLOCATION (Link);
                     public:
@@ -207,13 +215,13 @@ namespace   Stroika {
 
 
                     /*
-                     *      ForwardIterator<T> allows you to iterate over a LinkedList<T>. Its API
+                     *      ForwardIterator<T> allows you to iterate over a LinkedList<T,TRAITS>. Its API
                      *  is designed to make easy implemenations of subclasses of IteratorRep<T>.
                      *  It is unpatched - use LinkedListIterator_Patch<T> or LinkedListMutator_Patch<T>
                      *  for that.
                      */
-                    template    <typename   T>
-                    class   LinkedList<T>::ForwardIterator {
+                    template      <typename  T, typename TRAITS>
+                    class   LinkedList<T, TRAITS>::ForwardIterator {
                     public:
                         ForwardIterator (const ForwardIterator& from);
                         ForwardIterator (const LinkedList& data);
@@ -232,14 +240,14 @@ namespace   Stroika {
                         nonvirtual  void    Invariant () const;
 
                     protected:
-                        const LinkedList<T>*  _fData;
+                        const LinkedList<T, TRAITS>*  _fData;
 
                     protected:
-                        //const typename LinkedList<T>::Link*     fCachedPrev;        // either nullptr or valid cached prev
+                        //const typename LinkedList<T,TRAITS>::Link*     fCachedPrev;        // either nullptr or valid cached prev
                     protected:
                     public:
                         ///@todo - tmphack - this SB protected probably???
-                        const typename LinkedList<T>::Link*     _fCurrent;
+                        const typename LinkedList<T, TRAITS>::Link*     _fCurrent;
                     protected:
                         bool                                    _fSuppressMore;      // Indicates if More should do anything, or if were already Mored...
 
