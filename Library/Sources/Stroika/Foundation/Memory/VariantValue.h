@@ -143,6 +143,21 @@ namespace   Stroika {
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
 
+            public:
+                /**
+                 */
+                nonvirtual  bool    Equals (const VariantValue& rhs, bool exactTypeMatchOnly = false) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  bool    operator== (const VariantValue& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  bool    operator!= (const VariantValue& rhs) const;
+
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
@@ -159,12 +174,6 @@ namespace   Stroika {
                 template    <typename T, Type t>
                 struct  TIRep_;
             };
-
-
-            bool    Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly = false);
-
-            bool    operator== (const VariantValue& lhs, const VariantValue& rhs);
-            bool    operator!= (const VariantValue& lhs, const VariantValue& rhs);
 
 
             template    <>

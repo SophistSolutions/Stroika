@@ -418,9 +418,9 @@ Sequence<VariantValue> VariantValue::As () const
     return Sequence<VariantValue> (As<vector<VariantValue>> ());
 }
 
-bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool exactTypeMatchOnly)
+bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) const
 {
-    VariantValue::Type  lt  =   lhs.GetType ();
+    VariantValue::Type  lt  =   GetType ();
     VariantValue::Type  rt  =   rhs.GetType ();
     if (lt != rt) {
         if (exactTypeMatchOnly) {
@@ -432,7 +432,7 @@ bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool e
                 lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean
            ) {
             // compare as STRING  - in case someone compares true with 'FRED' (we want that to come out as a FALSE compare result)
-            return  lhs.As<wstring> () == rhs.As<wstring> ();
+            return  As<wstring> () == rhs.As<wstring> ();
         }
         return false;
     }
@@ -440,20 +440,20 @@ bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool e
         case    VariantValue::Type::eNull:
             return true;
         case    VariantValue::Type::eBoolean:
-            return lhs.As<bool> () == rhs.As<bool> ();
+            return As<bool> () == rhs.As<bool> ();
         case    VariantValue::Type::eInteger:
-            return lhs.As<int> () == rhs.As<int> ();
+            return As<int> () == rhs.As<int> ();
         case    VariantValue::Type::eFloat:
-            return lhs.As<VariantValue::FloatType> () == rhs.As<VariantValue::FloatType> ();
+            return As<VariantValue::FloatType> () == rhs.As<VariantValue::FloatType> ();
         case    VariantValue::Type::eDate:
-            return lhs.As<Date> () == rhs.As<Date> ();
+            return As<Date> () == rhs.As<Date> ();
         case    VariantValue::Type::eDateTime:
-            return lhs.As<DateTime> () == rhs.As<DateTime> ();
+            return As<DateTime> () == rhs.As<DateTime> ();
         case    VariantValue::Type::eString:
-            return lhs.As<wstring> () == rhs.As<wstring> ();
+            return As<wstring> () == rhs.As<wstring> ();
         case    VariantValue::Type::eArray: {
                 // same iff all elts same
-                vector<VariantValue>    lhsV    =   lhs.As<vector<VariantValue>> ();
+                vector<VariantValue>    lhsV    =   As<vector<VariantValue>> ();
                 vector<VariantValue>    rhsV    =   rhs.As<vector<VariantValue>> ();
                 if (lhsV.size () != rhsV.size ()) {
                     return false;
@@ -467,7 +467,7 @@ bool    Memory::Equals (const VariantValue& lhs, const VariantValue& rhs, bool e
             }
         case    VariantValue::Type::eMap: {
                 // same iff all elts same
-                map<wstring, VariantValue>   lhsM    =   lhs.As<map<wstring, VariantValue>> ();
+                map<wstring, VariantValue>   lhsM    =   As<map<wstring, VariantValue>> ();
                 map<wstring, VariantValue>   rhsM    =   rhs.As<map<wstring, VariantValue>> ();
                 if (lhsM.size () != rhsM.size ()) {
                     return false;

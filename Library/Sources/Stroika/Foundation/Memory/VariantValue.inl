@@ -55,20 +55,13 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
             }
 #endif
-
-
-            /*
-             ********************************************************************************
-             ************************************* Operators ********************************
-             ********************************************************************************
-             */
-            inline  bool    operator== (const VariantValue& lhs, const VariantValue& rhs)
+            inline  bool    VariantValue::operator== (const VariantValue& rhs) const
             {
-                return Equals (lhs, rhs);
+                return Equals (rhs);
             }
-            inline  bool    operator!= (const VariantValue& lhs, const VariantValue& rhs)
+            inline  bool    VariantValue::operator!= (const VariantValue& rhs) const
             {
-                return not Equals (lhs, rhs);
+                return not Equals (rhs);
             }
 
 
