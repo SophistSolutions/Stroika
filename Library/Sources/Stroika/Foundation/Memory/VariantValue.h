@@ -24,6 +24,9 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *
+ *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
+ *
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
  *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
  *
@@ -139,6 +142,20 @@ namespace   Stroika {
                  *
                  *  If the caller attempts a conversion that isn't supported, or doesn't make sense
                  *  then DataExchangeFormat::BadFormatException will be thrown.
+                 *
+                 *      Supported types (RETURNTYPE) include:
+                 *          o   bool
+                 *          o   int
+                 *          o   float
+                 *          o   double
+                 *          o   Date
+                 *          o   DateTime
+                 *          o   wstring
+                 *          o   String
+                 *          o   map<wstring, VariantValue>
+                 *          o   Mapping<String, VariantValue>
+                 *          o   vector<VariantValue>
+                 *          o   Sequence<VariantValue>
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
