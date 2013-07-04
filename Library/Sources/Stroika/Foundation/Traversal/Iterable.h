@@ -20,6 +20,12 @@
  *
  *  TODO:
  *
+ *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
+ *              GENERATOR (though dont)
+ *
+ *      @todo   Note that GetLength() CAN RETURN MAXINT (or some defined max) - and/or maybe some other sentinal? Maybe no sentinals?
+ *
+ *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
  *
  *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!

@@ -1293,6 +1293,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1924,6 +1930,18 @@
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Range.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\ReadMe.md">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md">
       <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
