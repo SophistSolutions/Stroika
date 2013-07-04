@@ -21,7 +21,7 @@
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
+//using   namespace   Stroika::Foundation::Containers;
 
 
 
