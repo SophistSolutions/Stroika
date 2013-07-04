@@ -6,7 +6,7 @@
 
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/Iterable.h"
+#include    "Stroika/Foundation/Traversal/Iterable.h"
 
 #include    "../TestHarness/TestHarness.h"
 

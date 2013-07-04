@@ -8,6 +8,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
+#include    "../Traversal/Iterable.h"
 
 
 
@@ -42,6 +43,10 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            using   Traversal::Iterable;
+            using   Traversal::Iterator;
 
 
             typedef uint16_t    Priority;

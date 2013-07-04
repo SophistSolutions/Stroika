@@ -133,6 +133,9 @@
     <Filter Include="Sources\Common">
       <UniqueIdentifier>{390cc25d-660b-4ffd-9038-965fc642e03f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Traversal">
+      <UniqueIdentifier>{6d8e7b2e-8462-4c11-9524-5b47803066fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -801,9 +804,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -968,9 +968,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h">
       <Filter>Sources\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.h">
-      <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1290,6 +1287,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.h">
       <Filter>Sources\DataExchangeFormat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1451,9 +1454,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -1549,9 +1549,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl">
       <Filter>Sources\Cache</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.inl">
-      <Filter>Sources\Containers</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1922,6 +1919,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.inl">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl">
+      <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Iterator_h_
-#define _Stroika_Foundation_Containers_Iterator_h_  1
+#ifndef _Stroika_Foundation_Traversal_Iterator_h_
+#define _Stroika_Foundation_Traversal_Iterator_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -30,7 +30,7 @@
  *          I think easy and useful, and biggest concern is the potential for subtle
  *          overload confusion generation.
  *
- *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Containers::mkIterable(Iterator<T>) - and
+ *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
  *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
  *          all iteration calls to that iterator!
  *
@@ -105,7 +105,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Containers {
+        namespace   Traversal {
 
 
             /**
@@ -593,4 +593,4 @@ namespace   Stroika {
 
 #include "Iterator.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Iterator_h_ */
+#endif  /*_Stroika_Foundation_Traversal_Iterator_h_ */

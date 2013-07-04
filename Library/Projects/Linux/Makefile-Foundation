@@ -25,6 +25,7 @@ SubDirs=				\
 	Memory				\
 	Streams				\
 	Time				\
+	Traversal			\
 
 
 

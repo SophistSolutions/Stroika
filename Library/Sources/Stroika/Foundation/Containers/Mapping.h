@@ -9,9 +9,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
+#include    "../Traversal/Iterable.h"
 
 
 
@@ -45,6 +43,10 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            using   Traversal::Iterable;
+            using   Traversal::Iterator;
 
 
             /**

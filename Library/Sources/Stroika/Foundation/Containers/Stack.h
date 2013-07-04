@@ -6,7 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "Iterable.h"
+#include    "../Traversal/Iterable.h"
+
 
 
 /**
@@ -34,6 +35,10 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            using   Traversal::Iterable;
+            using   Traversal::Iterator;
 
 
             /**

@@ -215,6 +215,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Streams", "Makefile-Foundation-Streams");
 		mkDirWithLinks2("Foundation/Streams/iostream", "Makefile-Foundation-Streams-iostream");
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
+		mkDirWithLinks("Foundation/Traversal", "Makefile-Foundation-Traversal");
 
 		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Library/Frameworks/Makefile");
 

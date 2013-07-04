@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Iterable_h_
-#define _Stroika_Foundation_Containers_Iterable_h_  1
+#ifndef _Stroika_Foundation_Traversal_Iterable_h_
+#define _Stroika_Foundation_Traversal_Iterable_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -20,9 +20,8 @@
  *
  *  TODO:
  *
- *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
-
+ *
  *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
  *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
  *              More()...
@@ -62,7 +61,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Containers {
+        namespace   Traversal {
 
 
             /**
@@ -373,4 +372,4 @@ namespace   Stroika {
  */
 #include    "Iterable.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Iterable_h_ */
+#endif  /*_Stroika_Foundation_Traversal_Iterable_h_ */

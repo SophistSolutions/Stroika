@@ -11,9 +11,8 @@
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
+#include    "../Traversal/Iterable.h"
+#include    "../Traversal/Iterator.h"
 
 
 
@@ -74,6 +73,10 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            using   Traversal::Iterable;
+            using   Traversal::Iterator;
 
 
             constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();

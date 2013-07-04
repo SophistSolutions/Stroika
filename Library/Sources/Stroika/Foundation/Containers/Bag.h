@@ -9,9 +9,7 @@
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
-
-#include    "Iterable.h"
-#include    "Iterator.h"
+#include    "../Traversal/Iterable.h"
 
 
 
@@ -67,6 +65,10 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
+
+
+            using   Traversal::Iterable;
+            using   Traversal::Iterator;
 
 
             template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>

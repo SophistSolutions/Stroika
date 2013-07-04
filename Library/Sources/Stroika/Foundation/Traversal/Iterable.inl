@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Iterable_inl_
-#define _Stroika_Foundation_Containers_Iterable_inl_
+#ifndef _Stroika_Foundation_Traversal_Iterable_inl_
+#define _Stroika_Foundation_Traversal_Iterable_inl_
 
 #include    "../Debug/Assertions.h"
 
@@ -10,7 +10,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Containers {
+        namespace   Traversal {
 
 
             /*
@@ -244,4 +244,4 @@ namespace   Stroika {
         }
     }
 }
-#endif /* _Stroika_Foundation_Containers_Iterable_inl_ */
+#endif /* _Stroika_Foundation_Traversal_Iterable_inl_ */

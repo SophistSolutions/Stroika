@@ -7,7 +7,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 // included for qIteratorsRequireNoArgConstructorForT, which should be moved or eliminated
-#include    "Stroika/Foundation/Containers/Iterator.h"
+#include    "Stroika/Foundation/Traversal/Iterator.h"
 
 #include    "Stroika/Foundation/Configuration/Common.h"
 

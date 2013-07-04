@@ -562,8 +562,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Deque.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.h" />
@@ -746,6 +744,8 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\LRUCache.inl" />
@@ -814,8 +814,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_LinkedList.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Deque.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterable.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Mapping.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\PriorityQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\DataStructures\Array.inl" />
@@ -959,6 +957,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5AFC8E54-EFA6-45A6-9E8F-7BB89C84AE5B}</ProjectGuid>
