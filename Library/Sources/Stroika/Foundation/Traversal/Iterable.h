@@ -295,6 +295,16 @@ namespace   Stroika {
                 nonvirtual  Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const;
 
 
+            public:
+                /**
+                 *  As<CONTAINER_OF_T> () can be used to easily map an iterable to another container
+                 *  (for exmaple STL container) which supports begin/end iterator constructor. This is
+                 *  really just a shorthand for
+                 *      CONTAINER_OF_T (this->begin (), this->end ());
+                 */
+                template    <typename CONTAINER_OF_T>
+                nonvirtual  void    As () const;
+
             protected:
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;

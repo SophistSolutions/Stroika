@@ -239,6 +239,12 @@ namespace   Stroika {
                 return _GetRep ().Apply (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE (&CheapLambda_ (doToElement), &CheapLambda_::DoToItem));
 #endif
             }
+            template    <typename T>
+            template    <typename CONTAINER_OF_T>
+            void    Iterable<T>::As () const
+            {
+                return CONTAINER_OF_T (this->begin (), this->end ());
+            }
 
 
         }
