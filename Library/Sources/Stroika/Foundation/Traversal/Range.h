@@ -22,6 +22,8 @@
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
+ *          @todo    Imlement first draft functionality.
+ *
  *          @todo   When this works with basic numbers, then add specializations to the Time module so that
  *                  this stuff all works with dates, and datetime etc.
  *

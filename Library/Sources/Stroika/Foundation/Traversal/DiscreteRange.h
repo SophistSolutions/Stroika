@@ -34,6 +34,9 @@ namespace   Stroika {
 
 
             /**
+             *  EXAMPLE USAGE:
+             *      vector<int> v = DiscreteRange (1,10).As<vector<int>> ();
+             *      // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
              */
             template    <typename T, typename TRAITS = DefaultDiscreteRangeTraits<T>>
             class  DiscreteRange : public Range<T, TRAITS>, public Iterable<T> {
