@@ -125,7 +125,7 @@ namespace   Stroika {
 
             public:
                 nonvirtual  PriorityQueue<T>&   operator+= (T item);
-                nonvirtual  PriorityQueue<T>&   operator+= (IteratorRep<PQEntry<T> >* it);
+                nonvirtual  PriorityQueue<T>&   operator+= (IteratorRep<PQEntry<T>>* it);
                 nonvirtual  PriorityQueue<T>&   operator-- ();
 
             protected:

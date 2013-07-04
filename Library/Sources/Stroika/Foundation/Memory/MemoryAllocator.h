@@ -175,7 +175,7 @@ namespace   Stroika {
              */
             class   LeakTrackingGeneralPurposeAllocator : public AbstractGeneralPurposeAllocator {
             public:
-                typedef map<void*, size_t, less<void*>, STLAllocator<pair<const void*, size_t> > >    PTRMAP;
+                typedef map<void*, size_t, less<void*>, STLAllocator<pair<const void*, size_t>>>    PTRMAP;
 
             public:
                 LeakTrackingGeneralPurposeAllocator ();

@@ -121,7 +121,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }

@@ -248,7 +248,7 @@ Date    Date::Parse (const String& rep, const locale& l)
     if (rep.empty ()) {
         return Date ();
     }
-    const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t> > (l);
+    const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
     ios::iostate state  =   ios::goodbit;
     wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
@@ -386,7 +386,7 @@ String Date::Format (const locale& l) const
         return String ();
     }
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
-    const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t> > (l);
+    const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
     tm when =   Date2TM_ (*this);
     wostringstream oss;
     const wchar_t kPattern[] = L"%x";  // http://www.cplusplus.com/reference/ctime/strftime/ ... (%x is date representation, ...the specifiers marked with an asterisk (*) are locale-dependent)

@@ -309,7 +309,7 @@ RetryWithNoCERTCheck:
 
     //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.4f);
 
-    list<vector<Byte> > bytesRead;
+    list<vector<Byte>> bytesRead;
     unsigned int totalBytes =   0;
     {
         // Keep reading data til all done

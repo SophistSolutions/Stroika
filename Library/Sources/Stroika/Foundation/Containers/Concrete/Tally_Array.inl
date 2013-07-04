@@ -104,9 +104,9 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual shared_ptr<typename Iterator<TallyEntry<T> >::IRep> Clone () const override {
+                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return shared_ptr<typename Iterator<TallyEntry<T> >::IRep> (new IteratorRep_ (*this));
+                            return shared_ptr<typename Iterator<TallyEntry<T>>::IRep> (new IteratorRep_ (*this));
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
@@ -116,7 +116,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T> >::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
