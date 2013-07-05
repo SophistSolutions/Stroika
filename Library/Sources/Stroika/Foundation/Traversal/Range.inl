@@ -38,7 +38,7 @@ namespace   Stroika {
                 Require (fEffectiveMin_ <= fEffectiveMax_);
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::Contains (T v) const
+            inline  bool    Range<T, TRAITS>::Contains (const T& v) const
             {
                 if (fEmpty_) {
                     return false;

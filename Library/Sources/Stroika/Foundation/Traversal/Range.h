@@ -78,7 +78,7 @@ namespace   Stroika {
                  *
                  *  Numerically - what makes the most sense is to contain the edges - so assume yes.
                  */
-                nonvirtual  bool    Contains (T v) const;
+                nonvirtual  bool    Contains (const T& v) const;
 
             public:
                 /**
