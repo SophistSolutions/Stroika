@@ -81,15 +81,15 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::ExpandedUnion (const Range<T, TRAITS>& v) const
             {
-                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (GetEffectiveMin (), v.GetEffectiveMin ()), max (GetEffectiveMax (), v.GetEffectiveMax ()));
-                Ensure (result.GetEffectiveMin () <= GetEffectiveMin ());
-                Ensure (result.GetEffectiveMin () <= GetEffectiveMax ());
-                Ensure (result.GetEffectiveMin () <= v.GetEffectiveMin ());
-                Ensure (result.GetEffectiveMin () <= v.GetEffectiveMax ());
-                Ensure (result.GetEffectiveMax () >= GetEffectiveMin ());
-                Ensure (result.GetEffectiveMax () >= GetEffectiveMax ());
-                Ensure (result.GetEffectiveMax () >= v.GetEffectiveMin ());
-                Ensure (result.GetEffectiveMax () >= v.GetEffectiveMax ());
+                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), v.begin ()), max (end (), v.end ()));
+                Ensure (result.begin () <= begin ());
+                Ensure (result.begin () <= end ());
+                Ensure (result.begin () <= v.begin ());
+                Ensure (result.begin () <= v.end ());
+                Ensure (result.end () >= begin ());
+                Ensure (result.end () >= end ());
+                Ensure (result.end () >= v.begin ());
+                Ensure (result.end () >= v.end ());
                 return result;
             }
             template    <typename T, typename TRAITS>
