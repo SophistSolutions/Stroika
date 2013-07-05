@@ -22,6 +22,7 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
+using   namespace   Stroika::Foundation::Containers::Private;
 using   namespace   Stroika::Foundation::Containers::Private::DataStructures;
 using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStructures;
 
@@ -31,7 +32,7 @@ using   namespace   Stroika::Foundation::Containers::Private::PatchingDataStruct
 namespace   {
     static  void    Test1()
     {
-        LinkedList_Patch<size_t>    someLL;
+        PatchingDataStructures::LinkedList<size_t>    someLL;
         const   size_t  kBigSize    =   1001;
 
 
@@ -50,7 +51,7 @@ namespace   {
         someLL.SetAt (55, 55);                                                                                                      //  someLL [55] = 55;
         VerifyTestResult (someLL.GetAt (55) == 55);                                                                                 //  VerifyTestResult(someArray [55] == 55);
         VerifyTestResult (someLL.GetAt (55) != 56);                                                                                 //  VerifyTestResult(someArray [55] != 56);
-        { size_t i = 1; size_t cur; for (LinkedList_Patch<size_t>::ForwardIterator it (someLL); it.More(&cur, true); i++) { if (i == 100) {someLL.AddAfter (it, 1); break;} } } //   someLL.InsertAt(1, 100);
+        { size_t i = 1; size_t cur; for (PatchingDataStructures::LinkedList<size_t>::ForwardIterator it (someLL); it.More(&cur, true); i++) { if (i == 100) {someLL.AddAfter (it, 1); break;} } } //   someLL.InsertAt(1, 100);
 
         VerifyTestResult(someLL.GetLength() == kBigSize + 1);
         VerifyTestResult (someLL.GetAt (100) == 1);                                                                                 //  VerifyTestResult(someArray [100] == 1);
@@ -64,7 +65,7 @@ namespace   {
 
     static  void    Test2()
     {
-        LinkedList_Patch<SimpleClass>   someLL;
+        PatchingDataStructures::LinkedList<SimpleClass>   someLL;
         const   size_t  kBigSize    =   1000;
 
         VerifyTestResult(someLL.GetLength() == 0);

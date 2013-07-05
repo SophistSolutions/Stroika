@@ -59,7 +59,7 @@ namespace   Stroika {
                      *  no public means to access the links themselves.
                      *
                      *      Since this class provides no patching support, it is not generally
-                     *  used - more likely you want to use LinkedList_Patch<T>. Use this if you
+                     *  used - more likely you want to use PatchingDataStructures::LinkedList<T>. Use this if you
                      *  will manage all patching, or know that none is necessary.
                      */
                     template      <typename  T, typename TRAITS = LinkedList_DefaultTraits<T>>

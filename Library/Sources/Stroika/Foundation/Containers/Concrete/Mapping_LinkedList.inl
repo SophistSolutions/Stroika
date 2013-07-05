@@ -66,7 +66,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_                           fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList_Patch<pair<Key, T>>  fData_;
+                    Private::PatchingDataStructures::LinkedList<pair<Key, T>>       fData_;
                     friend  class Mapping_LinkedList<Key, T>::IteratorRep_;
                 };
 
@@ -111,8 +111,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList_Patch<pair<Key, T>>::ForwardIterator  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::LinkedList<pair<Key, T>>::ForwardIterator     fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -228,7 +228,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<Key, T>::Rep_::Add (Key key, T newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::LinkedList_Patch<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename Private::PatchingDataStructures::LinkedList<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 fData_.SetAt (it, pair<Key, T> (key, newElt));
                                 return;
@@ -242,7 +242,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<Key, T>::Rep_::Remove (Key key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::LinkedList_Patch<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename Private::PatchingDataStructures::LinkedList<pair<Key, T>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (it.Current ().first == key) {
                                 fData_.RemoveAt (it);
                                 return;

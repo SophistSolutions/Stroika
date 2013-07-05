@@ -62,7 +62,7 @@ namespace   Stroika {
 
                 private:
                     typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    UseLinkedListTraitsType_;
-                    typedef Private::PatchingDataStructures::LinkedList_Patch<T, UseLinkedListTraitsType_>                      ImplArrayType_;
+                    typedef Private::PatchingDataStructures::LinkedList<T, UseLinkedListTraitsType_>                            ImplArrayType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;

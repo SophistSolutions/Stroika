@@ -56,8 +56,8 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                   fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList_Patch<T>    fData_;
+                    Private::ContainerRepLockDataSupport_         fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList<T>  fData_;
 
                 private:
                     friend  class Stack_LinkedList<T>::IteratorRep_;
@@ -104,8 +104,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList_Patch<T>::ForwardIterator     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator    fIterator_;
 
                 private:
                     friend  class   Rep_;

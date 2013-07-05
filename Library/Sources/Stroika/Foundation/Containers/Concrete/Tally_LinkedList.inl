@@ -67,8 +67,8 @@ namespace   Stroika {
                     virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                               fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList_Patch<TallyEntry<T>>    fData_;
+                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList<TallyEntry<T>>  fData_;
 
                     friend  class Tally_LinkedList<T>::IteratorRep_;
                 };
@@ -112,8 +112,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList_Patch<TallyEntry<T>>::ForwardIterator fIterator_;
+                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
+                    mutable typename Private::PatchingDataStructures::LinkedList<TallyEntry<T>>::ForwardIterator    fIterator_;
 
                 private:
                     friend class Tally_LinkedList<T>::Rep_;
@@ -216,7 +216,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename Private::PatchingDataStructures::LinkedList_Patch<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&current, true); ) {
+                            for (typename Private::PatchingDataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
@@ -234,7 +234,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename Private::PatchingDataStructures::LinkedList_Patch<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&current, true); ) {
+                            for (typename Private::PatchingDataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&current, true); ) {
                                 if (current.fItem == item) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
