@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <limits>
+
 #include    "../Configuration/Common.h"
 #include    "../Memory/Optional.h"
 
@@ -36,14 +38,14 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            // See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
             template    <typename T>
             struct  DefaultRangeTraits {
                 typedef ssize_t SignedDifferenceType;
                 typedef size_t  UnsignedDifferenceType;
 
-                // add values for min/max
-                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMin, -100);    // use limit<T> stuff
-                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMax, 100); // use limit<T> stuff
+                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMin, numeric_limits<T>::min ());
+                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMax, numeric_limits<T>::max ());
             };
 
 
@@ -62,6 +64,10 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  UNCLEAR - THOUGH OUT DEF _ IF WE WANT TO CONTIN EDGES. ANSWER COULD BE DIFFERNT BETWEEN
+                 *  DISCRETE versus NON-DISCRETE cases?
+                 *
+                 *  Numerically - what makes the most sense is to contain the edges - so assume yes.
                  */
                 nonvirtual  bool    Contains (T v) const;
 
@@ -84,22 +90,26 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  bool    GetMin () const;
+                nonvirtual  Memory::Optional<T>    GetMin () const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    GetMax () const;
+                nonvirtual  Memory::Optional<T>    GetMax () const;
 
             public:
                 /**
+                 *  The min-value is optional - and can be omitted. If omitted, treat as the
+                 *  TRAITS::kMin
                  */
-                nonvirtual  bool    GetEffectiveMin () const;
+                nonvirtual  T    GetEffectiveMin () const;
 
             public:
                 /**
+                 *  The max-value is optional - and can be omitted. If omitted, treat as the
+                 *  TRAITS::kMax
                  */
-                nonvirtual  bool    GetEffectiveMax () const;
+                nonvirtual  T    GetEffectiveMax () const;
 
             private:
                 Memory::Optional<T>    fMin_;
