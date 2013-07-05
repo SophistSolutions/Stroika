@@ -62,6 +62,9 @@ namespace   Stroika {
              *
              *  Note - you can do Range<float>, but cannot do DiscreteRange<float> - but can do DiscreteRange<int>.
              *
+             *  KEY NOTE!!!
+             *      HALF OPEN INTERVAL!!!! - LHS is INCLUDED. RHS (END) is NOT INCLUDED!!!!
+             *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
             class  Range {
