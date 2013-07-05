@@ -39,14 +39,17 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            /**
             // See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
+            * AND wrong type - about singed differnce type =- maybe use declyetype
+             */
             template    <typename T>
             struct  DefaultRangeTraits {
                 typedef ssize_t SignedDifferenceType;
                 typedef size_t  UnsignedDifferenceType;
 
-                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMin, numeric_limits<T>::min ());
-                DEFINE_CONSTEXPR_CONSTANT(SignedDifferenceType, kMax, numeric_limits<T>::max ());
+                DEFINE_CONSTEXPR_CONSTANT(decltype (numeric_limits<T>::min ()), kMin, numeric_limits<T>::min ());
+                DEFINE_CONSTEXPR_CONSTANT(decltype (numeric_limits<T>::max ()), kMax, numeric_limits<T>::max ());
             };
 
 
