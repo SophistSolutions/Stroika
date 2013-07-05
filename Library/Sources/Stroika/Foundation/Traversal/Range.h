@@ -48,8 +48,8 @@ namespace   Stroika {
                 typedef ssize_t SignedDifferenceType;
                 typedef size_t  UnsignedDifferenceType;
 
-                DEFINE_CONSTEXPR_CONSTANT(decltype (numeric_limits<T>::min ()), kMin, numeric_limits<T>::min ());
-                DEFINE_CONSTEXPR_CONSTANT(decltype (numeric_limits<T>::max ()), kMax, numeric_limits<T>::max ());
+                DEFINE_CONSTEXPR_CONSTANT(T, kMin, numeric_limits<T>::min ());
+                DEFINE_CONSTEXPR_CONSTANT(T, kMax, numeric_limits<T>::max ());
             };
 
 
