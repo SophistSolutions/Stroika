@@ -24,7 +24,8 @@
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
- *          @todo    Imlement first draft functionality.
+ *          @todo   Need a way to represent EMPTY RANGE (has no min/max).
+ *                  This is critical to properly implementing iNTERSECTION
  *
  *          @todo   When this works with basic numbers, then add specializations to the Time module so that
  *                  this stuff all works with dates, and datetime etc.
