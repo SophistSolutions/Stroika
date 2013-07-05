@@ -63,8 +63,13 @@ namespace   Stroika {
                 typedef T   ElementType;
 
             public:
+                Range ();
                 explicit Range (const Memory::Optional<T>& min, const Memory::Optional<T>& max);
 
+            public:
+                /**
+                 */
+                nonvirtual  bool    empty () const;
 
             public:
                 /**
@@ -116,10 +121,11 @@ namespace   Stroika {
                 nonvirtual  T    GetEffectiveMax () const;
 
             private:
-                Memory::Optional<T>    fMin_;
-                T                      fEffectiveMin_;
-                Memory::Optional<T>    fMax_;
-                T                      fEffectiveMax_;
+                bool                    fEmpty_;
+                Memory::Optional<T>     fMin_;
+                T                       fEffectiveMin_;
+                Memory::Optional<T>     fMax_;
+                T                       fEffectiveMax_;
             };
 
 
