@@ -49,7 +49,7 @@ namespace   Stroika {
                 //typedef ssize_t SignedDifferenceType;
                 typedef size_t  UnsignedDifferenceType;
 
-				//tmphack to compile on windoze - find better when when I decide what I'm looking for...
+                //tmphack to compile on windoze - find better when when I decide what I'm looking for...
                 //DEFINE_CONSTEXPR_CONSTANT(T, kMin, numeric_limits<T>::min ());
                 //DEFINE_CONSTEXPR_CONSTANT(T, kMax, numeric_limits<T>::max ());
                 DEFINE_CONSTEXPR_CONSTANT(T, kMin, -1);
@@ -78,12 +78,12 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators - 
-				 *	end refers to past the end).
-				 *
-				 *	Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
-				 *
-				 *	\req begin <= end (after substitution of optional values)
+                 *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
+                 *  end refers to past the end).
+                 *
+                 *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
+                 *
+                 *  \req begin <= end (after substitution of optional values)
                  */
                 Range ();
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
@@ -95,7 +95,7 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	end-begin, or distance from begin to end of the range. This is zero iff empty.
+                 *  end-begin, or distance from begin to end of the range. This is zero iff empty.
                  */
                 nonvirtual  typename TRAITS::UnsignedDifferenceType    size () const;
 
