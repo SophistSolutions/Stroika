@@ -7,6 +7,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Common/Compare.h"
 #include    "../../../Memory/BlockAllocated.h"
 
 #include    "../../Common.h"
@@ -209,7 +210,7 @@ namespace   Stroika {
                     /**
                      *  Just an implementation detail. Don't use directly except in helper classes.
                      */
-                    template    <typename   T>
+                    template      <typename  T, typename TRAITS>
                     class   DoublyLinkedList<T, TRAITS>::Link {
                     public:
                         DECLARE_USE_BLOCK_ALLOCATION (Link);
