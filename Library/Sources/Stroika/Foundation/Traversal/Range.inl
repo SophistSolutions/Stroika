@@ -32,6 +32,16 @@ namespace   Stroika {
                 Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
+            inline	bool    Range<T, TRAITS>::empty () const
+			{
+				return fBegin_ == fEnd_;
+			}
+            template    <typename T, typename TRAITS>
+            inline	typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::size () const
+			{
+				return fEnd_ - fBegin_;
+			}
+            template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Contains (const T& v) const
             {
                 return fBegin_ <= v and v < fEnd_;

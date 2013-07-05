@@ -33,3 +33,4 @@
 [33]	Foundation::Memory
 [34]	Foundation::Streams
 [35]	Foundation::Time
+[36]	Foundation::Traversal
