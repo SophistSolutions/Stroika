@@ -17,11 +17,11 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************ DoublyLinkedList<T>::Link *****************************
+                    ********************* DoublyLinkedList<T, TRAITS>::Link ************************
                     ********************************************************************************
                     */
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::Link::Link (T item, Link* next)
+                    template      <typename  T, typename TRAITS>
+                    inline  DoublyLinkedList<T, TRAITS>::Link::Link (T item, Link* next)
                         : fItem (item)
                         , fNext (next)
                     {
@@ -30,17 +30,17 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ************************* DoublyLinkedList<T> **********************************
+                    ************************* DoublyLinkedList<T, TRAITS> **************************
                     ********************************************************************************
                     */
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::DoublyLinkedList ()
+                    template      <typename  T, typename TRAITS>
+                    inline  DoublyLinkedList<T, TRAITS>::DoublyLinkedList ()
                         : _fHead (nullptr)
                     {
                         Invariant ();
                     }
-                    template    <typename   T>
-                    DoublyLinkedList<T>::DoublyLinkedList (const DoublyLinkedList<T>& from)
+                    template      <typename  T, typename TRAITS>
+                    DoublyLinkedList<T, TRAITS>::DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from)
                         : _fHead (nullptr)
                     {
                         /*
@@ -62,8 +62,8 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::~DoublyLinkedList ()
+                    template      <typename  T, typename TRAITS>
+                    inline  DoublyLinkedList<T, TRAITS>::~DoublyLinkedList ()
                     {
                         /*
                          * This could be a little cheaper - we could avoid setting fFirst pointer,
@@ -79,20 +79,20 @@ namespace   Stroika {
                         Ensure (GetLength () == 0);
                         Ensure (_fHead == nullptr);
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::Invariant () const
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <typename   T>
-                    bool    DoublyLinkedList<T>::IsEmpty () const
+                    template      <typename  T, typename TRAITS>
+                    bool    DoublyLinkedList<T, TRAITS>::IsEmpty () const
                     {
                         return _fHead == nullptr;
                     }
-                    template    <typename   T>
-                    inline  size_t  DoublyLinkedList<T>::GetLength () const
+                    template      <typename  T, typename TRAITS>
+                    inline  size_t  DoublyLinkedList<T, TRAITS>::GetLength () const
                     {
                         size_t  n   =   0;
                         for (const Link* i = _fHead; i != nullptr; i = i->fNext) {
@@ -100,14 +100,14 @@ namespace   Stroika {
                         }
                         return n;
                     }
-                    template    <typename   T>
-                    inline  T   DoublyLinkedList<T>::GetFirst () const
+                    template      <typename  T, typename TRAITS>
+                    inline  T   DoublyLinkedList<T, TRAITS>::GetFirst () const
                     {
                         AssertNotNull (_fHead);
                         return _fHead->fItem;
                     }
-                    template    <typename   T>
-                    inline  T   DoublyLinkedList<T>::GetLast () const
+                    template      <typename  T, typename TRAITS>
+                    inline  T   DoublyLinkedList<T, TRAITS>::GetLast () const
                     {
                         // TMPHACK - must restore storage of fLast - somehow lost (sterl?) by moving this code from old stroika 1992 code?
                         // maybe irrelevant if we swtich to usting STL list class
@@ -119,15 +119,15 @@ namespace   Stroika {
                         RequireNotReached ();
                         return *(T*)nullptr;
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::Prepend (T item)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::Prepend (T item)
                     {
                         Invariant ();
                         _fHead = new Link (item, _fHead);
                         Invariant ();
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::RemoveFirst ()
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::RemoveFirst ()
                     {
                         RequireNotNull (_fHead);
                         Invariant ();
@@ -138,8 +138,8 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::RemoveLast ()
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::RemoveLast ()
                     {
                         RequireNotNull (_fHead);
                         Invariant ();
@@ -165,8 +165,8 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <typename   T>
-                    DoublyLinkedList<T>& DoublyLinkedList<T>::operator= (const DoublyLinkedList<T>& rhs)
+                    template      <typename  T, typename TRAITS>
+                    DoublyLinkedList<T, TRAITS>& DoublyLinkedList<T, TRAITS>::operator= (const DoublyLinkedList<T, TRAITS>& rhs)
                     {
                         Invariant ();
 
@@ -193,8 +193,8 @@ namespace   Stroika {
 
                         return *this;
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::Remove (T item)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::Remove (T item)
                     {
                         Invariant ();
 
@@ -215,8 +215,8 @@ namespace   Stroika {
 
                         Invariant ();
                     }
-                    template    <typename   T>
-                    bool    DoublyLinkedList<T>::Contains (T item) const
+                    template      <typename  T, typename TRAITS>
+                    bool    DoublyLinkedList<T, TRAITS>::Contains (T item) const
                     {
                         for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
                             if (current->fItem == item) {
@@ -225,8 +225,8 @@ namespace   Stroika {
                         }
                         return false;
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::RemoveAll ()
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::RemoveAll ()
                     {
                         for (Link* i = _fHead; i != nullptr;) {
                             Link*    deleteMe    =   i;
@@ -235,8 +235,8 @@ namespace   Stroika {
                         }
                         _fHead = nullptr;
                     }
-                    template    <typename   T>
-                    T   DoublyLinkedList<T>::GetAt (size_t i) const
+                    template      <typename  T, typename TRAITS>
+                    T   DoublyLinkedList<T, TRAITS>::GetAt (size_t i) const
                     {
                         Require (i >= 0);
                         Require (i < GetLength ());
@@ -247,8 +247,8 @@ namespace   Stroika {
                         AssertNotNull (cur);        // cuz i <= fLength
                         return (cur->fItem);
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::SetAt (size_t i, T item)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::SetAt (size_t i, T item)
                     {
                         Require (i >= 0);
                         Require (i < GetLength ());
@@ -259,8 +259,8 @@ namespace   Stroika {
                         AssertNotNull (cur);        // cuz i <= fLength
                         cur->fItem = item;
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::RemoveAt (const ForwardIterator& i)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::RemoveAt (const ForwardIterator& i)
                     {
                         Require (not i.Done ());
                         this->Invariant ();
@@ -290,16 +290,16 @@ namespace   Stroika {
                         delete (victim);
                         this->Invariant ();
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::SetAt (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::SetAt (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         this->Invariant ();
                         const_cast<Link*> (i._fCurrent)->fItem = newValue;
                         this->Invariant ();
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::AddBefore (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::AddBefore (const ForwardIterator& i, T newValue)
                     {
                         /*
                          * NB: This code works fine, even if we are done!!!
@@ -323,16 +323,16 @@ namespace   Stroika {
                         }
                         this->Invariant ();
                     }
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::AddAfter (const ForwardIterator& i, T newValue)
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::AddAfter (const ForwardIterator& i, T newValue)
                     {
                         Require (not i.Done ());
                         AssertNotNull (i._fCurrent); // since not done...
                         const_cast<Link*> (i._fCurrent)->fNext = new Link (newValue, i._fCurrent->fNext);
                     }
 #if     qDebug
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::Invariant_ () const
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::Invariant_ () const
                     {
                         /*
                          * Check we are properly linked together.
@@ -346,25 +346,25 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ******************** DoublyLinkedList<T>::ForwardIterator **********************
+                    **************** DoublyLinkedList<T, TRAITS>::ForwardIterator ******************
                     ********************************************************************************
                     */
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T>& data)
+                    template      <typename  T, typename TRAITS>
+                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>& data)
                         : _fData (&data)
                         , _fCurrent (data._fHead)
                         , _fSuppressMore (true)
                     {
                     }
-                    template    <typename   T>
-                    inline  DoublyLinkedList<T>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
+                    template      <typename  T, typename TRAITS>
+                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)
                         : _fData (from._fData)
                         , _fCurrent (from._fCurrent)
                         , _fSuppressMore (from._fSuppressMore)
                     {
                     }
-                    template    <typename   T>
-                    inline  typename DoublyLinkedList<T>::ForwardIterator&  DoublyLinkedList<T>::ForwardIterator::operator= (const ForwardIterator& rhs)
+                    template      <typename  T, typename TRAITS>
+                    inline  typename DoublyLinkedList<T, TRAITS>::ForwardIterator&  DoublyLinkedList<T, TRAITS>::ForwardIterator::operator= (const ForwardIterator& rhs)
                     {
                         Invariant ();
                         _fData = rhs._fData;
@@ -373,21 +373,21 @@ namespace   Stroika {
                         Invariant ();
                         return *this;
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::ForwardIterator::Invariant () const
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::Invariant () const
                     {
 #if     qDebug
                         Invariant_ ();
 #endif
                     }
-                    template    <typename   T>
-                    inline  bool    DoublyLinkedList<T>::ForwardIterator::Done () const
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::Done () const
                     {
                         Invariant ();
                         return bool (_fCurrent == nullptr);
                     }
-                    template    <typename   T>
-                    inline  bool    DoublyLinkedList<T>::ForwardIterator::More (T* current, bool advance)
+                    template      <typename  T, typename TRAITS>
+                    inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                     {
                         Invariant ();
 
@@ -407,16 +407,16 @@ namespace   Stroika {
                         }
                         return (not Done ());
                     }
-                    template    <typename   T>
-                    inline  T   DoublyLinkedList<T>::ForwardIterator::Current () const
+                    template      <typename  T, typename TRAITS>
+                    inline  T   DoublyLinkedList<T, TRAITS>::ForwardIterator::Current () const
                     {
                         Require (not (Done ()));
                         Invariant ();
                         AssertNotNull (_fCurrent);
                         return _fCurrent->fItem;
                     }
-                    template    <typename   T>
-                    size_t DoublyLinkedList<T>::ForwardIterator::CurrentIndex () const
+                    template      <typename  T, typename TRAITS>
+                    size_t DoublyLinkedList<T, TRAITS>::ForwardIterator::CurrentIndex () const
                     {
                         Require (not (Done ()));
                         Invariant ();
@@ -426,27 +426,27 @@ namespace   Stroika {
                         }
                         return n;
                     }
-                    template    <typename   T>
-                    inline    typename DoublyLinkedList<T>::Link*   DoublyLinkedList<T>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T>* data)
+                    template      <typename  T, typename TRAITS>
+                    inline    typename DoublyLinkedList<T, TRAITS>::Link*   DoublyLinkedList<T, TRAITS>::ForwardIterator::_GetFirstDataLink (DoublyLinkedList<T, TRAITS>* data)
                     {
                         RequireNotNull (data);
                         return data->_fHead;
                     }
-                    template    <typename   T>
-                    inline const typename DoublyLinkedList<T>::Link* DoublyLinkedList<T>::ForwardIterator::_GetFirstDataLink (const DoublyLinkedList<T>* data)
+                    template      <typename  T, typename TRAITS>
+                    inline const typename DoublyLinkedList<T, TRAITS>::Link* DoublyLinkedList<T, TRAITS>::ForwardIterator::_GetFirstDataLink (const DoublyLinkedList<T, TRAITS>* data)
                     {
                         RequireNotNull (data);
                         return data->_fHead;
                     }
-                    template    <typename   T>
-                    inline  void    DoublyLinkedList<T>::ForwardIterator::_SetFirstDataLink (DoublyLinkedList<T>* data, Link* newFirstLink)
+                    template      <typename  T, typename TRAITS>
+                    inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::_SetFirstDataLink (DoublyLinkedList<T, TRAITS>* data, Link* newFirstLink)
                     {
                         RequireNotNull (data);
                         data->_fHead = newFirstLink;
                     }
 #if     qDebug
-                    template    <typename   T>
-                    void    DoublyLinkedList<T>::ForwardIterator::Invariant_ () const
+                    template      <typename  T, typename TRAITS>
+                    void    DoublyLinkedList<T, TRAITS>::ForwardIterator::Invariant_ () const
                     {
                     }
 #endif
