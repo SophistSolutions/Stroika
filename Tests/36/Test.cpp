@@ -85,6 +85,17 @@ namespace {
             nItemsHit (lastItemHit == 3);
             VerifyTestResult (lastItemHit == Color::green);
         }
+        {
+            int nItemsHit = 0;
+            Color lastItemHit = Color::red;
+            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color c) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit < i);
+                lastItemHit = i;
+            });
+            nItemsHit (lastItemHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
+        }
 #endif
     }
 }
