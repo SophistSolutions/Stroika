@@ -43,6 +43,15 @@ namespace   Stroika {
                 // must shadow methods that return Range in base class, and provide CTOR
 
                 //
+
+
+            public:
+                // returns same as begin
+                T   GetFirst () const;
+
+            public:
+                // returns one less than end!!! - the last valid value
+                T   GetLast () const;
             };
 
 

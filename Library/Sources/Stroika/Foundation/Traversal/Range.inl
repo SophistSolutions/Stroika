@@ -20,71 +20,57 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             Range<T, TRAITS>::Range ()
-                : fEmpty_ (true)
-                , fMin_ ()
-                , fEffectiveMin_ ()
-                , fMax_ ()
-                , fEffectiveMax_ ()
+                : fBegin_ (TRAITS::kMin)
+                , fEnd_ (TRAITS::kMin)
             {
             }
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS>::Range (const Memory::Optional<T>& min, const Memory::Optional<T>& max)
-                : fEmpty_ (false)
-                , fMin_ (min)
-                , fEffectiveMin_ (min.IsPresent () ? *min : TRAITS::kMin)
-                , fMax_ (max)
-                , fEffectiveMax_ (max.IsPresent () ? *max : TRAITS::kMax)
+            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+                : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
+                , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
             {
-                Require (fEffectiveMin_ <= fEffectiveMax_);
+                Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Contains (const T& v) const
             {
-                if (fEmpty_) {
-                    return false;
+                return fBegin_ <= v and v < fEnd_;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& v) const
+            {
+                if (empty ()) {
+                    return v.empty ();
                 }
-                return fEffectiveMin_ <= v and v <= fEffectiveMax_;
+                return fBegin_ == v.fBegin_ and fEnd_ == v.fEnd_;
             }
             template    <typename T, typename TRAITS>
             bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& v) const
             {
-                if (fEmpty_) {
-                    return false;
-                }
+                /*
+                 *  @todo   RETHINK - because Range has semantics of exclude end - make sure overlap usuage
+                 *          here is correct??? Unsure -- LGP 2013-07-05
+                 */
                 return Math::Overlaps (
-                           pair<T, T> (GetEffectiveMin (), GetEffectiveMax ()),
-                           pair<T, T> (v.GetEffectiveMin (), v.GetEffectiveMax ())
+                           pair<T, T> (fBegin_, fEnd_),
+                           pair<T, T> (v.fBegin_, v.fEnd_)
                        );
             }
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& v) const
             {
-                if (fEmpty_) {
+                T   l   =   max (fBegin_, v.fBegin_);
+                T   r   =   min (fEnd_, v.fEnd_);
+                if (l < r) {
+                    return Range<T, TRAITS> (l, r);
+                }
+                else {
                     return Range<T, TRAITS> ();
                 }
-                if (v.fEmpty_) {
-                    return Range<T, TRAITS> ();
-                }
-                T   lb = GetEffectiveMin ();
-                T   ub = GetEffectiveMax ();
-                Assert (lb <= ub);
-                T   rlb = v.GetEffectiveMin ();
-                T   rub = v.GetEffectiveMax ();
-                Assert (rlb <= rub);
-
-                // CANNOT DO UNTIL WE HAVE 'EMPTY' CTOR
-                AssertNotImplemented ();
-                return Range<T, TRAITS> (lb, ub);
             }
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::ExpandedUnion (const Range<T, TRAITS>& v) const
             {
-                if (fEmpty_) {
-                    return v;
-                }
-                if (v.fEmpty_) {
-                    return *this;
-                }
                 Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (GetEffectiveMin (), v.GetEffectiveMin ()), max (GetEffectiveMax (), v.GetEffectiveMax ()));
                 Ensure (result.GetEffectiveMin () <= GetEffectiveMin ());
                 Ensure (result.GetEffectiveMin () <= GetEffectiveMax ());
@@ -97,28 +83,14 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            inline  Memory::Optional<T>    Range<T, TRAITS>::GetMin () const
+            inline  T    Range<T, TRAITS>::begin () const
             {
-                Require (not fEmpty_);
-                return fMin_;
+                return fBegin_;
             }
             template    <typename T, typename TRAITS>
-            inline  Memory::Optional<T>    Range<T, TRAITS>::GetMax () const
+            inline  T    Range<T, TRAITS>::end () const
             {
-                Require (not fEmpty_);
-                return fMax_;
-            }
-            template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::GetEffectiveMin () const
-            {
-                Require (not fEmpty_);
-                return fEffectiveMin_;
-            }
-            template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::GetEffectiveMax () const
-            {
-                Require (not fEmpty_);
-                return fEffectiveMax_;
+                return fEnd_;
             }
 
 

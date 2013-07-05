@@ -24,12 +24,13 @@
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
- *          @todo   Need a way to represent EMPTY RANGE (has no min/max).
- *                  This is critical to properly implementing iNTERSECTION
+ *          @todo   Add operator< support (compare interface)
  *
  *          @todo   When this works with basic numbers, then add specializations to the Time module so that
  *                  this stuff all works with dates, and datetime etc.
  *
+ *          @todo   One open question is should we treat all empty intersections as equal? I think yes. So then
+ *                  Range(1,1) == Range(3,3)?
  */
 
 
@@ -54,6 +55,13 @@ namespace   Stroika {
 
 
             /**
+             *  Somewhat inspired by, and at least influenced by, the definition in
+             *      http://ruby-doc.org/core-2.0/Range.html
+             *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties
+             *  are expressed only in DiscreteRange<>
+             *
+             *  Note - you can do Range<float>, but cannot do DiscreteRange<float> - but can do DiscreteRange<int>.
+             *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
             class  Range {
@@ -63,8 +71,11 @@ namespace   Stroika {
                 typedef T   ElementType;
 
             public:
+                /**
+                 *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators - end refers to past the end).
+                 */
                 Range ();
-                explicit Range (const Memory::Optional<T>& min, const Memory::Optional<T>& max);
+                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
             public:
                 /**
@@ -88,6 +99,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  bool    Equals (const Range<T, TRAITS>& v) const;
+
+            public:
+                /**
+                 */
                 nonvirtual  Range<T, TRAITS> Intersection (const Range<T, TRAITS>& v) const;
 
             public:
@@ -99,33 +115,16 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<T>    GetMin () const;
+                nonvirtual  T    begin () const;
 
             public:
                 /**
                  */
-                nonvirtual  Memory::Optional<T>    GetMax () const;
-
-            public:
-                /**
-                 *  The min-value is optional - and can be omitted. If omitted, treat as the
-                 *  TRAITS::kMin
-                 */
-                nonvirtual  T    GetEffectiveMin () const;
-
-            public:
-                /**
-                 *  The max-value is optional - and can be omitted. If omitted, treat as the
-                 *  TRAITS::kMax
-                 */
-                nonvirtual  T    GetEffectiveMax () const;
+                nonvirtual  T    end () const;
 
             private:
-                bool                    fEmpty_;
-                Memory::Optional<T>     fMin_;
-                T                       fEffectiveMin_;
-                Memory::Optional<T>     fMax_;
-                T                       fEffectiveMax_;
+                T       fBegin_;
+                T       fEnd_;
             };
 
 
