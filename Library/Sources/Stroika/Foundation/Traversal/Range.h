@@ -127,7 +127,7 @@ namespace   Stroika {
                 /**
                  * if two regions are disjoint, this can encompass a larger region than the actual union would
                  */
-                nonvirtual  Range<T, TRAITS> ExpandedUnion (const Range<T, TRAITS>& v) const;
+                nonvirtual  Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& v) const;
 
             public:
                 /**

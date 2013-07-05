@@ -79,7 +79,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS> Range<T, TRAITS>::ExpandedUnion (const Range<T, TRAITS>& v) const
+            Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& v) const
             {
                 Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), v.begin ()), max (end (), v.end ()));
                 Ensure (result.begin () <= begin ());
