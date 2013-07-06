@@ -65,7 +65,10 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  bool    Contains (value_type item) const;
-                        nonvirtual  bool    Contains1 (value_type item) const;
+
+                    public:
+                        template <typename PREDICATE>
+                        nonvirtual  bool    FindIf (PREDICATE pred) const;
                     };
 
 

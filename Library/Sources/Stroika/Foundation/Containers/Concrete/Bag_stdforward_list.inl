@@ -26,13 +26,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************** Bag_stdforward_list<T>::Rep_ ************************
+                 ******************* Bag_stdforward_list<T, TRAITS>::Rep_ ***********************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class   Bag_stdforward_list<T>::Rep_ : public Bag<T>::_IRep {
+                template    <typename T, typename TRAITS>
+                class   Bag_stdforward_list<T, TRAITS>::Rep_ : public Bag<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Bag<T>::_IRep   inherited;
+                    typedef typename    Bag<T, TRAITS>::_IRep   inherited;
 
                 public:
                     Rep_ ();
@@ -51,9 +51,9 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Bag<T>::_IRep overrides
+                    // Bag<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Bag<T>::_IRep& rhs) const override;
+                    virtual bool    Equals (const typename Bag<T, TRAITS>::_IRep& rhs) const override;
                     virtual bool    Contains (T item) const override;
                     virtual size_t  TallyOf (T item) const override;
                     virtual void    Add (T item) override;
@@ -67,22 +67,22 @@ namespace   Stroika {
                     Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>>  fData_;
 
                 private:
-                    friend  class   Bag_stdforward_list<T>::IteratorRep_;
+                    friend  class   Bag_stdforward_list<T, TRAITS>::IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ******************** Bag_stdforward_list<T>::IteratorRep_ **********************
+                 ************ Bag_stdforward_list<T, TRAITS>::IteratorRep_ **********************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class  Bag_stdforward_list<T>::IteratorRep_ : public Iterator<T>::IRep {
+                template    <typename T, typename TRAITS>
+                class  Bag_stdforward_list<T, TRAITS>::IteratorRep_ : public Iterator<T>::IRep {
                 private:
                     typedef typename    Iterator<T>::IRep   inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Bag_stdforward_list<T>::Rep_& owner)
+                    explicit IteratorRep_ (typename Bag_stdforward_list<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (&owner.fData_) {
@@ -115,24 +115,24 @@ namespace   Stroika {
                     mutable typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator     fIterator_;
 
                 private:
-                    friend  class   Bag_stdforward_list<T>::Rep_;
+                    friend  class   Bag_stdforward_list<T, TRAITS>::Rep_;
                 };
 
 
                 /*
                 ********************************************************************************
-                ************************* Bag_stdforward_list<T>::Rep_ *************************
+                ***************** Bag_stdforward_list<T, TRAITS>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                inline  Bag_stdforward_list<T>::Rep_::Rep_ ()
+                template    <typename T, typename TRAITS>
+                inline  Bag_stdforward_list<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T>
-                inline  Bag_stdforward_list<T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T, typename TRAITS>
+                inline  Bag_stdforward_list<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -142,14 +142,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                typename Iterable<T>::_SharedPtrIRep  Bag_stdforward_list<T>::Rep_::Clone () const
+                template    <typename T, typename TRAITS>
+                typename Iterable<T>::_SharedPtrIRep  Bag_stdforward_list<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T>
-                Iterator<T>  Bag_stdforward_list<T>::Rep_::MakeIterator () const
+                template    <typename T, typename TRAITS>
+                Iterator<T>  Bag_stdforward_list<T, TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -161,8 +161,8 @@ namespace   Stroika {
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename T>
-                size_t  Bag_stdforward_list<T>::Rep_::GetLength () const
+                template    <typename T, typename TRAITS>
+                size_t  Bag_stdforward_list<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t  cnt = 0;
@@ -172,69 +172,71 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                bool  Bag_stdforward_list<T>::Rep_::IsEmpty () const
+                template    <typename T, typename TRAITS>
+                bool  Bag_stdforward_list<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.empty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void      Bag_stdforward_list<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                void      Bag_stdforward_list<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T>
-                Iterator<T>     Bag_stdforward_list<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                Iterator<T>     Bag_stdforward_list<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T>
-                bool    Bag_stdforward_list<T>::Rep_::Equals (const typename Bag<T>::_IRep& rhs) const
+                template    <typename T, typename TRAITS>
+                bool    Bag_stdforward_list<T, TRAITS>::Rep_::Equals (const typename Bag<T, TRAITS>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
-                template    <typename  T>
-                bool    Bag_stdforward_list<T>::Rep_::Contains (T item) const
+                template    <typename T, typename TRAITS>
+                bool    Bag_stdforward_list<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return fData_.Contains1 (item);
+                        return fData_.FindIf ([item] (T i) {
+                            return TRAITS::EqualsCompareFunctionType::Equals (i, item);
+                        });
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                size_t    Bag_stdforward_list<T>::Rep_::TallyOf (T item) const
+                template    <typename T, typename TRAITS>
+                size_t    Bag_stdforward_list<T, TRAITS>::Rep_::TallyOf (T item) const
                 {
                     return this->_TallyOf_Reference_Implementation (item);
                 }
-                template    <typename T>
-                void    Bag_stdforward_list<T>::Rep_::Add (T item)
+                template    <typename T, typename TRAITS>
+                void    Bag_stdforward_list<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.push_front (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_stdforward_list<T>::Rep_::Update (const Iterator<T>& i, T newValue)
+                template    <typename T, typename TRAITS>
+                void    Bag_stdforward_list<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Bag_stdforward_list<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T>::IteratorRep_&> (ir);
+                    const typename Bag_stdforward_list<T, TRAITS>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Assert (not i.Done ());
                         *mir.fIterator_.fStdIterator = newValue;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_stdforward_list<T>::Rep_::Remove (T item)
+                template    <typename T, typename TRAITS>
+                void    Bag_stdforward_list<T, TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto ei = fData_.before_begin ();
                         for (auto i = fData_.begin (); i != fData_.end (); ++i) {
-                            if (*i == item) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (*i, item)) {
                                 Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator*>   items2Patch (0);
                                 fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                 auto newI = fData_.erase_after (ei);
@@ -246,12 +248,12 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_stdforward_list<T>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T, typename TRAITS>
+                void    Bag_stdforward_list<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Bag_stdforward_list<T>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T>::IteratorRep_&> (ir);
+                    const typename Bag_stdforward_list<T, TRAITS>::IteratorRep_&      mir =   dynamic_cast<const typename Bag_stdforward_list<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         //mir.fIterator_.RemoveCurrent ();
 
@@ -272,8 +274,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Bag_stdforward_list<T>::Rep_::RemoveAll ()
+                template    <typename T, typename TRAITS>
+                void    Bag_stdforward_list<T, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear_WithPatching ();
@@ -285,34 +287,34 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                **************************** Bag_stdforward_list<T> ****************************
+                ************************ Bag_stdforward_list<T, TRAITS> ************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                Bag_stdforward_list<T>::Bag_stdforward_list ()
+                template    <typename T, typename TRAITS>
+                Bag_stdforward_list<T, TRAITS>::Bag_stdforward_list ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T>
-                Bag_stdforward_list<T>::Bag_stdforward_list (const T* start, const T* end)
+                template    <typename T, typename TRAITS>
+                Bag_stdforward_list<T, TRAITS>::Bag_stdforward_list (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                 }
-                template    <typename T>
-                Bag_stdforward_list<T>::Bag_stdforward_list (const Bag<T>& src)
+                template    <typename T, typename TRAITS>
+                Bag_stdforward_list<T, TRAITS>::Bag_stdforward_list (const Bag<T, TRAITS>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     inherited::operator+= (src);
                 }
-                template    <typename T>
-                Bag_stdforward_list<T>::Bag_stdforward_list (const Bag_stdforward_list<T>& src)
+                template    <typename T, typename TRAITS>
+                Bag_stdforward_list<T, TRAITS>::Bag_stdforward_list (const Bag_stdforward_list<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                 }
-                template    <typename T>
-                inline  Bag_stdforward_list<T>& Bag_stdforward_list<T>::operator= (const Bag_stdforward_list<T>& bag)
+                template    <typename T, typename TRAITS>
+                inline  Bag_stdforward_list<T, TRAITS>& Bag_stdforward_list<T, TRAITS>::operator= (const Bag_stdforward_list<T, TRAITS>& bag)
                 {
                     inherited::operator= (static_cast<const inherited&> (bag));
                     return *this;

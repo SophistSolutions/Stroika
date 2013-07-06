@@ -28,9 +28,10 @@ namespace   Stroika {
                         return this->find (item) != this->end ();
                     }
                     template    <typename STL_CONTAINER_OF_T>
-                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::Contains1 (value_type item) const
+                    template <typename PREDICATE>
+                    inline  bool    STLContainerWrapper<STL_CONTAINER_OF_T>::FindIf (PREDICATE pred) const
                     {
-                        return std::find (this->begin (), this->end (), item) != this->end ();
+                        return std::find_if (this->begin (), this->end (), pred) != this->end ();
                     }
 
 

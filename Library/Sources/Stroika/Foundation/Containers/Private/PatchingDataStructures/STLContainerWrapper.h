@@ -19,9 +19,6 @@
  *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
- *  @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
- *          cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
- *
  *  @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *          that uses forward_list code...
  *

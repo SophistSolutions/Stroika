@@ -32,23 +32,23 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief Bag_stdforward_list<T> is an std::forward_list (singly linked list)-based concrete implementation of the Bag<T> container pattern.
+                 *  \brief Bag_stdforward_list<T, TRAITS> is an std::forward_list (singly linked list)-based concrete implementation of the Bag<T, TRAITS> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class  Bag_stdforward_list : public Bag<T> {
+                template    <typename T, typename TRAITS = Bag_DefaultTraits<T>>
+                class  Bag_stdforward_list : public Bag<T, TRAITS> {
                 private:
-                    typedef     Bag<T>  inherited;
+                    typedef     Bag<T, TRAITS>  inherited;
 
                 public:
                     Bag_stdforward_list ();
                     Bag_stdforward_list (const T* start, const T* end);
-                    Bag_stdforward_list (const Bag<T>& bag);
-                    Bag_stdforward_list (const Bag_stdforward_list<T>& bag);
+                    Bag_stdforward_list (const Bag<T, TRAITS>& bag);
+                    Bag_stdforward_list (const Bag_stdforward_list<T, TRAITS>& bag);
 
-                    nonvirtual  Bag_stdforward_list<T>&  operator= (const Bag_stdforward_list<T>& bag);
+                    nonvirtual  Bag_stdforward_list<T, TRAITS>&  operator= (const Bag_stdforward_list<T, TRAITS>& bag);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

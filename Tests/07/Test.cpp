@@ -67,16 +67,19 @@ namespace   {
 namespace {
     struct X {
         X() {}
+        X(int a): fA (a) {}
         // no op== or other ops
+        int fA;
     };
     struct  MyXComparerWithEquals {
         static  bool    Equals (X v1, X v2) {
-            return true;
+            return v1.fA == v2.fA;
         }
     };
     Bag<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_xxx;
     Bag_Array<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ar;
     Bag_LinkedList<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ll;
+    Bag_stdforward_list<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_sfll;
 }
 #endif
 
