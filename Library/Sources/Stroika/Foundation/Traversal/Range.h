@@ -18,12 +18,16 @@
 /**
  *  \file
  *
- *  STATUS:     VERY PRELIMINARY DRAFT - No WHERE NEAR COMPILING/TESTABLE.
+ *  STATUS:     PRELIMINARY DRAFT.
  *
  *  NOTES:      INSPIRED BY READING ABOUT RUBY, but in the end, mostly
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
+ *          @todo   Make Range<T> a smartptr interface (like with containers). Have one rep for HalfOpen and
+ *                  another for fullyClosed (subtypes). And Discrte is subtype of FullyClosed.
+ *                  I THINK that will go a long way towards addressing sterls (2013-07-05) email issues raised.
+ *
  *          @todo   Add operator< support (compare interface)
  *
  *          @todo   When this works with basic numbers, then add specializations to the Time module so that
