@@ -38,6 +38,28 @@ namespace   Stroika {
     };
 
 
+    class   SimpleClassWithoutComparisonOperators {
+    public:
+#if qIteratorsRequireNoArgContructorForT
+        SimpleClassWithoutComparisonOperators ();
+#endif
+        SimpleClassWithoutComparisonOperators (size_t v);
+        SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators& f);
+        ~SimpleClassWithoutComparisonOperators ();
+
+        nonvirtual  size_t  GetValue () const;
+        static      size_t  GetTotalLiveCount ();
+
+        SimpleClassWithoutComparisonOperators operator+ (const SimpleClassWithoutComparisonOperators& rhs) const {
+            return SimpleClassWithoutComparisonOperators (fValue + rhs.fValue);
+        }
+
+    private:
+        size_t  fValue;
+        int     fConstructed;
+        static  size_t  sTotalLiveObjects;
+    };
+
 };
 
 #endif  /* _Stroika_Foundation_Tests_SimpleClass_h_ */

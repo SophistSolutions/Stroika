@@ -47,8 +47,15 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
+        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+            static  bool    Equals (SimpleClassWithoutComparisonOperators v1, SimpleClassWithoutComparisonOperators v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
+
         RunTests_<Bag<size_t>> ();
         RunTests_<Bag<SimpleClass>> ();
+        //RunTests_<Bag<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Bag_LinkedList<size_t>> ();
         RunTests_<Bag_LinkedList<SimpleClass>> ();
