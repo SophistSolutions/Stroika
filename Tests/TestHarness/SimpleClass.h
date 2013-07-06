@@ -28,16 +28,16 @@ namespace   Stroika {
             return SimpleClass (fValue + rhs.fValue);
         }
 
+        bool    operator== (const SimpleClass& rhs) const;
+        bool    operator< (const SimpleClass& rhs) const;
     private:
         size_t  fValue;
         int     fConstructed;
         static  size_t  sTotalLiveObjects;
 
-        friend  bool    operator== (const SimpleClass& lhs, const SimpleClass& rhs);
-        friend  bool    operator< (const SimpleClass& lhs, const SimpleClass& rhs);
     };
-    bool    operator== (const SimpleClass& lhs, const SimpleClass& rhs);
-    bool    operator< (const SimpleClass& lhs, const SimpleClass& rhs);
+
+
 };
 
 #endif  /* _Stroika_Foundation_Tests_SimpleClass_h_ */

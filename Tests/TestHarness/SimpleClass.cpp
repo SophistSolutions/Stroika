@@ -71,26 +71,18 @@ namespace   Stroika {
         return (sTotalLiveObjects);
     }
 
-
-    /*
-     ********************************************************************************
-     ******************************* comparison operators  **************************
-     ********************************************************************************
-     */
-    bool    operator== (const SimpleClass& lhs, const SimpleClass& rhs)
+    bool    SimpleClass::operator== (const SimpleClass& rhs) const
     {
-        VerifyTestResult (lhs.fConstructed == kFunnyValue);
+        VerifyTestResult (fConstructed == kFunnyValue);
         VerifyTestResult (rhs.fConstructed == kFunnyValue);
-        return (bool (lhs.fValue == rhs.fValue));
+        return (bool (fValue == rhs.fValue));
     }
 
-    bool    operator< (const SimpleClass& lhs, const SimpleClass& rhs)
+    bool    SimpleClass::operator< (const SimpleClass& rhs) const
     {
-        VerifyTestResult (lhs.fConstructed == kFunnyValue);
+        VerifyTestResult (fConstructed == kFunnyValue);
         VerifyTestResult (rhs.fConstructed == kFunnyValue);
-        return (bool (lhs.fValue < rhs.fValue));
+        return (bool (fValue < rhs.fValue));
     }
-
-
 
 }

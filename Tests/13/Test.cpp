@@ -400,14 +400,14 @@ namespace {
                 s.As (&vs);
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult ((i - vs.begin ()) == *i);
+                    VerifyTestResult (T (i - vs.begin ()) == *i);
                 }
             }
             {
                 vector<T>   vs = s.template As<vector<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult ((i - vs.begin ()) == *i);
+                    VerifyTestResult (T (i - vs.begin ()) == *i);
                 }
             }
             {
@@ -416,7 +416,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult ((idx) == *i);
+                    VerifyTestResult (T (idx) == *i);
                 }
             }
             {
@@ -424,7 +424,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult ((idx) == *i);
+                    VerifyTestResult (T (idx) == *i);
                 }
             }
         }
