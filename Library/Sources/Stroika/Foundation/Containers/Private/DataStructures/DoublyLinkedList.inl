@@ -198,13 +198,13 @@ namespace   Stroika {
                     {
                         Invariant ();
 
-                        if (item == _fHead->fItem) {
+                        if (TRAITS::EqualsCompareFunctionType::Equals (item, _fHead->fItem)) {
                             RemoveFirst ();
                         }
                         else {
                             Link*    prev    =   nullptr;
                             for (Link* link = _fHead; link != nullptr; prev = link, link = link->fNext) {
-                                if (link->fItem == item) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (link->fItem, item)) {
                                     AssertNotNull (prev);       // cuz otherwise we would have hit it in first case!
                                     prev->fNext = link->fNext;
                                     delete (link);
@@ -219,7 +219,7 @@ namespace   Stroika {
                     bool    DoublyLinkedList<T, TRAITS>::Contains (T item) const
                     {
                         for (const Link* current = _fHead; current != nullptr; current = current->fNext) {
-                            if (current->fItem == item) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (current->fItem, item)) {
                                 return true;
                             }
                         }

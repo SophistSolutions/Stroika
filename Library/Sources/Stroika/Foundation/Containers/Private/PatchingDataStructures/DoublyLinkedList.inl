@@ -17,7 +17,7 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ***************************** DoublyLinkedList<T, TRAITS> ******************************
+                    ********************* DoublyLinkedList<T, TRAITS> ******************************
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
@@ -148,7 +148,7 @@ namespace   Stroika {
                         Invariant ();
                         T current;
                         for (ForwardIterator it (*this); it.More (&current, true); ) {
-                            if (current == item) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
                                 RemoveAt (it);
                                 break;
                             }
