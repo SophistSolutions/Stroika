@@ -45,9 +45,9 @@ namespace   {
         const bool kWrite2FileAsWell_ = false;      // just for debugging
 
         struct SharedContactsConfig_ {
-            bool                    fEnabled;
-            DateTime                fLastSynchronizedAt;
-            Mapping<String, String>  fThisPHRsIDToSharedContactID;
+            bool                        fEnabled;
+            DateTime                    fLastSynchronizedAt;
+            Mapping<String, String>     fThisPHRsIDToSharedContactID;
 
             SharedContactsConfig_ ()
                 : fEnabled (false)
