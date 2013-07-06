@@ -33,26 +33,26 @@ namespace   Stroika {
                      *      Here we provide Patching Versions of each iterator, and for convienience
                      *  versions of DoublyLinkedList that maintain a list of all Patching iterators.
                      *
-                     *      PatchingDataStructures::DoublyLinkedList<T> is a DoublyLinkedList<T> with the ability to keep track of
+                     *      PatchingDataStructures::DoublyLinkedList<T, TRAITS> is a DoublyLinkedList<T, TRAITS> with the ability to keep track of
                      *  owned patching iterators. These patching iterators will automatically be
                      *  adjusted when the link list is adjusted. This is the class of DoublyLinkedList
                      *  most likely to be used in implementing a concrete container class.
                      */
-                    template    <typename   T>
-                    class   DoublyLinkedList : public DataStructures::DoublyLinkedList<T> {
+                    template      <typename  T, typename TRAITS = DataStructures::DoublyLinkedList_DefaultTraits<T>>
+                    class   DoublyLinkedList : public DataStructures::DoublyLinkedList<T, TRAITS> {
                     private:
-                        typedef typename DataStructures::DoublyLinkedList<T> inherited;
+                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS> inherited;
 
                     public:
                         DoublyLinkedList ();
-                        DoublyLinkedList (const DoublyLinkedList<T>& from);
+                        DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
                         ~DoublyLinkedList ();
 
                     public:
-                        nonvirtual  DoublyLinkedList<T>& operator= (const DoublyLinkedList<T>& list);
+                        nonvirtual  DoublyLinkedList<T, TRAITS>& operator= (const DoublyLinkedList<T, TRAITS>& rhs);
 
                     public:
-                        typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
+                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
 
                     public:
                         class   ForwardIterator;
@@ -112,17 +112,17 @@ namespace   Stroika {
 
                     /*
                      *      ForwardIterator is a .... that allows
-                     *  for updates to the DoublyLinkedList<T> to be dealt with properly. It maintains a
-                     *  link list of iterators headed by the DoublyLinkedList<T>, and takes care
+                     *  for updates to the DoublyLinkedList<T, TRAITS> to be dealt with properly. It maintains a
+                     *  link list of iterators headed by the DoublyLinkedList<T, TRAITS>, and takes care
                      *  of all patching details.
                      */
-                    template    <typename   T>
-                    class   DoublyLinkedList<T>::ForwardIterator : public DataStructures::DoublyLinkedList<T>::ForwardIterator {
+                    template      <typename  T, typename TRAITS>
+                    class   DoublyLinkedList<T, TRAITS>::ForwardIterator : public DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator {
                     private:
-                        typedef typename DataStructures::DoublyLinkedList<T>::ForwardIterator inherited;
+                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator inherited;
 
                     public:
-                        ForwardIterator (const DoublyLinkedList<T>& data);
+                        ForwardIterator (const DoublyLinkedList<T, TRAITS>& data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
 
@@ -130,7 +130,8 @@ namespace   Stroika {
                         nonvirtual  ForwardIterator&    operator= (const ForwardIterator& rhs);
 
                     public:
-                        typedef typename DataStructures::DoublyLinkedList<T>::Link    Link;
+                        typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
+                        typedef PatchingDataStructures::DoublyLinkedList<T, TRAITS>           ContainerType;
 
                     public:
                         /*
@@ -147,14 +148,14 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (Link* newI);
 
                     private:
-                        nonvirtual  const DoublyLinkedList<T>&  GetPatchingContainer_ () const;
-                        nonvirtual  DoublyLinkedList<T>&    GetPatchingContainer_ ();
+                        nonvirtual  const ContainerType&    GetPatchingContainer_ () const;
+                        nonvirtual  ContainerType&          GetPatchingContainer_ ();
 
                     private:
                         ForwardIterator*    fNextActiveIterator_;
 
                     private:
-                        friend  class   DoublyLinkedList<T>;
+                        friend  class   DoublyLinkedList<T, TRAITS>;
 
 #if     qDebug
                     protected:
