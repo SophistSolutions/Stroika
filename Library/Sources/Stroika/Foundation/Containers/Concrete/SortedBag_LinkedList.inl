@@ -264,7 +264,6 @@ namespace   Stroika {
                 void    SortedBag_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
                 {
                     typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator it (fData_);
-
                     // skip the smaller items
                     while (it.More (nullptr, true) and it.Current () < item) {
                     }

@@ -17,20 +17,7 @@
  *
  *  TODO:
  *
- *      @todo   DO SORTING. Just be careful in ADD method. ITs that simple! But first, fix REGRESSION
- *              test so it actually DETECTS that this ist't working, and then fix it - so we can test
- *              fix worked!
- *
- *              o   SortedBag_LinkedList<T>::Rep_::Update () is BUGGY!!! - change could change sort order. Must do
- *                  remove/add (or at least make sure we are already in right place when we update)
- *
- *              o   OK - more seriious - even Add() doesnt work ;-) thats more serious! Must have this functional
- *                  even if not performant!
- *
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
- *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
- *              THEN - MAYBE - try todo better, but at least do this as starter
  *
  */
 
@@ -45,8 +32,13 @@ namespace   Stroika {
                 /**
                  *  \brief SortedBag_LinkedList<T> is an LinkedList-based concrete implementation of the SortedBag<T> container pattern.
                  *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                 *  \note   \em Performance
+                 *      SortedBag_LinkedList<T> is a compact, and reasonable implementation of bags, so long as the bag remains quite small
+                 *      (empty or just a few entires). Thats really quite common!
                  *
+                 *      However, add, contains tests, and removes are O(N) - so quite slow - when the bag grows.
+                 *
+                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
                 template    <typename T, typename TRAITS = SortedBag_DefaultTraits<T>>
                 class  SortedBag_LinkedList : public SortedBag<T, TRAITS> {
