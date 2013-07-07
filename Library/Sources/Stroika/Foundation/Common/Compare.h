@@ -34,6 +34,8 @@ namespace   Stroika {
              */
             template <typename T>
             struct  ComparerWithEquals {
+                typedef T   ElementType;
+
                 RequireElementTraitsInClass(RequireOperatorEquals, T);
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
