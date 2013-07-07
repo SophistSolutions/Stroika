@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                SortedBag<T>  mkSortedBag_Default ()
+                template    <typename T, typename TRAITS>
+                SortedBag<T, TRAITS>  mkSortedBag_Default ()
                 {
-                    return SortedBag_LinkedList<T> ();
+                    return SortedBag_LinkedList<T, TRAITS> ();
                 }
 
 

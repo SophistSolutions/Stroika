@@ -48,18 +48,18 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class  SortedBag_LinkedList : public SortedBag<T> {
+                template    <typename T, typename TRAITS = SortedBag_DefaultTraits<T>>
+                class  SortedBag_LinkedList : public SortedBag<T, TRAITS> {
                 private:
-                    typedef     SortedBag<T>  inherited;
+                    typedef     SortedBag<T, TRAITS>  inherited;
 
                 public:
                     SortedBag_LinkedList ();
                     SortedBag_LinkedList (const T* start, const T* end);
-                    SortedBag_LinkedList (const SortedBag<T>& sb);
-                    SortedBag_LinkedList (const SortedBag_LinkedList<T>& sb);
+                    SortedBag_LinkedList (const SortedBag<T, TRAITS>& sb);
+                    SortedBag_LinkedList (const SortedBag_LinkedList<T, TRAITS>& sb);
 
-                    nonvirtual  SortedBag_LinkedList<T>&  operator= (const SortedBag_LinkedList<T>& rhs);
+                    nonvirtual  SortedBag_LinkedList<T, TRAITS>&  operator= (const SortedBag_LinkedList<T, TRAITS>& rhs);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
