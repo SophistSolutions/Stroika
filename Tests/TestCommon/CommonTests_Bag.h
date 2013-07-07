@@ -141,7 +141,7 @@ namespace CommonTests {
             {
                 typedef typename USING_BAG_CONTAINER::ElementType       T;
                 typedef typename USING_BAG_CONTAINER::TraitsType        TraitsType;
-                typedef  TraitsType::EqualsCompareFunctionType          EqualsCompareFunctionType;
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
 #if     qPrintTimings
                 Time t = GetCurrentTime();
                 cout << tab << "testing Bag<size_t> of length " << s.GetLength() << endl;
