@@ -95,6 +95,7 @@ namespace   Stroika {
                  *      o   Bag<T, TRAITS>::Equals()
                  */
                 typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                RequireElementTraitsInClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
             };
 
 
@@ -138,6 +139,11 @@ namespace   Stroika {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
+            public:
+                /**
+                 */
+                typedef TRAITS  TraitsType;
 
             public:
                 Bag ();
