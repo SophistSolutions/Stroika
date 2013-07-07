@@ -139,7 +139,9 @@ namespace CommonTests {
             template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
             void    BagTimings_ (USING_BAG_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_BAG_CONTAINER::ElementType   T;
+                typedef typename USING_BAG_CONTAINER::ElementType       T;
+                typedef typename USING_BAG_CONTAINER::TraitsType        TraitsType;
+                typedef  TraitsType::EqualsCompareFunctionType          EqualsCompareFunctionType;
 #if     qPrintTimings
                 Time t = GetCurrentTime();
                 cout << tab << "testing Bag<size_t> of length " << s.GetLength() << endl;
@@ -152,7 +154,7 @@ namespace CommonTests {
 
                 for(size_t i = 1; i <= s.GetLength(); i++) {
                     for (T it : s) {
-                        if(it == i) {
+                        if (EqualsCompareFunctionType::Equals (it, i)) {
                             break;
                         }
                     }
@@ -444,7 +446,7 @@ namespace CommonTests {
             {
                 typedef typename USING_BAG_CONTAINER::ElementType       T;
                 typedef typename USING_BAG_CONTAINER::TraitsType        TraitsType;
-                typedef  TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+                typedef  TraitsType::EqualsCompareFunctionType          EqualsCompareFunctionType;
                 USING_BAG_CONTAINER   b;
 
                 constexpr int FIRST = 0;

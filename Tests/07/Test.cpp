@@ -55,43 +55,23 @@ namespace   {
         };
         RunTests_<Bag<size_t>> ();
         RunTests_<Bag<SimpleClass>> ();
-        //RunTests_<Bag<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_LinkedList<size_t>> ();
         RunTests_<Bag_LinkedList<SimpleClass>> ();
-        //RunTests_<Bag_LinkedList<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_LinkedList<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_Array<size_t>> ();
         RunTests_<Bag_Array<SimpleClass>> ();
-        //RunTests_<Bag_Array<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_Array<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_stdforward_list<size_t>> ();
         RunTests_<Bag_stdforward_list<SimpleClass>> ();
-        //RunTests_<Bag_stdforward_list<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_stdforward_list<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
     }
 
 }
 
-
-#if 1
-namespace {
-    struct X {
-        X() {}
-        X(int a): fA (a) {}
-        // no op== or other ops
-        int fA;
-    };
-    struct  MyXComparerWithEquals {
-        static  bool    Equals (X v1, X v2) {
-            return v1.fA == v2.fA;
-        }
-    };
-    Bag<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_xxx;
-    Bag_Array<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ar;
-    Bag_LinkedList<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_ll;
-    Bag_stdforward_list<X, Bag_DefaultTraits<X, MyXComparerWithEquals>> f_sfll;
-}
-#endif
 
 
 int main (int argc, const char* argv[])
