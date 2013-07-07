@@ -38,7 +38,6 @@ namespace {
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
         auto testFunc = [] (const Bag<T, TraitsType>& s) {
         };
-
         CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
     }
 }
@@ -54,19 +53,21 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        //Bag_LinkedList<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>> x;
         RunTests_<Bag<size_t>> ();
         RunTests_<Bag<SimpleClass>> ();
-//        RunTests_<Bag<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        //RunTests_<Bag<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_LinkedList<size_t>> ();
         RunTests_<Bag_LinkedList<SimpleClass>> ();
+        //RunTests_<Bag_LinkedList<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_Array<size_t>> ();
         RunTests_<Bag_Array<SimpleClass>> ();
+        //RunTests_<Bag_Array<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
 
         RunTests_<Bag_stdforward_list<size_t>> ();
         RunTests_<Bag_stdforward_list<SimpleClass>> ();
+        //RunTests_<Bag_stdforward_list<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
     }
 
 }
