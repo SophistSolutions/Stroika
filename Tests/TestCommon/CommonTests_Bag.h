@@ -446,7 +446,7 @@ namespace CommonTests {
             {
                 typedef typename USING_BAG_CONTAINER::ElementType       T;
                 typedef typename USING_BAG_CONTAINER::TraitsType        TraitsType;
-                typedef  TraitsType::EqualsCompareFunctionType          EqualsCompareFunctionType;
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
                 USING_BAG_CONTAINER   b;
 
                 constexpr int FIRST = 0;
