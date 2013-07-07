@@ -38,7 +38,7 @@ namespace {
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
         auto testFunc = [] (const Bag<T, TraitsType>& s) {
         };
-        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
+        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER, Bag<T, TraitsType>> (testFunc);
     }
 }
 

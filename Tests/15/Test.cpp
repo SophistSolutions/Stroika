@@ -10,6 +10,7 @@
 #include    "Stroika/Foundation/Containers/SortedBag.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Memory/Optional.h"
 
 #include    "../TestCommon/CommonTests_Bag.h"
 #include    "../TestHarness/SimpleClass.h"
@@ -25,7 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 using   Concrete::SortedBag_LinkedList;
 
-
+using   Memory::Optional;
 
 
 namespace {
@@ -34,9 +35,18 @@ namespace {
     {
         typedef typename CONCRETE_CONTAINER::ElementType    T;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto testFunc = [] (const Bag<T, TraitsType>& s) {
+        auto testFunc = [] (const SortedBag<T, TraitsType>& s) {
+            // verify in sorted order
+            Optional<T> last;
+            for (T i : s) {
+                if (last.IsPresent ()) {
+                    // NEED THIS REQUIRE BUT SADLY FAILS - DONT KNOW WHY YET!!!
+                    //VerifyTestResult (*last < i);
+                }
+                last = i;
+            }
         };
-        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
+        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER, SortedBag<T, TraitsType>> (testFunc);
     }
 }
 

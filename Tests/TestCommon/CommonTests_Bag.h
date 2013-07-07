@@ -179,7 +179,7 @@ namespace CommonTests {
 #endif
             }
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void        On_Container_ (USING_BAG_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
                 typedef typename USING_BAG_CONTAINER::ElementType   T;
@@ -187,13 +187,13 @@ namespace CommonTests {
                 size_t  three = 3;
 
                 applyToContainer (s);
-                Bag<T, TraitsType> s1(s);
+                USING_BASEBAG_CONTAINER s1(s);
                 applyToContainer (s1);
 
                 VerifyTestResult(s1 == s);
                 VerifyTestResult(s1 == s);
 
-                Bag<T, TraitsType> s2 = s1;
+                USING_BASEBAG_CONTAINER s2 = s1;
                 applyToContainer (s2);
 
                 VerifyTestResult(s2 == s);
@@ -276,11 +276,11 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_BAG_CONTAINER s;
-                On_Container_<USING_BAG_CONTAINER> (s, applyToContainer);
+                On_Container_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (s, applyToContainer);
             }
 
         }
@@ -314,7 +314,7 @@ namespace CommonTests {
                 }
             }
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 SimpleTallyTest_<USING_BAG_CONTAINER> (applyToContainer);
@@ -369,7 +369,7 @@ namespace CommonTests {
 
             }
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 SimpleOpEqualsTest_<USING_BAG_CONTAINER> (applyToContainer);
@@ -425,7 +425,7 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 BasicIteratorTest_<USING_BAG_CONTAINER> (applyToContainer);
@@ -472,7 +472,7 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 DoIt_<USING_BAG_CONTAINER> (applyToContainer);
@@ -481,14 +481,14 @@ namespace CommonTests {
         }
 
 
-        template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
+        template <typename USING_BAG_CONTAINER, typename USING_BASEBAG_CONTAINER, typename TEST_FUNCTION>
         void    SimpleBagTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
-            Test2_TallyOf_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
-            Test3_Equals_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
-            Test4_IteratorsBasics_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
-            Test5_Apply_::DoAllTests_<USING_BAG_CONTAINER> (applyToContainer);
+            Test1_::DoAllTests_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (applyToContainer);
+            Test2_TallyOf_::DoAllTests_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (applyToContainer);
+            Test3_Equals_::DoAllTests_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (applyToContainer);
+            Test4_IteratorsBasics_::DoAllTests_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (applyToContainer);
+            Test5_Apply_::DoAllTests_<USING_BAG_CONTAINER, USING_BASEBAG_CONTAINER> (applyToContainer);
         }
 
 

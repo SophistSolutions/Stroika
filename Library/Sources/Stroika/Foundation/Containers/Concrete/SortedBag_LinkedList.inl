@@ -119,7 +119,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************ SortedBag_LinkedList<T, TRAITS>::Rep_ *************************
+                ****************** SortedBag_LinkedList<T, TRAITS>::Rep_ ***********************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
@@ -207,7 +207,13 @@ namespace   Stroika {
                 void    SortedBag_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.Prepend (item);
+                        for (typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                            if (it.Current () < item) {
+                                fData_.AddAfter (it, item);
+                                return;
+                            }
+                        }
+                        fData_.Append (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
