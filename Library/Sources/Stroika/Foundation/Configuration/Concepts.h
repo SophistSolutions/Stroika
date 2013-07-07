@@ -86,6 +86,23 @@ namespace   Stroika {
             };
 
 
+            template <typename TRAITS>
+            struct Concept_EqualsCompareFunctionType {
+                static void check () {
+                    typedef typename TRAITS::ElementType        T;
+                    if (false) {
+                        if (TRAITS::Equals (static_cast<const T*> (nullptr), static_cast<const T*> (nullptr))) {
+                        }
+                    }
+                }
+                Concept_EqualsCompareFunctionType () {
+                    check ();
+                }
+            };
+
+
+
+
 #if     qCheckConceptRequirements
 
 #define RequireElementTraitsInClass1(TEMPLATE,T,REQUIREMEMENT_NAME)\
