@@ -40,8 +40,7 @@ namespace {
             Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    // NEED THIS REQUIRE BUT SADLY FAILS - DONT KNOW WHY YET!!!
-                    //VerifyTestResult (*last < i);
+                    VerifyTestResult (*last < i or (*last == i));
                 }
                 last = i;
             }

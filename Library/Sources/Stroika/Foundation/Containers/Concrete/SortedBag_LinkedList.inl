@@ -61,6 +61,9 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
+                    nonvirtual  void    AddWithoutLocks_ (T item);
+
+                private:
                     Private::ContainerRepLockDataSupport_           fLockSupport_;
                     Private::PatchingDataStructures::LinkedList<T>  fData_;
 
@@ -207,13 +210,7 @@ namespace   Stroika {
                 void    SortedBag_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current () < item) {
-                                fData_.AddAfter (it, item);
-                                return;
-                            }
-                        }
-                        fData_.Append (item);
+                        AddWithoutLocks_ (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -224,7 +221,15 @@ namespace   Stroika {
                     AssertMember (&ir, IteratorRep_);
                     const typename SortedBag_LinkedList<T, TRAITS>::IteratorRep_&      mir =   dynamic_cast<const typename SortedBag_LinkedList<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.SetAt (mir.fIterator_, newValue);
+                        // equals might examine a subset of the object and we still want to update the whole object, but
+                        // if its not already equal, the sort order could have changed so we must simulate with a remove/add
+                        if (TRAITS::EqualsCompareFunctionType::Equals (mir.fIterator_.Current (), newValue)) {
+                            fData_.SetAt (mir.fIterator_, newValue);
+                        }
+                        else {
+                            fData_.RemoveAt (mir.fIterator_);
+                            AddWithoutLocks_ (newValue);
+                        }
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -254,6 +259,17 @@ namespace   Stroika {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
+                void    SortedBag_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
+                {
+                    typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator it (fData_);
+
+                    // skip the smaller items
+                    while (it.More (nullptr, true) and it.Current () < item) {
+                    }
+                    // at this point - we are pointing at the first link >= item, so insert before it
+                    fData_.AddBefore (it, item);
                 }
 
 
