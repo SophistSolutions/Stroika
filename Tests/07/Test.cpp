@@ -53,21 +53,23 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
+        typedef Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
+
         RunTests_<Bag<size_t>> ();
         RunTests_<Bag<SimpleClass>> ();
-        RunTests_<Bag<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
 
         RunTests_<Bag_LinkedList<size_t>> ();
         RunTests_<Bag_LinkedList<SimpleClass>> ();
-        RunTests_<Bag_LinkedList<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
 
         RunTests_<Bag_Array<size_t>> ();
         RunTests_<Bag_Array<SimpleClass>> ();
-        RunTests_<Bag_Array<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
 
         RunTests_<Bag_stdforward_list<size_t>> ();
         RunTests_<Bag_stdforward_list<SimpleClass>> ();
-        RunTests_<Bag_stdforward_list<SimpleClassWithoutComparisonOperators, Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>>> ();
+        RunTests_<Bag_stdforward_list<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
     }
 
 }
