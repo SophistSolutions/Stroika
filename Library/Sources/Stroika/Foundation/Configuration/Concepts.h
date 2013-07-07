@@ -91,7 +91,7 @@ namespace   Stroika {
                 static void check () {
                     typedef typename TRAITS::ElementType        T;
                     if (false) {
-                        if (TRAITS::Equals (static_cast<const T*> (nullptr), static_cast<const T*> (nullptr))) {
+                        if (TRAITS::Equals (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr))) {
                         }
                     }
                 }

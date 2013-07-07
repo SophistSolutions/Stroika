@@ -181,16 +181,17 @@ namespace CommonTests {
             void        On_Container_ (USING_BAG_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
                 typedef typename USING_BAG_CONTAINER::ElementType   T;
+                typedef typename USING_BAG_CONTAINER::TraitsType    TraitsType;
                 size_t  three = 3;
 
                 applyToContainer (s);
-                Bag<T> s1(s);
+                Bag<T, TraitsType> s1(s);
                 applyToContainer (s1);
 
                 VerifyTestResult(s1 == s);
                 VerifyTestResult(s1 == s);
 
-                Bag<T> s2 = s1;
+                Bag<T, TraitsType> s2 = s1;
                 applyToContainer (s2);
 
                 VerifyTestResult(s2 == s);
@@ -441,7 +442,9 @@ namespace CommonTests {
             template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
             void    DoIt_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_BAG_CONTAINER::ElementType T;
+                typedef typename USING_BAG_CONTAINER::ElementType       T;
+                typedef typename USING_BAG_CONTAINER::TraitsType        TraitsType;
+                typedef  TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
                 USING_BAG_CONTAINER   b;
 
                 constexpr int FIRST = 0;
@@ -461,7 +464,7 @@ namespace CommonTests {
                         sum = sum + i;
                     });
                     VerifyTestResult (count == LAST - FIRST);
-                    VerifyTestResult (sum == ((FIRST + (LAST - 1))) * (LAST - FIRST) / 2);
+                    VerifyTestResult (EqualsCompareFunctionType::Equals (sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
                     applyToContainer (b);
                 }
             }
