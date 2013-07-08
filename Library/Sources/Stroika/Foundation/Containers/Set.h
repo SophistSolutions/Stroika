@@ -173,20 +173,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
-            public:
-                /*
-                 *  Convert Set<T, TRAITS> losslessly into a standard supported C++ type.
-                 *  Supported types include:
-                 *      o   set<T>
-                 *      o   vector<T>
-                 *      o   list<T>
-                 *      (maybe any container that takes CTOR (IT BEGIN, IT END) - but dont count on that yet...
-                 */
-                template    <typename   CONTAINER_OF_T>
-                nonvirtual  CONTAINER_OF_T   As () const;
-                template    <typename   CONTAINER_OF_T>
-                nonvirtual  void    As (CONTAINER_OF_T* into) const;
-
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();

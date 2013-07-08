@@ -175,19 +175,6 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            template    <typename   CONTAINER_OF_T>
-            inline  CONTAINER_OF_T  Set<T, TRAITS>::As () const
-            {
-                return CONTAINER_OF_T (this->begin (), this->end ());
-            }
-            template    <typename T, typename TRAITS>
-            template    <typename   CONTAINER_OF_T>
-            inline  void    Set<T, TRAITS>::As (CONTAINER_OF_T* into) const
-            {
-                RequireNotNull (into);
-                *into = CONTAINER_OF_T (this->begin (), this->end ());
-            }
-            template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::clear ()
             {
                 RemoveAll ();

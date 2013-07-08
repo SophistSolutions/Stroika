@@ -25,30 +25,32 @@
  *
  *      @todo   Note that GetLength() CAN RETURN MAXINT (or some defined max) - and/or maybe some other sentinal? Maybe no sentinals?
  *
- *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
  *
  *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
  *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
  *              More()...
  *
- *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iteratable<T>
+ *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>
  *
  *      @todo   Consider renaming Iterable<T> to Collection<T>. Or at least document
  *              why not...
  *
  *      @todo   Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
  *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
+ *              <<<NO - DOCUMENT WHY WE CHOSE NOT TO>>> - DO USE TRAITS AT HGIHER LEVEL THOUGH...
  *
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
  *              this API works fully with lambdas - even bound...
  *
  *      @todo   See below - do we want to add Equals() - similar issue to Contains()
+ *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
  *
  *      @todo   Perhaps add Contains:
  *                  Contains () is true iff an iteration over the Collection<T,TTRAITS> would return at least one element such that (*it == item).
  *                  Just note method MAY not be defined if no way todo == (or not in traits)
+ *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
  */
 
 
@@ -294,13 +296,15 @@ namespace   Stroika {
                 nonvirtual  Iterator<T>    ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const;
                 nonvirtual  Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const;
 
-
             public:
                 /**
                  *  As<CONTAINER_OF_T> () can be used to easily map an iterable to another container
                  *  (for exmaple STL container) which supports begin/end iterator constructor. This is
                  *  really just a shorthand for
                  *      CONTAINER_OF_T (this->begin (), this->end ());
+                 *
+                 *  Note - this also works with (nearly all) of the Stroika containers as well
+                 *  (e.g. Set<T> x; x.As<Sequence<T>> ());
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    As () const;
