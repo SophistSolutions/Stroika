@@ -79,7 +79,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Sequence<T>::Contains (T item) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::Contains_ (*this, item);
             }
             template    <typename T>
@@ -90,7 +90,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Sequence<T>::Equals (const Sequence<T>& rhs) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::Equals_<T> (*this, rhs);
             }
             template    <typename T>
@@ -119,19 +119,19 @@ namespace   Stroika {
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (T item) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::IndexOf_ (*this, item, kBadSequenceIndex);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Sequence<T>& s) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::IndexOf_ (*this, s, kBadSequenceIndex);
             }
             template    <typename T>
             inline  size_t    Sequence<T>::IndexOf (const Iterator<T>& i) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return _GetRep ().IndexOf (i);
             }
             template    <typename T>

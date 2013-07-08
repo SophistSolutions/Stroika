@@ -77,7 +77,7 @@ namespace   Stroika {
             template    <typename T>
             class  Tally : public Iterable<TallyEntry<T>> {
             public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
 
             private:
                 typedef Iterable<TallyEntry<T>> inherited;

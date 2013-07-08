@@ -35,13 +35,13 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
-             *  \req    RequireElementTraitsInClass(RequireOperatorLess, T);
+             *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
              */
             template    <typename   T>
             class   SortedTally : public Tally<T> {
             public:
-                RequireElementTraitsInClass(RequireOperatorLess, T);
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
 
             private:
                 typedef     Tally<T> inherited;

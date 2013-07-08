@@ -93,7 +93,7 @@ namespace   Stroika {
             template    <typename T>
             bool    Stack<T>::Equals (const Stack<T>& rhs) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::Equals_<T> (*this, rhs);        // Because we define ordering as compare for equals
             }
             template    <typename T>

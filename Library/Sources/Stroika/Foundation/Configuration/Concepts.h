@@ -19,7 +19,10 @@
  *
  *
  * TODO:
+ *      @todo   Maybe put concepts in sub-namespace Concept {} - and then list them out here? Instead of the _ stuff?
  *
+ *      @todo   Think out if/when qCheckConceptRequirements SB defined? See if it takes up any runtime space/time? And decide
+ *              according to that!
  *
  *
  * Notes:
@@ -29,8 +32,7 @@
  */
 
 
-/*
- * See DOCS in Stroika/Foundation/Characters/Format.h
+/**
  */
 #ifndef qCheckConceptRequirements
 #define qCheckConceptRequirements 1
@@ -121,19 +123,19 @@ namespace   Stroika {
 
 #if     qCheckConceptRequirements
 
-#define RequireElementTraitsInClass1(TEMPLATE,T,REQUIREMEMENT_NAME)\
+#define RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE,T,REQUIREMEMENT_NAME)\
     Stroika::Foundation::Configuration::TEMPLATE<T> _IGNORE_##REQUIREMEMENT_NAME;
 
-#define RequireElementTraitsInClass(TEMPLATE,T)\
-    RequireElementTraitsInClass1(TEMPLATE,T,_REQ_##TEMPLATE)
+#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE,T)\
+    RequireConceptAppliesToTypeMemberOfClass1(TEMPLATE,T,_REQ_##TEMPLATE)
 
-#define RequireElementTraitsInMethod(TEMPLATE,T)\
+#define RequireConceptAppliesToTypeInFunction(TEMPLATE,T)\
     Stroika::Foundation::Configuration::TEMPLATE<T> ();
 
 #else
 
-#define RequireElementTraitsInClass(TEMPLATE,T,REQUIREMEMENT_NAME)
-#define RequireElementTraitsInMethod(TEMPLATE,T)
+#define RequireConceptAppliesToTypeMemberOfClass(TEMPLATE,T,REQUIREMEMENT_NAME)
+#define RequireConceptAppliesToTypeInFunction(TEMPLATE,T)
 
 #endif
 

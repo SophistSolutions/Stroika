@@ -36,7 +36,8 @@ namespace   Stroika {
             struct  ComparerWithEquals {
                 typedef T   ElementType;
 
-                RequireElementTraitsInClass(RequireOperatorEquals, T);
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
+
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
                  *  replace these, but they must remain consistent.
@@ -54,7 +55,9 @@ namespace   Stroika {
             template <typename T>
             struct  ComparerWithWellOrder { /*: ComparerWithEquals<T>*/
                 typedef T   ElementType;
-                RequireElementTraitsInClass(RequireOperatorLess, T);
+
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
+
                 /**
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */

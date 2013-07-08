@@ -21,7 +21,7 @@
  *  TODO:
  *
  *      @todo   Use TRAITS mechanism - like with Bag<>
- *              PUT RequireElementTraitsInClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
+ *              PUT RequireConceptAppliesToTypeMemberOfClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
  *
  *      @todo   Replace pair<Key,T> with KeyValuePair<Key,T>
  *              Documentent advantages (clearer naming .fKey versus .first, and .fValue versus .second)
@@ -60,7 +60,7 @@ namespace   Stroika {
             template    <typename Key, typename T>
             class   Mapping : public Iterable<pair<Key, T>> {
             public:
-                RequireElementTraitsInClass(RequireOperatorEquals, Key);
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, Key);
 
             private:
                 typedef Iterable<pair<Key, T>>  inherited;
@@ -123,7 +123,7 @@ namespace   Stroika {
                  *  and applies operator== on each value, and returns true if contained. Perhpas not
                  *  very useful but symetric to ContainsKey().
                  *
-                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool    ContainsValue (T v) const;
 

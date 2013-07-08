@@ -109,7 +109,7 @@ namespace   Stroika {
                  *
                  *  Equals is commutative().
                  *
-                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  *
                  *  Computational Complexity: O(N)
                  */

@@ -45,7 +45,7 @@ namespace   Stroika {
             template    <typename Key, typename T>
             class   SortedMapping : public Mapping<Key, T> {
             public:
-                RequireElementTraitsInClass(RequireOperatorLess, Key);
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, Key);
 
             private:
                 typedef     Mapping<Key, T> inherited;

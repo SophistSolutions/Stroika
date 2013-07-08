@@ -46,7 +46,8 @@ namespace   Stroika {
                 /**
                  */
                 typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
-                RequireElementTraitsInClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
 
 

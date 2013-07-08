@@ -51,7 +51,8 @@ namespace   Stroika {
                 /**
                  */
                 typedef EQUALS_COMPARER EqualsCompareFunctionType;
-                RequireElementTraitsInClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
             };
 
 
@@ -138,8 +139,6 @@ namespace   Stroika {
                  *  Two Sets are considered equal if they contain the same elements (by comparing them with operator==).
                  *
                  *  Equals is commutative().
-                 *
-                 *  \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
                  *
                  *  @todo - document computational complexity
                  */

@@ -183,7 +183,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool Contains (T item) const;
 
@@ -197,7 +197,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
 
@@ -232,7 +232,7 @@ namespace   Stroika {
                  *  operator== (if its defined). - require concept T::operator==)
                  *  for first two overloads - third taking iterator always works)
                  *
-                 * \req RequireElementTraitsInMethod(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual  size_t  IndexOf (T i) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;

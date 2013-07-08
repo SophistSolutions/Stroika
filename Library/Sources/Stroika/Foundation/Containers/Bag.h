@@ -86,7 +86,8 @@ namespace   Stroika {
                  *      o   Bag<T, TRAITS>::Equals()
                  */
                 typedef EQUALS_COMPARER EqualsCompareFunctionType;
-                RequireElementTraitsInClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
             };
 
 
