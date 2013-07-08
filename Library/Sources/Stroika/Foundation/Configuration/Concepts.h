@@ -24,6 +24,9 @@
  *      @todo   Think out if/when qCheckConceptRequirements SB defined? See if it takes up any runtime space/time? And decide
  *              according to that!
  *
+ *      @todo   I think the RequireConceptAppliesToTypeInFunction can be replaced with RequireConceptAppliesToTypeMemberOfClass,
+ *              and then both renamed to something simpler... test...
+ *
  *
  * Notes:
  *
