@@ -37,11 +37,11 @@ namespace   {
         };
         auto testFunc2 = [] (const Set<SimpleClass>& s) {
         };
-        Test_All_For_Type<SortedSet_stdset<size_t>> (testFunc1);
-        Test_All_For_Type<SortedSet_stdset<SimpleClass>> (testFunc2);
+        Test_All_For_Type<SortedSet_stdset<size_t>, SortedSet<size_t>> (testFunc1);
+        Test_All_For_Type<SortedSet_stdset<SimpleClass>, SortedSet<SimpleClass>> (testFunc2);
 
-        Test_All_For_Type<Set<size_t>> (testFunc1);
-        Test_All_For_Type<Set<SimpleClass>> (testFunc2);
+        Test_All_For_Type<SortedSet<size_t>, SortedSet<size_t>> (testFunc1);
+        Test_All_For_Type<SortedSet<SimpleClass>, SortedSet<SimpleClass>> (testFunc2);
     }
 }
 

@@ -19,7 +19,7 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation::Containers;
 
         namespace Test1_BasicConstruction {
-            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 typedef typename USING_SET_CONTAINER::ElementType ELEMENT_TYPE;
@@ -27,12 +27,12 @@ namespace CommonTests {
                 applyToContainer (s);
                 USING_SET_CONTAINER   s1 = s;
                 applyToContainer (s1);
-                Set<ELEMENT_TYPE>   s2 = s;
+                USING_BASESET_CONTAINER   s2 = s;
                 applyToContainer (s2);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s, applyToContainer);
                 IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2, applyToContainer);
                 ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
-                Set<ELEMENT_TYPE> s3 = USING_SET_CONTAINER (kVec_);
+                USING_BASESET_CONTAINER s3 = USING_BASESET_CONTAINER (kVec_);
                 VerifyTestResult (s3.GetLength () == 4);
                 VerifyTestResult (s3.Contains (1));
                 VerifyTestResult (s3.Contains (2));
@@ -44,7 +44,7 @@ namespace CommonTests {
 
 
         namespace Test2_AddRemove {
-            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_SET_CONTAINER s;
@@ -81,7 +81,7 @@ namespace CommonTests {
 
 
         namespace Test3_Equals {
-            template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_SET_CONTAINER s;
@@ -104,12 +104,12 @@ namespace CommonTests {
         }
 
 
-        template <typename USING_SET_CONTAINER, typename TEST_FUNCTION>
+        template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
         void    Test_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
-            Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
-            Test3_Equals::DoAllTests_<USING_SET_CONTAINER> (applyToContainer);
+            Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test3_Equals::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
         }
 
 

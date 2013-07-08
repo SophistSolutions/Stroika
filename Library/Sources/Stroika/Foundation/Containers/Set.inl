@@ -16,180 +16,179 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************* Set<T> ***********************************
+             ************************************* Set<T, TRAITS> ***********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Set<T>::Set ()
-                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T> ()))
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::Set ()
+                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            inline  Set<T>::Set (const Set<T>& s)
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& s)
                 : inherited (static_cast<const inherited&> (s))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Set<T>::Set (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T> ()))
+            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& s)
+                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (s);
             }
-            template    <typename T>
-            inline  Set<T>::Set (const _SharedPtrIRep& rep)
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::Set (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 RequireNotNull (rep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Set<T>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T> ()))
+            inline Set<T, TRAITS>::Set (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
             }
-            template    <typename T>
-            inline  Set<T>& Set<T>::operator= (const Set<T>& rhs)
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator= (const Set<T, TRAITS>& rhs)
             {
                 inherited::operator= (rhs);
                 return *this;
             }
-            template    <typename T>
-            inline  const typename  Set<T>::_IRep&    Set<T>::_GetRep () const
+            template    <typename T, typename TRAITS>
+            inline  const typename  Set<T, TRAITS>::_IRep&    Set<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  typename    Set<T>::_IRep&  Set<T>::_GetRep ()
+            template    <typename T, typename TRAITS>
+            inline  typename    Set<T, TRAITS>::_IRep&  Set<T, TRAITS>::_GetRep ()
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  bool    Set<T>::Contains (T item) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Set<T, TRAITS>::Contains (T item) const
             {
                 return _GetRep ().Contains (item);
             }
-            template    <typename T>
-            inline  Memory::Optional<T>    Set<T>::Lookup (T item) const
+            template    <typename T, typename TRAITS>
+            inline  Memory::Optional<T>    Set<T, TRAITS>::Lookup (T item) const
             {
                 return _GetRep ().Lookup (item);
             }
-            template    <typename T>
-            inline  void    Set<T>::Add (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::Add (T item)
             {
                 _GetRep ().Add (item);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            void    Set<T>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void    Set<T, TRAITS>::AddAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  void    Set<T>::AddAll (const CONTAINER_OF_T& s)
+            inline  void    Set<T, TRAITS>::AddAll (const CONTAINER_OF_T& s)
             {
-                // Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                // Note - unlike Bag<T, TRAITS> - we dont need to check for this != &s because if we
                 // attempt to add items that already exist, it would do nothing, and not lead to
                 // an infinite loop
                 AddAll (std::begin (s), std::end (s));
             }
-            template    <typename T>
-            inline  void    Set<T>::Remove (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::Remove (T item)
             {
                 _GetRep ().Remove (item);
             }
-            template    <typename T>
-            inline  void    Set<T>::Remove (const Iterator<T>& i)
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::Remove (const Iterator<T>& i)
             {
                 _GetRep ().Remove (i);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            void    Set<T>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            void    Set<T, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (*i);
                 }
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  void    Set<T>::RemoveAll (const CONTAINER_OF_T& s)
+            inline  void    Set<T, TRAITS>::RemoveAll (const CONTAINER_OF_T& s)
             {
                 RemoveAll (std::begin (s), std::end (s));
             }
-            template    <typename T>
-            inline  void    Set<T>::RemoveAll ()
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
-            template    <typename T>
-            bool  Set<T>::Equals (const Set<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            bool  Set<T, TRAITS>::Equals (const Set<T, TRAITS>& rhs) const
             {
-                RequireElementTraitsInMethod(RequireOperatorEquals, T);
                 return (_GetRep ().Equals (rhs._GetRep ()));
             }
-            template    <typename T>
-            inline  bool  Set<T>::operator== (const Set<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool  Set<T, TRAITS>::operator== (const Set<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename T>
-            inline  bool    Set<T>::operator!= (const Set<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Set<T, TRAITS>::operator!= (const Set<T, TRAITS>& rhs) const
             {
                 return (not Equals (rhs));
             }
-            template    <typename T>
-            inline  Set<T>& Set<T>::operator+= (T item)
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (T item)
             {
                 Add (item);
-                return (*this);
+                return *this;
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Set<T>& Set<T>::operator+= (const CONTAINER_OF_T& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const CONTAINER_OF_T& items)
             {
                 AddAll (items);
                 return (*this);
             }
-            template    <typename T>
-            inline  Set<T>& Set<T>::operator-= (T item)
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (T item)
             {
                 Remove (item);
-                return (*this);
+                return *this;
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Set<T>& Set<T>::operator-= (const CONTAINER_OF_T& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const CONTAINER_OF_T& items)
             {
                 RemoveAll (items);
-                return (*this);
+                return *this;
             }
-            template    <typename   T>
+            template    <typename T, typename TRAITS>
             template    <typename   CONTAINER_OF_T>
-            inline  CONTAINER_OF_T  Set<T>::As () const
+            inline  CONTAINER_OF_T  Set<T, TRAITS>::As () const
             {
                 return CONTAINER_OF_T (this->begin (), this->end ());
             }
-            template    <typename   T>
+            template    <typename T, typename TRAITS>
             template    <typename   CONTAINER_OF_T>
-            inline  void    Set<T>::As (CONTAINER_OF_T* into) const
+            inline  void    Set<T, TRAITS>::As (CONTAINER_OF_T* into) const
             {
                 RequireNotNull (into);
                 *into = CONTAINER_OF_T (this->begin (), this->end ());
             }
-            template    <typename T>
-            inline  void    Set<T>::clear ()
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::clear ()
             {
                 RemoveAll ();
             }
@@ -197,19 +196,19 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****************************** Set<T>::_IRep ***********************************
+             ************************** Set<T, TRAITS>::_IRep *******************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Set<T>::_IRep::_IRep ()
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::_IRep::_IRep ()
             {
             }
-            template    <typename T>
-            inline  Set<T>::_IRep::~_IRep ()
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::_IRep::~_IRep ()
             {
             }
-            template    <typename T>
-            bool    Set<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template    <typename T, typename TRAITS>
+            bool    Set<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;

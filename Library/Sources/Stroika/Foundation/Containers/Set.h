@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
@@ -22,12 +23,6 @@
  *
  *  TODO:
  *
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *              putting RequireElementTraitsInClass(RequireOperatorEquals, T) into the default traits object
- *
- *      @todo   Implement first draft of code based on
- *              http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Set.hh
- *
  *      @todo   Implement more backends
  *              >   Set_BitString
  *              >   Set_Array
@@ -37,8 +32,6 @@
  *              >   Set_stlset
  *              >   Set_stlunordered_set (really is hashset)
  *              >   Set_Treap
- *
- *      @todo   Thread safety (/locking)
  *
  */
 
@@ -53,6 +46,15 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+            struct   Set_DefaultTraits {
+                /**
+                 */
+                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+                RequireElementTraitsInClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+            };
+
+
             /**
              *      The Set class is based on SmallTalk-80, The Language & Its Implementation,
              *      page 148.
@@ -63,11 +65,8 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename   T>
+            template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
             class   Set : public Iterable<T> {
-            public:
-                RequireElementTraitsInClass(RequireOperatorEquals, T);
-
             private:
                 typedef Iterable<T> inherited;
 
@@ -78,8 +77,13 @@ namespace   Stroika {
             public:
                 /**
                  */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 */
                 Set ();
-                Set (const Set<T>& s);
+                Set (const Set<T, TRAITS>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Set (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -89,7 +93,7 @@ namespace   Stroika {
                 explicit Set (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Set<T>& operator= (const Set<T>& rhs);
+                nonvirtual  Set<T, TRAITS>& operator= (const Set<T, TRAITS>& rhs);
 
             public:
                 /**
@@ -139,30 +143,30 @@ namespace   Stroika {
                  *
                  *  @todo - document computational complexity
                  */
-                nonvirtual  bool    Equals (const Set<T>& rhs) const;
+                nonvirtual  bool    Equals (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      +=/-= are equivilent Add(), AddAll(), Remove() and RemoveAll(). They are just syntactic sugar.
                  */
-                nonvirtual  Set<T>& operator+= (T item);
+                nonvirtual  Set<T, TRAITS>& operator+= (T item);
                 template    <typename CONTAINER_OF_T>
-                nonvirtual  Set<T>& operator+= (const CONTAINER_OF_T& items);
-                nonvirtual  Set<T>& operator-= (T item);
+                nonvirtual  Set<T, TRAITS>& operator+= (const CONTAINER_OF_T& items);
+                nonvirtual  Set<T, TRAITS>& operator-= (T item);
                 template    <typename CONTAINER_OF_T>
-                nonvirtual  Set<T>& operator-= (const CONTAINER_OF_T& items);
+                nonvirtual  Set<T, TRAITS>& operator-= (const CONTAINER_OF_T& items);
 
             public:
                 /**
                  *      Syntactic sugar on Equals()
                  */
-                nonvirtual  bool    operator== (const Set<T>& rhs) const;
+                nonvirtual  bool    operator== (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar on not Equals()
                  */
-                nonvirtual  bool    operator!= (const Set<T>& rhs) const;
+                nonvirtual  bool    operator!= (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -172,7 +176,7 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Convert Set<T> losslessly into a standard supported C++ type.
+                 *  Convert Set<T, TRAITS> losslessly into a standard supported C++ type.
                  *  Supported types include:
                  *      o   set<T>
                  *      o   vector<T>
@@ -191,13 +195,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Set<T> implementors.
+             *  \brief  Implementation detail for Set<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Set<T> container API.
+             *  the Set<T, TRAITS> container API.
              */
-            template    <typename T>
-            class   Set<T>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   Set<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

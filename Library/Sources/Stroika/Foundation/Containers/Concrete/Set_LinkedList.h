@@ -30,19 +30,19 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Set_LinkedList<T> is an LinkedList-based concrete implementation of the Set<T> container pattern.
+                 *  \brief   Set_LinkedList<T, TRAITS> is an LinkedList-based concrete implementation of the Set<T, TRAITS> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Set_LinkedList : public Set<T> {
+                template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
+                class   Set_LinkedList : public Set<T, TRAITS> {
                 private:
-                    typedef     Set<T>  inherited;
+                    typedef     Set<T, TRAITS>  inherited;
 
                 public:
                     Set_LinkedList ();
-                    Set_LinkedList (const Set_LinkedList<T>& m);
+                    Set_LinkedList (const Set_LinkedList<T, TRAITS>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Set_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  Set_LinkedList<T>& operator= (const Set_LinkedList<T>& m);
+                    nonvirtual  Set_LinkedList<T, TRAITS>& operator= (const Set_LinkedList<T, TRAITS>& rhs);
 
 
                 private:

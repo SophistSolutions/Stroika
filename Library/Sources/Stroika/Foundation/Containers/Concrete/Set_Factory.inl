@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                inline  Set<T>  mkSet_Default ()
+                template    <typename T, typename TRAITS>
+                inline  Set<T, TRAITS>  mkSet_Default ()
                 {
-                    return Set_LinkedList<T> ();
+                    return Set_LinkedList<T, TRAITS> ();
                 }
 
 
