@@ -72,6 +72,11 @@ namespace   Stroika {
             public:
                 /**
                  */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 */
                 SortedBag ();
                 SortedBag (const SortedBag<T, TRAITS>& sb);
                 template <typename CONTAINER_OF_T>

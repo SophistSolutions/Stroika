@@ -267,7 +267,7 @@ namespace   Stroika {
                 {
                     typename Rep_::DataStructureImplType_::ForwardIterator it (fData_);
                     // skip the smaller items
-                    while (it.More (nullptr, true) and TraitsType::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
+                    while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
                     }
                     // at this point - we are pointing at the first link >= item, so insert before it
                     fData_.AddBefore (it, item);
