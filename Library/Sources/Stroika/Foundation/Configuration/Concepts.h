@@ -59,6 +59,7 @@ namespace   Stroika {
                 }
             };
 
+
             template <typename T>
             struct RequireOperatorNotEquals {
                 static void check () {
@@ -71,6 +72,7 @@ namespace   Stroika {
                     check ();
                 }
             };
+
 
             template <typename T>
             struct RequireOperatorLess {
@@ -96,6 +98,20 @@ namespace   Stroika {
                     }
                 }
                 Concept_EqualsCompareFunctionType () {
+                    check ();
+                }
+            };
+
+
+            template <typename TRAITS>
+            struct Concept_WellOrderCompareFunctionType {
+                static void check () {
+                    typedef typename TRAITS::ElementType        T;
+                    if (false) {
+                        int i = TRAITS::Compare (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr));
+                    }
+                }
+                Concept_WellOrderCompareFunctionType () {
                     check ();
                 }
             };

@@ -41,13 +41,12 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            // CALL IT WellOrdered_COMPARER (isntead of ordered or less or compare)
-
-            // redo so comparer is Compare_comparer!!!! and then gen == from it (or maybe its base class?)
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-            struct   SortedBag_DefaultTraits : Bag_DefaultTraits <T, EQUALS_COMPARER> {
+            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+            struct   SortedBag_DefaultTraits : Bag_DefaultTraits <T, WELL_ORDER_COMPARER> {
                 /**
                  */
+                typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+                RequireElementTraitsInClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
 
 
@@ -63,9 +62,6 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS = SortedBag_DefaultTraits<T>>
             class   SortedBag : public Bag<T, TRAITS> {
-            public:
-                RequireElementTraitsInClass(RequireOperatorLess, T);
-
             private:
                 typedef Bag<T, TRAITS>  inherited;
 

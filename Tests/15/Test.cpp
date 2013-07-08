@@ -40,7 +40,8 @@ namespace {
             Optional<T> last;
             for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (*last < i or (*last == i));
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                    //VerifyTestResult (*last < i or (*last == i));
                 }
                 last = i;
             }
@@ -54,21 +55,24 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2) {
                 return v1.GetValue () == v2.GetValue ();
             }
+            static  int    Compare (ElementType v1, ElementType v2) {
+                return v1.GetValue () - v2.GetValue ();
+            }
         };
-        typedef Bag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
+        typedef SortedBag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
 
         RunTests_<SortedBag<size_t>> ();
         RunTests_<SortedBag<SimpleClass>> ();
-        //RunTests_<SortedBag<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
+        RunTests_<SortedBag<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
 
         RunTests_<SortedBag_LinkedList<size_t>> ();
         RunTests_<SortedBag_LinkedList<SimpleClass>> ();
-        //RunTests_<SortedBag_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
+        RunTests_<SortedBag_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
     }
 
 }

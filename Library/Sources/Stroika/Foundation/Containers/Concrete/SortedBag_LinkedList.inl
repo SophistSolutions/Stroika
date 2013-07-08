@@ -64,8 +64,10 @@ namespace   Stroika {
                     nonvirtual  void    AddWithoutLocks_ (T item);
 
                 private:
-                    Private::ContainerRepLockDataSupport_           fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList<T>  fData_;
+                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    UseDataStructureTraitsType_;
+                    typedef Private::PatchingDataStructures::LinkedList<T, UseDataStructureTraitsType_>                         DataStructureImplType_;
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class   SortedBag_LinkedList<T, TRAITS>::IteratorRep_;
@@ -112,8 +114,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                           fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator   fIterator_;
 
                 private:
                     friend  class   SortedBag_LinkedList<T, TRAITS>::Rep_;
@@ -263,9 +265,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    SortedBag_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
                 {
-                    typename Private::PatchingDataStructures::LinkedList<T>::ForwardIterator it (fData_);
+                    typename Rep_::DataStructureImplType_::ForwardIterator it (fData_);
                     // skip the smaller items
-                    while (it.More (nullptr, true) and it.Current () < item) {
+                    while (it.More (nullptr, true) and TraitsType::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
                     }
                     // at this point - we are pointing at the first link >= item, so insert before it
                     fData_.AddBefore (it, item);

@@ -49,7 +49,7 @@ namespace   Stroika {
 
 
             template <typename T>
-            inline  int ComparerWithOrder<T>::Compare (T v1, T v2)
+            inline  int ComparerWithWellOrder<T>::Compare (T v1, T v2)
             {
                 if (v1 < v2) {
                     Assert (not Equals (v1, v2));
