@@ -255,7 +255,9 @@ namespace   Stroika {
             inline  void    BlockAllocator<T>::Deallocate (void* p)
             {
 #if     qAllowBlockAllocation
-                Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
+                if (p != nullptr) {
+                    Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
+                }
 #else
                 ::operator delete (p);
 #endif
