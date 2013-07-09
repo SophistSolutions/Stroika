@@ -111,8 +111,19 @@ namespace   Stroika {
             template    <typename   T>
             class   BlockAllocator  {
             public:
+                /**
+                 *  \req (n == sizeof (T))
+                 */
                 static  void*   Allocate (size_t n);
+
+            public:
+                /**
+                 *  \req (p allocated by BlockAllocator<T>::Allocate ());
+                 *  \req p != nullptr
+                 */
                 static  void    Deallocate (void* p);
+
+            public:
                 /**
                   * Return to the free store all deallocated blocks whcih can be returned.
                   *

@@ -132,7 +132,7 @@ namespace   Stroika {
             inline  void*   Private::BlockAllocationPool_<SIZE>::Allocate (size_t n)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
-                Require (n == SIZE);
+                Require (n <= SIZE);
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
 
                 lock_guard<mutex>  critSec (Private::GetCritSection_ ());
@@ -155,12 +155,11 @@ namespace   Stroika {
             inline  void    Private::BlockAllocationPool_<SIZE>::Deallocate (void* p)
             {
                 static_assert (SIZE >= sizeof (void*), "SIZE >= sizeof (void*)");
-                if (p != nullptr) {
-                    lock_guard<mutex>  critSec (Private::GetCritSection_ ());
-                    // push p onto the head of linked free list
-                    (*(void**)p) = sNextLink_;
-                    sNextLink_ = p;
-                }
+                Require (p != nullptr);
+                lock_guard<mutex>  critSec (Private::GetCritSection_ ());
+                // push p onto the head of linked free list
+                (*(void**)p) = sNextLink_;
+                sNextLink_ = p;
             }
             template    <size_t SIZE>
             void    Private::BlockAllocationPool_<SIZE>::Compact ()
@@ -174,6 +173,7 @@ namespace   Stroika {
                     links.reserve (kChunks * 2);
                     void*   link = sNextLink_;
                     while (link != nullptr) {
+                        // probably should use Containers::ReserveSpeedTweekAddN - but want to avoid embrance of dependencies
                         if (links.size () == links.capacity ()) {
                             links.reserve (links.size () * 2);
                         }
@@ -255,9 +255,7 @@ namespace   Stroika {
             inline  void    BlockAllocator<T>::Deallocate (void* p)
             {
 #if     qAllowBlockAllocation
-                if (p != nullptr) {
-                    Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
-                }
+                Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Deallocate (p);
 #else
                 ::operator delete (p);
 #endif
