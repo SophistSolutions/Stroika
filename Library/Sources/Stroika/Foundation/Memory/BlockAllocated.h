@@ -20,6 +20,12 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *  @todo   BlockAllocated<T> could hugely benefit from some optimistic locking
+ *          strategy - like in http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
+ *
+ *          Make sure when we experiment with that - we include it here as one of our first
+ *          optimization points!
+ *
  *  @todo   Could decouple the BlockAllocator (move to separate file along with pool spec)
  *          from BlockAllocated<>. And maybe use TRAITS on BlockAllocator to define some stuff
  *          about strategies (options) - like how to share pools?
