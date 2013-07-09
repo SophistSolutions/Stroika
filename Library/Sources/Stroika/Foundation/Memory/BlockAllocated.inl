@@ -236,11 +236,11 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************** BlockAllocationSupport<T> ***************************
+             ********************************** BlockAllocator<T> ***************************
              ********************************************************************************
              */
             template    <typename   T>
-            inline  void*   BlockAllocationSupport<T>::Allocate (size_t n)
+            inline  void*   BlockAllocator<T>::Allocate (size_t n)
             {
                 Require (n == sizeof (T));
                 Arg_Unused (n);                         // n only used for debuggging, avoid compiler warning
@@ -252,7 +252,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            inline  void    BlockAllocationSupport<T>::Deallocate (void* p)
+            inline  void    BlockAllocator<T>::Deallocate (void* p)
             {
 #if     qAllowBlockAllocation
                 if (p != nullptr) {
@@ -263,7 +263,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename   T>
-            void    BlockAllocationSupport<T>::Compact ()
+            void    BlockAllocator<T>::Compact ()
             {
 #if     qAllowBlockAllocation
                 Private::BlockAllocationPool_<BlockAllocation_Private_AdjustSizeForPool_ (sizeof (T))>::Compact ();

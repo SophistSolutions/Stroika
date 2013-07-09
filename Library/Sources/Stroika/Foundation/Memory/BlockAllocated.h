@@ -20,6 +20,12 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *  @todo   Could decouple the BlockAllocator (move to separate file along with pool spec)
+ *          from BlockAllocated<>. And maybe use TRAITS on BlockAllocator to define some stuff
+ *          about strategies (options) - like how to share pools?
+ *
+ *  @todo   Comments generally need a thorough review. Many VERY VERY old - from Led days.
+ *
  *  @todo   Document how you can use USE_BLOCK_ALLOCATION style usage, or explicit BlockAllocated<T>
  *          usage (as in Memory::Optional).
  *
@@ -50,7 +56,7 @@
  *          The reason for this option is for better use in templates like LinkedList<> - where we might
  *          want to blockallocate for small sizes of T, but not for ALL.
  *
- *  @todo   BlockAllocationSupport<>::Compact ()
+ *  @todo   BlockAllocator<>::Compact ()
  *              o   not sure this is useful, or worth the effort, but since
  *                  Sterl wrote it - leave it in for a while - til I get clearer experience.
  *
@@ -103,7 +109,7 @@ namespace   Stroika {
              *  false (0), this will just default to the global ::new/::delete
              */
             template    <typename   T>
-            class   BlockAllocationSupport  {
+            class   BlockAllocator  {
             public:
                 static  void*   Allocate (size_t n);
                 static  void    Deallocate (void* p);
@@ -140,17 +146,17 @@ namespace   Stroika {
              *  </code>
              *
              *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
-             *  @see Stroika::Foundation::Memory::BlockAllocationSupport
+             *  @see Stroika::Foundation::Memory::BlockAllocator
              *  @see Stroika::Foundation::Memory::BlockAllocated
              *
              *  \hideinitializer
              */
 #if     qAllowBlockAllocation
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Allocate (n)); }\
-    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Allocate (n)); }\
-    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Deallocate (p);       }\
-    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Deallocate (p);       }
+    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }\
+    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Allocate (n)); }\
+    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p);       }\
+    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocator<THIS_CLASS>::Deallocate (p);       }
 #else
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
