@@ -23,11 +23,11 @@
  *  NOTES:
  *
  *  TODO:
+ *      @todo   Placeholder - so I know its work todo... but not really even started
+ *
  *      @todo   See http://underscorejs.org/#filter - and add filter, and probably others - but not sure what
  *              to call these (functional helpers?)
  *              Same for http://underscorejs.org/#pluck
- *
- *      @todo   Placeholder - so I know its work todo... but not really even started
  *
  *      @todo   Consider replacing ElementType with value_type - after I verify taht alwways works in STL - and then
  *              this code will work with Stroika containers and STL containers
@@ -39,6 +39,11 @@
  *                  UPDATE_TARGET_CONTAINER (CONTAINER_OF_T* result, ElementType newElt);// UNCLEAR IF THIS APPENDS, or takes iteraotr???
  *              ...
  *              }
+ *
+ *      @todo   Consider having Map/Reduce (ETC) methods take Iterable<T> as the parameter, and then a templated
+ *              param for resulting container (and method to add to it - maybe stdfunction?) - Maybe something like
+ *              an STL output-iterator (but safe - using stroika containers)?
+ *
  */
 
 
