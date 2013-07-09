@@ -36,6 +36,17 @@
  *
  *          The reason for this option is for better use in templates like LinkedList<> - where we might
  *          want to blockallocate for small sizes of T, but not for ALL.
+ *
+ *  @todo   BlockAllocationSupport<>::Compact ()
+ *              o   not sure this is useful, or worth the effort, but since
+ *                  Sterl wrote it - leave it in for a while - til I get clearer experience.
+ *
+ *              o   BlockAllocationPool_<SIZE>::Compact () algorithm uses vector, which could fail if
+ *                  we are so fragmented we cannot allocate the large contiguous block needed for the vector<>.
+ *                  Catch-22. Maybe find a less costly strategy?
+ *
+ *              o   I make have broken something in Compact() routine when I transcribed it from Sterl's code.
+ *                  never tested (by me).
  */
 
 
@@ -83,6 +94,17 @@ namespace   Stroika {
             public:
                 static  void*   Allocate (size_t n);
                 static  void    Deallocate (void* p);
+                /**
+                  * Return to the free store all deallocated blocks whcih can be returned.
+                  *
+                  * This takes oN, where N is the total amount of operator new for this size.
+                  *
+                  * It also currently uses a large block of contiguous memory, which could fail.
+                  *
+                  * But it might sometimes return memory from a particular data structure (fixed element size pool) to
+                  * the general free store.
+                  */
+                static  void    Compact ();
             };
 
 
