@@ -1299,6 +1299,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1942,6 +1945,9 @@
       <Filter>Sources\Traversal</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
