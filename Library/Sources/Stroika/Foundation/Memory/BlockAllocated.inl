@@ -46,12 +46,13 @@ namespace   Stroika {
             namespace   Private {
 
 
-#if qCompilerAndStdLib_Supports_constexpr
+#if qCompilerAndStdLib_Supports_constexpr && 0
+                // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
                 constexpr inline    size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
                 {
                     // when we really fix constexpr usage, we can use the below!
                     //return  Math::RoundUpTo (sizeof(T), sizeof (void*));
-                    return (((x + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
+                    return (((n + sizeof (void*) - 1u) / sizeof (void*)) * sizeof (void*));
                 }
 #else
 #define BlockAllocation_Private_AdjustSizeForPool_(n)\
