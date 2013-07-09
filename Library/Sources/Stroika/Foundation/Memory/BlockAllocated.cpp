@@ -56,33 +56,3 @@ Execution::ModuleDependency Memory::MakeModuleDependency_BlockAllocated ()
 {
     return Execution::ModuleInitializer<Private::BlockAllocation_ModuleInit_>::GetDependency ();
 }
-
-
-
-
-
-
-
-#if     qAllowBlockAllocation
-void*   Private::sSizeof_4_NextLink     =   nullptr;
-void*   Private::sSizeof_8_NextLink     =   nullptr;
-void*   Private::sSizeof_12_NextLink    =   nullptr;
-void*   Private::sSizeof_16_NextLink    =   nullptr;
-void*   Private::sSizeof_20_NextLink    =   nullptr;
-void*   Private::sSizeof_24_NextLink    =   nullptr;
-void*   Private::sSizeof_28_NextLink    =   nullptr;
-void*   Private::sSizeof_32_NextLink    =   nullptr;
-void*   Private::sSizeof_36_NextLink    =   nullptr;
-void*   Private::sSizeof_40_NextLink    =   nullptr;
-void*   Private::sSizeof_44_NextLink    =   nullptr;
-void*   Private::sSizeof_48_NextLink    =   nullptr;
-void*   Private::sSizeof_52_NextLink    =   nullptr;
-void*   Private::sSizeof_56_NextLink    =   nullptr;
-void*   Private::sSizeof_60_NextLink    =   nullptr;
-void*   Private::sSizeof_64_NextLink    =   nullptr;
-void*   Private::sSizeof_68_NextLink    =   nullptr;
-void*   Private::sSizeof_72_NextLink    =   nullptr;
-void*   Private::sSizeof_76_NextLink    =   nullptr;
-void*   Private::sSizeof_80_NextLink    =   nullptr;
-#endif
-

@@ -72,25 +72,18 @@ namespace   Stroika {
 
 
             /**
+             *  Low-level tool to allocate and free memory from a fixed size/element pool. Very high performance since
+             *  no searching or coalescing ever needed, but at the cost of creating some amount of fragmentation.
+             *
+             *  If qAllowBlockAllocation true (default) - this will use the optimized block allocation store, but if qAllowBlockAllocation is
+             *  false (0), this will just default to the global ::new/::delete
              */
             template    <typename   T>
             class   BlockAllocationSupport  {
             public:
-                static  void*   operator new (size_t n);
-                static  void    operator delete (void* p);
-
-#if     qAllowBlockAllocation
-            private:
-                static  void    GetMem_ (); // Break out into separate function so we can
-                // make op new inline for MOST important case
-                // were alloc is cheap linked list operation...
-
-                static  void*   sNextLink;
-                static  void*   GetNextLink_ ();
-                static  void    SetNextLink_ (void* nextLink);
-#endif
+                static  void*   Allocate (size_t n);
+                static  void    Deallocate (void* p);
             };
-
 
 
             /**
@@ -112,16 +105,17 @@ namespace   Stroika {
              *  </code>
              *
              *  @see DECLARE_DONT_USE_BLOCK_ALLOCATION()
+             *  @see Stroika::Foundation::Memory::BlockAllocationSupport
              *  @see Stroika::Foundation::Memory::BlockAllocated
              *
              *  \hideinitializer
              */
 #if     qAllowBlockAllocation
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)\
-    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator new (n)); }\
-    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator new (n)); }\
-    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator delete (p);       }\
-    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::operator delete (p);       }
+    static  void*   operator new (size_t n)                         {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Allocate (n)); }\
+    static  void*   operator new (size_t n,int,const char*,int)     {   return (Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Allocate (n)); }\
+    static  void    operator delete (void* p)                       {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Deallocate (p);       }\
+    static  void    operator delete (void* p,int,const char*,int)   {   Stroika::Foundation::Memory::BlockAllocationSupport<THIS_CLASS>::Deallocate (p);       }
 #else
 #define DECLARE_USE_BLOCK_ALLOCATION(THIS_CLASS)
 #endif
@@ -150,7 +144,7 @@ namespace   Stroika {
              *  </pre>
              *  </code>
              *
-             *  @see BlockAllocated
+             *  @see DECLARE_USE_BLOCK_ALLOCATION
              *
              *  \hideinitializer
              */
