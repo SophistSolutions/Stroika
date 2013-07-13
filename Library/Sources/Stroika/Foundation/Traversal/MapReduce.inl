@@ -17,12 +17,12 @@ namespace   Stroika {
              ******************************* Traversal::Map *********************************
              ********************************************************************************
              */
-            template    <typename CONTAINER_OF_T>
-            CONTAINER_OF_T  Map (const CONTAINER_OF_T& containerOfT, const std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType)>& do2Each)
+            template    <typename CONTAINER_OF_T, typename APPLY_TO_EACH_FUNCTION_TYPE>
+            CONTAINER_OF_T  Map (const CONTAINER_OF_T& containerOfT, const APPLY_TO_EACH_FUNCTION_TYPE& do2Each)
             {
                 CONTAINER_OF_T  result;
                 for (typename CONTAINER_OF_T::ElementType i : containerOfT) {
-                    // unsure if we pdate in place, or create a new container? May need traits param to define how todo this!
+                    // unsure if we update in place, or create a new container? May need traits param to define how todo this!
                     result.Append (do2Each (i));
                 }
                 return result;
@@ -34,8 +34,8 @@ namespace   Stroika {
              **************************** Traversal::Reduce *********************************
              ********************************************************************************
              */
-            template    <typename CONTAINER_OF_T>
-            typename CONTAINER_OF_T::ElementType    Reduce (const CONTAINER_OF_T& containerOfT, const std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType memo, typename CONTAINER_OF_T::ElementType i)>& do2Each, typename CONTAINER_OF_T::ElementType memo)
+            template    <typename CONTAINER_OF_T, typename APPLY_TO_EACH_FUNCTION_TYPE>
+            typename CONTAINER_OF_T::ElementType    Reduce (const CONTAINER_OF_T& containerOfT, const APPLY_TO_EACH_FUNCTION_TYPE& do2Each, typename CONTAINER_OF_T::ElementType memo)
             {
                 typename CONTAINER_OF_T::ElementType    result  =   memo;
                 for (typename CONTAINER_OF_T::ElementType i : containerOfT) {

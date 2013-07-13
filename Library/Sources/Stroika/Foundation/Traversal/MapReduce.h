@@ -25,10 +25,6 @@
  *  TODO:
  *      @todo   Placeholder - so I know its work todo... but not really even started
  *
- *      @todo   CONCEPTS! We currently use std::function<>... with particular arguments to advertise the
- *              required type signature, but that probably has a performance overhead compared to using typename FUNCTION.
- *
- *              We should verify if there is truely a performance difference, and if there is, then find
  *      @todo   Consider renaming this module to
  *                  >   FunctionalUtilties
  *                  >   FunctionalSupport
@@ -54,6 +50,13 @@
  *              param for resulting container (and method to add to it - maybe stdfunction?) - Maybe something like
  *              an STL output-iterator (but safe - using stroika containers)?
  *
+ *      @todo   CONCEPTS!
+ *                  o   use std::function<>... with particular arguments to advertise the
+ *                      required type signature,
+ *                  o   OR use typename FUNCTION - better performance performance - TEST.
+ *
+ *              We should verify if there is truely a performance difference, and if there is, then find
+ *
  */
 
 
@@ -67,15 +70,15 @@ namespace   Stroika {
              *  @see http://en.wikipedia.org/wiki/MapReduce
              *  @see http://www.ruby-doc.org/core-2.0/Array.html#method-i-map
              */
-            template    <typename CONTAINER_OF_T>
-            CONTAINER_OF_T  Map (const CONTAINER_OF_T& containerOfT, const std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType)>& do2Each);
+            template    < typename CONTAINER_OF_T, typename APPLY_TO_EACH_FUNCTION_TYPE/* = std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType)>*/ >
+            CONTAINER_OF_T  Map (const CONTAINER_OF_T& containerOfT, const APPLY_TO_EACH_FUNCTION_TYPE& do2Each);
 
             /**
              *  @see http://en.wikipedia.org/wiki/MapReduce
              *  @see http://underscorejs.org/#reduce
              */
-            template    <typename CONTAINER_OF_T>
-            typename CONTAINER_OF_T::ElementType    Reduce (const CONTAINER_OF_T& containerOfT, const std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType memo, typename CONTAINER_OF_T::ElementType i)>& do2Each, typename CONTAINER_OF_T::ElementType memo = typename CONTAINER_OF_T::ElementType ());
+            template    < typename CONTAINER_OF_T, typename APPLY_TO_EACH_FUNCTION_TYPE/* = std::function<typename CONTAINER_OF_T::ElementType (typename CONTAINER_OF_T::ElementType memo, typename CONTAINER_OF_T::ElementType i)>*/ >
+            typename CONTAINER_OF_T::ElementType    Reduce (const CONTAINER_OF_T& containerOfT, const APPLY_TO_EACH_FUNCTION_TYPE& do2Each, typename CONTAINER_OF_T::ElementType memo = typename CONTAINER_OF_T::ElementType ());
 
 
         }
