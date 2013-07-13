@@ -25,6 +25,10 @@
  *  TODO:
  *      @todo   Placeholder - so I know its work todo... but not really even started
  *
+ *      @todo   CONCEPTS! We currently use std::function<>... with particular arguments to advertise the
+ *              required type signature, but that probably has a performance overhead compared to using typename FUNCTION.
+ *
+ *              We should verify if there is truely a performance difference, and if there is, then find
  *      @todo   Consider renaming this module to
  *                  >   FunctionalUtilties
  *                  >   FunctionalSupport
