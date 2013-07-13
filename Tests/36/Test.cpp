@@ -5,8 +5,11 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
+#include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
+#include    "Stroika/Foundation/Traversal/MapReduce.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -101,6 +104,37 @@ namespace {
 }
 
 
+#ifndef qNeedExplicitCastToStdFunctionForTemplateToMapArgument
+#define qNeedExplicitCastToStdFunctionForTemplateToMapArgument 1
+#endif // qNeedExplicitCastToStdFunctionForTemplateToMapArgument
+
+
+namespace {
+    void    Test4_MapReduceTest_ ()
+    {
+        using   namespace   Containers;
+        {
+            Sequence<int>   n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+#if qNeedExplicitCastToStdFunctionForTemplateToMapArgument
+            Sequence<int>   n1 = Traversal::Map (n, std::function<int(int)> ([] (int i) -> int {
+                return i + 1;
+            }));
+#else
+            Sequence<int>   n1 = Traversal::Map (n, [] (int i) -> int { return i + 1;});
+#endif
+            VerifyTestResult (n1.size () == 3);
+            VerifyTestResult (n1[0] == 1);
+            VerifyTestResult (n1[1] == 2);
+            VerifyTestResult (n1[2] == 3);
+        }
+    }
+}
+
+
+
 
 namespace   {
 
@@ -109,6 +143,7 @@ namespace   {
         Test_1_BasicRange_ ();
         Test_2_BasicDiscreteRangeIteration_ ();
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
+        Test4_MapReduceTest_ ();
     }
 }
 
