@@ -25,6 +25,12 @@
  *  TODO:
  *      @todo   Placeholder - so I know its work todo... but not really even started
  *
+ *      @todo   Consider renaming this module to
+ *                  >   FunctionalUtilties
+ *                  >   FunctionalSupport
+ *                  >   FunctionalAlgorithms
+ *                  >   Or - Migrate this code directly into Iterable<T>!!!
+ *
  *      @todo   See http://underscorejs.org/#filter - and add filter, and probably others - but not sure what
  *              to call these (functional helpers?)
  *              Same for http://underscorejs.org/#pluck

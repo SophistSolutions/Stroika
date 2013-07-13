@@ -110,7 +110,7 @@ namespace {
 
 
 namespace {
-    void    Test4_MapReduceTest_ ()
+    void    Test4_MapTest_ ()
     {
         using   namespace   Containers;
         {
@@ -126,13 +126,37 @@ namespace {
             Sequence<int>   n1 = Traversal::Map (n, [] (int i) -> int { return i + 1;});
 #endif
             VerifyTestResult (n1.size () == 3);
-            VerifyTestResult (n1[0] == 1);
-            VerifyTestResult (n1[1] == 2);
-            VerifyTestResult (n1[2] == 3);
+            VerifyTestResult (n1[0] == 2);
+            VerifyTestResult (n1[1] == 3);
+            VerifyTestResult (n1[2] == 4);
         }
     }
 }
 
+
+
+
+
+
+
+namespace {
+    void    Test5_ReduceTest_ ()
+    {
+        using   namespace   Containers;
+        {
+            Sequence<int>   n;
+            n.Append (1);
+            n.Append (2);
+            n.Append (3);
+#if qNeedExplicitCastToStdFunctionForTemplateToMapArgument
+            int sum = Traversal::Reduce (n, std::function<int(int, int)> ([] (int l, int r) -> int { return l + r; }), 0);
+#else
+            int sum = Traversal::Reduce (n, [] (int l, int r) -> int { return l + r; }, 0);
+#endif
+            VerifyTestResult (sum == 6);
+        }
+    }
+}
 
 
 
@@ -143,7 +167,8 @@ namespace   {
         Test_1_BasicRange_ ();
         Test_2_BasicDiscreteRangeIteration_ ();
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
-        Test4_MapReduceTest_ ();
+        Test4_MapTest_ ();
+        Test5_ReduceTest_ ();
     }
 }
 
