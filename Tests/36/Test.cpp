@@ -104,9 +104,6 @@ namespace {
 }
 
 
-#ifndef qNeedExplicitCastToStdFunctionForTemplateToMapArgument
-#define qNeedExplicitCastToStdFunctionForTemplateToMapArgument 1
-#endif // qNeedExplicitCastToStdFunctionForTemplateToMapArgument
 
 
 namespace {
@@ -118,13 +115,7 @@ namespace {
             n.Append (1);
             n.Append (2);
             n.Append (3);
-#if qNeedExplicitCastToStdFunctionForTemplateToMapArgument
-            Sequence<int>   n1 = Traversal::Map (n, std::function<int(int)> ([] (int i) -> int {
-                return i + 1;
-            }));
-#else
             Sequence<int>   n1 = Traversal::Map (n, [] (int i) -> int { return i + 1;});
-#endif
             VerifyTestResult (n1.size () == 3);
             VerifyTestResult (n1[0] == 2);
             VerifyTestResult (n1[1] == 3);
@@ -148,11 +139,7 @@ namespace {
             n.Append (1);
             n.Append (2);
             n.Append (3);
-#if qNeedExplicitCastToStdFunctionForTemplateToMapArgument
-            int sum = Traversal::Reduce (n, std::function<int(int, int)> ([] (int l, int r) -> int { return l + r; }), 0);
-#else
             int sum = Traversal::Reduce (n, [] (int l, int r) -> int { return l + r; }, 0);
-#endif
             VerifyTestResult (sum == 6);
         }
     }
