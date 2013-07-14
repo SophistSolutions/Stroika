@@ -29,42 +29,49 @@ using   Concrete::SortedSet_stdset;
 
 
 
-namespace   {
-    template    <typename CONTAINER_OF_T>
-    void    Check_ (const CONTAINER_OF_T& s)
+namespace {
+    template    <typename CONCRETE_CONTAINER>
+    void     RunTests_ ()
     {
-        typedef typename CONTAINER_OF_T::ElementType    T;
-        // verify in sorted order
-        Memory::Optional<T> last;
-        for (T i : s) {
-            if (last.IsPresent ()) {
-                VerifyTestResult (CONTAINER_OF_T::TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
-                //VerifyTestResult (*last < i or (*last == i));
+        typedef typename CONCRETE_CONTAINER::ElementType    T;
+        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        auto testFunc = [] (const SortedSet<T, TraitsType>& s) {
+            // verify in sorted order
+            Memory::Optional<T> last;
+            for (T i : s) {
+                if (last.IsPresent ()) {
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                    //VerifyTestResult (*last < i or (*last == i));
+                }
+                last = i;
             }
-            last = i;
-        }
+        };
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T, TraitsType>> (testFunc);
     }
+}
 
+
+namespace   {
     void    DoRegressionTests_ ()
     {
         using namespace CommonTests::SetTests;
 
-#if 0
-        typedef typename CONCRETE_CONTAINER::ElementType    T;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-#endif
-
-        auto testFunc1 = [] (const SortedSet<size_t>& s) {
-            Check_ (s);
+        struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+            static  int    Compare (ElementType v1, ElementType v2) {
+                return v1.GetValue () - v2.GetValue ();
+            }
         };
-        auto testFunc2 = [] (const SortedSet<SimpleClass>& s) {
-            Check_ (s);
-        };
-        Test_All_For_Type<SortedSet_stdset<size_t>, SortedSet<size_t>> (testFunc1);
-        Test_All_For_Type<SortedSet_stdset<SimpleClass>, SortedSet<SimpleClass>> (testFunc2);
+        typedef SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_SETTRAITS;
 
-        Test_All_For_Type<SortedSet<size_t>, SortedSet<size_t>> (testFunc1);
-        Test_All_For_Type<SortedSet<SimpleClass>, SortedSet<SimpleClass>> (testFunc2);
+        RunTests_<SortedSet<size_t>> ();
+        RunTests_<SortedSet<SimpleClass>> ();
+
+        RunTests_<SortedSet_stdset<size_t>> ();
+        RunTests_<SortedSet_stdset<SimpleClass>> ();
     }
 }
 
