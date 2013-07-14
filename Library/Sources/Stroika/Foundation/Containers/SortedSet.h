@@ -28,6 +28,9 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            /**
+             *  \req    DEFAULT IMPLEMENTATION (with no args) - RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
+             */
             template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
             struct   SortedSet_DefaultTraits : Set_DefaultTraits <T, WELL_ORDER_COMPARER> {
                 /**
@@ -42,9 +45,6 @@ namespace   Stroika {
              *      A SortedSet is a Set<T> which remains sorted (iterator).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-             *
-             *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
-             *
              */
             template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
             class   SortedSet : public Set<T, TRAITS> {

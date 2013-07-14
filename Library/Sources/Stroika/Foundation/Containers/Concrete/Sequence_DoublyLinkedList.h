@@ -31,25 +31,25 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Sequence_DoublyLinkedList<T> is an Array-based concrete implementation of the Sequence<T> container pattern.
+                 *  \brief   Sequence_DoublyLinkedList<T, TRAITS> is an Array-based concrete implementation of the Sequence<T, TRAITS> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename   T>
-                class   Sequence_DoublyLinkedList : public Sequence<T> {
+                template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
+                class   Sequence_DoublyLinkedList : public Sequence<T, TRAITS> {
                 private:
-                    typedef     Sequence<T>  inherited;
+                    typedef     Sequence<T, TRAITS>  inherited;
 
                 public:
                     Sequence_DoublyLinkedList ();
-                    Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T>& s);
+                    Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T, TRAITS>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Sequence_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                    nonvirtual  Sequence_DoublyLinkedList<T>& operator= (const Sequence_DoublyLinkedList<T>& s);
+                    nonvirtual  Sequence_DoublyLinkedList<T, TRAITS>& operator= (const Sequence_DoublyLinkedList<T, TRAITS>& s);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

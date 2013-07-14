@@ -24,7 +24,8 @@
  *
  *  TODO:
  *
- *      @todo       Use TRAITS mechanism - like with Bag<>
+ *      @todo       Use TRAITS mechanism - FOR EQUALS and othermethodst hat require a compare (template param), IndexOf
+ *
  *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
@@ -80,6 +81,11 @@ namespace   Stroika {
 
 
             constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
+
+
+            template    <typename T>
+            struct   Sequence_DefaultTraits {
+            };
 
 
             /**
@@ -149,7 +155,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T>
+            template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
             class   Sequence : public Iterable<T> {
             private:
                 typedef Iterable<T> inherited;
@@ -164,7 +170,7 @@ namespace   Stroika {
                  *  all the elements.
                  */
                 Sequence ();
-                Sequence (const Sequence<T>& s);
+                Sequence (const Sequence<T, TRAITS>& s);
 #if      qCompilerAndStdLib_Supports_initializer_lists
                 Sequence (const std::initializer_list<T>& s);
 #endif
@@ -179,7 +185,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Sequence<T>& operator= (const Sequence<T>& rhs);
+                nonvirtual  Sequence<T, TRAITS>& operator= (const Sequence<T, TRAITS>& rhs);
 
             public:
                 /**
@@ -199,7 +205,7 @@ namespace   Stroika {
                 /**
                  * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
-                nonvirtual  bool    Equals (const Sequence<T>& rhs) const;
+                nonvirtual  bool    Equals (const Sequence<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -235,7 +241,7 @@ namespace   Stroika {
                  * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
                 nonvirtual  size_t  IndexOf (T i) const;
-                nonvirtual  size_t  IndexOf (const Sequence<T>& s) const;
+                nonvirtual  size_t  IndexOf (const Sequence<T, TRAITS>& s) const;
                 nonvirtual  size_t  IndexOf (const Iterator<T>& i) const;
 
             public:
@@ -302,7 +308,6 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Update (const Iterator<T>& i, T newValue);
 
-
             public:
                 /**
                  * This function requires that the iterator 'i' came from this container.
@@ -323,7 +328,7 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Convert Sequence<T> losslessly into a standard supproted C++ type.
+                 *  Convert Sequence<T, TRAITS> losslessly into a standard supproted C++ type.
                  *  Supported types include:
                  *      o   vector<T>
                  *      o   list<T>
@@ -356,12 +361,12 @@ namespace   Stroika {
                 nonvirtual  void    clear ();
 
             public:
-                nonvirtual  Sequence<T>&    operator+= (T item);
-                nonvirtual  Sequence<T>&    operator+= (const Sequence<T>& items);
+                nonvirtual  Sequence<T, TRAITS>&    operator+= (T item);
+                nonvirtual  Sequence<T, TRAITS>&    operator+= (const Sequence<T, TRAITS>& items);
 
             public:
-                nonvirtual  Sequence<T>&    operator-= (T item);
-                nonvirtual  Sequence<T>&    operator-= (const Sequence<T>& items);
+                nonvirtual  Sequence<T, TRAITS>&    operator-= (T item);
+                nonvirtual  Sequence<T, TRAITS>&    operator-= (const Sequence<T, TRAITS>& items);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -370,13 +375,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Sequence<T> implementors.
+             *  \brief  Implementation detail for Sequence<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Sequence<T> container API.
+             *  the Sequence<T, TRAITS> container API.
              */
-            template    <typename T>
-            class   Sequence<T>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   Sequence<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

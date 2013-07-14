@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                Sequence<T>  mkSequence_Default ()
+                template    <typename T, typename TRAITS>
+                Sequence<T, TRAITS>  mkSequence_Default ()
                 {
-                    return Sequence_Array<T> ();
+                    return Sequence_Array<T, TRAITS> ();
                 }
 
 
