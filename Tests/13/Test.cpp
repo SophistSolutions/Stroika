@@ -212,7 +212,7 @@ namespace {
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < 1000; ++i) {
             s.Append (1);
-            VerifyTestResult (s.GetAt (i) == 1);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (i), 1));
             VerifyTestResult (EQUALS_COMPARER::Equals (s[i], 1));
         }
         for (size_t i = 0; i < 1000; ++i) {
@@ -297,7 +297,7 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (*i == j);
+                VerifyTestResult (EQUALS_COMPARER::Equals (*i, j));
             }
             VerifyTestResult (s.size () == 1000);
             s.RemoveAll ();
@@ -353,7 +353,7 @@ namespace {
             }
             s.SetAt (16, 16);
             for (auto i = s.begin (); i != s.end (); ++i) {
-                if (*i == 16) {
+                if (EQUALS_COMPARER::Equals (*i, 16)) {
                     s.Update (i, 17);
                 }
             }
@@ -586,9 +586,19 @@ namespace   {
     {
         typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
         typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        struct  COMPARE_SimpleClassWithoutComparisonOperators {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
+
+
+
+
         SimpleSequenceTest_All_For_Type<Sequence<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
-        //SimpleSequenceTest_All_For_Type<Sequence<SimpleClassWithoutComparisonOperators>> ();
+        //SimpleSequenceTest_All_For_Type<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>, COMPARE_SimpleClass> ();
