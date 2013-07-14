@@ -38,7 +38,7 @@ namespace   {
         Memory::Optional<T> last;
         for (T i : s) {
             if (last.IsPresent ()) {
-                VerifyTestResult (typename CONTAINER_OF_T::TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                VerifyTestResult (CONTAINER_OF_T::TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
                 //VerifyTestResult (*last < i or (*last == i));
             }
             last = i;
