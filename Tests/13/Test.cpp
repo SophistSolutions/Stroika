@@ -467,7 +467,29 @@ namespace {
     }
 
 
+
+    template <typename SequenceOfT>
+    void    SimpleSequenceTest_12_Initializers_ (SequenceOfT s)
+    {
+        typedef typename SequenceOfT::ElementType T;
+        VerifyTestResult (s.empty ());
+
+#if      qCompilerAndStdLib_Supports_initializer_lists
+        // fix - once we have on all subclasses - do be basic test for aech
+        {
+            Sequence<int> x1 = { };
+            VerifyTestResult (x1.size () == 0);
+            Sequence<int> x2 = { 1, 2, 3 };
+            VerifyTestResult (x2.size () == 3);
+            VerifyTestResult (x2[0] == 1);
+        }
+#endif
+
+    }
+
+
 }
+
 
 
 
@@ -489,6 +511,7 @@ namespace   {
         SimpleSequenceTest_9_Remove_ (s);
         SimpleSequenceTest_10_STLCompatWrappers_ (s);
         SimpleSequenceTest_11_ToFromSTLVector_<SequenceOfT> (s);
+        SimpleSequenceTest_12_Initializers_ (s);
 
     }
 
@@ -496,35 +519,23 @@ namespace   {
     {
         SimpleSequenceTest_All_For_Type<Sequence<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>> ();
+        //SimpleSequenceTest_All_For_Type<Sequence<SimpleClassWithoutComparisonOperators>> ();
 
         SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>> ();
+        //SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClassWithoutComparisonOperators>> ();
 
         SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClass>> ();
+        //SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>> ();
 
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClass>> ();
+        //SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>> ();
 
-
-
-#if      qCompilerAndStdLib_Supports_initializer_lists
-        // fix - once we have on all subclasses - do be basic test for aech
-        {
-            Sequence<int> x1 = { };
-            VerifyTestResult (x1.size () == 0);
-            Sequence<int> x2 = { 1, 2, 3 };
-            VerifyTestResult (x2.size () == 3);
-            VerifyTestResult (x2[0] == 1);
-        }
-#endif
-
-
-#if 0
-        // NOT WORKING YET - LGP 2013-05-07
         SimpleSequenceTest_All_For_Type<Sequence_stdvector<size_t>> ();
         SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClass>> ();
-#endif
+        //SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClassWithoutComparisonOperators>> ();
     }
 
 }
