@@ -49,7 +49,6 @@ namespace   Stroika {
                     template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit SortedSet_stdset (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-
                 public:
                     nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& m);
 
@@ -65,7 +64,6 @@ namespace   Stroika {
                     nonvirtual  const Rep_&  GetRep_ () const;
                     nonvirtual  Rep_&        GetRep_ ();
                 };
-
 
 
             }

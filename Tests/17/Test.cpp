@@ -30,14 +30,15 @@ using   Concrete::SortedSet_stdset;
 
 
 namespace   {
-    template    <typename T>
-    void    Check_ (const SortedSet<T>& s)
+    template    <typename CONTAINER_OF_T>
+    void    Check_ (const CONTAINER_OF_T& s)
     {
+        typedef typename CONTAINER_OF_T::ElementType    T;
         // verify in sorted order
         Memory::Optional<T> last;
         for (T i : s) {
             if (last.IsPresent ()) {
-                VerifyTestResult (typename SortedSet<T>::TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
+                VerifyTestResult (typename CONTAINER_OF_T::TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
                 //VerifyTestResult (*last < i or (*last == i));
             }
             last = i;
@@ -54,10 +55,10 @@ namespace   {
 #endif
 
         auto testFunc1 = [] (const SortedSet<size_t>& s) {
-            Check_<size_t> (s);
+            Check_ (s);
         };
         auto testFunc2 = [] (const SortedSet<SimpleClass>& s) {
-            Check_<SimpleClass> (s);
+            Check_ (s);
         };
         Test_All_For_Type<SortedSet_stdset<size_t>, SortedSet<size_t>> (testFunc1);
         Test_All_For_Type<SortedSet_stdset<SimpleClass>, SortedSet<SimpleClass>> (testFunc2);
