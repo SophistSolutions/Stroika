@@ -60,7 +60,7 @@ namespace   Stroika {
                     void    STLContainerWrapper<STL_CONTAINER_OF_T>::insert_toVector_WithPatching (typename STL_CONTAINER_OF_T::iterator i, INSERT_VALUE_TYPE v)
                     {
                         Invariant ();
-                        insert (i, v);
+                        this->insert (i, v);
                         /// WRONG!!!! - must be more sophisticated. Must map all iteraotrs to OFFSETS, and then replace with new iteartors based on old offsets!!!
 #if 0
                         // USE TwoPhaseIteratorPatcherPass1 - to captch all - and capture their offsets - need new overload - adn then new overload to patch back...
