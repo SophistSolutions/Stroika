@@ -164,6 +164,17 @@ namespace   Stroika {
                     };
 
 
+
+                    namespace stdc_Compare_Helpers {
+
+                        template<class _Ty, typename STROIKA_COMPARER>
+                        struct less : public binary_function<_Ty, _Ty, bool> {
+                            bool operator()(const _Ty& _Left, const _Ty& _Right) const {
+                                return STROIKA_COMPARER::Compare (_Left, _Right) < 0;
+                            }
+                        };
+                    }
+
                 }
             }
         }

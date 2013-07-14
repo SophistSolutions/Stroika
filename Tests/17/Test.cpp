@@ -69,9 +69,11 @@ namespace   {
 
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<SimpleClass>> ();
+        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
 
         RunTests_<SortedSet_stdset<size_t>> ();
         RunTests_<SortedSet_stdset<SimpleClass>> ();
+        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
     }
 }
 
