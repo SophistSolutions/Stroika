@@ -52,46 +52,56 @@ using   Concrete::Sequence_stdvector;
  */
 
 
+
 namespace {
 
-    template <typename T>
-    void    SimpleSequenceTest_1_ (Sequence<T>& s)
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_1_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
         {
+            CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
             VerifyTestResult (s.size () == 1);
-            VerifyTestResult (s.GetAt (0) == 1);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (0), 1));
             s.Append (2);
             VerifyTestResult (s.size () == 2);
-            VerifyTestResult (s.GetAt (0) == 1);
-            VerifyTestResult (s.GetAt (1) == 2);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (0), 1));
+            VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (1), 2));
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
         {
+            CONCRETE_SEQUENCE_T s;
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (i);
             }
             VerifyTestResult (s.size () == 1000);
-            VerifyTestResult (s[0] == 0);
-            VerifyTestResult (s[1] == 1);
-            VerifyTestResult (s[100] == 100);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[0], 0));
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 1));
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[100], 100));
             s.Remove (0);
             VerifyTestResult (s.size () == 999);
             for (size_t i = 0; i < 999; ++i) {
-                VerifyTestResult (s[i] == i + 1);
+                VerifyTestResult (EQUALS_COMPARER::Equals (s[i], i + 1));
             }
             s.RemoveAll ();
             VerifyTestResult (s.empty ());
         }
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_2_Contains_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_2_Contains_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
         {
+            CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             VerifyTestResult (not s.Contains (1));
             s.Append (1);
@@ -101,6 +111,7 @@ namespace {
             VerifyTestResult (s.empty ());
         }
         {
+            CONCRETE_SEQUENCE_T s;
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (i + 1000);
             }
@@ -113,10 +124,15 @@ namespace {
         }
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_3_Compare_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_3_Compare_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
 #if 0
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
@@ -135,12 +151,18 @@ namespace {
 #endif
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_4_Equals_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_4_Equals_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
         // This is RIGHT but We need a way to use 'TRAITS' to extend the defintiion of Sequence<T> or some such - to make this work...
         {
+            CONCRETE_SEQUENCE_T s;
             VerifyTestResult (s.size () == 0);
             s.Append (1);
             Sequence<T> s2 = s;
@@ -155,10 +177,15 @@ namespace {
         }
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_4_RemoveAll_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_5_RemoveAll_ ()
     {
+        CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
@@ -173,32 +200,43 @@ namespace {
         VerifyTestResult (s.empty ());
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_5_GetSetAt_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_6_GetSetAt_ ()
     {
+        CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
         for (size_t i = 0; i < 1000; ++i) {
             s.Append (1);
             VerifyTestResult (s.GetAt (i) == 1);
-            VerifyTestResult (s[i] == 1);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[i], 1));
         }
         for (size_t i = 0; i < 1000; ++i) {
             s.SetAt (i, 5000 + i);
-            VerifyTestResult (s[i] == 5000 + i);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[i], 5000 + i));
         }
         for (size_t i = 0; i < 1000; ++i) {
-            VerifyTestResult (s.GetAt (i) == 5000 + i);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s.GetAt (i), 5000 + i));
         }
         VerifyTestResult (not s.empty ());
         s.RemoveAll ();
         VerifyTestResult (s.empty ());
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_6_IndexOf_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_7_IndexOf_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
             for (size_t i = 0; i < 1000; ++i) {
@@ -243,10 +281,16 @@ namespace {
         }
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_7_InsertAppendPrepend_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_8_InsertAppendPrepend_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        CONCRETE_SEQUENCE_T s;
         {
             for (size_t i = 0; i < 1000; ++i) {
                 s.Append (i);
@@ -265,7 +309,7 @@ namespace {
             }
             size_t j = 0;
             for (Iterator<T> i = s.begin (); i != s.end (); ++i, ++j) {
-                VerifyTestResult (*i == 1000 - j - 1);
+                VerifyTestResult (EQUALS_COMPARER::Equals (*i, 1000 - j - 1));
             }
             VerifyTestResult (s.size () == 1000);
             s.RemoveAll ();
@@ -282,18 +326,21 @@ namespace {
             s.PrependAll (x);
             VerifyTestResult (s.Equals (x));
             s.AppendAll (x);
-            VerifyTestResult (s[1] == 11);
-            VerifyTestResult (s[2] == 12);
-            VerifyTestResult (s[3] == 10);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[1], 11));
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[2], 12));
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[3], 10));
         }
     }
 
+}
 
 
+namespace {
 
-    template <typename T>
-    void    SimpleSequenceTest_8_Update_ (Sequence<T>& s)
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_9_Update_ ()
     {
+        CONCRETE_SEQUENCE_T s;
         {
             for (size_t i = 0; i < 100; ++i) {
                 s.Append (i);
@@ -302,7 +349,7 @@ namespace {
                 s.Update (i, 5);
             }
             for (auto i : s) {
-                VerifyTestResult (i == 5);
+                VerifyTestResult (EQUALS_COMPARER::Equals (i, 5));
             }
             s.SetAt (16, 16);
             for (auto i = s.begin (); i != s.end (); ++i) {
@@ -310,9 +357,9 @@ namespace {
                     s.Update (i, 17);
                 }
             }
-            VerifyTestResult (s[16] == 17);
+            VerifyTestResult (EQUALS_COMPARER::Equals (s[16], 17));
             for (auto i = s.begin (); i != s.end (); ++i) {
-                VerifyTestResult (*i == 5 or s.IndexOf (i) == 16);
+                VerifyTestResult (EQUALS_COMPARER::Equals (*i, 5) or s.IndexOf (i) == 16);
             }
 
             s.RemoveAll ();
@@ -320,12 +367,15 @@ namespace {
         }
     }
 
+}
 
 
+namespace {
 
-    template <typename T>
-    void    SimpleSequenceTest_9_Remove_ (Sequence<T>& s)
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_10_Remove_ ()
     {
+        CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
@@ -335,10 +385,10 @@ namespace {
             VerifyTestResult (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (*i == s.IndexOf (i));
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult ((*i) == s.IndexOf (i) + 1);
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
                 }
             }
         }
@@ -352,10 +402,10 @@ namespace {
             VerifyTestResult (s.size () == 10);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (*i == s.IndexOf (i));
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult ((*i) == s.IndexOf (i) + 90);
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 90));
                 }
             }
         }
@@ -374,10 +424,10 @@ namespace {
             VerifyTestResult (s.size () == 99);
             for (auto i = s.begin (); i != s.end (); ++i) {
                 if (s.IndexOf (i) < 5) {
-                    VerifyTestResult (*i == s.IndexOf (i));
+                    VerifyTestResult (EQUALS_COMPARER::Equals (*i, s.IndexOf (i)));
                 }
                 else {
-                    VerifyTestResult ((*i) == s.IndexOf (i) + 1);
+                    VerifyTestResult (EQUALS_COMPARER::Equals ((*i), s.IndexOf (i) + 1));
                 }
             }
             s.RemoveAll ();
@@ -386,10 +436,16 @@ namespace {
         VerifyTestResult (s.empty ());
     }
 
+}
 
-    template <typename T>
-    void    SimpleSequenceTest_10_STLCompatWrappers_ (Sequence<T>& s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_11_STLCompatWrappers_ ()
     {
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        CONCRETE_SEQUENCE_T s;
         {
             VerifyTestResult (s.empty ());
             for (size_t i = 0; i < 100; ++i) {
@@ -400,14 +456,14 @@ namespace {
                 s.As (&vs);
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (T (i - vs.begin ()) == *i);
+                    VerifyTestResult (EQUALS_COMPARER::Equals (T (i - vs.begin ()), *i));
                 }
             }
             {
                 vector<T>   vs = s.template As<vector<T>> ();
                 VerifyTestResult (vs.size () == 100);
                 for (auto i = vs.begin (); i != vs.end (); ++i) {
-                    VerifyTestResult (T (i - vs.begin ()) == *i);
+                    VerifyTestResult (EQUALS_COMPARER::Equals (T (i - vs.begin ()), *i));
                 }
             }
             {
@@ -416,7 +472,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (T (idx) == *i);
+                    VerifyTestResult (EQUALS_COMPARER::Equals (T (idx), *i));
                 }
             }
             {
@@ -424,7 +480,7 @@ namespace {
                 VerifyTestResult (vs.size () == 100);
                 int idx = 0;
                 for (auto i = vs.begin (); i != vs.end (); ++i, idx++) {
-                    VerifyTestResult (T (idx) == *i);
+                    VerifyTestResult (EQUALS_COMPARER::Equals (T (idx), *i));
                 }
             }
         }
@@ -445,11 +501,16 @@ namespace {
         VerifyTestResult (s.empty ());
     }
 
+}
 
-    template <typename SequenceOfT>
-    void    SimpleSequenceTest_11_ToFromSTLVector_ (SequenceOfT s)
+
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_12_ToFromSTLVector_ ()
     {
-        typedef typename SequenceOfT::ElementType T;
+        typedef typename CONCRETE_SEQUENCE_T::ElementType       T;
+        CONCRETE_SEQUENCE_T s;
         VerifyTestResult (s.empty ());
 
         {
@@ -457,7 +518,7 @@ namespace {
             n.push_back (3);
             n.push_back (5);
             n.push_back (9);
-            s = SequenceOfT (n);
+            s = CONCRETE_SEQUENCE_T (n);
             vector<T>   nn = s.template As<vector<T>> ();
             VerifyTestResult (nn == n);
         }
@@ -466,12 +527,16 @@ namespace {
         VerifyTestResult (s.empty ());
     }
 
+}
 
 
-    template <typename SequenceOfT>
-    void    SimpleSequenceTest_12_Initializers_ (SequenceOfT s)
+namespace {
+
+    template <typename CONCRETE_SEQUENCE_T, typename EQUALS_COMPARER>
+    void    SimpleSequenceTest_13_Initializers_ ()
     {
-        typedef typename SequenceOfT::ElementType T;
+        CONCRETE_SEQUENCE_T s;
+        typedef typename CONCRETE_SEQUENCE_T::ElementType T;
         VerifyTestResult (s.empty ());
 
 #if      qCompilerAndStdLib_Supports_initializer_lists
@@ -487,7 +552,6 @@ namespace {
 
     }
 
-
 }
 
 
@@ -495,50 +559,56 @@ namespace {
 
 namespace   {
 
-    template <typename SequenceOfT>
+    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
     void    SimpleSequenceTest_All_For_Type ()
     {
-        SequenceOfT s;
-        SimpleSequenceTest_1_ (s);
-        SimpleSequenceTest_2_Contains_ (s);
-        SimpleSequenceTest_3_Compare_ (s);
-        SimpleSequenceTest_4_Equals_ (s);
-        SimpleSequenceTest_4_RemoveAll_ (s);
-        SimpleSequenceTest_5_GetSetAt_ (s);
-        SimpleSequenceTest_6_IndexOf_ (s);
-        SimpleSequenceTest_7_InsertAppendPrepend_ (s);
-        SimpleSequenceTest_8_Update_ (s);
-        SimpleSequenceTest_9_Remove_ (s);
-        SimpleSequenceTest_10_STLCompatWrappers_ (s);
-        SimpleSequenceTest_11_ToFromSTLVector_<SequenceOfT> (s);
-        SimpleSequenceTest_12_Initializers_ (s);
-
+        SimpleSequenceTest_1_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_2_Contains_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_3_Compare_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_4_Equals_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_5_RemoveAll_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_6_GetSetAt_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_7_IndexOf_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_8_InsertAppendPrepend_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_9_Update_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_10_Remove_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_11_STLCompatWrappers_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_12_ToFromSTLVector_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        SimpleSequenceTest_13_Initializers_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
     }
+}
+
+
+
+namespace   {
 
     void    DoRegressionTests_ ()
     {
-        SimpleSequenceTest_All_For_Type<Sequence<size_t>> ();
-        SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>> ();
+        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
+        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        SimpleSequenceTest_All_For_Type<Sequence<size_t>, COMPARE_SIZET> ();
+        SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence<SimpleClassWithoutComparisonOperators>> ();
 
-        SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>> ();
-        SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_Array<size_t>, COMPARE_SIZET> ();
+        SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence_Array<SimpleClassWithoutComparisonOperators>> ();
 
-        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<size_t>> ();
-        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClass>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence_DoublyLinkedList<SimpleClassWithoutComparisonOperators>> ();
 
-        SimpleSequenceTest_All_For_Type<Sequence_LinkedList<size_t>> ();
-        SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClass>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_LinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence_LinkedList<SimpleClassWithoutComparisonOperators>> ();
 
-        SimpleSequenceTest_All_For_Type<Sequence_stdvector<size_t>> ();
-        SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClass>> ();
+        SimpleSequenceTest_All_For_Type<Sequence_stdvector<size_t>, COMPARE_SIZET> ();
+        SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence_stdvector<SimpleClassWithoutComparisonOperators>> ();
     }
 
 }
+
 
 
 int     main (int argc, const char* argv[])
