@@ -40,7 +40,7 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS>
+                template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
                 class   Sequence_stdvector : public Sequence<T, TRAITS> {
                 private:
                     typedef     Sequence<T, TRAITS>  inherited;
@@ -64,7 +64,6 @@ namespace   Stroika {
                      *  the concrete sequence, calling this may save memory.
                      */
                     nonvirtual  void    Compact ();
-
 
                 public:
                     /*

@@ -275,7 +275,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  Sequence_stdvector<T, TRAITS>::Sequence_stdvector (const Sequence_stdvector<T, TRAITS>& s)
-                    : inherited (s)
+                    : inherited (static_cast<const inherited&> (s))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
