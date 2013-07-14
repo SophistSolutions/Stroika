@@ -25,13 +25,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************* SortedSet_stdset<T>::Rep_ ****************************
+                 ********************* SortedSet_stdset<T, TRAITS>::Rep_ ************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class   SortedSet_stdset<T>::Rep_ : public SortedSet<T>::_IRep {
+                template    <typename T, typename TRAITS>
+                class   SortedSet_stdset<T, TRAITS>::Rep_ : public SortedSet<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedSet<T>::_IRep  inherited;
+                    typedef typename    SortedSet<T, TRAITS>::_IRep  inherited;
 
                 public:
                     Rep_ ();
@@ -50,9 +50,9 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // SortedSet<T>::_IRep overrides
+                    // SortedSet<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool                Equals (const typename Set<T>::_IRep& rhs) const override;
+                    virtual bool                Equals (const typename Set<T, TRAITS>::_IRep& rhs) const override;
                     virtual bool                Contains (T item) const override;
                     virtual Memory::Optional<T> Lookup (T item) const override;
                     virtual void                RemoveAll () override;
@@ -65,22 +65,22 @@ namespace   Stroika {
                     Private::PatchingDataStructures::STLContainerWrapper<set<T>>    fData_;
 
                 private:
-                    friend  class SortedSet_stdset<T>::IteratorRep_;
+                    friend  class SortedSet_stdset<T, TRAITS>::IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ************************** SortedSet_stdset<T>::IteratorRep_ *******************
+                 ****************** SortedSet_stdset<T, TRAITS>::IteratorRep_ *******************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class  SortedSet_stdset<T>::IteratorRep_ : public Iterator<T>::IRep {
+                template    <typename T, typename TRAITS>
+                class  SortedSet_stdset<T, TRAITS>::IteratorRep_ : public Iterator<T>::IRep {
                 private:
                     typedef typename Iterator<T>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename SortedSet_stdset<T>::Rep_& owner)
+                    explicit IteratorRep_ (typename SortedSet_stdset<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (&owner.fData_) {
@@ -119,18 +119,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************** SortedSet_stdset<T>::Rep_ ***************************
+                ******************** SortedSet_stdset<T, TRAITS>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                inline  SortedSet_stdset<T>::Rep_::Rep_ ()
+                template    <typename T, typename TRAITS>
+                inline  SortedSet_stdset<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T>
-                inline  SortedSet_stdset<T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T, typename TRAITS>
+                inline  SortedSet_stdset<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -140,14 +140,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                typename Iterable<T>::_SharedPtrIRep  SortedSet_stdset<T>::Rep_::Clone () const
+                template    <typename T, typename TRAITS>
+                typename Iterable<T>::_SharedPtrIRep  SortedSet_stdset<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T>
-                Iterator<T>  SortedSet_stdset<T>::Rep_::MakeIterator () const
+                template    <typename T, typename TRAITS>
+                Iterator<T>  SortedSet_stdset<T, TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -159,8 +159,8 @@ namespace   Stroika {
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename T>
-                size_t  SortedSet_stdset<T>::Rep_::GetLength () const
+                template    <typename T, typename TRAITS>
+                size_t  SortedSet_stdset<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -168,8 +168,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                bool  SortedSet_stdset<T>::Rep_::IsEmpty () const
+                template    <typename T, typename TRAITS>
+                bool  SortedSet_stdset<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -177,31 +177,31 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void      SortedSet_stdset<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                void      SortedSet_stdset<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T>
-                Iterator<T>     SortedSet_stdset<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                Iterator<T>     SortedSet_stdset<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T>
-                bool    SortedSet_stdset<T>::Rep_::Equals (const typename Set<T>::_IRep& rhs) const
+                template    <typename T, typename TRAITS>
+                bool    SortedSet_stdset<T, TRAITS>::Rep_::Equals (const typename Set<T, TRAITS>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
-                template    <typename T>
-                bool    SortedSet_stdset<T>::Rep_::Contains (T item) const
+                template    <typename T, typename TRAITS>
+                bool    SortedSet_stdset<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.Contains (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                Memory::Optional<T>    SortedSet_stdset<T>::Rep_::Lookup (T item) const
+                template    <typename T, typename TRAITS>
+                Memory::Optional<T>    SortedSet_stdset<T, TRAITS>::Rep_::Lookup (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto    i    = fData_.find (item);
@@ -209,16 +209,16 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedSet_stdset<T>::Rep_::RemoveAll ()
+                template    <typename T, typename TRAITS>
+                void    SortedSet_stdset<T, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedSet_stdset<T>::Rep_::Add (T item)
+                template    <typename T, typename TRAITS>
+                void    SortedSet_stdset<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.insert (item);
@@ -226,8 +226,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedSet_stdset<T>::Rep_::Remove (T item)
+                template    <typename T, typename TRAITS>
+                void    SortedSet_stdset<T, TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -238,12 +238,12 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedSet_stdset<T>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T, typename TRAITS>
+                void    SortedSet_stdset<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedSet_stdset<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedSet_stdset<T>::IteratorRep_&> (ir);
+                    const typename SortedSet_stdset<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename SortedSet_stdset<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
                     }
@@ -253,37 +253,37 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************************** SortedSet_stdset<T> *****************************
+                ********************** SortedSet_stdset<T, TRAITS> *****************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                SortedSet_stdset<T>::SortedSet_stdset ()
+                template    <typename T, typename TRAITS>
+                SortedSet_stdset<T, TRAITS>::SortedSet_stdset ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename T>
-                inline  SortedSet_stdset<T>::SortedSet_stdset (const SortedSet_stdset<T>& m)
+                template    <typename T, typename TRAITS>
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& m)
                     : inherited (m)
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename T>
+                template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
-                inline  SortedSet_stdset<T>::SortedSet_stdset (const CONTAINER_OF_T& s)
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     this->AddAll (s);
                 }
-                template    <typename T>
-                inline  SortedSet_stdset<T>&   SortedSet_stdset<T>::operator= (const SortedSet_stdset<T>& m)
+                template    <typename T, typename TRAITS>
+                inline  SortedSet_stdset<T, TRAITS>&   SortedSet_stdset<T, TRAITS>::operator= (const SortedSet_stdset<T, TRAITS>& m)
                 {
                     inherited::operator= (m);
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
-                template    <typename T>
-                inline  const typename SortedSet_stdset<T>::Rep_&  SortedSet_stdset<T>::GetRep_ () const
+                template    <typename T, typename TRAITS>
+                inline  const typename SortedSet_stdset<T, TRAITS>::Rep_&  SortedSet_stdset<T, TRAITS>::GetRep_ () const
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SortedSetRep() - and so no way to ever change
@@ -292,8 +292,8 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
-                template    <typename T>
-                inline  typename SortedSet_stdset<T>::Rep_&    SortedSet_stdset<T>::GetRep_ ()
+                template    <typename T, typename TRAITS>
+                inline  typename SortedSet_stdset<T, TRAITS>::Rep_&    SortedSet_stdset<T, TRAITS>::GetRep_ ()
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SortedSetRep() - and so no way to ever change

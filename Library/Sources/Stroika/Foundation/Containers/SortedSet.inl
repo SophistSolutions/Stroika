@@ -16,36 +16,36 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************ SortedSet<T> ******************************
+             ********************************** SortedSet<T> ********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  SortedSet<T>::SortedSet ()
-                : inherited (Concrete::mkSortedSet_Default<T> ())
+            template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>::SortedSet ()
+                : inherited (Concrete::mkSortedSet_Default<T, TRAITS> ())
             {
             }
-            template    <typename T>
-            inline  SortedSet<T>::SortedSet (const SortedSet<T>& ss)
+            template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>::SortedSet (const SortedSet<T, TRAITS>& ss)
                 : inherited (static_cast<const inherited&> (ss))
             {
             }
-            template    <typename T>
-            inline  SortedSet<T>::SortedSet (const _SharedPtrIRep& rep)
+            template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>::SortedSet (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  SortedSet<T>::SortedSet (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedSet_Default<T> ()))
+            inline  SortedSet<T, TRAITS>::SortedSet (const CONTAINER_OF_T& s)
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedSet_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);
             }
-            template    <typename T>
-            inline  SortedSet<T>&   SortedSet<T>::operator= (const SortedSet<T>& src)
+            template    <typename T, typename TRAITS>
+            inline  SortedSet<T, TRAITS>&   SortedSet<T, TRAITS>::operator= (const SortedSet<T, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
                 EnsureMember (&inherited::_GetRep (), _IRep);

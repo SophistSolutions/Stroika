@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                SortedSet<T>  mkSortedSet_Default ()
+                template    <typename T, typename TRAITS>
+                SortedSet<T, TRAITS>  mkSortedSet_Default ()
                 {
-                    return SortedSet_stdset<T> ();
+                    return SortedSet_stdset<T, TRAITS> ();
                 }
 
 

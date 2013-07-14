@@ -31,19 +31,19 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   SortedSet_stdset<T> is an std::map-based concrete implementation of the SortedMapping<Key,T> container pattern.
+                 *  \brief   SortedSet_stdset<T, TRAITS> is an std::map-based concrete implementation of the SortedMapping<Key,T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   SortedSet_stdset : public SortedSet<T> {
+                template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
+                class   SortedSet_stdset : public SortedSet<T, TRAITS> {
                 private:
-                    typedef     SortedSet<T>  inherited;
+                    typedef     SortedSet<T, TRAITS>  inherited;
 
                 public:
                     SortedSet_stdset ();
-                    SortedSet_stdset (const SortedSet_stdset<T>& s);
+                    SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s);
                     template    <typename CONTAINER_OF_T>
                     explicit SortedSet_stdset (const CONTAINER_OF_T& cp);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -51,7 +51,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  SortedSet_stdset<T>& operator= (const SortedSet_stdset<T>& m);
+                    nonvirtual  SortedSet_stdset<T, TRAITS>& operator= (const SortedSet_stdset<T, TRAITS>& m);
 
 
                 private:

@@ -17,10 +17,7 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a> -- CODE NO WHERE NEAR COMPILING - just rough draft of API based on 1992 Stroika...
  *
  *
- *
  *  TODO:
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *
  *
  */
 
@@ -31,6 +28,16 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+            struct   SortedSet_DefaultTraits : Set_DefaultTraits <T, WELL_ORDER_COMPARER> {
+                /**
+                 */
+                typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+            };
+
+
             /**
              *      A SortedSet is a Set<T> which remains sorted (iterator).
              *
@@ -39,13 +46,15 @@ namespace   Stroika {
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
              */
-            template    <typename   T>
-            class   SortedSet : public Set<T> {
-            public:
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
-
+            template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
+            class   SortedSet : public Set<T, TRAITS> {
             private:
-                typedef     Set<T> inherited;
+                typedef     Set<T, TRAITS> inherited;
+
+            public:
+                /**
+                 */
+                typedef TRAITS  TraitsType;
 
             protected:
                 class   _IRep;
@@ -53,14 +62,14 @@ namespace   Stroika {
 
             public:
                 SortedSet ();
-                SortedSet (const SortedSet<T>& s);
+                SortedSet (const SortedSet<T, TRAITS>& s);
                 template <typename CONTAINER_OF_T>
                 explicit SortedSet (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedSet (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
-                nonvirtual  SortedSet<T>& operator= (const SortedSet<T>& rhs);
+                nonvirtual  SortedSet<T, TRAITS>& operator= (const SortedSet<T, TRAITS>& rhs);
 
             protected:
                 explicit SortedSet (const _SharedPtrIRep& rep);
@@ -68,16 +77,16 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for SortedSet<T> implementors.
+             *  \brief  Implementation detail for SortedSet<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedSet<T> container API.
+             *  the SortedSet<T, TRAITS> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template    <typename   T>
-            class   SortedSet<T>::_IRep : public Set<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   SortedSet<T, TRAITS>::_IRep : public Set<T, TRAITS>::_IRep {
             };
 
 

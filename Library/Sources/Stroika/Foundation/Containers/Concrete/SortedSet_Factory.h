@@ -22,7 +22,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             class   SortedSet;
 
 
@@ -35,8 +35,8 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                SortedSet<T>  mkSortedSet_Default ();
+                template    <typename T, typename TRAITS>
+                SortedSet<T, TRAITS>  mkSortedSet_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED
