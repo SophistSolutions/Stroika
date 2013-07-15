@@ -33,6 +33,13 @@
  *              >   Set_stlunordered_set (really is hashset)
  *              >   Set_Treap
  *
+ *      @todo   Add Union/Interesection/Difference methods (and maybe global functions?)
+ *              Then see if we can lose the STL/SetUtils code? Gradually ...
+ *
+ *              maybe redo impls using Stroika impl, and use that to encourage
+ *              redo of calling code - or at least for each function in that code - document
+ *              how todo equiv in Stroika!
+ *
  */
 
 

@@ -77,6 +77,7 @@ namespace   Stroika {
                  *      AVOID FOR this class. Maybe should have more abstract thing - or maybe should ahve this be such - so
                  *      these things not implementated virtually - and bag can eb something that doesnt require operator== or any comparer???
                  *      @todo - think about above!!! And clarify these docs
+                 *      @todo DID GOOD JOB OF THIS WITH SEQUENCE. DECIDE IF BAG ALWAYS REQUIRES EQUALS!!!
                  *
                  *  Note - this comparer is NOT required - and not actually used except for certain specific methods:
                  *      o   Bag<T, TRAITS>::Contains (T)
@@ -120,6 +121,9 @@ namespace   Stroika {
              *
              *  As syntactic sugar, using either functional (Add, Remove) or
              *  operator (+,-) is allowed.
+             *
+             *  @TODO BELOW REWUIRMENT WRONG - BUT CLARIFY!!!
+             * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */

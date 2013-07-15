@@ -227,7 +227,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
+                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
                 nonvirtual  bool Contains (T item) const;
 
@@ -236,12 +236,15 @@ namespace   Stroika {
                  * Only supported of T::Compare() or T::compare() defined
                  *      (CONSIDER NEW code to detect methods in templates)
                  *      (MAYBE always use compare() - not Compare)
+                 *
+                 *      @todo - FIXUP USING LOGIC WE DID FOR ABOVE
+                 *          \req xxxxRequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
                 nonvirtual  int     Compare (const Iterable<T>& rhs) const;
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
+                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
                 nonvirtual  bool    Equals (const Sequence<T, TRAITS>& rhs) const;
 
