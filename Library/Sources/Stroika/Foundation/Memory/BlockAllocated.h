@@ -20,6 +20,10 @@
  *
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
+ *
+ *  @todo   Document why we didnt use BlockAllocated<T> : T ... issue is that wouldnt work for non-class T, such
+ *          as int.
+ *
  *  @todo   BlockAllocated<T> could hugely benefit from some optimistic locking
  *          strategy - like in http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3341.pdf
  *
