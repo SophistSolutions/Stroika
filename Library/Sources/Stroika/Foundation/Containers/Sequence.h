@@ -25,8 +25,12 @@
  *
  *  TODO:
  *
- *      @todo       Use TRAITS mechanism - FOR EQUALS and othermethodst hat require a compare (template param), IndexOf
+ *      @todo       Review with Sterl the choice (and better document) - that Sequence<> can be used on type T
+ *                  without operator==, but when you got to call Contains/IndexOf/Equals() you get a compile
+ *                  error. Can always fix with explicit TRIATS.
  *
+ *                  Key is that these functions all implemented NON-VIRTUALLY (otherwise they would need
+ *                  to be compiled to fill in vtable).
  *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
@@ -49,8 +53,6 @@
  *                  SequenceIterator (like we had in Stroika 1) - which adds operator-?
  *
  *      @todo       Stroika had REVERSE_ITERATORS - and so does STL. At least for sequences, we need reverse iterators!
- *
- *      @todo       DOCUMENT - and use some library for OCNPETS (ElementsTraits.h).
  *
  *      @todo       Add Sequence_SparseArray<T> - using btree implementation
  *                  it requires there is an empty T CTOR. But then uses btree to store values when they differ from T()
@@ -92,7 +94,11 @@ namespace   Stroika {
              *      o   Sequence<T,TRAITS>::Contains ()
              *      o   Sequence<T,TRAITS>::Equals ()
              *      o   Sequence<T,TRAITS>::IndexOf ()
-             //?? oithers
+             *
+             *  This means that
+             *      Sequence<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
+             *      // works FINE, UNTIL you try to call Contains/Equals/IndexOf - and at that point you must adjust
+             *      // the traits to specify the Equals() compare function.
              *
              */
             template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
@@ -181,6 +187,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Just a short-hand for the 'TRAITS' part of Sequence<T,TRAITS>. This is often handy to use in
+                 *  building other tempaltes.
+                 */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
                  *  For the CTOR overload with CONTAINER_OF_T, its anything that supports c.begin(), c.end () to find
                  *  all the elements.
                  */
@@ -204,7 +217,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
                  */
                 nonvirtual  bool Contains (T item) const;
 
@@ -218,7 +231,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
                  */
                 nonvirtual  bool    Equals (const Sequence<T, TRAITS>& rhs) const;
 
@@ -250,10 +263,10 @@ namespace   Stroika {
                 /**
                  *      Search the sequence and see if the given item is contained in
                  *  it, and return the index of that item. Comparison is done with
-                 *  operator== (if its defined). - require concept T::operator==)
+                 *  TRAITS::EqualsCompareFunctionType (which defaults to operator== (T, T))
                  *  for first two overloads - third taking iterator always works)
                  *
-                 * \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
                  */
                 nonvirtual  size_t  IndexOf (T i) const;
                 nonvirtual  size_t  IndexOf (const Sequence<T, TRAITS>& s) const;
