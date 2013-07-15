@@ -33,16 +33,23 @@ namespace   Stroika {
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
              */
             template <typename T>
-            struct  ComparerWithEquals {
+            struct  ComparerWithEqualsOptionally {
                 typedef T   ElementType;
-
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
 
                 /**
                  *  Returns true if "v1 == v2" - or more precisely - if Compare (v1, v2) == 0. Users can template specialize to
                  *  replace these, but they must remain consistent.
                  */
                 static  bool    Equals (T v1, T v2);
+            };
+
+
+            /**
+             *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
+             */
+            template <typename T>
+            struct  ComparerWithEquals : ComparerWithEqualsOptionally<T> {
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
             };
 
 

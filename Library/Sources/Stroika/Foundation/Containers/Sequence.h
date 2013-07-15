@@ -83,8 +83,22 @@ namespace   Stroika {
             constexpr   size_t  kBadSequenceIndex   =   numeric_limits<size_t>::max ();
 
 
-            template    <typename T>
+            /**
+             *  NOTE - Traits for Sequence<T> don't NEED an EQUALS_COMPARER, and the default one should
+             *  should be fine (never called if never used).
+             *
+             *  It will only be invoked if you call
+             *      o   Sequence<T,TRAITS>::Contains ()
+             *      o   Sequence<T,TRAITS>::Equals ()
+             *      o   Sequence<T,TRAITS>::IndexOf ()
+             //?? oithers
+             *
+             */
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
             struct   Sequence_DefaultTraits {
+                /**
+                 */
+                typedef EQUALS_COMPARER EqualsCompareFunctionType;
             };
 
 

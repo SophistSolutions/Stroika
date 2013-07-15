@@ -30,7 +30,7 @@ namespace   Stroika {
             namespace Private {
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 bool    Contains_ (const Iterable<T>& c, T item);
 
 
@@ -38,7 +38,7 @@ namespace   Stroika {
                 int     Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 

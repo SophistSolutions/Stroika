@@ -12,11 +12,11 @@ namespace   Stroika {
             namespace   Private {
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 bool    Contains_ (const Iterable<T>& c, T item)
                 {
                     for (T i : c) {
-                        if (i == item) {
+                        if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
                             return true;
                         }
                     }
@@ -57,7 +57,7 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
                 {
                     // Check length, so we dont need to check both iterators for end/done
@@ -69,7 +69,7 @@ namespace   Stroika {
                     }
                     auto li = lhs.MakeIterator ();
                     auto ri = rhs.MakeIterator ();
-                    while (not li.Done () and * li == *ri) {
+                    while (not li.Done () and ELEMENT_COMPARE_EQUALS_TYPE::Equals (*li, *ri)) {
                         ++li;
                         ++ri;
                     }

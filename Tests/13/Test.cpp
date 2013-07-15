@@ -594,8 +594,6 @@ namespace   {
         };
 
 
-
-
         SimpleSequenceTest_All_For_Type<Sequence<size_t>, COMPARE_SIZET> ();
         SimpleSequenceTest_All_For_Type<Sequence<SimpleClass>, COMPARE_SimpleClass> ();
         //SimpleSequenceTest_All_For_Type<Sequence<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
@@ -627,4 +625,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-

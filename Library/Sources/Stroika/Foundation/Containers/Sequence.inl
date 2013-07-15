@@ -79,8 +79,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Contains (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::Contains_ (*this, item);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, TRAITS::EqualsCompareFunctionType);
+                return Private::Contains_<T, TRAITS::EqualsCompareFunctionType> (*this, item);
             }
             template    <typename T, typename TRAITS>
             inline  int    Sequence<T, TRAITS>::Compare (const Iterable<T>& rhs) const
@@ -90,8 +90,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const
             {
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, TRAITS::EqualsCompareFunctionType);
+                return Private::Equals_<T, TRAITS::EqualsCompareFunctionType> (*this, rhs);
+#if 0
                 RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::Equals_<T> (*this, rhs);
+#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Sequence<T, TRAITS>::RemoveAll ()
@@ -131,7 +135,6 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (const Iterator<T>& i) const
             {
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return _GetRep ().IndexOf (i);
             }
             template    <typename T, typename TRAITS>

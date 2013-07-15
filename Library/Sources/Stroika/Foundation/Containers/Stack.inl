@@ -94,7 +94,7 @@ namespace   Stroika {
             bool    Stack<T>::Equals (const Stack<T>& rhs) const
             {
                 RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::Equals_<T> (*this, rhs);        // Because we define ordering as compare for equals
+                return Private::Equals_<T, Common::ComparerWithEquals<T>> (*this, rhs);        // Because we define ordering as compare for equals
             }
             template    <typename T>
             inline  bool  Stack<T>::operator== (const Stack<T>& rhs) const

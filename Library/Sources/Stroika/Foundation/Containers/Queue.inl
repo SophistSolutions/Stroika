@@ -104,7 +104,7 @@ namespace   Stroika {
             bool    Queue<T>::Equals (const Queue<T>& rhs) const
             {
                 RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::Equals_<T> (*this, rhs);        // Because we define ordering as compare for equals
+                return Private::Equals_<T, Common::ComparerWithEquals<T>> (*this, rhs);        // Because we define ordering as compare for equals
             }
             template    <typename T>
             inline  bool  Queue<T>::operator== (const Queue<T>& rhs) const
