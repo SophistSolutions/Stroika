@@ -34,7 +34,7 @@ namespace   Stroika {
                 bool    Contains_ (const Iterable<T>& c, T item);
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARER_TYPE>
                 int     Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
@@ -42,11 +42,11 @@ namespace   Stroika {
                 bool    Equals_ (const Iterable<T>& lhs, const Iterable<T>& rhs);
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 size_t  IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound);
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 size_t  IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound);
 
 

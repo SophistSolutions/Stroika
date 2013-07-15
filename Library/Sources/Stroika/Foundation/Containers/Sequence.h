@@ -10,6 +10,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
+#include    "../Common/Compare.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
 #include    "../Traversal/Iterator.h"

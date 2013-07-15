@@ -24,7 +24,7 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARER_TYPE>
                 int    Compare_ (const Iterable<T>& lhs, const Iterable<T>& rhs)
                 {
                     auto li = lhs.begin ();
@@ -32,7 +32,7 @@ namespace   Stroika {
                     auto ri = rhs.begin ();
                     auto re = rhs.end ();
                     int c;
-                    while (li != le and ri != re and ((c = (*li).Compare (*ri) ) == 0)) {
+                    while ((li != le) and (ri != re) and (c = ELEMENT_COMPARER_TYPE::Compare (*li, *ri)) == 0) {
                         ++li;
                         ++ri;
                     }
@@ -50,7 +50,7 @@ namespace   Stroika {
                         }
                         else {
                             Assert (li != le and ri != re);
-                            Assert (c ==  (*li).Compare (*ri));
+                            Assert (c ==  ELEMENT_COMPARER_TYPE::Compare (*li, *ri));
                             return c;
                         }
                     }
@@ -77,13 +77,12 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 size_t    IndexOf_ (const Iterable<T>& c, T item, size_t sentinalValueForNotFound)
                 {
                     size_t  n = 0;
                     for (T i : c) {
-
-                        if (i == item) {
+                        if (ELEMENT_COMPARE_EQUALS_TYPE::Equals (i, item)) {
                             return n;
                         }
                         n++;
@@ -92,7 +91,7 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
+                template    <typename T, typename ELEMENT_COMPARE_EQUALS_TYPE>
                 size_t    IndexOf_ (const Iterable<T>& c, const Iterable<T>& rhs, size_t sentinalValueForNotFound)
                 {
                     size_t  n = 0;
@@ -103,7 +102,7 @@ namespace   Stroika {
                             if (ii == c.end ()) {
                                 return sentinalValueForNotFound;
                             }
-                            if (not (r == *ii)) {
+                            if (not (ELEMENT_COMPARE_EQUALS_TYPE::Equals (r, *ii))) {
                                 foundDiff = true;
                                 break;
                             }

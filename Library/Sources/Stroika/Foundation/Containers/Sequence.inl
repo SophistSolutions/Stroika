@@ -119,14 +119,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::IndexOf_ (*this, item, kBadSequenceIndex);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
+                return Private::IndexOf_<T, TRAITS::EqualsCompareFunctionType> (*this, item, kBadSequenceIndex);
             }
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (const Sequence<T, TRAITS>& s) const
             {
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::IndexOf_ (*this, s, kBadSequenceIndex);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
+                return Private::IndexOf_<T, TRAITS::EqualsCompareFunctionType> (*this, s, kBadSequenceIndex);
             }
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (const Iterator<T>& i) const
