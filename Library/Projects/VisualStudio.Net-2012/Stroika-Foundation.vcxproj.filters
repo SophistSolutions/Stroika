@@ -1302,6 +1302,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h">
+      <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1949,6 +1952,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.inl">
       <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl">
+      <Filter>Sources\Containers\STL</Filter>
     </None>
   </ItemGroup>
 </Project>

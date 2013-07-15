@@ -583,6 +583,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h" />
@@ -839,6 +840,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Stack.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl" />

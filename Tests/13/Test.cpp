@@ -15,6 +15,7 @@
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_DoublyLinkedList.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_LinkedList.h"
 #include    "Stroika/Foundation/Containers/Concrete/Sequence_stdvector.h"
+#include    "Stroika/Foundation/Containers/STL/Compare.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -491,21 +492,13 @@ namespace {
             vector<T>   vs = s.template As<vector<T>> ();
             Sequence<T> tmp = Sequence<T> (vs);
             VerifyTestResult (tmp.size () == vs.size ());
-#if 0
-            // FIX - ISSUE IS WHEN operator== ! defined - MUST FIX SO WORKS USING FANCY PREDICATE ON COMPARE
-            // --LGP 2013-07-15
-            VerifyTestResult (tmp.template As<vector<T>> () == vs);
-#endif
+            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<vector<T>> (), vs));
         }
         {
             list<T>     ls = s.template As<list<T>> ();
             Sequence<T> tmp = Sequence<T> (ls);
             VerifyTestResult (tmp.size () == ls.size ());
-#if 0
-            // FIX - ISSUE IS WHEN operator== ! defined - MUST FIX SO WORKS USING FANCY PREDICATE ON COMPARE
-            // --LGP 2013-07-15
-            VerifyTestResult (tmp.template As<list<T>> () == ls);
-#endif
+            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (tmp.template As<list<T>> (), ls));
         }
 
         s.RemoveAll ();
@@ -531,11 +524,7 @@ namespace {
             n.push_back (9);
             s = CONCRETE_SEQUENCE_T (n);
             vector<T>   nn = s.template As<vector<T>> ();
-#if 0
-            // FIX - ISSUE IS WHEN operator== ! defined - MUST FIX SO WORKS USING FANCY PREDICATE ON COMPARE
-            // --LGP 2013-07-15
-            VerifyTestResult (nn == n);
-#endif
+            VerifyTestResult (STL::Equals<EQUALS_COMPARER> (nn, n));
         }
 
         s.RemoveAll ();

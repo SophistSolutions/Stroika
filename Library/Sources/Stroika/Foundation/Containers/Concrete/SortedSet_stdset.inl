@@ -13,6 +13,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
+#include    "../STL/Compare.h"
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
@@ -61,7 +62,7 @@ namespace   Stroika {
                     virtual void                Remove (const Iterator<T>& i) override;
 
                 private:
-                    typedef set<T, Private::PatchingDataStructures::stdc_Compare_Helpers::less<T, typename TRAITS::WellOrderCompareFunctionType>> STL_SET_TYPE_;
+                    typedef set<T, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>> STL_SET_TYPE_;
                     typedef Private::PatchingDataStructures::STLContainerWrapper<STL_SET_TYPE_>                                                 ConcreteBackendType_;
 
                 private:
