@@ -73,9 +73,16 @@ namespace   Stroika {
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of SortedBag<T,TRAITS>. This is often handy to use in
-                 *  building other tempaltes.
+                 *  building other templates.
                  */
                 typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
 
             public:
                 /**

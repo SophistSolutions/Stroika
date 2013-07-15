@@ -78,9 +78,16 @@ namespace   Stroika {
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of Set<T,TRAITS>. This is often handy to use in
-                 *  building other tempaltes.
+                 *  building other templates.
                  */
                 typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
 
             public:
                 /**
