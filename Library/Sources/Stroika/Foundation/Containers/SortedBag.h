@@ -72,6 +72,8 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Just a short-hand for the 'TRAITS' part of SortedBag<T,TRAITS>. This is often handy to use in
+                 *  building other tempaltes.
                  */
                 typedef TRAITS  TraitsType;
 
