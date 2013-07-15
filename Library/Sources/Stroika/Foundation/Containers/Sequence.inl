@@ -79,7 +79,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Contains (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, TRAITS::EqualsCompareFunctionType);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
                 return Private::Contains_<T, TRAITS::EqualsCompareFunctionType> (*this, item);
             }
             template    <typename T, typename TRAITS>
@@ -90,12 +90,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, TRAITS::EqualsCompareFunctionType);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
                 return Private::Equals_<T, TRAITS::EqualsCompareFunctionType> (*this, rhs);
-#if 0
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::Equals_<T> (*this, rhs);
-#endif
             }
             template    <typename T, typename TRAITS>
             inline  void    Sequence<T, TRAITS>::RemoveAll ()
