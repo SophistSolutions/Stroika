@@ -82,7 +82,7 @@ namespace   Stroika {
                  *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
                  *  building other templates.
                  */
-                typedef TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
+                typedef typename TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
 
             public:
                 /**
