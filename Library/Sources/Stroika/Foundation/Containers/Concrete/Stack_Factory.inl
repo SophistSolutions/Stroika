@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                inline  Stack<T>  mkStack_Default ()
+                template    <typename T, typename TRAITS>
+                inline  Stack<T, TRAITS>  mkStack_Default ()
                 {
-                    return Stack_LinkedList<T> ();
+                    return Stack_LinkedList<T, TRAITS> ();
                 }
 
 

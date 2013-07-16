@@ -23,13 +23,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************* Stack_LinkedList<T>::Rep_ ****************************
+                 ******************** Stack_LinkedList<T, TRAITS>::Rep_ *************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class   Stack_LinkedList<T>::Rep_ : public Stack<T>::_IRep {
+                template    <typename T, typename TRAITS>
+                class   Stack_LinkedList<T, TRAITS>::Rep_ : public Stack<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Stack<T>::_IRep  inherited;
+                    typedef typename    Stack<T, TRAITS>::_IRep  inherited;
 
                 public:
                     Rep_ ();
@@ -48,7 +48,7 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Stack<T>::_IRep overrides
+                    // Stack<T, TRAITS>::_IRep overrides
                 public:
                     virtual void    Push (T item) override;
                     virtual T       Pop () override;
@@ -60,22 +60,22 @@ namespace   Stroika {
                     Private::PatchingDataStructures::LinkedList<T>  fData_;
 
                 private:
-                    friend  class Stack_LinkedList<T>::IteratorRep_;
+                    friend  class Stack_LinkedList<T, TRAITS>::IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ************************** Stack_LinkedList<T>::IteratorRep_ *******************
+                 ****************** Stack_LinkedList<T, TRAITS>::IteratorRep_ *******************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class  Stack_LinkedList<T>::IteratorRep_ : public Iterator<T>::IRep {
+                template    <typename T, typename TRAITS>
+                class  Stack_LinkedList<T, TRAITS>::IteratorRep_ : public Iterator<T>::IRep {
                 private:
                     typedef typename Iterator<T>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Stack_LinkedList<T>::Rep_& owner)
+                    explicit IteratorRep_ (typename Stack_LinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {
@@ -115,18 +115,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************ Stack_LinkedList<T>::Rep_ *****************************
+                ******************** Stack_LinkedList<T, TRAITS>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                inline  Stack_LinkedList<T>::Rep_::Rep_ ()
+                template    <typename T, typename TRAITS>
+                inline  Stack_LinkedList<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T>
-                inline  Stack_LinkedList<T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T, typename TRAITS>
+                inline  Stack_LinkedList<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -136,14 +136,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                typename Iterable<T>::_SharedPtrIRep  Stack_LinkedList<T>::Rep_::Clone () const
+                template    <typename T, typename TRAITS>
+                typename Iterable<T>::_SharedPtrIRep  Stack_LinkedList<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T>
-                Iterator<T>  Stack_LinkedList<T>::Rep_::MakeIterator () const
+                template    <typename T, typename TRAITS>
+                Iterator<T>  Stack_LinkedList<T, TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -155,50 +155,50 @@ namespace   Stroika {
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename T>
-                size_t  Stack_LinkedList<T>::Rep_::GetLength () const
+                template    <typename T, typename TRAITS>
+                size_t  Stack_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                bool  Stack_LinkedList<T>::Rep_::IsEmpty () const
+                template    <typename T, typename TRAITS>
+                bool  Stack_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.IsEmpty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void      Stack_LinkedList<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                void      Stack_LinkedList<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T>
-                Iterator<T>     Stack_LinkedList<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                Iterator<T>     Stack_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T>
-                void    Stack_LinkedList<T>::Rep_::RemoveAll ()
+                template    <typename T, typename TRAITS>
+                void    Stack_LinkedList<T, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    Stack_LinkedList<T>::Rep_::Push (T item)
+                template    <typename T, typename TRAITS>
+                void    Stack_LinkedList<T, TRAITS>::Rep_::Push (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Append (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                T    Stack_LinkedList<T>::Rep_::Pop ()
+                template    <typename T, typename TRAITS>
+                T    Stack_LinkedList<T, TRAITS>::Rep_::Pop ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         T   result  =   fData_.GetFirst ();
@@ -208,8 +208,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                T    Stack_LinkedList<T>::Rep_::Top () const
+                template    <typename T, typename TRAITS>
+                T    Stack_LinkedList<T, TRAITS>::Rep_::Top () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.GetFirst ();
@@ -220,25 +220,25 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************************** Stack_LinkedList<T> *****************************
+                *************************** Stack_LinkedList<T, TRAITS> ************************
                 ********************************************************************************
                 */
-                template    <typename T>
-                Stack_LinkedList<T>::Stack_LinkedList ()
+                template    <typename T, typename TRAITS>
+                Stack_LinkedList<T, TRAITS>::Stack_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename T>
-                inline  Stack_LinkedList<T>::Stack_LinkedList (const Stack_LinkedList<T>& s)
+                template    <typename T, typename TRAITS>
+                inline  Stack_LinkedList<T, TRAITS>::Stack_LinkedList (const Stack_LinkedList<T, TRAITS>& s)
                     : inherited (static_cast<const inherited&> (s))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename T>
-                inline  Stack_LinkedList<T>&   Stack_LinkedList<T>::operator= (const Stack_LinkedList<T>& s)
+                template    <typename T, typename TRAITS>
+                inline  Stack_LinkedList<T, TRAITS>&   Stack_LinkedList<T, TRAITS>::operator= (const Stack_LinkedList<T, TRAITS>& rhs)
                 {
-                    inherited::operator= (static_cast<const inherited&> (s));
+                    inherited::operator= (static_cast<const inherited&> (rhs));
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
