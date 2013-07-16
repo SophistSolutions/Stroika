@@ -18,7 +18,7 @@
  *  TODO:
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
+ *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
@@ -36,20 +36,20 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename   T>
+                template    <typename T, typename TRAITS = Deque_DefaultTraits<T>>
                 class   Deque_DoublyLinkedList : public Deque<T> {
                 private:
                     typedef     Deque<T>  inherited;
 
                 public:
                     Deque_DoublyLinkedList ();
-                    Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T>& s);
+                    Deque_DoublyLinkedList (const Deque_DoublyLinkedList<T, TRAITS>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Deque_DoublyLinkedList (const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Deque_DoublyLinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
-                    nonvirtual  Deque_DoublyLinkedList<T>& operator= (const Deque_DoublyLinkedList<T>& s);
+                    nonvirtual  Deque_DoublyLinkedList<T, TRAITS>&  operator= (const Deque_DoublyLinkedList<T, TRAITS>& src);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

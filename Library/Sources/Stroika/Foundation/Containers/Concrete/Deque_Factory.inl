@@ -19,7 +19,7 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
+                template    <typename T, typename TRAITS>
                 inline  Deque<T>  mkDeque_Default ()
                 {
                     return Deque_DoublyLinkedList<T> ();
