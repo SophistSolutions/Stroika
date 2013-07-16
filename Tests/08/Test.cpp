@@ -27,103 +27,67 @@ using   namespace   Stroika::Foundation::Containers;
 using   Concrete::Deque_DoublyLinkedList;
 
 
+
+
+
 namespace {
-    template <typename DequeOfT>
-    void    SimpleTest_1_ (DequeOfT s)
-    {
-        DequeOfT s2;
-        DequeOfT s3 = s;
+    namespace Test1_BasicDequeTest_ {
+        template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+        void    DoAllTests_ ()
+        {
+            // test DQUEUE METHODS - NYI
+        }
     }
 }
 
 
+
+
 namespace {
-    template <typename DequeOfT>
-    void    SimpleTest_2_ (DequeOfT s)
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_NotRequiringEquals_For_Type ()
     {
-        s.Enqueue (1);
-        VerifyTestResult (s.size () == 1);
-        s.Enqueue (1);
-        VerifyTestResult (s.size () == 2);
-        s.Dequeue ();
-        VerifyTestResult (s.size () == 1);
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
+        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    }
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_For_Type ()
+    {
+        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+        Test1_BasicDequeTest_::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 }
 
 
-namespace {
-    template <typename DequeOfT>
-    void    SimpleTest_3_Iteration_ (DequeOfT s)
-    {
-#if 0
-        m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
-        for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
-        }
-        m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
-        for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
-        }
-        m.Remove (1);
-        VerifyTestResult (m.size () == 0);
-        for (auto i : m) {
-            VerifyTestResult (false);
-        }
-        m.Add (1, 2);
-        m.Add (2, 3);
-        m.Add (3, 4);
-        unsigned int cnt = 0;
-        for (auto i : m) {
-            cnt++;
-            if (cnt == 1) {
-                VerifyTestResult (i.first == 1);
-                VerifyTestResult (i.second == 2);
-            }
-            if (cnt == 2) {
-                VerifyTestResult (i.first == 2);
-                VerifyTestResult (i.second == 3);
-            }
-            if (cnt == 3) {
-                VerifyTestResult (i.first == 3);
-                VerifyTestResult (i.second == 4);
-            }
-        }
-        VerifyTestResult (cnt == 3);
-#endif
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
-    }
-}
 
-
-namespace {
-    template <typename DequeOfT>
-    void    SimpleMappingTest_All_For_Type ()
-    {
-        DequeOfT s;
-        SimpleTest_1_ (s);
-        SimpleTest_2_ (s);
-        SimpleTest_3_Iteration_ (s);
-    }
-}
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        SimpleMappingTest_All_For_Type<Deque<size_t>> ();
-        SimpleMappingTest_All_For_Type<Deque<SimpleClass>> ();
+        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
+        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        struct  COMPARE_SimpleClassWithoutComparisonOperators {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
 
-        SimpleMappingTest_All_For_Type<Deque_DoublyLinkedList<size_t>> ();
-        SimpleMappingTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>> ();
+        typedef Deque_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+
+        SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        //SimpleQueueTest_All_For_Type<Deque<SimpleClassWithoutComparisonOperators, Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        //SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators, Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
     }
 }
+
+
 
 
 int     main (int argc, const char* argv[])
