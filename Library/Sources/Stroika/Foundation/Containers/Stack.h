@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Common/Compare.h"
 #include    "../Traversal/Iterable.h"
 
 
