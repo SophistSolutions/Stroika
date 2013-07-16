@@ -103,8 +103,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             bool    Queue<T, TRAITS>::Equals (const Queue<T, TRAITS>& rhs) const
             {
-                RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                return Private::Equals_<T, Common::ComparerWithEquals<T>> (*this, rhs);        // Because we define ordering as compare for equals
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+                return Private::Equals_<T, EqualsCompareFunctionType> (*this, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  bool  Queue<T, TRAITS>::operator== (const Queue<T, TRAITS>& rhs) const

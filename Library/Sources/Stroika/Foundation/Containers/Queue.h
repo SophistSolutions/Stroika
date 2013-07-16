@@ -22,6 +22,11 @@
  *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
  *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
  *
+ *      @todo   trial balloon - EnqueueAll(CONTAINER), and Enqueue (STARTIT, ENDIT), enques
+ *              items in order from start to end, so that when iterating over teh resulting queue, you
+ *              encounter the items in teh order you added them. That makes EnqueueAll(CONTINER) as simple
+ *              as EnqueueAll(C.begin(),C.end()).
+ *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
  *      @todo   Review
@@ -65,9 +70,10 @@ namespace   Stroika {
 
 
             /**
-             *      Standard LIFO (Last in first out) queue. See Sedgewick, 30-31.(CHECK REFERNECE)
+             *      Standard FIFO (first in - first out) queue. See Sedgewick, 30-31.(CHECK REFERNECE)
              *
-             *      Queues always iterate from Head to Tail: the same order as removals would encounter items.
+             *      Queues always iterate from Head (aka front) to Tail: the same order as removals
+             *  would encounter items, dequeing them.
              *
              *      Related classes include Deques, which allow addition and removal at
              *  either end, and PriorityQueues, which allow removal based on the priority
@@ -98,7 +104,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  @todo Document carefully Queue(start,end) iter order - so copy works well!
+                 *  Just a short-hand for the 'TRAITS' part of Queue<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 *
+                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
+                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
+                 */
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+
+            public:
+                /**
+                 *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
                  */
                 Queue ();
                 Queue (const Queue<T, TRAITS>& q);
@@ -158,12 +181,13 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Two Queues are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  Two Queues are considered equal if they contain the same elements (by comparing them
+                 *  with EqualsCompareFunctionType from the TRAITS object, which defaults to operator== (T,T))
                  *  in exactly the same order (iteration).
                  *
                  *  Equals is commutative().
                  *
-                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 *  \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
                  *
                  *  Computational Complexity: O(N)
                  */

@@ -68,7 +68,7 @@ namespace   Stroika {
 
 
             /**
-             *      Standard FIFO (first in - first out) Stack. See Sedgewick, 30-31.
+             *      Standard LIFO (Last in first out) Stack. See Sedgewick, 30-31.
              *      Iteration proceeds from the top to the bottom of the stack. Top
              *      is the FIRST IN (also first out).
              *

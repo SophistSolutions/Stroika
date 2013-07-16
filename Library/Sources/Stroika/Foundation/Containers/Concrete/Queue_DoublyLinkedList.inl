@@ -65,7 +65,7 @@ namespace   Stroika {
                     typedef typename    Iterator<T>::IRep   inherited;
 
                 public:
-                    explicit IteratorRep_ (typename Queue_DoublyLinkedList<T>::Rep_& owner)
+                    explicit IteratorRep_ (typename Queue_DoublyLinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (owner.fData_) {

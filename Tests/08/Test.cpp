@@ -15,6 +15,7 @@
 
 
 #include    "../TestHarness/SimpleClass.h"
+#include    "../TestCommon/CommonTests_Queue.h"
 #include    "../TestHarness/TestHarness.h"
 
 

@@ -14,6 +14,7 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 
 
+#include    "../TestCommon/CommonTests_Queue.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
@@ -28,115 +29,22 @@ using   Concrete::Queue_DoublyLinkedList;
 
 
 
-namespace {
-    template <typename QueueOfT>
-    void    SimpleTest_1_ (QueueOfT s)
-    {
-        QueueOfT s2;
-        QueueOfT s3 = s;
-    }
-}
 
 
-namespace {
-    template <typename QueueOfT>
-    void    SimpleTest_2_ (QueueOfT s)
-    {
-        s.Enqueue (1);
-        VerifyTestResult (s.size () == 1);
-        s.Enqueue (1);
-        VerifyTestResult (s.size () == 2);
-        s.Dequeue ();
-        VerifyTestResult (s.size () == 1);
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
-    }
-}
-
-
-namespace {
-    template <typename QueueOfT>
-    void    SimpleTest_3_Iteration_ (QueueOfT s)
-    {
-#if 0
-        m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
-        for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
-        }
-        m.Add (1, 2);
-        VerifyTestResult (m.size () == 1);
-        for (auto i : m) {
-            VerifyTestResult (i.first == 1);
-            VerifyTestResult (i.second == 2);
-        }
-        m.Remove (1);
-        VerifyTestResult (m.size () == 0);
-        for (auto i : m) {
-            VerifyTestResult (false);
-        }
-        m.Add (1, 2);
-        m.Add (2, 3);
-        m.Add (3, 4);
-        unsigned int cnt = 0;
-        for (auto i : m) {
-            cnt++;
-            if (cnt == 1) {
-                VerifyTestResult (i.first == 1);
-                VerifyTestResult (i.second == 2);
-            }
-            if (cnt == 2) {
-                VerifyTestResult (i.first == 2);
-                VerifyTestResult (i.second == 3);
-            }
-            if (cnt == 3) {
-                VerifyTestResult (i.first == 3);
-                VerifyTestResult (i.second == 4);
-            }
-        }
-        VerifyTestResult (cnt == 3);
-#endif
-        s.RemoveAll ();
-        VerifyTestResult (s.size () == 0);
-    }
-}
-
-
-
-
-
-namespace Test4_Equals {
-    template <typename USING_QUEUE_CONTAINER>
-    void    DoAllTests_ ()
-    {
-        USING_QUEUE_CONTAINER s;
-        USING_QUEUE_CONTAINER s2 = s;
-        s.Enqueue (1);
-        s.Enqueue (2);
-        VerifyTestResult (s.size () == 2);
-        USING_QUEUE_CONTAINER s3 = s;
-        VerifyTestResult (s == s3);
-        VerifyTestResult (s.Equals (s3));
-        VerifyTestResult (not (s != s3));
-
-        VerifyTestResult (s != s2);
-        VerifyTestResult (not s.Equals (s2));
-        VerifyTestResult (not (s == s2));
-    }
-}
 
 
 
 namespace {
-    template <typename QueueOfT>
-    void    Test_All_For_Type_ ()
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_NotRequiringEquals_For_Type ()
     {
-        QueueOfT s;
-        SimpleTest_1_ (s);
-        SimpleTest_2_ (s);
-        SimpleTest_3_Iteration_ (s);
-        Test4_Equals::DoAllTests_<QueueOfT> ();
+        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+    }
+
+    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
+    void    SimpleQueueTest_All_For_Type ()
+    {
+        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
     }
 }
 
@@ -148,11 +56,26 @@ namespace {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Test_All_For_Type_<Queue<size_t>> ();
-        Test_All_For_Type_<Queue<SimpleClass>> ();
+        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
+        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        struct  COMPARE_SimpleClassWithoutComparisonOperators {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
 
-        Test_All_For_Type_<Queue_DoublyLinkedList<size_t>> ();
-        Test_All_For_Type_<Queue_DoublyLinkedList<SimpleClass>> ();
+        typedef Queue_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+
+        SimpleQueueTest_All_For_Type<Queue<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
     }
 }
 
