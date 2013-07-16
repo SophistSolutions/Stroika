@@ -79,8 +79,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Contains (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
-                return Private::Contains_<T, typename TRAITS::EqualsCompareFunctionType> (*this, item);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+                return Private::Contains_<T, EqualsCompareFunctionType> (*this, item);
             }
             template    <typename T, typename TRAITS>
             inline  int    Sequence<T, TRAITS>::Compare (const Iterable<T>& rhs) const
@@ -90,8 +90,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
-                return Private::Equals_<T, typename TRAITS::EqualsCompareFunctionType> (*this, rhs);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+                return Private::Equals_<T, EqualsCompareFunctionType> (*this, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  void    Sequence<T, TRAITS>::RemoveAll ()
@@ -119,14 +119,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (T item) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
-                return Private::IndexOf_<T, typename TRAITS::EqualsCompareFunctionType> (*this, item, kBadSequenceIndex);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+                return Private::IndexOf_<T, EqualsCompareFunctionType> (*this, item, kBadSequenceIndex);
             }
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (const Sequence<T, TRAITS>& s) const
             {
-                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename TRAITS::EqualsCompareFunctionType);
-                return Private::IndexOf_<T, typename TRAITS::EqualsCompareFunctionType> (*this, s, kBadSequenceIndex);
+                RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+                return Private::IndexOf_<T, EqualsCompareFunctionType> (*this, s, kBadSequenceIndex);
             }
             template    <typename T, typename TRAITS>
             inline  size_t    Sequence<T, TRAITS>::IndexOf (const Iterator<T>& i) const
