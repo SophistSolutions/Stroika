@@ -123,27 +123,54 @@ namespace Test4_Equals {
 }
 
 
-namespace {
-    template <typename StackOfT>
-    void    Tests_All_For_Type ()
+
+
+
+
+namespace   {
+
+    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
+    void    Tests_All_For_Type_WhichDontRequireComparer_For_Type_ ()
     {
-        StackOfT s;
-        SimpleTest_1_ (s);
-        SimpleTest_2_ (s);
-        SimpleTest_3_Iteration_ (s);
-        Test4_Equals::DoAllTests_<StackOfT> ();
+        CONCRETE_SEQUENCE_TYPE s;
+        SimpleTest_1_<CONCRETE_SEQUENCE_TYPE> (s);
+        SimpleTest_2_<CONCRETE_SEQUENCE_TYPE> (s);
+        SimpleTest_3_Iteration_<CONCRETE_SEQUENCE_TYPE> (s);
     }
+
+    template <typename CONCRETE_SEQUENCE_TYPE, typename EQUALS_COMPARER>
+    void    Tests_All_For_Type_ ()
+    {
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<CONCRETE_SEQUENCE_TYPE, EQUALS_COMPARER> ();
+        Test4_Equals::DoAllTests_<CONCRETE_SEQUENCE_TYPE> ();
+    }
+
 }
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        Tests_All_For_Type<Stack<size_t>> ();
-        Tests_All_For_Type<Stack<SimpleClass>> ();
+        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
+        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
+        struct  COMPARE_SimpleClassWithoutComparisonOperators {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
 
-        Tests_All_For_Type<Stack_LinkedList<size_t>> ();
-        Tests_All_For_Type<Stack_LinkedList<SimpleClass>> ();
+        typedef Stack_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Stack_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+
+        Tests_All_For_Type_<Stack<size_t>, COMPARE_SIZET> ();
+        Tests_All_For_Type_<Stack<SimpleClass>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        Tests_All_For_Type_<Stack<SimpleClassWithoutComparisonOperators, Stack_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        Tests_All_For_Type_<Stack_LinkedList<size_t>, COMPARE_SIZET> ();
+        Tests_All_For_Type_<Stack_LinkedList<SimpleClass>, COMPARE_SimpleClass> ();
+        Tests_All_For_Type_WhichDontRequireComparer_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        Tests_All_For_Type_<Stack_LinkedList<SimpleClassWithoutComparisonOperators, Stack_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
     }
 }
 

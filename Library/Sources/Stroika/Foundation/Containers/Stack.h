@@ -109,7 +109,7 @@ namespace   Stroika {
             public:
                 /**
                  *  @todo   MUST WORK OUT DETAILS OF SEMANTICS FOR ITERATOR ADD cuz naieve interpreation of above
-                 *          rules owuld lead to having a copy reverse the stack
+                 *          rules owuld lead to having a copy reverse the stack (SEE FILE-TODO-NOTE)
                  */
                 Stack ();
                 Stack (const Stack<T, TRAITS>& s);
