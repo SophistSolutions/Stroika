@@ -19,10 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                inline  Queue<T>  mkQueue_Default ()
+                template    <typename T, typename TRAITS>
+                inline  Queue<T, TRAITS>  mkQueue_Default ()
                 {
-                    return Queue_DoublyLinkedList<T> ();
+                    return Queue_DoublyLinkedList<T, TRAITS> ();
                 }
 
 

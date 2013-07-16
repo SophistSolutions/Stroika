@@ -18,117 +18,117 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************ Queue<T> **********************************
+             ************************************ Queue<T, TRAITS> **********************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Queue<T>::Queue ()
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T> ()))
+            template    <typename T, typename TRAITS>
+            inline  Queue<T, TRAITS>::Queue ()
+                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            inline  Queue<T>::Queue (const Queue<T>& q)
+            template    <typename T, typename TRAITS>
+            inline  Queue<T, TRAITS>::Queue (const Queue<T, TRAITS>& q)
                 : inherited (static_cast<const inherited&> (q))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Queue<T>::Queue (const CONTAINER_OF_T& q)
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T> ()))
+            inline  Queue<T, TRAITS>::Queue (const CONTAINER_OF_T& q)
+                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
 //                AddAll (q);
             }
-            template    <typename T>
-            inline  Queue<T>::Queue (const _SharedPtrIRep& rep)
+            template    <typename T, typename TRAITS>
+            inline  Queue<T, TRAITS>::Queue (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 RequireNotNull (rep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
-            inline Queue<T>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T> ()))
+            inline Queue<T, TRAITS>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
 //                AddAll (start, end);
             }
-            template    <typename T>
-            inline  const typename  Queue<T>::_IRep&    Queue<T>::_GetRep () const
+            template    <typename T, typename TRAITS>
+            inline  const typename  Queue<T, TRAITS>::_IRep&    Queue<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  typename    Queue<T>::_IRep&  Queue<T>::_GetRep ()
+            template    <typename T, typename TRAITS>
+            inline  typename    Queue<T, TRAITS>::_IRep&  Queue<T, TRAITS>::_GetRep ()
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  void    Queue<T>::AddTail (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Queue<T, TRAITS>::AddTail (T item)
             {
                 _GetRep ().AddTail (item);
             }
-            template    <typename T>
-            inline  T       Queue<T>::Head () const
+            template    <typename T, typename TRAITS>
+            inline  T       Queue<T, TRAITS>::Head () const
             {
                 return _GetRep ().Head ();
             }
-            template    <typename T>
-            inline  T       Queue<T>::RemoveHead ()
+            template    <typename T, typename TRAITS>
+            inline  T       Queue<T, TRAITS>::RemoveHead ()
             {
                 return _GetRep ().RemoveHead ();
             }
-            template    <typename T>
-            inline  void    Queue<T>::Enqueue (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Queue<T, TRAITS>::Enqueue (T item)
             {
                 _GetRep ().AddTail (item);
             }
-            template    <typename T>
-            inline  T       Queue<T>::Dequeue ()
+            template    <typename T, typename TRAITS>
+            inline  T       Queue<T, TRAITS>::Dequeue ()
             {
                 return _GetRep ().RemoveHead ();
             }
-            template    <typename T>
-            inline  void    Queue<T>::RemoveAll ()
+            template    <typename T, typename TRAITS>
+            inline  void    Queue<T, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
-            template    <typename T>
-            bool    Queue<T>::Equals (const Queue<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            bool    Queue<T, TRAITS>::Equals (const Queue<T, TRAITS>& rhs) const
             {
                 RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 return Private::Equals_<T, Common::ComparerWithEquals<T>> (*this, rhs);        // Because we define ordering as compare for equals
             }
-            template    <typename T>
-            inline  bool  Queue<T>::operator== (const Queue<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool  Queue<T, TRAITS>::operator== (const Queue<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename T>
-            inline  bool    Queue<T>::operator!= (const Queue<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Queue<T, TRAITS>::operator!= (const Queue<T, TRAITS>& rhs) const
             {
-                return (not Equals (rhs));
+                return not Equals (rhs);
             }
 
 
             /*
              ********************************************************************************
-             ***************************** Queue<T>::_IRep **********************************
+             ************************ Queue<T, TRAITS>::_IRep *******************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Queue<T>::_IRep::_IRep ()
+            template    <typename T, typename TRAITS>
+            inline  Queue<T, TRAITS>::_IRep::_IRep ()
             {
             }
-            template    <typename T>
-            inline  Queue<T>::_IRep::~_IRep ()
+            template    <typename T, typename TRAITS>
+            inline  Queue<T, TRAITS>::_IRep::~_IRep ()
             {
             }
 

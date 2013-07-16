@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Common/Compare.h"
 #include    "../Traversal/Iterable.h"
 
 
@@ -18,7 +19,8 @@
  *
  *  TODO:
  *
- *      @todo   Use TRAITS mechanism - like with Bag<>
+ *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
+ *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
  *
  *      @todo   Embellish test cases (regression tests), and fix/make sure copying works.
  *
@@ -42,6 +44,27 @@ namespace   Stroika {
 
 
             /**
+             *  NOTE - Traits for Queue<T, TRAITS> don't NEED an EQUALS_COMPARER, and the default one should
+             *  should be fine (never called if never used).
+             *
+             *  It will only be invoked if you call
+             *      o   Queue<T,TRAITS>::Equals ()
+             *
+             *  This means that
+             *      Queue<SOME_TYPE_WITH_NO_OPERATOR_EQUALS> x;
+             *      // works FINE, UNTIL you try to call Equals - and at that point you must adjust
+             *      // the traits to specify the Equals() compare function.
+             *
+             */
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<T>>
+            struct   Queue_DefaultTraits {
+                /**
+                 */
+                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+            };
+
+
+            /**
              *      Standard LIFO (Last in first out) queue. See Sedgewick, 30-31.(CHECK REFERNECE)
              *
              *      Queues always iterate from Head to Tail: the same order as removals would encounter items.
@@ -51,7 +74,7 @@ namespace   Stroika {
              *  assigned to an item.
              *
              *  @see Deque<T> - which allow addition and removal at either end
-             *  @see PriorityQueues<T> - which allow removal based on the priority
+             *  @see PriorityQueues<T, TRAITS> - which allow removal based on the priority
              *          assigned to an item.
              *
              * Notes:
@@ -64,7 +87,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename   T>
+            template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
             class   Queue : public Iterable<T> {
             private:
                 typedef Iterable<T> inherited;
@@ -78,7 +101,7 @@ namespace   Stroika {
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well!
                  */
                 Queue ();
-                Queue (const Queue<T>& q);
+                Queue (const Queue<T, TRAITS>& q);
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& q);
                 template <typename COPY_FROM_ITERATOR_OF_T>
@@ -88,7 +111,7 @@ namespace   Stroika {
                 explicit Queue (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Queue<T>& operator= (const Queue<T>& rhs);
+                nonvirtual  Queue<T, TRAITS>& operator= (const Queue<T, TRAITS>& rhs);
 
             public:
                 /**
@@ -123,6 +146,8 @@ namespace   Stroika {
                  * Remove the first item from the Q. This is an error (assertion) if the Q is
                  * empty. This returns that last most distant (historical/time) item from the Q -
                  * IE the one who has been waiting the longest.
+                 *
+                 *  @todo maybe add DequeIf() - return Optional<T>?
                  */
                 nonvirtual  T       Dequeue ();             //RemoveHead
 
@@ -142,7 +167,7 @@ namespace   Stroika {
                  *
                  *  Computational Complexity: O(N)
                  */
-                nonvirtual  bool    Equals (const Queue<T>& rhs) const;
+                nonvirtual  bool    Equals (const Queue<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -152,24 +177,24 @@ namespace   Stroika {
                 /**
                  *      Syntactic sugar for Equals()
                  */
-                nonvirtual  bool    operator== (const Queue<T>& rhs) const;
+                nonvirtual  bool    operator== (const Queue<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar for not Equals()
                  */
-                nonvirtual  bool    operator!= (const Queue<T>& rhs) const;
+                nonvirtual  bool    operator!= (const Queue<T, TRAITS>& rhs) const;
             };
 
 
             /**
-             *  \brief  Implementation detail for Queue<T> implementors.
+             *  \brief  Implementation detail for Queue<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Queue<T> container API.
+             *  the Queue<T, TRAITS> container API.
              */
-            template    <typename T>
-            class   Queue<T>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   Queue<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 
