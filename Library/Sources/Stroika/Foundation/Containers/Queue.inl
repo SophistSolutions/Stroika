@@ -18,7 +18,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************ Queue<T, TRAITS> **********************************
+             **************************** Queue<T, TRAITS> **********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -40,7 +40,7 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
-//                AddAll (q);
+//                AddAll (q);   // @todo - use new EnqueueAll()
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const _SharedPtrIRep& rep)
@@ -55,7 +55,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AssertNotImplemented ();
+                AssertNotImplemented ();            // @todo - use new EnqueueAll()
 //                AddAll (start, end);
             }
             template    <typename T, typename TRAITS>

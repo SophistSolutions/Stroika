@@ -226,7 +226,7 @@ namespace   Stroika {
                 inline  Queue_DoublyLinkedList<T, TRAITS>::Queue_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertNotImplemented ();
+                    AssertNotImplemented ();        // @todo - use new EnqueueAll()
                     //InsertAll (0, s);
                 }
                 template    <typename T, typename TRAITS>
