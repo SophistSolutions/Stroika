@@ -18,7 +18,7 @@
  *  TODO:
  *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
  *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchonizaiton support
+ *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronization support
  *              THEN - MAYBE - try todo better, but at least do this as starter
  *
  *      @todo   Be sure can move-semantics into and out of Sequence_stdvector() - with vector<T> -
