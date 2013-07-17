@@ -35,14 +35,14 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename Key, typename T>
-                class   Mapping_LinkedList : public Mapping<Key, T> {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                class   Mapping_LinkedList : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
                 private:
-                    typedef     Mapping<Key, T>  inherited;
+                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
 
                 public:
                     Mapping_LinkedList ();
-                    Mapping_LinkedList (const Mapping_LinkedList<Key, T>& m);
+                    Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  Mapping_LinkedList<Key, T>& operator= (const Mapping_LinkedList<Key, T>& m);
+                    nonvirtual  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
 
 
                 private:

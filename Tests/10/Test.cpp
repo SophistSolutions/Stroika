@@ -32,28 +32,37 @@ using   Concrete::Mapping_LinkedList;
 using   Concrete::Mapping_stdmap;
 
 
+namespace {
+    template    <typename   CONCRETE_CONTAINER>
+    void    DoTestForConcreteContainer_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::KeyType    KeyType;
+        typedef typename CONCRETE_CONTAINER::ValueType  ValueType;
+        typedef typename CONCRETE_CONTAINER::TraitsType TraitsType;
+        auto extraChecksFunction = [] (const Mapping<KeyType, ValueType, TraitsType>& m) {
+            // only work todo on sorted mappings
+        };
+        CommonTests::MappingTests::SimpleMappingTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+}
+
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        using namespace CommonTests::MappingTests;
+        DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
 
-        auto testFunc1 = [] (const Mapping<size_t, size_t>& m) {
-        };
-        auto testFunc2 = [] (const Mapping<SimpleClass, SimpleClass>& m) {
-        };
+        DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
 
-        SimpleMappingTest_All_For_Type<Mapping<size_t, size_t>> (testFunc1);
-        SimpleMappingTest_All_For_Type<Mapping<SimpleClass, SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
 
-        SimpleMappingTest_All_For_Type<Mapping_Array<size_t, size_t>> (testFunc1);
-        SimpleMappingTest_All_For_Type<Mapping_Array<SimpleClass, SimpleClass>> (testFunc2);
-
-        SimpleMappingTest_All_For_Type<Mapping_LinkedList<size_t, size_t>> (testFunc1);
-        SimpleMappingTest_All_For_Type<Mapping_LinkedList<SimpleClass, SimpleClass>> (testFunc2);
-
-        SimpleMappingTest_All_For_Type<Mapping_stdmap<size_t, size_t>> (testFunc1);
-        SimpleMappingTest_All_For_Type<Mapping_stdmap<SimpleClass, SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
+        DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
     }
 }
 

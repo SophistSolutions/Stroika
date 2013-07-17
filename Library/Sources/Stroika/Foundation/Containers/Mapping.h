@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
@@ -19,9 +20,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *              PUT RequireConceptAppliesToTypeMemberOfClass etc in DEFUALT TRAITS OBJECT - NOT in class iteself (unless needed)
  *
  *      @todo   Replace pair<Key,T> with KeyValuePair<Key,T>
  *              Documentent advantages (clearer naming .fKey versus .first, and .fValue versus .second)
@@ -49,6 +47,21 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            struct   Mapping_DefaultTraits {
+                /**
+                 */
+                typedef KEY_EQUALS_COMPARER KeyEqualsCompareFunctionType;
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, KeyEqualsCompareFunctionType);
+
+                /**
+                 * only defined optionally...(see what can call this - gen list here @todo)
+                 */
+                typedef VALUE_EQUALS_COMPARER ValueEqualsCompareFunctionType;
+            };
+
+
             /**
              *      Mapping which allows for the association of two elements, and key and
              *  a value. The key UNIQUELY specifies its associated value.
@@ -57,28 +70,49 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            template    <typename Key, typename T>
-            class   Mapping : public Iterable<pair<Key, T>> {
-            public:
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, Key);
-
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+            class   Mapping : public Iterable<pair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                typedef Iterable<pair<Key, T>>  inherited;
+                typedef Iterable<pair<KEY_TYPE, VALUE_TYPE>>  inherited;
 
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
-                typedef Key     KeyType;
+                /**
+                 */
+                typedef TRAITS      TraitsType;
+
             public:
-                typedef T       ValueType;
+                /**
+                 */
+                typedef KEY_TYPE    KeyType;
+
+            public:
+                /**
+                 */
+                typedef VALUE_TYPE  ValueType;
+
+            public:
+                /**
+                 *  Just a short-hand for the KeyEqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef typename TraitsType::KeyEqualsCompareFunctionType  KeyEqualsCompareFunctionType;
+
+            public:
+                /**
+                 *  Just a short-hand for the ValueEqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef typename TraitsType::ValueEqualsCompareFunctionType  ValueEqualsCompareFunctionType;
 
             public:
                 /**
                  */
                 Mapping ();
-                Mapping (const Mapping<Key, T>& m);
+                Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -89,9 +123,9 @@ namespace   Stroika {
 
             public:
 #if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-                nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src) =   default;
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
 #else
-                nonvirtual  Mapping<Key, T>& operator= (const Mapping<Key, T>& src);
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
 #endif
 
             public:
@@ -100,7 +134,7 @@ namespace   Stroika {
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
                  *  maybe smart enough to use lazy copying)
                  */
-                nonvirtual  Iterable<Key>   Keys () const;
+                nonvirtual  Iterable<KeyType>   Keys () const;
 
             public:
                 /**
@@ -108,14 +142,14 @@ namespace   Stroika {
                  *  a default value on Lookup (so for case where not present) - as in:
                  *      returm m.Lookup (key).Value (putDefaultValueHere);
                  */
-                nonvirtual  Memory::Optional<T> Lookup (Key key) const;
-                nonvirtual  bool                Lookup (Key key, T* item) const;
+                nonvirtual  Memory::Optional<ValueType> Lookup (KeyType key) const;
+                nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
 
             public:
                 /**
                  *  Synonym for not (Lookup (key).empty ())
                  */
-                nonvirtual  bool    ContainsKey (Key key) const;
+                nonvirtual  bool    ContainsKey (KeyType key) const;
 
             public:
                 /**
@@ -125,7 +159,7 @@ namespace   Stroika {
                  *
                  *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                  */
-                nonvirtual  bool    ContainsValue (T v) const;
+                nonvirtual  bool    ContainsValue (ValueType v) const;
 
             public:
                 /**
@@ -134,7 +168,7 @@ namespace   Stroika {
                  *  Also - we guarantee that even if the association is different, if the key has not changed,
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
-                nonvirtual  void    Add (Key key, T newElt);
+                nonvirtual  void    Add (KeyType key, ValueType newElt);
 
             public:
                 /**
@@ -152,8 +186,8 @@ namespace   Stroika {
                  *      TBD in the case of Remove() on in iterator???? Probably should have consistent
                  *      answers but review Remove()for other containers as well.
                  */
-                nonvirtual  void    Remove (Key key);
-                nonvirtual  void    Remove (const Iterator<pair<Key, T>>& i);
+                nonvirtual  void    Remove (KeyType key);
+                nonvirtual  void    Remove (const Iterator<pair<KEY_TYPE, VALUE_TYPE>>& i);
 
             public:
                 /**
@@ -178,13 +212,14 @@ namespace   Stroika {
                 /*
                  *  Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
                  *  with the same value. There is no need for the items to appear in the same order for the two Mappings to
-                 *  be equal.
+                 *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
+                 *  vers linkedlist).
                  *
                  *  Equals is commutative().
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual  bool    Equals (const Mapping<Key, T>& rhs) const;
+                nonvirtual  bool    Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -196,25 +231,25 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<Key, T>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Mapping<Key, T>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  *      Syntactic sugar on Equals()
                  */
-                nonvirtual  bool    operator== (const Mapping<Key, T>& rhs) const;
+                nonvirtual  bool    operator== (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar on not Equals()
                  */
-                nonvirtual  bool    operator!= (const Mapping<Key, T>& rhs) const;
+                nonvirtual  bool    operator!= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -228,8 +263,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Mapping<T> container API.
              */
-            template    <typename Key, typename T>
-            class   Mapping<Key, T>::_IRep : public Iterable<pair<Key, T>>::_IRep {
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
                 _IRep ();
 
@@ -237,13 +272,13 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool            Equals (const _IRep& rhs) const     =   0;
-                virtual void            RemoveAll ()                        =   0;
-                virtual  Iterable<Key>  Keys () const                       =   0;
-                virtual  bool           Lookup (Key key, T* item) const     =   0;
-                virtual  void           Add (Key key, T newElt)             =   0;
-                virtual  void           Remove (Key key)                    =   0;
-                virtual  void           Remove (Iterator<pair<Key, T>> i)   =   0;
+                virtual bool                Equals (const _IRep& rhs) const                 =   0;
+                virtual void                RemoveAll ()                                    =   0;
+                virtual  Iterable<KeyType>  Keys () const                                   =   0;
+                virtual  bool               Lookup (KeyType key, ValueType* item) const     =   0;
+                virtual  void               Add (KeyType key, ValueType newElt)             =   0;
+                virtual  void               Remove (KeyType key)                            =   0;
+                virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

@@ -19,6 +19,13 @@
  *
  *  TODO:
  *
+ *      @todo   Defining Mapping_stdmap this way makes sense, but runs into deadly
+ *              embrace of #include problems. Maybe easier to just implement it
+ *              a second time (duplicate the SortedMapping_stdmap<> code).
+ *
+ *              YES - REDO AS CLONE!
+ *
+ *
  *      @todo   Fix  this code so
  *        namespace Test5_ToFromSTLMap {
  *            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
@@ -27,10 +34,6 @@
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronization support
  *              THEN - MAYBE - try todo better, but at least do this as starter
- *
- *      @todo   Defining Mapping_stdmap this way makes sense, but runs into deadly
- *              embrace of #include problems. Maybe easier to just implement it
- *              a second time (duplicate the SortedMapping_stdmap<> code).
  */
 
 

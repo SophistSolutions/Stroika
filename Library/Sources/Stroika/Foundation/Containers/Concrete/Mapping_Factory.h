@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename Key, typename T>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             class   Mapping;
 
 
@@ -40,8 +40,8 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename Key, typename T>
-                Mapping<Key, T>  mkMapping_Default ();
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mkMapping_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED

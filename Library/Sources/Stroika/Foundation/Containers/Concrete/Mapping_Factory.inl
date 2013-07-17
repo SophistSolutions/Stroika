@@ -29,13 +29,14 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename Key, typename T>
-                Mapping<Key, T>  mkMapping_Default ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mkMapping_Default ()
                 {
+                    //@todo - convert to traits!!!
 #if     COMPILE_FACTORY_MAPPING_USING_LINKEDLIST_
-                    return Mapping_LinkedList<Key, T> ();
+                    return Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
 #else
-                    return Mapping_stdmap<Key, T> ();
+                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> ();
 #endif
                 }
 

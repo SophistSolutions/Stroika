@@ -34,23 +34,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename Key, typename T>
-                class   Mapping_Array : public Mapping<Key, T> {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                class   Mapping_Array : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
                 private:
-                    typedef     Mapping<Key, T>  inherited;
+                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
 
                 public:
                     Mapping_Array ();
-                    Mapping_Array (const Mapping_Array<Key, T>& m);
+                    Mapping_Array (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Mapping_Array (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit Mapping_Array (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-
                 public:
-                    nonvirtual  Mapping_Array<Key, T>& operator= (const Mapping_Array<Key, T>& m);
-
+                    nonvirtual  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
 
                 public:
                     /**
@@ -61,14 +59,12 @@ namespace   Stroika {
                      */
                     nonvirtual  void    Compact ();
 
-
                 public:
                     /*
                      * This optional API allows pre-reserving space as an optimizaiton.
                      */
                     nonvirtual  size_t  GetCapacity () const;
                     nonvirtual  void    SetCapacity (size_t slotsAlloced);
-
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
