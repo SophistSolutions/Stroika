@@ -41,7 +41,7 @@ namespace   Stroika {
                  *
                  */
                 template    <typename T, typename TRAITS>
-                Deque<T>  mkDeque_Default ();
+                Deque<T, TRAITS>  mkDeque_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED

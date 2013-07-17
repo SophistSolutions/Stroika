@@ -89,9 +89,9 @@ namespace   Stroika {
                 /**
                  */
                 Deque ();
-                Deque (const Deque<T, TRAITS>& d);
+                Deque (const Deque<T, TRAITS>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Deque (const CONTAINER_OF_T& d);
+                explicit Deque (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Deque (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

@@ -20,9 +20,9 @@ namespace   Stroika {
 
 
                 template    <typename T, typename TRAITS>
-                inline  Deque<T>  mkDeque_Default ()
+                inline  Deque<T, TRAITS>  mkDeque_Default ()
                 {
-                    return Deque_DoublyLinkedList<T> ();
+                    return Deque_DoublyLinkedList<T, TRAITS> ();
                 }
 
 

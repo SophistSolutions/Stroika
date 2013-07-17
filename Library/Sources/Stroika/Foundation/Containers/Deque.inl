@@ -33,7 +33,7 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& d)
+            inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::mkDeque_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
