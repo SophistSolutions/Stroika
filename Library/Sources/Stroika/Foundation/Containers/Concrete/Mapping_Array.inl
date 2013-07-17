@@ -211,7 +211,7 @@ namespace   Stroika {
                     return *(Iterable<KEY_TYPE>*)nullptr;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KeyType key, ValueType* item) const
+                bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
@@ -227,7 +227,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KeyType key, ValueType newElt)
+                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
@@ -241,7 +241,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KeyType key)
+                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {

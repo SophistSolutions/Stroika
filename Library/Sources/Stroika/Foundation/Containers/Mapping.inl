@@ -106,7 +106,7 @@ namespace   Stroika {
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
             {
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                for (ElementType t : *this) {
+                for (pair<KEY_TYPE, VALUE_TYPE> t : *this) {
                     if (t.second == v) {
                         return true;
                     }
