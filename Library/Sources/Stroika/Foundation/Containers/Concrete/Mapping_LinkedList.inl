@@ -54,19 +54,19 @@ namespace   Stroika {
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<pair<KEY_TYPE, VALUE_TYPE>>                ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Mapping<Key,T>::_IRep overrides
+                    // Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep overrides
                 public:
                     virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
                     virtual void                RemoveAll () override;
-                    virtual  Iterable<KeyType>  Keys () const override;
-                    virtual  bool               Lookup (KeyType key, ValueType* item) const override;
-                    virtual  void               Add (KeyType key, ValueType newElt) override;
-                    virtual  void               Remove (KeyType key) override;
+                    virtual  Iterable<KEY_TYPE> Keys () const override;
+                    virtual  bool               Lookup (KEY_TYPE key, VALUE_TYPE* item) const override;
+                    virtual  void               Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual  void               Remove (KEY_TYPE key) override;
                     virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                           fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>       fData_;
+                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
+                    Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>     fData_;
                     friend  class Mapping_LinkedList<KEY_TYPE, VALUE_TYPE>::IteratorRep_;
                 };
 

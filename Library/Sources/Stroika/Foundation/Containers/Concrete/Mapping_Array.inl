@@ -58,15 +58,15 @@ namespace   Stroika {
                 public:
                     virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
                     virtual void                RemoveAll () override;
-                    virtual  Iterable<KeyType>  Keys () const override;
-                    virtual  bool               Lookup (KeyType key, ValueType* item) const override;
-                    virtual  void               Add (KeyType key, ValueType newElt) override;
-                    virtual  void               Remove (KeyType key) override;
+                    virtual  Iterable<KEY_TYPE> Keys () const override;
+                    virtual  bool               Lookup (KEY_TYPE key, VALUE_TYPE* item) const override;
+                    virtual  void               Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual  void               Remove (KEY_TYPE key) override;
                     virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
-                    Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>  fData_;
+                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
+                    Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>    fData_;
 
                 private:
                     friend  class Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_;
