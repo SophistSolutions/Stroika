@@ -29,7 +29,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Mapping_Array<Key,T> is an Array-based concrete implementation of the Mapping<Key,T> container pattern.
+                 *  \brief   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
@@ -52,7 +52,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  \brief  Reduce the space used to store the Mapping_Array<Key,T> contents.
+                     *  \brief  Reduce the space used to store the Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> contents.
                      *
                      *  This has no semantics, no observable behavior. But depending on the representation of
                      *  the concrete Mapping, calling this may save memory.

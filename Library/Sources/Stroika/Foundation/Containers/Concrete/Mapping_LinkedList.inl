@@ -73,7 +73,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************** Mapping_LinkedList<Key,T>::IteratorRep_ *****************
+                 ****** Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ **********
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>

@@ -75,7 +75,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ********************** Mapping_Array<Key,T>::IteratorRep_ **********************
+                 ******* Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ **************
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -123,7 +123,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************** Mapping_Array<Key,T>::Rep_ ******************************
+                ************ Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ *****************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -268,7 +268,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************************** Mapping_Array<Key,T> ****************************
+                ***************** Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> ******************
                 ********************************************************************************
                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
