@@ -124,9 +124,9 @@ namespace   Stroika {
                  *  @todo Document carefully Queue(start,end) iter order - so copy works well! -- SEE DESIGN IN TODO DOCS ABOVE
                  */
                 Queue ();
-                Queue (const Queue<T, TRAITS>& q);
+                Queue (const Queue<T, TRAITS>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Queue (const CONTAINER_OF_T& q);
+                explicit Queue (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

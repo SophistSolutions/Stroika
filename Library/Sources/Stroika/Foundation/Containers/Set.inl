@@ -16,7 +16,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************* Set<T, TRAITS> ***********************************
+             ***************************** Set<T, TRAITS> ***********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -26,18 +26,18 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& s)
-                : inherited (static_cast<const inherited&> (s))
+            inline  Set<T, TRAITS>::Set (const Set<T, TRAITS>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& s)
+            inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::mkSet_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (s);
+                AddAll (src);
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>::Set (const _SharedPtrIRep& rep)
