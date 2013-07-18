@@ -34,6 +34,12 @@
  *              and/or extenral file. Maybe also map to DynamoDB, MongoDB, etc... (but not here under Mapping,
  *              other db module would inherit from mapping).
  *
+ *      @todo   At the same time - Keys() method should probably retunr Set<KeyType> - instead of Iterable<KeyType>.
+ *
+ *      @todo   Add method Iterable<T>  Image () - returns a set (maybe say return set not iterable?) of items
+ *              which are the 'target' of this mapping (all the VALUES collected in a set). Note in docs - range
+ *              is the containing set of plusaible possible values, but image is the set of actual values
+ *
  */
 
 

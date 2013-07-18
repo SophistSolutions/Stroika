@@ -240,8 +240,8 @@ namespace   Stroika {
                     return false;
                 }
                 for (auto i = this->MakeIterator (); not i.Done (); ++i) {
-                    ValueType   tmp;    // @todo THIS IS BAD - because of this we must hange the REP::Lookup () API to return OPTIONAL
-                    if (not rhs.Lookup (i->first, &tmp) or not (tmp == i->second)) {
+                    ValueType   tmp;    // @todo THIS IS BAD - because of this we must change the REP::Lookup () API to return OPTIONAL
+                    if (not rhs.Lookup (i->first, &tmp) or not ValueEqualsCompareFunctionType::Equals (tmp, i->second)) {
                         return false;
                     }
                 }

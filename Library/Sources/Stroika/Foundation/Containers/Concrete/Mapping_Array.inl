@@ -215,7 +215,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
                                 }
@@ -231,7 +231,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_[it.CurrentIndex ()].second = newElt;
                                 return;
                             }
@@ -245,7 +245,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
                             }
@@ -284,9 +284,9 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>&   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
+                inline  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>&   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
                 {
-                    inherited::operator= (m);
+                    inherited::operator= (rhs);
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }

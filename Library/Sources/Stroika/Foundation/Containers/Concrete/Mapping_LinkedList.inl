@@ -67,7 +67,9 @@ namespace   Stroika {
                 private:
                     Private::ContainerRepLockDataSupport_                                       fLockSupport_;
                     Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>     fData_;
-                    friend  class Mapping_LinkedList<KEY_TYPE, VALUE_TYPE>::IteratorRep_;
+
+                private:
+                    friend  class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_;
                 };
 
 
@@ -213,7 +215,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
                                 }
@@ -229,7 +231,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<KEY_TYPE, VALUE_TYPE> (key, newElt));
                                 return;
                             }
@@ -243,7 +245,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
-                            if (it.Current ().first == key) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }

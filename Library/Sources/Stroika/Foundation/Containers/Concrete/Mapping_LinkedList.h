@@ -42,7 +42,7 @@ namespace   Stroika {
 
                 public:
                     Mapping_LinkedList ();
-                    Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
+                    Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit Mapping_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
+                    nonvirtual  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
 
                 private:

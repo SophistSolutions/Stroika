@@ -79,18 +79,20 @@ namespace CommonTests {
             template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                typedef typename USING_MAPPING_CONTAINER::KeyEqualsCompareFunctionType      KeyEqualsCompareFunctionType;
+                typedef typename USING_MAPPING_CONTAINER::ValueEqualsCompareFunctionType    ValueEqualsCompareFunctionType;
                 USING_MAPPING_CONTAINER m;
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (i.first == 1);
-                    VerifyTestResult (i.second == 2);
+                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.first, 1));
+                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.second, 2));
                 }
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
                 for (auto i : m) {
-                    VerifyTestResult (i.first == 1);
-                    VerifyTestResult (i.second == 2);
+                    VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.first, 1));
+                    VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.second, 2));
                 }
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
@@ -104,16 +106,16 @@ namespace CommonTests {
                 for (auto i : m) {
                     cnt++;
                     if (cnt == 1) {
-                        VerifyTestResult (i.first == 1);
-                        VerifyTestResult (i.second == 2);
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.first, 1));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.second, 2));
                     }
                     if (cnt == 2) {
-                        VerifyTestResult (i.first == 2);
-                        VerifyTestResult (i.second == 3);
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.first, 2));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.second, 3));
                     }
                     if (cnt == 3) {
-                        VerifyTestResult (i.first == 3);
-                        VerifyTestResult (i.second == 4);
+                        VerifyTestResult (KeyEqualsCompareFunctionType::Equals (i.first, 3));
+                        VerifyTestResult (ValueEqualsCompareFunctionType::Equals (i.second, 4));
                     }
                 }
                 VerifyTestResult (cnt == 3);
