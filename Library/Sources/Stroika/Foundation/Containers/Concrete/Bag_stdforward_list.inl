@@ -63,8 +63,11 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
-                    Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>>  fData_;
+                    typedef Private::PatchingDataStructures::STLContainerWrapper<std::forward_list<T>>      DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class   Bag_stdforward_list<T, TRAITS>::IteratorRep_;
@@ -111,8 +114,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                      fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Bag_stdforward_list<T, TRAITS>::Rep_;
@@ -237,7 +240,7 @@ namespace   Stroika {
                         auto ei = fData_.before_begin ();
                         for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (*i, item)) {
-                                Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator*>   items2Patch (0);
+                                Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*>   items2Patch (0);
                                 fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                 auto newI = fData_.erase_after (ei);
                                 fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
@@ -262,7 +265,7 @@ namespace   Stroika {
                             auto ei = fData_.before_begin ();
                             for (auto i = fData_.begin (); i != fData_.end (); ++i) {
                                 if (i == mir.fIterator_.fStdIterator) {
-                                    Memory::SmallStackBuffer<typename Private::PatchingDataStructures::STLContainerWrapper<forward_list<T>>::ForwardIterator*>   items2Patch (0);
+                                    Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*>   items2Patch (0);
                                     fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
                                     auto newI = fData_.erase_after (ei);
                                     fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);

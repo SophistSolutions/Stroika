@@ -65,8 +65,11 @@ namespace   Stroika {
                     virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
-                    Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>    fData_;
+                    typedef Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>    DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_;
@@ -113,8 +116,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator    fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Rep_;

@@ -61,9 +61,9 @@ namespace   Stroika {
 
                 private:
                     typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType> UseArrayTraitsType_;
-                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayTraitsType_>                        ImplArrayType_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayTraitsType_>                        DataStructureImplType_;
                     Private::ContainerRepLockDataSupport_                                                               fLockSupport_;
-                    ImplArrayType_                                                                                      fData_;
+                    DataStructureImplType_                                                                              fData_;
 
                 private:
                     friend  class Bag_Array<T, TRAITS>::IteratorRep_;
@@ -109,8 +109,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                   fLockSupport_;
-                    mutable typename Rep_::ImplArrayType_::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -229,10 +229,10 @@ namespace   Stroika {
                         /*
                          *  Iterate backwards since removing from the end of an array will be faster.
                          */
-                        // DEBUG WHY USING BACKWARD ITERATOR GENERATES ERROR ON MSVC - COMPILE ERROR ABOUT TYPE MISMATCH-- WHEN I SWITCHED TO USING ImplArrayType_...
+                        // DEBUG WHY USING BACKWARD ITERATOR GENERATES ERROR ON MSVC - COMPILE ERROR ABOUT TYPE MISMATCH-- WHEN I SWITCHED TO USING DataStructureImplType_...
                         // NOT IMPORTANT NOW _ SO DEFER
-                        //for (typename ImplArrayType_::BackwardIterator it (fData_); it.More (nullptr, true);) {
-                        for (typename ImplArrayType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        //for (typename DataStructureImplType_::BackwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;

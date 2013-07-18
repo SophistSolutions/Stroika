@@ -59,12 +59,14 @@ namespace   Stroika {
                     virtual void                Remove (const Iterator<T>& i) override;
 
                 private:
-                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    ImplTraitsType_;
-                    typedef Private::PatchingDataStructures::LinkedList<T, ImplTraitsType_>                                     ImplType_;
+                    typedef Private::PatchingDataStructures::LinkedList <
+                    T,
+                    Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>
+                    >       DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    ImplType_                               fData_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class Set_LinkedList<T, TRAITS>::IteratorRep_;
@@ -111,8 +113,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&              fLockSupport_;
-                    mutable typename Rep_::ImplType_::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -221,7 +223,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename ImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 return;
                             }
@@ -234,7 +236,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename ImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it);
                                 return;

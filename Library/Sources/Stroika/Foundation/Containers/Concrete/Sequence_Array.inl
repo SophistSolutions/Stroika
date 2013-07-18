@@ -56,8 +56,13 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_           fLockSupport_;
-                    Private::PatchingDataStructures::Array_Patch<T> fData_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T>     DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_       fLockSupport_;
+                    DataStructureImplType_                      fData_;
+
+                private:
                     friend  class Sequence_Array<T, TRAITS>::IteratorRep_;
                 };
 
@@ -97,8 +102,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                              fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<T>::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator      fIterator_;
 
                 private:
                     friend  class   Rep_;

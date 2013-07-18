@@ -62,11 +62,11 @@ namespace   Stroika {
 
                 private:
                     typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    UseLinkedListTraitsType_;
-                    typedef Private::PatchingDataStructures::LinkedList<T, UseLinkedListTraitsType_>                            ImplArrayType_;
+                    typedef Private::PatchingDataStructures::LinkedList<T, UseLinkedListTraitsType_>                            DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    ImplArrayType_                          fData_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class   Bag_LinkedList<T, TRAITS>::IteratorRep_;
@@ -114,8 +114,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                  fLockSupport_;
-                    mutable typename Rep_::ImplArrayType_::ForwardIterator  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Bag_LinkedList<T, TRAITS>::Rep_;

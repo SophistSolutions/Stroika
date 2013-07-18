@@ -64,8 +64,12 @@ namespace   Stroika {
                     nonvirtual  void    AddWithoutLocks_ (T item);
 
                 private:
-                    typedef Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>    UseDataStructureTraitsType_;
-                    typedef Private::PatchingDataStructures::LinkedList<T, UseDataStructureTraitsType_>                         DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::LinkedList <
+                    T,
+                    Private::DataStructures::LinkedList_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>
+                    >       DataStructureImplType_;
+
+                private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
 

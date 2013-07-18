@@ -72,8 +72,11 @@ namespace   Stroika {
                     nonvirtual void                                 Compact ();
 
                 private:
-                    Private::ContainerRepLockDataSupport_                       fLockSupport_;
-                    Private::PatchingDataStructures::Array_Patch<TallyEntry<T>> fData_;
+                    typedef Private::PatchingDataStructures::Array_Patch<TallyEntry<T>>     DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                     DEFINE_CONSTEXPR_CONSTANT(size_t, kNotFound_, (size_t) - 1);
 
@@ -122,8 +125,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::Array_Patch<TallyEntry<T>>::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
                     friend  class   Tally_Array<T>::Rep_;
                 };
 

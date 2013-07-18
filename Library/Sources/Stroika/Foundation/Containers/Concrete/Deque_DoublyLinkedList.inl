@@ -59,8 +59,11 @@ namespace   Stroika {
                     virtual T           Tail () const override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                 fLockSupport_;
-                    Private::PatchingDataStructures::DoublyLinkedList<T>  fData_;
+                    typedef Private::PatchingDataStructures::DoublyLinkedList<T>        DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_       fLockSupport_;
+                    DataStructureImplType_                      fData_;
                     friend  class Deque_DoublyLinkedList<T, TRAITS>::IteratorRep_;
                 };
 
@@ -100,8 +103,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                   fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::DoublyLinkedList<T>::ForwardIterator   fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Rep_;

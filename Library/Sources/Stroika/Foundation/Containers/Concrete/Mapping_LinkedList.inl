@@ -65,8 +65,11 @@ namespace   Stroika {
                     virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                       fLockSupport_;
-                    Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>     fData_;
+                    typedef Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>> DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_       fLockSupport_;
+                    DataStructureImplType_                      fData_;
 
                 private:
                     friend  class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_;
@@ -113,8 +116,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                          fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator     fIterator_;
+                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator      fIterator_;
 
                 private:
                     friend  class   Rep_;
@@ -230,7 +233,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<KEY_TYPE, VALUE_TYPE> (key, newElt));
                                 return;
@@ -244,7 +247,7 @@ namespace   Stroika {
                 void    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::PatchingDataStructures::LinkedList<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.RemoveAt (it);
                                 return;

@@ -70,8 +70,11 @@ namespace   Stroika {
                     virtual Iterator<T>                             MakeBagIterator () const override;
 
                 private:
-                    Private::ContainerRepLockDataSupport_                                   fLockSupport_;
-                    Private::PatchingDataStructures::STLContainerWrapper<map<T, size_t>>    fData_;
+                    typedef Private::PatchingDataStructures::STLContainerWrapper<map<T, size_t>>        DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                     friend  class SortedTally_stdmap<T>::IteratorRep_;
                 };
@@ -127,8 +130,8 @@ namespace   Stroika {
                     }
 
                 private:
-                    Private::ContainerRepLockDataSupport_&                                                                  fLockSupport_;
-                    mutable typename Private::PatchingDataStructures::STLContainerWrapper<map<T, size_t>>::ForwardIterator  fIterator_;
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   SortedTally_stdmap<T>::Rep_;

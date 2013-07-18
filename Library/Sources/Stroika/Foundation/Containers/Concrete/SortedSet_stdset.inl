@@ -62,12 +62,13 @@ namespace   Stroika {
                     virtual void                Remove (const Iterator<T>& i) override;
 
                 private:
-                    typedef set<T, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>> STL_SET_TYPE_;
-                    typedef Private::PatchingDataStructures::STLContainerWrapper<STL_SET_TYPE_>                                                 ConcreteBackendType_;
+                    typedef Private::PatchingDataStructures::STLContainerWrapper <
+                    set<T, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>
+                            >   DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;
-                    ConcreteBackendType_                        fData_;
+                    DataStructureImplType_                      fData_;
 
                 private:
                     friend  class SortedSet_stdset<T, TRAITS>::IteratorRep_;
@@ -115,7 +116,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable typename Rep_::ConcreteBackendType_::ForwardIterator    fIterator_;
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
                     friend  class   Rep_;
