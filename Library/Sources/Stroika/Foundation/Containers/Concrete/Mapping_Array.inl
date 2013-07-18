@@ -64,6 +64,9 @@ namespace   Stroika {
                     virtual  void               Remove (KEY_TYPE key) override;
                     virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
+                public:
+                    typedef typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
+
                 private:
                     typedef Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>    DataStructureImplType_;
 
