@@ -6,7 +6,7 @@
 [06]	Foundation::Containers::Private::STLContainerWrapper
 [07]	Foundation::Containers::Bag
 [08]	Foundation::Containers::Deque
-[09]	Foundation::Containers::Dictionary
+[09]	Foundation::Containers::Dictionary--OBSOLETE-DELETE-ME
 [10]	Foundation::Containers::Mapping
 [11]	Foundation::Containers::PriorityQueue
 [12]	Foundation::Containers::Queue
