@@ -28,8 +28,8 @@ namespace CommonTests {
                 USING_MAPPING_CONTAINER   s;
                 applyToContainer (s);
                 USING_MAPPING_CONTAINER   s1 = s;
-#if 0
                 applyToContainer (s1);
+#if 0
                 Mapping<ELEMENT_TYPE>   s2 = s;
                 applyToContainer (s2);
                 ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
@@ -177,15 +177,26 @@ namespace CommonTests {
         }
 
 
-
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
         {
             Test1_BasicConstruction::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+        }
+
+        template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+        void    SimpleMappingTest_AllTestsRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
+        {
             Test5_ToFromSTLMap::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+        }
+
+        template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+        void    SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        {
+            SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<USING_MAPPING_CONTAINER> (applyToContainer);
+            SimpleMappingTest_AllTestsRequireComparer_For_Type_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
 
