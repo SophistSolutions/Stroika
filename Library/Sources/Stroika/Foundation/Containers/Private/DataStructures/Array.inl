@@ -464,7 +464,7 @@ namespace   Stroika {
                     inline  T       Array<T, TRAITS>::_ArrayIteratorBase::Current () const
                     {
                         Invariant ();
-						EnsureNotNull (_fCurrent);
+                        EnsureNotNull (_fCurrent);
                         return *_fCurrent;
                     }
 
