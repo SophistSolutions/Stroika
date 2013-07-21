@@ -16,45 +16,45 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ****************************** SortedMapping<Key,T> ****************************
+             ************** SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> *********************
              ********************************************************************************
              */
-            template    <typename Key, typename T>
-            SortedMapping<Key, T>::SortedMapping ()
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedMapping_Default<Key, T> ()))
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping ()
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedMapping_Default<KEY_TYPE, VALUE_TYPE, TRAITS> ()))
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
 #if 0
             template    <typename Key, typename T>
-            inline  Mapping<Key, T>::Mapping (const Mapping<Key, T>& m)
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
                 : inherited (m)
             {
             }
             template    <typename Key, typename T>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<Key, T>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Mapping_stdmap<Key, T> ())
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
+                : inherited (Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ())
             {
                 AddAll (cp);
             }
             template    <typename Key, typename T>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Mapping<Key, T>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Mapping_stdmap<Key, T> ())
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                : inherited (Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ())
             {
                 AddAll (start, end);
             }
 #endif
-            template    <typename Key, typename T>
-            inline  SortedMapping<Key, T>::SortedMapping (const _SharedPtrIRep& rep)
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename Key, typename T>
-            inline  SortedMapping<Key, T>& SortedMapping<Key, T>::operator= (const SortedMapping<Key, T>& src)
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
                 EnsureMember (&inherited::_GetRep (), _IRep);

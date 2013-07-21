@@ -19,8 +19,6 @@
  *
  *
  *  TODO:
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *
  *      @todo   Fix constructors to work better/more flexibly like other containers (copy from iterator etc)
  *
  */
@@ -33,6 +31,17 @@ namespace   Stroika {
 
 
             /**
+             */
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            struct   SortedMapping_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
+            public:
+//apx light this?
+                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, KEY_TYPE);
+
+            };
+
+
+            /**
              *      A SortedMapping is a Mapping<Key,T> which remains sorted (iterator) by the Key.
              *
              *  Note - this class might have been called "Dictionary".
@@ -42,13 +51,10 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename Key, typename T>
-            class   SortedMapping : public Mapping<Key, T> {
-            public:
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, Key);
-
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+            class   SortedMapping : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
             private:
-                typedef     Mapping<Key, T> inherited;
+                typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> inherited;
 
             protected:
                 class   _IRep;
@@ -58,7 +64,7 @@ namespace   Stroika {
                 SortedMapping ();
 
             public:
-                nonvirtual  SortedMapping<Key, T>&  operator= (const SortedMapping<Key, T>& src);
+                nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
 
             protected:
                 explicit SortedMapping (const _SharedPtrIRep& rep);
@@ -74,8 +80,8 @@ namespace   Stroika {
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template    <typename Key, typename T>
-            class   SortedMapping<Key, T>::_IRep : public Mapping<Key, T>::_IRep {
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            class   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
             };
 
 

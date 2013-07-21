@@ -19,14 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename Key, typename T>
-                class SortedMapping_stdmap;
-
-
-                template    <typename Key, typename T>
-                SortedMapping<Key, T>    mkSortedMapping_Default ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>    mkSortedMapping_Default ()
                 {
-                    return SortedMapping_stdmap<Key, T> ();
+                    return SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ();
                 }
 
 

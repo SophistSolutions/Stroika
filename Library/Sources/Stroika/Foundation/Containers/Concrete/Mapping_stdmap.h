@@ -54,15 +54,15 @@ namespace   Stroika {
                 template    <typename Key, typename T>
                 using   Mapping_stdmap = SortedMapping_stdmap<Key, T>;
 #else
-                template    <typename Key, typename T>
-                class   Mapping_stdmap : public Mapping<Key, T> {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                class   Mapping_stdmap : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
                 private:
-                    typedef     Mapping<Key, T>  inherited;
+                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
 
                 public:
                     Mapping_stdmap ()
                     // static cast to select right base class CTOR (that wont copy)
-                        : inherited (static_cast<inherited&> (SortedMapping_stdmap<Key, T> ())) {
+                        : inherited (static_cast<inherited&> (SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE> ())) {
                     }
 #if 0
                     // support/enabel these as needed - all SB there

@@ -69,11 +69,11 @@ namespace   Stroika {
 
                 private:
                     typedef Private::DataStructures::Array <
-						pair<KEY_TYPE, VALUE_TYPE>
+                    pair<KEY_TYPE, VALUE_TYPE>
                     >
                     NonPatchingDataStructureImplType_;
                     typedef Private::PatchingDataStructures::Array_Patch <
-						pair<KEY_TYPE, VALUE_TYPE>
+                    pair<KEY_TYPE, VALUE_TYPE>
                     >
                     DataStructureImplType_;
 

@@ -25,13 +25,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************** SortedMapping_stdmap<Key,T>::Rep_ *************************
+                 ******* SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ ***************
                  ********************************************************************************
                  */
-                template    <typename Key, typename T>
-                class   SortedMapping_stdmap<Key, T>::Rep_ : public SortedMapping<Key, T>::_IRep {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedMapping<Key, T>::_IRep  inherited;
+                    typedef typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep  inherited;
 
                 public:
                     Rep_ ();
@@ -44,52 +44,54 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                    virtual typename Iterable<pair<Key, T>>::_SharedPtrIRep  Clone () const override {
-                        return Iterable<pair<Key, T>>::_SharedPtrIRep (new Rep_ (*this));
+                    virtual typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override {
+                        return Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<pair<Key, T>>::_SharedPtrIRep     Clone () const override;
+                    virtual typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep     Clone () const override;
 #endif
-                    virtual Iterator<pair<Key, T>>                              MakeIterator () const override;
+                    virtual Iterator<pair<KEY_TYPE, VALUE_TYPE>>                MakeIterator () const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<Key, T>>                              ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<pair<KEY_TYPE, VALUE_TYPE>>                ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Mapping<Key,T>::_IRep overrides
+                    // Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep overrides
                 public:
-                    virtual bool            Equals (const typename Mapping<Key, T>::_IRep& rhs) const override;
-                    virtual void            RemoveAll () override;
-                    virtual  Iterable<Key>  Keys () const override;
-                    virtual  bool           Lookup (Key key, T* item) const override;
-                    virtual  void           Add (Key key, T newElt) override;
-                    virtual  void           Remove (Key key) override;
-                    virtual  void           Remove (Iterator<pair<Key, T>> i) override;
+                    virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
+                    virtual void                RemoveAll () override;
+                    virtual  Iterable<KEY_TYPE> Keys () const override;
+                    virtual  bool               Lookup (KEY_TYPE key, VALUE_TYPE* item) const override;
+                    virtual  void               Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual  void               Remove (KEY_TYPE key) override;
+                    virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper<map<Key, T>>       DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::STLContainerWrapper <
+                    map < KEY_TYPE, VALUE_TYPE/*, STL::less<KEY_TYPE, typename TRAITS::WellOrderCompareFunctionType>*/ >
+                    >       DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
 
                 private:
-                    friend  class SortedMapping_stdmap<Key, T>::IteratorRep_;
+                    friend  class   IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ******************** SortedMapping_stdmap<Key,T>::IteratorRep_ *****************
+                 ******* SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ *******
                  ********************************************************************************
                  */
-                template    <typename Key, typename T>
-                class  SortedMapping_stdmap<Key, T>::IteratorRep_ : public Iterator<pair<Key, T>>::IRep {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                class  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ : public Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep {
                 private:
-                    typedef typename Iterator<pair<Key, T>>::IRep    inherited;
+                    typedef typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep    inherited;
 
                 public:
-                    explicit IteratorRep_ (typename SortedMapping_stdmap<Key, T>::Rep_& owner)
+                    explicit IteratorRep_ (typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (&owner.fData_) {
@@ -100,19 +102,19 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<pair<Key, T>>::SharedIRepPtr     Clone () const override {
+                    virtual typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr     Clone () const override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*this));
+                            return typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*this));
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool   More (pair<Key, T>* current, bool advance) override {
+                    virtual bool   More (pair<KEY_TYPE, VALUE_TYPE>* current, bool advance) override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             return (fIterator_.More (current, advance));
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool   StrongEquals (const typename Iterator<pair<Key, T>>::IRep* rhs) const override {
+                    virtual bool   StrongEquals (const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override {
                         AssertNotImplemented ();
                         return false;
                     }
@@ -131,16 +133,16 @@ namespace   Stroika {
                 ******************** SortedMapping_stdmap<Key,T>::Rep_ *************************
                 ********************************************************************************
                 */
-                template    <typename Key, typename T>
-                inline  SortedMapping_stdmap<Key, T>::Rep_::Rep_ ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                     fData_.Invariant ();
                 }
-                template    <typename Key, typename T>
-                inline  SortedMapping_stdmap<Key, T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -155,28 +157,28 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                template    <typename Key, typename T>
-                typename Iterable<pair<Key, T>>::_SharedPtrIRep  SortedMapping_stdmap<Key, T>::Rep_::Clone () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<pair<Key, T>>::_SharedPtrIRep (new Rep_ (*this));
+                    return typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                 }
 #endif
-                template    <typename Key, typename T>
-                Iterator<pair<Key, T>>  SortedMapping_stdmap<Key, T>::Rep_::MakeIterator () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Iterator<pair<KEY_TYPE, VALUE_TYPE>>  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator () const
                 {
-                    typename Iterator<pair<Key, T>>::SharedIRepPtr tmpRep;
+                    typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<pair<Key, T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                        tmpRep = typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    Iterator<pair<Key, T>> tmp = Iterator<pair<Key, T>> (tmpRep);
+                    Iterator<pair<KEY_TYPE, VALUE_TYPE>> tmp = Iterator<pair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename Key, typename T>
-                size_t  SortedMapping_stdmap<Key, T>::Rep_::GetLength () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                size_t  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -184,8 +186,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename Key, typename T>
-                bool  SortedMapping_stdmap<Key, T>::Rep_::IsEmpty () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                bool  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -193,37 +195,37 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename Key, typename T>
-                void      SortedMapping_stdmap<Key, T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void      SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename Key, typename T>
-                Iterator<pair<Key, T>>     SortedMapping_stdmap<Key, T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Iterator<pair<KEY_TYPE, VALUE_TYPE>>     SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename Key, typename T>
-                bool    SortedMapping_stdmap<Key, T>::Rep_::Equals (const typename Mapping<Key, T>::_IRep& rhs) const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
-                template    <typename Key, typename T>
-                void    SortedMapping_stdmap<Key, T>::Rep_::RemoveAll ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename Key, typename T>
-                Iterable<Key>    SortedMapping_stdmap<Key, T>::Rep_::Keys () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Iterable<KEY_TYPE>    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Keys () const
                 {
                     AssertNotImplemented ();
-                    return *(Iterable<Key>*)nullptr;
+                    return *(Iterable<KEY_TYPE>*)nullptr;
                 }
-                template    <typename Key, typename T>
-                bool    SortedMapping_stdmap<Key, T>::Rep_::Lookup (Key key, T* item) const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto i = fData_.find (key);
@@ -240,14 +242,14 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return false;
                 }
-                template    <typename Key, typename T>
-                void    SortedMapping_stdmap<Key, T>::Rep_::Add (Key key, T newElt)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
-                            i = fData_.insert (pair<Key, T> (key, newElt)).first;
+                            i = fData_.insert (pair<KEY_TYPE, VALUE_TYPE> (key, newElt)).first;
                             // no need to patch map<>
                         }
                         else {
@@ -257,8 +259,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename Key, typename T>
-                void    SortedMapping_stdmap<Key, T>::Rep_::Remove (Key key)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
@@ -269,12 +271,12 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename Key, typename T>
-                void    SortedMapping_stdmap<Key, T>::Rep_::Remove (Iterator<pair<Key, T>> i)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i)
                 {
-                    const typename Iterator<pair<Key, T>>::IRep&    ir  =   i.GetRep ();
+                    const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedMapping_stdmap<Key, T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedMapping_stdmap<Key, T>::IteratorRep_&> (ir);
+                    auto    mir =   dynamic_cast<const typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
                     }
@@ -287,27 +289,27 @@ namespace   Stroika {
                 ************************* SortedMapping_stdmap<Key,T> **************************
                 ********************************************************************************
                 */
-                template    <typename Key, typename T>
-                SortedMapping_stdmap<Key, T>::SortedMapping_stdmap ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename Key, typename T>
-                inline  SortedMapping_stdmap<Key, T>::SortedMapping_stdmap (const SortedMapping_stdmap<Key, T>& m)
-                    : inherited (static_cast<const SortedMapping<Key, T>&> (m))
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
+                    : inherited (static_cast<const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&> (src))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
-                template    <typename Key, typename T>
-                inline  SortedMapping_stdmap<Key, T>&   SortedMapping_stdmap<Key, T>::operator= (const SortedMapping_stdmap<Key, T>& m)
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>&   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)
                 {
-                    inherited::operator= (static_cast<const inherited&> (m));
+                    inherited::operator= (static_cast<const inherited&> (rhs));
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
-                template    <typename Key, typename T>
-                inline  const typename SortedMapping_stdmap<Key, T>::Rep_&  SortedMapping_stdmap<Key, T>::GetRep_ () const
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  const typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_&  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::GetRep_ () const
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
@@ -316,8 +318,8 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
-                template    <typename Key, typename T>
-                inline  typename SortedMapping_stdmap<Key, T>::Rep_&    SortedMapping_stdmap<Key, T>::GetRep_ ()
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_&    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::GetRep_ ()
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change

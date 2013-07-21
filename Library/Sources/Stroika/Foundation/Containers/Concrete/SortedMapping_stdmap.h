@@ -35,14 +35,14 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename Key, typename T>
-                class   SortedMapping_stdmap : public SortedMapping<Key, T> {
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
+                class   SortedMapping_stdmap : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
                 private:
-                    typedef     SortedMapping<Key, T>  inherited;
+                    typedef     SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
 
                 public:
                     SortedMapping_stdmap ();
-                    SortedMapping_stdmap (const SortedMapping_stdmap<Key, T>& m);
+                    SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
                     explicit SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& cp);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -50,7 +50,7 @@ namespace   Stroika {
 
 
                 public:
-                    nonvirtual  SortedMapping_stdmap<Key, T>& operator= (const SortedMapping_stdmap<Key, T>& m);
+                    nonvirtual  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
 
 
                 private:

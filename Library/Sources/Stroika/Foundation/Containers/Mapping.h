@@ -53,6 +53,8 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
+            /**
+             */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
             struct   Mapping_DefaultTraits {
                 /**
