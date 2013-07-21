@@ -60,10 +60,15 @@ namespace   Stroika {
                     virtual void    RemoveAll () override;
 
                 private:
-                    typedef Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType> UseArrayTraitsType_;
-                    typedef Private::PatchingDataStructures::Array_Patch<T, UseArrayTraitsType_>                        DataStructureImplType_;
-                    Private::ContainerRepLockDataSupport_                                                               fLockSupport_;
-                    DataStructureImplType_                                                                              fData_;
+                    typedef Private::PatchingDataStructures::Array_Patch <
+                    T,
+                    Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>
+                    >
+                    DataStructureImplType_;
+
+                private:
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
 
                 private:
                     friend  class Bag_Array<T, TRAITS>::IteratorRep_;
