@@ -23,7 +23,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******** Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ *********************
+                 ************ Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ *****************
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -68,14 +68,21 @@ namespace   Stroika {
                     typedef typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
 
                 private:
-                    typedef Private::PatchingDataStructures::Array_Patch<pair<KEY_TYPE, VALUE_TYPE>>    DataStructureImplType_;
+                    typedef Private::DataStructures::Array <
+						pair<KEY_TYPE, VALUE_TYPE>
+                    >
+                    NonPatchingDataStructureImplType_;
+                    typedef Private::PatchingDataStructures::Array_Patch <
+						pair<KEY_TYPE, VALUE_TYPE>
+                    >
+                    DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
 
                 private:
-                    friend  class Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_;
+                    friend  class   IteratorRep_;
                 };
 
 
@@ -220,7 +227,7 @@ namespace   Stroika {
                 bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
@@ -236,7 +243,7 @@ namespace   Stroika {
                 void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_[it.CurrentIndex ()].second = newElt;
                                 return;
@@ -250,7 +257,7 @@ namespace   Stroika {
                 void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::Array<pair<KEY_TYPE, VALUE_TYPE>>::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
@@ -264,7 +271,7 @@ namespace   Stroika {
                 {
                     const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Mapping_Array<KEY_TYPE, VALUE_TYPE>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_Array<KEY_TYPE, VALUE_TYPE>::IteratorRep_&> (ir);
+                    const typename Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAt (mir.fIterator_);
                     }
