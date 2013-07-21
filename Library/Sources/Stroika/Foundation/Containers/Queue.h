@@ -22,6 +22,9 @@
  *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
  *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
  *
+ *      @todo   Select carefully thoguht through principle descriptive documemtatnion (probably: HEAD/TAIL)
+ *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).
+ *
  *      @todo   trial balloon - EnqueueAll(CONTAINER), and Enqueue (STARTIT, ENDIT), enques
  *              items in order from start to end, so that when iterating over teh resulting queue, you
  *              encounter the items in teh order you added them. That makes EnqueueAll(CONTINER) as simple
@@ -70,12 +73,18 @@ namespace   Stroika {
 
 
             /**
-             *      Standard FIFO (first in - first out) queue. See Sedgewick, 30-31.(CHECK REFERNECE)
+             *  A Queue is a first-in-first-out (FIFO) data structure, where elements are arranged
+             *  n well-ordered fashion, from HEAD to TAIL.
              *
-             *      Queues always iterate from Head (aka front) to Tail: the same order as removals
+             *  The HEAD if the Queue is where elements are removed. The TAIL of the queue is where
+             *  elements enter the queue.
+             *
+             *  Queues always iterate from Head (aka front) to Tail: the same order as removals
              *  would encounter items, dequeing them.
              *
-             *      Related classes include Deques, which allow addition and removal at
+             *  @see Sedgewick, 30-31.(@todo CHECK REFERNECE)
+             *
+             *  Related classes include Deques, which allow addition and removal at
              *  either end, and PriorityQueues, which allow removal based on the priority
              *  assigned to an item.
              *
@@ -84,6 +93,12 @@ namespace   Stroika {
              *          assigned to an item.
              *
              * Notes:
+             *      <<< TODO - OBSOLETE - DONT DOCUMENT HERE WHAT IS DEFAULT. INSTEAD - Add
+             *      @see link to FACTORY - which tells you what is the default!!!
+             *
+             *      @todo also - that doc about circular array is perhaps what we SHOUDL use by default
+             *      but NYI
+             *
              *      We currently default to the circular array implementation, as it is
              *  fastest under most circumstances. One drawback to it is that it has
              *  unpredictable costs for an Enqueue operation. DoubleLinkList is usually
@@ -101,23 +116,6 @@ namespace   Stroika {
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Queue<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                typedef TRAITS  TraitsType;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 *
-                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
-                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
-                 */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
 
             public:
                 /**
@@ -193,10 +191,6 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    Equals (const Queue<T, TRAITS>& rhs) const;
 
-            protected:
-                nonvirtual  const _IRep&    _GetRep () const;
-                nonvirtual  _IRep&          _GetRep ();
-
             public:
                 /**
                  *      Syntactic sugar for Equals()
@@ -208,6 +202,27 @@ namespace   Stroika {
                  *      Syntactic sugar for not Equals()
                  */
                 nonvirtual  bool    operator!= (const Queue<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 *  Just a short-hand for the 'TRAITS' part of Queue<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 *
+                 *  Note - though the type must exist, the implied 'Equals' function may never be compiled (so can be invalid)
+                 *  if you avoid the documented methods (see EqualsCompareFunctionType above).
+                 */
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+
+            protected:
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 
