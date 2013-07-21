@@ -34,6 +34,17 @@ using   Concrete::Mapping_stdmap;
 
 namespace {
     template    <typename   CONCRETE_CONTAINER>
+    void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::KeyType    KeyType;
+        typedef typename CONCRETE_CONTAINER::ValueType  ValueType;
+        typedef typename CONCRETE_CONTAINER::TraitsType TraitsType;
+        auto extraChecksFunction = [] (const Mapping<KeyType, ValueType, TraitsType>& m) {
+            // only work todo on sorted mappings
+        };
+        CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+    template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
         typedef typename CONCRETE_CONTAINER::KeyType    KeyType;
@@ -65,31 +76,22 @@ namespace   {
         MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
         >   SimpleClassWithoutComparisonOperators_MappingTRAITS;
 
-#if 0
-        // must breakup SimpleMappingTest_All_For_Type as we did for other stuf - this STL thing cannot work unless operaotr< or some other emchanim so speicyt right stl comparer!
-        template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleMappingTest_All_For_Type (TEST_FUNCTION applyToContainer) {
-            ...            Test5_ToFromSTLMap::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
-        }
-#endif
-
-
         DoTestForConcreteContainer_<Mapping<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping<SimpleClass, SimpleClass>> ();
-        //DoTestForConcreteContainer_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
 
         DoTestForConcreteContainer_<Mapping_Array<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_Array<SimpleClass, SimpleClass>> ();
-        //DoTestForConcreteContainer_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
 
         DoTestForConcreteContainer_<Mapping_LinkedList<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
-        //DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
 
         DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
         //needs work - @todo - must add TRIATS stuff to SortedMapping first (or move this code to not depend on sorted mapping)
-        //DoTestForConcreteContainer_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        //DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
     }
 }
 
