@@ -463,8 +463,8 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  T       Array<T, TRAITS>::_ArrayIteratorBase::Current () const
                     {
-                        Ensure (TRAITS::EqualsCompareFunctionType::Equals (_fData->GetAt (CurrentIndex ()), *_fCurrent));
                         Invariant ();
+						EnsureNotNull (_fCurrent);
                         return *_fCurrent;
                     }
 
