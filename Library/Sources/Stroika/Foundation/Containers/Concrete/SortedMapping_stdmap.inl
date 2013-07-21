@@ -10,6 +10,7 @@
 #include    <map>
 
 #include    "../../Memory/BlockAllocated.h"
+#include    "../STL/Compare.h"
 
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
@@ -68,7 +69,7 @@ namespace   Stroika {
 
                 private:
                     typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map < KEY_TYPE, VALUE_TYPE/*, STL::less<KEY_TYPE, typename TRAITS::WellOrderCompareFunctionType>*/ >
+                    map < KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType> >
                     >       DataStructureImplType_;
 
                 private:

@@ -41,7 +41,6 @@ namespace {
             for (T i : s) {
                 if (last.IsPresent ()) {
                     VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
-                    //VerifyTestResult (*last < i or (*last == i));
                 }
                 last = i;
             }

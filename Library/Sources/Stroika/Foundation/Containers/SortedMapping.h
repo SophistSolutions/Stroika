@@ -29,15 +29,16 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
-
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
-            struct   SortedMapping_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            struct   SortedMapping_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_WELL_ORDER_COMPARER, VALUE_EQUALS_COMPARER> {
             public:
-//apx light this?
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, KEY_TYPE);
+                /**
+                 */
+                typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
 
+                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
             };
 
 
@@ -65,6 +66,16 @@ namespace   Stroika {
 
             public:
                 nonvirtual  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&  operator= (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
+
+            public:
+                /**
+                 */
+                typedef TRAITS      TraitsType;
+
+            public:
+                /**
+                 */
+                typedef typename    TraitsType::KeyWellOrderCompareFunctionType KeyWellOrderCompareFunctionType;
 
             protected:
                 explicit SortedMapping (const _SharedPtrIRep& rep);
