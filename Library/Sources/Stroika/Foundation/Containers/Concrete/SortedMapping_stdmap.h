@@ -48,10 +48,8 @@ namespace   Stroika {
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit SortedMapping_stdmap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
-
                 public:
                     nonvirtual  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
-
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
