@@ -335,7 +335,7 @@ namespace   Stroika {
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    Add (start, end);
+                    this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src) :

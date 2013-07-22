@@ -22,7 +22,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 inline  SortedTally<T, TRAITS>  mkSortedTally_Default ()
                 {
-                    return SortedTally_stdmap<T> ();
+                    return SortedTally_stdmap<T, TRAITS> ();
                 }
 
 
