@@ -95,7 +95,7 @@ namespace   Stroika {
                 typedef T   TallyOfElementType;
 
             protected:
-                class _IRep;
+                class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
