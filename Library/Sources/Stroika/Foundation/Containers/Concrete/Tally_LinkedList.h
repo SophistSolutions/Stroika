@@ -38,7 +38,7 @@ namespace   Stroika {
                  *
                  */
                 template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
-                class  Tally_LinkedList : public Tally<T> {
+                class  Tally_LinkedList : public Tally<T, TRAITS> {
                 private:
                     typedef Tally<T, TRAITS> inherited;
 
@@ -46,7 +46,7 @@ namespace   Stroika {
                     Tally_LinkedList ();
                     Tally_LinkedList (const Tally<T, TRAITS>& src);
                     Tally_LinkedList (const Tally_LinkedList<T, TRAITS>& src);
-                    Tally_LinkedList (const T* items, size_t size);
+                    Tally_LinkedList (const T* start, const T* end);
 
                 public:
                     nonvirtual  Tally_LinkedList<T, TRAITS>& operator= (const Tally_LinkedList<T, TRAITS>& src);

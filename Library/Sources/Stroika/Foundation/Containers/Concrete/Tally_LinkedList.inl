@@ -332,16 +332,16 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
-                Tally_LinkedList<T, TRAITS>::Tally_LinkedList (const T* items, size_t size) :
+                Tally_LinkedList<T, TRAITS>::Tally_LinkedList (const T* start, const T* end) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AddItems (items, size);
+                    this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 Tally_LinkedList<T, TRAITS>::Tally_LinkedList (const Tally<T, TRAITS>& src) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    operator+= (src);
+                    this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
                 inline Tally_LinkedList<T, TRAITS>::Tally_LinkedList (const Tally_LinkedList<T, TRAITS>& src) :
