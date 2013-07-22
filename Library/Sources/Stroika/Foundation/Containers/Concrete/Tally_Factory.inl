@@ -19,9 +19,10 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                inline  Tally<T>  mkTally_Default ()
+                template    <typename T, typename TRAITS>
+                inline  Tally<T, TRAITS>  mkTally_Default ()
                 {
+                    /// TODO @todo - fix TRAITS usage
                     return Tally_Array<T> ();
                 }
 

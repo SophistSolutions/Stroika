@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             class   Tally;
 
 
@@ -40,8 +40,8 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                Tally<T>  mkTally_Default ();
+                template    <typename T, typename TRAITS>
+                Tally<T, TRAITS>  mkTally_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED

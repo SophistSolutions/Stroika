@@ -4,14 +4,13 @@
 #ifndef _Stroika_Foundation_Containers_Tally_h_
 #define _Stroika_Foundation_Containers_Tally_h_ 1
 
-
 #include    "../StroikaPreComp.h"
 
+#include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/SharedByValue.h"
 #include    "../Traversal/Iterable.h"
-
 
 
 /**
@@ -20,8 +19,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *
@@ -39,8 +36,19 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+
+
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+            struct   Tally_DefaultTraits {
+                /**
+                 */
+                typedef EQUALS_COMPARER EqualsCompareFunctionType;
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+            };
 
 
             template    <typename T>
@@ -61,31 +69,28 @@ namespace   Stroika {
 
 
             /**
-             *  A Tally<T> a collection of <T> elements, but where each time you add something, the tally
+             *  A Tally<T, TRAITS> a collection of T elements, but where each time you add something, the tally
              *  tracks the number of times that thing has been entered. This is not a commonly used class,
              *  but handy when you want to count things.
              *
-             *  Tally<T> inherits from Iterable<TallyEntry<T>> instead of Iterable<T> because if you are
+             *  Tally<T, TRAITS> inherits from Iterable<TallyEntry<T>> instead of Iterable<T> because if you are
              *  using a Tally, you probably want access to the counts as you iterate - not just the
              *  unique elements (though we make it easy to get that iterator too with MakeBagIterator()).
              *
-             *  A Tally<T> makes no promises about ordering of elements in iteration.
+             *  A Tally<T, TRAITS> makes no promises about ordering of elements in iteration.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T>
+            template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
             class  Tally : public Iterable<TallyEntry<T>> {
-            public:
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorEquals, T);
-
             private:
                 typedef Iterable<TallyEntry<T>> inherited;
 
             public:
                 /**
                  *      \brief  TallyOfElementType is just a handly copy of the *T* template type which this
-                 *              Tally<T> parameterizes counting.
+                 *              Tally<T, TRAITS> parameterizes counting.
                  */
                 typedef T   TallyOfElementType;
 
@@ -95,7 +100,7 @@ namespace   Stroika {
 
             public:
                 Tally ();
-                Tally (const Tally<T>& src);
+                Tally (const Tally<T, TRAITS>& src);
                 Tally (const T* start, const T* end);
                 Tally (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
@@ -148,8 +153,8 @@ namespace   Stroika {
                 nonvirtual  size_t  TotalTally () const;
 
             public:
-                nonvirtual  Tally<T>&   operator+= (T item);
-                nonvirtual  Tally<T>&   operator+= (const Tally<T>& t);
+                nonvirtual  Tally<T, TRAITS>&   operator+= (T item);
+                nonvirtual  Tally<T, TRAITS>&   operator+= (const Tally<T, TRAITS>& t);
 
             public:
                 /**
@@ -179,11 +184,11 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual  bool    Equals (const Tally<T>& rhs) const;
+                nonvirtual  bool    Equals (const Tally<T, TRAITS>& rhs) const;
 
             public:
-                nonvirtual  bool    operator== (const Tally<T>& rhs) const;
-                nonvirtual  bool    operator!= (const Tally<T>& rhs) const;
+                nonvirtual  bool    operator== (const Tally<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Tally<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -193,8 +198,8 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename T>
-            class   Tally<T>::_IRep : public Iterable<TallyEntry<T>>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   Tally<T, TRAITS>::_IRep : public Iterable<TallyEntry<T>>::_IRep {
             private:
                 typedef typename Iterable<TallyEntry<T>>::_IRep  inherited;
 
@@ -224,7 +229,7 @@ namespace   Stroika {
                 nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
 
             protected:
-                class _TallyEntryToItemIteratorHelperRep;
+                class   _TallyEntryToItemIteratorHelperRep;
             };
 
 

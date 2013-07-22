@@ -38,14 +38,14 @@ namespace   {
         auto testFunc2 = [] (const Tally<SimpleClass>& s) {
         };
 
+        All_For_Type<Tally<size_t>> (testFunc1);
+        All_For_Type<Tally<SimpleClass>> (testFunc2);
+
         All_For_Type<Tally_LinkedList<size_t>> (testFunc1);
         All_For_Type<Tally_LinkedList<SimpleClass>> (testFunc2);
 
         All_For_Type<Tally_Array<size_t>> (testFunc1);
         All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
-
-        All_For_Type<Tally<size_t>> (testFunc1);
-        All_For_Type<Tally<SimpleClass>> (testFunc2);
     }
 
 }

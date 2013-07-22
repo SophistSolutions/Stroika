@@ -30,8 +30,8 @@ namespace   Stroika {
              *
              *          But document and verify the calling code is expecting this.
              */
-            template    <typename T>
-            class  Tally<T>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
+            template    <typename T, typename TRAITS>
+            class  Tally<T, TRAITS>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
             private:
                 typedef typename    Iterator<T>::IRep   inherited;
 
@@ -95,15 +95,15 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             **************************** Tally<T>::_IRep ***********************************
+             ************************* Tally<T, TRAITS>::_IRep ******************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  Tally<T>::_IRep::_IRep ()
+            template    <typename T, typename TRAITS>
+            inline  Tally<T, TRAITS>::_IRep::_IRep ()
             {
             }
-            template    <typename T>
-            bool  Tally<T>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template    <typename T, typename TRAITS>
+            bool  Tally<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;
@@ -122,58 +122,58 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             *********************************** Tally<T> ***********************************
+             ******************************** Tally<T, TRAITS> ******************************
              ********************************************************************************
              */
-            template    <typename T>
-            Tally<T>::Tally ()
-                : inherited (Concrete::mkTally_Default<T> ())
+            template    <typename T, typename TRAITS>
+            Tally<T, TRAITS>::Tally ()
+                : inherited (Concrete::mkTally_Default<T, TRAITS> ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            inline  Tally<T>::Tally (const Tally<T>& t)
-                : inherited (static_cast<const inherited&> (t))
+            template    <typename T, typename TRAITS>
+            inline  Tally<T, TRAITS>::Tally (const Tally<T, TRAITS>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            inline  Tally<T>::Tally (const _SharedPtrIRep& rep)
+            template    <typename T, typename TRAITS>
+            inline  Tally<T, TRAITS>::Tally (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            Tally<T>::Tally (const T* start, const T* end)
-                : inherited (Concrete::mkTally_Default<T> (start, end))
+            template    <typename T, typename TRAITS>
+            Tally<T, TRAITS>::Tally (const T* start, const T* end)
+                : inherited (Concrete::mkTally_Default<T, TRAITS> (start, end))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            Tally<T>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
-                : inherited (Concrete::mkTally_Default<T> (start, end))
+            template    <typename T, typename TRAITS>
+            Tally<T, TRAITS>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
+                : inherited (Concrete::mkTally_Default<T, TRAITS> (start, end))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
-            inline  const typename Tally<T>::_IRep&  Tally<T>::_GetRep () const
+            template    <typename T, typename TRAITS>
+            inline  const typename Tally<T, TRAITS>::_IRep&  Tally<T, TRAITS>::_GetRep () const
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            inline  typename Tally<T>::_IRep&        Tally<T>::_GetRep ()
+            template    <typename T, typename TRAITS>
+            inline  typename Tally<T, TRAITS>::_IRep&        Tally<T, TRAITS>::_GetRep ()
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);       // use static_cast cuz more efficient, but validate with assertion
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
-            template    <typename T>
-            void   Tally<T>::RemoveAll (T item)
+            template    <typename T, typename TRAITS>
+            void   Tally<T, TRAITS>::RemoveAll (T item)
             {
                 Remove (item, TallyOf (item));
             }
-            template    <typename T>
-            size_t Tally<T>::TotalTally () const
+            template    <typename T, typename TRAITS>
+            size_t Tally<T, TRAITS>::TotalTally () const
             {
                 size_t sum = 0;
                 for (auto i = this->begin (); i != this->end (); ++i) {
@@ -181,108 +181,108 @@ namespace   Stroika {
                 }
                 return sum;
             }
-            template    <typename T>
-            inline  bool  Tally<T>::Equals (const Tally<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool  Tally<T, TRAITS>::Equals (const Tally<T, TRAITS>& rhs) const
             {
-                return (_GetRep ().Equals (rhs._GetRep ()));
+                return _GetRep ().Equals (rhs._GetRep ());
             }
-            template    <typename T>
-            inline  bool    Tally<T>::Contains (T item) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Tally<T, TRAITS>::Contains (T item) const
             {
-                return (_GetRep ().Contains (item));
+                return _GetRep ().Contains (item);
             }
-            template    <typename T>
-            inline  void    Tally<T>::RemoveAll ()
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
-            template    <typename T>
-            inline  Iterator<T>    Tally<T>::MakeBagIterator () const
+            template    <typename T, typename TRAITS>
+            inline  Iterator<T>    Tally<T, TRAITS>::MakeBagIterator () const
             {
                 return _GetRep ().MakeBagIterator ();
             }
-            template    <typename T>
-            inline  Iterator<T>    Tally<T>::bagbegin () const
+            template    <typename T, typename TRAITS>
+            inline  Iterator<T>    Tally<T, TRAITS>::bagbegin () const
             {
                 return MakeBagIterator ();
             }
-            template    <typename T>
-            inline  Iterator<T>       Tally<T>::bagend () const
+            template    <typename T, typename TRAITS>
+            inline  Iterator<T>       Tally<T, TRAITS>::bagend () const
             {
-                return (Iterator<T>::GetEmptyIterator ());
+                return Iterator<T>::GetEmptyIterator ();
             }
-            template    <typename T>
-            inline  void    Tally<T>::Add (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Add (T item)
             {
                 _GetRep ().Add (item, 1);
             }
-            template    <typename T>
-            inline  void    Tally<T>::Add (T item, size_t count)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Add (T item, size_t count)
             {
                 _GetRep ().Add (item, count);
             }
-            template    <typename T>
-            inline  void    Tally<T>::Add (const TallyEntry<T>& item)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Add (const TallyEntry<T>& item)
             {
                 _GetRep ().Add (item.fItem, item.fCount);
             }
-            template    <typename T>
-            void   Tally<T>::AddAll (const T* begin, const T* end)
+            template    <typename T, typename TRAITS>
+            void   Tally<T, TRAITS>::AddAll (const T* begin, const T* end)
             {
                 for (const T* i = begin; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename T>
-            inline  void    Tally<T>::AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end)
             {
                 for (auto i = begin; i != end; ++i) {
                     _GetRep ().Add (i->fItem, i->fEnd);
                 }
             }
-            template    <typename T>
-            inline  void    Tally<T>::Remove (T item)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Remove (T item)
             {
                 _GetRep ().Remove (item, 1);
             }
-            template    <typename T>
-            inline  void    Tally<T>::Remove (T item, size_t count)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Remove (T item, size_t count)
             {
                 _GetRep ().Remove (item, count);
             }
-            template    <typename T>
-            inline  void    Tally<T>::Remove (const Iterator<TallyEntry<T>>& i)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::Remove (const Iterator<TallyEntry<T>>& i)
             {
                 _GetRep ().Remove (i);
             }
-            template    <typename T>
-            inline  void    Tally<T>::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+            template    <typename T, typename TRAITS>
+            inline  void    Tally<T, TRAITS>::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
             {
                 _GetRep ().UpdateCount (i, newCount);
             }
-            template    <typename T>
-            inline  size_t  Tally<T>::TallyOf (T item) const
+            template    <typename T, typename TRAITS>
+            inline  size_t  Tally<T, TRAITS>::TallyOf (T item) const
             {
                 return (_GetRep ().TallyOf (item));
             }
-            template    <typename T>
-            inline  Tally<T>&   Tally<T>::operator+= (T item)
+            template    <typename T, typename TRAITS>
+            inline  Tally<T, TRAITS>&   Tally<T, TRAITS>::operator+= (T item)
             {
                 _GetRep ().Add (item, 1);
-                return (*this);
+                return *this;
             }
-            template    <typename T>
-            inline  bool   Tally<T>::operator== (const Tally<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool   Tally<T, TRAITS>::operator== (const Tally<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename T>
-            inline  bool    Tally<T>::operator!= (const Tally<T>& rhs) const
+            template    <typename T, typename TRAITS>
+            inline  bool    Tally<T, TRAITS>::operator!= (const Tally<T, TRAITS>& rhs) const
             {
                 return not (Equals (rhs));
             }
-            template    <typename T>
-            Tally<T>&  Tally<T>::operator+= (const Tally<T>& t)
+            template    <typename T, typename TRAITS>
+            Tally<T, TRAITS>&  Tally<T, TRAITS>::operator+= (const Tally<T, TRAITS>& t)
             {
                 for (auto i = t.begin (); i != t.end (); ++i) {
                     Add (i->fItem, i->fCount);

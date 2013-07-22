@@ -12,8 +12,6 @@
 #include    "../Traversal/Iterable.h"
 
 
-
-
 /**
  *  \file
  *
