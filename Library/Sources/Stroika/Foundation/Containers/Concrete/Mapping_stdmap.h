@@ -8,9 +8,6 @@
 
 #include    "../Mapping.h"
 
-//#include    "SortedMapping_stdmap.h"
-
-
 
 /**
  *  \file
@@ -18,15 +15,6 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *
- *      @todo   Note in docs why (deadly #include embrance) why this is cloned, and just just .....
-
-                // I THINK best todo would be to have PUBLIC (HEADER) file act like new class, but backend INL file
-                // just use SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::REP!!!!
- *
- *
- *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronization support
- *              THEN - MAYBE - try todo better, but at least do this as starter
  */
 
 
@@ -38,7 +26,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  Mapping_stdmap requiers its own traits (besides Mapping_DefaultTraits) because of the neeed for a compare function, in std::map<>
+                 *  Mapping_stdmap requires its own traits (besides Mapping_DefaultTraits) because of the neeed for a compare function for std::map<>
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
                 struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_WELL_ORDER_COMPARER, VALUE_EQUALS_COMPARER> {
