@@ -24,6 +24,8 @@
  *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
+ *              OR
+ *              just look at the Elements() method. That maybe good enough? Maybe take param to say includes dups?
  *
  *      @todo   Maybe get rid of TallyEntry<T> and instead repalce with pair<T,count>. If not
  *              then change Mapping to use a named type like  this...
@@ -122,6 +124,10 @@ namespace   Stroika {
                 explicit Tally (const _SharedPtrIRep& rep);
 
             public:
+                /**
+                 *  Contains (item) is equivilent to TallyOf (item) != 0, but maybe faster (since it doesn't need to compute
+                 *  the fully tally).
+                 */
                 nonvirtual  bool    Contains (T item) const;
 
             public:
