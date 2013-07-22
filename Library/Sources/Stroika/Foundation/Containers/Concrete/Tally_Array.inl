@@ -356,7 +356,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (end - start);
-                    Add (start, end);
+                    this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Tally_Array<T, TRAITS>::Tally_Array (const Tally_Array<T, TRAITS>& src) :
@@ -368,12 +368,12 @@ namespace   Stroika {
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (src.GetLength ());
-                    operator+= (src);
+                    this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
-                inline  Tally_Array<T, TRAITS>& Tally_Array<T, TRAITS>::operator= (const Tally_Array<T, TRAITS>& src)
+                inline  Tally_Array<T, TRAITS>& Tally_Array<T, TRAITS>::operator= (const Tally_Array<T, TRAITS>& rhs)
                 {
-                    inherited::operator= (static_cast<const inherited&> (src));
+                    inherited::operator= (static_cast<const inherited&> (rhs));
                     return *this;
                 }
                 template    <typename T, typename TRAITS>

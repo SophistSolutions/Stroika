@@ -53,7 +53,7 @@ namespace   Stroika {
                     Tally_Array (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
                 public:
-                    nonvirtual  Tally_Array<T, TRAITS>& operator= (const Tally_Array<T, TRAITS>& src);
+                    nonvirtual  Tally_Array<T, TRAITS>& operator= (const Tally_Array<T, TRAITS>& rhs);
 
                 public:
                     nonvirtual  size_t  GetCapacity () const;

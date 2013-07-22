@@ -349,9 +349,9 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
-                inline Tally_LinkedList<T, TRAITS>& Tally_LinkedList<T, TRAITS>::operator= (const Tally_LinkedList<T, TRAITS>& src)
+                inline Tally_LinkedList<T, TRAITS>& Tally_LinkedList<T, TRAITS>::operator= (const Tally_LinkedList<T, TRAITS>& rhs)
                 {
-                    inherited::operator= (src);
+                    inherited::operator= (rhs);
                     return *this;
                 }
 

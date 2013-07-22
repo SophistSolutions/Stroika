@@ -49,7 +49,7 @@ namespace   Stroika {
                     Tally_LinkedList (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Tally_LinkedList<T, TRAITS>& operator= (const Tally_LinkedList<T, TRAITS>& src);
+                    nonvirtual  Tally_LinkedList<T, TRAITS>& operator= (const Tally_LinkedList<T, TRAITS>& rhs);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
