@@ -198,7 +198,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         TallyEntry<T>   c = item;
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
-                            if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
                             }
@@ -222,7 +222,7 @@ namespace   Stroika {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
-                                if (EqualsCompareFunctionType::Equals (current.fItem, item)) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
                                     return;
@@ -240,7 +240,7 @@ namespace   Stroika {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
-                                if (EqualsCompareFunctionType::Equals (current.fItem, item)) {
+                                if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
                                     }
@@ -300,17 +300,17 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 size_t Tally_LinkedList<T, TRAITS>::Rep_::TallyOf (T item) const
                 {
-                    TallyEntry<T>   c;
+                    TallyEntry<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
-                            if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);
                             }
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    return (0);
+                    return 0;
                 }
                 template    <typename T, typename TRAITS>
                 Iterator<T>    Tally_LinkedList<T, TRAITS>::Rep_::MakeBagIterator () const
