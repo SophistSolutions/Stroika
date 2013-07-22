@@ -25,13 +25,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************ SortedTally_stdmap<T>::Rep_ ***************************
+                 ******************* SortedTally_stdmap<T, TRAITS>::Rep_ ************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class   SortedTally_stdmap<T>::Rep_ : public SortedTally<T>::_IRep {
+                template    <typename T, typename TRAITS>
+                class   SortedTally_stdmap<T, TRAITS>::Rep_ : public SortedTally<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedTally<T>::_IRep inherited;
+                    typedef typename    SortedTally<T, TRAITS>::_IRep inherited;
 
                 public:
                     Rep_ ();
@@ -57,9 +57,9 @@ namespace   Stroika {
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Tally<T>::_IRep overrides
+                    // Tally<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool                                    Equals (const typename Tally<T>::_IRep& rhs) const override;
+                    virtual bool                                    Equals (const typename Tally<T, TRAITS>::_IRep& rhs) const override;
                     virtual bool                                    Contains (T item) const override;
                     virtual void                                    RemoveAll () override;
                     virtual void                                    Add (T item, size_t count) override;
@@ -76,22 +76,24 @@ namespace   Stroika {
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
 
-                    friend  class SortedTally_stdmap<T>::IteratorRep_;
+                private:
+                    //friend  class SortedTally_stdmap<T, TRAITS>::IteratorRep_;
+                    friend  class   IteratorRep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ****************** SortedTally_stdmap<T>::IteratorRep_ *************************
+                 ************** SortedTally_stdmap<T, TRAITS>::IteratorRep_ *********************
                  ********************************************************************************
                  */
-                template    <typename T>
-                class  SortedTally_stdmap<T>::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
+                template    <typename T, typename TRAITS>
+                class  SortedTally_stdmap<T, TRAITS>::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:
                     typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
 
                 public:
-                    IteratorRep_ (typename SortedTally_stdmap<T>::Rep_& owner)
+                    IteratorRep_ (typename SortedTally_stdmap<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
                         , fIterator_ (&owner.fData_) {
@@ -134,24 +136,25 @@ namespace   Stroika {
                     mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
 
                 private:
-                    friend  class   SortedTally_stdmap<T>::Rep_;
+                    //friend  class   SortedTally_stdmap<T, TRAITS>::Rep_;
+                    friend      class       Rep_;
                 };
 
 
                 /*
                  ********************************************************************************
-                 ********************** SortedTally_stdmap<T>::Rep_ *****************************
+                 **************** SortedTally_stdmap<T, TRAITS>::Rep_ ***************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                inline  SortedTally_stdmap<T>::Rep_::Rep_ ()
+                template    <typename T, typename TRAITS>
+                inline  SortedTally_stdmap<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T>
-                inline  SortedTally_stdmap<T>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T, typename TRAITS>
+                inline  SortedTally_stdmap<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -161,24 +164,24 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                size_t  SortedTally_stdmap<T>::Rep_::GetLength () const
+                template    <typename T, typename TRAITS>
+                size_t  SortedTally_stdmap<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.size ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                bool  SortedTally_stdmap<T>::Rep_::IsEmpty () const
+                template    <typename T, typename TRAITS>
+                bool  SortedTally_stdmap<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.size () == 0);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                Iterator<TallyEntry<T>> SortedTally_stdmap<T>::Rep_::MakeIterator () const
+                template    <typename T, typename TRAITS>
+                Iterator<TallyEntry<T>> SortedTally_stdmap<T, TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -190,23 +193,23 @@ namespace   Stroika {
                     tmp++;  //tmphack - redo iterator impl itself
                     return tmp;
                 }
-                template    <typename T>
-                void      SortedTally_stdmap<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                void      SortedTally_stdmap<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T>
-                Iterator<TallyEntry<T>>     SortedTally_stdmap<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T, typename TRAITS>
+                Iterator<TallyEntry<T>>     SortedTally_stdmap<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T>
-                bool    SortedTally_stdmap<T>::Rep_::Equals (const typename Tally<T>::_IRep& rhs) const
+                template    <typename T, typename TRAITS>
+                bool    SortedTally_stdmap<T, TRAITS>::Rep_::Equals (const typename Tally<T, TRAITS>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }
-                template    <typename T>
-                bool    SortedTally_stdmap<T>::Rep_::Contains (T item) const
+                template    <typename T, typename TRAITS>
+                bool    SortedTally_stdmap<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     TallyEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -215,15 +218,15 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                template    <typename T>
-                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    SortedTally_stdmap<T>::Rep_::Clone () const
+                template    <typename T, typename TRAITS>
+                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
                 }
 #endif
-                template    <typename T>
-                void    SortedTally_stdmap<T>::Rep_::Add (T item, size_t count)
+                template    <typename T, typename TRAITS>
+                void    SortedTally_stdmap<T, TRAITS>::Rep_::Add (T item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -240,8 +243,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedTally_stdmap<T>::Rep_::Remove (T item, size_t count)
+                template    <typename T, typename TRAITS>
+                void    SortedTally_stdmap<T, TRAITS>::Rep_::Remove (T item, size_t count)
                 {
                     if (count == 0) {
                         return;
@@ -259,31 +262,31 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedTally_stdmap<T>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
+                template    <typename T, typename TRAITS>
+                void    SortedTally_stdmap<T, TRAITS>::Rep_::Remove (const Iterator<TallyEntry<T>>& i)
                 {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedTally_stdmap<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T>::IteratorRep_&> (ir);
+                    const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         mir.fIterator_.RemoveCurrent ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedTally_stdmap<T>::Rep_::RemoveAll ()
+                template    <typename T, typename TRAITS>
+                void    SortedTally_stdmap<T, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear_WithPatching ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                void    SortedTally_stdmap<T>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
+                template    <typename T, typename TRAITS>
+                void    SortedTally_stdmap<T, TRAITS>::Rep_::UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount)
                 {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedTally_stdmap<T>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T>::IteratorRep_&> (ir);
+                    const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
                             mir.fIterator_.RemoveCurrent ();
@@ -295,8 +298,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                size_t  SortedTally_stdmap<T>::Rep_::TallyOf (T item) const
+                template    <typename T, typename TRAITS>
+                size_t  SortedTally_stdmap<T, TRAITS>::Rep_::TallyOf (T item) const
                 {
                     TallyEntry<T> tmp (item);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -308,8 +311,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T>
-                Iterator<T>    SortedTally_stdmap<T>::Rep_::MakeBagIterator () const
+                template    <typename T, typename TRAITS>
+                Iterator<T>    SortedTally_stdmap<T, TRAITS>::Rep_::MakeBagIterator () const
                 {
                     Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ())));
                     //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
@@ -320,43 +323,45 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************************** SortedTally_stdmap<T> *******************************
+                 ************************ SortedTally_stdmap<T, TRAITS> *************************
                  ********************************************************************************
                  */
-                template    <typename T>
-                SortedTally_stdmap<T>::SortedTally_stdmap ()
+                template    <typename T, typename TRAITS>
+                SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T>    SortedTally_stdmap<T>::SortedTally_stdmap (const T* start, const T* end)
+                template    <typename T, typename TRAITS>
+                SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Add (start, end);
                 }
-                template    <typename T>
-                inline  SortedTally_stdmap<T>::SortedTally_stdmap (const SortedTally_stdmap<T>& src) :
+                template    <typename T, typename TRAITS>
+                inline  SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src) :
                     inherited (static_cast<const inherited&> (src))
                 {
                 }
-                template    <typename T>
-                SortedTally_stdmap<T>::SortedTally_stdmap (const Tally<T>& src) :
+                template    <typename T, typename TRAITS>
+                template    <typename CONTAINER_OF_T>
+                SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const CONTAINER_OF_T& src) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     operator+= (src);
                 }
-                template    <typename T>
-                inline  SortedTally_stdmap<T>& SortedTally_stdmap<T>::operator= (const SortedTally_stdmap<T>& src)
+                template    <typename T, typename TRAITS>
+                inline  SortedTally_stdmap<T, TRAITS>& SortedTally_stdmap<T, TRAITS>::operator= (const SortedTally_stdmap<T, TRAITS>& src)
                 {
                     inherited::operator= (static_cast<const inherited&> (src));
                     return *this;
                 }
-                template    <typename T>
-                inline  const typename SortedTally_stdmap<T>::Rep_&    SortedTally_stdmap<T>::GetRep_ () const
+                template    <typename T, typename TRAITS>
+                inline  const typename SortedTally_stdmap<T, TRAITS>::Rep_&    SortedTally_stdmap<T, TRAITS>::GetRep_ () const
                 {
                     return reinterpret_cast<const Rep_&> (this->_GetRep ());
                 }
-                template    <typename T>
-                inline  typename SortedTally_stdmap<T>::Rep_&  SortedTally_stdmap<T>::GetRep_ ()
+                template    <typename T, typename TRAITS>
+                inline  typename SortedTally_stdmap<T, TRAITS>::Rep_&  SortedTally_stdmap<T, TRAITS>::GetRep_ ()
                 {
                     return reinterpret_cast<Rep_&> (this->_GetRep ());
                 }

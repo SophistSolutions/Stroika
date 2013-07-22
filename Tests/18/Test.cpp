@@ -34,10 +34,10 @@ namespace   {
     {
         using namespace CommonTests::TallyTests;
 
-        auto testFunc1 = [] (const Tally<size_t>& s) {
+        auto testFunc1 = [] (const SortedTally<size_t>& s) {
             ///FIX TO DO SORT CHEKCING
         };
-        auto testFunc2 = [] (const Tally<SimpleClass>& s) {
+        auto testFunc2 = [] (const SortedTally<SimpleClass>& s) {
             ///FIX TO DO SORT CHEKCING
         };
 

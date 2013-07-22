@@ -138,6 +138,14 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
+            template    <typename CONTAINER_OF_T>
+            inline  Tally<T, TRAITS>::Tally (const CONTAINER_OF_T& src)
+                : inherited (Concrete::mkTally_Default<T, TRAITS> ())
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                operator+= (src);
+            }
+            template    <typename T, typename TRAITS>
             inline  Tally<T, TRAITS>::Tally (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
@@ -239,6 +247,12 @@ namespace   Stroika {
                 for (auto i = begin; i != end; ++i) {
                     _GetRep ().Add (i->fItem, i->fEnd);
                 }
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename CONTAINER_OF_T>
+            void    Tally<T, TRAITS>::AddAll (const CONTAINER_OF_T& src)
+            {
+                operator+= (src);
             }
             template    <typename T, typename TRAITS>
             inline  void    Tally<T, TRAITS>::Remove (T item)

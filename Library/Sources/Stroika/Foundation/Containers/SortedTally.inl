@@ -16,36 +16,36 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************************** SortedTally<T> ******************************
+             *************************** SortedTall<T, TRAITS> ******************************
              ********************************************************************************
              */
-            template    <typename T>
-            inline  SortedTally<T>::SortedTally ()
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedTally_Default<T> ()))
+            template    <typename T, typename TRAITS>
+            inline  SortedTally<T, TRAITS>::SortedTally ()
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedTally_Default<T, TRAITS> ()))
             {
             }
-            template    <typename T>
-            inline  SortedTally<T>::SortedTally (const SortedTally<T>& st)
-                : inherited (static_cast<const inherited&> (st))
+            template    <typename T, typename TRAITS>
+            inline  SortedTally<T, TRAITS>::SortedTally (const SortedTally<T, TRAITS>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
             }
-            template    <typename T>
-            inline  SortedTally<T>::SortedTally (const _SharedPtrIRep& rep)
+            template    <typename T, typename TRAITS>
+            inline  SortedTally<T, TRAITS>::SortedTally (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
-            inline  SortedTally<T>::SortedTally (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedTally_Default<T> ()))
+            inline  SortedTally<T, TRAITS>::SortedTally (const CONTAINER_OF_T& src)
+                : inherited (static_cast<const inherited&> (Concrete::mkSortedTally_Default<T, TRAITS> ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                this->AddAll (s);
+                this->AddAll (src);
             }
-            template    <typename T>
-            inline  SortedTally<T>&   SortedTally<T>::operator= (const SortedTally<T>& src)
+            template    <typename T, typename TRAITS>
+            inline  SortedTally<T, TRAITS>&   SortedTally<T, TRAITS>::operator= (const SortedTally<T, TRAITS>& src)
             {
                 inherited::operator= (static_cast<const inherited&> (src));
                 EnsureMember (&inherited::_GetRep (), _IRep);

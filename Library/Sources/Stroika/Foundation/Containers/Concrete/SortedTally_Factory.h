@@ -27,7 +27,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T>
+            template    <typename T, typename TRAITS>
             class   SortedTally;
 
 
@@ -40,8 +40,8 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                SortedTally<T>  mkSortedTally_Default ();
+                template    <typename T, typename TRAITS>
+                SortedTally<T, TRAITS>  mkSortedTally_Default ();
 
 
                 // PROTO-IDEA - NOT IMPLEMENTED

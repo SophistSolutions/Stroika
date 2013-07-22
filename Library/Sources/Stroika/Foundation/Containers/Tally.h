@@ -101,6 +101,8 @@ namespace   Stroika {
             public:
                 Tally ();
                 Tally (const Tally<T, TRAITS>& src);
+                template    <typename CONTAINER_OF_T>
+                explicit Tally (const CONTAINER_OF_T& src);
                 Tally (const T* start, const T* end);
                 Tally (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
@@ -118,6 +120,8 @@ namespace   Stroika {
             public:
                 nonvirtual  void    AddAll (const T* begin, const T* end);
                 nonvirtual  void    AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end);
+                template <typename CONTAINER_OF_T>
+                nonvirtual  void    AddAll (const CONTAINER_OF_T& src);
 
             public:
                 /**
@@ -193,6 +197,20 @@ namespace   Stroika {
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
+
+            public:
+                /**
+                 *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
             };
 
 

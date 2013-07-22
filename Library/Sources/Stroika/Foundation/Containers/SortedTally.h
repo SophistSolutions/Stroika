@@ -18,8 +18,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *      @todo   Use TRAITS mechanism - like with Bag<>
- *
  *
  */
 
@@ -31,20 +29,29 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedTally is a Tally<T> which remains sorted (iterator).
+             */
+            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+            struct   SortedTally_DefaultTraits : Tally_DefaultTraits <T, WELL_ORDER_COMPARER> {
+                /**
+                 */
+                typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
+
+                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+            };
+
+
+            /**
+             *      A SortedTally is a Tally<T, TRAITS> which remains sorted (iterator).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              *  \req    RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              *
              */
-            template    <typename   T>
-            class   SortedTally : public Tally<T> {
-            public:
-                RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
-
+            template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
+            class   SortedTally : public Tally<T, TRAITS> {
             private:
-                typedef     Tally<T> inherited;
+                typedef     Tally<T, TRAITS> inherited;
 
             protected:
                 class   _IRep;
@@ -52,31 +59,45 @@ namespace   Stroika {
 
             public:
                 SortedTally ();
-                SortedTally (const SortedTally<T>& st);
+                SortedTally (const SortedTally<T, TRAITS>& src);
                 template <typename CONTAINER_OF_T>
-                explicit SortedTally (const CONTAINER_OF_T& st);
+                explicit SortedTally (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedTally (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             public:
-                nonvirtual  SortedTally<T>& operator= (const SortedTally<T>& rhs);
+                nonvirtual  SortedTally<T, TRAITS>& operator= (const SortedTally<T, TRAITS>& rhs);
 
             protected:
                 explicit SortedTally (const _SharedPtrIRep& rep);
+
+            public:
+                /**
+                 *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                 *  Just a short-hand for the WellOrderCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
+                typedef typename TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
             };
 
 
             /**
-             *  \brief  Implementation detail for SortedTally<T> implementors.
+             *  \brief  Implementation detail for SortedTall<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedTally<T> container API.
+             *  the SortedTall<T, TRAITS> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
-            template    <typename   T>
-            class   SortedTally<T>::_IRep : public Tally<T>::_IRep {
+            template    <typename T, typename TRAITS>
+            class   SortedTally<T, TRAITS>::_IRep : public Tally<T, TRAITS>::_IRep {
             };
 
 

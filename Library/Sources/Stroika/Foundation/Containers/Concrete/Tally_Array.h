@@ -40,20 +40,20 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   Tally_Array : public Tally<T> {
+                template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
+                class   Tally_Array : public Tally<T, TRAITS> {
                 private:
-                    typedef Tally<T>    inherited;
+                    typedef Tally<T, TRAITS>    inherited;
 
                 public:
                     Tally_Array ();
-                    Tally_Array (const Tally<T>& src);
-                    Tally_Array (const Tally_Array<T>& src);
+                    Tally_Array (const Tally<T, TRAITS>& src);
+                    Tally_Array (const Tally_Array<T, TRAITS>& src);
                     Tally_Array (const T* start, const T* end);
                     Tally_Array (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
                 public:
-                    nonvirtual  Tally_Array<T>& operator= (const Tally_Array<T>& src);
+                    nonvirtual  Tally_Array<T, TRAITS>& operator= (const Tally_Array<T, TRAITS>& src);
 
                 public:
                     nonvirtual  size_t  GetCapacity () const;
@@ -66,8 +66,8 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
                 public:
 #endif
-                    class Rep_;
-                    class IteratorRep_;
+                    class   Rep_;
+                    class   IteratorRep_;
 
                 private:
                     nonvirtual  const Rep_& GetRep_ () const;

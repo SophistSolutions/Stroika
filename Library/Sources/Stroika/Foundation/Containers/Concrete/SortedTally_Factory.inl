@@ -19,8 +19,8 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                template    <typename T>
-                inline  SortedTally<T>  mkSortedTally_Default ()
+                template    <typename T, typename TRAITS>
+                inline  SortedTally<T, TRAITS>  mkSortedTally_Default ()
                 {
                     return SortedTally_stdmap<T> ();
                 }

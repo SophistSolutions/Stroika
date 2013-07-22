@@ -128,26 +128,26 @@ namespace CommonTests {
         template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
         void    SimpleTallyTests (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
         {
-            typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
+            typedef typename USING_TALLY_CONTAINER::TallyOfElementType  T;
+            typedef typename USING_TALLY_CONTAINER::TraitsType          TraitsType;
+
             size_t  three = 3;
 
-            Tally<T>   s1 (s);
+            applyToContainer (s);
+
+            Tally<T, TraitsType>   s1 (s);
 
             VerifyTestResult (s1 == s);
-            VerifyTestResult (s1 == s);
-            Tally<T>   s2 = s1;
-            applyToContainer (s1);
-            applyToContainer (s2);
+            Tally<T, TraitsType>   s2 = s1;
 
             VerifyTestResult (s2 == s);
             VerifyTestResult (s2 == s1);
             s2.Add (three);
-            applyToContainer (s2);
+            applyToContainer (USING_TALLY_CONTAINER (s2));
             VerifyTestResult (s1 == s);
             VerifyTestResult (s2 != s1);
 
             CommonTests:: TallyTests::TallyIteratorTests_<USING_TALLY_CONTAINER> (s, applyToContainer);
-
 
             const   size_t  K = 500;
 

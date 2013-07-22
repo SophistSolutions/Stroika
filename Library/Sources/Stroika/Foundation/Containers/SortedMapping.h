@@ -29,6 +29,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
 
+
             /**
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>

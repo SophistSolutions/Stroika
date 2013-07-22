@@ -40,20 +40,21 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
-                class   SortedTally_stdmap : public SortedTally<T> {
+                template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
+                class   SortedTally_stdmap : public SortedTally<T, TRAITS> {
                 private:
-                    typedef SortedTally<T>    inherited;
+                    typedef SortedTally<T, TRAITS>    inherited;
 
                 public:
                     SortedTally_stdmap ();
-                    SortedTally_stdmap (const Tally<T>& src);
-                    SortedTally_stdmap (const SortedTally_stdmap<T>& src);
+                    SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src);
+                    template <typename CONTAINER_OF_T>
+                    explicit SortedTally_stdmap (const CONTAINER_OF_T& src);
                     SortedTally_stdmap (const T* start, const T* end);
                     SortedTally_stdmap (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
                 public:
-                    nonvirtual  SortedTally_stdmap<T>& operator= (const SortedTally_stdmap<T>& src);
+                    nonvirtual  SortedTally_stdmap<T, TRAITS>& operator= (const SortedTally_stdmap<T, TRAITS>& src);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

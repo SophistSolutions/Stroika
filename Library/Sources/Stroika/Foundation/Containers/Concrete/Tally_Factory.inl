@@ -20,10 +20,9 @@ namespace   Stroika {
 
 
                 template    <typename T, typename TRAITS>
-                inline  Tally<T, TRAITS>  mkTally_Default ()
+                inline  Tally<T, TRAITS>    mkTally_Default ()
                 {
-                    /// TODO @todo - fix TRAITS usage
-                    return Tally_Array<T> ();
+                    return Tally_Array<T, TRAITS> ();
                 }
 
 

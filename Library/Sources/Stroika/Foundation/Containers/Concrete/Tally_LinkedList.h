@@ -37,19 +37,19 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T>
+                template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
                 class  Tally_LinkedList : public Tally<T> {
                 private:
-                    typedef Tally<T> inherited;
+                    typedef Tally<T, TRAITS> inherited;
 
                 public:
                     Tally_LinkedList ();
-                    Tally_LinkedList (const Tally<T>& src);
-                    Tally_LinkedList (const Tally_LinkedList<T>& src);
+                    Tally_LinkedList (const Tally<T, TRAITS>& src);
+                    Tally_LinkedList (const Tally_LinkedList<T, TRAITS>& src);
                     Tally_LinkedList (const T* items, size_t size);
 
                 public:
-                    nonvirtual  Tally_LinkedList<T>& operator= (const Tally_LinkedList<T>& src);
+                    nonvirtual  Tally_LinkedList<T, TRAITS>& operator= (const Tally_LinkedList<T, TRAITS>& src);
 
                 private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
