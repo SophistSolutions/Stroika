@@ -197,7 +197,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         TallyEntry<T>   c;
                         for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
-                            if (c.fItem == item) {
+                            if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
                             }
@@ -221,7 +221,7 @@ namespace   Stroika {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
-                                if (current.fItem == item) {
+                                if (EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
                                     return;
@@ -239,7 +239,7 @@ namespace   Stroika {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
-                                if (current.fItem == item) {
+                                if (EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
                                     }
@@ -302,7 +302,7 @@ namespace   Stroika {
                     TallyEntry<T>   c;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
-                            if (c.fItem == item) {
+                            if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);
                             }

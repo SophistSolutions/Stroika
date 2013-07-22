@@ -128,8 +128,9 @@ namespace CommonTests {
         template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
         void    SimpleTallyTests (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
         {
-            typedef typename USING_TALLY_CONTAINER::TallyOfElementType  T;
-            typedef typename USING_TALLY_CONTAINER::TraitsType          TraitsType;
+            typedef typename USING_TALLY_CONTAINER::TallyOfElementType          T;
+            typedef typename USING_TALLY_CONTAINER::TraitsType                  TraitsType;
+            typedef typename USING_TALLY_CONTAINER::EqualsCompareFunctionType   EqualsCompareFunctionType;
 
             size_t  three = 3;
 
@@ -179,7 +180,7 @@ namespace CommonTests {
 
             for (size_t i = 1; i <= s.GetLength (); i++) {
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    if (it.Current ().fItem == i) {
+                    if (EqualsCompareFunctionType::Equals (it.Current ().fItem, i)) {
                         break;
                     }
                 }

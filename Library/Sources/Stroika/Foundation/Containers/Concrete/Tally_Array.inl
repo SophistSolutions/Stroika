@@ -332,7 +332,7 @@ namespace   Stroika {
                     // this code assumes locking done by callers
                     size_t length = fData_.GetLength ();
                     for (size_t i = 0; i < length; i++) {
-                        if (fData_.GetAt (i).fItem == item.fItem) {
+                        if (EqualsCompareFunctionType::Equals (fData_.GetAt (i).fItem, item.fItem)) {
                             item = fData_.GetAt (i);
                             return (i);
                         }

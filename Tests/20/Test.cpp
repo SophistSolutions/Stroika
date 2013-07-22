@@ -27,25 +27,59 @@ using   Concrete::Tally_Array;
 using   Concrete::Tally_LinkedList;
 
 
+
+namespace {
+#if 0
+    template    <typename   CONCRETE_CONTAINER>
+    void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
+        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
+        auto extraChecksFunction = [] (const Tally<TallyOfElementType, TraitsType>& t) {
+            // only work todo on sorted mappings
+        };
+        CommonTests::TallyTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+#endif
+    template    <typename   CONCRETE_CONTAINER>
+    void    DoTestForConcreteContainer_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
+        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
+        auto extraChecksFunction = [] (const Tally<TallyOfElementType, TraitsType>& t) {
+            // only work todo on sorted mappings
+        };
+        CommonTests::TallyTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        using namespace CommonTests::TallyTests;
-
-        auto testFunc1 = [] (const Tally<size_t>& s) {
+        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
         };
-        auto testFunc2 = [] (const Tally<SimpleClass>& s) {
-        };
+        typedef Tally_DefaultTraits <
+        SimpleClassWithoutComparisonOperators,
+        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+        >   SimpleClassWithoutComparisonOperators_TallyTRAITS;
 
-        All_For_Type<Tally<size_t>> (testFunc1);
-        All_For_Type<Tally<SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<Tally<size_t>> ();
+        DoTestForConcreteContainer_<Tally<SimpleClass>> ();
+        DoTestForConcreteContainer_<Tally<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
 
-        All_For_Type<Tally_LinkedList<size_t>> (testFunc1);
-        All_For_Type<Tally_LinkedList<SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<Tally_LinkedList<size_t>> ();
+        DoTestForConcreteContainer_<Tally_LinkedList<SimpleClass>> ();
+        DoTestForConcreteContainer_<Tally_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
 
-        All_For_Type<Tally_Array<size_t>> (testFunc1);
-        All_For_Type<Tally_Array<SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<Tally_Array<size_t>> ();
+        DoTestForConcreteContainer_<Tally_Array<SimpleClass>> ();
+        DoTestForConcreteContainer_<Tally_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
     }
 
 }
