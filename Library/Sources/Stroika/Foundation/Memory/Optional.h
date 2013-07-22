@@ -18,7 +18,10 @@
  *
  *  TODO:
  *      @todo   Redo TRAITS for Optional using new Common/Compare trait code
+ *              (or document why not)
  *
+ *      @todo   Condsider (maybe test) if implemenation using member buffer Byte buf[sizeof(T)]; with appropriate alignof stuff -
+ *              would perform better than BlockAllocated? It's important that this class be low-cost, low-overhead!
  */
 
 
