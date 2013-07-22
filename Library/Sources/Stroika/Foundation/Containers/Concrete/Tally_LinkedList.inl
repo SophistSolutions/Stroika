@@ -67,6 +67,7 @@ namespace   Stroika {
                     virtual Iterator<T>                         MakeBagIterator () const override;
 
                 private:
+                    typedef Private::DataStructures::LinkedList<TallyEntry<T>>              NonPatchingDataStructureImplType_;
                     typedef Private::PatchingDataStructures::LinkedList<TallyEntry<T>>      DataStructureImplType_;
 
                 private:
@@ -195,8 +196,8 @@ namespace   Stroika {
                 bool   Tally_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        TallyEntry<T>   c;
-                        for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
+                        TallyEntry<T>   c = item;
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
                             if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
@@ -301,7 +302,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T>   c;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename Private::DataStructures::LinkedList<TallyEntry<T>>::ForwardIterator it (fData_); it.More (&c, true); ) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
                             if (EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);

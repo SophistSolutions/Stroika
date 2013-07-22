@@ -88,10 +88,10 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for SortedTall<T, TRAITS> implementors.
+             *  \brief  Implementation detail for SortedTally<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedTall<T, TRAITS> container API.
+             *  the SortedTally<T, TRAITS> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).

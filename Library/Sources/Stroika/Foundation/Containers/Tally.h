@@ -19,14 +19,26 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *
+ *      @todo   Redo code so operator+= () is an cosmetic alias and AddAll() is primary.
+ *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
  *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
  *
  *      @todo   Maybe get rid of TallyEntry<T> and instead repalce with pair<T,count>. If not
  *              then change Mapping to use a named type like  this...
  *
- *      @todo   Need Tally_Tree<T> implementation - where we use btree to keep tally's sorted,
- *              so faster lookup. PROBLEM with that impl is it requires an ordering on T, which the others dont
+ *      @todo   Need Tally_stdmap<T> implementation (re-use SortedTally_stdmap they way we did
+ *              for mapping).
+ *
+ *      @todo   Consider rewriting all Tally<> concrete types using Mapping<T,counttype> concrete impl?
+ *              Probably wont work but document why... (Add () semantics - but maybe).
+ *
+ *      @todo   AddAll() and CTOR for Tally (and SortedTally and concrete types) is confused by having
+ *              overload taking T* and TallyEntry<T>*. Issue is that we cannot do templated iterator
+ *              and templated objhect CTOR while these are iteratored (without mcuh better partial
+ *              template specializaiton - I THINK????). Maybe use differnt method for one or the other
+ *              to distinguish?
  *
  */
 

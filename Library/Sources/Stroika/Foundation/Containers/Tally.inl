@@ -277,7 +277,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  size_t  Tally<T, TRAITS>::TallyOf (T item) const
             {
-                return (_GetRep ().TallyOf (item));
+                return _GetRep ().TallyOf (item);
             }
             template    <typename T, typename TRAITS>
             inline  Tally<T, TRAITS>&   Tally<T, TRAITS>::operator+= (T item)
