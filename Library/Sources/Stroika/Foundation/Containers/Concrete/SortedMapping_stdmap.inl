@@ -7,6 +7,9 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
+
 #include    <map>
 
 #include    "../../Memory/BlockAllocated.h"
@@ -14,9 +17,6 @@
 
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
-
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedMapping_stdmap_inl_
 
 namespace   Stroika {
     namespace   Foundation {
@@ -301,6 +301,13 @@ namespace   Stroika {
                     : inherited (static_cast<const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>&> (src))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename CONTAINER_OF_PAIR_KEY_T>
+                inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    this->AddAll (src);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>&   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs)

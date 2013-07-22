@@ -44,7 +44,7 @@ namespace   Stroika {
                     SortedMapping_stdmap ();
                     SortedMapping_stdmap (const SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
                     template    <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& cp);
+                    explicit SortedMapping_stdmap (const CONTAINER_OF_PAIR_KEY_T& src);
                     template    <typename COPY_FROM_ITERATOR_KEY_T>
                     explicit SortedMapping_stdmap (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 

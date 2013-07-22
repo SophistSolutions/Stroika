@@ -21,6 +21,7 @@
 #include    "../TestHarness/TestHarness.h"
 
 
+#include    "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
@@ -88,12 +89,10 @@ namespace   {
         DoTestForConcreteContainer_<Mapping_LinkedList<SimpleClass, SimpleClass>> ();
         DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
 
-#if 0
         DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
         //needs work - @todo - must add TRIATS stuff to SortedMapping first (or move this code to not depend on sorted mapping)
         //DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
-#endif
     }
 }
 
