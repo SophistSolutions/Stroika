@@ -29,18 +29,6 @@ using   Concrete::Tally_LinkedList;
 
 
 namespace {
-#if 0
-    template    <typename   CONCRETE_CONTAINER>
-    void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
-    {
-        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
-        auto extraChecksFunction = [] (const Tally<TallyOfElementType, TraitsType>& t) {
-            // only work todo on sorted mappings
-        };
-        CommonTests::TallyTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
-    }
-#endif
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {

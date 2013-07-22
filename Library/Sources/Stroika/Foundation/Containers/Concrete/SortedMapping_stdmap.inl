@@ -69,8 +69,8 @@ namespace   Stroika {
 
                 private:
                     typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map < KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType> >
-                    >       DataStructureImplType_;
+                    map < KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>
+                            >       DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;

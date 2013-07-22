@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Containers/Concrete/SortedTally_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Memory/Optional.h"
 
 #include    "../TestCommon/CommonTests_Tally.h"
 #include    "../TestHarness/SimpleClass.h"
@@ -28,24 +29,53 @@ using   namespace   Stroika::Foundation::Containers;
 using   Concrete::SortedTally_stdmap;
 
 
+
+namespace {
+    template    <typename   CONCRETE_CONTAINER>
+    void    DoTestForConcreteContainer_ ()
+    {
+        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
+        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
+        auto extraChecksFunction = [] (const SortedTally<TallyOfElementType, TraitsType>& t) {
+            // verify in sorted order
+            Memory::Optional<TallyOfElementType> last;
+            for (TallyEntry<TallyOfElementType> i : t) {
+                if (last.IsPresent ()) {
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fItem) <= 0);
+                }
+                last = i.fItem;
+            }
+        };
+        CommonTests::TallyTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+    }
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
     {
-        using namespace CommonTests::TallyTests;
-
-        auto testFunc1 = [] (const SortedTally<size_t>& s) {
-            ///FIX TO DO SORT CHEKCING
+        struct  MySimpleClassWithoutComparisonOperators_ComparerWithComparer_ {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+            static  int    Compare (ElementType v1, ElementType v2) {
+                return v1.GetValue () - v2.GetValue ();
+            }
         };
-        auto testFunc2 = [] (const SortedTally<SimpleClass>& s) {
-            ///FIX TO DO SORT CHEKCING
-        };
+        typedef SortedTally_DefaultTraits <
+        SimpleClassWithoutComparisonOperators,
+        MySimpleClassWithoutComparisonOperators_ComparerWithComparer_
+        >   SimpleClassWithoutComparisonOperators_SortedTallyTRAITS;
 
-        All_For_Type<SortedTally<size_t>> (testFunc1);
-        All_For_Type<SortedTally<SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<SortedTally<size_t>> ();
+        DoTestForConcreteContainer_<SortedTally<SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedTally<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedTallyTRAITS>> ();
 
-        All_For_Type<SortedTally_stdmap<size_t>> (testFunc1);
-        All_For_Type<SortedTally_stdmap<SimpleClass>> (testFunc2);
+        DoTestForConcreteContainer_<SortedTally_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<SortedTally_stdmap<SimpleClass>> ();
+        DoTestForConcreteContainer_<SortedTally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedTallyTRAITS>> ();
     }
 
 }

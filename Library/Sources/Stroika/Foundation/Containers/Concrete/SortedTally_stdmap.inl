@@ -13,6 +13,8 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
+#include    "../STL/Compare.h"
+
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
@@ -70,14 +72,15 @@ namespace   Stroika {
                     virtual Iterator<T>                             MakeBagIterator () const override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper<map<T, size_t>>        DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::STLContainerWrapper <
+                    map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>
+                            >        DataStructureImplType_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
 
                 private:
-                    //friend  class SortedTally_stdmap<T, TRAITS>::IteratorRep_;
                     friend  class   IteratorRep_;
                 };
 
