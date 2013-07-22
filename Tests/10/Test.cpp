@@ -91,8 +91,21 @@ namespace   {
 
         DoTestForConcreteContainer_<Mapping_stdmap<size_t, size_t>> ();
         DoTestForConcreteContainer_<Mapping_stdmap<SimpleClass, SimpleClass>> ();
-        //needs work - @todo - must add TRIATS stuff to SortedMapping first (or move this code to not depend on sorted mapping)
-        //DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        {
+            struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+                typedef SimpleClassWithoutComparisonOperators ElementType;
+                static  int    Compare (ElementType v1, ElementType v2) {
+                    return v1.GetValue () - v2.GetValue ();
+                }
+            };
+            typedef Concrete::Mapping_stdmap_DefaultTraits <
+            SimpleClassWithoutComparisonOperators,
+            SimpleClassWithoutComparisonOperators,
+            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_,
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
+            DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
+        }
     }
 }
 
