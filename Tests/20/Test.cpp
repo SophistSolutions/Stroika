@@ -84,7 +84,7 @@ namespace   {
             SimpleClassWithoutComparisonOperators,
             MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
             >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
-			DoTestForConcreteContainer_<Tally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
+            DoTestForConcreteContainer_<Tally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
 
     }

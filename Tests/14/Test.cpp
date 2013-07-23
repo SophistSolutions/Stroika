@@ -10,6 +10,7 @@
 
 #include    "Stroika/Foundation/Containers/Set.h"
 #include    "Stroika/Foundation/Containers/Concrete/Set_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Set_stdset.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -25,6 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 
 using   Concrete::Set_LinkedList;
+using   Concrete::Set_stdset;
 
 
 
@@ -48,13 +50,16 @@ namespace   {
         auto testFunc3 = [] (const Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>& s) {
         };
 
+        Test_All_For_Type<Set<size_t>, Set<size_t>> (testFunc1);
+        Test_All_For_Type<Set<SimpleClass>, Set<SimpleClass>> (testFunc2);
+        Test_All_For_Type<Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>, Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>> (testFunc3);
+
         Test_All_For_Type<Set_LinkedList<size_t>, Set<size_t>> (testFunc1);
         Test_All_For_Type<Set_LinkedList<SimpleClass>, Set<SimpleClass>> (testFunc2);
         Test_All_For_Type<Set_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>, Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>> (testFunc3);
 
-        Test_All_For_Type<Set<size_t>, Set<size_t>> (testFunc1);
-        Test_All_For_Type<Set<SimpleClass>, Set<SimpleClass>> (testFunc2);
-        Test_All_For_Type<Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>, Set<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETRAITS>> (testFunc3);
+        Set_stdset<size_t>  tmp;
+
     }
 }
 
