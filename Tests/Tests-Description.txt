@@ -4,9 +4,9 @@
 [04]	Foundation::Containers::Private::DataStructures::LinkedList
 [05]	Foundation::Containers::Private::DataStructures::DoublyLinkedList
 [06]	Foundation::Containers::Private::DataStructures::STLContainerWrapper
-[07]	Foundation::Containers::Bag
-[08]	Foundation::Containers::Deque
-[09]	Foundation::Containers::Private::DataStructures::SkipList
+[07]	Foundation::Containers::Private::DataStructures::SkipList
+[08]	Foundation::Containers::Bag
+[09]	Foundation::Containers::Deque
 [10]	Foundation::Containers::Mapping
 [11]	Foundation::Containers::PriorityQueue
 [12]	Foundation::Containers::Queue
