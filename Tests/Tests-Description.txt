@@ -1,12 +1,12 @@
 [01]	Foundation::Caching
 [02]	Foundation::Characters::Strings
-[03]	Foundation::Containers::Private::Array
-[04]	Foundation::Containers::Private::LinkedList
-[05]	Foundation::Containers::Private::DoublyLinkedList
-[06]	Foundation::Containers::Private::STLContainerWrapper
+[03]	Foundation::Containers::Private::DataStructures::Array
+[04]	Foundation::Containers::Private::DataStructures::LinkedList
+[05]	Foundation::Containers::Private::DataStructures::DoublyLinkedList
+[06]	Foundation::Containers::Private::DataStructures::STLContainerWrapper
 [07]	Foundation::Containers::Bag
 [08]	Foundation::Containers::Deque
-[09]	Foundation::Containers::Dictionary--OBSOLETE-DELETE-ME--dont delete - add PRIVATE::Skiplist
+[09]	Foundation::Containers::Private::DataStructures::SkipList
 [10]	Foundation::Containers::Mapping
 [11]	Foundation::Containers::PriorityQueue
 [12]	Foundation::Containers::Queue

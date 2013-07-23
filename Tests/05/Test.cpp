@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  Foundation::Containers::Private::DoublyLinkedList
+//  Foundation::Containers::Private::DataStructures::DoublyLinkedList
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>

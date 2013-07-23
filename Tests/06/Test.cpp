@@ -1,7 +1,7 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  Foundation::Containers::Private::STLContainerWrapper
+//  Foundation::Containers::Private::DataStructures::STLContainerWrapper
 ///             STATUS - ALL WRONG - REWRITE!!!!!
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
