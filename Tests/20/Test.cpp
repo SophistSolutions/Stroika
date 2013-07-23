@@ -10,6 +10,7 @@
 #include    "Stroika/Foundation/Containers/Tally.h"
 #include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Tally_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -25,6 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 using   Concrete::Tally_Array;
 using   Concrete::Tally_LinkedList;
+using   Concrete::Tally_stdmap;
 
 
 
@@ -61,13 +63,30 @@ namespace   {
         DoTestForConcreteContainer_<Tally<SimpleClass>> ();
         DoTestForConcreteContainer_<Tally<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
 
+        DoTestForConcreteContainer_<Tally_Array<size_t>> ();
+        DoTestForConcreteContainer_<Tally_Array<SimpleClass>> ();
+        DoTestForConcreteContainer_<Tally_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
+
         DoTestForConcreteContainer_<Tally_LinkedList<size_t>> ();
         DoTestForConcreteContainer_<Tally_LinkedList<SimpleClass>> ();
         DoTestForConcreteContainer_<Tally_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
 
-        DoTestForConcreteContainer_<Tally_Array<size_t>> ();
-        DoTestForConcreteContainer_<Tally_Array<SimpleClass>> ();
-        DoTestForConcreteContainer_<Tally_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
+        DoTestForConcreteContainer_<Tally_stdmap<size_t>> ();
+        DoTestForConcreteContainer_<Tally_stdmap<SimpleClass>> ();
+        {
+            struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+                typedef SimpleClassWithoutComparisonOperators ElementType;
+                static  int    Compare (ElementType v1, ElementType v2) {
+                    return v1.GetValue () - v2.GetValue ();
+                }
+            };
+            typedef Concrete::Tally_stdmap_DefaultTraits <
+            SimpleClassWithoutComparisonOperators,
+            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
+            >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
+			DoTestForConcreteContainer_<Tally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
+        }
+
     }
 
 }

@@ -1179,9 +1179,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Factory.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1304,6 +1301,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h">
       <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_stdmap.h">
+      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1815,9 +1818,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Factory.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -1957,6 +1957,12 @@
       <Filter>Sources\Containers\STL</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Set_stdset.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
