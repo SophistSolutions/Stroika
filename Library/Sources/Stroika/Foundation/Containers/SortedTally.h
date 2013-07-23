@@ -84,6 +84,9 @@ namespace   Stroika {
                  *  building other templates.
                  */
                 typedef typename TraitsType::WellOrderCompareFunctionType  WellOrderCompareFunctionType;
+
+            public:
+                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
 
 
