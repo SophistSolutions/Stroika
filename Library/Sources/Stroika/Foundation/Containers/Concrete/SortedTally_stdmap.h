@@ -7,7 +7,7 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../Tally.h"
+#include    "../SortedTally.h"
 
 
 
