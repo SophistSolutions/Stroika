@@ -61,7 +61,7 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
             static  int    Compare (ElementType v1, ElementType v2) {
-                return v1.GetValue () - v2.GetValue ();
+                return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
             }
         };
         typedef SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_SETTRAITS;
