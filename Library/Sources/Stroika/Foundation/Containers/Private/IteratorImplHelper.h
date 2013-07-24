@@ -39,14 +39,13 @@ namespace   Stroika {
                 private:
                     typedef typename    Iterator<T>::IRep   inherited;
 
-				public:
+                public:
                     explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, typename PATCHABLE_CONTAINER* data)
                         : inherited ()
-						, fLockSupport (*sharedLock)
-                        , fIterator (*data)
-					{
-						RequireNotNull (sharedLock);
-						RequireNotNull (data);
+                        , fLockSupport (*sharedLock)
+                        , fIterator (*data) {
+                        RequireNotNull (sharedLock);
+                        RequireNotNull (data);
                     }
 
                 public:
@@ -71,8 +70,8 @@ namespace   Stroika {
                         return false;
                     }
 
-                    ContainerRepLockDataSupport_&			fLockSupport;
-                    mutable PATCHABLE_CONTAINER_ITERATOR	fIterator;
+                    ContainerRepLockDataSupport_&           fLockSupport;
+                    mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 
 
