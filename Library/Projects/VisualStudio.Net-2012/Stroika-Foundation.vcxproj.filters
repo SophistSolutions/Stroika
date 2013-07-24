@@ -1308,6 +1308,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.h">
+      <Filter>Sources\Containers\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1964,6 +1967,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Private\IteratorImplHelper.inl">
+      <Filter>Sources\Containers\Private</Filter>
     </None>
   </ItemGroup>
 </Project>
