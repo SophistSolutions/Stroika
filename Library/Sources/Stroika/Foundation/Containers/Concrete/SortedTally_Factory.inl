@@ -19,6 +19,13 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                // Not sure why this pre-declare needed on GCC 4.7? Either a bug with my mutual #include file stuff or??? Hmmm...
+                // no biggie for now...
+                // -- LGP 2013-07-23
+                template    <typename T, typename TRAITS>
+                class SortedTally_stdmap;
+
+
                 template    <typename T, typename TRAITS>
                 inline  SortedTally<T, TRAITS>  mkSortedTally_Default ()
                 {
