@@ -72,8 +72,8 @@ namespace   Stroika {
                     DataStructureImplType_                  fData_;
 
 
-				private:
-					typedef	typename Private::IteratorImplHelper_<T, DataStructureImplType_>	IteratorRep_;
+                private:
+                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
                 };
 
 
