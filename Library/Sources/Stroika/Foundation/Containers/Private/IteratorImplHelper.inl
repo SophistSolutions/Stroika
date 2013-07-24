@@ -12,6 +12,42 @@ namespace   Stroika {
             namespace   Private {
 
 
+                /*
+                 ********************************************************************************
+                 *** IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR> **
+                 ********************************************************************************
+                 */
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
+                inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data)
+                    : inherited ()
+                    , fLockSupport (*sharedLock)
+                    , fIterator (*data)
+                {
+                    RequireNotNull (sharedLock);
+                    RequireNotNull (data);
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
+                typename Iterator<T>::SharedIRepPtr IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::Clone () const
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                        return typename Iterator<T>::SharedIRepPtr (new IteratorImplHelper_ (*this));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
+                bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::More (T* current, bool advance)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                        return (fIterator.More (current, advance));
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
+                bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::StrongEquals (const typename Iterator<T>::IRep* rhs) const
+                {
+                    AssertNotImplemented ();
+                    return false;
+                }
 
 
             }

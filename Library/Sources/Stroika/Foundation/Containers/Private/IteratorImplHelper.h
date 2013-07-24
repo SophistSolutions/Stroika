@@ -14,9 +14,8 @@
 #include    "SynchronizationUtils.h"
 
 
-
 /**
- *  Private utilities to support building subtypes of Containers::Iterable<T>
+ *  Private utility to support building of Traversal::Iterator<> objects for concrete Containers.
  *
  * TODO:
  *
@@ -40,36 +39,18 @@ namespace   Stroika {
                     typedef typename    Iterator<T>::IRep   inherited;
 
                 public:
-                    explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data)
-                        : inherited ()
-                        , fLockSupport (*sharedLock)
-                        , fIterator (*data) {
-                        RequireNotNull (sharedLock);
-                        RequireNotNull (data);
-                    }
+                    explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                            return typename Iterator<T>::SharedIRepPtr (new IteratorImplHelper_ (*this));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool    More (T* current, bool advance) override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                            return (fIterator.More (current, advance));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
-                        AssertNotImplemented ();
-                        return false;
-                    }
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
+                    virtual bool    More (T* current, bool advance) override;
+                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
 
+                public:
                     ContainerRepLockDataSupport_&           fLockSupport;
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
