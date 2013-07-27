@@ -15,6 +15,7 @@
 #include    "../../Memory/BlockAllocated.h"
 #include    "../STL/Compare.h"
 
+#include    "../Private/IteratorImplHelper.h"
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
@@ -69,63 +70,16 @@ namespace   Stroika {
 
                 private:
                     typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map < KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>
-                            >       DataStructureImplType_;
+                    map <KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>
+                            >
+                            DataStructureImplType_;
+
+                private:
+                    typedef typename Private::IteratorImplHelper_<pair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>    IteratorRep_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
-
-                private:
-                    friend  class   IteratorRep_;
-                };
-
-
-                /*
-                 ********************************************************************************
-                 ******* SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ *******
-                 ********************************************************************************
-                 */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_ : public Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep {
-                private:
-                    typedef typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep    inherited;
-
-                public:
-                    explicit IteratorRep_ (typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_& owner)
-                        : inherited ()
-                        , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (&owner.fData_) {
-                    }
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                    // Iterator<T>::IRep
-                public:
-                    virtual typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr     Clone () const override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*this));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool   More (pair<KEY_TYPE, VALUE_TYPE>* current, bool advance) override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return (fIterator_.More (current, advance));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool   StrongEquals (const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override {
-                        AssertNotImplemented ();
-                        return false;
-                    }
-
-                private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
-
-                private:
-                    friend  class   Rep_;
                 };
 
 
@@ -171,7 +125,7 @@ namespace   Stroika {
                     typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                        tmpRep = typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     Iterator<pair<KEY_TYPE, VALUE_TYPE>> tmp = Iterator<pair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
@@ -277,9 +231,9 @@ namespace   Stroika {
                 {
                     const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    auto    mir =   dynamic_cast<const typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::IteratorRep_&> (ir);
+                    auto    mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        mir.fIterator.RemoveCurrent ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

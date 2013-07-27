@@ -12,8 +12,8 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
-#include    "../Private/PatchingDataStructures/DoublyLinkedList.h"
 #include    "../Private/IteratorImplHelper.h"
+#include    "../Private/PatchingDataStructures/DoublyLinkedList.h"
 #include    "../Private/SynchronizationUtils.h"
 
 
@@ -57,14 +57,12 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::DoublyLinkedList<T>        DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::DoublyLinkedList<T>                DataStructureImplType_;
+                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;
                     DataStructureImplType_                      fData_;
-
-                private:
-                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
                 };
 
 

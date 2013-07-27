@@ -12,6 +12,7 @@
 
 #include    "../../Memory/BlockAllocated.h"
 
+#include    "../Private/IteratorImplHelper.h"
 #include    "../Private/PatchingDataStructures/Array.h"
 #include    "../Private/SynchronizationUtils.h"
 
@@ -56,57 +57,12 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::Array_Patch<T>     DataStructureImplType_;
+                    typedef Private::PatchingDataStructures::Array_Patch<T>             DataStructureImplType_;
+                    typedef Private::IteratorImplHelper_<T, DataStructureImplType_>     IteratorRep_;
 
                 private:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;
                     DataStructureImplType_                      fData_;
-
-                private:
-                    friend  class Sequence_Array<T, TRAITS>::IteratorRep_;
-                };
-
-
-                template    <typename T, typename TRAITS>
-                class  Sequence_Array<T, TRAITS>::IteratorRep_ : public Iterator<T>::IRep {
-                private:
-                    typedef typename    Iterator<T>::IRep   inherited;
-
-                public:
-                    explicit IteratorRep_ (typename Sequence_Array<T, TRAITS>::Rep_& owner)
-                        : inherited ()
-                        , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (&owner.fData_) {
-                    }
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                    // Iterator<T>::IRep
-                public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*this));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool    More (T* current, bool advance) override {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return (fIterator_.More (current, advance));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
-                        AssertNotImplemented ();
-                        return false;
-                    }
-
-                private:
-                    Private::ContainerRepLockDataSupport_&                              fLockSupport_;
-                    mutable typename Rep_::DataStructureImplType_::ForwardIterator      fIterator_;
-
-                private:
-                    friend  class   Rep_;
                 };
 
 
@@ -145,7 +101,7 @@ namespace   Stroika {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                        tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     Iterator<T> tmp = Iterator<T> (tmpRep);
@@ -205,9 +161,9 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Sequence_Array<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T, TRAITS>::IteratorRep_&> (ir);
+                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return mir.fIterator_.CurrentIndex ();
+                        return mir.fIterator.CurrentIndex ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -216,9 +172,9 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Sequence_Array<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T, TRAITS>::IteratorRep_&> (ir);
+                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.RemoveAt (mir.fIterator_);
+                        fData_.RemoveAt (mir.fIterator);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -227,9 +183,9 @@ namespace   Stroika {
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename Sequence_Array<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename Sequence_Array<T, TRAITS>::IteratorRep_&> (ir);
+                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.SetAt (mir.fIterator_, newValue);
+                        fData_.SetAt (mir.fIterator, newValue);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
