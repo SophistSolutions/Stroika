@@ -206,7 +206,7 @@ namespace   Stroika {
                         _ArrayIteratorBase ();       // not defined - do not call.
 
                     public:
-                        _ArrayIteratorBase (const Array<T, TRAITS>& data);
+                        _ArrayIteratorBase (const Array<T, TRAITS>* data);
 
                         nonvirtual  T       Current () const;           //  Error to call if Done (), otherwise OK
                         nonvirtual  size_t  CurrentIndex () const;      //  NB: This can be called if we are done - if so, it returns GetLength() + 1.
@@ -244,7 +244,7 @@ namespace   Stroika {
                         typedef typename Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        ForwardIterator (const Array<T, TRAITS>& data);
+                        ForwardIterator (const Array<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -262,7 +262,7 @@ namespace   Stroika {
                         typedef typename    Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        BackwardIterator (const Array<T, TRAITS>& data);
+                        BackwardIterator (const Array<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

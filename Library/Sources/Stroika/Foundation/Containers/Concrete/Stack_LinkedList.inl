@@ -81,7 +81,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename Stack_LinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:

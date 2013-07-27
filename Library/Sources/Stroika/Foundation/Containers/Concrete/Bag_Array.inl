@@ -191,7 +191,7 @@ namespace   Stroika {
                         // DEBUG WHY USING BACKWARD ITERATOR GENERATES ERROR ON MSVC - COMPILE ERROR ABOUT TYPE MISMATCH-- WHEN I SWITCHED TO USING DataStructureImplType_...
                         // NOT IMPORTANT NOW _ SO DEFER
                         //for (typename DataStructureImplType_::BackwardIterator it (fData_); it.More (nullptr, true);) {
-                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;

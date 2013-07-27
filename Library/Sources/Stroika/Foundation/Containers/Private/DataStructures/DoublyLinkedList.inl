@@ -350,9 +350,9 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>& data)
-                        : _fData (&data)
-                        , _fCurrent (data._fHead)
+                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>* data)
+                        : _fData (data)
+                        , _fCurrent (data->_fHead)
                         , _fSuppressMore (true)
                     {
                     }

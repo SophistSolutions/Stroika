@@ -87,7 +87,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename Set_LinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:
@@ -223,7 +223,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 return;
                             }
@@ -236,7 +236,7 @@ namespace   Stroika {
                 void    Set_LinkedList<T, TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it);
                                 return;

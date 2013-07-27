@@ -224,7 +224,7 @@ namespace   Stroika {
                     class   LinkedList<T, TRAITS>::ForwardIterator {
                     public:
                         ForwardIterator (const ForwardIterator& from);
-                        ForwardIterator (const LinkedList& data);
+                        ForwardIterator (const LinkedList* data);
 
                     public:
                         nonvirtual  ForwardIterator& operator= (const ForwardIterator& it);

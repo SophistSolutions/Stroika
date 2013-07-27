@@ -21,7 +21,7 @@ namespace   Stroika {
                 inline  IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data)
                     : inherited ()
                     , fLockSupport (*sharedLock)
-                    , fIterator (*data)
+                    , fIterator (data)
                 {
                     RequireNotNull (sharedLock);
                     RequireNotNull (data);

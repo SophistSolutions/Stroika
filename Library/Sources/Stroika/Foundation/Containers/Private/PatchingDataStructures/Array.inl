@@ -21,10 +21,10 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array_Patch<T, TRAITS>& data)
+                    inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array_Patch<T, TRAITS>* data)
                         : inherited (data)
-                        , fData (&data)
-                        , fNext (data.fIterators_)
+                        , fData (data)
+                        , fNext (data->fIterators_)
                     {
                         const_cast <Array_Patch<T, TRAITS>*> (fData)->fIterators_ = this;
                         /*
@@ -460,9 +460,10 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array_Patch<T, TRAITS>::ForwardIterator::ForwardIterator (const Array_Patch<T, TRAITS>& data) :
+                    inline  Array_Patch<T, TRAITS>::ForwardIterator::ForwardIterator (const Array_Patch<T, TRAITS>* data) :
                         inherited (data)
                     {
+                        RequireNotNull (data);
                         this->_fCurrent = this->_fStart;
                         this->Invariant ();
                     }

@@ -413,15 +413,16 @@ namespace   Stroika {
 #endif
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>& data) :
+                    inline  Array<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array<T, TRAITS>* data) :
 #if     qDebug
-                        _fData (&data),
+                        _fData (data),
 #endif
-                        _fStart (&data._fItems[0]),
-                        _fEnd (&data._fItems[data.GetLength ()]),
+                        _fStart (&data->_fItems[0]),
+                        _fEnd (&data->_fItems[data->GetLength ()]),
                         //_fCurrent ()                           dont initialize - done in subclasses...
                         _fSuppressMore (true)                // first time thru - cuz of how used in for loops...
                     {
+                        RequireNotNull (data);
 #if     qDebug
                         _fCurrent = nullptr; // more likely to cause bugs...
 #endif
@@ -475,7 +476,7 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>::ForwardIterator::ForwardIterator (const Array<T, TRAITS>& data)
+                    inline  Array<T, TRAITS>::ForwardIterator::ForwardIterator (const Array<T, TRAITS>* data)
                         : inherited (data)
                     {
                         this->_fCurrent = this->_fStart;
@@ -501,7 +502,7 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>& data)
+                    inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>* data)
                         : inherited (data)
                     {
                         if (data.GetLength () == 0) {

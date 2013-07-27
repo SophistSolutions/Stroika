@@ -340,12 +340,13 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>& data)
+                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>* data)
                     //: fCachedPrev (nullptr)
-                        : _fData (&data)
-                        , _fCurrent (data._fHead)
+                        : _fData (data)
+                        , _fCurrent (data->_fHead)
                         , _fSuppressMore (true)
                     {
+                        RequireNotNull (data);
                     }
                     template      <typename  T, typename TRAITS>
                     inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const ForwardIterator& from)

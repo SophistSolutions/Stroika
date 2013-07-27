@@ -122,7 +122,7 @@ namespace   Stroika {
                         typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::ForwardIterator inherited;
 
                     public:
-                        ForwardIterator (const DoublyLinkedList<T, TRAITS>& data);
+                        ForwardIterator (const DoublyLinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
 

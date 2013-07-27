@@ -73,7 +73,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename Queue_DoublyLinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:

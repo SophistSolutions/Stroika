@@ -215,7 +215,7 @@ namespace   Stroika {
                         else {
                             size_t index = at;
                             T tmphack;
-                            for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&tmphack, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         fData_.AddBefore (it, *p);
@@ -238,7 +238,7 @@ namespace   Stroika {
                     size_t amountToRemove = (to - from);
                     T tmphack;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&tmphack, true); ) {
+                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&tmphack, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     fData_.RemoveAt (it);

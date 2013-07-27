@@ -103,7 +103,7 @@ namespace   Stroika {
                     IteratorRep_ (typename Tally_Array<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:

@@ -233,15 +233,16 @@ namespace   Stroika {
 
                     /*
                     ********************************************************************************
-                    ******************* DoublyLinkedList<T, TRAITS>::ForwardIterator ***********************
+                    ***************** DoublyLinkedList<T, TRAITS>::ForwardIterator *****************
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>& data)
+                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>* data)
                         : inherited (data)
-                        , fNextActiveIterator_ (data.fActiveIteratorsListHead_)
+                        , fNextActiveIterator_ (data->fActiveIteratorsListHead_)
                     {
-                        const_cast<DoublyLinkedList<T, TRAITS>*> (&data)->fActiveIteratorsListHead_ = this;
+                        RequireNotNull (data);
+                        const_cast<DoublyLinkedList<T, TRAITS>*> (data)->fActiveIteratorsListHead_ = this;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>

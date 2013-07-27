@@ -124,7 +124,7 @@ namespace   Stroika {
                         typedef typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        _ArrayIteratorBase (const Array_Patch<T, TRAITS>& data);
+                        _ArrayIteratorBase (const Array_Patch<T, TRAITS>* data);
                         _ArrayIteratorBase (const _ArrayIteratorBase& from);
                         ~_ArrayIteratorBase ();
 
@@ -169,7 +169,7 @@ namespace   Stroika {
                         typedef typename Array_Patch<T, TRAITS>::_ArrayIteratorBase    inherited;
 
                     public:
-                        ForwardIterator (const Array_Patch<T, TRAITS>& data);
+                        ForwardIterator (const Array_Patch<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

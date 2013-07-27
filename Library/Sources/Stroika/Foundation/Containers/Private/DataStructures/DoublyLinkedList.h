@@ -233,7 +233,7 @@ namespace   Stroika {
                     class   DoublyLinkedList<T, TRAITS>::ForwardIterator {
                     public:
                         ForwardIterator (const ForwardIterator& from);
-                        ForwardIterator (const DoublyLinkedList<T, TRAITS>& data);
+                        ForwardIterator (const DoublyLinkedList<T, TRAITS>* data);
 
                     public:
                         typedef typename DoublyLinkedList<T, TRAITS>::Link    Link;

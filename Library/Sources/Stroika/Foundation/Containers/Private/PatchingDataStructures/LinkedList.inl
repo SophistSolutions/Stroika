@@ -154,7 +154,7 @@ namespace   Stroika {
                          */
                         Invariant ();
                         T current;
-                        for (ForwardIterator it (*this); it.More (&current, true); ) {
+                        for (ForwardIterator it (this); it.More (&current, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
                                 this->RemoveAt (it);
                                 break;
@@ -249,12 +249,13 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>& data)
+                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>* data)
                         : inherited (data)
-                        , _fNextActiveIterator (data.fActiveIteratorsListHead_)
+                        , _fNextActiveIterator (data->fActiveIteratorsListHead_)
                         //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {
-                        const_cast<LinkedList<T, TRAITS>*> (&data)->fActiveIteratorsListHead_ = this;
+                        RequireNotNull (data);
+                        const_cast<LinkedList<T, TRAITS>*> (data)->fActiveIteratorsListHead_ = this;
                         this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>

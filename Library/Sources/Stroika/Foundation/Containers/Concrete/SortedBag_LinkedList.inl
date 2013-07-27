@@ -92,7 +92,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename SortedBag_LinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:
@@ -269,7 +269,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    SortedBag_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
                 {
-                    typename Rep_::DataStructureImplType_::ForwardIterator it (fData_);
+                    typename Rep_::DataStructureImplType_::ForwardIterator it (&fData_);
                     // skip the smaller items
                     while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
                     }

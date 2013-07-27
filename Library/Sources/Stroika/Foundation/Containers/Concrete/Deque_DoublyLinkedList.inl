@@ -77,7 +77,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename Deque_DoublyLinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:

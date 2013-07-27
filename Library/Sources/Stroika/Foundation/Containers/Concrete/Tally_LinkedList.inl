@@ -92,7 +92,7 @@ namespace   Stroika {
                     IteratorRep_ (typename Tally_LinkedList<T, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:
@@ -197,7 +197,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         TallyEntry<T>   c = item;
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Assert (c.fCount != 0);
                                 return (true);
@@ -221,7 +221,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
@@ -239,7 +239,7 @@ namespace   Stroika {
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename DataStructureImplType_::ForwardIterator it (fData_); it.More (&current, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;
@@ -302,7 +302,7 @@ namespace   Stroika {
                 {
                     TallyEntry<T>   c = item;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (&c, true); ) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
                                 return (c.fCount);

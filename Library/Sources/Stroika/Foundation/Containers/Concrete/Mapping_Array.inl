@@ -100,7 +100,7 @@ namespace   Stroika {
                     explicit IteratorRep_ (typename Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_& owner)
                         : inherited ()
                         , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (owner.fData_) {
+                        , fIterator_ (&owner.fData_) {
                     }
 
                 public:
@@ -227,7 +227,7 @@ namespace   Stroika {
                 bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
@@ -243,7 +243,7 @@ namespace   Stroika {
                 void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_[it.CurrentIndex ()].second = newElt;
                                 return;
@@ -257,7 +257,7 @@ namespace   Stroika {
                 void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (KEY_TYPE key)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (fData_); it.More (nullptr, true);) {
+                        for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
                             if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
