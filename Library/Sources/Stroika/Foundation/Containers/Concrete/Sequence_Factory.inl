@@ -25,7 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Sequence<T, TRAITS> (*) ()> Sequence_Factory<T, TRAITS>::sFactory_  =   &Default_;
+                atomic<Sequence<T, TRAITS> (*) ()> Sequence_Factory<T, TRAITS>::sFactory_ (&Default_);
 
                 template    <typename T, typename TRAITS>
                 inline  Sequence<T, TRAITS>  Sequence_Factory<T, TRAITS>::mk ()

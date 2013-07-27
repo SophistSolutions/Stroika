@@ -25,7 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Bag<T, TRAITS> (*) ()>   Bag_Factory<T, TRAITS>::sFactory_ =   &Default_;
+                atomic<Bag<T, TRAITS> (*) ()>   Bag_Factory<T, TRAITS>::sFactory_ (&Default_);
 
                 template    <typename T, typename TRAITS>
                 inline  Bag<T, TRAITS>  Bag_Factory<T, TRAITS>::mk ()
