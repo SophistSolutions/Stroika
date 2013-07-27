@@ -15,6 +15,7 @@
 
 #include    "../STL/Compare.h"
 
+#include    "../Private/IteratorImplHelper.h"
 #include    "../Private/PatchingDataStructures/STLContainerWrapper.h"
 #include    "../Private/SynchronizationUtils.h"
 
@@ -77,11 +78,14 @@ namespace   Stroika {
                             >        DataStructureImplType_;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
+                    class   IteratorRep_;
 
                 private:
-                    friend  class   IteratorRep_;
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
                 };
 
 
@@ -90,16 +94,50 @@ namespace   Stroika {
                  ************** SortedTally_stdmap<T, TRAITS>::IteratorRep_ *********************
                  ********************************************************************************
                  */
+#if 0
                 template    <typename T, typename TRAITS>
-                class  SortedTally_stdmap<T, TRAITS>::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
+                class   SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>    {
+                private:
+                    typedef Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_> inherited;
+
+                public:
+                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
+                        : inherited (sharedLock, data) {
+                    }
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
+
+                public:
+                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                            if (current == nullptr) {
+                                return fIterator.More (static_cast<pair<T, size_t>*> (nullptr), advance);
+                            }
+                            else {
+                                pair<T, size_t> tmp;
+                                bool result = fIterator.More (&tmp, advance);
+                                if (current != nullptr) {
+                                    current->fItem = tmp.first;
+                                    current->fCount = tmp.second;
+                                }
+                                return result;
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                };
+#else
+                template    <typename T, typename TRAITS>
+                class  SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:
                     typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
 
                 public:
-                    IteratorRep_ (typename SortedTally_stdmap<T, TRAITS>::Rep_& owner)
+                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                         : inherited ()
-                        , fLockSupport_ (owner.fLockSupport_)
-                        , fIterator_ (&owner.fData_) {
+                        , fLockSupport_ (*sharedLock)
+                        , fIterator (data) {
                     }
 
                 public:
@@ -115,11 +153,11 @@ namespace   Stroika {
                     virtual bool    More (TallyEntry<T>* current, bool advance) override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             if (current == nullptr) {
-                                return fIterator_.More (static_cast<pair<T, size_t>*> (nullptr), advance);
+                                return fIterator.More (static_cast<pair<T, size_t>*> (nullptr), advance);
                             }
                             else {
                                 pair<T, size_t> tmp;
-                                bool result = fIterator_.More (&tmp, advance);
+                                bool result = fIterator.More (&tmp, advance);
                                 if (current != nullptr) {
                                     current->fItem = tmp.first;
                                     current->fCount = tmp.second;
@@ -136,12 +174,10 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator_;
-
-                private:
-                    //friend  class   SortedTally_stdmap<T, TRAITS>::Rep_;
-                    friend      class       Rep_;
+                public:
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator;
                 };
+#endif
 
 
                 /*
@@ -189,7 +225,7 @@ namespace   Stroika {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*NON_CONST_THIS));
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (tmpRep);
@@ -270,9 +306,9 @@ namespace   Stroika {
                 {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&> (ir);
+                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        mir.fIterator_.RemoveCurrent ();
+                        mir.fIterator.RemoveCurrent ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -289,13 +325,13 @@ namespace   Stroika {
                 {
                     const typename Iterator<TallyEntry<T>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
-                    const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&       mir =   dynamic_cast<const typename SortedTally_stdmap<T, TRAITS>::IteratorRep_&> (ir);
+                    auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (newCount == 0) {
-                            mir.fIterator_.RemoveCurrent ();
+                            mir.fIterator.RemoveCurrent ();
                         }
                         else {
-                            mir.fIterator_.fStdIterator->second = newCount;
+                            mir.fIterator.fStdIterator->second = newCount;
                         }
                         // TODO - PATCH
                     }

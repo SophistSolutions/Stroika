@@ -32,6 +32,8 @@ namespace   Stroika {
 
 
                 /**
+                 *  There is no requirement that Stroika contcrete containers use this class. However, it
+                 *  so far has appeared a handy code sharing utility.
                  */
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
                 class  IteratorImplHelper_ : public Iterator<T>::IRep {
