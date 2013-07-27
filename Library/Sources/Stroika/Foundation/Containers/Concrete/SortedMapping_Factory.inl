@@ -32,16 +32,24 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
+                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
                 {
-                    return sFactory_ ();
+                    /*
+                     *  Would have been more performant to just and assure always properly set, but to initialize
+                     *  sFactory_ with a value other than nullptr requires waiting until after main() - so causes problems
+                     *  with containers constructed before main.
+                     *
+                     *  This works more generally (and with hopefully modest enough performance impact).
+                     *
+                     */
+                    return (sFactory_.load () == nullptr) ? Default_() : sFactory_ ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
                 {
-                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                    sFactory_ = factory;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
