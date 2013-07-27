@@ -127,7 +127,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally ()
-                : inherited (Concrete::mkTally_Default<T, TRAITS> ())
+                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -140,7 +140,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Tally<T, TRAITS>::Tally (const CONTAINER_OF_T& src)
-                : inherited (Concrete::mkTally_Default<T, TRAITS> ())
+                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 operator+= (src);
@@ -153,14 +153,16 @@ namespace   Stroika {
             }
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const T* start, const T* end)
-                : inherited (Concrete::mkTally_Default<T, TRAITS> (start, end))
+                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
+                this->AddAll (start, end);
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const TallyEntry<T>* start, const TallyEntry<T>* end)
-                : inherited (Concrete::mkTally_Default<T, TRAITS> (start, end))
+                : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
+                this->AddAll (start, end);
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>

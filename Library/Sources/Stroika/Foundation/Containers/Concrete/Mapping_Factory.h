@@ -6,7 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
-
+#include    <atomic>
 
 /**
  *  \file
@@ -15,8 +15,6 @@
  *      @todo   Extend this metaphor to have different kinds of factories, like mkMapping_Fasted,
  *              mkMapping_Smallest, mkMappingWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Consider something like RegisterFactory_Mapping below
  *
  */
 
@@ -35,20 +33,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a Mapping<> container
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container
+                 *
+                 *  Note - you can override the underlying factory dynamically by calling Mapping_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing Mapping_Factory<T,TRAITS>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mkMapping_Default ();
+                class   Mapping_Factory {
+                private:
+                    static  atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
 
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the Mapping<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if 0
-                template    <typename Key, typename T>
-                void    RegisterFactory_Mapping (Mapping<Key, T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given Mapping<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                };
 
 
             }

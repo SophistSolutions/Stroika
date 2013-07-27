@@ -27,7 +27,7 @@ namespace   Stroika {
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
-                : inherited (Concrete::mkMapping_Default<KEY_TYPE, VALUE_TYPE, TRAITS> ())
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -38,14 +38,14 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::mkMapping_Default<KEY_TYPE, VALUE_TYPE, TRAITS> ())
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
                 AddAll (cp);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::mkMapping_Default<KEY_TYPE, VALUE_TYPE, TRAITS> ())
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
                 AddAll (start, end);
             }

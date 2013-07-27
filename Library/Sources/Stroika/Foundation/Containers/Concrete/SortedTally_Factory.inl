@@ -26,8 +26,26 @@ namespace   Stroika {
                 class SortedTally_stdmap;
 
 
+                /*
+                 ********************************************************************************
+                 ************************ SortedTally_Factory<T, TRAITS> ************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                inline  SortedTally<T, TRAITS>  mkSortedTally_Default ()
+                atomic<SortedTally<T, TRAITS> (*) ()> SortedTally_Factory<T, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename T, typename TRAITS>
+                inline  SortedTally<T, TRAITS>  SortedTally_Factory<T, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename T, typename TRAITS>
+                void    SortedTally_Factory<T, TRAITS>::Register (SortedTally<T, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename T, typename TRAITS>
+                SortedTally<T, TRAITS>  SortedTally_Factory<T, TRAITS>::Default_ ()
                 {
                     return SortedTally_stdmap<T, TRAITS> ();
                 }

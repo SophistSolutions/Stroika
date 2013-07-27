@@ -19,8 +19,26 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ************************ Tally_Factory<T, TRAITS> ******************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                inline  Tally<T, TRAITS>    mkTally_Default ()
+                atomic<Tally<T, TRAITS> (*) ()> Tally_Factory<T, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename T, typename TRAITS>
+                inline  Tally<T, TRAITS>  Tally_Factory<T, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename T, typename TRAITS>
+                void    Tally_Factory<T, TRAITS>::Register (Tally<T, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename T, typename TRAITS>
+                Tally<T, TRAITS>  Tally_Factory<T, TRAITS>::Default_ ()
                 {
                     return Tally_Array<T, TRAITS> ();
                 }

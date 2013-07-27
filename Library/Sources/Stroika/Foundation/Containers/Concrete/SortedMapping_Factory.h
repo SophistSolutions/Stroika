@@ -6,18 +6,16 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <atomic>
 
 
 /**
  *  \file
  *
  *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkMapping_Fasted,
- *              mkMapping_Smallest, mkMappingWithHash_Fastest etc...
+ *      @todo   Extend this metaphor to have different kinds of factories, like mkSortedMapping_Fastest,
+ *              mkSortedMapping_Smallest, mkSortedMappingWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Consider something like RegisterFactory_SortedMapping below
- *
  */
 
 
@@ -35,19 +33,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a SortedMapping<> container
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedMapping<> container
+                 *
+                 *  Note - you can override the underlying factory dynamically by calling SortedMapping_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing SortedMapping_Factory<T,TRAITS>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>    mkSortedMapping_Default ();
+                class   SortedMapping_Factory {
+                private:
+                    static  atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if     0
-                template    <typename Key, typename T>
-                void    RegisterFactory_SortedMapping (SortedMapping<Key, T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the SortedMapping<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given SortedMapping<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                };
 
 
             }

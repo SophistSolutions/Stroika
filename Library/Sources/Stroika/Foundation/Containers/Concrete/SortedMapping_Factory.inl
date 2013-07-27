@@ -26,8 +26,26 @@ namespace   Stroika {
                 class SortedMapping_stdmap;
 
 
+                /*
+                 ********************************************************************************
+                 ************ SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> ***************
+                 ********************************************************************************
+                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>    mkSortedMapping_Default ()
+                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
                 {
                     return SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ();
                 }

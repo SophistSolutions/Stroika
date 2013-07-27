@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping ()
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedMapping_Default<KEY_TYPE, VALUE_TYPE, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }

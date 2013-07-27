@@ -19,8 +19,26 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ************ Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> *********************
+                 ********************************************************************************
+                 */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  mkMapping_Default ()
+                atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                void    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most

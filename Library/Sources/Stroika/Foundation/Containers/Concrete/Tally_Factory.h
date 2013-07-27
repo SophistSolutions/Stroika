@@ -6,18 +6,16 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <atomic>
 
 
 /**
  *  \file
  *
  *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkTally_Fasted,
+ *      @todo   Extend this metaphor to have different kinds of factories, like mkTally_Fastest,
  *              mkTally_Smallest, mkTallyWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Consider something like RegisterFactory_Tally below
- *
  */
 
 
@@ -35,20 +33,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a Tally<> container
-                 *
-                 *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
-                 */
+                *  \brief   Singleton factory object - Used to create the default backend implementation of a Tally<> container
+                *
+                *  Note - you can override the underlying factory dynamically by calling Tally_Factory<T,TRAITS>::Register (), or
+                *  replace it statically by template-specailizing Tally_Factory<T,TRAITS>::mk () - though the later is trickier.
+                *
+                *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+                */
                 template    <typename T, typename TRAITS>
-                Tally<T, TRAITS>  mkTally_Default ();
+                class   Tally_Factory {
+                private:
+                    static  atomic<Tally<T, TRAITS> (*) ()>   sFactory_;
 
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the Tally<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  Tally<T, TRAITS>  mk ();
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if 0
-                template    <typename T>
-                void    RegisterFactory_Tally (Tally<T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given Tally<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (Tally<T, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  Tally<T, TRAITS>  Default_ ();
+                };
 
 
             }
