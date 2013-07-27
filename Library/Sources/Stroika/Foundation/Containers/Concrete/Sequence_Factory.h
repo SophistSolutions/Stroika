@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <atomic>
 
 
 /**
@@ -15,8 +16,6 @@
  *      @todo   Extend this metaphor to have different kinds of factories, like mkSequence_Fasted,
  *              mkSequence_Smallest, mkSequenceWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Consider something like RegisterFactory_Sequence below
  *
  */
 
@@ -35,20 +34,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a Sequence<> container
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a Sequence<> container
+                 *
+                 *  Note - you can override the underlying factory dynamically by calling Sequence_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing Sequence_Factory<T,TRAITS>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename T, typename TRAITS>
-                Sequence<T, TRAITS>  mkSequence_Default ();
+                class   Sequence_Factory {
+                private:
+                    static  atomic<Sequence<T, TRAITS> (*) ()>   sFactory_;
 
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the Sequence<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  Sequence<T, TRAITS>  mk ();
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if 0
-                template    <typename Key, typename T>
-                void    RegisterFactory_Sequence (Sequence<Key, T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given Sequence<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (Sequence<T, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  Sequence<T, TRAITS>  Default_ ();
+                };
 
 
             }

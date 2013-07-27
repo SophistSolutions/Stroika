@@ -35,6 +35,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Bag_Factory<T, TRAITS>::Register (Bag<T, TRAITS> (*factory) ())
                 {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
                 }
                 template    <typename T, typename TRAITS>
                 Bag<T, TRAITS>  Bag_Factory<T, TRAITS>::Default_ ()
