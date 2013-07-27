@@ -12,11 +12,12 @@
  *  \file
  *
  *  TODO:
+ *      @todo   FIX FOR RE-ENTRANCY!!!! - USE STD-ATOMICS FOR UPDATE / FETCH OF FACTORY POINTER
+ *
  *      @todo   Extend this metaphor to have different kinds of factories, like mkBag_Fastest,
  *              mkBag_Smallest, mkBagWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
- *
- *      @todo   Consider something like RegisterFactory_Bag below
+ *              MAYBE????
  *
  */
 
@@ -35,20 +36,30 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a Bag<> container
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a Bag<> container
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename T, typename TRAITS>
-                Bag<T, TRAITS>  mkBag_Default ();
+                class   Bag_Factory {
+                private:
+                    static  Bag<T, TRAITS>       (*sFactory_) ();
 
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the Bag<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  Bag<T, TRAITS>  mk ();
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if 0
-                template    <typename Key, typename T>
-                void    RegisterFactory_Bag (Bag<Key, T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given Bag<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (Bag<T, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  Bag<T, TRAITS>  Default_ ();
+                };
 
 
             }

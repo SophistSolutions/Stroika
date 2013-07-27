@@ -28,7 +28,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Bag<T, TRAITS>::Bag ()
-                : inherited (Concrete::mkBag_Default<T, TRAITS> ())
+                : inherited (Concrete::Bag_Factory<T, TRAITS>::mk ())
             {
             }
             template    <typename T, typename TRAITS>
@@ -46,7 +46,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Bag<T, TRAITS>::Bag (const CONTAINER_OF_T& b)
-                : inherited (Concrete::mkBag_Default<T, TRAITS> ())
+                : inherited (Concrete::Bag_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (b);
