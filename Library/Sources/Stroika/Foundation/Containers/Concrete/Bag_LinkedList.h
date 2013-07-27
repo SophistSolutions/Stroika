@@ -55,7 +55,6 @@ namespace   Stroika {
                 public:
 #endif
                     class   Rep_;
-                    class   IteratorRep_;
                 };
 
 

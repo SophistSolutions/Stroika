@@ -68,11 +68,11 @@ namespace   Stroika {
                     DataStructureImplType_;
 
                 private:
-                    Private::ContainerRepLockDataSupport_   fLockSupport_;
-                    DataStructureImplType_                  fData_;
+                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
 
                 private:
-                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
+                    Private::ContainerRepLockDataSupport_   fLockSupport_;
+                    DataStructureImplType_                  fData_;
                 };
 
 
