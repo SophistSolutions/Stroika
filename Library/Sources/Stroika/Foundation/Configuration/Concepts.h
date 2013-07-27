@@ -35,11 +35,13 @@
  */
 
 
+
 /**
  */
 #ifndef qCheckConceptRequirements
 #define qCheckConceptRequirements 1
 #endif
+
 
 
 namespace   Stroika {

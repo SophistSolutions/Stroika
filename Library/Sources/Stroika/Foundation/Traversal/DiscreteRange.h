@@ -19,6 +19,7 @@
  */
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {

@@ -54,6 +54,7 @@
  */
 
 
+
 /**
  *  Empirically, std::function seems to use way more code space (and must evaluate rest)
  *  than the qAPPLY_IMPL_STRATEGY_COOKIE strategy, which is functionally equivilent from

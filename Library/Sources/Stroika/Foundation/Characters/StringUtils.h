@@ -11,7 +11,6 @@
 #include    <string>
 #include    <vector>
 
-
 #include    "../Configuration/Common.h"
 #include    "Character.h"
 
@@ -24,7 +23,6 @@
  * TODO:
  *      >> Probably move LineEdnings related stutff to Characters/LineEndings module
  */
-
 
 
 
@@ -53,9 +51,6 @@
 #ifndef qPlatformSupports_wcsncasecmp
 #error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
 #endif
-
-
-
 
 
 

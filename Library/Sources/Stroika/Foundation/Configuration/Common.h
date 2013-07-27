@@ -9,6 +9,7 @@
 #include    <ciso646>
 
 
+
 namespace   Stroika {
     namespace   Foundation {
         using   namespace   std;

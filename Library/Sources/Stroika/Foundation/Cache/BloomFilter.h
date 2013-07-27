@@ -4,6 +4,13 @@
 #ifndef _Stroika_Foundation_Cache_BloomFilter_h_
 #define _Stroika_Foundation_Cache_BloomFilter_h_   1
 
+#include    "../StroikaPreComp.h"
+
+#include    "../Configuration/Common.h"
+#include    "../Memory/SharedByValue.h"
+
+
+
 /**
  *
  * Description:
@@ -18,12 +25,6 @@
  *              return (due to nature of bloom filter you dont store the stuff, but the hashes)
  *
  */
-
-
-#include    "../StroikaPreComp.h"
-
-#include    "../Configuration/Common.h"
-#include    "../Memory/SharedByValue.h"
 
 
 

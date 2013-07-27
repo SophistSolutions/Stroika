@@ -4,7 +4,6 @@
 #ifndef _Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_
 #define _Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_   1
 
-
 #include    "../../StroikaPreComp.h"
 
 #include    "../SortedTally.h"
