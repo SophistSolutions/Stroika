@@ -23,7 +23,7 @@ namespace   Stroika {
                 // no biggie for now...
                 // -- LGP 2013-07-23
                 template    <typename T, typename TRAITS>
-                class SortedTally_stdmap;
+                class   SortedTally_stdmap;
 
 
                 /*
@@ -32,8 +32,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedTally<T, TRAITS> (*) ()> SortedTally_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<SortedTally<T, TRAITS> (*) ()>   SortedTally_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  SortedTally<T, TRAITS>  SortedTally_Factory<T, TRAITS>::mk ()
                 {

@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>    Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
                 {

@@ -23,7 +23,7 @@ namespace   Stroika {
                 // no biggie for now...
                 // -- LGP 2013-07-21
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class SortedMapping_stdmap;
+                class   SortedMapping_stdmap;
 
 
                 /*
@@ -32,8 +32,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()> SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
-
+                atomic<SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (&Default_);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>  SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
                 {

@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Deque<T, TRAITS> (*) ()> Deque_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Deque<T, TRAITS> (*) ()>     Deque_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  Deque<T, TRAITS>  Deque_Factory<T, TRAITS>::mk ()
                 {

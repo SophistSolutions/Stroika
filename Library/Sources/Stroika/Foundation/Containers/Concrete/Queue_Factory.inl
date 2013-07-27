@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Queue<T, TRAITS> (*) ()> Queue_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Queue<T, TRAITS> (*) ()>     Queue_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  Queue<T, TRAITS>  Queue_Factory<T, TRAITS>::mk ()
                 {

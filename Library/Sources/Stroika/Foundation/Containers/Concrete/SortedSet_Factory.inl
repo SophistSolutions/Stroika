@@ -23,7 +23,7 @@ namespace   Stroika {
                 // no biggie for now...
                 // -- LGP 2013-07-23
                 template    <typename T, typename TRAITS>
-                class SortedSet_stdset;
+                class   SortedSet_stdset;
 
 
                 /*
@@ -32,8 +32,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedSet<T, TRAITS> (*) ()> SortedSet_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<SortedSet<T, TRAITS> (*) ()>     SortedSet_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::mk ()
                 {

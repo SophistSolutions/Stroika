@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Tally<T, TRAITS> (*) ()> Tally_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Tally<T, TRAITS> (*) ()>     Tally_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  Tally<T, TRAITS>  Tally_Factory<T, TRAITS>::mk ()
                 {

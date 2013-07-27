@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Stack<T, TRAITS> (*) ()> Stack_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Stack<T, TRAITS> (*) ()>     Stack_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  Stack<T, TRAITS>  Stack_Factory<T, TRAITS>::mk ()
                 {

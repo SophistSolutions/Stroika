@@ -25,8 +25,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<Set<T, TRAITS> (*) ()> Set_Factory<T, TRAITS>::sFactory_ (&Default_);
-
+                atomic<Set<T, TRAITS> (*) ()>   Set_Factory<T, TRAITS>::sFactory_ (&Default_);
                 template    <typename T, typename TRAITS>
                 inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::mk ()
                 {
