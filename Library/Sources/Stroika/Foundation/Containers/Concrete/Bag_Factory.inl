@@ -19,9 +19,13 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-
+                /*
+                 ********************************************************************************
+                 ***************************** Bag_Factory<T, TRAITS> ***************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                Bag<T, TRAITS>       (*Bag_Factory<T, TRAITS>::sFactory_) ()      =   &Default_;
+                atomic<Bag<T, TRAITS> (*) ()>   Bag_Factory<T, TRAITS>::sFactory_ =   &Default_;
 
                 template    <typename T, typename TRAITS>
                 inline  Bag<T, TRAITS>  Bag_Factory<T, TRAITS>::mk ()
@@ -34,14 +38,6 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 Bag<T, TRAITS>  Bag_Factory<T, TRAITS>::Default_ ()
-                {
-                    return Bag_Array<T, TRAITS> ();
-                }
-
-
-
-                template    <typename T, typename TRAITS>
-                Bag<T, TRAITS>  mkBag_Default ()
                 {
                     return Bag_Array<T, TRAITS> ();
                 }

@@ -16,12 +16,12 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************************ SortedBag<T, TRAITS> ******************************
+             **************************** SortedBag<T, TRAITS> ******************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
             inline  SortedBag<T, TRAITS>::SortedBag ()
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedBag_Default<T, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::SortedBag_Factory<T, TRAITS>::mk ()))
             {
             }
             template    <typename T, typename TRAITS>
@@ -39,7 +39,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedBag<T, TRAITS>::SortedBag (const CONTAINER_OF_T& s)
-                : inherited (static_cast<const inherited&> (Concrete::mkSortedBag_Default<T, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::SortedBag_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (s);

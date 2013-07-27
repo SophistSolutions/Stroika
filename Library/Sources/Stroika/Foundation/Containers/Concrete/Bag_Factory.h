@@ -6,14 +6,13 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <atomic>
 
 
 /**
  *  \file
  *
  *  TODO:
- *      @todo   FIX FOR RE-ENTRANCY!!!! - USE STD-ATOMICS FOR UPDATE / FETCH OF FACTORY POINTER
- *
  *      @todo   Extend this metaphor to have different kinds of factories, like mkBag_Fastest,
  *              mkBag_Smallest, mkBagWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
@@ -38,12 +37,15 @@ namespace   Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Bag<> container
                  *
+                 *  Note - you can override the underlying factory dynamically by calling Bag_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing Bag_Factory<T,TRAITS>::mk () - though the later is trickier.
+                 *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
                 template    <typename T, typename TRAITS>
                 class   Bag_Factory {
                 private:
-                    static  Bag<T, TRAITS>       (*sFactory_) ();
+                    static  atomic<Bag<T, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
