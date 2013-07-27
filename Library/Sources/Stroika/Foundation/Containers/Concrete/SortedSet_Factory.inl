@@ -26,8 +26,26 @@ namespace   Stroika {
                 class SortedSet_stdset;
 
 
+                /*
+                 ********************************************************************************
+                 ************************ SortedSet_Factory<T, TRAITS> **************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                SortedSet<T, TRAITS>  mkSortedSet_Default ()
+                atomic<SortedSet<T, TRAITS> (*) ()> SortedSet_Factory<T, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename T, typename TRAITS>
+                inline  SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename T, typename TRAITS>
+                void    SortedSet_Factory<T, TRAITS>::Register (SortedSet<T, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename T, typename TRAITS>
+                SortedSet<T, TRAITS>  SortedSet_Factory<T, TRAITS>::Default_ ()
                 {
                     return SortedSet_stdset<T, TRAITS> ();
                 }

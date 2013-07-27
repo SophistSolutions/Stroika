@@ -19,8 +19,26 @@ namespace   Stroika {
             namespace   Concrete {
 
 
+                /*
+                 ********************************************************************************
+                 ************************** Stack_Factory<T, TRAITS> ****************************
+                 ********************************************************************************
+                 */
                 template    <typename T, typename TRAITS>
-                inline  Stack<T, TRAITS>  mkStack_Default ()
+                atomic<Stack<T, TRAITS> (*) ()> Stack_Factory<T, TRAITS>::sFactory_ (&Default_);
+
+                template    <typename T, typename TRAITS>
+                inline  Stack<T, TRAITS>  Stack_Factory<T, TRAITS>::mk ()
+                {
+                    return sFactory_ ();
+                }
+                template    <typename T, typename TRAITS>
+                void    Stack_Factory<T, TRAITS>::Register (Stack<T, TRAITS> (*factory) ())
+                {
+                    sFactory_ = (factory == nullptr) ? &Default_ : factory;
+                }
+                template    <typename T, typename TRAITS>
+                Stack<T, TRAITS>  Stack_Factory<T, TRAITS>::Default_ ()
                 {
                     return Stack_LinkedList<T, TRAITS> ();
                 }

@@ -23,7 +23,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue ()
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
@@ -36,7 +36,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Queue<T, TRAITS>::Queue (const CONTAINER_OF_T& src)
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
@@ -52,7 +52,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_OF_T>
             inline Queue<T, TRAITS>::Queue (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
-                : inherited (static_cast<const inherited&> (Concrete::mkQueue_Default<T, TRAITS> ()))
+                : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();            // @todo - use new EnqueueAll()

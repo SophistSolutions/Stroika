@@ -6,6 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
+#include    <atomic>
 
 
 /**
@@ -30,20 +31,33 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Create the default backend implementation of a SortedSet<> container
+                 *  \brief   Singleton factory object - Used to create the default backend implementation of a SortedSet<> container
+                 *
+                 *  Note - you can override the underlying factory dynamically by calling SortedSet_Factory<T,TRAITS>::Register (), or
+                 *  replace it statically by template-specailizing SortedSet_Factory<T,TRAITS>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-                 *
                  */
                 template    <typename T, typename TRAITS>
-                SortedSet<T, TRAITS>  mkSortedSet_Default ();
+                class   SortedSet_Factory {
+                private:
+                    static  atomic<SortedSet<T, TRAITS> (*) ()>   sFactory_;
 
+                public:
+                    /**
+                     *  You can call this directly, but there is no need, as the SortedSet<T,TRAITS> CTOR does so automatically.
+                     */
+                    static  SortedSet<T, TRAITS>  mk ();
 
-                // PROTO-IDEA - NOT IMPLEMENTED
-#if 0
-                template    <typename Key, typename T>
-                void    RegisterFactory_SortedSet (SortedSet<Key, T> (*factory) () = nullptr);
-#endif
+                public:
+                    /**
+                     *  Register a replacement creator/factory for the given SortedSet<T,TRAITS>. Note this is a global change.
+                     */
+                    static  void    Register (SortedSet<T, TRAITS> (*factory) () = nullptr);
+
+                private:
+                    static  SortedSet<T, TRAITS>  Default_ ();
+                };
 
 
             }
