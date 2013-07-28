@@ -40,25 +40,18 @@ namespace   Stroika {
                     : inherited ()
                     , fDelegateTo_ (delegateTo) {
                 }
-                virtual Memory::Optional<T>    More (bool advance) override {
+                virtual void    More (Memory::Optional<T>* result, bool advance) override {
                     bool done = fDelegateTo_.Done ();
                     if (not done and advance) {
                         fDelegateTo_++;
                         done = fDelegateTo_.Done ();
                     }
-#if 1
                     if (done) {
-                        return Memory::Optional<T> ();
+                        result->clear ();
                     }
                     else {
-                        return fDelegateTo_->fItem;
+                        *result = fDelegateTo_->fItem;
                     }
-#else
-                    if (current != nullptr and not done) {
-                        *current = (*fDelegateTo_).fItem;
-                    }
-                    return (not done);
-#endif
                 }
                 virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
                     return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));

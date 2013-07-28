@@ -99,7 +99,9 @@ namespace   Stroika {
                     // Reason for cast stuff is to avoid Clone if unneeded.
                     //
                     IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
-                    fDoneFlag_ = rep->More (false).IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
+                    Memory::Optional<T> tmp;
+                    rep->More (&tmp, false);
+                    fDoneFlag_ = tmp.IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
                 }
                 return fDoneFlag_ == DoneFlag::eDone;
             }
@@ -128,14 +130,14 @@ namespace   Stroika {
             inline   void  Iterator<T>::operator++ ()
             {
                 RequireNotNull (fIterator_);
-                fCurrent_ = fIterator_->More (true);
+                fIterator_->More (&fCurrent_, true);
                 fDoneFlag_ = fCurrent_.IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
             inline   void  Iterator<T>::operator++ (int)
             {
                 RequireNotNull (fIterator_);
-                fCurrent_ = fIterator_->More (true);
+                fIterator_->More (&fCurrent_, true);
                 fDoneFlag_ = fCurrent_.IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
@@ -206,12 +208,15 @@ namespace   Stroika {
             {
                 class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:
-                    virtual Memory::Optional<T>    More (bool advance) override {
-                        return Memory::Optional<T> ();
+                    virtual void    More (Memory::Optional<T>* result, bool advance) override {
+                        RequireNotNull (result);
+                        result->clear ();
                     }
                     virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         RequireNotNull (rhs);
-                        return const_cast<typename Iterator<T>::IRep*> (rhs)->More (false).IsPresent ();
+                        Memory::Optional<T> tmp;
+                        const_cast<typename Iterator<T>::IRep*> (rhs)->More (&tmp, false);
+                        return tmp.empty ();
                     }
                     virtual shared_ptr<IRep>    Clone () const override {
                         // May never be called since we never really call More() - except in special case of
