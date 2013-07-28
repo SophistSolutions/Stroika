@@ -20,6 +20,8 @@
  *              DataStructures::Array<T,TRAITS>::_ArrayIteratorBase subtype... MAYBE - THINK THROUGH.
  *              PERHAPS EXPERIMETNT...
  *
+ *              KEY IS LESS COPY-PASE OF IMPL FROM BASE
+ *
  *
  *
  *
@@ -143,7 +145,7 @@ namespace   Stroika {
                         nonvirtual  void    PatchRealloc ();                //  call after realloc could have happened
 
                     protected:
-                        const Array_Patch<T, TRAITS>*    fData;
+                        const Array_Patch<T, TRAITS>*   fData;
                         _ArrayIteratorBase*             fNext;
 
 #if     qDebug
@@ -173,6 +175,10 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
+                        nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
+                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                            return More (static_cast<T*> (nullptr), advance);
+                        }
 
                     protected:
                         virtual void    PatchRemoveCurrent () override;
@@ -196,6 +202,10 @@ namespace   Stroika {
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
+                        nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
+                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                            return More (static_cast<T*> (nullptr), advance);
+                        }
 
                     protected:
                         virtual void    PatchRemoveCurrent () override;

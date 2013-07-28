@@ -8,6 +8,7 @@
 
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/SmallStackBuffer.h"
+#include    "../../../Memory/Optional.h"
 
 #include    "../../Common.h"
 
@@ -94,6 +95,8 @@ namespace   Stroika {
                     public:
                         template    <typename VALUE_TYPE>
                         nonvirtual  bool    More (VALUE_TYPE* current, bool advance);
+                        template    <typename VALUE_TYPE>
+                        nonvirtual  void    More (Memory::Optional<VALUE_TYPE>* current, bool advance);
 
                     public:
                         /**

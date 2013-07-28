@@ -214,6 +214,16 @@ namespace   Stroika {
                         return inherited::More (current, advance);
                     }
                     template    <typename STL_CONTAINER_OF_T>
+                    template    <typename VALUE_TYPE>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
+                    {
+                        if (advance and fSuppressMore) {
+                            advance = false;
+                            fSuppressMore = false;
+                        }
+                        inherited::More (result, advance);
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
                     inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::RemoveCurrent ()
                     {
                         AssertNotNull (fData);

@@ -400,6 +400,34 @@ namespace   Stroika {
                         return not Done ();
                     }
                     template      <typename  T, typename TRAITS>
+                    inline  void    LinkedList<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    {
+                        RequireNotNull (result);
+                        Invariant ();
+                        if (advance) {
+                            if (_fSuppressMore) {
+                                _fSuppressMore = false;
+                            }
+                            else {
+                                /*
+                                 * We could already be done since after the last Done() call, we could
+                                 * have done a removeall.
+                                 */
+                                if (_fCurrent != nullptr) {
+                                    _fCurrent = _fCurrent->fNext;
+                                }
+                            }
+                        }
+                        Assert (not _fSuppressMore);
+                        Invariant ();
+                        if (this->Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result = _fCurrent->fItem;
+                        }
+                    }
+                    template      <typename  T, typename TRAITS>
                     inline  T   LinkedList<T, TRAITS>::ForwardIterator::Current () const
                     {
                         Require (not (Done ()));

@@ -494,6 +494,29 @@ namespace   Stroika {
                         }
                         return (inherited::More (current, advance));
                     }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    {
+                        Invariant ();
+                        if (advance) {
+                            if (this->_fSuppressMore) {
+                                this->_fSuppressMore = false;
+                            }
+                            else {
+                                if (not this->Done ()) {
+                                    Assert (this->_fCurrent < this->_fEnd);
+                                    this->_fCurrent++;
+                                }
+                            }
+                        }
+                        Invariant ();
+                        if (Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result = *_fCurrent;
+                        }
+                    }
 
 
                     /*
@@ -530,6 +553,35 @@ namespace   Stroika {
                             }
                         }
                         return inherited::More (current, advance);
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    {
+                        Invariant ();
+                        if (advance) {
+                            if (this->_fSuppressMore) {
+                                this->_fSuppressMore = false;
+                            }
+                            else {
+                                if (not this->Done ()) {
+                                    if (this->_fCurrent == this->_fStart) {
+                                        this->_fCurrent = this->_fEnd;    // magic to indicate done
+                                        Ensure (this->Done ());
+                                    }
+                                    else {
+                                        this->_fCurrent--;
+                                        Ensure (not this->Done ());
+                                    }
+                                }
+                            }
+                        }
+                        Invariant ();
+                        if (Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result = *_fCurrent;
+                        }
                     }
 
 

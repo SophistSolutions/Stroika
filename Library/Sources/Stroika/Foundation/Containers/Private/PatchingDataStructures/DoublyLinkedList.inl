@@ -312,6 +312,7 @@ namespace   Stroika {
                         this->Invariant ();
                         return *this;
                     }
+#if 0
                     template      <typename  T, typename TRAITS>
                     inline  bool    DoublyLinkedList<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                     {
@@ -334,6 +335,7 @@ namespace   Stroika {
                         }
                         return not this->Done ();
                     }
+#endif
                     template      <typename  T, typename TRAITS>
                     inline  void    DoublyLinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {

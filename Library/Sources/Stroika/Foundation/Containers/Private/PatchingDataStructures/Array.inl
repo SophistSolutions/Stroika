@@ -485,6 +485,27 @@ namespace   Stroika {
                         return (not this->Done ());
                     }
                     template      <typename  T, typename TRAITS>
+                    inline  void    Array_Patch<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    {
+                        //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
+                        RequireNotNull (result);
+                        this->Invariant ();
+                        if (advance) {
+                            if (not this->_fSuppressMore and not this->Done ()) {
+                                Assert ( this->_fCurrent <  this->_fEnd);
+                                this->_fCurrent++;
+                            }
+                            this->_fSuppressMore = false;
+                        }
+                        this->Invariant ();
+                        if (this->Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result = *this->_fCurrent;
+                        }
+                    }
+                    template      <typename  T, typename TRAITS>
                     inline  void    Array_Patch<T, TRAITS>::ForwardIterator::PatchRemoveCurrent ()
                     {
                         Assert ( this->_fCurrent <  this->_fEnd); // cannot remove something past the end
@@ -542,6 +563,36 @@ namespace   Stroika {
                             }
                         }
                         return (not this->Done ());
+                    }
+                    template      <typename  T, typename TRAITS>
+                    inline  void    Array_Patch<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
+                    {
+                        //// RESTRUCTUIRE SO WE CAN INHERIT IMPL!!!
+                        RequireNotNull (result);
+                        this->Invariant ();
+                        if (advance) {
+                            if (this->_fSuppressMore) {
+                                this->_fSuppressMore = false;
+                            }
+                            else {
+                                if (not this->Done ()) {
+                                    if (this->_fCurrent == this->fStart) {
+                                        this->_fCurrent = this->_fEnd;    // magic to indicate done
+                                        Ensure (this->Done ());
+                                    }
+                                    else {
+                                        this->_fCurrent--;
+                                    }
+                                }
+                            }
+                        }
+                        this->Invariant ();
+                        if (this->Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result = *this->_fCurrent;
+                        }
                     }
                     template      <typename  T, typename TRAITS>
                     inline  void    Array_Patch<T, TRAITS>::BackwardIterator::PatchRemoveCurrent ()

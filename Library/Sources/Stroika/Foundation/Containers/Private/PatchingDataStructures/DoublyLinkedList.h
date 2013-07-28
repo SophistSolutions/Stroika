@@ -133,11 +133,13 @@ namespace   Stroika {
                         typedef typename DataStructures::DoublyLinkedList<T, TRAITS>::Link    Link;
                         typedef PatchingDataStructures::DoublyLinkedList<T, TRAITS>           ContainerType;
 
+#if 0
                     public:
                         /*
                          * Shadow more to keep track of prev.
                          */
                         nonvirtual  bool    More (T* current, bool advance);
+#endif
 
                     public:
                         nonvirtual  void    PatchAdd (const Link* link);        //  call after add

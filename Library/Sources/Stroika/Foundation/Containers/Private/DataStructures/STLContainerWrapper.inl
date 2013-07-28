@@ -77,6 +77,23 @@ namespace   Stroika {
                         return not done;
                     }
                     template    <typename STL_CONTAINER_OF_T>
+                    template    <typename VALUE_TYPE>
+                    inline  void    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::More (Memory::Optional<VALUE_TYPE>* result, bool advance)
+                    {
+                        RequireNotNull (result);
+                        if (advance) {
+                            if (not Done ()) {
+                                fStdIterator++;
+                            }
+                        }
+                        if (Done ()) {
+                            result->clear ();
+                        }
+                        else {
+                            *result =  *fStdIterator;
+                        }
+                    }
+                    template    <typename STL_CONTAINER_OF_T>
                     inline  size_t    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::CurrentIndex () const
                     {
                         AssertNotNull (fData);

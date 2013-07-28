@@ -9,6 +9,7 @@
 #include    "../../../Configuration/Common.h"
 #include    "../../../Common/Compare.h"
 #include    "../../../Memory/BlockAllocated.h"
+#include    "../../../Memory/Optional.h"
 
 #include    "../../Common.h"
 
@@ -232,6 +233,10 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    Done () const;
                         nonvirtual  bool    More (T* current, bool advance);
+                        nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
+                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                            return More (static_cast<T*> (nullptr), advance);
+                        }
                         nonvirtual  T       Current () const;
 
                         nonvirtual size_t CurrentIndex () const;

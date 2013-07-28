@@ -8,6 +8,7 @@
 
 #include    "../../../Configuration/Common.h"
 #include    "../../../Memory/BlockAllocated.h"
+#include    "../../../Memory/Optional.h"
 
 #include    "../../Common.h"
 
