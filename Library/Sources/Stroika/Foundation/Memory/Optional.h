@@ -17,6 +17,10 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   operator= (const T& from) is currently a little funny with ptr test. Maybe wrong.
+ *              But anyhow - see if we can do BETTER - and avoid allocating more memroy (even with blockalloc - still
+ *              more expensvie than pointer deref/copy).
+ *
  *      @todo   Redo TRAITS for Optional using new Common/Compare trait code
  *              (or document why not)
  *
