@@ -510,11 +510,11 @@ namespace   Stroika {
                             }
                         }
                         Invariant ();
-                        if (Done ()) {
+                        if (this->Done ()) {
                             result->clear ();
                         }
                         else {
-                            *result = *_fCurrent;
+                            *result = *this->_fCurrent;
                         }
                     }
 
@@ -576,11 +576,11 @@ namespace   Stroika {
                             }
                         }
                         Invariant ();
-                        if (Done ()) {
+                        if (this->Done ()) {
                             result->clear ();
                         }
                         else {
-                            *result = *_fCurrent;
+                            *result = *this->_fCurrent;
                         }
                     }
 
