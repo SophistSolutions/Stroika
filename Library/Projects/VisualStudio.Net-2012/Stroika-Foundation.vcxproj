@@ -554,6 +554,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_Factory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_stdmap.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h" />
@@ -812,6 +813,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_Factory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedTally_stdmap.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.inl" />
