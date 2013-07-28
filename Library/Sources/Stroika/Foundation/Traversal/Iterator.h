@@ -249,8 +249,8 @@ namespace   Stroika {
                  *  \brief
                  *      This overload is usually not called directly. Instead, iterators are
                  *      usually created from a container (eg. Bag<T>::begin()).
-				 *
-				 *	\req RequireNotNull (rep.get ())
+                 *
+                 *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
 
@@ -516,9 +516,7 @@ namespace   Stroika {
                 SharedByValueRepType    fIterator_;
 
             private:
-                enum class DoneFlag { eUnknown = -1, eNotDone = 1, eDone = 0 };
-                mutable DoneFlag    fDoneFlag_;     // 0 false, 1 true, -1 unknown
-                Memory::Optional<T> fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                Memory::Optional<T>     fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
                 static  SharedIRepPtr    Clone_ (const IRep& rep);
