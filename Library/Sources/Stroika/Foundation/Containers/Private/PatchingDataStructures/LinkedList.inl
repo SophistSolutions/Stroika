@@ -329,29 +329,6 @@ namespace   Stroika {
                         return *this;
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  bool    LinkedList<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
-                    {
-                        this->Invariant ();
-
-                        if (advance) {
-                            /*
-                             * We could already be done since after the last Done() call, we could
-                             * have done a removeall.
-                             */
-                            if (not this->_fSuppressMore and this->_fCurrent != nullptr) {
-                                //fPrev = this->_fCurrent;
-                                this->_fCurrent = this->_fCurrent->fNext;
-
-                            }
-                            this->_fSuppressMore = false;
-                        }
-                        this->Invariant ();
-                        if ((current != nullptr) and (not this->Done ())) {
-                            *current = this->_fCurrent->fItem;
-                        }
-                        return (not this->Done ());
-                    }
-                    template      <typename  T, typename TRAITS>
                     inline  void    LinkedList<T, TRAITS>::ForwardIterator::PatchAdd (const Link* link)
                     {
                         /*

@@ -15,6 +15,8 @@
 /**
  *
  * TODO:
+ *      @todo   Track 'prev' in iterator, for greater performance on addbefore (cacehd prevptr)
+ *
  */
 
 
@@ -132,8 +134,6 @@ namespace   Stroika {
                         /*
                          * Shadow more to keep track of prev.
                          */
-                        nonvirtual  bool    More (T* current, bool advance);
-
                         nonvirtual  void    PatchAdd (const Link* link);     //  call after add
                         nonvirtual  void    PatchRemove (const Link* link);  //  call before remove
                         nonvirtual  void    PatchRemoveAll ();                  //  call after removeall
