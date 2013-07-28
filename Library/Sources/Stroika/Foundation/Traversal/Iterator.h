@@ -10,6 +10,7 @@
 
 #include    "../Configuration/Common.h"
 
+#include    "../Memory/Optional.h"
 #include    "../Memory/SharedByValue.h"
 
 
@@ -366,8 +367,10 @@ namespace   Stroika {
                  *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
                  *  definition of Iterator<T> equality.
                  *
-                 *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
-                 *  definition of Iterator<T> equality.
+                 *  StrongEquals () is a more restrictive, more logically coherent, but potentially more expensive
+                 *  to compute definition of Iterator<T> equality.
+                 *
+                 *  \em NB: StrongEquals () is the same notion of equality as used by STL iterators.
                  *
                  *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
@@ -510,7 +513,7 @@ namespace   Stroika {
             private:
                 enum class DoneFlag { eUnknown = -1, eNotDone = 1, eDone = 0 };
                 mutable DoneFlag    fDoneFlag_;     // 0 false, 1 true, -1 unknown
-                T                   fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                Memory::Optional<T> fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
 
             private:
                 static  SharedIRepPtr    Clone_ (const IRep& rep);
@@ -569,7 +572,7 @@ namespace   Stroika {
                  *  This function returns true iff the iterator is positioned at a valid position, and if (advance
                  *  is true, then More() returns true for exactly the cases where a valid value is copied out.
                  */
-                virtual bool    More (T* current, bool advance)     = 0;
+                virtual Memory::Optional<T>    More (bool advance)     = 0;
                 /**
                  * \brief two iterators must be iterating over the same source, and be up to the same position.
                  *

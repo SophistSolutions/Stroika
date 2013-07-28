@@ -109,8 +109,17 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport) {
+#if 1
+                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
+                            if (fIterator.More (&tmp, advance)) {
+                                return TallyEntry<T> (tmp.first, tmp.second);
+                            }
+                            else {
+                                return Memory::Optional<TallyEntry<T>> ();
+                            }
+#else
                             if (current == nullptr) {
                                 return fIterator.More (static_cast<pair<T, size_t>*> (nullptr), advance);
                             }
@@ -123,6 +132,7 @@ namespace   Stroika {
                                 }
                                 return result;
                             }
+#endif
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
@@ -150,8 +160,17 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool    More (TallyEntry<T>* current, bool advance) override {
+                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+#if 1
+                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
+                            if (fIterator.More (&tmp, advance)) {
+                                return TallyEntry<T> (tmp.first, tmp.second);
+                            }
+                            else {
+                                return Memory::Optional<TallyEntry<T>> ();
+                            }
+#else
                             if (current == nullptr) {
                                 return fIterator.More (static_cast<pair<T, size_t>*> (nullptr), advance);
                             }
@@ -164,6 +183,7 @@ namespace   Stroika {
                                 }
                                 return result;
                             }
+#endif
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }

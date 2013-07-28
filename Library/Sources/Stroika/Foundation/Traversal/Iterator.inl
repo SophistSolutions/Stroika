@@ -70,7 +70,7 @@ namespace   Stroika {
                 fIterator_ = rhs.fIterator_;
                 fDoneFlag_ = rhs.fDoneFlag_;
                 fCurrent_ = rhs.fCurrent_;
-                return (*this);
+                return *this;
             }
             template    <typename T>
             inline  typename    Iterator<T>::IRep&         Iterator<T>::GetRep ()
@@ -88,7 +88,8 @@ namespace   Stroika {
             inline T   Iterator<T>::Current () const
             {
                 RequireNotNull (fIterator_);
-                return (fCurrent_);
+                Require (fCurrent_.IsPresent ());
+                return *fCurrent_;
             }
             template    <typename T>
             inline bool    Iterator<T>::Done () const
@@ -98,7 +99,7 @@ namespace   Stroika {
                     // Reason for cast stuff is to avoid Clone if unneeded.
                     //
                     IRep*   rep =   const_cast<IRep*> (fIterator_.get ());
-                    fDoneFlag_ = rep->More (nullptr, false) ? DoneFlag::eNotDone : DoneFlag::eDone;
+                    fDoneFlag_ = rep->More (false).IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
                 }
                 return fDoneFlag_ == DoneFlag::eDone;
             }
@@ -107,33 +108,35 @@ namespace   Stroika {
             {
                 RequireNotNull (fIterator_);
                 Require (not Done ());
-                return (fCurrent_);
+                return *fCurrent_;
             }
             template    <typename T>
             inline    T*   Iterator<T>::operator-> ()
             {
                 RequireNotNull (fIterator_);
                 Require (not Done ());
-                return (&fCurrent_);
+                return fCurrent_.get ();
             }
             template    <typename T>
             inline    const T*   Iterator<T>::operator-> () const
             {
                 RequireNotNull (fIterator_);
                 Require (not Done ());
-                return (&fCurrent_);
+                return fCurrent_.get ();
             }
             template    <typename T>
             inline   void  Iterator<T>::operator++ ()
             {
                 RequireNotNull (fIterator_);
-                fDoneFlag_ = fIterator_->More (&fCurrent_, true) ? DoneFlag::eNotDone : DoneFlag::eDone;
+                fCurrent_ = fIterator_->More (true);
+                fDoneFlag_ = fCurrent_.IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
             inline   void  Iterator<T>::operator++ (int)
             {
                 RequireNotNull (fIterator_);
-                fDoneFlag_ = fIterator_->More (&fCurrent_, true) ? DoneFlag::eNotDone : DoneFlag::eDone;
+                fCurrent_ = fIterator_->More (true);
+                fDoneFlag_ = fCurrent_.IsPresent () ? DoneFlag::eNotDone : DoneFlag::eDone;
             }
             template    <typename T>
             bool    Iterator<T>::WeakEquals (const Iterator& rhs) const
@@ -203,12 +206,12 @@ namespace   Stroika {
             {
                 class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:
-                    virtual bool    More (T* current, bool advance) override {
-                        return false;
+                    virtual Memory::Optional<T>    More (bool advance) override {
+                        return Memory::Optional<T> ();
                     }
                     virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
                         RequireNotNull (rhs);
-                        return const_cast<typename Iterator<T>::IRep*> (rhs)->More (nullptr, false);
+                        return const_cast<typename Iterator<T>::IRep*> (rhs)->More (false).IsPresent ();
                     }
                     virtual shared_ptr<IRep>    Clone () const override {
                         // May never be called since we never really call More() - except in special case of

@@ -35,10 +35,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
-                bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::More (T* current, bool advance)
+                Memory::Optional<T>    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::More (bool advance)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                        return (fIterator.More (current, advance));
+                        // To fix THIS - we have to fix the CONCRETE ForwardIterator types to have a More() that returns optional!
+                        T val_Must_Fix_So_Doesnt_Req_DEFCTOR;
+                        return (fIterator.More (&val_Must_Fix_So_Doesnt_Req_DEFCTOR, advance) ? val_Must_Fix_So_Doesnt_Req_DEFCTOR : Memory::Optional<T> ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
