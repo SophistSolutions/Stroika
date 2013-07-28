@@ -458,15 +458,18 @@ namespace CommonTests {
 
                 {
                     static size_t count;
-                    static T sum;
+                    static Memory::Optional<T> sum;
                     count = 0;
                     sum = 0;
                     b.ApplyStatic ([] (const T & i) {
                         count++;
-                        sum = sum + i;
+                        if (sum.empty ()) {
+                            sum = 0;
+                        }
+                        sum = *sum + i;
                     });
                     VerifyTestResult (count == LAST - FIRST);
-                    VerifyTestResult (EqualsCompareFunctionType::Equals (sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
+                    VerifyTestResult (EqualsCompareFunctionType::Equals (*sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
                     applyToContainer (b);
                 }
             }
