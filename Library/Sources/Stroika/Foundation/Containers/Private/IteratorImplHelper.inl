@@ -40,7 +40,7 @@ namespace   Stroika {
                 {
                     RequireNotNull (result);
                     CONTAINER_LOCK_HELPER_START (fLockSupport) {
-#if 0
+#if 1
                         fIterator.More (result, advance);
 #else
                         // To fix THIS - we have to fix the CONCRETE ForwardIterator types to have a More() that returns optional!
