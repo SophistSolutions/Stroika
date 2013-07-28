@@ -109,9 +109,7 @@ namespace   Stroika {
                         tmpRep = typename Iterator<T>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    Iterator<T> tmp = Iterator<T> (tmpRep);
-                    tmp++;  //tmphack - redo iterator impl itself
-                    return tmp;
+                    return Iterator<T> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
                 size_t  Bag_LinkedList<T, TRAITS>::Rep_::GetLength () const

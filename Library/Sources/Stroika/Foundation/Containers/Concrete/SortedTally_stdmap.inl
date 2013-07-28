@@ -133,6 +133,7 @@ namespace   Stroika {
                         : inherited ()
                         , fLockSupport_ (*sharedLock)
                         , fIterator (data) {
+                        fIterator.More (static_cast<pair<T, size_t>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                     }
 
                 public:
@@ -219,9 +220,7 @@ namespace   Stroika {
                         tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (tmpRep);
-                    tmp++;  //tmphack - redo iterator impl itself
-                    return tmp;
+                    return Iterator<TallyEntry<T>> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
                 void      SortedTally_stdmap<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const

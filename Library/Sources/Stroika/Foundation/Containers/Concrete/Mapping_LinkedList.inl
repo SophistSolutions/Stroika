@@ -118,9 +118,7 @@ namespace   Stroika {
                         tmpRep = typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    Iterator<pair<KEY_TYPE, VALUE_TYPE>> tmp = Iterator<pair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
-                    tmp++;  //tmphack - redo iterator impl itself
-                    return tmp;
+                    return Iterator<pair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 size_t  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::GetLength () const

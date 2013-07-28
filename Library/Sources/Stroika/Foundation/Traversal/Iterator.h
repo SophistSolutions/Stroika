@@ -19,6 +19,17 @@
  *
  *  \file
  *
+ *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
+ *          constructed in the wrong state and requiring an initial ++.
+ *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
+ *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
+ *          to assure right behavior when not constructed. Be careful about MOVE semantics...
+ *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
+ *          {{{{{{{{{{IMPORTANT - DO VERY SOON}}}}}}}}}}}}}}}}
+ *
+ *
+ *
+ *
  *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
@@ -29,14 +40,6 @@
  *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
  *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
  *          all iteration calls to that iterator!
- *
- *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
- *          constructed in the wrong state and requiring an initial ++.
- *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
- *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
- *          to assure right behavior when not constructed. Be careful about MOVE semantics...
- *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
- *          {{{{{{{{{{IMPORTANT - DO VERY SOON}}}}}}}}}}}}}}}}
  *
  *  @todo   Merge Current virtual call into More() call? Trouble is constructing
  *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
@@ -90,6 +93,11 @@
  *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
  *                      And the benefit in teh more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).
+ *
+ *  @todo   Consider as speed tweek
+ *          // we allow fIterator to equal nullptr, as a sentinal value during iteration, signaling that iteration is Done
+ *          #define qIteratorUsingNullRepAsSentinalValue    1
+ *
  */
 
 
@@ -241,6 +249,8 @@ namespace   Stroika {
                  *  \brief
                  *      This overload is usually not called directly. Instead, iterators are
                  *      usually created from a container (eg. Bag<T>::begin()).
+				 *
+				 *	\req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
 

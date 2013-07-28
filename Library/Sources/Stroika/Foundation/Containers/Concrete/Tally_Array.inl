@@ -140,9 +140,7 @@ namespace   Stroika {
                         tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    Iterator<TallyEntry<T>> tmp = Iterator<TallyEntry<T>> (tmpRep);
-                    tmp++;  //tmphack - redo iterator impl itself
-                    return tmp;
+                    return Iterator<TallyEntry<T>> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
                 void      Tally_Array<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const

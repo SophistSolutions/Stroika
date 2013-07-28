@@ -476,11 +476,10 @@ namespace   Stroika {
                                 Assert ( this->_fCurrent <  this->_fEnd);
                                 this->_fCurrent++;
                             }
-
                             this->_fSuppressMore = false;
-                            if ((current != nullptr) and (not this->Done ())) {
-                                *current = *this->_fCurrent;
-                            }
+                        }
+                        if ((current != nullptr) and (not this->Done ())) {
+                            *current = *this->_fCurrent;
                         }
                         this->Invariant ();
                         return (not this->Done ());
