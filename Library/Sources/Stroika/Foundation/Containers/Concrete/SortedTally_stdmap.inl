@@ -91,6 +91,88 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
+                 ************** SortedTally_stdmap<T, TRAITS>::IteratorRep_ *********************
+                 ********************************************************************************
+                 */
+#if 0
+                template    <typename T, typename TRAITS>
+                class   SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>    {
+                private:
+                    typedef Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_> inherited;
+
+                public:
+                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
+                        : inherited (sharedLock, data) {
+                    }
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
+
+                public:
+                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
+                            if (fIterator.More (&tmp, advance)) {
+                                return TallyEntry<T> (tmp.first, tmp.second);
+                            }
+                            else {
+                                return Memory::Optional<TallyEntry<T>> ();
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                };
+#else
+                template    <typename T, typename TRAITS>
+                class  SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
+                private:
+                    typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
+
+                public:
+                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
+                        : inherited ()
+                        , fLockSupport_ (*sharedLock)
+                        , fIterator (data) {
+                    }
+
+                public:
+                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
+
+                public:
+                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override {
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            return typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*this));
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override {
+                        RequireNotNull (result);
+                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
+                            if (fIterator.More (&tmp, advance)) {
+                                *result = TallyEntry<T> (tmp.first, tmp.second);
+                            }
+                            else {
+                                result->clear ();
+                            }
+                        }
+                        CONTAINER_LOCK_HELPER_END ();
+                    }
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
+                        AssertNotImplemented ();
+                        return false;
+                    }
+
+                private:
+                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                public:
+                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator;
+                };
+#endif
+
+
+                /*
+                 ********************************************************************************
                  **************** SortedTally_stdmap<T, TRAITS>::Rep_ ***************************
                  ********************************************************************************
                  */
