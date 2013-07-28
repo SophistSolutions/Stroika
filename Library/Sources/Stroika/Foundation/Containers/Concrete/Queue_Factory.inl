@@ -35,9 +35,12 @@ namespace   Stroika {
                      *  with containers constructed before main.
                      *
                      *  This works more generally (and with hopefully modest enough performance impact).
-                     *
                      */
-                    return (sFactory_.load () == nullptr) ? Default_() : sFactory_ ();
+                    auto f = sFactory_.load ();
+                    if (f == nullptr) {
+                        f = &Default_;
+                    }
+                    return f ();
                 }
                 template    <typename T, typename TRAITS>
                 void    Queue_Factory<T, TRAITS>::Register (Queue<T, TRAITS> (*factory) ())
