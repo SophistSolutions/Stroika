@@ -103,7 +103,7 @@
 
 
 // SSW 9/19/2011: remove this restriction for more efficiency and flexibility
-#define qIteratorsRequireNoArgContructorForT    1
+//#define qIteratorsRequireNoArgContructorForT    1
 
 
 
