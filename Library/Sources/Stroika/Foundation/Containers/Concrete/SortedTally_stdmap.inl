@@ -149,9 +149,10 @@ namespace   Stroika {
                     virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override {
                         RequireNotNull (result);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
-                            if (fIterator.More (&tmp, advance)) {
-                                *result = TallyEntry<T> (tmp.first, tmp.second);
+                            Memory::Optional<pair<T, size_t>> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
+                            fIterator.More (&tmp, advance);
+                            if (tmp.IsPresent ()) {
+                                *result = TallyEntry<T> (tmp->first, tmp->second);
                             }
                             else {
                                 result->clear ();
