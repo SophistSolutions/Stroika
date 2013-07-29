@@ -153,7 +153,7 @@ namespace   Stroika {
                          *  returning ptr to next node would do it).
                          */
                         Invariant ();
-                        T current;
+                        Memory::Optional<T> current;
                         for (ForwardIterator it (this); it.More (&current, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
                                 this->RemoveAt (it);
