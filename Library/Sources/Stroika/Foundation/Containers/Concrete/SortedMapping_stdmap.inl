@@ -62,11 +62,11 @@ namespace   Stroika {
                 public:
                     virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
                     virtual void                RemoveAll () override;
-                    virtual  Iterable<KEY_TYPE> Keys () const override;
-                    virtual  bool               Lookup (KEY_TYPE key, VALUE_TYPE* item) const override;
-                    virtual  void               Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual  void               Remove (KEY_TYPE key) override;
-                    virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual Iterable<KEY_TYPE>  Keys () const override;
+                    virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual void                Remove (KEY_TYPE key) override;
+                    virtual void                Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
                     typedef Private::PatchingDataStructures::STLContainerWrapper <
@@ -178,11 +178,14 @@ namespace   Stroika {
                     return *(Iterable<KEY_TYPE>*)nullptr;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
+                bool    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         auto i = fData_.find (key);
                         if (i == fData_.end ()) {
+                            if (item != nullptr) {
+                                item->clear ();
+                            }
                             return false;
                         }
                         else {
@@ -193,7 +196,6 @@ namespace   Stroika {
                         }
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    return false;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 void    SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Add (KEY_TYPE key, VALUE_TYPE newElt)

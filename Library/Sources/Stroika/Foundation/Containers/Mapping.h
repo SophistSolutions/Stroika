@@ -149,9 +149,15 @@ namespace   Stroika {
                  *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
                  *  a default value on Lookup (so for case where not present) - as in:
                  *      returm m.Lookup (key).Value (putDefaultValueHere);
+                 *
+                 *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
+                 *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
+                 *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
                  */
                 nonvirtual  Memory::Optional<ValueType> Lookup (KeyType key) const;
+                nonvirtual  bool                        Lookup (KeyType key, Memory::Optional<ValueType>* item) const;
                 nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
+                nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
 
             public:
                 /**
@@ -280,13 +286,15 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool                Equals (const _IRep& rhs) const                 =   0;
-                virtual void                RemoveAll ()                                    =   0;
-                virtual  Iterable<KeyType>  Keys () const                                   =   0;
-                virtual  bool               Lookup (KeyType key, ValueType* item) const     =   0;
-                virtual  void               Add (KeyType key, ValueType newElt)             =   0;
-                virtual  void               Remove (KeyType key)                            =   0;
-                virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) =   0;
+                virtual bool                Equals (const _IRep& rhs) const                                 =   0;
+                virtual void                RemoveAll ()                                                    =   0;
+                virtual  Iterable<KeyType>  Keys () const                                                   =   0;
+                // always clear/set item, and ensure return value == item->IsValidItem()); \
+                // 'item' arg CAN be nullptr
+                virtual  bool               Lookup (KeyType key, Memory::Optional<ValueType>* item) const   =   0;
+                virtual  void               Add (KeyType key, ValueType newElt)                             =   0;
+                virtual  void               Remove (KeyType key)                                            =   0;
+                virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i)                 =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

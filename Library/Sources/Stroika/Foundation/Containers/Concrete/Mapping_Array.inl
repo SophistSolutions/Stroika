@@ -58,11 +58,11 @@ namespace   Stroika {
                 public:
                     virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
                     virtual void                RemoveAll () override;
-                    virtual  Iterable<KEY_TYPE> Keys () const override;
-                    virtual  bool               Lookup (KEY_TYPE key, VALUE_TYPE* item) const override;
-                    virtual  void               Add (KEY_TYPE key, VALUE_TYPE newElt) override;
-                    virtual  void               Remove (KEY_TYPE key) override;
-                    virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual Iterable<KEY_TYPE>  Keys () const override;
+                    virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
+                    virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
+                    virtual void                Remove (KEY_TYPE key) override;
+                    virtual void                Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 public:
                     typedef typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
@@ -174,7 +174,7 @@ namespace   Stroika {
                     return *(Iterable<KEY_TYPE>*)nullptr;
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, VALUE_TYPE* item) const
+                bool    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
@@ -184,6 +184,9 @@ namespace   Stroika {
                                 }
                                 return true;
                             }
+                        }
+                        if (item != nullptr) {
+                            item->clear ();
                         }
                         return false;
                     }

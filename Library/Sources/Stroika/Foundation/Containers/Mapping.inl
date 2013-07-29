@@ -85,17 +85,35 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
             {
+                if (item == nullptr) {
+                    return _GetRep ().Lookup (key, nullptr);
+                }
+                else {
+                    Memory::Optional<ValueType> tmp;
+                    if (_GetRep ().Lookup (key, &tmp)) {
+                        *item = *tmp;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            {
                 return _GetRep ().Lookup (key, item);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Memory::Optional<VALUE_TYPE>    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
             {
-                // @todo change virutal API so this trick not needed
-                ValueType   r;  // find way so we dont require a default CTOR - probably change virtual AP
-                if (_GetRep ().Lookup (key, &r)) {
-                    return r;
-                }
-                return Memory::Optional<VALUE_TYPE> ();
+                Memory::Optional<VALUE_TYPE>   r;
+                bool    result = _GetRep ().Lookup (key, &r);
+                Ensure (result == r.IsPresent ());
+                return r;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
+            {
+                return _GetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
@@ -236,12 +254,15 @@ namespace   Stroika {
                 if (this == &rhs) {
                     return true;
                 }
+                // If sizes differ, the Mappings differ
                 if (this->GetLength () != rhs.GetLength ()) {
                     return false;
                 }
+                // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
+                // are present, and with the same mapping in the second.
                 for (auto i = this->MakeIterator (); not i.Done (); ++i) {
-                    ValueType   tmp;    // @todo THIS IS BAD - because of this we must change the REP::Lookup () API to return OPTIONAL
-                    if (not rhs.Lookup (i->first, &tmp) or not ValueEqualsCompareFunctionType::Equals (tmp, i->second)) {
+                    Memory::Optional<ValueType>   tmp;
+                    if (not rhs.Lookup (i->first, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->second)) {
                         return false;
                     }
                 }

@@ -154,8 +154,8 @@ namespace   Stroika {
                          */
                         Invariant ();
                         Memory::Optional<T> current;
-                        for (ForwardIterator it (this); it.More (&current, true); ) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (current, item)) {
+                        for (ForwardIterator it (this); it.More (&current, true), current.IsPresent (); ) {
+                            if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                 this->RemoveAt (it);
                                 break;
                             }
