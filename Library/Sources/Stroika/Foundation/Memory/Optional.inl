@@ -75,18 +75,36 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& from)
             {
-                if (fValue_->get () != &from) {
-                    delete fValue_;
-                    fValue_ = nullptr;
-                    fValue_ = new BlockAllocated<T> (from);
+                if (fValue_->get () == &from) {
+                    // No need to copy in this case and would be bad to try
+                    //  Optional<T> x;
+                    //  x = *x;
+                }
+                else {
+                    if (fValue_ == nullptr) {
+                        fValue_ = new BlockAllocated<T> (from);
+                    }
+                    else {
+                        *fValue_ = from;
+                    }
                 }
                 return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && from)
             {
-                if (fValue_->get () != &from) {
-                    fValue_ = new BlockAllocated<T> (std::move (from));
+                if (fValue_->get () == &from) {
+                    // No need to copy in this case and would be bad to try
+                    //  Optional<T> x;
+                    //  x = *x;
+                }
+                else {
+                    if (fValue_ == nullptr) {
+                        fValue_ = new BlockAllocated<T> (std::move (from));
+                    }
+                    else {
+                        *fValue_ = std::move (from);
+                    }
                 }
                 return *this;
             }

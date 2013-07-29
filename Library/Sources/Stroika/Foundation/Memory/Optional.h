@@ -17,6 +17,8 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
+ *      @todo   Use new ICompararer stuff instead of manual compare Optional_DefaultTraits
+ *
  *      @todo   operator= (const T& from) is currently a little funny with ptr test. Maybe wrong.
  *              But anyhow - see if we can do BETTER - and avoid allocating more memroy (even with blockalloc - still
  *              more expensvie than pointer deref/copy).
