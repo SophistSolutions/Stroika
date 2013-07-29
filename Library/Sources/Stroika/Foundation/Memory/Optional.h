@@ -17,17 +17,14 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  *  TODO:
- *      @todo   Use new ICompararer stuff instead of manual compare Optional_DefaultTraits
- *
- *      @todo   operator= (const T& from) is currently a little funny with ptr test. Maybe wrong.
- *              But anyhow - see if we can do BETTER - and avoid allocating more memroy (even with blockalloc - still
- *              more expensvie than pointer deref/copy).
- *
- *      @todo   Redo TRAITS for Optional using new Common/Compare trait code
+ *      @todo   Redo TRAITS for Optional using new Common/Compare trait code (in Optional_DefaultTraits)
  *              (or document why not)
  *
  *      @todo   Condsider (maybe test) if implemenation using member buffer Byte buf[sizeof(T)]; with appropriate alignof stuff -
  *              would perform better than BlockAllocated? It's important that this class be low-cost, low-overhead!
+ *
+ *              One trick is must be careful with copy-semantics. But almost certainly would perform better (just cuz no
+ *              lock needed with blockallocated).
  */
 
 
