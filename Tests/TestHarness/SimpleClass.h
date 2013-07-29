@@ -14,9 +14,6 @@
 namespace   Stroika {
     class   SimpleClass {
     public:
-#if qIteratorsRequireNoArgContructorForT
-        SimpleClass ();
-#endif
         SimpleClass (size_t v);
         SimpleClass (const SimpleClass& f);
         ~SimpleClass ();
@@ -40,9 +37,6 @@ namespace   Stroika {
 
     class   SimpleClassWithoutComparisonOperators {
     public:
-#if qIteratorsRequireNoArgContructorForT
-        SimpleClassWithoutComparisonOperators ();
-#endif
         SimpleClassWithoutComparisonOperators (size_t v);
         SimpleClassWithoutComparisonOperators (const SimpleClassWithoutComparisonOperators& f);
         ~SimpleClassWithoutComparisonOperators ();

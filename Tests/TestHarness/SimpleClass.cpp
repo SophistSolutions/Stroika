@@ -27,15 +27,6 @@ static  const   int kFunnyValue = 1234;
 
 size_t  SimpleClass::sTotalLiveObjects  =   0;
 
-#if qIteratorsRequireNoArgContructorForT
-SimpleClass::SimpleClass () :
-    fValue (3),
-    fConstructed (kFunnyValue)
-{
-    sTotalLiveObjects++;
-}
-#endif
-
 SimpleClass::SimpleClass (size_t v) :
     fValue (v),
     fConstructed (kFunnyValue)
@@ -97,15 +88,6 @@ bool    SimpleClass::operator< (const SimpleClass& rhs) const
  ********************************************************************************
  */
 size_t  SimpleClassWithoutComparisonOperators::sTotalLiveObjects  =   0;
-
-#if qIteratorsRequireNoArgContructorForT
-SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators () :
-    fValue (3),
-    fConstructed (kFunnyValue)
-{
-    sTotalLiveObjects++;
-}
-#endif
 
 SimpleClassWithoutComparisonOperators::SimpleClassWithoutComparisonOperators (size_t v) :
     fValue (v),

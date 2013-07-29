@@ -19,17 +19,6 @@
  *
  *  \file
  *
- *  @todo   FIX/LOSE qIteratorsRequireNoArgContructorForT stuff. Also related to quirk about REPS being
- *          constructed in the wrong state and requiring an initial ++.
- *          FIX THIS before supporting more types that require Iterable<T> / Iterator<T>.
- *          MAYBE just have ITERATOR define fVal as array of chars of size - sizeof(T), and carefully wrap access
- *          to assure right behavior when not constructed. Be careful about MOVE semantics...
- *          TIGHTLY coupled iwth next time - about merge ciurrent virtual call itno More()..
- *          {{{{{{{{{{IMPORTANT - DO VERY SOON}}}}}}}}}}}}}}}}
- *
- *
- *
- *
  *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
@@ -99,11 +88,6 @@
  *          #define qIteratorUsingNullRepAsSentinalValue    1
  *
  */
-
-
-
-// SSW 9/19/2011: remove this restriction for more efficiency and flexibility
-//#define qIteratorsRequireNoArgContructorForT    1
 
 
 

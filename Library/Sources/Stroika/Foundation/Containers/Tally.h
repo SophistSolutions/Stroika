@@ -68,9 +68,6 @@ namespace   Stroika {
             template    <typename T>
             class   TallyEntry {
             public:
-#if qIteratorsRequireNoArgContructorForT
-                TallyEntry () {}
-#endif
                 TallyEntry (T item);
                 TallyEntry (T item, size_t count);
 
