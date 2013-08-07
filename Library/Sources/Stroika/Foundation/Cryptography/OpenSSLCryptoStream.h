@@ -7,7 +7,13 @@
 #include    "../StroikaPreComp.h"
 
 #if     qHas_OpenSSL
-#include <openssl/evp.h>
+#if     !qCompilerAndStdLib_Supports_final && defined (final)
+#undef final
+#endif
+#include    <openssl/evp.h>
+#if     !qCompilerAndStdLib_Supports_final && defined (final)
+#define final
+#endif
 #endif
 
 #include    "../Configuration/Common.h"
