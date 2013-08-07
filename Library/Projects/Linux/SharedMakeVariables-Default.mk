@@ -47,7 +47,7 @@ endif
 
 # Intentionally use '=' instead of ':=' so $Includes can get re-evaluated
 ifndef CFLAGS
-	CFLAGS		=	-c -std=c++0x  $(COPTIMIZE_FLAGS) $(Includes)
+	CFLAGS		=	-c -std=c++11  $(COPTIMIZE_FLAGS) $(Includes)
 endif
 
 
@@ -61,7 +61,7 @@ endif
 
 ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
   ifeq ($(IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD), 1)
-    STDCPPLIBArgs      :=      $(shell g++ -print-file-name=libstdc++.a)
+    STDCPPLIBArgs      :=      $(shell $(Linker) -print-file-name=libstdc++.a)
   else
     STDCPPLIBArgs=		-lstdc++
     StroikaLinkerArgs	+=  -static-libstdc++
