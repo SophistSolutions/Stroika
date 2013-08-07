@@ -143,6 +143,9 @@ namespace   Stroika {
                         nonvirtual  void    RemoveCurrent ();
 
                     private:
+#if     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
+                    public:
+#endif
                         /*
                          * OK to be private cuz CONTAINER_TYPE is a friend.
                          */
@@ -161,8 +164,10 @@ namespace   Stroika {
                         ForwardIterator*    fNextActiveIterator;
                         bool                fSuppressMore;  // for removealls
 
+#if     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
                     private:
                         friend  CONTAINER_TYPE;
+#endif
                     };
 
 

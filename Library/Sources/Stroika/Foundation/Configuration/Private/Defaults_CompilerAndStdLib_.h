@@ -188,6 +188,27 @@
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
+
+#if     defined (__GNUC__)  && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename   1
+#endif
+
+#endif
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 @DESCRIPTION:   <p></p>
