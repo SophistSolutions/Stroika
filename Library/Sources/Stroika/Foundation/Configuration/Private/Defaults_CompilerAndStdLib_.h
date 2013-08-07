@@ -438,6 +438,42 @@
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
+*/
+#ifndef qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates    1
+#endif
+#endif
+
+
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitConversionOperators
+*/
+#ifndef qCompilerAndStdLib_Supports_ExplicitConversionOperators
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_ExplicitConversionOperators (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define qCompilerAndStdLib_Supports_ExplicitConversionOperators 1
+#endif
+#endif
+
+
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_threads
 @DESCRIPTION:   <p>Defined true if the compiler supports the stdc++ threads library</p>

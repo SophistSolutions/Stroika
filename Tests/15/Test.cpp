@@ -28,6 +28,17 @@ using   Concrete::SortedBag_LinkedList;
 
 using   Memory::Optional;
 
+#if     !qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
+namespace CommonTests {
+    namespace BagTests {
+        namespace   Test5_Apply_ {
+            size_t   count;
+            int      hack_sum;
+        }
+    }
+}
+#endif
+
 
 namespace {
     template    <typename CONCRETE_CONTAINER>
