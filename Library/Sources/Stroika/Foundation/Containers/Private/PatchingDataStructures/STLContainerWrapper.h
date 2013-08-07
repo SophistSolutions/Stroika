@@ -143,7 +143,7 @@ namespace   Stroika {
                         nonvirtual  void    RemoveCurrent ();
 
                     private:
-#if     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
+#if     !qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
                     public:
 #endif
                         /*
