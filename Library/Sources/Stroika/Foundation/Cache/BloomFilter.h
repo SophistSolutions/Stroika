@@ -18,7 +18,7 @@
  *
  * TODO:
  *      @todo   Biggest question is whether this is just a single implemeentaiton or virtual
- *              abstraction with differnt backend implementations (probably the latter).
+ *              abstraction with different backend implementations (probably the latter).
  *
  *      @todo   interesting if we want to have an AsIterable<T>() method - so you can iterate
  *              over something in the filter? But probably NOT since its not clear what you could

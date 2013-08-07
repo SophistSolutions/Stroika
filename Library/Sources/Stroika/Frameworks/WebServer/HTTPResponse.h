@@ -33,7 +33,7 @@
  *      (o)     Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
  *              usage.
  *
- *      (o)     eExact is UNTESTED, and should have CHECKING code - so if a user writes a differnt amount, we detect and assert out.
+ *      (o)     eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
  */
 

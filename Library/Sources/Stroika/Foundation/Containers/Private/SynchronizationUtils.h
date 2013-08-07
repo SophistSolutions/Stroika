@@ -18,7 +18,7 @@
  *
  * TODO:
  *      @todo   Consider somehow getting rid of this (or moving it) so thats a TRAIT object
- *              usable in backends. That way - it should  be easier todo differnt locking strategies
+ *              usable in backends. That way - it should  be easier todo different locking strategies
  *              within a concrete object type.
  *
  * Notes:

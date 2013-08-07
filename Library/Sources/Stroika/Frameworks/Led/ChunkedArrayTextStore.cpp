@@ -1558,7 +1558,7 @@ void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, siz
                     OurStuff (mi)->fNextSubMarker = NULL;
                     OurStuff (mi)->fParent = NULL;
                     AddMarker1 (mi, parent, false); // don't bother with adding hack markers - possibly might help but unlikely since we are going
-                    // into same list we started in (though possibly with differnt size)
+                    // into same list we started in (though possibly with different size)
                 }
                 else {
                     prevMarker = mi;

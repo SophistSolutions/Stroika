@@ -39,7 +39,7 @@
  *      @todo   AddAll() and CTOR for Tally (and SortedTally and concrete types) is confused by having
  *              overload taking T* and TallyEntry<T>*. Issue is that we cannot do templated iterator
  *              and templated objhect CTOR while these are iteratored (without mcuh better partial
- *              template specializaiton - I THINK????). Maybe use differnt method for one or the other
+ *              template specializaiton - I THINK????). Maybe use different method for one or the other
  *              to distinguish?
  *
  */

@@ -1295,7 +1295,7 @@ namespace   Stroika {
                 void    Led_MFC_CViewHelper<BASECLASS>::OnPrint (CDC* pDC, CPrintInfo* /*pInfo*/)
                 {
                     AssertNotNull (fPrintInfo);
-                    // Consider different print loop - maybe differnt print-oriented entry in TextImager?
+                    // Consider different print loop - maybe different print-oriented entry in TextImager?
                     // That doesn't have todo with scrolling? Just DrawFromSize_tOffset? Maybe - into rect.
                     // Make the MRTI::Draw() vector to that?
                     ASSERT_VALID (pDC);

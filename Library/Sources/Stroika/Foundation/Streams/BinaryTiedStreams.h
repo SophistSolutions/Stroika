@@ -43,7 +43,7 @@ namespace   Stroika {
              *  the appropriate subobject (either the BinaryInputStream or BinaryOutputStream to get the right
              *  stream object, and then seek on that.
              *
-             *  Note that this is significantly differnt from a BinaryInputOutputStream (which represents
+             *  Note that this is significantly different from a BinaryInputOutputStream (which represents
              *  a single stream that can both be written two and read from).
              *
              *  The input and output streams MAY shared a common shared_ptr<> rep, but are not required to.

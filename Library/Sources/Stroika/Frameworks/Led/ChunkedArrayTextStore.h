@@ -47,7 +47,7 @@ namespace   Stroika {
 
             /*
              *  Reduce the amount of memory needed per Marker*, by limiting the number of Led_tChars
-             *  in the buffer to 16Megs, and the number of differnt MarkerOwner*'s associated with
+             *  in the buffer to 16Megs, and the number of different MarkerOwner*'s associated with
              *  a particular text-store to 256. Doing this can save (??? roughly) 8 bytes per
              *  Marker. (OH, and also can do similar trick with next/prev/parent poiinters. They
              *  all occur multiple times. Use table (array) in textstore obj, and store indexes

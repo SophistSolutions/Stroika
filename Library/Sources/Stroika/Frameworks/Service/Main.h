@@ -107,7 +107,7 @@ namespace   Stroika {
 
 
             /**
-             *  There are two differnt dimentions along which you can subtype the behavior of a service application:
+             *  There are two different dimentions along which you can subtype the behavior of a service application:
              *      (1) the functionality the service provides
              *      (2) the OS service mechanism to use
              *

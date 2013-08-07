@@ -32,7 +32,7 @@ DEMO APP:
 CLEINT CODE:
 	for listener: 
 		create multicast socket. Send out igmp group add for multicast group.
-		listen for right format messages (distingish alive/dead and have differnt flags
+		listen for right format messages (distingish alive/dead and have different flags
 		we generate. Maybe even be smart about boucning, and track times, and if we get
 		a dead with TS out of order with alive, treat properly (based on TS, not order of
 		arrivaa)

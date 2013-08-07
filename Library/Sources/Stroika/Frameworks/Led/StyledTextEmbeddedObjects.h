@@ -38,7 +38,7 @@ namespace   Stroika {
 
 
             /*
-             *  qOverrideDefaultSentinalValue allows you to use a differnt value for the sentinal than
+             *  qOverrideDefaultSentinalValue allows you to use a different value for the sentinal than
              *  the default of zero. NB, that zero is a good default choice because it isn't a valid
              *  character code, and nearly all other (if not all other) choices are valid characters
              *  which you might be confusing with a sentinal.

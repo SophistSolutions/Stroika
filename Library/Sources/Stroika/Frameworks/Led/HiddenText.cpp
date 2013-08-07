@@ -424,7 +424,7 @@ void    HidableTextMarkerOwner::ReifyMarker (HidableTextMarker* m)
 @DESCRIPTION:   <p>This routine creates the actual marker objects to be used to hide text.</p>
                 <p>By default - it
             creates @'HidableTextMarkerOwner::FontSpecHidableTextMarker' markers. You can OVERRIDE this to create different
-            style markers, or to set differnt color etc attributes for use in your @'HidableTextMarkerOwner' subclass.</p>
+            style markers, or to set different color etc attributes for use in your @'HidableTextMarkerOwner' subclass.</p>
 */
 HidableTextMarkerOwner::HidableTextMarker*  HidableTextMarkerOwner::MakeHidableTextMarker ()
 {
