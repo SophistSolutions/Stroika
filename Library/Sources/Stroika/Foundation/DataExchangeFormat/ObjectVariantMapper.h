@@ -45,6 +45,22 @@
  *      @todo   NOTE and TODO
  *              The cast to Byte* loses some type safety (we may want to store the class size htrough template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
+ *
+ *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to Memory::VariantValue
+ *              objects (logically - these are RAM-based representations of an XML or JSON tree - for example).
+ *
+ *              We could restructure the API so that it was more SAX-like: instead of taking a VariantValue, it took
+ *              something that virtually acted like a VariantValue (gettype, and for array and map types, iterate over the
+ *              sub-parts). Similarly - on the FromObject () code - generate a stream of 'write' like calls that
+ *              contained atom Variants, and start-array/end-array/start-map/end-map calls.
+ *
+ *              This might allow this code to work better with a more effient json-reader/writer/xml/reader/writer
+ *              that also used these sorts of intermediate objects.
+ *
+ *              Of course, this ALSO might be implementable without any API changes - just using a special 'rep' for
+ *              VariantValue - that was smart about how to it would accessed etc. Needs some thought.
+ *
+ *              Anyhow - this is a long-term todo item, so no need to work out details now.
  */
 
 
