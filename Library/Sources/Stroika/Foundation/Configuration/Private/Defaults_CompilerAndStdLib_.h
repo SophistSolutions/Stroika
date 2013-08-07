@@ -168,6 +168,27 @@
 
 
 /*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_final
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_Supports_final
+
+#if     defined (__GNUC__)  && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_final   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_final   1
+#endif
+
+#endif
+
+
+
+
+
+
+
+
+/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 @DESCRIPTION:   <p></p>
 */
@@ -866,6 +887,11 @@
 #endif
 
 
+// If final is not supported, just stubbing it out but leaving it there for
+// compilers that do support it, and/or documentation purposes
+#if     !qCompilerAndStdLib_Supports_final
+#define final
+#endif
 
 
 

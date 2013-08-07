@@ -123,6 +123,9 @@ namespace   Stroika {
              *  from EITEHR the process in which the service is run, or from any other process (via IPC - specific to the process
              *  service backend implementation).
              *
+             *  This class is 'final' - since the intended use is to provide polymorphic behavior via the REP classes passed
+             *  in to the CTOR.
+             *
              *  Miscelaneous Notes:
              *      o   No need for a --daemonize option for --Run-As-Service, because thats essentially
              *          what the --start command does
