@@ -48,6 +48,11 @@
  *
  * TODO:
  *
+ *      @todo   Redo SetLength() API, so caller must specify fill-character.
+ *              Or maybe better yet - replace with two APIs
+ *                  GrowToLength(n, fillChar)
+ *                  ShriunkeToLength(n) - AKA
+ *
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
  *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
  *
@@ -84,8 +89,6 @@
  *
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
- *
- *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *
  *      @todo   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistent
  *               with other APIs.
