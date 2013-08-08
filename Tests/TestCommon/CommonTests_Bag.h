@@ -469,6 +469,7 @@ namespace CommonTests {
                     hack_sum = 0;
 #endif
                     count = 0;
+#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
                     b.ApplyStatic ([] (const T & i) {
                         count++;
 #if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
@@ -477,6 +478,16 @@ namespace CommonTests {
                         hack_sum = hack_sum + static_cast<int> (i);
 #endif
                     });
+#else
+                    b.Apply ([] (const T & i) {
+                        count++;
+#if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
+                        sum = sum + i;
+#else
+                        hack_sum = hack_sum + static_cast<int> (i);
+#endif
+                    });
+#endif
                     VerifyTestResult (count == LAST - FIRST);
 #if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
                     VerifyTestResult (EqualsCompareFunctionType::Equals (sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));

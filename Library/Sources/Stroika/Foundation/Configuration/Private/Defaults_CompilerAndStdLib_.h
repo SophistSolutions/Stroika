@@ -755,6 +755,8 @@
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (_MSC_VER >= _MS_VS_2k12_VER_)
+#elif   defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)) || (__GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ >= 3))
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
 #endif
