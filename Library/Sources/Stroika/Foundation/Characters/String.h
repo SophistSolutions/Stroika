@@ -44,14 +44,19 @@
  *              o   String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite
  *              o   String_ExternalMemoryOwnership_StackLifetime_ReadOnly
  *              o   String_ExternalMemoryOwnership_StackLifetime_ReadWrite
+ *              o   String_wstring
+ *
+ *      Possible future additions
  *              o   String_Common
+ *              o   String_AsciiOnlyOptimized
  *
  * TODO:
  *
  *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *              Or maybe better yet - replace with two APIs
  *                  GrowToLength(n, fillChar)
- *                  ShriunkeToLength(n) - AKA
+ *                  ShriunkToLength(n) - AKA Qt::QString::truncate().
+ *              Not an error if nothing todo (even if already longer/shorter).
  *
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
  *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
@@ -68,6 +73,9 @@
  *
  *              VERY IMPORTANT TODO NEXT CUZ REMOVES LOTS OF DUPLICATED CODE!
  *
+ *              May need special area/folder for helper backend reps (see String_AsciiOnlyOptimized and
+ *              its backend rep?)
+ *
  *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
  *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
  *              commutativity issues (wchar* == String versus String == wchar*).
@@ -76,11 +84,26 @@
  *              does std::move of wstring - and builds String_stdwstring rep! That could be notably
  *              faster for constructing Strings from wstring - in some cases...
  *
- *      @todo   Add a String_UTF8 backend - (maybe a number of variants). Key is that these can be more compact
- *              and for many operaitons, just fine, but for insert, and a[i] = quite sucky.
+ *      @todo   Add a String_AsciiOnlyOptimized or String_isolatin1Optimized class (instead of String_UTF8).
+ *              Idea is THIS can be very efficient and we can detect automatically when to create in
+ *              normal string CTOR (i think - if strlen > 3? - check if all ascii and do).
  *
- *      @todo   Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
- *              Should be able to do for (Character c : s) {...}
+ *              This will automatically morph to other class (like buffered as we do for readonly). Maybe that
+ *              means we need a backend, but no front-end?
+ *
+ *              OBSOLETE TODO
+ *                  Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
+ *                  and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
+ *
+ *                  CLOSELY RELATED - MAYBE DO part of above (no check CTOR except assert).
+ *
+ *      @todo   We want String : public Iterable<Character>. Verify easy and has no overhead!
+ *              Document we chose NOT to have String : Sequence<Character> - because of issue of assignemtn to
+ *              members? Maybe not good enough reason? But would muck up API more. Maybe revisit that?
+ *
+ *              OBSOLETE RELATED TODO
+ *                  Somehow make it easy to convert String to an Iterable<Character> - and perhaps even Sequence<Character>
+ *                  Should be able to do for (Character c : s) {...}.
  *
  *      @todo   Think out and document the whole choice about 'readonly' strings and all modifying member
  *              functions returning a new string. Has performance implications, but also usability.
@@ -101,6 +124,21 @@
  *              not obvious!!!! MUST BE SUPER CLEARLY DOCUMENTED.
  *              Be sure docs for TOKENIZE are clear this is not a FLEX replacement - but just a very simple 'split' like functionaliuty.
  *              not totally clear what name is best (split or tokenize()).
+ *
+ *              Closely related to my existing FIND () API. Maybe this is just a comment?
+ *
+ *              But also review:
+ *                  http://qt-project.org/doc/qt-5.0/qtcore/qstring.html#split
+ *
+ *                  especially:
+ *                      QString line = "forename\tmiddlename  surname \t \t phone";
+ *                      QRegularExpression sep("\\s+");
+ *                      str = line.section(sep, 2, 2); // str == "surname"
+ *                      str = line.section(sep, -3, -2); // str == "middlename  surname"
+ *              Make sure our FIND is at least this simple, and maybe diff between find and split is FIND the regular expression names the things
+ *              looked for and SPLIT() uses regexp to name the separators?
+ *
+ *              Add something like the above to the String String demo app (when it exists)
  *
  *      @todo   MAYBE also add ReplaceOne() function (we have ReplaceAll() now).
  *
@@ -134,7 +172,8 @@
  *              Writeup in docs STRINGS THREADING SAFETY setioN (intenral hidden stuff fully threadsafe,
  *              but externally, envelope cannot be read/write or write/write at the same time). – document examples.
  *
- *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API
+ *      @todo   Add Ranged insert public envelope API, and add APPEND (not just operaotr+) API. See/maybe use new
+ *              Stroika Range type?
  *
  *      @todo   Migrate most of the StringUtils stuff here like:
  *              > Contains- with CI optin
@@ -143,6 +182,10 @@
  *              > Equals() - with CI optin
  *
  *      @todo   Add Left()/Right()/Mid() funtions - like basic (simple, vaguely useful - especially 'Right'()).
+ *
+ *      @todo   Add NormalizeSpace (Character useSpaceCharacter = ' ');
+ *              see Qt 'QString::simplify()'. Idea is Trim() (right and left) - plus replace contiguous substrings with
+ *              Character::IsSpace() with a single (given) space character.
  *
  *      @todo   Compare
  *          template    <typename TCHAR>
@@ -157,39 +200,31 @@
  *                  }
  *          with the TRIM() implementation I wrote here - in String. Not sure we want to use the local stuff? Maybe?
  *
- *      @todo   when we get Sequence<> ported (after) - we MUST add sequence-iterator to String class
- *              (will work beatifulyl with new stdc++ foreach() stuff).
- *
- *              (OR PERHAPS create new class Iterable<T> and make String subclass from that instead of Sequence?)?
- *
- *              (OR - perhaps BEST - make STRING a readonly class, and have it able to
- *                  Sequence<Character> AsCharacters() const;
- *                  and CTOR
- *                  String (Sequence<Character>);
- *              THEN the class can be fully readonly and use sequence stuff to modify?
- *              UNSURE - maybe just too conveinet to be able to modify (but still do sequnce converters?)
- *
- *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
- *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
- *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
- *
- *      @todo   Consider adding a new subtype of string - OPTIMIZAITON - which takes an ASCII argument (so can do less checking
- *              and be more compact??? Perhaps similarly for REP storing stuff as UTF8?
- *
  *      @todo   Implement String_Common
  *              NOT YET IMPLEMETNED - EVEN IN FAKE FORM - BECAUSE I"M NOT SURE OF SEMANTICS YET!
  *
- *              String_Common is a subtype of string you can use to construct a String object freely. It has no semantics requirements. However, it SHOULD only
- *              be used for strings which are commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
- *              allocated permanently - for the lifetime of the application, and will take potentially extra time looking for the given string.
+ *              String_Common is a subtype of string you can use to construct a String object freely.
+ *              It has no semantics requirements. However, it SHOULD only be used for strings which are
+ *              commonly used, and where you wish to save space. The implementation will keep the memory for String_Common strings
+ *              allocated permanently - for the lifetime of the application, and will take potentially
+ *              extra time looking for the given string.
  *
- *              We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in a hashtable (or map), and do quick lookup of associated index, and
- *              also store in a table (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value of the stored rep. Then doing a PEEK()
- *              is trivial and efficient.
+ *              We MAY handle this like the HealthFrame RFLLib ATOM class - where we store the string in
+ *              a hashtable (or map), and do quick lookup of associated index, and also store in a table
+ *              (intead of vector of strings, use a big buffer we APPEND to, and whose index is the value
+ *              of the stored rep. Then doing a PEEK() is trivial and efficient.
  *              class   String_Common : public String {
  *                  public:
  *                      explicit String_Common (const String& from);
  *              };
+ *
+ *      @todo   Add a String_UTF8 backend - (maybe a number of variants). Key is that these can be more compact
+ *              and for many operaitons, just fine, but for insert, and a[i] = quite sucky.
+ *              [RETHINK - See String_AsciiOnlyOptimized - and probably dont do this]
+ *
+ *      @todo   Handle Turkish toupper('i') problem. Maybe use ICU. Maybe add optional LOCALE parameter to routines where this matters.
+ *              Maybe use per-thread global LOCALE settings. Discuss with KDJ.
+ *              KDJ's BASIC SUGGESTION is - USE ICU and 'stand on their shoulders'.
  *
  */
 
