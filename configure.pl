@@ -39,7 +39,8 @@ sub	ParseCommandLine_
 			DoHelp_ ();
 		}
 		else {
-			$genConfigureArgs[@genConfigureArgs] = $var;
+			#extra quoting so when passed through extra level of shell interpretation the params dont get exploded
+			$genConfigureArgs[@genConfigureArgs] = "\"$var\"";
 		}
 	}
 }
