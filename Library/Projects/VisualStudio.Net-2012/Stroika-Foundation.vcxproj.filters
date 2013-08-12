@@ -564,6 +564,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.cpp">
       <Filter>Sources\DataExchangeFormat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Reader.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1314,6 +1320,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Reader.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1976,6 +1988,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_stdset.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.inl">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
   </ItemGroup>
 </Project>
