@@ -20,9 +20,9 @@
 * TODO:
 *
 *       @todo   Short term- convert to using only Stroika string class (but make easy to still leverage from HF -
-*				think this out carefully befor change)
+*               think this out carefully befor change)
 *
-*       @todo	Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
+*       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
 *               Maybe add optional params for some types (control enums).
 *               Supprot dates, and Memory::VariantUniion, and Memory::Ooptioan, etc...
 */
