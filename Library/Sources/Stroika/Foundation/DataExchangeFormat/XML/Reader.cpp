@@ -29,11 +29,11 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 Memory::VariantValue    DataExchangeFormat::XML::Reader (const Streams::TextInputStream& in)
 {
 #if     qHasLibrary_Xerces
-	AssertNotImplemented ();
-	return Memory::VariantValue ();
+    AssertNotImplemented ();
+    return Memory::VariantValue ();
 #else
-	AssertNotImplemented ();
-	return Memory::VariantValue ();
+    AssertNotImplemented ();
+    return Memory::VariantValue ();
 #endif
 }
 

@@ -10,6 +10,7 @@
 #include    "../../Configuration/Common.h"
 #include    "../../Memory/VariantValue.h"
 #include    "../../Streams/BinaryOutputStream.h"
+#include    "../../Streams/TextOutputStream.h"
 
 #include    "Common.h"
 
@@ -17,7 +18,10 @@
 
 /*
 * TODO:
-*	@todo	NotYetImplemented
+*   @todo   NotYetImplemented (just very trivial rough draft based on json code)
+*
+*   @todo   See dataexchangeformat/todo.md - we may need class for writer - so can fill in paarms like incliuding
+*           top-level <?xml...stuff and charset
 */
 
 
@@ -40,12 +44,10 @@ namespace   Stroika {
                  *  or it can be the type:
                  *          o   Memory::VariantValue::eNull
                  *
-                 *  Other types are illegal an JSON and will trigger a 'Require' failure.
-                 *
-                 * Note that PrettyPrint () writes in UTF-8 format to the output stream.
+                 *  Other types are illegal an XML and will trigger a 'Require' failure.
                  */
                 void    PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
-                void    PrettyPrint (const Memory::VariantValue& v, ostream& out);
+                void    PrettyPrint (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
 
 
             }
