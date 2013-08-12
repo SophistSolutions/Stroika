@@ -3,11 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    <sstream>
-
 #include    "../../Characters/StringUtils.h"
 #include    "../../Characters/Format.h"
-#include    "../../Streams/iostream/Utilities.h"
 #include    "../../Streams/TextInputStreamBinaryAdapter.h"
 #include    "../BadFormatException.h"
 
