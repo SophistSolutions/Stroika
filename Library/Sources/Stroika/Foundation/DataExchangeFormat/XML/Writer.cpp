@@ -22,11 +22,6 @@ using   namespace   Stroika::Foundation::Streams;
 
 
 
-/*
- ********************************************************************************
- *************** DataExchangeFormat::XML::PrettyPrint ***************************
- ********************************************************************************
- */
 namespace   {
     void    Indent_ (const TextOutputStream& out, int indentLevel)
     {
@@ -134,12 +129,25 @@ namespace   {
     }
 }
 
-void    DataExchangeFormat::XML::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
-{
-    PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
-}
 
-void    DataExchangeFormat::XML::PrettyPrint (const Memory::VariantValue& v, const Streams::TextOutputStream& out)
+
+/*
+ ********************************************************************************
+ ******************** DataExchangeFormat::XML::Writer ***************************
+ ********************************************************************************
+ */
+class   DataExchangeFormat::XML::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
+public:
+    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
+        PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+    }
+    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
+        PrettyPrint_ (v, out, 0);
+    }
+};
+
+
+DataExchangeFormat::XML::Writer::Writer ()
+    : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
-    PrettyPrint_ (v, out, 0);
 }

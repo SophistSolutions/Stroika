@@ -12,6 +12,7 @@
 #include    "../../Streams/BinaryOutputStream.h"
 #include    "../../Streams/TextOutputStream.h"
 
+#include    "../Writer.h"
 #include    "Common.h"
 
 
@@ -34,6 +35,24 @@ namespace   Stroika {
             namespace   XML {
 
 
+                /**
+                 *  @todo
+                 * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
+                 *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+                 */
+                class Writer : public DataExchangeFormat::Writer {
+                private:
+                    typedef DataExchangeFormat::Writer  inherited;
+
+                private:
+                    class   Rep_;
+
+                public:
+                    Writer ();
+                };
+
+#if 0
+
                 /*
                  *
                  * The arguemnt VariantValue must be composed of any combination of these types:
@@ -50,6 +69,8 @@ namespace   Stroika {
                  */
                 void    PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
                 void    PrettyPrint (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
+#endif
+
 
 
             }

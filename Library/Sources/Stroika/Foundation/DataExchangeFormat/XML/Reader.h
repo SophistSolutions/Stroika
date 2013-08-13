@@ -11,6 +11,7 @@
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
+#include    "../Reader.h"
 
 
 /**
@@ -28,8 +29,17 @@ namespace   Stroika {
             namespace   XML {
 
 
-                Memory::VariantValue    Reader (const Streams::BinaryInputStream& in);
-                Memory::VariantValue    Reader (const Streams::TextInputStream& in);
+                /**
+                 *  @todo
+                 * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
+                 *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+                 */
+                class Reader : public DataExchangeFormat::Reader {
+                private:
+                    class   Rep_;
+                public:
+                    Reader ();
+                };
 
 
             }

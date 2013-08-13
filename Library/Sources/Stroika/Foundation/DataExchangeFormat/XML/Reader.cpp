@@ -14,31 +14,23 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
 
 
-
-
-
-
-
-/*
- ********************************************************************************
- *********************** DataExchangeFormat::XML::Reader ************************
- ********************************************************************************
- */
-Memory::VariantValue    DataExchangeFormat::XML::Reader (const Streams::TextInputStream& in)
-{
+class   DataExchangeFormat::XML::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
+public:
+    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
+        // not sure about this - we may want to led xerces read raw binary bytes!!
+        return Read (Streams::TextInputStreamBinaryAdapter (in));
+    }
+    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
 #if     qHasLibrary_Xerces
-    AssertNotImplemented ();
-    return Memory::VariantValue ();
+        AssertNotImplemented ();
+        return Memory::VariantValue ();
 #else
-    AssertNotImplemented ();
-    return Memory::VariantValue ();
+        AssertNotImplemented ();
+        return Memory::VariantValue ();
 #endif
-}
-
-Memory::VariantValue    DataExchangeFormat::XML::Reader (const Streams::BinaryInputStream& in)
-{
-    return Reader (Streams::TextInputStreamBinaryAdapter (in));
-}
+    }
+};
 

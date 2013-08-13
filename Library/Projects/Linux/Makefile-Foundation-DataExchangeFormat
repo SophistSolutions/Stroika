@@ -14,6 +14,8 @@ Objs	=	\
 	$(ObjDir)BadFormatException.o\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
+	$(ObjDir)Reader.o\
+	$(ObjDir)Writer.o\
 
 SubDirs	=	\
 	JSON \
