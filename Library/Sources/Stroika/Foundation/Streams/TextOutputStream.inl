@@ -56,7 +56,11 @@ namespace   Stroika {
             }
             inline  void    TextOutputStream::Write (const wchar_t* cStr) const
             {
-                return Write (cStr, cStr + ::wcslen (cStr));
+                Write (cStr, cStr + ::wcslen (cStr));
+            }
+            inline  void    TextOutputStream::Write (const String& s) const
+            {
+                Write (s.c_str ());
             }
 
 

@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/Character.h"
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "TextStream.h"
 
@@ -26,6 +27,7 @@ namespace   Stroika {
 
 
             using   Characters::Character;
+            using   Characters::String;
 
 
             /**
@@ -74,6 +76,7 @@ namespace   Stroika {
                 nonvirtual  void    Write (const wchar_t* start, const wchar_t* end) const;
                 nonvirtual  void    Write (const Character* start, const Character* end) const;
                 nonvirtual  void    Write (const wchar_t* cStr) const;
+                nonvirtual  void    Write (const String& s) const;
             };
 
 
