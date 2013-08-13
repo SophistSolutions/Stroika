@@ -18,7 +18,9 @@
 
 /*
 * TODO:
-*   @todo   NotYetImplemented (just very trivial rough draft based on json code)
+*   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
+*
+*   @todo   See about <?xml ... heading and char encoding - see class ssiue in todo below
 *
 *   @todo   See dataexchangeformat/todo.md - we may need class for writer - so can fill in paarms like incliuding
 *           top-level <?xml...stuff and charset

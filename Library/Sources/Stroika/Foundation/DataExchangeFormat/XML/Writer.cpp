@@ -65,65 +65,39 @@ namespace   {
         }
         out.Write (buf);
     }
-    void    PrettyPrint_ (const wstring& v, const TextOutputStream& out)
+    void    PrettyPrint_ (const String& v, const TextOutputStream& out)
     {
-        //@@@@TODO - WRONG FOR XML
-        out.Write (L"\"");
-        for (auto i = v.begin (); i != v.end (); ++i) {
-            switch (*i) {
-                case '\"':
-                    out.Write (L"\\\"");
-                    break;
-                case '\\':
-                    out.Write (L"\\\\");
-                    break;
-                case '\n':
-                    out.Write (L"\\n");
-                    break;
-                case '\r':
-                    out.Write (L"\\r");
-                    break;
-// unclear if we need to quote other chars such as \f\t\b\ but probably not...
-                default:
-                    wchar_t c = *i;
-                    out.Write (&c, &c + 1);
-                    break;
-            }
-        }
-        out.Write (L"\"");
+        // @todo need variant of QuoteForXML that ONLY quotes special cahracters, and not fancy (eg japaense, etc)
+        // characters
+        //
+        // then can clean this up
+        out.Write (String::FromAscii (QuoteForXML (v)));
     }
     void    PrettyPrint_ (const vector<Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
-        //@@@@TODO - WRONG FOR XML
-        out.Write (L"[\n");
         for (auto i = v.begin (); i != v.end (); ++i) {
             Indent_ (out, indentLevel + 1);
             PrettyPrint_ (*i, out, indentLevel + 1);
-            if (i + 1 != v.end ()) {
-                out.Write (L",");
-            }
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"]");
     }
     void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
-        //@@@@TODO - WRONG FOR XML
-        out.Write (L"{\n");
+        //@@@@TODO - indents wrong, and must validate first legit xml elt args
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel + 1);
-            PrettyPrint_ (i->first, out, indentLevel + 1);
-            out.Write (L" : ");
+            out.Write (L"<");
+            out.Write (i->first.c_str ());
+            out.Write (L">");
             PrettyPrint_ (i->second, out, indentLevel + 1);
+            out.Write (L"</");
+            out.Write (i->first.c_str ());
+            out.Write (L">");
             ++i;
-            if (i != v.end ()) {
-                out.Write (L",");
-            }
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"}");
     }
     void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
@@ -134,10 +108,10 @@ namespace   {
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
             case    Memory::VariantValue::Type::eDate:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (v.As<String> (), out);
                 break;
             case    Memory::VariantValue::Type::eDateTime:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (v.As<String> (), out);
                 break;
             case    Memory::VariantValue::Type::eInteger:
                 PrettyPrint_ (v.As<int> (), out);
@@ -146,7 +120,7 @@ namespace   {
                 PrettyPrint_ (v.As<Memory::VariantValue::FloatType> (), out);
                 break;
             case    Memory::VariantValue::Type::eString:
-                PrettyPrint_ (v.As<wstring> (), out);
+                PrettyPrint_ (v.As<String> (), out);
                 break;
             case    Memory::VariantValue::Type::eMap:
                 PrettyPrint_ (v.As<map<wstring, Memory::VariantValue>> (), out, indentLevel);
