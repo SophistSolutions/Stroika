@@ -24,6 +24,8 @@ public:
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
     virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
+
+        // TODO - USE SAXREADER HERE!!!
 #if     qHasLibrary_Xerces
         AssertNotImplemented ();
         return Memory::VariantValue ();
@@ -34,3 +36,15 @@ public:
     }
 };
 
+
+
+
+/*
+ ********************************************************************************
+ ******************** DataExchangeFormat::XML::Reader ***************************
+ ********************************************************************************
+ */
+DataExchangeFormat::XML::Reader::Reader ()
+    : inherited (shared_ptr<_IRep> (new Rep_ ()))
+{
+}

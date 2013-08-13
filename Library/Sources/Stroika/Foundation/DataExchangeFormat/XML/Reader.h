@@ -36,7 +36,11 @@ namespace   Stroika {
                  */
                 class Reader : public DataExchangeFormat::Reader {
                 private:
+                    typedef DataExchangeFormat::Reader  inherited;
+
+                private:
                     class   Rep_;
+
                 public:
                     Reader ();
                 };
