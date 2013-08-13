@@ -19,6 +19,11 @@
  *  \file
  *
  *  TODO:
+ *      @todo   This was hard to use. See if I can find example of where I used it, and either cleanup,
+ *              or maybe get rid of this - OBSOLETE - and see if easier using new ObjectVairantMapper stuff.
+ *
+ *              BUT - note - this had the advnatage of using no intermediate format!!! So see about
+ *              capturing its adnvanteas?? Maybe re-use some stuff with new metadata?
  *
  */
 
