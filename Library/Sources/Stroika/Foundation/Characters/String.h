@@ -52,6 +52,8 @@
  *
  * TODO:
  *
+ *      @todo   Add FromISOLatin1()
+ *
  *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *              Or maybe better yet - replace with two APIs
  *                  GrowToLength(n, fillChar)
@@ -316,6 +318,13 @@ namespace   Stroika {
                  */
                 static  String  FromNarrowSDKString (const char* from);
                 static  String  FromNarrowSDKString (const string& from);
+
+            public:
+                /**
+                 *  Create a String object from ascii text. This function requires that its arguments all ascii (no high-bit set)
+                 */
+                static  String  FromAscii (const char* from);
+                static  String  FromAscii (const string& from);
 
             public:
                 nonvirtual  String& operator+= (Character appendage);

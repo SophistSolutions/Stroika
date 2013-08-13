@@ -554,6 +554,26 @@ String  String::FromNarrowSDKString (const string& from)
     return NarrowSDKStringToWide (from);
 }
 
+String  String::FromAscii (const char* from)
+{
+#if     qDebug
+    for (auto i = from; i != from; ++i) {
+        Require (isascii (*i));
+    }
+#endif
+    return ASCIIStringToWide (from);
+}
+
+String  String::FromAscii (const string& from)
+{
+#if     qDebug
+    for (auto i = from.begin (); i != from.end (); ++i) {
+        Require (isascii (*i));
+    }
+#endif
+    return ASCIIStringToWide (from);
+}
+
 void    String::SetLength (size_t newLength)
 {
     try {
