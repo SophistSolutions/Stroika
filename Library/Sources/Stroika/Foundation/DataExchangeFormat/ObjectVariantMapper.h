@@ -27,6 +27,9 @@
  *
  *  TODO:
  *
+ *      @todo   Redo examples (maybe small bits of API) using new Reader/Writer abstract impl
+ *              stuff (backends to XML or JSON)
+ *
  *      @todo   Just a draft - think through what we really want here...
  *
  *      @todo   Add support for array to ResetToDefaultTypeRegistry - like we have for struct - using Sequence<>
