@@ -398,9 +398,35 @@ namespace   {
 
 
 
+        namespace Test_01_FirstPlayingAroundTest_ {
+            void    DoIt ()
+            {
+                {
+                    DataExchangeFormat::XML::Writer w;
+                    Memory::VariantValue    v   =   Memory::VariantValue (44905.3);
+                    Streams::BasicBinaryOutputStream    out;
+                    w.Write (v, out);
+                    string x = out.As<string> ();
+                    int breakhere = 1;
+                }
+                {
+                    DataExchangeFormat::XML::Writer w;
+                    map<wstring, VariantValue>  mv;
+                    mv[L"MaxFiles"] = Memory::VariantValue (405);
+                    Memory::VariantValue    v   =    Memory::VariantValue (mv);
+                    Streams::BasicBinaryOutputStream    out;
+                    w.Write (v, out);
+                    string x = out.As<string> ();
+                    int breakhere = 1;
+                }
+            }
+        }
+
+
 
         void    DoAll_ ()
         {
+            Test_01_FirstPlayingAroundTest_::DoIt ();
         }
     }
 }
@@ -423,6 +449,9 @@ namespace   {
 
         void    DoAll_ ()
         {
+
+
+
         }
     }
 }

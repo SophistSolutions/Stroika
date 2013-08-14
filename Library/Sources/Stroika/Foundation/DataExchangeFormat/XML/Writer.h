@@ -35,6 +35,8 @@ namespace   Stroika {
             namespace   XML {
 
 
+                using   Characters::String;
+
                 /**
                  *  @todo
                  * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
@@ -47,8 +49,21 @@ namespace   Stroika {
                 private:
                     class   Rep_;
 
+
+                    //@todo - this should take OPTIONAL<STRING>...
+                public:
+                    // NOTE - defaults to "Document"
+                    // if empty - then Write requiers
+                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
+
+                    String GetDocumentElementName () const;
+                    void    SetDocumentElementName (const String& n);
+
                 public:
                     Writer ();
+
+                private:
+                    nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
                 };
 
 #if 0

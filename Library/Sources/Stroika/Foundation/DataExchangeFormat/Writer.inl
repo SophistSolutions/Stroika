@@ -32,6 +32,10 @@ namespace   Stroika {
             {
                 fRep_->Write (v, out);
             }
+            inline  shared_ptr<Writer::_IRep>   Writer::_GetRep () const
+            {
+                return fRep_;
+            }
 
 
         }

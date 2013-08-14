@@ -44,6 +44,10 @@ namespace   Stroika {
                 void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
                 void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
 
+
+            protected:
+                shared_ptr<_IRep>   _GetRep () const;
+
             private:
                 shared_ptr<_IRep>   fRep_;
             };

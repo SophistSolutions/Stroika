@@ -71,7 +71,6 @@ namespace   {
     void    PrettyPrint_ (const vector<Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         for (auto i = v.begin (); i != v.end (); ++i) {
-            Indent_ (out, indentLevel + 1);
             PrettyPrint_ (*i, out, indentLevel + 1);
             out.Write (L"\n");
         }
@@ -81,7 +80,7 @@ namespace   {
     {
         //@@@@TODO - indents wrong, and must validate first legit xml elt args
         for (auto i = v.begin (); i != v.end ();) {
-            Indent_ (out, indentLevel + 1);
+            Indent_ (out, indentLevel);
             out.Write (L"<");
             out.Write (i->first.c_str ());
             out.Write (L">");
@@ -92,7 +91,6 @@ namespace   {
             ++i;
             out.Write (L"\n");
         }
-        Indent_ (out, indentLevel);
     }
     void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
@@ -138,16 +136,59 @@ namespace   {
  */
 class   DataExchangeFormat::XML::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
 public:
+    Rep_ ()
+        : fDocumentElementName_ (L"Document") {
+    }
+
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
-        PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+        if (fDocumentElementName_.empty ()) {
+            Require (v.GetType () == Memory::VariantValue::Type::eMap);
+            PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+        }
+        else {
+            Containers::Mapping<String, Memory::VariantValue> v2;
+            v2.Add (fDocumentElementName_, v);
+            PrettyPrint_ (v2, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+        }
     }
     virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
-        PrettyPrint_ (v, out, 0);
+        if (fDocumentElementName_.empty ()) {
+            Require (v.GetType () == Memory::VariantValue::Type::eMap);
+            PrettyPrint_ (v, out, 0);
+        }
+        else {
+            Containers::Mapping<String, Memory::VariantValue> v2;
+            v2.Add (fDocumentElementName_, v);
+            PrettyPrint_ (v2, out, 0);
+        }
     }
+    nonvirtual  String GetDocumentElementName () const {
+        return fDocumentElementName_;
+    }
+    nonvirtual  void    SetDocumentElementName (const String& n) {
+        fDocumentElementName_ = n;
+    }
+
+private:
+    String fDocumentElementName_;
 };
 
 
 DataExchangeFormat::XML::Writer::Writer ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
+}
+shared_ptr<DataExchangeFormat::XML::Writer::Rep_>   DataExchangeFormat::XML::Writer::GetRep_ () const
+{
+    // no need for this exactly since cannot throw...
+    return dynamic_pointer_cast<DataExchangeFormat::XML::Writer::Rep_> (inherited::_GetRep ());
+}
+
+String DataExchangeFormat::XML::Writer::GetDocumentElementName () const
+{
+    return GetRep_ ()->GetDocumentElementName ();
+}
+void    DataExchangeFormat::XML::Writer::SetDocumentElementName (const String& n)
+{
+    GetRep_ ()->SetDocumentElementName (n);
 }
