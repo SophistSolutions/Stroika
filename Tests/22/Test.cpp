@@ -1,7 +1,7 @@
 ﻿/*
- * Copyright(c) Records For Living, Inc. 2004-2012.  All rights reserved
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::DataExchangeFormat::JSON
+//  TEST    Foundation::DataExchangeFormat::Reader/Writers(JSON/XML)
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
