@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include	<istream>
+
 #include    "../Memory/VariantValue.h"
 #include    "../Streams/BinaryInputStream.h"
 #include    "../Streams/TextInputStream.h"
@@ -16,6 +18,18 @@
  *
  * TODO:
  *      @todo   UNDOCUMENTED - PRELIMINARY
+ *
+ *		@todo	Consider support for wistream reader as well..
+ *
+ *
+ *	\em Design Note:
+ *		One question was whether or not to natively include support for istream sources or not.
+ *		Its easy todo if not supported, by just using BinaryInputStreamFromIStreamAdapter. However,
+ *		I decided it would be best to directly support it so typical users (who may not want to
+ *		lookup those mapper classes) will just get the right results automagically.
+ *
+ *		This comports with a similar choice made in the String and Container classes (direct builtin
+ *		first-class support for native STL objects where appropriate).
  */
 
 
@@ -41,11 +55,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Note - to use std::istream - use
-                 *      Read (BinaryInputStreamFromIStreamAdapter (some_istream));
                  */
                 Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
                 Memory::VariantValue    Read (const Streams::TextInputStream& in);
+                Memory::VariantValue    Read (istream& in);
 
             private:
                 shared_ptr<_IRep>   fRep_;

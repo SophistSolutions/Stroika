@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include	<ostream>
+
 #include    "../Memory/VariantValue.h"
 #include    "../Streams/BinaryOutputStream.h"
 #include    "../Streams/TextOutputStream.h"
@@ -15,6 +17,15 @@
  *
  * TODO:
  *      @todo   UNDOCUMENTED - PRELIMINARY
+ *
+ *	\em Design Note:
+ *		One question was whether or not to natively include support for istream sources or not.
+ *		Its easy todo if not supported, by just using BinaryInputStreamFromIStreamAdapter. However,
+ *		I decided it would be best to directly support it so typical users (who may not want to
+ *		lookup those mapper classes) will just get the right results automagically.
+ *
+ *		This comports with a similar choice made in the String and Container classes (direct builtin
+ *		first-class support for native STL objects where appropriate).
  */
 
 
@@ -41,8 +52,9 @@ namespace   Stroika {
                  *  Note - to use std::ostream - use
                  *      Read (BinaryOutputStreamFromOStreamAdapter (some_ostream));
                  */
-                void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
-                void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
+                nonvirtual	void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
+                nonvirtual	void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
+                nonvirtual	void    Write (const Memory::VariantValue& v, ostream& out);
 
 
             protected:

@@ -34,6 +34,7 @@ namespace   Stroika {
 
 
 				/**
+				 *	@todo add example usage (and docs)
 				 */
                 class Reader : public DataExchangeFormat::Reader {
                 private:
