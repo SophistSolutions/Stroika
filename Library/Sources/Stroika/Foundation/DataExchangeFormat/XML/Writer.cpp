@@ -78,7 +78,8 @@ namespace   {
     }
     void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
-        //@@@@TODO - indents wrong, and must validate first legit xml elt args
+        //@@@@TODO - must validate first legit xml elt args
+        out.Write (L"\n");
         for (auto i = v.begin (); i != v.end ();) {
             Indent_ (out, indentLevel);
             out.Write (L"<");
