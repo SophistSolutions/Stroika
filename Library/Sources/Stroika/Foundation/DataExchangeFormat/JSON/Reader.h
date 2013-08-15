@@ -11,6 +11,7 @@
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
+#include    "../Reader.h"
 
 
 /**
@@ -32,7 +33,21 @@ namespace   Stroika {
             namespace   JSON {
 
 
-                Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
+				/**
+				 */
+                class Reader : public DataExchangeFormat::Reader {
+                private:
+                    typedef DataExchangeFormat::Reader  inherited;
+
+                private:
+                    class   Rep_;
+
+                public:
+                    Reader ();
+                };
+
+				
+				Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
                 Memory::VariantValue    Read (const Streams::TextInputStream& in);
 
 

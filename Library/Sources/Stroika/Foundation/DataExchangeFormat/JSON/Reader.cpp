@@ -406,6 +406,33 @@ namespace   {
 
 
 
+
+
+
+/*
+ ********************************************************************************
+ ******************* DataExchangeFormat::JSON::Reader ***************************
+ ********************************************************************************
+ */
+class   DataExchangeFormat::JSON::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
+public:
+    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
+		return Read (Streams::TextInputStreamBinaryAdapter (in));
+    }
+    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
+		wstring     tmp =   in.ReadAll ().As<wstring> ();
+		wstring::const_iterator i = tmp.begin ();
+		return Reader_value_ (&i, tmp.end ());
+    }
+};
+DataExchangeFormat::JSON::Reader::Reader ()
+    : inherited (shared_ptr<_IRep> (new Rep_ ()))
+{
+}
+
+
+
+
 /*
  ********************************************************************************
  *********************** DataExchangeFormat::JSON::Reader ***********************
@@ -413,13 +440,11 @@ namespace   {
  */
 Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::TextInputStream& in)
 {
-    wstring     tmp =   in.ReadAll ().As<wstring> ();
-    wstring::const_iterator i = tmp.begin ();
-    return Reader_value_ (&i, tmp.end ());
+	return DataExchangeFormat::JSON::Reader ().Read (in);
 }
 
 Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::BinaryInputStream& in)
 {
-    return Read (Streams::TextInputStreamBinaryAdapter (in));
+	return DataExchangeFormat::JSON::Reader ().Read (in);
 }
 

@@ -163,12 +163,44 @@ namespace   {
     }
 }
 
-void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
+
+
+
+/*
+ ********************************************************************************
+ ******************** DataExchangeFormat::JSON::Writer **************************
+ ********************************************************************************
+ */
+class   DataExchangeFormat::JSON::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
+public:
+    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
+		PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+    }
+    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
+		PrettyPrint_ (v, out, 0);
+    }
+};
+
+
+DataExchangeFormat::JSON::Writer::Writer ()
+    : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
-    PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
 }
 
+
+
+
+
+void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
+{
+	JSON::Writer ().Write (v, out);
+}
+
+#if 0
 void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
 {
-    PrettyPrint (v, Streams::iostream::BinaryOutputStreamFromOStreamAdapter (out));
+	JSON::Writer ().Write (v, Streams::iostream::BinaryOutputStreamFromOStreamAdapter (out));
 }
+#endif
+
+
