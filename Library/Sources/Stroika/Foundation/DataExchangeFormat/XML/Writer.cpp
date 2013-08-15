@@ -179,6 +179,7 @@ DataExchangeFormat::XML::Writer::Writer ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
 }
+
 shared_ptr<DataExchangeFormat::XML::Writer::Rep_>   DataExchangeFormat::XML::Writer::GetRep_ () const
 {
     // no need for this exactly since cannot throw...
@@ -189,6 +190,7 @@ String DataExchangeFormat::XML::Writer::GetDocumentElementName () const
 {
     return GetRep_ ()->GetDocumentElementName ();
 }
+
 void    DataExchangeFormat::XML::Writer::SetDocumentElementName (const String& n)
 {
     GetRep_ ()->SetDocumentElementName (n);

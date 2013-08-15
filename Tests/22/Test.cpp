@@ -18,6 +18,7 @@
 #include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
+#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
@@ -31,7 +32,7 @@ using   Memory::Byte;
 using   Memory::VariantValue;
 
 using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
-
+using	Streams::iostream::BinaryOutputStreamFromOStreamAdapter;
 
 /*
  * Validating JSON parse results:
@@ -299,11 +300,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (v, BinaryOutputStreamFromOStreamAdapter (tmpStrm));
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+					VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -324,7 +325,7 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                        DataExchangeFormat::JSON::PrettyPrint (v, BinaryOutputStreamFromOStreamAdapter (tmpStrm));
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
@@ -356,7 +357,7 @@ namespace   {
 
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (Memory::VariantValue (44905.3), tmpStrm);
+                        DataExchangeFormat::JSON::PrettyPrint (Memory::VariantValue (44905.3), BinaryOutputStreamFromOStreamAdapter (tmpStrm));
                         string tmp = tmpStrm.str ();
                         VerifyTestResult (tmp.find (",") == string::npos);
                     }
