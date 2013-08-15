@@ -32,8 +32,8 @@ namespace   Stroika {
             namespace   JSON {
 
 
-                Memory::VariantValue    Reader (const Streams::BinaryInputStream& in);
-                Memory::VariantValue    Reader (const Streams::TextInputStream& in);
+                Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
+                Memory::VariantValue    Read (const Streams::TextInputStream& in);
 
 
             }

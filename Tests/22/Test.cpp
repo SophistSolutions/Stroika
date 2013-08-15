@@ -107,7 +107,7 @@ namespace   {
             {
                 stringstream    tmp;
                 tmp << v;
-                VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
+                VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
                 VerifyTestResult (v1.GetType () == expected.GetType ());
                 VerifyTestResult (v1 == expected);
             }
@@ -153,7 +153,7 @@ namespace   {
                     const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
                     stringstream    tmp;
                     tmp << kExample;
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
                     VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
                 }
 
@@ -167,7 +167,7 @@ namespace   {
                 stringstream    tmp;
                 tmp << s;
                 try {
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
                     VerifyTestResult (false);   // should get exception
                 }
                 catch (const DataExchangeFormat::BadFormatException&) {
@@ -202,7 +202,7 @@ namespace   {
                 {
                     stringstream    tmp;
                     tmp << encodedRep;
-                    VariantValue    vOut    =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    vOut    =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
                     VerifyTestResult (vOut.GetType () == v.GetType ());
                     VerifyTestResult (vOut == v);
                 }
@@ -252,7 +252,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    Memory::VariantValue v = DataExchangeFormat::JSON::Reader (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    Memory::VariantValue v = DataExchangeFormat::JSON::Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
                     VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -303,7 +303,7 @@ namespace   {
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -328,7 +328,7 @@ namespace   {
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
                     // JSON reader comes back with strings - because date/datetime are not native types
                     if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
                         v1 = VariantValue (v1.As<Time::Date> ());

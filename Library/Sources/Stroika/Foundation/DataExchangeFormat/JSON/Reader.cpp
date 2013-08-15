@@ -411,15 +411,15 @@ namespace   {
  *********************** DataExchangeFormat::JSON::Reader ***********************
  ********************************************************************************
  */
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::TextInputStream& in)
+Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::TextInputStream& in)
 {
     wstring     tmp =   in.ReadAll ().As<wstring> ();
     wstring::const_iterator i = tmp.begin ();
     return Reader_value_ (&i, tmp.end ());
 }
 
-Memory::VariantValue    DataExchangeFormat::JSON::Reader (const Streams::BinaryInputStream& in)
+Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::BinaryInputStream& in)
 {
-    return Reader (Streams::TextInputStreamBinaryAdapter (in));
+    return Read (Streams::TextInputStreamBinaryAdapter (in));
 }
 
