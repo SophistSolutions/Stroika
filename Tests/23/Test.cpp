@@ -93,20 +93,20 @@ namespace   {
         // This can then be serialized using
 
         Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::PrettyPrint (v, tmpStream);
+		JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileOutputStream tmp (L"t.txt");
-            JSON::PrettyPrint (v, tmp);
+            JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Read (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
+			SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
         }
 
         // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Read   (tmpStream));
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
         VerifyTestResult (tmp2 == tmp);
     }
 }

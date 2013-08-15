@@ -41,6 +41,18 @@ namespace   Stroika {
                  *  @todo
                  * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
                  *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
+                 *
+                 * The arguemnt VariantValue must be composed of any combination of these types:
+                 *          o   Memory::VariantValue::eBoolean
+                 *          o   Memory::VariantValue::eInteger
+                 *          o   Memory::VariantValue::eFloat
+                 *          o   Memory::VariantValue::eString
+                 *          o   Memory::VariantValue::eMap
+                 *          o   Memory::VariantValue::eArray
+                 *  or it can be the type:
+                 *          o   Memory::VariantValue::eNull
+                 *
+                 *  Other types are illegal an XML and will trigger a 'Require' failure.
                  */
                 class Writer : public DataExchangeFormat::Writer {
                 private:
@@ -65,27 +77,6 @@ namespace   Stroika {
                 private:
                     nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
                 };
-
-#if 0
-
-                /*
-                 *
-                 * The arguemnt VariantValue must be composed of any combination of these types:
-                 *          o   Memory::VariantValue::eBoolean
-                 *          o   Memory::VariantValue::eInteger
-                 *          o   Memory::VariantValue::eFloat
-                 *          o   Memory::VariantValue::eString
-                 *          o   Memory::VariantValue::eMap
-                 *          o   Memory::VariantValue::eArray
-                 *  or it can be the type:
-                 *          o   Memory::VariantValue::eNull
-                 *
-                 *  Other types are illegal an XML and will trigger a 'Require' failure.
-                 */
-                void    PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
-                void    PrettyPrint (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
-#endif
-
 
 
             }

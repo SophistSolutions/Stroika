@@ -429,22 +429,3 @@ DataExchangeFormat::JSON::Reader::Reader ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
 }
-
-
-
-
-/*
- ********************************************************************************
- *********************** DataExchangeFormat::JSON::Reader ***********************
- ********************************************************************************
- */
-Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::TextInputStream& in)
-{
-	return DataExchangeFormat::JSON::Reader ().Read (in);
-}
-
-Memory::VariantValue    DataExchangeFormat::JSON::Read (const Streams::BinaryInputStream& in)
-{
-	return DataExchangeFormat::JSON::Reader ().Read (in);
-}
-

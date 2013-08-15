@@ -24,6 +24,9 @@
  *		I decided it would be best to directly support it so typical users (who may not want to
  *		lookup those mapper classes) will just get the right results automagically.
  *
+ *		Also note - since there are no virtual functions involved in the call, the linker/optimizer
+ *		can eliminate the code if this feature isn't used.
+ *
  *		This comports with a similar choice made in the String and Container classes (direct builtin
  *		first-class support for native STL objects where appropriate).
  */

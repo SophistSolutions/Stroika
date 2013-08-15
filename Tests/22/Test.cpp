@@ -17,9 +17,6 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 
@@ -31,8 +28,6 @@ using   namespace   Stroika::Foundation;
 using   Memory::Byte;
 using   Memory::VariantValue;
 
-using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
-using	Streams::iostream::BinaryOutputStreamFromOStreamAdapter;
 
 /*
  * Validating JSON parse results:
@@ -54,7 +49,7 @@ namespace   {
             void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
                 Streams::BasicBinaryOutputStream    out;
-                DataExchangeFormat::JSON::PrettyPrint (v, out);
+                DataExchangeFormat::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
                     if (x[i] != expected[i]) {
@@ -108,7 +103,7 @@ namespace   {
             {
                 stringstream    tmp;
                 tmp << v;
-                VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
+                VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
                 VerifyTestResult (v1.GetType () == expected.GetType ());
                 VerifyTestResult (v1 == expected);
             }
@@ -154,7 +149,7 @@ namespace   {
                     const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
                     stringstream    tmp;
                     tmp << kExample;
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
                     VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
                 }
 
@@ -168,7 +163,7 @@ namespace   {
                 stringstream    tmp;
                 tmp << s;
                 try {
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
                     VerifyTestResult (false);   // should get exception
                 }
                 catch (const DataExchangeFormat::BadFormatException&) {
@@ -197,13 +192,13 @@ namespace   {
                 string  encodedRep;
                 {
                     Streams::BasicBinaryOutputStream    out;
-                    DataExchangeFormat::JSON::PrettyPrint (v, out);
+                    DataExchangeFormat::JSON::Writer ().Write (v, out);
                     encodedRep = out.As<string> ();
                 }
                 {
                     stringstream    tmp;
                     tmp << encodedRep;
-                    VariantValue    vOut    =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tmp));
+                    VariantValue    vOut    =   DataExchangeFormat::JSON::Reader ().Read (tmp);
                     VerifyTestResult (vOut.GetType () == v.GetType ());
                     VerifyTestResult (vOut == v);
                 }
@@ -253,7 +248,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    Memory::VariantValue v = DataExchangeFormat::JSON::Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+					Memory::VariantValue v = DataExchangeFormat::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
                     VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -264,14 +259,14 @@ namespace   {
                     string  jsonExampleWithUpdatedMaxFilesReference;
                     {
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
                     }
                     {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (locale ("C"));
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -279,7 +274,7 @@ namespace   {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, tmpStrm);
+						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -300,11 +295,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, BinaryOutputStreamFromOStreamAdapter (tmpStrm));
+                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-					VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+					VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -325,11 +320,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (v, BinaryOutputStreamFromOStreamAdapter (tmpStrm));
+						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Read (BinaryInputStreamFromIStreamAdapter (tnmStrStrm));
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
                     // JSON reader comes back with strings - because date/datetime are not native types
                     if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
                         v1 = VariantValue (v1.As<Time::Date> ());
@@ -357,7 +352,7 @@ namespace   {
 
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::PrettyPrint (Memory::VariantValue (44905.3), BinaryOutputStreamFromOStreamAdapter (tmpStrm));
+						DataExchangeFormat::JSON::Writer ().Write (Memory::VariantValue (44905.3), tmpStrm);
                         string tmp = tmpStrm.str ();
                         VerifyTestResult (tmp.find (",") == string::npos);
                     }

@@ -48,10 +48,6 @@ namespace   Stroika {
                 };
 
 				
-				Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
-                Memory::VariantValue    Read (const Streams::TextInputStream& in);
-
-
             }
         }
     }

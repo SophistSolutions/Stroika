@@ -186,21 +186,3 @@ DataExchangeFormat::JSON::Writer::Writer ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
 }
-
-
-
-
-
-void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
-{
-	JSON::Writer ().Write (v, out);
-}
-
-#if 0
-void    DataExchangeFormat::JSON::PrettyPrint (const Memory::VariantValue& v, ostream& out)
-{
-	JSON::Writer ().Write (v, Streams::iostream::BinaryOutputStreamFromOStreamAdapter (out));
-}
-#endif
-
-
