@@ -59,9 +59,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
-                Memory::VariantValue    Read (const Streams::TextInputStream& in);
-                Memory::VariantValue    Read (istream& in);
+                nonvirtual	Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
+                nonvirtual	Memory::VariantValue    Read (const Streams::TextInputStream& in);
+                nonvirtual	Memory::VariantValue    Read (istream& in);
+                nonvirtual	Memory::VariantValue    Read (wistream& in);
 
             private:
                 shared_ptr<_IRep>   fRep_;

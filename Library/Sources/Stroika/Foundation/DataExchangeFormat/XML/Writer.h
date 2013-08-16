@@ -54,25 +54,28 @@ namespace   Stroika {
                  *
                  *  Other types are illegal an XML and will trigger a 'Require' failure.
                  */
-                class Writer : public DataExchangeFormat::Writer {
+                class	Writer : public DataExchangeFormat::Writer {
                 private:
                     typedef DataExchangeFormat::Writer  inherited;
 
                 private:
+#if		!qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+				public:
+#endif
                     class   Rep_;
-
-
-                    //@todo - this should take OPTIONAL<STRING>...
-                public:
-                    // NOTE - defaults to "Document"
-                    // if empty - then Write requiers
-                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
-
-                    String GetDocumentElementName () const;
-                    void    SetDocumentElementName (const String& n);
 
                 public:
                     Writer ();
+
+                public:
+                    //@todo - this should take OPTIONAL<STRING>...
+                    //
+					// NOTE - defaults to "Document"
+                    // if empty - then Write requiers
+                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
+
+                    nonvirtual	String	GetDocumentElementName () const;
+                    nonvirtual	void    SetDocumentElementName (const String& n);
 
                 private:
                     nonvirtual  shared_ptr<Rep_>    GetRep_ () const;

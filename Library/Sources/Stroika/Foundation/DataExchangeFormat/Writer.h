@@ -58,7 +58,7 @@ namespace   Stroika {
                 nonvirtual	void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
                 nonvirtual	void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
                 nonvirtual	void    Write (const Memory::VariantValue& v, ostream& out);
-
+                nonvirtual	void    Write (const Memory::VariantValue& v, wostream& out);
 
             protected:
                 shared_ptr<_IRep>   _GetRep () const;
