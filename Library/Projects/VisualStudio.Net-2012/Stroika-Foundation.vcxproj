@@ -511,6 +511,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Streams-iostream-Utilities.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Streams-iostream-Utilities.obj</ObjectFileName>
@@ -799,6 +800,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\CommonInsertersAndExtractors.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\FStreamSupport.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextInputStreamFromIStreamAdapter.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\Seekable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.h" />
