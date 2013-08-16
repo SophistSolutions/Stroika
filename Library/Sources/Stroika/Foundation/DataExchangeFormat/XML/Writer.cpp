@@ -137,6 +137,8 @@ namespace   {
  */
 class   DataExchangeFormat::XML::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
 public:
+    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+public:
     Rep_ ()
         : fDocumentElementName_ (L"Document") {
     }

@@ -19,6 +19,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
 
 class   DataExchangeFormat::XML::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
 public:
+    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+public:
     virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextInputStreamBinaryAdapter (in));

@@ -416,6 +416,8 @@ namespace   {
  */
 class   DataExchangeFormat::JSON::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
 public:
+    DECLARE_USE_BLOCK_ALLOCATION (Rep_);
+public:
     virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
 		return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
