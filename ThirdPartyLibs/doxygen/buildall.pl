@@ -18,7 +18,7 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 my $doxygenFile = "CURRENT/bin/doxygen.exe";
 unless (-e $doxygenFile) {
 	print ("Extracting ThirdPartyLibs/doxygen...\n");
-	system ("tar xvf Origs/doxygen-1.8.2-Windows-Installed.tar.gz");
+	system ("tar xvf ../Origs-Cache/doxygen-1.8.2-Windows-Installed.tar.gz");
 	system ("mv doxygen-1.8.2-Windows-Installed CURRENT");
 }
 
