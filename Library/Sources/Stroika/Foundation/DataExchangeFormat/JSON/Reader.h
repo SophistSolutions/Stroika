@@ -33,9 +33,9 @@ namespace   Stroika {
             namespace   JSON {
 
 
-				/**
-				 *	@todo add example usage (and docs)
-				 */
+                /**
+                 *  @todo add example usage (and docs)
+                 */
                 class Reader : public DataExchangeFormat::Reader {
                 private:
                     typedef DataExchangeFormat::Reader  inherited;
@@ -47,7 +47,7 @@ namespace   Stroika {
                     Reader ();
                 };
 
-				
+
             }
         }
     }

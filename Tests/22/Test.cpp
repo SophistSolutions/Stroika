@@ -248,7 +248,7 @@ namespace   {
                         "    }"
                         "}"
                         ;
-					Memory::VariantValue v = DataExchangeFormat::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    Memory::VariantValue v = DataExchangeFormat::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
                     VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
@@ -259,7 +259,7 @@ namespace   {
                     string  jsonExampleWithUpdatedMaxFilesReference;
                     {
                         Streams::BasicBinaryOutputStream    tmpStrm;
-						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
                     }
                     {
@@ -274,7 +274,7 @@ namespace   {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
                         Streams::BasicBinaryOutputStream    tmpStrm;
-						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -299,7 +299,7 @@ namespace   {
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-					VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
+                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -320,7 +320,7 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-						DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
@@ -352,7 +352,7 @@ namespace   {
 
                     {
                         stringstream    tmpStrm;
-						DataExchangeFormat::JSON::Writer ().Write (Memory::VariantValue (44905.3), tmpStrm);
+                        DataExchangeFormat::JSON::Writer ().Write (Memory::VariantValue (44905.3), tmpStrm);
                         string tmp = tmpStrm.str ();
                         VerifyTestResult (tmp.find (",") == string::npos);
                     }

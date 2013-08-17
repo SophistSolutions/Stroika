@@ -37,7 +37,7 @@ protected:
     }
 
 #if 0
-	// NYI in base class
+    // NYI in base class
     virtual void    Flush () override {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         fOriginalStream_.flush ();
@@ -70,8 +70,8 @@ protected:
     }
 
 private:
-    mutable recursive_mutex		fCriticalSection_;
-    wostream&					fOriginalStream_;
+    mutable recursive_mutex     fCriticalSection_;
+    wostream&                   fOriginalStream_;
 };
 
 

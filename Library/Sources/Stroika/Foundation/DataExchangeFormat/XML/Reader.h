@@ -34,9 +34,9 @@ namespace   Stroika {
                  * add options for stuff like - special for xml - assumed-outer-doc, stuff abotu namespaces, and st
                  *... todo namespaces - store in string (elt name a:b) and fill in namespace object accordingly.
 
-				 define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
-				  like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
-				  do or dont include xml processing instruction
+                 define common struct (shared modeule - in common.h of this I guess? - for serializeation package parmas
+                  like "use this tag for arrays" (where empty is an option but hard to read back)", and namespace list, and
+                  do or dont include xml processing instruction
                  */
                 class Reader : public DataExchangeFormat::Reader {
                 private:

@@ -29,9 +29,9 @@ namespace   Stroika {
 
 
                 /**
-				 *
-				 *	\em Note:
-				 *
+                 *
+                 *  \em Note:
+                 *
                  * The arguemnt VariantValue must be composed of any combination of these types:
                  *          o   Memory::VariantValue::eBoolean
                  *          o   Memory::VariantValue::eInteger
@@ -47,16 +47,16 @@ namespace   Stroika {
                  * Note that Write () writes in UTF-8 format to the output stream.??? UNCLEAR - DOCUMENT BETTER @todo
                  *
                  *
-				 *	Example usage:
-				 *		Memory::VariantValue v (3);
-				 *		JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream ("fred.json"));
-				 *
-				 *	Example usage:
-				 *		Mapping<String, Memory::VariantValue> m;
-				 *		m.Add (L"max-files", 10);
-				 *		m.Add (L"max-processes", 3);
-				 *		stringstream stringBuf;
-				 *		JSON::Writer ().Write (Memory::VariantValue (m), Streams::iostream::BinaryOutputStreamFromOStreamAdapter (stringBuf));
+                 *  Example usage:
+                 *      Memory::VariantValue v (3);
+                 *      JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream ("fred.json"));
+                 *
+                 *  Example usage:
+                 *      Mapping<String, Memory::VariantValue> m;
+                 *      m.Add (L"max-files", 10);
+                 *      m.Add (L"max-processes", 3);
+                 *      stringstream stringBuf;
+                 *      JSON::Writer ().Write (Memory::VariantValue (m), Streams::iostream::BinaryOutputStreamFromOStreamAdapter (stringBuf));
                  */
                 class Writer : public DataExchangeFormat::Writer {
                 private:

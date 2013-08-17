@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include	<istream>
+#include    <istream>
 
 #include    "../Memory/VariantValue.h"
 #include    "../Streams/BinaryInputStream.h"
@@ -19,20 +19,18 @@
  * TODO:
  *      @todo   UNDOCUMENTED - PRELIMINARY
  *
- *		@todo	Consider support for wistream reader as well..
  *
+ *  \em Design Note:
+ *      One question was whether or not to natively include support for istream sources or not.
+ *      Its easy todo if not supported, by just using BinaryInputStreamFromIStreamAdapter. However,
+ *      I decided it would be best to directly support it so typical users (who may not want to
+ *      lookup those mapper classes) will just get the right results automagically.
  *
- *	\em Design Note:
- *		One question was whether or not to natively include support for istream sources or not.
- *		Its easy todo if not supported, by just using BinaryInputStreamFromIStreamAdapter. However,
- *		I decided it would be best to directly support it so typical users (who may not want to
- *		lookup those mapper classes) will just get the right results automagically.
+ *      Also note - since there are no virtual functions involved in the call, the linker/optimizer
+ *      can eliminate the code if this feature isn't used.
  *
- *		Also note - since there are no virtual functions involved in the call, the linker/optimizer
- *		can eliminate the code if this feature isn't used.
- *
- *		This comports with a similar choice made in the String and Container classes (direct builtin
- *		first-class support for native STL objects where appropriate).
+ *      This comports with a similar choice made in the String and Container classes (direct builtin
+ *      first-class support for native STL objects where appropriate).
  */
 
 
@@ -59,10 +57,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual	Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
-                nonvirtual	Memory::VariantValue    Read (const Streams::TextInputStream& in);
-                nonvirtual	Memory::VariantValue    Read (istream& in);
-                nonvirtual	Memory::VariantValue    Read (wistream& in);
+                nonvirtual  Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
+                nonvirtual  Memory::VariantValue    Read (const Streams::TextInputStream& in);
+                nonvirtual  Memory::VariantValue    Read (istream& in);
+                nonvirtual  Memory::VariantValue    Read (wistream& in);
 
             private:
                 shared_ptr<_IRep>   fRep_;

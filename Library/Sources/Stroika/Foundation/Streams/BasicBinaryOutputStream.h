@@ -43,10 +43,10 @@ namespace   Stroika {
              *
              *  Since BasicBinaryOutputStream keeps its data all in memory, it has the limitation that attempts to seek
              *  or write more than will fit in RAM will fail (with an exception).
-			 *
-			 *	Note - this is roughly equivilent (in terms of being able to use it as an alterantive) to std::ostringstream -
-			 *	except that it uses the Stroika Streams library (and none of the stdC++ streams library). But as many Stroika
-			 *	APIs have overloads with automatic adpaters, you can often use one or the other.
+             *
+             *  Note - this is roughly equivilent (in terms of being able to use it as an alterantive) to std::ostringstream -
+             *  except that it uses the Stroika Streams library (and none of the stdC++ streams library). But as many Stroika
+             *  APIs have overloads with automatic adpaters, you can often use one or the other.
              */
             class   BasicBinaryOutputStream : public BinaryOutputStream {
             private:

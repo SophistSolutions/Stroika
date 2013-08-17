@@ -19,9 +19,9 @@
 
 /**
  * TODO:
- *		@todo	Totally untested - just a draft implementations
+ *      @todo   Totally untested - just a draft implementations
  *
- *		@todo   Consider mixing in Seekable here. Would be easy
+ *      @todo   Consider mixing in Seekable here. Would be easy
  */
 
 

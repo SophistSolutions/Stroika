@@ -176,10 +176,10 @@ public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
-		PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+        PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
     }
     virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
-		PrettyPrint_ (v, out, 0);
+        PrettyPrint_ (v, out, 0);
     }
 };
 

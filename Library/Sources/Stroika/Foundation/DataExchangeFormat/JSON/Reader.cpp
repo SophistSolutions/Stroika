@@ -419,12 +419,12 @@ public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
     virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
-		return Read (Streams::TextInputStreamBinaryAdapter (in));
+        return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
     virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
-		wstring     tmp =   in.ReadAll ().As<wstring> ();
-		wstring::const_iterator i = tmp.begin ();
-		return Reader_value_ (&i, tmp.end ());
+        wstring     tmp =   in.ReadAll ().As<wstring> ();
+        wstring::const_iterator i = tmp.begin ();
+        return Reader_value_ (&i, tmp.end ());
     }
 };
 DataExchangeFormat::JSON::Reader::Reader ()

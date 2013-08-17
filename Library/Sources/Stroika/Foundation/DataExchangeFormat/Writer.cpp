@@ -26,12 +26,12 @@ using   Streams::iostream::BinaryOutputStreamFromOStreamAdapter;
  */
 void    Writer::Write (const Memory::VariantValue& v, ostream& out)
 {
-	Write (v, BinaryOutputStreamFromOStreamAdapter (out));
+    Write (v, BinaryOutputStreamFromOStreamAdapter (out));
 }
 
 void    Writer::Write (const Memory::VariantValue& v, wostream& out)
 {
-	AssertNotImplemented ();	// just because we never implemented
-	//Write (v, TextOutputStreamFromOStreamAdapter (out));
+    AssertNotImplemented ();    // just because we never implemented
+    //Write (v, TextOutputStreamFromOStreamAdapter (out));
 }
 
