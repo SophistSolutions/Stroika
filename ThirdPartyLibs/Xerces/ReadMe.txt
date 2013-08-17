@@ -1,5 +1,4 @@
-This version of Xerces was retrieved from 
-	http://xerces.apache.org/xerces-c/
-	
-To use a different version of Xerces, just acquire the tar.gz file, and place
-it in the Origs directory, and update the build.pl file to point to it ($BASENAME).
+The version of Xerces used is defined at the top of the buildall.pl file.
+
+It will first check in the ..\Origs-cache folder for that version and
+if not already present, it will automatically download it.

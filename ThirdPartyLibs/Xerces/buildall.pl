@@ -39,6 +39,14 @@ if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
 }
 
 require "../../ScriptsLib/ConfigurationReader.pl";
+
+
+if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
+	print ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.fightrice.com/mirrors/apache//xerces/c/3/sources/$BASENAME.tar.gz ...\n");
+	system ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.fightrice.com/mirrors/apache//xerces/c/3/sources/$BASENAME.tar.gz");
+}
+
+
 print ("Extracting Xerces...\n");
 
 system ("rm -rf $trgDirName CURRENT");
