@@ -45,7 +45,10 @@ if (-e "CURRENT/e_os.h") {
 	goto DONE;
 }
 
-
+if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
+	print ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz ...\n");
+	system ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz");
+}
 
 print ("Extracting $BASENAME...\n");
 system ("rm -rf $trgDirName CURRENT");
