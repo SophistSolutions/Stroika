@@ -22,11 +22,11 @@
 * TODO:
 *   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
 *
-*	@todo	Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
-*			both reader and writer).
-*			o	include?xml... header
-*			o	Pretty print (spacing/tabs etc)
-*			o	POSSIBLY option for characterset to write wiith?
+*   @todo   Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
+*           both reader and writer).
+*           o   include?xml... header
+*           o   Pretty print (spacing/tabs etc)
+*           o   POSSIBLY option for characterset to write wiith?
 */
 
 
@@ -74,7 +74,8 @@ namespace   Stroika {
                     nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
 
                 private:
-                    nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
+                    nonvirtual  const Rep_&     GetRep_ () const;
+                    nonvirtual  Rep_&           GetRep_ ();
                 };
 
 

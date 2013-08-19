@@ -32,9 +32,15 @@ namespace   Stroika {
             {
                 return fRep_->Read (in);
             }
-            inline  shared_ptr<Reader::_IRep>   Reader::_GetRep () const
+            inline  Reader::_IRep&   Reader::_GetRep ()
             {
-                return fRep_;
+                EnsureNotNull (fRep_.get ());
+                return *fRep_;
+            }
+            inline  const Reader::_IRep&   Reader::_GetRep () const
+            {
+                EnsureNotNull (fRep_.get ());
+                return *fRep_;
             }
 
 

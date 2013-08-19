@@ -19,9 +19,9 @@
  *      @todo   Add support for namespaces
  *
  *      @todo   Add support for Schema validation
- *				and optionally more stuff – for how to map between variant structure and schema. 
- *				Maybe have virtual API to make certain decisions?  
- *				Will need experience/experimation to get right
+ *              and optionally more stuff – for how to map between variant structure and schema.
+ *              Maybe have virtual API to make certain decisions?
+ *              Will need experience/experimation to get right
  */
 
 
@@ -36,7 +36,7 @@ namespace   Stroika {
                 using   Memory::Optional;
 
                 /**
-				 *	@see XML::Reader, and @see XML::Writer
+                 *  @see XML::Reader, and @see XML::Writer
                  */
                 class   SerializationConfiguration {
                 public:

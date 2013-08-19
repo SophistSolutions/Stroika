@@ -58,7 +58,8 @@ namespace   Stroika {
                     nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
 
                 private:
-                    nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
+                    nonvirtual  const Rep_&     GetRep_ () const;
+                    nonvirtual  Rep_&           GetRep_ ();
                 };
 
 

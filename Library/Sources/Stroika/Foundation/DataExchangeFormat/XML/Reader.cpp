@@ -64,18 +64,24 @@ DataExchangeFormat::XML::Reader::Reader (const SerializationConfiguration& confi
 {
 }
 
-shared_ptr<DataExchangeFormat::XML::Reader::Rep_>   DataExchangeFormat::XML::Reader::GetRep_ () const
+DataExchangeFormat::XML::Reader::Rep_&   DataExchangeFormat::XML::Reader::GetRep_ ()
 {
-    // no need for this exactly since cannot throw...
-    return dynamic_pointer_cast<DataExchangeFormat::XML::Reader::Rep_> (inherited::_GetRep ());
+    EnsureMember (&inherited::_GetRep (), Rep_);
+    return reinterpret_cast<Rep_&> (inherited::_GetRep ());
+}
+
+const DataExchangeFormat::XML::Reader::Rep_&   DataExchangeFormat::XML::Reader::GetRep_ () const
+{
+    EnsureMember (&inherited::_GetRep (), Rep_);
+    return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
 }
 
 SerializationConfiguration DataExchangeFormat::XML::Reader::GetConfiguration () const
 {
-    return GetRep_ ()->GetConfiguration ();
+    return GetRep_ ().GetConfiguration ();
 }
 
 void    DataExchangeFormat::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
 {
-    GetRep_ ()->SetConfiguration (config);
+    GetRep_ ().SetConfiguration (config);
 }

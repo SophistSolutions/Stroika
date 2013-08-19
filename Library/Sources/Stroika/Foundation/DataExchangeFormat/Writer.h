@@ -61,7 +61,8 @@ namespace   Stroika {
                 nonvirtual  void    Write (const Memory::VariantValue& v, wostream& out);
 
             protected:
-                shared_ptr<_IRep>   _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
+                nonvirtual  const _IRep&    _GetRep () const;
 
             private:
                 shared_ptr<_IRep>   fRep_;
