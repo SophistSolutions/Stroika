@@ -583,6 +583,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include "Iterator.inl"
+#include    "Iterator.inl"
 
 #endif  /*_Stroika_Foundation_Traversal_Iterator_h_ */
