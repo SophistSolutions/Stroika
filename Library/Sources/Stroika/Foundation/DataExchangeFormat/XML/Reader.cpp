@@ -25,6 +25,9 @@ public:
         : fSerializationConfiguration_ (config) {
     }
 public:
+    virtual _SharedPtrIRep  Clone () const override {
+        return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
+    }
     virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextInputStreamBinaryAdapter (in));

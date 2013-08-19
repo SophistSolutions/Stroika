@@ -44,13 +44,10 @@ namespace   Stroika {
              */
             class   Reader {
             protected:
-                class _IRep;
+                class   _IRep;
 
             protected:
-                // we may want to lift these restrictions? But start out restricive...
-                NO_DEFAULT_CONSTRUCTOR(Reader);
-                NO_ASSIGNMENT_OPERATOR(Reader);
-                NO_COPY_CONSTRUCTOR(Reader);
+                NO_DEFAULT_CONSTRUCTOR(Reader); // @todo may want to allow?
 
             protected:
                 explicit Reader (shared_ptr<_IRep> rep);
@@ -67,13 +64,23 @@ namespace   Stroika {
                 nonvirtual  _IRep&          _GetRep ();
                 nonvirtual  const _IRep&    _GetRep () const;
 
+            protected:
+                typedef     shared_ptr<_IRep>   _SharedPtrIRep;
+
             private:
-                shared_ptr<_IRep>   fRep_;
+                struct  _Rep_Cloner {
+                    inline  static  _SharedPtrIRep   Copy (const _IRep& t);
+                };
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>  SharedRepByValuePtr_;
+
+            private:
+                SharedRepByValuePtr_   fRep_;
             };
 
 
-            class Reader::_IRep {
+            class   Reader::_IRep {
             public:
+                virtual _SharedPtrIRep          Clone () const                              =   0;
                 virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) =   0;
                 virtual Memory::VariantValue    Read (const Streams::TextInputStream& in)   =   0;
             };

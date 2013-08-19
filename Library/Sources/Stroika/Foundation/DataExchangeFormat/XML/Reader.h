@@ -21,6 +21,8 @@
  *
  * TODO:
  *      @todo   NotYetImplemented
+ *
+ *      @todo   fix thread-safety - cloning rep - lock for access config data
  */
 
 

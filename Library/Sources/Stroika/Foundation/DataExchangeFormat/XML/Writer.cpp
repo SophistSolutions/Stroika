@@ -144,6 +144,9 @@ public:
         , fDocumentElementName_ (config.GetDocumentElementName ().Value ()) {
     }
 
+    virtual _SharedPtrIRep  Clone () const override {
+        return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
+    }
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == Memory::VariantValue::Type::eMap);

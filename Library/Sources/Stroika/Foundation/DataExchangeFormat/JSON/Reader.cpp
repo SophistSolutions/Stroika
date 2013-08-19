@@ -418,6 +418,9 @@ class   DataExchangeFormat::JSON::Reader::Rep_ : public DataExchangeFormat::Read
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
+    virtual _SharedPtrIRep  Clone () const override {
+        return _SharedPtrIRep (new Rep_ ());    // no instance data
+    }
     virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }

@@ -19,15 +19,17 @@
 
 
 /*
-* TODO:
-*   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
-*
-*   @todo   Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
-*           both reader and writer).
-*           o   include?xml... header
-*           o   Pretty print (spacing/tabs etc)
-*           o   POSSIBLY option for characterset to write wiith?
-*/
+ * TODO:
+ *   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
+ *
+ *   @todo   Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
+ *           both reader and writer).
+ *           o   include?xml... header
+ *           o   Pretty print (spacing/tabs etc)
+ *           o   POSSIBLY option for characterset to write wiith?
+ *
+ *      @todo   fix thread-safety - cloning rep - lock for access config data
+ */
 
 
 

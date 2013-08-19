@@ -175,6 +175,9 @@ class   DataExchangeFormat::JSON::Writer::Rep_ : public DataExchangeFormat::Writ
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
+    virtual _SharedPtrIRep  Clone () const override {
+        return _SharedPtrIRep (new Rep_ ());    // no instance data
+    }
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
         PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
     }

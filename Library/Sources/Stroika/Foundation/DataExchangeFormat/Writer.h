@@ -40,10 +40,7 @@ namespace   Stroika {
             /**
              */
             class   Writer {
-                // we may want to lift these restrictions? But start out restricive...
-                NO_DEFAULT_CONSTRUCTOR(Writer);
-                NO_ASSIGNMENT_OPERATOR(Writer);
-                NO_COPY_CONSTRUCTOR(Writer);
+                NO_DEFAULT_CONSTRUCTOR(Writer); // @todo may want to allow?
 
             protected:
                 class   _IRep;
@@ -64,15 +61,25 @@ namespace   Stroika {
                 nonvirtual  _IRep&          _GetRep ();
                 nonvirtual  const _IRep&    _GetRep () const;
 
+            protected:
+                typedef     shared_ptr<_IRep>   _SharedPtrIRep;
+
             private:
-                shared_ptr<_IRep>   fRep_;
+                struct  _Rep_Cloner {
+                    inline  static  _SharedPtrIRep   Copy (const _IRep& t);
+                };
+                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>  SharedRepByValuePtr_;
+
+            private:
+                SharedRepByValuePtr_   fRep_;
             };
 
 
             class   Writer::_IRep {
             public:
-                virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) = 0;
-                virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) = 0;
+                virtual _SharedPtrIRep  Clone () const                                                                  =   0;
+                virtual void            Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)   =   0;
+                virtual void            Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out)     =   0;
             };
 
 
