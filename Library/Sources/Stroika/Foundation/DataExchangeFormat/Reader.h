@@ -62,6 +62,9 @@ namespace   Stroika {
                 nonvirtual  Memory::VariantValue    Read (istream& in);
                 nonvirtual  Memory::VariantValue    Read (wistream& in);
 
+            protected:
+                shared_ptr<_IRep>   _GetRep () const;
+
             private:
                 shared_ptr<_IRep>   fRep_;
             };

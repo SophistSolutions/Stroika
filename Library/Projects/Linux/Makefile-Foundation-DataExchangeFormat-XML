@@ -12,6 +12,7 @@ Objs	=	\
 	$(ObjDir)Reader.o\
 	$(ObjDir)SAXObjectReader.o\
 	$(ObjDir)SAXReader.o\
+	$(ObjDir)SerializationConfiguration.o\
 	$(ObjDir)Writer.o\
 	$(ObjDir)WriterUtils.o\
 

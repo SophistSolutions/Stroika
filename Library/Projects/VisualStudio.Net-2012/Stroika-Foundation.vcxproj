@@ -326,6 +326,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
@@ -678,6 +679,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
@@ -940,6 +942,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />

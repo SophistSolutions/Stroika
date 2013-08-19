@@ -14,6 +14,7 @@
 
 #include    "../Writer.h"
 #include    "Common.h"
+#include    "SerializationConfiguration.h"
 
 
 
@@ -21,10 +22,11 @@
 * TODO:
 *   @todo   Probably wrong, and certainly incomplete, but it is now at the point of being testable.
 *
-*   @todo   See about <?xml ... heading and char encoding - see class ssiue in todo below
-*
-*   @todo   See dataexchangeformat/todo.md - we may need class for writer - so can fill in paarms like incliuding
-*           top-level <?xml...stuff and charset
+*	@todo	Add SerializationOptions (distingished from SerializationConfiguariton cuz thats used for
+*			both reader and writer).
+*			o	include?xml... header
+*			o	Pretty print (spacing/tabs etc)
+*			o	POSSIBLY option for characterset to write wiith?
 */
 
 
@@ -65,17 +67,11 @@ namespace   Stroika {
                     class   Rep_;
 
                 public:
-                    Writer ();
+                    Writer (const SerializationConfiguration& config = SerializationConfiguration ());
 
                 public:
-                    //@todo - this should take OPTIONAL<STRING>...
-                    //
-                    // NOTE - defaults to "Document"
-                    // if empty - then Write requiers
-                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
-
-                    nonvirtual  String  GetDocumentElementName () const;
-                    nonvirtual  void    SetDocumentElementName (const String& n);
+                    nonvirtual  SerializationConfiguration  GetConfiguration () const;
+                    nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
 
                 private:
                     nonvirtual  shared_ptr<Rep_>    GetRep_ () const;

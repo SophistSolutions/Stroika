@@ -579,6 +579,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.cpp">
       <Filter>Sources\Streams\iostream</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.cpp">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1344,6 +1347,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\iostream\TextOutputStreamFromOStreamAdapter.h">
       <Filter>Sources\Streams\iostream</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.h">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2015,6 +2021,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Writer.inl">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.inl">
+      <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
   </ItemGroup>
 </Project>

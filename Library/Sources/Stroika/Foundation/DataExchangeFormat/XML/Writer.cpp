@@ -139,8 +139,9 @@ class   DataExchangeFormat::XML::Writer::Rep_ : public DataExchangeFormat::Write
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
-    Rep_ ()
-        : fDocumentElementName_ (L"Document") {
+    Rep_ (const SerializationConfiguration& config)
+        : fSerializationConfiguration_ (config)
+        , fDocumentElementName_ (config.GetDocumentElementName ().Value ()) {
     }
 
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
@@ -165,20 +166,22 @@ public:
             PrettyPrint_ (v2, out, 0);
         }
     }
-    nonvirtual  String GetDocumentElementName () const {
-        return fDocumentElementName_;
+    nonvirtual  SerializationConfiguration GetConfiguration () const {
+        return fSerializationConfiguration_;
     }
-    nonvirtual  void    SetDocumentElementName (const String& n) {
-        fDocumentElementName_ = n;
+    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config) {
+        fSerializationConfiguration_ = config;
+        fDocumentElementName_ = config.GetDocumentElementName ().Value ();
     }
 
 private:
-    String fDocumentElementName_;
+    SerializationConfiguration  fSerializationConfiguration_;
+    String                      fDocumentElementName_;
 };
 
 
-DataExchangeFormat::XML::Writer::Writer ()
-    : inherited (shared_ptr<_IRep> (new Rep_ ()))
+DataExchangeFormat::XML::Writer::Writer (const SerializationConfiguration& config)
+    : inherited (shared_ptr<_IRep> (new Rep_ (config)))
 {
 }
 
@@ -188,12 +191,12 @@ shared_ptr<DataExchangeFormat::XML::Writer::Rep_>   DataExchangeFormat::XML::Wri
     return dynamic_pointer_cast<DataExchangeFormat::XML::Writer::Rep_> (inherited::_GetRep ());
 }
 
-String DataExchangeFormat::XML::Writer::GetDocumentElementName () const
+SerializationConfiguration DataExchangeFormat::XML::Writer::GetConfiguration () const
 {
-    return GetRep_ ()->GetDocumentElementName ();
+    return GetRep_ ()->GetConfiguration ();
 }
 
-void    DataExchangeFormat::XML::Writer::SetDocumentElementName (const String& n)
+void    DataExchangeFormat::XML::Writer::SetConfiguration (const SerializationConfiguration& config)
 {
-    GetRep_ ()->SetDocumentElementName (n);
+    GetRep_ ()->SetConfiguration (config);
 }

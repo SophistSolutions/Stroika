@@ -13,6 +13,8 @@
 
 #include    "../Reader.h"
 
+#include    "SerializationConfiguration.h"
+
 
 /**
  *  \file
@@ -43,10 +45,20 @@ namespace   Stroika {
                     typedef DataExchangeFormat::Reader  inherited;
 
                 private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
                     class   Rep_;
 
                 public:
-                    Reader ();
+                    Reader (const SerializationConfiguration& config = SerializationConfiguration ());
+
+                public:
+                    nonvirtual  SerializationConfiguration  GetConfiguration () const;
+                    nonvirtual  void                        SetConfiguration (const SerializationConfiguration& config);
+
+                private:
+                    nonvirtual  shared_ptr<Rep_>    GetRep_ () const;
                 };
 
 
