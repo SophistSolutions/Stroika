@@ -121,6 +121,22 @@ namespace   Stroika {
 
 
             /**
+             *  OVERVIEW:
+             *      Stroika Threads are built on std::thread, so can be used fully interoperably. However,
+             *  Stroika threads add a number of useful features to std::threads:
+             *          o   Cancelation/Interuption/Aborting
+             *          o   EINTR handling (POSIX only)
+             *          o   Copyability
+             *          o   Better lifetime management (the thread envelope - object you create - can go away, but
+             *              the underlying thread can continue running, with its memory/resources being cleaned
+             *              up autoamtically.
+             *
+             *  Note - this cancelation feature is very handy for building large scale applications which use
+             *  worker tasks and things like thread pools, to be able to reclaim resources, cancel ongoing operations
+             *  as useless, and maintain overall running system integrity.
+             *
+             *
+             *  DETAILS:
              *      Using the smartpointer wrapper Thread around a thread guarantees its reference counting
              *  will work safely - so that even when all external references go away, the fact that the thread
              *  is still running will keep the reference count non-zero.
