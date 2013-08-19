@@ -53,12 +53,13 @@ namespace   Stroika {
 
                 public:
                     // NOTE - defaults to "Array"
-                    // if empty - then Write requiers
-                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
                     //
                     // If provided - must be a valid xml element name (ncname?)
                     //
-                    // DOCUMENT CONSEQUENCES OF MISSING (cannot deseriualize without heko?? but how)
+                    // DOCUMENT CONSEQUENCES OF MISSING (cannot deseriualize without knowing diff
+                    // between a single element and an array. Need some way to tell. Perhaps in the
+                    // the future this can be better handled infering data from the schema.
+                    // but for now - with the current implementation - this is needed.
                     nonvirtual  Optional<String>    GetArrayElementName () const;
                     nonvirtual  void                SetArrayElementName (const Optional<String>& n);
 
