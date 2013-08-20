@@ -7,6 +7,7 @@
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
+#include    "../../Containers/Mapping.h"
 #include    "../../Characters/String.h"
 #include    "../../Execution/ProgressMonitor.h"
 #include    "../../Memory/VariantValue.h"
@@ -32,6 +33,8 @@ namespace   Stroika {
 
 
                 using   Characters::String;
+                using   Containers::Mapping;
+                using   Memory::VariantValue;
 
 
                 /**
@@ -43,7 +46,7 @@ namespace   Stroika {
                     virtual void    StartDocument ();
                     virtual void    EndDocument ();
                 public:
-                    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs);
+                    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs);
                     virtual void    EndElement (const String& uri, const String& localName, const String& qname);
                 public:
                     virtual void    CharactersInsideElement (const String& text);
@@ -51,7 +54,7 @@ namespace   Stroika {
 
 
 #if     qHasLibrary_Xerces
-                /*
+                /**
                  * Parse will throw an exception if it encouters any errors parsing.
                  */
                 void    SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);

@@ -116,7 +116,7 @@ namespace   {
             virtual void    EndDocument () override {
                 Assert (fEltDepthCount == 0);
             }
-            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
                 fEltDepthCount++;
                 fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
             }
@@ -150,10 +150,10 @@ namespace   {
         Memory::Optional<String> middleName;
     };
     struct PersonReader_ : public ComplexObjectReader<Person_> {
-        PersonReader_ (Person_* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ()):
+        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
             ComplexObjectReader<Person_> (v) {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
             RequireNotNull (fValuePtr);
             if (localName == L"FirstName") {
                 _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
@@ -174,10 +174,10 @@ namespace   {
         Person_         withWhom;
     };
     struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-        AppointmentReader_ (Appointment_* v, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ()):
+        AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
             ComplexObjectReader<Appointment_> (v, attrs) {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
             if (localName == L"When") {
                 _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
             }

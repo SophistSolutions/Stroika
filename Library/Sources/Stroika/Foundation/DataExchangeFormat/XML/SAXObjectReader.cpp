@@ -48,7 +48,7 @@ public:
     }
     virtual void    EndDocument () override {
     }
-    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
@@ -95,7 +95,7 @@ namespace   {
             , fDocEltURI (checkURI)
             , fDocEltName (checkDocEltName) {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
             if (not fAnyDocElt) {
                 if (localName != fDocEltName or uri != fDocEltURI) {
                     ThrowUnRecognizedStartElt (uri, localName);
@@ -168,14 +168,14 @@ SAXObjectReader::ObjectBase::~ObjectBase ()
  ************************* XML::BuiltinReader<String> ***************************
  ********************************************************************************
  */
-BuiltinReader<String>::BuiltinReader (String* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<String>::BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
 {
     RequireNotNull (intoVal);
     *intoVal = String ();
 }
 
-void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<String>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -202,14 +202,14 @@ void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
  **************************** XML::BuiltinReader<int> ***************************
  ********************************************************************************
  */
-BuiltinReader<int>::BuiltinReader (int* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<int>::BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -235,14 +235,14 @@ void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
  ******************* XML::BuiltinReader<unsigned int> ***************************
  ********************************************************************************
  */
-BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -270,14 +270,14 @@ void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
  *************************** XML::BuiltinReader<bool> ***************************
  ********************************************************************************
  */
-BuiltinReader<bool>::BuiltinReader (bool* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<bool>::BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<bool>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -308,14 +308,14 @@ void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
  ************************** XML::BuiltinReader<float> ***************************
  ********************************************************************************
  */
-BuiltinReader<float>::BuiltinReader (float* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<float>::BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -340,14 +340,14 @@ void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
  ************************** XML::BuiltinReader<double> **************************
  ********************************************************************************
  */
-BuiltinReader<double>::BuiltinReader (double* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<double>::BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
     RequireNotNull (intoVal);
 }
 
-void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -373,7 +373,7 @@ void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
  ********************** XML::BuiltinReader<Time::DateTime> **********************
  ********************************************************************************
  */
-BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const map<String, Memory::VariantValue>& attrs)
+BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs)
     : value_ (intoVal)
     , tmpVal_ ()
 {
@@ -381,7 +381,7 @@ BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const map
     *intoVal = Time::DateTime ();
 }
 
-void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    BuiltinReader<Time::DateTime>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     ThrowUnRecognizedStartElt (uri, localName);
 }
@@ -413,7 +413,7 @@ IgnoreNodeReader::IgnoreNodeReader ()
 {
 }
 
-void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+void    IgnoreNodeReader::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
 {
     Require (fDepth_ >= 0);
     fDepth_++;

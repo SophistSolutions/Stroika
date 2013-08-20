@@ -64,14 +64,14 @@ namespace   Stroika {
                 class   BuiltinReader<String> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (String* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (String* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (String* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -79,15 +79,15 @@ namespace   Stroika {
                 class   BuiltinReader<int> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (int* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (int* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String  tmpVal_;
                     int*    value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -95,15 +95,15 @@ namespace   Stroika {
                 class   BuiltinReader<unsigned int> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (unsigned int* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (unsigned int* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String  tmpVal_;
                     unsigned int*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -111,15 +111,15 @@ namespace   Stroika {
                 class   BuiltinReader<float> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (float* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (float* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String  tmpVal_;
                     float*  value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -127,15 +127,15 @@ namespace   Stroika {
                 class   BuiltinReader<double> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (double* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (double* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String  tmpVal_;
                     double* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -143,15 +143,15 @@ namespace   Stroika {
                 class   BuiltinReader<bool> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (bool* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (bool* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String  tmpVal_;
                     bool*   value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -159,15 +159,15 @@ namespace   Stroika {
                 class   BuiltinReader<Time::DateTime> : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (Time::DateTime* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (Time::DateTime* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
                 private:
                     String          tmpVal_;
                     Time::DateTime* value_;
                 public:
-                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs) override;
+                    virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
                     virtual void    HandleTextInside (SAXObjectReader& r, const String& text) override;
                     virtual void    HandleEndTag (SAXObjectReader& r) override;
                 };
@@ -179,14 +179,14 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T, typename ACTUAL_READER>
-                OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const map<String, Memory::VariantValue>& attrs)
+                OptionalTypesReader<T, ACTUAL_READER>::OptionalTypesReader (Memory::Optional<T>* intoVal, const Mapping<String, VariantValue>& attrs)
                     : value_ (intoVal)
                     , proxyValue_ ()
                     , actualReader_ (&proxyValue_)
                 {
                 }
                 template    <typename   T, typename ACTUAL_READER>
-                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+                void    OptionalTypesReader<T, ACTUAL_READER>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
                 {
                     actualReader_.HandleChildStart (r, uri, localName, qname, attrs);
                 }
@@ -213,7 +213,7 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename   T>
-                inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp, const map<String, Memory::VariantValue>& attrs)
+                inline  ComplexObjectReader<T>::ComplexObjectReader (T* vp, const Mapping<String, VariantValue>& attrs)
                     : fValuePtr (vp)
                 {
                     RequireNotNull (vp);
@@ -244,13 +244,13 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename TRAITS>
-                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs)
+                ListOfObjectReader<TRAITS>::ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs)
                     : ComplexObjectReader<vector<typename TRAITS::ElementType>> (v)
                             , readingAT_ (false)
                 {
                 }
                 template    <typename TRAITS>
-                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const map<String, Memory::VariantValue>& attrs)
+                void ListOfObjectReader<TRAITS>::HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs)
                 {
                     if (localName == TRAITS::ElementName) {
                         if (readingAT_) {
