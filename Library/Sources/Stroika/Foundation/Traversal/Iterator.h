@@ -19,6 +19,18 @@
  *
  *  \file
  *
+ *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
+ *          to recheck the current item, and recheck the done state of the container.
+ *
+ *          Use case is with map/reduce. Consider one process doing the mapping, and
+ *          another reading the output (if we have &param version of map). Then the
+ *          reader could check if done, and wait a moment, and check again (wait? how that?)
+ *
+ *          The key is that with map reduce you have parallel mapping and processing the output.
+ *          But if iterating over output, hard (not impossible) to know you are at the end (length).
+ *
+ *          Restartable iterators would be one way.
+ *
  *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
