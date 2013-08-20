@@ -308,7 +308,7 @@ namespace   {
  */
 namespace   {
 #if     qDebug
-    atomic<uint32_t>    sStdIStream_InputStream_COUNT   =   0;
+    atomic<uint32_t>    sStdIStream_InputStream_COUNT_ (0);
 #endif
 
 
@@ -344,7 +344,7 @@ namespace   {
             ~UsingLibInterHelper_XERCES () {
                 TraceContextBumper ctx (TSTR ("~UsingLibInterHelper_XERCES"));
                 XMLPlatformUtils::Terminate ();
-                Assert (sStdIStream_InputStream_COUNT == 0);
+                Assert (sStdIStream_InputStream_COUNT_ == 0);
 #if     qUseMyXMLDBMemManager
                 delete fUseXercesMemoryManager;
 #endif
@@ -405,12 +405,12 @@ namespace   {
             StdIStream_InputStream (BinaryInputStream in)
                 : fSource (in) {
 #if     qDebug
-                sStdIStream_InputStream_COUNT++;
+                sStdIStream_InputStream_COUNT_++;
 #endif
             }
             ~StdIStream_InputStream () {
 #if     qDebug
-                sStdIStream_InputStream_COUNT--;
+                sStdIStream_InputStream_COUNT_--;
 #endif
             }
         public:
