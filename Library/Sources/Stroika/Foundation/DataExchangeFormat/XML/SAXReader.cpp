@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    <sstream>
+#include    <atomic>
 
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/AtomicOperations.h"
@@ -73,6 +73,7 @@ using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::DataExchangeFormat;
 using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
 using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::Streams;
 
 
 namespace {
@@ -144,9 +145,9 @@ namespace   {
      *  of future perfomance/memory optimizations, but for now, just a helpful debugging/tracking
      *  class.
      */
-    class   MyXercesMemMgr : public MemoryManager {
+    class   MyXercesMemMgr_ : public MemoryManager {
     public:
-        MyXercesMemMgr ()
+        MyXercesMemMgr_ ()
 #if     qXMLDBTrackAllocs
             :
             fBaseAllocator (),
@@ -155,7 +156,7 @@ namespace   {
 #endif
         {
         }
-        ~MyXercesMemMgr () {
+        ~MyXercesMemMgr_ () {
         }
 
 
@@ -170,7 +171,7 @@ namespace   {
     public:
 #if     qXMLDBTrackAllocs
         void    DUMPCurMemStats () {
-            TraceContextBumper ctx (TSTR ("MyXercesMemMgr::DUMPCurMemStats"));
+            TraceContextBumper ctx (TSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
             lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
@@ -211,10 +212,10 @@ namespace   {
 
 #if     qHasLibrary_Xerces
 namespace   {
-    //const XMLCh   kDOMImplFeatureDeclaration[]    =   L"Core";
-    const   XMLCh   kDOMImplFeatureDeclaration[]    =   { 'C', 'o', 'r', 'e', '\0'};
     DOMImplementation&  GetDOMIMPL_ ()
     {
+        //const XMLCh   kDOMImplFeatureDeclaration[]    =   L"Core";
+        constexpr   XMLCh   kDOMImplFeatureDeclaration[]    =   { 'C', 'o', 'r', 'e', '\0'};
         // safe to save in a static var? -- LGP 2007-05-20
         // from perusing implementation - this appears safe to cache and re-use in different threads
         static  DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation (kDOMImplFeatureDeclaration);
@@ -227,7 +228,7 @@ namespace   {
 
 
 #if     qHasLibrary_Xerces
-class   MyErrorReproter : public XMLErrorReporter, public ErrorHandler {
+class   MyErrorReproter_ : public XMLErrorReporter, public ErrorHandler {
     // XMLErrorReporter
 public:
     virtual     void    error
@@ -260,7 +261,7 @@ public:
         //Execution::DoThrow (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
 };
-static  MyErrorReproter sMyErrorReproter;
+static  MyErrorReproter_ sMyErrorReproter_;
 #endif
 
 
@@ -307,7 +308,7 @@ namespace   {
  */
 namespace   {
 #if     qDebug
-    uint32_t    sStdIStream_InputStream_COUNT   =   0;
+    atomic<uint32_t>    sStdIStream_InputStream_COUNT   =   0;
 #endif
 
 
@@ -332,11 +333,11 @@ namespace   {
     struct  UsingLibInterHelper {
 #if     qHasLibrary_Xerces
         struct  UsingLibInterHelper_XERCES {
-            MyXercesMemMgr* fUseXercesMemoryManager;
+            MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ():
                 fUseXercesMemoryManager (nullptr) {
 #if     qUseMyXMLDBMemManager
-                fUseXercesMemoryManager = DEBUG_NEW MyXercesMemMgr ();
+                fUseXercesMemoryManager = DEBUG_NEW MyXercesMemMgr_ ();
 #endif
                 XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
             }
@@ -401,42 +402,41 @@ namespace   {
     protected:
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public :
-            StdIStream_InputStream (istream& in):
-                fSource (in) {
+            StdIStream_InputStream (BinaryInputStream in)
+                : fSource (in) {
 #if     qDebug
-                AtomicIncrement (&sStdIStream_InputStream_COUNT);
+                sStdIStream_InputStream_COUNT++;
 #endif
             }
             ~StdIStream_InputStream () {
 #if     qDebug
-                AtomicDecrement (&sStdIStream_InputStream_COUNT);
+                sStdIStream_InputStream_COUNT--;
 #endif
             }
         public:
             virtual  XMLFilePos curPos () const override {
-                return fSource.tellg ();
+                return fSource.GetOffset ();
             }
             virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override {
-                fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
-                return static_cast<XMLSize_t> (fSource.gcount ());  // cast safe cuz amount asked to read was also XMLSize_t
+                return fSource.Read (toFill, toFill + maxToRead);
             }
             virtual     const XMLCh* getContentType () const override {
                 return nullptr;
             }
         protected:
-            istream&    fSource;
+            BinaryInputStream    fSource;
         };
 
     public :
-        StdIStream_InputSource (istream& in, const XMLCh* const bufId = nullptr):
-            InputSource (bufId),
-            fSource (in) {
+        StdIStream_InputSource (BinaryInputStream in, const XMLCh* const bufId = nullptr)
+            : InputSource (bufId)
+            , fSource (in) {
         }
         virtual     BinInputStream* makeStream () const override {
             return new (getMemoryManager ()) StdIStream_InputStream (fSource);
         }
     protected:
-        istream& fSource;
+        BinaryInputStream   fSource;
     };
 
 
@@ -445,15 +445,17 @@ namespace   {
     protected:
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
         public :
-            ISWithProg (istream& in, ProgressMontior* progressCallback):
-                StdIStream_InputStream (in),
-                fProgress (progressCallback, 0.0f, 1.0f),
-                fTotalSize (0.0f) {
-                streamoff   start   =   in.tellg ();
-                in.seekg (0, ios_base::end);
-                streamoff totalSize =   in.tellg ();
+            ISWithProg (const BinaryInputStream& in, ProgressMontior* progressCallback)
+                : StdIStream_InputStream (in)
+                , fProgress (progressCallback, 0.0f, 1.0f)
+                , fTotalSize (0.0f) {
+                // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
+                /// for now we raise exceptions
+                SeekOffsetType   start   =   in.GetOffset ();
+                in.Seek (Whence::eFromEnd, 0);
+                SeekOffsetType totalSize =   in.GetOffset ();
                 Assert (start <= totalSize);
-                in.seekg (start, ios_base::beg);
+                in.Seek (start);
                 fTotalSize = static_cast<float> (totalSize);
             }
         public :
@@ -461,13 +463,17 @@ namespace   {
                 float   curOffset           =   0.0;
                 bool    doProgressBefore    =   (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize > 0.0f and doProgressBefore) {
-                    curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
+                    //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
+                    curOffset = fSource.GetOffset ();
                     fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
                 }
-                fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
-                XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
+
+                //fSource.read (reinterpret_cast<char*> (toFill), maxToRead);
+                //XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
+                XMLSize_t   result  =   fSource.Read (toFill, toFill + maxToRead);
                 if (fTotalSize > 0) {
-                    curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
+                    curOffset = fSource.GetOffset ();
+                    //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
                     fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
                 }
                 return result;
@@ -478,7 +484,7 @@ namespace   {
         };
 
     public :
-        StdIStream_InputSourceWithProgress (istream& in, ProgressMontior* progressCallback, const XMLCh* const bufId = nullptr):
+        StdIStream_InputSourceWithProgress (BinaryInputStream in, ProgressMontior* progressCallback, const XMLCh* const bufId = nullptr):
             StdIStream_InputSource (in, bufId),
             fProgressCallback (progressCallback) {
         }
@@ -579,13 +585,13 @@ namespace   {
     };
 }
 
-void    XML::SAXParse (istream& in, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
+void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
 {
     SAX2PrintHandlers_  handler (callback);
     shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
     parser->setContentHandler (&handler);
-    parser->setErrorHandler (&sMyErrorReproter);
+    parser->setErrorHandler (&sMyErrorReproter_);
     //const XMLCh kBufID[] = L"SAX::Parse";
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMontior::SubTask (progres, 0.1f, 0.9f), kBufID));
@@ -601,7 +607,7 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
         shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager, accessSchema.GetCachedTRep ()));
         SetupCommonParserFeatures_ (*parser, true);
         parser->setContentHandler (&handler);
-        parser->setErrorHandler (&sMyErrorReproter);
+        parser->setErrorHandler (&sMyErrorReproter_);
         parser->parse (StdIStream_InputSourceWithProgress (in, ProgressSubTask (progressCallback, 0.1f, 0.9f), L"XMLDB::SAX::Parse"));
     }
     else {

@@ -13,6 +13,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
+#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -24,8 +25,7 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
 
 using   Stroika::Foundation::Debug::TraceContextBumper;
-
-
+using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
 
 
 namespace   {
@@ -133,7 +133,7 @@ namespace   {
         stringstream tmpStrm;
         WriteTextStream_ (newDocXML, tmpStrm);
         MyCallback  myCallback;
-        XML::SAXParse (tmpStrm, myCallback);
+        XML::SAXParse (BinaryInputStreamFromIStreamAdapter (tmpStrm), myCallback);
         //SAX::Parse (tmpStrm, gSchema, myCallback);
     }
 }
@@ -229,7 +229,7 @@ namespace   {
         reader.fTraceThisReader = true; // handy to debug these SAX-object trees...
 #endif
         CalendarType_       calendar;
-        reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), tmpStrm);
+        reader.Run (shared_ptr<SAXObjectReader::ObjectBase> (new CalendarReader_ (&calendar)), BinaryInputStreamFromIStreamAdapter (tmpStrm));
         VerifyTestResult (calendar.size () == 2);
         VerifyTestResult (calendar[0].withWhom.firstName == L"Jim");
         VerifyTestResult (calendar[0].withWhom.lastName == L"Smith");
