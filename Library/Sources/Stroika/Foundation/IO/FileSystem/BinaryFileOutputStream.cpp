@@ -61,7 +61,8 @@ public:
         }
         ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC));
+        const mode_t kCreateMode_ = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH;
+        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC, kCreateMode_));
 #endif
     }
     ~Rep_ () {
