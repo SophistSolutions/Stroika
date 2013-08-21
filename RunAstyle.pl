@@ -2,16 +2,6 @@
 
 my $astyleEXE	=	"astyle";
 
-
-my $astyleEXE_GCC	=	"ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle";
-if (-e "$astyleEXE_GCC") {
-	$astyleEXE	=	$astyleEXE_GCC;
-}
-my $astyleEXE_GCC	=	"ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle.exe";
-if (-e "$astyleEXE_GCC") {
-	$astyleEXE	=	$astyleEXE_GCC;
-}
-
 # avoid quirks - ubuntu stores find in one place, and windows has own find, and cygin stores
 # elsewhere... Sigh...
 my $findEXE	=	"find";
