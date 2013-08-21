@@ -102,7 +102,7 @@ namespace   {
 
         if (kWrite2FileAsWell_) {
             IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (L"t.txt")));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
         }
 
         // THEN deserialized, and mapped back to C++ object form
