@@ -797,7 +797,7 @@ namespace   Stroika {
                 /*
                  *  UnsupportedFeatureException
                  *
-                 *          Some 'reps' - don't supprot some features. For exmaple - a READONLY char* rep won't support
+                 *          Some 'reps' - don't support some features. For exmaple - a READONLY char* rep won't support
                  *      any operaiton that modifies the string. Its up to the CONTAINER change the rep to a generic one
                  *      that supports everything todo that.
                  *

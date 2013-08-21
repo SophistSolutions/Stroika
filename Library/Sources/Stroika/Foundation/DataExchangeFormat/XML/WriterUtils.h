@@ -24,7 +24,7 @@
 *
 *       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
 *               Maybe add optional params for some types (control enums).
-*               Supprot dates, and Memory::VariantUniion, and Memory::Ooptioan, etc...
+*               Support dates, and Memory::VariantValue, and Memory::Optional, etc...
 */
 
 

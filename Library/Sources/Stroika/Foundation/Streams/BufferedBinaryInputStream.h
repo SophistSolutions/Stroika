@@ -18,7 +18,7 @@
  *
  *      @todo   Seekable! Must think out if this should mixin Seekable or not. I THINK it must be.
  *              I THINK if one SEEKS this, but the underlying
- *              class doesn't supprot seeking, we MAY need to either BUFFER MORE, or throw not supported.
+ *              class doesn't support seeking, we MAY need to either BUFFER MORE, or throw not supported.
  *              BufferedBinaryInputStream::IRep_ IMPLEMENTATION NEEDED
  *
  *      @todo   Add tuning parameters, such as buffer size

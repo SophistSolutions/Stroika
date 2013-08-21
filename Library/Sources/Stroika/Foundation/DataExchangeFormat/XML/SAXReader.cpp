@@ -598,7 +598,7 @@ void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterfac
 }
 
 #if 0
-//SCHEMA NOT YET SUPPROTED
+//SCHEMA NOT YET SUPPORTED
 void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& callback, Execution::ProgressMontior* progres)
 {
     if (schema.HasSchema ()) {

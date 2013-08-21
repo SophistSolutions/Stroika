@@ -76,7 +76,7 @@
  *              to control stop/start etc. Think through relationship between windows
  *              approahc and unix approach
  *
- *      @todo   Windoze implementation - supproting the richer set of control mechanism.
+ *      @todo   Windoze implementation - supporting the richer set of control mechanism.
  *              AT LEAST support --stop from command-line (currently broken - but you can use net stop or net start servicename;
  *
  *      @todo   Support Pause/Continue

@@ -369,7 +369,7 @@ namespace   Stroika {
 
             public:
                 /*
-                 *  Convert Sequence<T, TRAITS> losslessly into a standard supproted C++ type.
+                 *  Convert Sequence<T, TRAITS> losslessly into a standard supported C++ type.
                  *  Supported types include:
                  *      o   vector<T>
                  *      o   list<T>
