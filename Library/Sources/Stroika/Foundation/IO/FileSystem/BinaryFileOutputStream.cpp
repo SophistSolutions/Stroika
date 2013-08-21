@@ -61,7 +61,7 @@ public:
         }
         ThrowIfFalseGetLastError (fFD_ != -1);
 #else
-        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+        Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC));
 #endif
     }
     ~Rep_ () {
