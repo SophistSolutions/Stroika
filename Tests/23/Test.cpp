@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
+#include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
@@ -42,7 +43,7 @@ namespace   {
 namespace   {
     void    DoRegressionTests_SimpleMapToFromJSON_2_ ()
     {
-        const bool kWrite2FileAsWell_ = false;      // just for debugging
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
 
         struct SharedContactsConfig_ {
             bool                        fEnabled;
@@ -96,12 +97,12 @@ namespace   {
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileOutputStream tmp (L"t.txt");
+            IO::FileSystem::BinaryFileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileInputStream tmp (L"t.txt");
+            IO::FileSystem::BinaryFileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
         }
 
