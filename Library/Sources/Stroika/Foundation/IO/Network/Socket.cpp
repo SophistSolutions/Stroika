@@ -283,7 +283,7 @@ Socket::Socket (const shared_ptr<_Rep>& rep)
 #endif
 }
 
-Socket::Socket (shared_ptr<_Rep> && rep)
+Socket::Socket (shared_ptr<_Rep>&&  rep)
     : fRep_ (std::move (rep))
 {
 #if     qPlatform_Windows

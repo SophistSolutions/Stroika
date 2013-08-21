@@ -52,7 +52,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (T && from)
+            inline  Optional<T, TRAITS>::Optional (T&&  from)
                 : fValue_ (new BlockAllocated<T> (std::move (from)))
             {
             }
@@ -62,7 +62,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (Optional<T, TRAITS> && from)
+            inline  Optional<T, TRAITS>::Optional (Optional<T, TRAITS>&&  from)
                 : fValue_ (from.fValue_)
             {
                 from.fValue_ = nullptr;

@@ -54,7 +54,7 @@ namespace   Stroika {
                 : _fRep (from._fRep)
             {
             }
-            inline  String::String (const String && from)
+            inline  String::String (const String&&  from)
                 : _fRep (std::move (from._fRep))
             {
             }

@@ -85,11 +85,11 @@ namespace   Stroika {
                      */
                     Socket ();
                     Socket (SocketKind socketKind);
-                    Socket (Socket && s);
+                    Socket (Socket&&  s);
                     Socket (const Socket& s);
 
                 protected:
-                    explicit Socket (shared_ptr<_Rep> && rep);
+                    explicit Socket (shared_ptr<_Rep>&&  rep);
                     explicit Socket (const shared_ptr<_Rep>& rep);
 
                 public:

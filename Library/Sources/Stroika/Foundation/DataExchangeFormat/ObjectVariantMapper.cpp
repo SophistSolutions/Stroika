@@ -151,7 +151,7 @@ namespace {
             };
             auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
                 ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
-                *actualInto = d.As<Mapping<String, VariantValue>> ();
+                * actualInto = d.As<Mapping<String, VariantValue>> ();
             };
             result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
         }

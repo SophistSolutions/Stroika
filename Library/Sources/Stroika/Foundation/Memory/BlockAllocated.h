@@ -249,7 +249,7 @@ namespace   Stroika {
                 BlockAllocated () : fValue_ () {}
                 BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
                 BlockAllocated (const T& t) : fValue_ (t) {}
-                BlockAllocated (T && t) : fValue_ (std::move (t)) {}
+                BlockAllocated (T&&  t) : fValue_ (std::move (t)) {}
                 nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t) {
                     fValue_ = t.fValue_;
                     return *this;

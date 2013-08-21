@@ -506,7 +506,7 @@ String::String (const _SharedRepByValuePtr::shared_ptr_type& rep)
     RequireNotNull (rep.get ());
 }
 
-String::String (const _SharedRepByValuePtr::shared_ptr_type && rep)
+String::String (const _SharedRepByValuePtr::shared_ptr_type&&  rep)
     : _fRep (std::move (rep), _Rep_Cloner ())
 {
     RequireNotNull (rep.get ());

@@ -132,7 +132,7 @@ namespace   Stroika {
 #if  qCompilerAndStdLib_Supports_varadic_templates
             public:
                 template    <typename... ARGS>
-                void construct (pointer p, ARGS && ... args);
+                void construct (pointer p, ARGS&&  ... args);
 #endif
 
             public:

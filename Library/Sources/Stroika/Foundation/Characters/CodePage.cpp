@@ -1348,7 +1348,7 @@ void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, 
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5
         };
         static  const   UCS4 offsetsFromUTF8[6] =   {0x00000000UL, 0x00003080UL, 0x000E2080UL,
-                0x03C82080UL, 0xFA082080UL, 0x82082080UL
+                                                     0x03C82080UL, 0xFA082080UL, 0x82082080UL
                                                     };
         const int halfShift             = 10;
         const UCS4 halfBase             = 0x0010000UL;
@@ -1468,7 +1468,7 @@ void    UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt
             2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5
         };
         static  const   UCS4 offsetsFromUTF8[6] =   {0x00000000UL, 0x00003080UL, 0x000E2080UL,
-                0x03C82080UL, 0xFA082080UL, 0x82082080UL
+                                                     0x03C82080UL, 0xFA082080UL, 0x82082080UL
                                                     };
         static  const   UTF8 firstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF8, 0xFC};
         const int halfShift             = 10;

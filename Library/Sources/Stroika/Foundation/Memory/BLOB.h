@@ -82,7 +82,7 @@ namespace   Stroika {
                  * Subclass BLOB, and provider your own 'rep' type, to create more efficient storage.
                  */
                 explicit BLOB (const shared_ptr<_IRep>& rep);
-                explicit BLOB (shared_ptr<_IRep> && rep);
+                explicit BLOB (shared_ptr<_IRep>&&  rep);
 
             public:
                 /**

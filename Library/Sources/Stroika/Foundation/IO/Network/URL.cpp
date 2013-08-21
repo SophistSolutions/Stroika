@@ -465,8 +465,7 @@ http_URL = "http:" "//" host [ ":" port ] [ abs_path [ "?" query ]]
                        SHOULD use a case-sensitive octet-by-octet comparison of the entire
                                URIs, with these exceptions:
 
-- A port that is empty or not given is equivalent to the default
-port for that URI - reference;
+- A port that is empty or not given is equivalent to the defaultport for that URI - reference;
 
 - Comparisons of host names MUST be case-insensitive;
 

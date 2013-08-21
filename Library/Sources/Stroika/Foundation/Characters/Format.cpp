@@ -38,7 +38,7 @@ using   namespace   Stroika::Foundation::Memory;
 string  Characters::FormatV (const char* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<char, 10* 1024> msgBuf (10 * 1024);
+    Memory::SmallStackBuffer<char, 10 * 1024> msgBuf (10 * 1024);
 #if     qSupportValgrindQuirks
     // Makes little sense - even msgBuf[0] not sufficient - but this silences lots of warnings.
     // -- LGP 2012-05-19
@@ -72,7 +72,7 @@ string  Characters::Format (const char* format, ...)
 wstring Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
-    Memory::SmallStackBuffer<wchar_t, 10* 1024>  msgBuf (10 * 1024);
+    Memory::SmallStackBuffer<wchar_t, 10 * 1024>  msgBuf (10 * 1024);
     const   wchar_t*    useFormat   =   format;
 #if     !qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
     wchar_t     newFormat[5 * 1024];

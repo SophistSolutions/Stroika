@@ -40,7 +40,7 @@ namespace   Stroika {
                     : fRep_ (s.fRep_)
                 {
                 }
-                inline  Socket::Socket (Socket && s)
+                inline  Socket::Socket (Socket&&  s)
                     : fRep_ (std::move (s.fRep_))
                 {
                 }

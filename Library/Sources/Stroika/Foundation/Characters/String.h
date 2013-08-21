@@ -290,7 +290,7 @@ namespace   Stroika {
                 String (const Character* from, const Character* to);
                 String (const std::wstring& r);
                 String (const String& from);
-                String (const String && from);
+                String (const String&&  from);
                 ~String ();
 
             public:
@@ -742,7 +742,7 @@ namespace   Stroika {
                  * rep MUST be not-null
                  */
                 String (const _SharedRepByValuePtr::shared_ptr_type& rep);
-                String (const _SharedRepByValuePtr::shared_ptr_type && rep);
+                String (const _SharedRepByValuePtr::shared_ptr_type&&  rep);
 
             private:
                 /*

@@ -110,9 +110,9 @@ namespace   Stroika {
                  */
                 Optional ();
                 Optional (const T& from);
-                Optional (T && from);
+                Optional (T&&  from);
                 Optional (const Optional<T, TRAITS>& from);
-                Optional (Optional<T, TRAITS> && from);
+                Optional (Optional<T, TRAITS>&&  from);
 
             public:
                 ~Optional ();

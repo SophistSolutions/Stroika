@@ -96,7 +96,7 @@ namespace   Stroika {
 #if  qCompilerAndStdLib_Supports_varadic_templates
             template <typename T, typename BASE_ALLOCATOR>
             template    <typename... ARGS>
-            inline  void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS && ... args)
+            inline  void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS&&  ... args)
             {
                 ::new ((void*)p) T (std::forward<ARGS> (args)...);
             }

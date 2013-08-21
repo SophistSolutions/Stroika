@@ -403,7 +403,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
                                         err != ERROR_NO_MORE_FILES and
                                         err != ERROR_PIPE_BUSY and
                                         err != ERROR_NO_DATA
-                                ) {
+                                   ) {
                                     DbgTrace ("in RunExternalProcess_ - throwing %d while fill in stdin", err);
                                     Execution::Platform::Windows::Exception::DoThrow (err);
                                 }

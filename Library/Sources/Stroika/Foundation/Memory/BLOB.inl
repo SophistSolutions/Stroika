@@ -78,7 +78,7 @@ namespace   Stroika {
                 : fRep_ (rep)
             {
             }
-            inline  BLOB::BLOB (shared_ptr<_IRep> && rep)
+            inline  BLOB::BLOB (shared_ptr<_IRep>&&  rep)
                 : fRep_ (std::move (rep))
             {
             }
