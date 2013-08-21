@@ -25,6 +25,11 @@
  *
  *  TODO:
  *
+ *      @todo   fixup int type serialization (bigger int types - probably need to extend VariantValue class -
+ *              and maybe should for unsigned?
+ *
+ *              See ObjectVariantMapper code (for mapping to int types)
+ *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
