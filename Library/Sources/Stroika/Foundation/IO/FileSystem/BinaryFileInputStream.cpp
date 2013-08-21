@@ -62,7 +62,11 @@ public:
 #endif
     }
     ~Rep_ () {
+#if     qPlatform_Windows
         ::_close (fFD_);
+#else
+        ::close (fFD_);
+#endif
     }
     virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override {
         RequireNotNull (intoStart);
@@ -70,11 +74,19 @@ public:
         Require (intoStart < intoEnd);
         size_t  nRequested  =   intoEnd - intoStart;
         lock_guard<mutex>  critSec (fCriticalSection_);
+#if     qPlatform_Windows
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, nRequested)));
+#else
+        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
+#endif
     }
     virtual Streams::SeekOffsetType  GetOffset () const override {
         lock_guard<mutex>  critSec (fCriticalSection_);
+#if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, 0, SEEK_CUR)));
+#else
+        return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek (fFD_, 0, SEEK_CUR)));
+#endif
     }
     virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override {
         using namespace Streams;
@@ -84,15 +96,27 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
+#if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_SET)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek (fFD_, offset, SEEK_SET)));
+#endif
                 }
                 break;
             case    Whence::eFromCurrent: {
+#if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_CUR)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek (fFD_, offset, SEEK_CUR)));
+#endif
                 }
                 break;
             case    Whence::eFromEnd: {
+#if     qPlatform_Windows
                     return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseek (fFD_, offset, SEEK_END)));
+#else
+                    return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek (fFD_, offset, SEEK_END)));
+#endif
                 }
                 break;
         }
