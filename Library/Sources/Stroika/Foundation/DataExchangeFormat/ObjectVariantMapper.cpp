@@ -108,6 +108,10 @@ namespace {
         Set<ObjectVariantMapper::TypeMappingDetails>    result;
         result.Add (mkSerializerInfo_<bool, bool> ());
         result.Add (mkSerializerInfo_<int, int> ());
+        // @todo - fixup int type serialization (bigger int types - probably need to extend VariantValue class - and maybe should for unsigned?
+        result.Add (mkSerializerInfo_<unsigned int, int> ());
+        result.Add (mkSerializerInfo_<long, int> ());
+        result.Add (mkSerializerInfo_<unsigned long, int> ());
         result.Add (mkSerializerInfo_<float, VariantValue::FloatType> ());
         result.Add (mkSerializerInfo_<double, VariantValue::FloatType> ());
         result.Add (mkSerializerInfo_<Date, Date> ());
