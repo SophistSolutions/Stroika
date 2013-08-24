@@ -235,12 +235,12 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
                 return static_cast<int> (v->fVal);
             }
         case    Type::eInteger: {
-				auto    v   =   dynamic_cast<const TIRep_<IntegerType_, Type::eInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<IntegerType_, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eUnsignedInteger: {
-				auto    v   =   dynamic_cast<const TIRep_<UnsignedIntegerType_, Type::eUnsignedInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<UnsignedIntegerType_, Type::eUnsignedInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -267,12 +267,12 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
                 return static_cast<int> (v->fVal);
             }
         case    Type::eInteger: {
-				auto    v   =   dynamic_cast<const TIRep_<IntegerType_, Type::eInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<IntegerType_, Type::eInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eUnsignedInteger: {
-				auto    v   =   dynamic_cast<const TIRep_<UnsignedIntegerType_, Type::eUnsignedInteger>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<UnsignedIntegerType_, Type::eUnsignedInteger>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
