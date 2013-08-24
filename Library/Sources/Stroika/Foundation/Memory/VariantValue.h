@@ -30,6 +30,13 @@
  *
  *              See ObjectVariantMapper code (for mapping to int types)
  *
+ *				<<NOTE - PARTLY DONE - DID RIGHT CTOR overloads and right As<T> () templates for each of the 5 signed and unsigned types (read spec).
+ *				<<but still todo is alt storage for each>>
+ *
+ *				TO FIX - ADD ADDITIONAL 'types' 
+ *					//
+ *					// but be careful cuz many places with  VariantValue::Type enums
+ *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
@@ -80,6 +87,11 @@ namespace   Stroika {
              *          either from a web service or configuration data), and if that was mal-formed
              *          (since there is no JSON schema) - we would assert. At least for this usage (and
              *          that now seems the primary one) exceptions on  type mismatches seemed most helpful.
+			 *
+			 *	INTEGER Types for CTOR and As<T> () overloads:
+			 *		“signed char”, “short int”, “int”, “long int”, and “long long int”
+			 *		“unsigned char”, “unsigned short int”, “unsigned int”, “unsigned long int”, and “unsigned long long int”,
+			 *	from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
              */
             class   VariantValue {
             public:
@@ -90,14 +102,42 @@ namespace   Stroika {
                  */
                 typedef double  FloatType;
 
-            public:
+            private:
+                /**
+                 *  
+                 */
+                typedef long long int  IntegerType_;
+
+            private:
+                /**
+                 *  
+                 */
+                typedef unsigned long long int  UnsignedIntegerType_;
+
+			public:
                 /**
                  * \brief   Enumeration of variant types
                  */
                 enum class Type : uint8_t {
                     eNull,
                     eBoolean,
+
+					// From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf 
+					// 
+					//		There are five standard signed integer types : signed char, short int, int, 
+					//		long int, and long long int. In this list, each type provides at least as much 
+					//		storage as those preceding it in the list.
+					//		For each of the standard signed integer types, there exists a corresponding (but different) 
+					//		standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int, 
+					//		and unsigned long long int, each of which occupies the same amount of storage and has the
+					//		same alignment requirements.
+					//
+					//	So this ....just store in largest type
+
+					//
+					// but be careful cuz many places with  VariantValue::Type enums
                     eInteger,
+                    eUnsignedInteger,
                     eFloat,
                     eDate,
                     eDateTime,
@@ -111,7 +151,16 @@ namespace   Stroika {
             public:
                 VariantValue ();
                 VariantValue (bool val);
+                VariantValue (signed char val);
+                VariantValue (short int val);
                 VariantValue (int val);
+                VariantValue (long int val);
+                VariantValue (long long int val);
+                VariantValue (unsigned char val);
+                VariantValue (unsigned short int val);
+                VariantValue (unsigned int val);
+                VariantValue (unsigned long int val);
+                VariantValue (unsigned long long int val);
                 VariantValue (float val);
                 VariantValue (double val);
                 VariantValue (const Date& val);
@@ -150,20 +199,27 @@ namespace   Stroika {
                  *
                  *      Supported types (RETURNTYPE) include:
                  *          o   bool
-                 *          o   int
+                 *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
+                 *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsignedlong long int (any of the 5 unsigned int types)
                  *          o   float
                  *          o   double
+				 *				(TO ADD LONG DOUBLE)
                  *          o   Date
                  *          o   DateTime
                  *          o   wstring
                  *          o   String
-                 *          o   map<wstring, VariantValue>
                  *          o   Mapping<String, VariantValue>
-                 *          o   vector<VariantValue>
                  *          o   Sequence<VariantValue>
+                 *          o   map<wstring, VariantValue>
+                 *          o   vector<VariantValue>
                  */
                 template    <typename   RETURNTYPE>
                 nonvirtual RETURNTYPE As () const;
+
+			private:
+				nonvirtual	IntegerType_ AsInteger_ () const;
+				nonvirtual	UnsignedIntegerType_ AsUnsignedInteger_ () const;
+				nonvirtual	FloatType AsFloatType_ () const;
 
             public:
                 /**
@@ -201,7 +257,25 @@ namespace   Stroika {
             template    <>
             bool VariantValue::As () const;
             template    <>
+            signed char VariantValue::As () const;
+            template    <>
+            short int	VariantValue::As () const;
+            template    <>
             int VariantValue::As () const;
+            template    <>
+            long int	VariantValue::As () const;
+            template    <>
+            long long int	VariantValue::As () const;
+            template    <>
+            unsigned char VariantValue::As () const;
+            template    <>
+            unsigned short int	VariantValue::As () const;
+            template    <>
+            unsigned int VariantValue::As () const;
+            template    <>
+            unsigned long int	VariantValue::As () const;
+            template    <>
+            unsigned long long VariantValue::As () const;
             template    <>
             float VariantValue::As () const;
             template    <>

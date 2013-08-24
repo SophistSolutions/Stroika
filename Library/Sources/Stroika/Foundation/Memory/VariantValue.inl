@@ -48,6 +48,71 @@ namespace   Stroika {
                 }
                 return fVal_->GetType ();
             }
+			template    <>
+			inline	signed char VariantValue::As () const
+			{
+				return static_cast<signed char> (AsInteger_ ());
+			}
+			template    <>
+			inline	short int	VariantValue::As () const
+			{
+				return static_cast<short> (AsInteger_ ());
+			}
+			template    <>
+			inline	int	VariantValue::As () const
+			{
+				return static_cast<int> (AsInteger_ ());
+			}
+			template    <>
+			inline	long int	VariantValue::As () const
+			{
+				return static_cast<long int> (AsInteger_ ());
+			}
+			template    <>
+			inline	long long int	VariantValue::As () const
+			{
+				return static_cast<long long int> (AsInteger_ ());
+			}
+			template    <>
+			inline	unsigned char VariantValue::As () const
+			{
+				return static_cast<unsigned char> (AsUnsignedInteger_ ());
+			}
+			template    <>
+			inline	unsigned short int	VariantValue::As () const
+			{
+				return static_cast<unsigned short int> (AsUnsignedInteger_ ());
+			}
+			template    <>
+			inline	unsigned int VariantValue::As () const
+			{
+				return static_cast<unsigned int> (AsUnsignedInteger_ ());
+			}
+			template    <>
+			inline	unsigned long int	VariantValue::As () const
+			{
+				return static_cast<unsigned long int> (AsUnsignedInteger_ ());
+			}
+			template    <>
+			inline	unsigned long long	int	VariantValue::As () const
+			{
+				return static_cast<unsigned long long int> (AsUnsignedInteger_ ());
+			}
+			template    <>
+			inline	float VariantValue::As () const
+			{
+				return static_cast<float> (AsFloatType_ ());
+			}
+			template    <>
+			inline	double VariantValue::As () const
+			{
+				return static_cast<double> (AsFloatType_ ());
+			}
+			template    <>
+			inline	long double VariantValue::As () const
+			{
+				return static_cast<long double> (AsFloatType_ ());
+			}
 #if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   RETURNTYPE>
             RETURNTYPE VariantValue::As () const

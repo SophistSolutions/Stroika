@@ -35,8 +35,43 @@ using   Time::DateTime;
 
 
 namespace   {
-    void    DoRegressionTests_SimpleRegisterEtc_1_ ()
-    {
+    namespace DoRegressionTests_BasicDataRoundtrips_1_ {
+        template    <typename T>
+        void    RoundTripTest_ (T v)
+        {
+            Memory::VariantValue mv =   v;
+            VerifyTestResult (mv.As<T> () == v);
+        }
+        template    <typename T>
+        void    RoundTripMinMax_ ()
+        {
+            RoundTripTest_ (numeric_limits<T>::min ());
+            RoundTripTest_ (numeric_limits<T>::max ());
+        }
+        void    DoAll ()
+        {
+            RoundTripMinMax_<int> ();
+            RoundTripMinMax_<unsigned int> ();
+            RoundTripMinMax_<long> ();
+            RoundTripMinMax_<unsigned long> ();
+            RoundTripMinMax_<long long> ();
+            RoundTripMinMax_<unsigned long long> ();
+            RoundTripMinMax_<int8_t> ();
+            RoundTripMinMax_<uint8_t> ();
+            RoundTripMinMax_<int16_t> ();
+            RoundTripMinMax_<uint16_t> ();
+            RoundTripMinMax_<int32_t> ();
+            RoundTripMinMax_<uint32_t> ();
+            RoundTripMinMax_<int64_t> ();
+            RoundTripMinMax_<uint64_t> ();
+            RoundTripMinMax_<float> ();
+            RoundTripMinMax_<float> ();
+            RoundTripMinMax_<double> ();
+            RoundTripMinMax_<double> ();
+            //enum class Fred { Barny };
+            //RoundTripMinMax_<Fred> ();
+            RoundTripTest_<int> (3);
+        }
     }
 }
 
@@ -97,12 +132,12 @@ namespace   {
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+			IO::FileSystem::BinaryFileOutputStream tmp (String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + L"t.txt");
             JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
+            IO::FileSystem::BinaryFileInputStream tmp (String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + L"t.txt");
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
         }
 
@@ -116,7 +151,7 @@ namespace   {
 namespace   {
     void    DoRegressionTests_ ()
     {
-        DoRegressionTests_SimpleRegisterEtc_1_ ();
+        DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
         DoRegressionTests_SimpleMapToFromJSON_2_ ();
     }
 }
