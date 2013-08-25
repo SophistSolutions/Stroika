@@ -65,13 +65,13 @@ namespace {
 }
 
 
-template    <typename T, VariantValue::Type t = TN_<T>::kTYPEENUM>
+template    <typename T>
 struct  VariantValue::TIRep_ : VariantValue::IRep_ {
     TIRep_ (T v)
         : fVal (v) {
     }
     virtual Type    GetType () const override {
-        return t;
+        return TN_<T>::kTYPEENUM;
     }
     T     fVal;
     DECLARE_USE_BLOCK_ALLOCATION(TIRep_);

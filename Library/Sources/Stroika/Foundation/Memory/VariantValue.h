@@ -252,7 +252,7 @@ namespace   Stroika {
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
 #endif
-                template    <typename T, Type t>
+                template    <typename T>
                 struct  TIRep_;
             };
 
