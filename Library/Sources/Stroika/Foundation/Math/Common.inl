@@ -174,6 +174,14 @@ namespace   std {
         return f != f;
 #endif
     }
+    inline  bool    isnan (long double f)
+    {
+#if     _MSC_VER
+        return static_cast<bool> (!!_isnan (f));
+#else
+        return f != f;
+#endif
+    }
 }
 #endif
 
