@@ -16,6 +16,37 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
 
 
+namespace {
+    template    <typename T>
+    struct TN_ {
+        typename VariantValue::Type TYPEENUM;
+    };
+    template    <>
+    struct TN_<bool> {
+        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eBoolean;
+    };
+    template    <>
+    struct TN_<String> {
+        static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eString;
+    };
+}
+
+
+template    <typename T, VariantValue::Type t = TN_<T>::kTYPEENUM>
+struct  VariantValue::TIRep_ : VariantValue::IRep_ {
+    TIRep_ (T v)
+        : fVal (v) {
+    }
+    virtual Type    GetType () const override {
+        return t;
+    }
+    T     fVal;
+    DECLARE_USE_BLOCK_ALLOCATION(TIRep_);
+};
+
+
+
+
 
 
 
@@ -30,7 +61,7 @@ VariantValue::VariantValue ()
 }
 
 VariantValue::VariantValue (bool val)
-    : fVal_ (DEBUG_NEW TIRep_<bool, Type::eBoolean> (val))
+    : fVal_ (DEBUG_NEW TIRep_<bool> (val))
 {
 }
 
@@ -110,17 +141,17 @@ VariantValue::VariantValue (const DateTime& val)
 }
 
 VariantValue::VariantValue (const wchar_t* val)
-    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
+    : fVal_ (DEBUG_NEW TIRep_<String> (val))
 {
 }
 
 VariantValue::VariantValue (const wstring& val)
-    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
+    : fVal_ (DEBUG_NEW TIRep_<String> (val))
 {
 }
 
 VariantValue::VariantValue (const String& val)
-    : fVal_ (DEBUG_NEW TIRep_<String, Type::eString> (val))
+    : fVal_ (DEBUG_NEW TIRep_<String> (val))
 {
 }
 
@@ -180,7 +211,7 @@ bool    VariantValue::empty () const
                 return v->fVal.empty ();
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -195,7 +226,7 @@ bool    VariantValue::empty () const
                 return v->fVal.empty ();
             }
         default: {
-                return As<wstring> ().empty ();
+                return As<String> ().empty ();
             }
     }
 }
@@ -208,13 +239,13 @@ bool    VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eBoolean: {
-                auto    v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
         case    Type::eString: {
                 //return tmp != L"false";           // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
-                return As<wstring> () == L"true";   // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
+                return As<String> () == L"true";   // no need to worry about case etc - cuz XML-Schema  xs:boolean is case-sensative
             }
         case    Type::eInteger: {
                 return As<IntegerType_> () != 0;
@@ -250,7 +281,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::String2Int (v->fVal);
             }
@@ -282,7 +313,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::String2Int (v->fVal);
             }
@@ -314,7 +345,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 // NB. this may return NAN if string not a well-formed number (including empty string case)
                 return Characters::String2Float (v->fVal);
@@ -343,7 +374,7 @@ Date VariantValue::As() const
                 return v->fVal.GetDate ();
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
@@ -371,7 +402,7 @@ DateTime VariantValue::As () const
                 return v->fVal;
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
@@ -381,30 +412,29 @@ DateTime VariantValue::As () const
     }
 }
 
-template    <>
-wstring VariantValue::As () const
+String  VariantValue::AsString_ () const
 {
     if (fVal_.get () == nullptr) {
-        return wstring ();
+        return String ();
     }
     switch (fVal_->GetType ()) {
         case    Type::eDate: {
                 auto    v   =   dynamic_cast<const TIRep_<Date, Type::eDate>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (Date::PrintFormat::eISO8601).As<wstring> ();
+                return v->fVal.Format (Date::PrintFormat::eISO8601);
             }
         case    Type::eDateTime: {
                 auto    v   =   dynamic_cast<const TIRep_<DateTime, Type::eDateTime>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.Format (DateTime::PrintFormat::eISO8601).As<wstring> ();
+                return v->fVal.Format (DateTime::PrintFormat::eISO8601);
             }
         case    Type::eString: {
-                auto    v   =   dynamic_cast<const TIRep_<String, Type::eString>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal.As<wstring> ();
+                return v->fVal;
             }
         case    Type::eBoolean: {
-                auto    v   =   dynamic_cast<const TIRep_<bool, Type::eBoolean>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<bool>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal ? L"true" : L"false";
             }
@@ -455,12 +485,6 @@ wstring VariantValue::As () const
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
             }
     }
-}
-
-template    <>
-String VariantValue::As () const
-{
-    return As<wstring> ();
 }
 
 template    <>
@@ -525,7 +549,7 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
                 lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean
            ) {
             // compare as STRING  - in case someone compares true with 'FRED' (we want that to come out as a FALSE compare result)
-            return  As<wstring> () == rhs.As<wstring> ();
+            return  As<String> () == rhs.As<String> ();
         }
         return false;
     }
@@ -545,7 +569,7 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
         case    VariantValue::Type::eDateTime:
             return As<DateTime> () == rhs.As<DateTime> ();
         case    VariantValue::Type::eString:
-            return As<wstring> () == rhs.As<wstring> ();
+            return As<String> () == rhs.As<String> ();
         case    VariantValue::Type::eArray: {
                 // same iff all elts same
                 vector<VariantValue>    lhsV    =   As<vector<VariantValue>> ();

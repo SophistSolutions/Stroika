@@ -23,19 +23,6 @@ namespace   Stroika {
             };
 
 
-            template    <typename T, VariantValue::Type t>
-            struct  VariantValue::TIRep_ : VariantValue::IRep_ {
-                TIRep_ (T v)
-                    : fVal (v) {
-                }
-                virtual Type    GetType () const override {
-                    return t;
-                }
-                T               fVal;
-                DECLARE_USE_BLOCK_ALLOCATION(TIRep_);
-            };
-
-
             /*
              ********************************************************************************
              ********************************** VariantValue ********************************
@@ -112,6 +99,16 @@ namespace   Stroika {
             inline  long double VariantValue::As () const
             {
                 return static_cast<long double> (AsFloatType_ ());
+            }
+            template    <>
+            inline  wstring VariantValue::As () const
+            {
+                return AsString_ ().As<wstring> ();
+            }
+            template    <>
+            inline  String VariantValue::As () const
+            {
+                return AsString_ ();
             }
 #if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   RETURNTYPE>

@@ -25,6 +25,9 @@
  *
  *  TODO:
  *
+ *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
+ *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
+ *
  *      @todo   fixup int type serialization (bigger int types - probably need to extend VariantValue class -
  *              and maybe should for unsigned?
  *
@@ -36,11 +39,9 @@
  *              TO FIX - ADD ADDITIONAL 'types'
  *                  //
  *                  // but be careful cuz many places with  VariantValue::Type enums
+    <<review - partly done>>>
  *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
- *
- *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
- *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
  *
  *      @todo   Add r-value reference -- && -- overloads for CTORs (and more) - as performance hack
  *
@@ -48,9 +49,6 @@
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
  *              Though probably not.
- *
- *      @todo   Consider adding more integer types, like int32, int64, etc... COM VARIANT has many more
- *              types than we do.
  */
 
 
@@ -96,21 +94,19 @@ namespace   Stroika {
             class   VariantValue {
             private:
                 /**
-                 *  There are several floating point types - float, double, long double (and others?).
-                 *  This selects which we use to represent a VariantValue internally, but either double
-                 *  or float (maybe more) can be used to access
+                 *  Internal format for storing floating point data in a VariantValue.
                  */
-                typedef double  FloatType_;
+                typedef long double  FloatType_;
 
             private:
                 /**
-                 *
+                 *  Internal format for storing int data in a VariantValue.
                  */
                 typedef long long int  IntegerType_;
 
             private:
                 /**
-                 *
+                 *  Internal format for storing unsigned int data in a VariantValue.
                  */
                 typedef unsigned long long int  UnsignedIntegerType_;
 
@@ -209,7 +205,7 @@ namespace   Stroika {
                  *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsignedlong long int (any of the 5 unsigned int types)
                  *          o   float
                  *          o   double
-                 *              (TO ADD LONG DOUBLE)
+                 *          o   long double
                  *          o   Date
                  *          o   DateTime
                  *          o   wstring
@@ -223,9 +219,10 @@ namespace   Stroika {
                 nonvirtual RETURNTYPE As () const;
 
             private:
-                nonvirtual  IntegerType_ AsInteger_ () const;
-                nonvirtual  UnsignedIntegerType_ AsUnsignedInteger_ () const;
-                nonvirtual  FloatType_ AsFloatType_ () const;
+                nonvirtual  IntegerType_            AsInteger_ () const;
+                nonvirtual  UnsignedIntegerType_    AsUnsignedInteger_ () const;
+                nonvirtual  FloatType_              AsFloatType_ () const;
+                nonvirtual  String                  AsString_ () const;
 
             public:
                 /**
