@@ -211,56 +211,26 @@ unsigned int Characters::HexString2Int (const String& s)
  ********************************* String2Int ***********************************
  ********************************************************************************
  */
-int Characters::String2Int (const string& s)
+long long int Characters::String2Int (const string& s)
 {
     using   std::numeric_limits;
-    long    l   =   strtol (s.c_str (), nullptr, 10);
-    if (l <= numeric_limits<int>::min ()) {
-        return numeric_limits<int>::min ();
-    }
-    if (l >= numeric_limits<int>::max ()) {
-        return numeric_limits<int>::max ();
-    }
+#if     qCompilerAndStdLib_Supports_strtoll
+    long long int    l   =   strtoll (s.c_str (), nullptr, 10);
+#else
+    long long int    l   =   _strtoi64 (s.c_str (), nullptr, 10);
+#endif
+    // nothing needed todo to pin the value to min/max
     return l;
 }
 
-int Characters::String2Int (const wstring& s)
+long long int Characters::String2Int (const String& s)
 {
     using   std::numeric_limits;
-    long    l   =   wcstol (s.c_str (), nullptr, 10);
-    if (l <= numeric_limits<int>::min ()) {
-        return numeric_limits<int>::min ();
-    }
-    if (l >= numeric_limits<int>::max ()) {
-        return numeric_limits<int>::max ();
-    }
-    return l;
-}
-
-int Characters::String2Int (const wchar_t* s)
-{
-    using   std::numeric_limits;
-    RequireNotNull (s);
-    long    l   =   wcstol (s, nullptr, 10);
-    if (l <= numeric_limits<int>::min ()) {
-        return numeric_limits<int>::min ();
-    }
-    if (l >= numeric_limits<int>::max ()) {
-        return numeric_limits<int>::max ();
-    }
-    return l;
-}
-
-int Characters::String2Int (const String& s)
-{
-    using   std::numeric_limits;
-    long    l   =   wcstol (s.c_str (), nullptr, 10);
-    if (l <= numeric_limits<int>::min ()) {
-        return numeric_limits<int>::min ();
-    }
-    if (l >= numeric_limits<int>::max ()) {
-        return numeric_limits<int>::max ();
-    }
+#if     qCompilerAndStdLib_Supports_strtoll
+    long long int    l   =   wcstoll (s.c_str (), nullptr, 10);
+#else
+    long long int    l   =   _wcstoi64 (s.c_str (), nullptr, 10);
+#endif
     return l;
 }
 

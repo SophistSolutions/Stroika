@@ -185,7 +185,7 @@ namespace   {
             return Memory::VariantValue (Characters::String2Float (tmp));
         }
         else {
-            return Memory::VariantValue (Characters::String2Int (tmp));
+            return Memory::VariantValue (Characters::String2Integer<long long int> (tmp));
         }
     }
 

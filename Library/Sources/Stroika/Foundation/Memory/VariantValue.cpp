@@ -316,7 +316,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         case    Type::eString: {
                 auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Characters::String2Int (v->fVal);
+                return Characters::String2Integer<IntegerType_> (v->fVal);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
@@ -348,7 +348,9 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
         case    Type::eString: {
                 auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Characters::String2Int (v->fVal);
+                // not sure this is right for high order bit set for unsigned long long?
+                // --LGP 2013-08-25
+                return Characters::String2Integer<UnsignedIntegerType_> (v->fVal);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());

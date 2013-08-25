@@ -130,18 +130,31 @@ namespace   Stroika {
             unsigned int     HexString2Int (const String& s);
 
             /**
-             *  Convert the given decimal-format integral string to an integer.
+             *  Convert the given decimal-format integral string to an integer (long long int)
              *  String2Int will return 0 if no valid parse, and INT_MIN on underflow,
              *  INT_MAX on overflow.
              *
-             *  @see strtol(), or @see wcstol (). This is a simple wrapper on strtol() / wcstol ().
-             *  strtol() is more flexible. This is merely meant to be an often convenient wrapper.
-             *  Use strtol etc directly to see if the string parsed properly.
+             *  @see strtoll(), or @see wcstoll (). This is a simple wrapper on strtoll() / wcstoll ().
+             *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
+             *  Use strtoll etc directly to see if the string parsed properly.
              */
-            int     String2Int (const string& s);
-            int     String2Int (const wchar_t* s);
-            int     String2Int (const wstring& s);
-            int     String2Int (const String& s);
+            long long int     String2Int (const string& s);
+            long long int     String2Int (const String& s);
+            long long int     String2Int (const char* s);
+            long long int     String2Int (const wchar_t* s);
+            long long int     String2Int (const wstring& s);
+
+            /**
+             *  Like @see String2Int() - but trims to the given int size, and pins ant numeric_limits<T>::min/max.
+             */
+            template    <typename T>
+            T     String2Integer (const string& s);
+            template    <typename T>
+            T     String2Integer (const wchar_t* s);
+            template    <typename T>
+            T     String2Integer (const wstring& s);
+            template    <typename T>
+            T     String2Integer (const String& s);
 
             /**
              *  Convert the given decimal-format floating point string to an double.

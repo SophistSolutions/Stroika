@@ -209,6 +209,22 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_strtoll
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_Supports_strtoll
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_strtoll  (_MSC_VER > _MS_VS_2k12_VER_)
+#else
+#define qCompilerAndStdLib_Supports_strtoll  1
+#endif
+#endif
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 @DESCRIPTION:   <p></p>
