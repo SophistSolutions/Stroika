@@ -85,12 +85,17 @@ VariantValue::VariantValue (unsigned long long int val)
 }
 
 VariantValue::VariantValue (float val)
-    : fVal_ (DEBUG_NEW TIRep_<FloatType, Type::eFloat> (val))
+    : fVal_ (DEBUG_NEW TIRep_<FloatType_, Type::eFloat> (val))
 {
 }
 
 VariantValue::VariantValue (double val)
-    : fVal_ (DEBUG_NEW TIRep_<FloatType, Type::eFloat> (val))
+    : fVal_ (DEBUG_NEW TIRep_<FloatType_, Type::eFloat> (val))
+{
+}
+
+VariantValue::VariantValue (long double val)
+    : fVal_ (DEBUG_NEW TIRep_<FloatType_, Type::eFloat> (val))
 {
 }
 
@@ -160,7 +165,7 @@ bool    VariantValue::empty () const
                 return false;       // cannot be empty
             }
         case    Type::eFloat: {
-                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType_, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return std::isnan (v->fVal) != 0;
             }
@@ -230,7 +235,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eFloat: {
-                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType_, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<int> (v->fVal);
             }
@@ -262,7 +267,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eFloat: {
-                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType_, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return static_cast<int> (v->fVal);
             }
@@ -287,7 +292,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
     }
 }
 
-VariantValue::FloatType VariantValue::AsFloatType_ () const
+VariantValue::FloatType_ VariantValue::AsFloatType_ () const
 {
     if (fVal_.get () == nullptr) {
         return 0.0f;
@@ -304,7 +309,7 @@ VariantValue::FloatType VariantValue::AsFloatType_ () const
                 return static_cast<float> (v->fVal);
             }
         case    Type::eFloat: {
-                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType_, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -414,7 +419,7 @@ wstring VariantValue::As () const
                 return Characters::Format (L"%d", v->fVal);
             }
         case    Type::eFloat: {
-                auto    v   =   dynamic_cast<const TIRep_<FloatType, Type::eFloat>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<FloatType_, Type::eFloat>*> (fVal_.get ());
                 AssertNotNull (v);
                 return Characters::Float2String (v->fVal);
             }
@@ -534,7 +539,7 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
         case    VariantValue::Type::eUnsignedInteger:
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
         case    VariantValue::Type::eFloat:
-            return As<VariantValue::FloatType> () == rhs.As<VariantValue::FloatType> ();
+            return As<VariantValue::FloatType_> () == rhs.As<VariantValue::FloatType_> ();
         case    VariantValue::Type::eDate:
             return As<Date> () == rhs.As<Date> ();
         case    VariantValue::Type::eDateTime:

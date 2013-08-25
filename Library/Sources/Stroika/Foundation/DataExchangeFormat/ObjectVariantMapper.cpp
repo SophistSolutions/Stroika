@@ -107,13 +107,19 @@ namespace {
     {
         Set<ObjectVariantMapper::TypeMappingDetails>    result;
         result.Add (mkSerializerInfo_<bool, bool> ());
+        result.Add (mkSerializerInfo_<signed char, signed char> ());
+        result.Add (mkSerializerInfo_<short int, short int> ());
         result.Add (mkSerializerInfo_<int, int> ());
-        // @todo - fixup int type serialization (bigger int types - probably need to extend VariantValue class - and maybe should for unsigned?
-        result.Add (mkSerializerInfo_<unsigned int, int> ());
-        result.Add (mkSerializerInfo_<long, int> ());
-        result.Add (mkSerializerInfo_<unsigned long, int> ());
-        result.Add (mkSerializerInfo_<float, VariantValue::FloatType> ());
-        result.Add (mkSerializerInfo_<double, VariantValue::FloatType> ());
+        result.Add (mkSerializerInfo_<long int, long int> ());
+        result.Add (mkSerializerInfo_<long long int, long long int> ());
+        result.Add (mkSerializerInfo_<unsigned char, unsigned char> ());
+        result.Add (mkSerializerInfo_<unsigned short, unsigned short> ());
+        result.Add (mkSerializerInfo_<unsigned int, unsigned int> ());
+        result.Add (mkSerializerInfo_<unsigned long int, unsigned long int> ());
+        result.Add (mkSerializerInfo_<unsigned long long int, unsigned long long int> ());
+        result.Add (mkSerializerInfo_<float, float> ());
+        result.Add (mkSerializerInfo_<double, double> ());
+        result.Add (mkSerializerInfo_<long double, long double> ());
         result.Add (mkSerializerInfo_<Date, Date> ());
         result.Add (mkSerializerInfo_<DateTime, DateTime> ());
         result.Add (mkSerializerInfo_<String, String> ());

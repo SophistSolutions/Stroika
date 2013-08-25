@@ -94,13 +94,13 @@ namespace   Stroika {
              *  from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
              */
             class   VariantValue {
-            public:
+            private:
                 /**
                  *  There are several floating point types - float, double, long double (and others?).
                  *  This selects which we use to represent a VariantValue internally, but either double
                  *  or float (maybe more) can be used to access
                  */
-                typedef double  FloatType;
+                typedef double  FloatType_;
 
             private:
                 /**
@@ -163,6 +163,7 @@ namespace   Stroika {
                 VariantValue (unsigned long long int val);
                 VariantValue (float val);
                 VariantValue (double val);
+                VariantValue (long double val);
                 VariantValue (const Date& val);
                 VariantValue (const DateTime& val);
                 VariantValue (const wstring& val);
@@ -224,7 +225,7 @@ namespace   Stroika {
             private:
                 nonvirtual  IntegerType_ AsInteger_ () const;
                 nonvirtual  UnsignedIntegerType_ AsUnsignedInteger_ () const;
-                nonvirtual  FloatType AsFloatType_ () const;
+                nonvirtual  FloatType_ AsFloatType_ () const;
 
             public:
                 /**
@@ -285,6 +286,8 @@ namespace   Stroika {
             float VariantValue::As () const;
             template    <>
             double VariantValue::As () const;
+            template    <>
+            long double VariantValue::As () const;
             template    <>
             Date VariantValue::As () const;
             template    <>

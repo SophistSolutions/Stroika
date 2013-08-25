@@ -63,7 +63,7 @@ namespace   {
         ::swprintf (buf, NEltsOf (buf), L"%ulld", v);
         out.Write (buf);
     }
-    void    PrettyPrint_ (Memory::VariantValue::FloatType v, const TextOutputStream& out)
+    void    PrettyPrint_ (long double v, const TextOutputStream& out)
     {
         wchar_t buf[1024];
         ::swprintf (buf, NEltsOf (buf), L"%f", v);
@@ -154,7 +154,7 @@ namespace   {
             case    Memory::VariantValue::Type::eUnsignedInteger:
                 PrettyPrint_ (v.As<unsigned long long int> (), out);
             case    Memory::VariantValue::Type::eFloat:
-                PrettyPrint_ (v.As<Memory::VariantValue::FloatType> (), out);
+                PrettyPrint_ (v.As<long double> (), out);
                 break;
             case    Memory::VariantValue::Type::eString:
                 PrettyPrint_ (v.As<wstring> (), out);
