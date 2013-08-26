@@ -90,10 +90,17 @@ namespace   Stroika {
              *          (since there is no JSON schema) - we would assert. At least for this usage (and
              *          that now seems the primary one) exceptions on  type mismatches seemed most helpful.
              *
-             *  INTEGER Types for CTOR and As<T> () overloads:
-             *      “signed char”, “short int”, “int”, “long int”, and “long long int”
-             *      “unsigned char”, “unsigned short int”, “unsigned int”, “unsigned long int”, and “unsigned long long int”,
-             *  from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
+             * From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
+             *      There are five standard signed integer types : signed char, short int, int,
+             *      long int, and long long int. In this list, each type provides at least as much
+             *      storage as those preceding it in the list.
+             *      For each of the standard signed integer types, there exists a corresponding (but different)
+             *      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
+             *      and unsigned long long int, each of which occupies the same amount of storage and has the
+             *      same alignment requirements.
+             *
+             *  So for now - we just store the largest signed and unsigned integer types and cast down to what
+             *  the user users/requests.
              */
             class   VariantValue {
             private:
@@ -121,21 +128,6 @@ namespace   Stroika {
                 enum class Type : uint8_t {
                     eNull,
                     eBoolean,
-
-                    // From section from section 3.9.1 of http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
-                    //
-                    //      There are five standard signed integer types : signed char, short int, int,
-                    //      long int, and long long int. In this list, each type provides at least as much
-                    //      storage as those preceding it in the list.
-                    //      For each of the standard signed integer types, there exists a corresponding (but different)
-                    //      standard unsigned integer type: unsigned char, unsigned short int, unsigned int, unsigned long int,
-                    //      and unsigned long long int, each of which occupies the same amount of storage and has the
-                    //      same alignment requirements.
-                    //
-                    //  So this ....just store in largest type
-
-                    //
-                    // but be careful cuz many places with  VariantValue::Type enums
                     eInteger,
                     eUnsignedInteger,
                     eFloat,
@@ -207,9 +199,7 @@ namespace   Stroika {
                  *          o   bool
                  *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
                  *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsignedlong long int (any of the 5 unsigned int types)
-                 *          o   float
-                 *          o   double
-                 *          o   long double
+                 *          o   float, double, long double
                  *          o   Date
                  *          o   DateTime
                  *          o   wstring
