@@ -41,17 +41,19 @@ protected:
         const wchar_t*  pc  =   sc;
 
         // convert characters to bytes using codepage, and then
-        mbstate_t mb = mbstate_t(); // docs say this is OK, but on windows maybe not???
+        //mbstate_t mb = mbstate_t(); // docs say this is OK, but on windows maybe not???
+        mbstate_t mb = 0;   // looking
 
-        //char  outBuf[10*1024];
-        char    outBuf[10]; // to test
-        char*   p   =   std::begin (outBuf);
+        char  outBuf[10 * 1024];
+        //char    outBuf[10]; // to test
         lock_guard<recursive_mutex>  critSec (_fCriticalSection);
 Again:
+        char*   p   =   std::begin (outBuf);
         codecvt_utf8<wchar_t>::result r = converter.out (mb, sc, ec, pc, std::begin (outBuf), std::end (outBuf), p);
         Assert (std::begin (outBuf) <= p and p <= std::end (outBuf));
         _fSource.Write (reinterpret_cast<const Byte*> (std::begin (outBuf)), reinterpret_cast<const Byte*> (p));
-        if (r == codecvt_utf8<wchar_t>::partial) {
+        if (r == codecvt_utf8<wchar_t>::partial or pc < ec) {
+            sc = pc;
             goto Again;
         }
         if (r != codecvt_utf8<wchar_t>::ok) {
