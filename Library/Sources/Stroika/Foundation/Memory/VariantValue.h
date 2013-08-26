@@ -25,6 +25,10 @@
  *
  *  TODO:
  *
+ *      @todo   Fix compare of signed and unsigned int (equals) - when comparing different types (signed/unsigned)
+ *              if the unsigned number is in range of valid signed numbers then can compare either way, but dont make
+ *              max_uint == -some neg #.
+ *
  *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
  *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
  *
