@@ -67,7 +67,7 @@ namespace {
         // get rid of this function - COULD do better API - but this is fine for how we currently use it...
         // -- LGP 2012-09-19
         RequireNotNull (t);
-        *t = Characters::String2Int (s);
+        *t = Characters::String2Int<int> (s);
         return true;
 #else
         int l   =   0;
