@@ -234,7 +234,7 @@ URL::URL (const String& w)
                         ++i;
                     }
                     if (!num.empty ()) {
-                        fPort_ = String2Integer<PortType> (num);
+                        fPort_ = String2Int<PortType> (num);
                     }
                 }
             }

@@ -186,8 +186,8 @@ namespace   {
         else {
             // if no - use unsigned since has wider range (if no -)
             return Characters::String (tmp).LTrim ().StartsWith (L"-") ?
-                   Memory::VariantValue (Characters::String2Integer<long long int> (tmp)) :
-                   Memory::VariantValue (Characters::String2Integer<unsigned long long int> (tmp))
+                   Memory::VariantValue (Characters::String2Int<long long int> (tmp)) :
+                   Memory::VariantValue (Characters::String2Int<unsigned long long int> (tmp))
                    ;
         }
     }

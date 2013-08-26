@@ -217,7 +217,7 @@ void    BuiltinReader<int>::HandleChildStart (SAXObjectReader& r, const String& 
 void    BuiltinReader<int>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
-    (*value_) = Characters::String2Int (tmpVal_.As<wstring> ());
+    (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
 void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
@@ -250,7 +250,7 @@ void    BuiltinReader<unsigned int>::HandleChildStart (SAXObjectReader& r, const
 void    BuiltinReader<unsigned int>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
-    (*value_) = Characters::String2Int (tmpVal_.As<wstring> ());
+    (*value_) = Characters::String2Int<int> (tmpVal_.As<wstring> ());
 }
 
 void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)

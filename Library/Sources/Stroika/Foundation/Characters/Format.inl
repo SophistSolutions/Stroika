@@ -18,6 +18,69 @@ namespace   Stroika {
         namespace   Characters {
 
 
+            namespace Private_ {
+                long long int           String2Int_ (const string& s);
+                long long int           String2Int_ (const String& s);
+                long long int           String2Int_ (const char* s);
+                long long int           String2Int_ (const wchar_t* s);
+                long long int           String2Int_ (const wstring& s);
+                unsigned long long int  String2UInt_ (const string& s);
+                unsigned long long int  String2UInt_ (const String& s);
+                unsigned long long int  String2UInt_ (const char* s);
+                unsigned long long int  String2UInt_ (const wchar_t* s);
+                unsigned long long int  String2UInt_ (const wstring& s);
+
+                inline  long long int     String2Int_ (const char* s)
+                {
+                    return String2Int_ (string (s));
+                }
+                inline  long long int     String2Int (const wchar_t* s)
+                {
+                    return String2Int_ (String (s));
+                }
+                inline  long long int     String2Int (const wstring& s)
+                {
+                    return String2Int_ (String (s));
+                }
+
+
+                inline  unsigned long long int     String2UInt (const char* s)
+                {
+                    return String2UInt_ (string (s));
+                }
+                inline  unsigned long long int     String2UInt (const wchar_t* s)
+                {
+                    return String2UInt_ (String (s));
+                }
+                inline  unsigned long long int     String2UInt (const wstring& s)
+                {
+                    return String2UInt_ (String (s));
+                }
+
+                template    <typename T, typename STRING_ARG>
+                unsigned long long int     String2IntOrUInt_ (STRING_ARG s)
+                {
+                    using   std::numeric_limits;
+                    if (numeric_limits<T>::is_signed) {
+                        long long int    l   =   String2Int_ (s);
+                        if (l <= numeric_limits<T>::min ()) {
+                            return numeric_limits<T>::min ();
+                        }
+                        if (l >= numeric_limits<T>::max ()) {
+                            return numeric_limits<T>::max ();
+                        }
+                        return static_cast<T> (l);
+                    }
+                    else {
+                        unsigned long long int    l   =   String2UInt_ (s);
+                        if (l >= numeric_limits<T>::max ()) {
+                            return numeric_limits<T>::max ();
+                        }
+                        return static_cast<T> (l);
+                    }
+                }
+            }
+
             template    <typename TCHAR>
             basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)
             {
@@ -45,74 +108,25 @@ namespace   Stroika {
             }
 
 
-            inline  long long int     String2Int (const char* s)
+            template    <typename T>
+            inline  T     String2Int (const string& s)
             {
-                return String2Int (string (s));
-            }
-            inline  long long int     String2Int (const wchar_t* s)
-            {
-                return String2Int (String (s));
-            }
-            inline  long long int     String2Int (const wstring& s)
-            {
-                return String2Int (String (s));
-            }
-
-
-            inline  unsigned long long int     String2UInt (const char* s)
-            {
-                return String2UInt (string (s));
-            }
-            inline  unsigned long long int     String2UInt (const wchar_t* s)
-            {
-                return String2UInt (String (s));
-            }
-            inline  unsigned long long int     String2UInt (const wstring& s)
-            {
-                return String2UInt (String (s));
-            }
-
-            template    <typename T, typename STRING_ARG>
-            unsigned long long int     String2UInt_ (STRING_ARG s)
-            {
-                using   std::numeric_limits;
-                if (numeric_limits<T>::is_signed) {
-                    long long int    l   =   String2Int (s);
-                    if (l <= numeric_limits<T>::min ()) {
-                        return numeric_limits<T>::min ();
-                    }
-                    if (l >= numeric_limits<T>::max ()) {
-                        return numeric_limits<T>::max ();
-                    }
-                    return static_cast<T> (l);
-                }
-                else {
-                    unsigned long long int    l   =   String2UInt (s);
-                    if (l >= numeric_limits<T>::max ()) {
-                        return numeric_limits<T>::max ();
-                    }
-                    return static_cast<T> (l);
-                }
+                return Private_::String2IntOrUInt_<T, const string&> (s);
             }
             template    <typename T>
-            inline  T     String2Integer (const string& s)
+            inline  T     String2Int (const wchar_t* s)
             {
-                return String2UInt_<T, const string&> (s);
+                return Private_::String2IntOrUInt_<T, const wchar_t*> (s);
             }
             template    <typename T>
-            inline  T     String2Integer (const wchar_t* s)
+            inline  T     String2Int (const wstring& s)
             {
-                return String2UInt_<T, const wchar_t*> (s);
+                return Private_::String2IntOrUInt_<T, const wstring&> (s);
             }
             template    <typename T>
-            inline  T     String2Integer (const wstring& s)
+            inline  T     String2Int (const String& s)
             {
-                return String2UInt_<T, const wstring&> (s);
-            }
-            template    <typename T>
-            inline  T     String2Integer (const String& s)
-            {
-                return String2UInt_<T, const String&> (s);
+                return Private_::String2IntOrUInt_<T, const String&> (s);
             }
 
 

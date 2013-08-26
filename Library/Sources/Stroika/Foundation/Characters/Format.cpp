@@ -211,7 +211,7 @@ unsigned int Characters::HexString2Int (const String& s)
  ********************************* String2Int ***********************************
  ********************************************************************************
  */
-long long int Characters::String2Int (const string& s)
+long long int Characters::Private_::String2Int_ (const string& s)
 {
     using   std::numeric_limits;
 #if     qCompilerAndStdLib_Supports_strtoll
@@ -223,7 +223,7 @@ long long int Characters::String2Int (const string& s)
     return l;
 }
 
-long long int Characters::String2Int (const String& s)
+long long int Characters::Private_::String2Int_ (const String& s)
 {
     using   std::numeric_limits;
 #if     qCompilerAndStdLib_Supports_strtoll
@@ -242,7 +242,7 @@ long long int Characters::String2Int (const String& s)
  ********************************* String2UInt ***********************************
  ********************************************************************************
  */
-unsigned long long int Characters::String2UInt (const string& s)
+unsigned long long int Characters::Private_::String2UInt_ (const string& s)
 {
     using   std::numeric_limits;
 #if     qCompilerAndStdLib_Supports_strtoll
@@ -254,7 +254,7 @@ unsigned long long int Characters::String2UInt (const string& s)
     return l;
 }
 
-unsigned long long int Characters::String2UInt (const String& s)
+unsigned long long int Characters::Private_::String2UInt_ (const String& s)
 {
     using   std::numeric_limits;
 #if     qCompilerAndStdLib_Supports_strtoll

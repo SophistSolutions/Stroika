@@ -123,7 +123,7 @@ void    Exception::DoThrowIfError (const wstring& status, const wstring& reason)
     if (ss.length () > 3) {
         ss = ss.substr (0, 3);
     }
-    unsigned int    s   =   String2Integer<unsigned int> (ss);
+    unsigned int    s   =   String2Int<unsigned int> (ss);
     if (s == 0) {
         DoThrowIfError (599, L"Status: " + status + L"; " + reason);
     }

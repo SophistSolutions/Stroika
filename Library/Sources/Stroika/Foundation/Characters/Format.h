@@ -130,42 +130,28 @@ namespace   Stroika {
             unsigned int     HexString2Int (const String& s);
 
             /**
-             *  Convert the given decimal-format integral string to an integer (long long int)
-             *  String2Int will return 0 if no valid parse, and INT_MIN on underflow,
-             *  INT_MAX on overflow.
+             *  Convert the given decimal-format integral string to any integer type
+             *  ( e.g. signed char, unsigned short int, long long int, uint32_t etc).
+             *
+             *  String2Int will return 0 if no valid parse, and numeric_limits<T>::min on underflow,
+             *  numeric_limits<T>::max on overflow.
+             *      @todo consider if this is unwise - it seems we ought to throw? Or have a variant
+             *              perhaps that does no throw?
+             *
+             *              CONSIDER!
              *
              *  @see strtoll(), or @see wcstoll (). This is a simple wrapper on strtoll() / wcstoll ().
              *  strtoll() is more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtoll etc directly to see if the string parsed properly.
              */
-            long long int     String2Int (const string& s);
-            long long int     String2Int (const String& s);
-            long long int     String2Int (const char* s);
-            long long int     String2Int (const wchar_t* s);
-            long long int     String2Int (const wstring& s);
-
-
-            /**
-             * if src negative, pin to zero. (or should we throw?)
-             */
-            unsigned long long int     String2UInt (const string& s);
-            unsigned long long int     String2UInt (const String& s);
-            unsigned long long int     String2UInt (const char* s);
-            unsigned long long int     String2UInt (const wchar_t* s);
-            unsigned long long int     String2UInt (const wstring& s);
-
-
-            /**
-             *  Like @see String2Int() - but trims to the given int size, and pins ant numeric_limits<T>::min/max.
-             */
             template    <typename T>
-            T     String2Integer (const string& s);
+            T     String2Int (const string& s);
             template    <typename T>
-            T     String2Integer (const wchar_t* s);
+            T     String2Int (const wchar_t* s);
             template    <typename T>
-            T     String2Integer (const wstring& s);
+            T     String2Int (const wstring& s);
             template    <typename T>
-            T     String2Integer (const String& s);
+            T     String2Int (const String& s);
 
             /**
              *  Convert the given decimal-format floating point string to an double.
