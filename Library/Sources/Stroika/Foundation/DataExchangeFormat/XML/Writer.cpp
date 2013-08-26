@@ -56,7 +56,7 @@ namespace   {
     void    PrettyPrint_ (long double v, const TextOutputStream& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, NEltsOf (buf), L"%f", v);
+        ::swprintf (buf, NEltsOf (buf), L"%Lf", v);
         Assert (::wcslen (buf) >= 1);
         // trim trailing 0
         for (size_t i = ::wcslen (buf) - 1; buf[i] == '0'; --i) {
