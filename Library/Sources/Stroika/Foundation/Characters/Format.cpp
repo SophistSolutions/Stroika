@@ -227,9 +227,41 @@ long long int Characters::String2Int (const String& s)
 {
     using   std::numeric_limits;
 #if     qCompilerAndStdLib_Supports_strtoll
-    long long int    l   =   wcstoll (s.c_str (), nullptr, 10);
+    unsigned    long long int    l   =   wcstoul (s.c_str (), nullptr, 10);
 #else
-    long long int    l   =   _wcstoi64 (s.c_str (), nullptr, 10);
+    unsigned    long long int    l   =   _wcstoi64 (s.c_str (), nullptr, 10);
+#endif
+    return l;
+}
+
+
+
+
+/*
+ ********************************************************************************
+ ********************************* String2UInt ***********************************
+ ********************************************************************************
+ */
+unsigned long long int Characters::String2UInt (const string& s)
+{
+    using   std::numeric_limits;
+#if     qCompilerAndStdLib_Supports_strtoll
+    unsigned    long long int    l   =   strtoull (s.c_str (), nullptr, 10);
+#else
+    unsigned    long long int    l   =   _strtoui64 (s.c_str (), nullptr, 10);
+#endif
+    // nothing needed todo to pin the value to min/max
+    return l;
+}
+
+unsigned long long int Characters::String2UInt (const String& s)
+{
+    using   std::numeric_limits;
+#if     qCompilerAndStdLib_Supports_strtoll
+    long long int    l   =   wcstoull (s.c_str (), nullptr, 10);
+#else
+
+    long long int    l   =   _wcstoui64 (s.c_str (), nullptr, 10);
 #endif
     return l;
 }

@@ -57,57 +57,62 @@ namespace   Stroika {
             {
                 return String2Int (String (s));
             }
+
+
+            inline  unsigned long long int     String2UInt (const char* s)
+            {
+                return String2UInt (string (s));
+            }
+            inline  unsigned long long int     String2UInt (const wchar_t* s)
+            {
+                return String2UInt (String (s));
+            }
+            inline  unsigned long long int     String2UInt (const wstring& s)
+            {
+                return String2UInt (String (s));
+            }
+
+            template    <typename T, typename STRING_ARG>
+            unsigned long long int     String2UInt_ (STRING_ARG s)
+            {
+                using   std::numeric_limits;
+                if (numeric_limits<T>::is_signed) {
+                    long long int    l   =   String2Int (s);
+                    if (l <= numeric_limits<T>::min ()) {
+                        return numeric_limits<T>::min ();
+                    }
+                    if (l >= numeric_limits<T>::max ()) {
+                        return numeric_limits<T>::max ();
+                    }
+                    return static_cast<T> (l);
+                }
+                else {
+                    unsigned long long int    l   =   String2UInt (s);
+                    if (l >= numeric_limits<T>::max ()) {
+                        return numeric_limits<T>::max ();
+                    }
+                    return static_cast<T> (l);
+                }
+            }
             template    <typename T>
             inline  T     String2Integer (const string& s)
             {
-                using   std::numeric_limits;
-                long long int    l   =   String2Int (s);
-                if (l <= numeric_limits<T>::min ()) {
-                    return numeric_limits<T>::min ();
-                }
-                if (l >= numeric_limits<T>::max ()) {
-                    return numeric_limits<T>::max ();
-                }
-                return static_cast<T> (l);
+                return String2UInt_<T, const string&> (s);
             }
             template    <typename T>
             inline  T     String2Integer (const wchar_t* s)
             {
-                using   std::numeric_limits;
-                long long int    l   =   String2Int (s);
-                if (l <= numeric_limits<T>::min ()) {
-                    return numeric_limits<T>::min ();
-                }
-                if (l >= numeric_limits<T>::max ()) {
-                    return numeric_limits<T>::max ();
-                }
-                return static_cast<T> (l);
+                return String2UInt_<T, const wchar_t*> (s);
             }
             template    <typename T>
             inline  T     String2Integer (const wstring& s)
             {
-                using   std::numeric_limits;
-                long long int    l   =   String2Int (s);
-                if (l <= numeric_limits<T>::min ()) {
-                    return numeric_limits<T>::min ();
-                }
-                if (l >= numeric_limits<T>::max ()) {
-                    return numeric_limits<T>::max ();
-                }
-                return static_cast<T> (l);
+                return String2UInt_<T, const wstring&> (s);
             }
             template    <typename T>
             inline  T     String2Integer (const String& s)
             {
-                using   std::numeric_limits;
-                long long int    l   =   String2Int (s);
-                if (l <= numeric_limits<T>::min ()) {
-                    return numeric_limits<T>::min ();
-                }
-                if (l >= numeric_limits<T>::max ()) {
-                    return numeric_limits<T>::max ();
-                }
-                return static_cast<T> (l);
+                return String2UInt_<T, const String&> (s);
             }
 
 

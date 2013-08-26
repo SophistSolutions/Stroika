@@ -144,6 +144,17 @@ namespace   Stroika {
             long long int     String2Int (const wchar_t* s);
             long long int     String2Int (const wstring& s);
 
+
+            /**
+             * if src negative, pin to zero. (or should we throw?)
+             */
+            unsigned long long int     String2UInt (const string& s);
+            unsigned long long int     String2UInt (const String& s);
+            unsigned long long int     String2UInt (const char* s);
+            unsigned long long int     String2UInt (const wchar_t* s);
+            unsigned long long int     String2UInt (const wstring& s);
+
+
             /**
              *  Like @see String2Int() - but trims to the given int size, and pins ant numeric_limits<T>::min/max.
              */
