@@ -199,7 +199,6 @@ namespace   {
                     stringstream    tmp;
                     tmp << encodedRep;
                     VariantValue    vOut    =   DataExchangeFormat::JSON::Reader ().Read (tmp);
-                    VerifyTestResult (vOut.GetType () == v.GetType ());
                     VerifyTestResult (vOut == v);
                 }
             }
@@ -213,6 +212,20 @@ namespace   {
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9"));  //  ₩
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
+#if 0
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
+#endif
             }
         }
 
