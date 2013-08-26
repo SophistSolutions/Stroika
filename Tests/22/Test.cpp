@@ -104,7 +104,6 @@ namespace   {
                 stringstream    tmp;
                 tmp << v;
                 VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
-                VerifyTestResult (v1.GetType () == expected.GetType ());
                 VerifyTestResult (v1 == expected);
             }
 
@@ -223,7 +222,7 @@ namespace   {
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::min ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
-#if 0
+#if 1
                 CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
 #endif
             }

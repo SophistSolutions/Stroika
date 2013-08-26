@@ -180,12 +180,15 @@ namespace   {
         if (tmp.empty ()) {
             Execution::DoThrow (BadFormatException (L"JSON: no valid number found"));
         }
-        // COULD do better about types (int32 versus int64 etc)
         if (containsDot) {
             return Memory::VariantValue (Characters::String2Float (tmp));
         }
         else {
-            return Memory::VariantValue (Characters::String2Integer<long long int> (tmp));
+            // if no - use unsigned since has wider range (if no -)
+            return Characters::String (tmp).LTrim ().StartsWith (L"-") ?
+                   Memory::VariantValue (Characters::String2Integer<long long int> (tmp)) :
+                   Memory::VariantValue (Characters::String2Integer<unsigned long long int> (tmp))
+                   ;
         }
     }
 
