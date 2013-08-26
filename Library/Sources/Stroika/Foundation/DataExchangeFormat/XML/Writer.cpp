@@ -50,7 +50,7 @@ namespace   {
     void    PrettyPrint_ (unsigned long long int v, const TextOutputStream& out)
     {
         wchar_t buf[1024];
-        ::swprintf (buf, NEltsOf (buf), L"%ulld", v);
+        ::swprintf (buf, NEltsOf (buf), L"%llu", v);
         out.Write (buf);
     }
     void    PrettyPrint_ (long double v, const TextOutputStream& out)
