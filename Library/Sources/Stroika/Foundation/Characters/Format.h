@@ -20,6 +20,8 @@
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
  *
+ *		@todo	Same changes to HexString2Int() as we did with String2Int()
+ *
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
  *              But DOCUMENT in all cases!!! And maybe implement variants...
