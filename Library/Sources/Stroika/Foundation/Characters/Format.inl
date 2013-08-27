@@ -29,7 +29,6 @@ namespace   Stroika {
                 unsigned long long int  String2UInt_ (const char* s);
                 unsigned long long int  String2UInt_ (const wchar_t* s);
                 unsigned long long int  String2UInt_ (const wstring& s);
-
                 inline  long long int     String2Int_ (const char* s)
                 {
                     return String2Int_ (string (s));
@@ -42,8 +41,6 @@ namespace   Stroika {
                 {
                     return String2Int_ (String (s));
                 }
-
-
                 inline  unsigned long long int     String2UInt (const char* s)
                 {
                     return String2UInt_ (string (s));
@@ -56,9 +53,12 @@ namespace   Stroika {
                 {
                     return String2UInt_ (String (s));
                 }
-
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#pragma warning (4 : 4018)
+#endif
                 template    <typename T, typename STRING_ARG>
-                unsigned long long int     String2IntOrUInt_ (STRING_ARG s)
+                T     String2IntOrUInt_ (STRING_ARG s)
                 {
                     using   std::numeric_limits;
                     if (numeric_limits<T>::is_signed) {
@@ -80,6 +80,9 @@ namespace   Stroika {
                     }
                 }
             }
+#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
+#pragma warning (push)
+#endif
 
             template    <typename TCHAR>
             basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)
