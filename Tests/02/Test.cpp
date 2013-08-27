@@ -782,17 +782,17 @@ namespace {
     void    Test21_StringToIntEtc_ ()
     {
         {
-            VerifyTestResult (String2Int ("-3") == -3);
-            VerifyTestResult (String2Int ("3") == 3);
-            VerifyTestResult (String2Int (wstring (L"3")) == 3);
-            VerifyTestResult (String2Int (String (L"3")) == 3);
+            VerifyTestResult (String2Int<int> ("-3") == -3);
+            VerifyTestResult (String2Int<int> ("3") == 3);
+            VerifyTestResult (String2Int<int> (wstring (L"3")) == 3);
+            VerifyTestResult (String2Int<int> (String (L"3")) == 3);
         }
         {
-            VerifyTestResult (String2Int ("") == 0);
-            VerifyTestResult (String2Int (L"") == 0);
-            VerifyTestResult (String2Int (wstring (L"")) == 0);
-            VerifyTestResult (String2Int (String ()) == 0);
-            VerifyTestResult (String2Int ("     ") == 0);
+            VerifyTestResult (String2Int<int> ("") == 0);
+            VerifyTestResult (String2Int<int> (L"") == 0);
+            VerifyTestResult (String2Int<int> (wstring (L"")) == 0);
+            VerifyTestResult (String2Int<int> (String ()) == 0);
+            VerifyTestResult (String2Int<int> ("     ") == 0);
         }
         {
             VerifyTestResult (HexString2Int ("") == 0);
