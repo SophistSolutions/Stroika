@@ -33,23 +33,23 @@ namespace   Stroika {
                 {
                     return String2Int_ (string (s));
                 }
-                inline  long long int     String2Int (const wchar_t* s)
+                inline  long long int     String2Int_ (const wchar_t* s)
                 {
                     return String2Int_ (String (s));
                 }
-                inline  long long int     String2Int (const wstring& s)
+                inline  long long int     String2Int_ (const wstring& s)
                 {
                     return String2Int_ (String (s));
                 }
-                inline  unsigned long long int     String2UInt (const char* s)
+                inline  unsigned long long int     String2UInt_ (const char* s)
                 {
                     return String2UInt_ (string (s));
                 }
-                inline  unsigned long long int     String2UInt (const wchar_t* s)
+                inline  unsigned long long int     String2UInt_ (const wchar_t* s)
                 {
                     return String2UInt_ (String (s));
                 }
-                inline  unsigned long long int     String2UInt (const wstring& s)
+                inline  unsigned long long int     String2UInt_ (const wstring& s)
                 {
                     return String2UInt_ (String (s));
                 }
