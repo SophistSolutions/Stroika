@@ -195,13 +195,13 @@ String FileSystem::GetFileBaseName (const String& pathName)
     String tmp =   pathName;
     {
         size_t i = tmp.rfind ('/');
-        if (i != String::npos) {
+        if (i != String::kBadIndex) {
             tmp =  tmp.substr (i + 1);
         }
     }
     {
         size_t i = tmp.find ('.');
-        if (i != String::npos) {
+        if (i != String::kBadIndex) {
             tmp =  tmp.substr (0, i);
         }
     }

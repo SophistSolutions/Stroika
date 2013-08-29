@@ -186,7 +186,7 @@ TString FileSystem::WellKnownLocations::GetTemporaryT ()
         tempPath = AssureDirectoryPathSlashTerminated (String::FromTString (buf)).AsTString ();
     }
 #elif   qPlatform_POSIX
-    return TString (L"/tmp/");
+    return TSTR ("/tmp/");
 #else
     AssertNotImplemented ();
 #endif

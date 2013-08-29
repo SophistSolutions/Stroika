@@ -553,7 +553,7 @@ bool    FileSystem::FileExists (const String& filePath)
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    return access (filePath.AsTString(), R_OK) == 0;
+    return access (filePath.AsTString().c_str (), R_OK) == 0;
 #else
     AssertNotImplemented ();
     return false;

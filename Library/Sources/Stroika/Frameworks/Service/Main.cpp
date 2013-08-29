@@ -682,7 +682,7 @@ void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
 
 String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 {
-    return String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + fAppRep_->GetServiceDescription ().fRegistrationName + L".pid";
+    return IO::FileSystem::WellKnownLocations::GetTemporary () + fAppRep_->GetServiceDescription ().fRegistrationName + L".pid";
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
