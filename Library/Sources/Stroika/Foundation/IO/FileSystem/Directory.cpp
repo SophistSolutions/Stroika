@@ -70,6 +70,6 @@ void    Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 #if     qPlatform_Windows
     ThrowIfFalseGetLastError (::RemoveDirectoryW (fFileFullPath_.c_str ()));
 #elif   qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.c_str ()));
+    Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.AsTString ().c_str ()));
 #endif
 }

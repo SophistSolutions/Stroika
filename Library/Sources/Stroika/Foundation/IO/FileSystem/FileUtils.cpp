@@ -362,7 +362,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
             Execution::DoThrow (StringException (L"bad filename"));
         }
         struct  stat    s;
-        ThrowErrNoIfNegative (::stat (filePathName.c_str (), &s));
+        ThrowErrNoIfNegative (::stat (filePathName.AsTString ().c_str (), &s));
 
         mode_t  desiredMode =   (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
         if (S_ISDIR (s.st_mode)) {
@@ -372,7 +372,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
         int result = 0;
         // Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
         if ((s.st_mode & desiredMode) != desiredMode) {
-            result = chmod (filePathName.c_str (), desiredMode);
+            result = chmod (filePathName.AsTString ().c_str (), desiredMode);
         }
         ThrowErrNoIfNegative (result);
 #else
@@ -426,7 +426,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             // Ignore any failures - and just let the report of failure (if any must result) come from original basic
             // CreateDirectory call.
             vector<String> paths;
-            size_t  index   =   directoryPath.find (TSTR ("/"));
+            size_t  index   =   directoryPath.find ('/');
             while (index != -1 and index + 1 < directoryPath.length ()) {
                 if (index != 0) {
                     String parentPath = directoryPath.substr (0, index);
@@ -439,7 +439,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             // Now go in reverse order - checking if the exist - and if so - stop going back
             for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
                 //NB: this avoids matching files - we know dir - cuz name ends in /
-                if (access(i->c_str (), R_OK) == 0) {
+                if (access(i->AsTString ().c_str (), R_OK) == 0) {
                     // ignore this one
                 }
                 else {
@@ -454,7 +454,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             }
         }
         // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
-        if (mkdir (directoryPath.c_str (), 0755) != 0) {
+        if (::mkdir (directoryPath.AsTString ().c_str (), 0755) != 0) {
             if (errno != 0 and errno != EEXIST) {
                 Execution::DoThrow (errno_ErrorException (errno));
             }
@@ -553,7 +553,7 @@ bool    FileSystem::FileExists (const String& filePath)
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    return access(filePath, R_OK) == 0;
+    return access (filePath.AsTString(), R_OK) == 0;
 #else
     AssertNotImplemented ();
     return false;
@@ -575,14 +575,14 @@ bool    FileSystem::DirectoryExists (const String& filePath)
 {
 #if     qPlatform_Windows
     RequireNotNull (filePath);
-    DWORD attribs = ::GetFileAttributes (filePath.AsTString ().c_str ());
+    DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
         return false;
     }
     return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 #elif   qPlatform_POSIX
     struct  stat    s;
-    if (::stat (filePath, &s) < 0) {
+    if (::stat (filePath.AsTString ().c_str (), &s) < 0) {
         // If file doesn't exist - or other error reading, just say not exist
         return false;
     }
