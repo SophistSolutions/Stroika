@@ -22,18 +22,18 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName)
+    wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
             return Characters::Format (L"File busy");
         }
         else {
-            return Characters::Format (L"File busy: '%.200s'", Characters::LimitLength (Characters::TString2Wide (fileName), 100, false).c_str ());
+            return Characters::Format (L"File busy: '%.200s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }
 
-FileBusyException::FileBusyException (const TString& fileName)
+FileBusyException::FileBusyException (const String& fileName)
     : StringException (mkMessage_ (fileName))
     , fFileName_ (fileName)
 {

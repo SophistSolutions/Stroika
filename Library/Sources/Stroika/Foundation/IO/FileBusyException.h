@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/TString.h"
+#include    "../Characters/String.h"
 #include    "../Execution/StringException.h"
 
 
@@ -16,18 +16,18 @@ namespace   Stroika {
         namespace   IO {
 
 
-            using   Characters::TString;
+            using   Characters::String;
 
 
             class   FileBusyException : public Execution::StringException {
             public:
-                FileBusyException (const TString& fileName = TString ());
+                FileBusyException (const String& fileName = String ());
 
             public:
-                nonvirtual  TString         GetFileName () const;
+                nonvirtual  String         GetFileName () const;
 
             private:
-                TString fFileName_;
+                String fFileName_;
             };
 
 

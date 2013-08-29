@@ -20,18 +20,18 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName)
+    wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
             return Characters::Format (L"Invalid file format");
         }
         else {
-            return Characters::Format (L"Invalid file format: '%.200s'", Characters::LimitLength (Characters::TString2Wide (fileName), 100, false).c_str ());
+            return Characters::Format (L"Invalid file format: '%.200s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }
 
-FileFormatException::FileFormatException (const TString& fileName)
+FileFormatException::FileFormatException (const String& fileName)
     : StringException (mkMessage_ (fileName))
     , fFileName_ (fileName)
 {

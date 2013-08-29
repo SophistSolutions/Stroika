@@ -6,7 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../../Characters/TString.h"
+#include    "../../Characters/String.h"
 
 
 
@@ -23,7 +23,7 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-                using   Characters::TString;
+                using   Characters::String;
 
 
                 // These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
@@ -35,26 +35,26 @@ namespace   Stroika {
                 namespace   WellKnownLocations {
 
 
-                    TString GetMyDocuments (bool createIfNotPresent = true);
+                    String GetMyDocuments (bool createIfNotPresent = true);
 
 
                     /*
                      * Return directory which contains top-level application data - which should be persistent. Store long-term applicaiton
                      * data (which is not user specific) such as databases etc here.
                      */
-                    TString GetApplicationData (bool createIfNotPresent = true);
+                    String GetApplicationData (bool createIfNotPresent = true);
 
 
                     /*
                      * This returns the directory where an appliation may write temporary files - files which should not
                      * be preserved across reboots (though the OS may not enforce this). This directory may or may not be current-user-specific.
                      */
-                    TString GetTemporary ();
+                    String GetTemporary ();
 
 
 #if         qPlatform_Windows
                     // empty string if doesn't exist
-                    TString GetWinSxS ();
+                    String GetWinSxS ();
 #endif
 
 

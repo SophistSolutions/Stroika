@@ -45,7 +45,9 @@ String Execution::GetEXEDir ()
  */
 TString Execution::GetEXEDirT ()
 {
-    return IO::FileSystem::GetFileDirectory (GetEXEPath ().AsTString ());
+    // Currently this impl depends on String - we may want to redo one cleanly without any dependency on String()...
+    // Docs call for this - but I'm not sure its needed
+    return IO::FileSystem::GetFileDirectory (GetEXEPath ()).AsTString ();
 }
 
 

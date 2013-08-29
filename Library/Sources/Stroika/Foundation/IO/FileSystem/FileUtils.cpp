@@ -114,7 +114,7 @@ FileSystem::Private::FileUtilsModuleData_::~FileUtilsModuleData_ ()
  ************************ FileSystem::CheckFileAccess ***************************
  ********************************************************************************
  */
-void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanRead, bool checkCanWrite)
+void    FileSystem::CheckFileAccess (const String& fileFullPath, bool checkCanRead, bool checkCanWrite)
 {
     // quick hack - not fully implemented - but since advsiory only - not too important...
 
@@ -133,10 +133,10 @@ void    FileSystem::CheckFileAccess (const TString& fileFullPath, bool checkCanR
 
 /*
  ********************************************************************************
- ********************************* FileSystem::ResolveShortcut **************************
+ ************************* FileSystem::ResolveShortcut **************************
  ********************************************************************************
  */
-TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
+String FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
 {
 #if     qPlatform_Windows
     // NB: this requires COM, and for now - I don't want the support module depending on the COM module,
@@ -163,7 +163,7 @@ TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
             return path2FileOrShortcut;
         }
         if (SUCCEEDED (psl->QueryInterface (IID_IPersistFile, (LPVOID*)&ppf))) {
-            if (SUCCEEDED (ppf->Load (TString2Wide (path2FileOrShortcut).c_str (), STGM_READ))) {
+            if (SUCCEEDED (ppf->Load (path2FileOrShortcut.c_str (), STGM_READ))) {
                 // Resolve the link, this may post UI to find the link
                 if (SUCCEEDED (psl->Resolve(0, SLR_NO_UI))) {
                     TChar   path[MAX_PATH + 1];
@@ -198,7 +198,7 @@ TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
 #else
     // interpret as slink follow - readlink
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 
@@ -213,10 +213,10 @@ TString FileSystem::ResolveShortcut (const TString& path2FileOrShortcut)
 
 /*
  ********************************************************************************
- ************************* FileSystem::FileSizeToDisplayString **************************
+ ******************* FileSystem::FileSizeToDisplayString ************************
  ********************************************************************************
  */
-wstring FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
+String FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
 {
     if (bytes < 1000) {
         return Format (L"%d bytes", static_cast<int> (bytes));
@@ -235,10 +235,10 @@ wstring FileSystem::FileSizeToDisplayString (FileOffset_t bytes)
 
 /*
  ********************************************************************************
- *********************************** FileSystem::GetFileSize ****************************
+ *************************** FileSystem::GetFileSize ****************************
  ********************************************************************************
  */
-FileOffset_t    FileSystem::GetFileSize (const TString& fileName)
+FileOffset_t    FileSystem::GetFileSize (const String& fileName)
 {
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
@@ -258,10 +258,10 @@ FileOffset_t    FileSystem::GetFileSize (const TString& fileName)
 
 /*
  ********************************************************************************
- ***************************** FileSystem::GetFileLastModificationDate ******************
+ ********************* FileSystem::GetFileLastModificationDate ******************
  ********************************************************************************
  */
-DateTime        FileSystem::GetFileLastModificationDate (const TString& fileName)
+DateTime        FileSystem::GetFileLastModificationDate (const String& fileName)
 {
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
@@ -281,10 +281,10 @@ DateTime        FileSystem::GetFileLastModificationDate (const TString& fileName
 
 /*
  ********************************************************************************
- ******************************* FileSystem::GetFileLastAccessDate **********************
+ *********************** FileSystem::GetFileLastAccessDate **********************
  ********************************************************************************
  */
-DateTime    FileSystem::GetFileLastAccessDate (const TString& fileName)
+DateTime    FileSystem::GetFileLastAccessDate (const String& fileName)
 {
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
@@ -311,7 +311,7 @@ DateTime    FileSystem::GetFileLastAccessDate (const TString& fileName)
  *      Add 'Everyone' to have FULL ACCESS to the given argument file
  *
  */
-void    FileSystem::SetFileAccessWideOpened (const TString& filePathName)
+void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
 {
     try {
 #if     qPlatform_Windows
@@ -394,7 +394,7 @@ void    FileSystem::SetFileAccessWideOpened (const TString& filePathName)
  ************************ FileSystem::CreateDirectory ***************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectory (const TString& directoryPath, bool createParentComponentsIfNeeded)
+void    FileSystem::CreateDirectory (const String& directoryPath, bool createParentComponentsIfNeeded)
 {
     /*
      * TODO:
@@ -406,9 +406,9 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
             // walk path and break into parts, and from top down - try to create parent directory structure.
             // Ignore any failures - and just let the report of failure (if any must result) come from original basic
             // CreateDirectory call.
-            size_t  index   =   directoryPath.find (TSTR ("\\"));
+            size_t  index   =   directoryPath.find ('\\');
             while (index != -1 and index + 1 < directoryPath.length ()) {
-                TString parentPath = directoryPath.substr (0, index);
+                String parentPath = directoryPath.substr (0, index);
                 IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
                 index = directoryPath.find ('\\', index + 1);
             }
@@ -425,11 +425,11 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
             // walk path and break into parts, and from top down - try to create parent directory structure.
             // Ignore any failures - and just let the report of failure (if any must result) come from original basic
             // CreateDirectory call.
-            vector<TString> paths;
+            vector<String> paths;
             size_t  index   =   directoryPath.find (TSTR ("/"));
             while (index != -1 and index + 1 < directoryPath.length ()) {
                 if (index != 0) {
-                    TString parentPath = directoryPath.substr (0, index);
+                    String parentPath = directoryPath.substr (0, index);
                     //IgnoreExceptionsForCall (CreateDirectory (parentPath, false));
                     paths.push_back (parentPath);
                 }
@@ -477,7 +477,7 @@ void    FileSystem::CreateDirectory (const TString& directoryPath, bool createPa
  ******************* FileSystem::CreateDirectoryForFile *************************
  ********************************************************************************
  */
-void    FileSystem::CreateDirectoryForFile (const TString& filePath)
+void    FileSystem::CreateDirectoryForFile (const String& filePath)
 {
     if (filePath.empty ()) {
         // NOT sure this is the best exception to throw here?
@@ -500,7 +500,7 @@ void    FileSystem::CreateDirectoryForFile (const TString& filePath)
  ************************** FileSystem::GetVolumeName ***************************
  ********************************************************************************
  */
-TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath)
+String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 {
 #if     qPlatform_Windows
     // SEM_FAILCRITICALERRORS needed to avoid dialog in call to GetVolumeInformation
@@ -527,7 +527,7 @@ TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath)
 #else
     AssertNotImplemented ();
 #endif
-    return TString ();
+    return String ();
 }
 
 
@@ -541,11 +541,11 @@ TString FileSystem::GetVolumeName (const TString& driveLetterAbsPath)
  ***************************** FileSystem::FileExists ***************************
  ********************************************************************************
  */
-bool    FileSystem::FileExists (const TChar* filePath)
+bool    FileSystem::FileExists (const String& filePath)
 {
 #if     qPlatform_Windows
     RequireNotNull (filePath);
-    DWORD attribs = ::GetFileAttributes (filePath);
+    DWORD attribs = ::GetFileAttributes (filePath.AsTString ().c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
         return false;
     }
@@ -560,11 +560,6 @@ bool    FileSystem::FileExists (const TChar* filePath)
 #endif
 }
 
-bool    FileSystem::FileExists (const TString& filePath)
-{
-    return FileExists (filePath.c_str ());
-}
-
 
 
 
@@ -576,11 +571,11 @@ bool    FileSystem::FileExists (const TString& filePath)
  ************************** FileSystem::DirectoryExists *************************
  ********************************************************************************
  */
-bool    FileSystem::DirectoryExists (const TChar* filePath)
+bool    FileSystem::DirectoryExists (const String& filePath)
 {
 #if     qPlatform_Windows
     RequireNotNull (filePath);
-    DWORD attribs = ::GetFileAttributes (filePath);
+    DWORD attribs = ::GetFileAttributes (filePath.AsTString ().c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
         return false;
     }
@@ -598,11 +593,6 @@ bool    FileSystem::DirectoryExists (const TChar* filePath)
 #endif
 }
 
-bool    FileSystem::DirectoryExists (const TString& filePath)
-{
-    return DirectoryExists (filePath.c_str ());
-}
-
 
 
 
@@ -611,10 +601,10 @@ bool    FileSystem::DirectoryExists (const TString& filePath)
 
 /*
  ********************************************************************************
- *************************************** FileSystem::CopyFile ***************************
+ ******************************* FileSystem::CopyFile ***************************
  ********************************************************************************
  */
-void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath)
+void    FileSystem::CopyFile (const String& srcFile, const String& destPath)
 {
 #if     qPlatform_Windows
 // see if can be/should be rewritten to use Win32 API of same name!!!
@@ -624,7 +614,7 @@ void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath)
         Execution::DoThrow (FileAccessException (srcFile, IO::FileAccessMode::eRead_FAM));
     }
     CreateDirectoryForFile (destPath);
-    ThrowIfFalseGetLastError (::CopyFile (destPath.c_str (), srcFile.c_str (), false));
+    ThrowIfFalseGetLastError (::CopyFile (destPath.AsTString ().c_str (), srcFile.AsTString ().c_str (), false));
 #else
     AssertNotImplemented ();
 #endif
@@ -640,18 +630,18 @@ void    FileSystem::CopyFile (const TString& srcFile, const TString& destPath)
 
 /*
  ********************************************************************************
- ************************************* FileSystem::FindFiles ****************************
+ ***************************** FileSystem::FindFiles ****************************
  ********************************************************************************
  */
-vector<TString> FileSystem::FindFiles (const TString& path, const TString& fileNameToMatch)
+vector<String> FileSystem::FindFiles (const String& path, const String& fileNameToMatch)
 {
-    vector<TString> result;
+    vector<String> result;
     if (path.empty ()) {
         return result;
     }
 #if     qPlatform_Windows
-    TString usePath         =   AssureDirectoryPathSlashTerminated (path);
-    TString matchFullPath   =   usePath + (fileNameToMatch.empty () ? TSTR ("*") : fileNameToMatch);
+    String usePath         =   AssureDirectoryPathSlashTerminated (path);
+    String matchFullPath   =   usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
     HANDLE hFind = ::FindFirstFile (matchFullPath.c_str (), &fd);
@@ -686,18 +676,18 @@ vector<TString> FileSystem::FindFiles (const TString& path, const TString& fileN
 
 /*
  ********************************************************************************
- ********************************* FileSystem::FindFilesOneDirUnder *********************
+ ************************* FileSystem::FindFilesOneDirUnder *********************
  ********************************************************************************
  */
-vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TString& fileNameToMatch)
+vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const String& fileNameToMatch)
 {
     if (path.empty ()) {
-        return vector<TString> ();
+        return vector<String> ();
     }
 
-    set<TString>    resultSet;
+    set<String>    resultSet;
 #if     qPlatform_Windows
-    TString usePath =   AssureDirectoryPathSlashTerminated (path);
+    String usePath =   AssureDirectoryPathSlashTerminated (path);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
     HANDLE hFind = ::FindFirstFile ((usePath + TSTR ("*")).c_str (), &fd);
@@ -705,12 +695,12 @@ vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TSt
         do {
             TString fileName = (LPCTSTR) &fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                TString fileName = (LPCTSTR) &fd.cFileName;
-                const   TString kDOT    =   TSTR (".");
-                const   TString kDOTDOT =   TSTR ("..");
+                String fileName = String::FromTString ((LPCTSTR) &fd.cFileName);
+                const   String kDOT    =   L".";
+                const   String kDOTDOT =   L"..";
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
-                    vector<TString> subdirFiles =   FindFiles (usePath + fileName, fileNameToMatch);
-                    resultSet = resultSet + set<TString> (subdirFiles.begin (), subdirFiles.end ());
+                    vector<String> subdirFiles =   FindFiles (usePath + fileName, fileNameToMatch);
+                    resultSet = resultSet + set<String> (subdirFiles.begin (), subdirFiles.end ());
                 }
             }
         }
@@ -720,7 +710,7 @@ vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TSt
 #else
     AssertNotImplemented ();
 #endif
-    return vector<TString> (resultSet.begin (), resultSet.end ());
+    return vector<String> (resultSet.begin (), resultSet.end ());
 }
 
 
@@ -732,16 +722,16 @@ vector<TString> FileSystem::FindFilesOneDirUnder (const TString& path, const TSt
 
 /*
  ********************************************************************************
- ************************* FileSystem::DeleteAllFilesInDirectory ************************
+ ***************** FileSystem::DeleteAllFilesInDirectory ************************
  ********************************************************************************
  */
-void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreErrors)
+void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreErrors)
 {
 #if     qPlatform_Windows
     if (path.empty ()) {
         Execution::DoThrow (Execution::Platform::Windows::Exception (ERROR_INVALID_NAME));
     }
-    TString dir2Use =   AssureDirectoryPathSlashTerminated (path);
+    String dir2Use =   AssureDirectoryPathSlashTerminated (path);
 
     WIN32_FIND_DATA fd;
     (void)::memset (&fd, 0, sizeof (fd));
@@ -749,15 +739,15 @@ void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreE
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
-                TString fileName = fd.cFileName;
+                String fileName = String::FromTString (fd.cFileName);
                 if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    if ((fileName != TSTR (".")) and (fileName != TSTR (".."))) {
-                        DeleteAllFilesInDirectory (dir2Use + fileName + TSTR ("\\"), ignoreErrors);
+                    if ((fileName != TSTR (".")) and (fileName != L"..")) {
+                        DeleteAllFilesInDirectory (dir2Use + fileName + L"\\", ignoreErrors);
                         try {
                             ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).c_str ()));
                         }
                         catch (...) {
-                            DbgTrace (TSTR ("Exception %s calling RemoveDirectory on file '%s'"), ignoreErrors ? TSTR ("(ignored)") : TSTR (""), (dir2Use + fileName).c_str ());
+                            DbgTrace ("Exception %s calling RemoveDirectory on file '%s'", ignoreErrors ? L"(ignored)" : L"", (dir2Use + fileName).c_str ());
                             if (!ignoreErrors) {
                                 Execution::DoReThrow ();
                             }
@@ -766,7 +756,7 @@ void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreE
                 }
                 else {
                     try {
-                        ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).c_str ()));
+                        ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).AsTString ().c_str ()));
                     }
                     catch (...) {
                         DbgTrace (TSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors ? TSTR ("(ignored)") : TSTR (""), (dir2Use + fileName).c_str ());
@@ -799,13 +789,13 @@ void    FileSystem::DeleteAllFilesInDirectory (const TString& path, bool ignoreE
  ********************* FileSystem::DirectoryChangeWatcher ***********************
  ********************************************************************************
  */
-FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const TString& directoryName, bool watchSubTree, DWORD notifyFilter):
-    fDirectory (directoryName),
-    fWatchSubTree (watchSubTree),
-    fThread (),
-    fDoneEvent (::CreateEvent (nullptr, false, false, nullptr)),
-    fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter)),
-    fQuitting (false)
+FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& directoryName, bool watchSubTree, DWORD notifyFilter)
+    : fDirectory (directoryName)
+    , fWatchSubTree (watchSubTree)
+    , fThread ()
+    , fDoneEvent (::CreateEvent (nullptr, false, false, nullptr))
+    , fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter))
+    , fQuitting (false)
 {
     fThread = Execution::Thread (bind (&ThreadProc, this));
     fThread.SetThreadName (L"DirectoryChangeWatcher");
@@ -860,7 +850,7 @@ AppTempFileManager::AppTempFileManager ():
     fTmpDir ()
 {
 #if     qPlatform_Windows
-    TString tmpDir  =   WellKnownLocations::GetTemporary ();
+    String tmpDir  =   WellKnownLocations::GetTemporary ();
 
     TChar   exePath[MAX_PATH];
     memset (exePath, 0, sizeof exePath);
@@ -896,7 +886,7 @@ AppTempFileManager::AppTempFileManager ():
     tmpDir += TSTR ("HealthFrameWorks\\");
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
-        TString d   =   tmpDir + Format (TSTR ("%s-%d-%d\\"), exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
+        String d   =   tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
         if (not ::CreateDirectory (d.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error == ERROR_ALREADY_EXISTS) {
@@ -929,10 +919,10 @@ AppTempFileManager::~AppTempFileManager ()
 #endif
 }
 
-TString AppTempFileManager::GetTempFile (const TString& fileNameBase)
+String AppTempFileManager::GetTempFile (const String& fileNameBase)
 {
 #if     qPlatform_Windows
-    TString fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
+    String fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
     FileSystem::CreateDirectoryForFile (fn);
 
     TString::size_type  suffixStart = fn.rfind ('.');
@@ -942,7 +932,7 @@ TString AppTempFileManager::GetTempFile (const TString& fileNameBase)
     }
     int attempts = 0;
     while (attempts < 5) {
-        TString s = fn;
+        wstring s = fn.As<wstring> ();
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
         s.insert (suffixStart, ToTString (buf));
@@ -961,19 +951,19 @@ TString AppTempFileManager::GetTempFile (const TString& fileNameBase)
     Execution::DoThrow (StringException (L"Unknown error creating file"), "AppTempFileManager::GetTempFile (): failed to create tempfile");
 }
 
-TString AppTempFileManager::GetTempDir (const TString& fileNameBase)
+String AppTempFileManager::GetTempDir (const String& fileNameBase)
 {
-    TString fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
+    String fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
 
     int attempts = 0;
     while (attempts < 5) {
-        TString s = fn;
+        String s = fn;
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
-        s.append (ToTString  (buf));
+        s += String::FromAscii (buf);
         if (not DirectoryExists (s)) {
             CreateDirectory (s, true);
-            DbgTrace (TSTR ("AppTempFileManager::GetTempDir (): returning '%s'"), s.c_str ());
+            DbgTrace ("AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
             return s;
         }
     }
@@ -993,7 +983,7 @@ TString AppTempFileManager::GetTempDir (const TString& fileNameBase)
  **************************** TempFileLibrarian *********************************
  ********************************************************************************
  */
-TempFileLibrarian::TempFileLibrarian (const TString& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
+TempFileLibrarian::TempFileLibrarian (const String& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel, bool deleteFilesOnDescruction)
     : fFiles ()
     , fPrivateDirectory (privateDirectory)
     , fMakeTMPDIRRel (makeTMPDIRRel)
@@ -1027,10 +1017,10 @@ TempFileLibrarian::~TempFileLibrarian ()
 #endif
 }
 
-TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
+String TempFileLibrarian::GetTempFile (const String& fileNameBase)
 {
 #if     qPlatform_Windows
-    TString fn  =   fileNameBase;
+    String fn  =   fileNameBase;
     if (fn.find (':') == -1) {
         if (fPrivateDirectory.size () > 0) {
             fn = fPrivateDirectory + TSTR ("\\") + fn;
@@ -1050,7 +1040,7 @@ TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 
     int attempts = 0;
     while (attempts < 5) {
-        TString s = fn;
+        wstring s = fn.As<wstring> ();
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
         s.insert (suffixStart, ToTString (buf));
@@ -1070,10 +1060,10 @@ TString TempFileLibrarian::GetTempFile (const TString& fileNameBase)
 #endif
 }
 
-TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
+String TempFileLibrarian::GetTempDir (const String& fileNameBase)
 {
 #if     qPlatform_Windows
-    TString fn  =   fileNameBase;
+    String fn  =   fileNameBase;
     if (fn.find (':') == -1) {
         if (fPrivateDirectory.size () > 0) {
             fn = fPrivateDirectory + TSTR ("\\") + fn;
@@ -1085,7 +1075,7 @@ TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
 
     int attempts = 0;
     while (attempts < 5) {
-        TString s = fn;
+        wstring s = fn.As<wstring> ();
         char    buf[100];
         {
             // man page doesn't gaurantee thread-safety of rand ()
@@ -1117,7 +1107,7 @@ TString TempFileLibrarian::GetTempDir (const TString& fileNameBase)
  ************************************ FileSystem::ScopedTmpDir **************************
  ********************************************************************************
  */
-ScopedTmpDir::ScopedTmpDir (const TString& fileNameBase)
+ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
     : fTmpDir (AppTempFileManager::Get ().GetTempDir (fileNameBase))
 {
 }
@@ -1145,10 +1135,10 @@ ScopedTmpDir::~ScopedTmpDir ()
 
 /*
  ********************************************************************************
- ******************************* FileSystem::ScopedTmpFile ******************************
+ *********************** FileSystem::ScopedTmpFile ******************************
  ********************************************************************************
  */
-ScopedTmpFile::ScopedTmpFile (const TString& fileNameBase):
+ScopedTmpFile::ScopedTmpFile (const String& fileNameBase):
     fTmpFile (AppTempFileManager::Get ().GetTempFile (fileNameBase))
 {
 }
@@ -1175,10 +1165,10 @@ ScopedTmpFile::~ScopedTmpFile ()
 
 /*
  ********************************************************************************
- ***************************** FileSystem::ThroughTmpFileWriter *************************
+ ************************ FileSystem::ThroughTmpFileWriter **********************
  ********************************************************************************
  */
-ThroughTmpFileWriter::ThroughTmpFileWriter (const TString& realFileName, const TString& tmpSuffix)
+ThroughTmpFileWriter::ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix)
     : fRealFilePath (realFileName)
     , fTmpFilePath (realFileName + tmpSuffix)
 {
@@ -1239,7 +1229,7 @@ void    ThroughTmpFileWriter::Commit ()
  ************************************* FileReader *******************************
  ********************************************************************************
  */
-FileReader::FileReader (const TChar* fileName)
+FileReader::FileReader (const String& fileName)
 {
     RequireNotNull (fileName);
 #if     qPlatform_Windows
@@ -1249,7 +1239,7 @@ FileReader::FileReader (const TChar* fileName)
     if (kUseWIN32FILEIOAPI) {
         // OPEN
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-        HANDLE  fd = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        HANDLE  fd = ::CreateFile (fileName.AsTString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         ThrowIfFalseGetLastError (fd != INVALID_HANDLE_VALUE);
 
         Byte*   fileData    =   nullptr;
@@ -1281,7 +1271,7 @@ FileReader::FileReader (const TChar* fileName)
     else {
         // OPEN
         int fd  =   -1;
-        ThrowIfError_errno_t (::_tsopen_s (&fd, fileName, O_RDONLY | O_BINARY, _SH_DENYNO, 0));
+        ThrowIfError_errno_t (::_tsopen_s (&fd, fileName.AsTString ().c_str (), O_RDONLY | O_BINARY, _SH_DENYNO, 0));
         ThrowIfFalseGetLastError (fd != -1);
 
         // Get LENGTH
@@ -1333,11 +1323,11 @@ FileReader::~FileReader ()
  *********************************** FileWriter *********************************
  ********************************************************************************
  */
-FileWriter::FileWriter (const TChar* fileName)
+FileWriter::FileWriter (const String& fileName)
     : fFD (-1)
 {
 #if     qPlatform_Windows
-    ThrowIfError_errno_t (::_tsopen_s (&fFD, fileName, _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE));
+    ThrowIfError_errno_t (::_tsopen_s (&fFD, fileName.AsTString ().c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE));
     ThrowIfFalseGetLastError (fFD != -1);
 #else
     AssertNotImplemented ();
@@ -1375,7 +1365,7 @@ void    FileWriter::Append (const Byte* data, size_t count)
  ***************************** MemoryMappedFileReader ***************************
  ********************************************************************************
  */
-MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
+MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     : fFileDataStart (nullptr)
     , fFileDataEnd (nullptr)
 #if         qPlatform_Windows
@@ -1386,7 +1376,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const TChar* fileName)
 #if         qPlatform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-        fFileHandle = ::CreateFile (fileName, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        fFileHandle = ::CreateFile (fileName.AsTString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         ThrowIfFalseGetLastError (fFileHandle != INVALID_HANDLE_VALUE);
         DWORD   fileSize    =   ::GetFileSize (fFileHandle, nullptr);
         if (fileSize != 0) {
@@ -1467,7 +1457,7 @@ AdjustSysErrorMode::~AdjustSysErrorMode ()
  ************************ DirectoryContentsIterator *****************************
  ********************************************************************************
  */
-DirectoryContentsIterator::DirectoryContentsIterator (const TString& pathExpr)
+DirectoryContentsIterator::DirectoryContentsIterator (const String& pathExpr)
 #if         qPlatform_Windows
     : fHandle (INVALID_HANDLE_VALUE)
     , fFindFileData ()
@@ -1508,14 +1498,14 @@ bool    DirectoryContentsIterator::NotAtEnd () const
 #endif
 }
 
-TString DirectoryContentsIterator::operator *() const
+String DirectoryContentsIterator::operator *() const
 {
     Ensure (NotAtEnd ());
 #if         qPlatform_Windows
     return fDirectory + fFindFileData.cFileName;
 #else
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 

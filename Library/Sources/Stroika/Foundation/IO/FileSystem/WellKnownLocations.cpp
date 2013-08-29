@@ -40,7 +40,7 @@ using   Characters::TChar;
  ************ FileSystem::WellKnownLocations::GetMyDocuments ********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
+String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
     TChar   fileBuf[MAX_PATH];
@@ -57,16 +57,16 @@ TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     }
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or DirectoryExists (result));
-    return result;
+    return String::FromTString (result);
 #elif   qPlatform_POSIX
     const char* pPath = getenv ("HOME");
     if (pPath == nullptr) {
         return TString ();
     }
-    return pPath;
+    return String::FromTString (pPath);
 #else
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 
@@ -80,7 +80,7 @@ TString FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
  ******** FileSystem::WellKnownLocations::GetApplicationData ********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
+String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
     TChar   fileBuf[MAX_PATH];
@@ -97,12 +97,12 @@ TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPres
     }
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or DirectoryExists (result));
-    return result;
+    return String::FromTString (result);
 #elif   qPlatform_POSIX
-    return TSTR ("/var/lib/");
+    return L"/var/lib/";
 #else
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 
@@ -117,17 +117,17 @@ TString FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPres
  ************** FileSystem::WellKnownLocations::GetWinSxS ***********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetWinSxS ()
+String FileSystem::WellKnownLocations::GetWinSxS ()
 {
     TChar   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_WINDOWS, false));
-    TString result = fileBuf;
+    String result = String::FromTString (fileBuf);
     // Assure non-empty result
     if (result.empty ()) {
         return result;
     }
-    result = AssureDirectoryPathSlashTerminated (result) + TSTR ("WinSxS");
+    result = AssureDirectoryPathSlashTerminated (result) + L"WinSxS";
     result = AssureDirectoryPathSlashTerminated (result);
     if (not DirectoryExists (result)) {
         result.clear ();
@@ -147,9 +147,9 @@ TString FileSystem::WellKnownLocations::GetWinSxS ()
  ************* FileSystem::WellKnownLocations::GetTemporary *********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetTemporary ()
+String FileSystem::WellKnownLocations::GetTemporary ()
 {
-    TString tempPath;
+    String tempPath;
 #if     qPlatform_Windows
     TChar   buf[1024];
     if (::GetTempPath (NEltsOf (buf), buf) == 0) {
@@ -159,7 +159,7 @@ TString FileSystem::WellKnownLocations::GetTemporary ()
         tempPath = buf;
     }
 #elif   qPlatform_POSIX
-    return TSTR ("/tmp/");
+    return String (L"/tmp/");
 #else
     AssertNotImplemented ();
 #endif

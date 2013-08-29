@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    "../../Characters/TString.h"
+#include    "../../Characters/String.h"
 #include    "../../Memory/SmallStackBuffer.h"
 
 #include    "PathName.h"
@@ -41,21 +41,20 @@ const   TChar   FileSystem::kPathComponentSeperator =   '/';
  ************** FileSystem::AssureDirectoryPathSlashTerminated ******************
  ********************************************************************************
  */
-TString FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath)
+String FileSystem::AssureDirectoryPathSlashTerminated (const String& dirPath)
 {
     if (dirPath.empty ()) {
         AssertNotReached ();    // not sure if this is an error or not. Not sure how code used.
         // put assert in there to find out... Probably should THROW!
         //      -- LGP 2009-05-12
-        return TString (&kPathComponentSeperator, &kPathComponentSeperator + 1);
+        return String (&kPathComponentSeperator, &kPathComponentSeperator + 1);
     }
     else {
-        //TChar lastChar = dirPath.back (); // try later - or not deendingon other code chnages - but didn;t' workw th gcc 4.5
-        TChar   lastChar = dirPath[dirPath.size () - 1];
+        Character   lastChar = dirPath[dirPath.size () - 1];
         if (lastChar == kPathComponentSeperator) {
             return dirPath;
         }
-        TString result  =   dirPath;
+        String result  =   dirPath;
         result += kPathComponentSeperator;
         return result;
     }
@@ -72,9 +71,9 @@ TString FileSystem::AssureDirectoryPathSlashTerminated (const TString& dirPath)
  *********************** FileSystem::SafeFilenameChars **************************
  ********************************************************************************
  */
-TString FileSystem::SafeFilenameChars (const TString& s)
+String FileSystem::SafeFilenameChars (const String& s)
 {
-    wstring tmp =   TString2Wide (s);   // analyze as wide-char string so we don't mis-identify
+    wstring tmp =   s.As<wstring> ();   // analyze as wide-char string so we don't mis-identify
     // characters (by looking at lead bytes etc)
 Again:
     for (auto i = tmp.begin (); i != tmp.end (); ++i) {
@@ -93,7 +92,7 @@ Again:
                 goto Again;
         }
     }
-    return Wide2TString (tmp);
+    return tmp;
 }
 
 
@@ -108,7 +107,7 @@ Again:
  ********************* FileSystem::AssureLongFileName ***************************
  ********************************************************************************
  */
-TString FileSystem::AssureLongFileName (const TString& fileName)
+String FileSystem::AssureLongFileName (const String& fileName)
 {
 #if     qPlatform_Windows
     DWORD   r   =   ::GetLongPathName (fileName.c_str (), nullptr, 0);
@@ -132,10 +131,10 @@ TString FileSystem::AssureLongFileName (const TString& fileName)
  ************************** FileSystem::GetFileSuffix ***************************
  ********************************************************************************
  */
-TString FileSystem::GetFileSuffix (const TString& fileName)
+String FileSystem::GetFileSuffix (const String& fileName)
 {
 #if     qPlatform_Windows
-    TString useFName    =   fileName;
+    String useFName    =   fileName;
 
     {
         TChar   fNameBuf[4 * MAX_PATH ];
@@ -157,9 +156,8 @@ TString FileSystem::GetFileSuffix (const TString& fileName)
     // returns leading '.' in name...
     return ext;
 #else
-
     AssertNotImplemented ();
-    return TString ();
+    return String ();
 #endif
 }
 
@@ -171,10 +169,10 @@ TString FileSystem::GetFileSuffix (const TString& fileName)
  ************************ FileSystem::GetFileBaseName ***************************
  ********************************************************************************
  */
-TString FileSystem::GetFileBaseName (const TString& pathName)
+String FileSystem::GetFileBaseName (const String& pathName)
 {
 #if     qPlatform_Windows
-    TString useFName    =   pathName;
+    String useFName    =   pathName;
 
     {
         TChar   fNameBuf[4 * MAX_PATH ];
@@ -192,18 +190,18 @@ TString FileSystem::GetFileBaseName (const TString& pathName)
     memset (fname, 0, sizeof (fname));
     memset (ext, 0, sizeof (ext));
     ::_tsplitpath_s (useFName.c_str (), drive, dir, fname, ext);
-    return fname;
+    return String::FromTString (fname);
 #elif   qPlatform_POSIX
-    TString tmp =   pathName;
+    String tmp =   pathName;
     {
         size_t i = tmp.rfind ('/');
-        if (i != TString::npos) {
+        if (i != String::npos) {
             tmp =  tmp.substr (i + 1);
         }
     }
     {
         size_t i = tmp.find ('.');
-        if (i != TString::npos) {
+        if (i != String::npos) {
             tmp =  tmp.substr (0, i);
         }
     }
@@ -222,10 +220,10 @@ TString FileSystem::GetFileBaseName (const TString& pathName)
  ************************ FileSystem::StripFileSuffix ***************************
  ********************************************************************************
  */
-TString FileSystem::StripFileSuffix (const TString& pathName)
+String FileSystem::StripFileSuffix (const String& pathName)
 {
-    TString useFName    =   pathName;
-    TString fileSuffix  =   GetFileSuffix (pathName);
+    String useFName    =   pathName;
+    String fileSuffix  =   GetFileSuffix (pathName);
     if (useFName.length () > fileSuffix.length ()) {
         return useFName.substr (0, useFName.length () - fileSuffix.length ());
     }
@@ -244,12 +242,12 @@ TString FileSystem::StripFileSuffix (const TString& pathName)
  ************************ FileSystem::GetFileDirectory **************************
  ********************************************************************************
  */
-TString FileSystem::GetFileDirectory (const TString& pathName)
+String FileSystem::GetFileDirectory (const String& pathName)
 {
     // could use splitpath, but this maybe better, since works with \\UNCNAMES
-    TString tmp     =   pathName;
+    String tmp     =   pathName;
     size_t  idx     =   tmp.rfind (kPathComponentSeperator);
-    if (idx != TString::npos) {
+    if (idx != String::kBadIndex) {
         tmp.erase (idx + 1);
     }
     return tmp;

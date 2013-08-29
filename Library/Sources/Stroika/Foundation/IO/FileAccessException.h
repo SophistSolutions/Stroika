@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/TString.h"
+#include    "../Characters/String.h"
 #include    "../Execution/StringException.h"
 
 #include    "FileAccessMode.h"
@@ -18,7 +18,7 @@ namespace   Stroika {
         namespace   IO {
 
 
-            using   Characters::TString;
+            using   Characters::String;
 
 
             // This exception is thrown when a given file is opened, or creation attempted, etc. It is a failure due to
@@ -30,14 +30,14 @@ namespace   Stroika {
             // list of exceptions. Probably should do separate handler so can customize messages...
             class   FileAccessException : public Execution::StringException {
             public:
-                FileAccessException (const TString& fileName = TString (), FileAccessMode fileAccessMode = FileAccessMode::eReadWrite_FAM);
+                FileAccessException (const String& fileName = String (), FileAccessMode fileAccessMode = FileAccessMode::eReadWrite_FAM);
 
             public:
-                nonvirtual  TString         GetFileName () const;
+                nonvirtual  String          GetFileName () const;
                 nonvirtual  FileAccessMode  GetFileAccessMode () const;
 
             private:
-                TString         fFileName_;
+                String          fFileName_;
                 FileAccessMode  fFileAccessMode_;
             };
 

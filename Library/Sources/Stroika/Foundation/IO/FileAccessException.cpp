@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::IO;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_ (const TString& fileName, FileAccessMode fileAccessMode)
+    wstring mkMessage_ (const String& fileName, FileAccessMode fileAccessMode)
     {
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning (push)
@@ -43,12 +43,12 @@ namespace   {
 #pragma warning (pop)
 #endif
         if (not fileName.empty ()) {
-            message = Characters::Format (L"%s: '%.200s'", message.c_str (), Characters::LimitLength (Characters::TString2Wide (fileName), 100, false).c_str ());
+            message = Characters::Format (L"%s: '%.200s'", message.c_str (), fileName.LimitLength (100, false).c_str ());
         }
         return message;
     }
 }
-FileAccessException::FileAccessException (const TString& fileName, FileAccessMode fileAccessMode)
+FileAccessException::FileAccessException (const String& fileName, FileAccessMode fileAccessMode)
     : StringException (mkMessage_ (fileName, fileAccessMode))
     , fFileName_ (fileName)
     , fFileAccessMode_ (fileAccessMode)

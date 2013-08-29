@@ -132,12 +132,12 @@ namespace   {
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileOutputStream tmp (String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + L"t.txt");
+            IO::FileSystem::BinaryFileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             JSON::Writer ().Write (v, tmp);
         }
 
         if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileInputStream tmp (String::FromTString (IO::FileSystem::WellKnownLocations::GetTemporary ()) + L"t.txt");
+            IO::FileSystem::BinaryFileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
         }
 

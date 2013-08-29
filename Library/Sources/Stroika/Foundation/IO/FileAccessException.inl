@@ -17,7 +17,7 @@ namespace   Stroika {
     namespace   Foundation  {
         namespace   IO {
 
-            inline  TString         FileAccessException::GetFileName () const
+            inline  String         FileAccessException::GetFileName () const
             {
                 return fFileName_;
             }

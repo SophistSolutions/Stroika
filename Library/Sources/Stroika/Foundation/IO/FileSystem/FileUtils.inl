@@ -47,7 +47,7 @@ namespace   Stroika {
                  ********************* FileSystem::ThroughTmpFileWriter *************************
                  ********************************************************************************
                  */
-                inline  ThroughTmpFileWriter::operator TString () const
+                inline  ThroughTmpFileWriter::operator String () const
                 {
                     Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
                     return fTmpFilePath;
@@ -102,7 +102,7 @@ namespace   Stroika {
                 {
                     return Execution::ModuleInitializer<Private::FileUtilsModuleData_>::Actual ().fAppTempFileManager;
                 }
-                inline  TString AppTempFileManager::GetMasterTempDir () const
+                inline  String AppTempFileManager::GetMasterTempDir () const
                 {
                     return fTmpDir;
                 }
@@ -113,7 +113,7 @@ namespace   Stroika {
                  ***************************** FileSystem::ScopedTmpDir *************************
                  ********************************************************************************
                  */
-                inline  ScopedTmpDir::operator TString () const
+                inline  ScopedTmpDir::operator String () const
                 {
                     return fTmpDir;
                 }
@@ -124,7 +124,7 @@ namespace   Stroika {
                  **************************** FileSystem::ScopedTmpFile *************************
                  ********************************************************************************
                  */
-                inline  ScopedTmpFile::operator TString () const
+                inline  ScopedTmpFile::operator String () const
                 {
                     return fTmpFile;
                 }

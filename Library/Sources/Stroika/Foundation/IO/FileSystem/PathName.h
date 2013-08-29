@@ -6,7 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../../Characters/TChar.h"
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
 
@@ -32,18 +31,17 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-                using   Characters::TChar;
-                using   Characters::TString;
+                using   Characters::String;
 
 
 #if     qCompilerAndStdLib_Supports_constexpr
 #if     qPlatform_Windows
-                constexpr   TChar   kPathComponentSeperator =   '\\';
+                constexpr   wchar_t   kPathComponentSeperator =   '\\';
 #elif   qPlatform_POSIX
-                constexpr   TChar   kPathComponentSeperator =   '/';
+                constexpr   wchar_t   kPathComponentSeperator =   '/';
 #endif
 #else
-                extern  const   TChar   kPathComponentSeperator;
+                extern  const   wchar_t   kPathComponentSeperator;
 #endif
 
 
@@ -53,17 +51,17 @@ namespace   Stroika {
                  * operate with the assumption that directories have that trailing slash, so its easier to compose
                  * pathanmes.
                  */
-                TString AssureDirectoryPathSlashTerminated (const TString& dirPath);
+                String AssureDirectoryPathSlashTerminated (const String& dirPath);
 
 
                 // map ALL characters in the string to something safe to use for a filename (that is - get rid of slashes etc - if present)
-                TString SafeFilenameChars (const TString& s);
+                String SafeFilenameChars (const String& s);
 
 
                 /*
                  * if Win32 'short-file-name' - 8.3 - extend and return associated longfilename
                  */
-                TString AssureLongFileName (const TString& fileName);
+                String AssureLongFileName (const String& fileName);
 
 
                 /*
@@ -74,25 +72,25 @@ namespace   Stroika {
                  *      (( The windows behaviro is that the code did - I'm not sure its wise, or even needed anymore?))
                  *      (( -- LGP 2011-09-29)
                  */
-                TString GetFileSuffix (const TString& fileName);
+                String GetFileSuffix (const String& fileName);
 
 
                 /*
                  *  get the base name (strippping path and suffix)
                  */
-                TString GetFileBaseName (const TString& pathName);
+                String GetFileBaseName (const String& pathName);
 
 
                 /*
                  *  // get the full path WITHOUT the file suffix at the end
                  */
-                TString StripFileSuffix (const TString& pathName);
+                String StripFileSuffix (const String& pathName);
 
 
                 /*
                  *      // get the directory part of the given pathname (if the path refers to a directory - ends in / - then return THAT name)
                  */
-                TString GetFileDirectory (const TString& pathName);
+                String GetFileDirectory (const String& pathName);
 
 
             }
