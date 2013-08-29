@@ -1004,6 +1004,28 @@ bool String::IsWhitespace () const
     return true;
 }
 
+String  String::LimitLength (size_t maxLen, bool keepLeft) const
+{
+    static  const String kELIPSIS_  = L"...";
+    String  tmp =   Trim ();
+    if (tmp.length () <= maxLen) {
+        return tmp;
+    }
+    size_t  useLen  =   maxLen;
+    if (useLen > kELIPSIS_.length ()) {
+        useLen -= kELIPSIS_.length ();
+    }
+    else {
+        useLen = 0;
+    }
+    if (keepLeft) {
+        return tmp.substr (0, useLen) + kELIPSIS_;
+    }
+    else {
+        return kELIPSIS_ + tmp.substr (tmp.length () - useLen);
+    }
+}
+
 template    <>
 void    String::AsUTF8 (string* into) const
 {

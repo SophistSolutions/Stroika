@@ -604,6 +604,12 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    IsWhitespace () const;
 
+            public:
+                /**
+                 *  This function is for GUI/display purposes. It returns the given string, trimmed down
+                 *  to at most maxLen characters, and removes surrounding whitespace.
+                 */
+                nonvirtual  String  LimitLength (size_t maxLen, bool keepLeft = true) const;
 
             public:
                 /**
