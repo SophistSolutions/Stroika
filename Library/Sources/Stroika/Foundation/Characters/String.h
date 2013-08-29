@@ -52,6 +52,9 @@
  *
  * TODO:
  *
+ *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
+ *              through if this seems ugly/pointless.
+ *
  *      @todo   Add AsTString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
  *              not sure of this, but could be a significant performance advantage. Test more...
  *
@@ -692,7 +695,23 @@ namespace   Stroika {
                 // StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without
                 // inlines - like new '=' guy???
             public:
+                /**
+                 *  std::basic_string alias for npos = kBadIndex
+                 */
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr size_t    npos   = kBadIndex;
+#else
+                DEFINE_CONSTEXPR_CONSTANT (size_t, npos, kBadIndex);
+#endif
+
+                /**
+                 *  std::basic_string alias: size = GetLength
+                 */
                 nonvirtual  size_t          size () const;
+
+                /**
+                 *  std::basic_string alias: length = GetLength
+                 */
                 nonvirtual  size_t          length () const;
 
                 // As with STL, the return value of the data () function should NOT be assumed to be
