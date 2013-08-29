@@ -846,20 +846,20 @@ void    FileSystem::DirectoryChangeWatcher::ThreadProc (void* lpParameter)
  *********************** FileSystem::AppTempFileManager *************************
  ********************************************************************************
  */
-AppTempFileManager::AppTempFileManager ():
-    fTmpDir ()
+AppTempFileManager::AppTempFileManager ()
+    : fTmpDir ()
 {
 #if     qPlatform_Windows
     String tmpDir  =   WellKnownLocations::GetTemporary ();
 
-    TChar   exePath[MAX_PATH];
+    wchar_t   exePath[MAX_PATH];
     memset (exePath, 0, sizeof exePath);
-    Verify (::GetModuleFileName (nullptr, exePath, NEltsOf (exePath)));
+    Verify (::GetModuleFileNameW (nullptr, exePath, NEltsOf (exePath)));
 
-    TString exeFileName =   exePath;
+    wstring exeFileName =   exePath;
     {
-        size_t  i   =   exeFileName.rfind (TSTR ("\\"));
-        if (i != TString::npos) {
+        size_t  i   =   exeFileName.rfind ('\\');
+        if (i != wstring::npos) {
             exeFileName = exeFileName.substr (i + 1);
         }
         // strip trailing .EXE
@@ -887,7 +887,7 @@ AppTempFileManager::AppTempFileManager ():
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         String d   =   tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
-        if (not ::CreateDirectory (d.AsTString ().c_str (), nullptr)) {
+        if (not ::CreateDirectoryW (d.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error == ERROR_ALREADY_EXISTS) {
                 continue;   // try again
@@ -902,7 +902,7 @@ AppTempFileManager::AppTempFileManager ():
         break;
     }
     fTmpDir = tmpDir;
-    DbgTrace (TSTR ("AppTempFileManager::CTOR: created '%s'"), fTmpDir.c_str ());
+    DbgTrace (L"AppTempFileManager::CTOR: created '%s'", fTmpDir.c_str ());
 #else
     //AssertNotImplemented ();
 #endif
@@ -910,7 +910,7 @@ AppTempFileManager::AppTempFileManager ():
 
 AppTempFileManager::~AppTempFileManager ()
 {
-    DbgTrace (TSTR ("AppTempFileManager::DTOR: clearing '%s'"), fTmpDir.c_str ());
+    DbgTrace ("AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
 #if     qPlatform_Windows
     DeleteAllFilesInDirectory (fTmpDir, true);
     Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
