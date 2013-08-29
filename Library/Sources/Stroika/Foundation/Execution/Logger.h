@@ -157,7 +157,7 @@ namespace   Stroika {
             public:
                 virtual void    Log (Priority logLevel, const String& message) override;
             private:
-                TString fApplicationName_;  // must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
+                string fApplicationName_;  // must save like this because open-syslog appears to KEEP ahold of pointer (http://www.gnu.org/s/hello/manual/libc/openlog.html)
             };
 #endif
 

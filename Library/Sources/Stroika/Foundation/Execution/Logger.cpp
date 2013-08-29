@@ -73,9 +73,9 @@ Logger::IAppenderRep::~IAppenderRep ()
  ********************************************************************************
  */
 namespace   {
-    TString mkMsg_ (const String& applicationName)
+    string mkMsg_ (const String& applicationName)
     {
-        return Characters::Format (TSTR ("%s[%d]"), applicationName.AsTString ().c_str (), GetCurrentProcessID ());
+        return Characters::Format ("%s[%d]", applicationName.AsNarrowSDKString ().c_str (), GetCurrentProcessID ());
     }
 }
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
@@ -98,7 +98,7 @@ Logger::SysLogAppender::~SysLogAppender ()
 void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 {
     DbgTrace (L"%s", message.c_str ());
-    syslog (static_cast<int> (logLevel), "%s", message.AsTString ().c_str ());
+    syslog (static_cast<int> (logLevel), "%s", message.AsNarrowSDKString ().c_str ());
 }
 #endif
 
@@ -107,10 +107,16 @@ void    Logger::SysLogAppender::Log (Priority logLevel, const String& message)
 
 
 
+/*
+ ********************************************************************************
+ ************************** Execution::FileAppender *****************************
+ ********************************************************************************
+ */
 Logger::FileAppender::FileAppender (const String& fileName)
 {
     AssertNotImplemented ();
 }
+
 void    Logger::FileAppender::Log (Priority logLevel, const String& message)
 {
     AssertNotImplemented ();
