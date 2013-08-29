@@ -989,6 +989,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />

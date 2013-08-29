@@ -2025,5 +2025,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.inl">
       <Filter>Sources\DataExchangeFormat\XML</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
   </ItemGroup>
 </Project>

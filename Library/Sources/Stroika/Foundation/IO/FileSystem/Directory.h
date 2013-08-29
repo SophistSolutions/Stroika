@@ -49,7 +49,7 @@ namespace   Stroika {
                 public:
 
                     // If the argument name is not already '/'-terminated, this CTOR will adjust it
-                    Directory (const TString& fileFullPath);
+                    Directory (const String& fileFullPath);
 
                     void    Create () const;    // fails if exists
                     void    AssureExists (bool createParentComponentsIfNeeded = true) const;    // fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)?
@@ -65,7 +65,7 @@ namespace   Stroika {
                     TString AsTString () const;
 
                 private:
-                    TString fFileFullPath_;
+                    String fFileFullPath_;
                 };
 
 

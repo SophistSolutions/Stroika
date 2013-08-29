@@ -146,7 +146,7 @@ String FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
     {
         SHFILEINFO   info;
         memset (&info, 0, sizeof (info));
-        if (::SHGetFileInfo (path2FileOrShortcut.c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
+        if (::SHGetFileInfo (path2FileOrShortcut.AsTString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
             return path2FileOrShortcut;
         }
         // not a shortcut?
@@ -173,7 +173,7 @@ String FileSystem::ResolveShortcut (const String& path2FileOrShortcut)
                         ppf = nullptr;
                         psl->Release ();
                         psl = nullptr;
-                        return path;
+                        return String::FromTString (path);
                     }
                 }
             }
@@ -243,7 +243,7 @@ FileOffset_t    FileSystem::GetFileSize (const String& fileName)
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.AsTString ().c_str (), GetFileExInfoStandard, &fileAttrData));
     return fileAttrData.nFileSizeLow + (static_cast<FileOffset_t> (fileAttrData.nFileSizeHigh) << 32);
 #else
     AssertNotImplemented ();
@@ -266,7 +266,7 @@ DateTime        FileSystem::GetFileLastModificationDate (const String& fileName)
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
-    ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+    ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.AsTString ().c_str (), GetFileExInfoStandard, &fileAttrData));
     return DateTime (fileAttrData.ftLastWriteTime);
 #else
     AssertNotImplemented ();
@@ -289,7 +289,7 @@ DateTime    FileSystem::GetFileLastAccessDate (const String& fileName)
 #if     qPlatform_Windows
     WIN32_FILE_ATTRIBUTE_DATA   fileAttrData;
     (void)::memset (&fileAttrData, 0, sizeof (fileAttrData));
-    ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.c_str (), GetFileExInfoStandard, &fileAttrData));
+    ThrowIfFalseGetLastError (::GetFileAttributesEx (fileName.AsTString ().c_str (), GetFileExInfoStandard, &fileAttrData));
     return DateTime (fileAttrData.ftLastAccessTime);
 #else
     AssertNotImplemented ();
@@ -348,7 +348,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
 
         // Try to modify the object's DACL.
         DWORD dwRes  = SetNamedSecurityInfo(
-                           const_cast<TChar*> (filePathName.c_str ()),          // name of the object
+                           const_cast<TChar*> (filePathName.AsTString ().c_str ()),          // name of the object
                            SE_FILE_OBJECT,              // type of object
                            DACL_SECURITY_INFORMATION,   // change only the object's DACL
                            nullptr, nullptr,                  // don't change owner or group
@@ -414,7 +414,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             }
         }
 
-        if (not ::CreateDirectory (directoryPath.c_str (), nullptr)) {
+        if (not ::CreateDirectory (directoryPath.AsTString ().c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error != ERROR_ALREADY_EXISTS) {
                 Execution::DoThrow (Execution::Platform::Windows::Exception (error));
@@ -512,7 +512,7 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     TChar   igBuf[1024];
     memset (igBuf, 0, sizeof (igBuf));
     BOOL    result  =   ::GetVolumeInformation (
-                            AssureDirectoryPathSlashTerminated (driveLetterAbsPath).c_str (),
+                            AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsTString ().c_str (),
                             volNameBuf,
                             NEltsOf (volNameBuf),
                             nullptr,
@@ -522,7 +522,7 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
                             NEltsOf (igBuf)
                         );
     if (result) {
-        return volNameBuf;
+        return String::FromTString (volNameBuf);
     }
 #else
     AssertNotImplemented ();
@@ -644,11 +644,11 @@ vector<String> FileSystem::FindFiles (const String& path, const String& fileName
     String matchFullPath   =   usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile (matchFullPath.c_str (), &fd);
+    HANDLE hFind = ::FindFirstFile (matchFullPath.AsTString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
-                TString fileName = fd.cFileName;
+                String fileName = String::FromTString (fd.cFileName);
                 if (not (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
                     result.push_back (usePath + fileName);
                 }
@@ -690,7 +690,7 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
     String usePath =   AssureDirectoryPathSlashTerminated (path);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile ((usePath + TSTR ("*")).c_str (), &fd);
+    HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsTString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
             TString fileName = (LPCTSTR) &fd.cFileName;
@@ -735,16 +735,16 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
 
     WIN32_FIND_DATA fd;
     (void)::memset (&fd, 0, sizeof (fd));
-    HANDLE          hFind = ::FindFirstFile ((LPCTSTR) (dir2Use + TSTR ("*")).c_str (), &fd);
+    HANDLE          hFind = ::FindFirstFile ((dir2Use + L"*").AsTString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
                 String fileName = String::FromTString (fd.cFileName);
                 if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                    if ((fileName != TSTR (".")) and (fileName != L"..")) {
+                    if ((fileName != L".") and (fileName != L"..")) {
                         DeleteAllFilesInDirectory (dir2Use + fileName + L"\\", ignoreErrors);
                         try {
-                            ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).c_str ()));
+                            ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).AsTString ().c_str ()));
                         }
                         catch (...) {
                             DbgTrace ("Exception %s calling RemoveDirectory on file '%s'", ignoreErrors ? L"(ignored)" : L"", (dir2Use + fileName).c_str ());
@@ -794,7 +794,7 @@ FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& direct
     , fWatchSubTree (watchSubTree)
     , fThread ()
     , fDoneEvent (::CreateEvent (nullptr, false, false, nullptr))
-    , fWatchEvent (::FindFirstChangeNotification (fDirectory.c_str (), fWatchSubTree, notifyFilter))
+    , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsTString ().c_str (), fWatchSubTree, notifyFilter))
     , fQuitting (false)
 {
     fThread = Execution::Thread (bind (&ThreadProc, this));
@@ -883,11 +883,11 @@ AppTempFileManager::AppTempFileManager ():
     // But whatever we do, the DLL may do also, so we must use what is in the filesystem
     // to disambiguiate.
     //
-    tmpDir += TSTR ("HealthFrameWorks\\");
+    tmpDir += L"HealthFrameWorks\\";
     CreateDirectory (tmpDir);
     for (int i = 0; i < INT_MAX; ++i) {
         String d   =   tmpDir + Format (L"%s-%d-%d\\", exeFileName.c_str (), ::GetCurrentProcessId (), i + rand ());
-        if (not ::CreateDirectory (d.c_str (), nullptr)) {
+        if (not ::CreateDirectory (d.AsTString ().c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error == ERROR_ALREADY_EXISTS) {
                 continue;   // try again
@@ -913,7 +913,7 @@ AppTempFileManager::~AppTempFileManager ()
     DbgTrace (TSTR ("AppTempFileManager::DTOR: clearing '%s'"), fTmpDir.c_str ());
 #if     qPlatform_Windows
     DeleteAllFilesInDirectory (fTmpDir, true);
-    Verify (::RemoveDirectory (fTmpDir.c_str ()));
+    Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
 #else
     //AssertNotImplemented ();
 #endif
@@ -927,7 +927,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
 
     TString::size_type  suffixStart = fn.rfind ('.');
     if (suffixStart == TString::npos) {
-        fn += TSTR (".txt");
+        fn += L".txt";
         suffixStart = fn.rfind ('.');
     }
     int attempts = 0;
@@ -935,9 +935,9 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
         wstring s = fn.As<wstring> ();
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
-        s.insert (suffixStart, ToTString (buf));
+        s.insert (suffixStart, NarrowSDKStringToWide (buf));
         if (not FileExists (s.c_str ())) {
-            HANDLE  f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+            HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 ::CloseHandle (f);
                 DbgTrace (TSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
@@ -992,7 +992,7 @@ TempFileLibrarian::TempFileLibrarian (const String& privateDirectory, bool purge
 {
     ::srand (static_cast<unsigned int> (::time (0)));
     if (purgeDirectory and fPrivateDirectory.size () > 0) {
-        DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + TSTR ("\\"));
+        DeleteAllFilesInDirectory (AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + L"\\");
     }
 }
 
@@ -1003,13 +1003,13 @@ TempFileLibrarian::~TempFileLibrarian ()
         for (auto it = fFiles.begin (); it != fFiles.end (); ++it) {
             // item could be a file or directory, so see if dir delete works, and only if that fails,
             // then try to delete the item as a directory ... all silently ignoring failures...
-            if (::DeleteFile (it->c_str ()) == 0) {
+            if (::DeleteFileW (it->c_str ()) == 0) {
                 FileSystem::DeleteAllFilesInDirectory (*it);
-                (void)::RemoveDirectory (it->c_str ());
+                (void)::RemoveDirectoryW (it->c_str ());
             }
         }
         if (fPrivateDirectory.size () > 0) {
-            (void)::RemoveDirectory ((AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + TSTR ("\\")).c_str ());
+            (void)::RemoveDirectoryW ((AppTempFileManager::Get ().GetMasterTempDir () + fPrivateDirectory + L"\\").c_str ());
         }
     }
 #else
@@ -1023,7 +1023,7 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
     String fn  =   fileNameBase;
     if (fn.find (':') == -1) {
         if (fPrivateDirectory.size () > 0) {
-            fn = fPrivateDirectory + TSTR ("\\") + fn;
+            fn = fPrivateDirectory + L"\\" + fn;
         }
 
         if (fMakeTMPDIRRel) {
@@ -1034,7 +1034,7 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
 
     TString::size_type  suffixStart = fn.rfind ('.');
     if (suffixStart == TString::npos) {
-        fn += TSTR (".txt");
+        fn += L".txt";
         suffixStart = fn.rfind ('.');
     }
 
@@ -1043,9 +1043,9 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
         wstring s = fn.As<wstring> ();
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d", ::rand ());
-        s.insert (suffixStart, ToTString (buf));
+        s.insert (suffixStart, NarrowSDKStringToWide (buf));
         if (not FileSystem::FileExists (s.c_str ())) {
-            HANDLE  f = ::CreateFile (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+            HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 CloseHandle (f);
                 lock_guard<mutex> enterCriticalSection (fCriticalSection_);
@@ -1066,7 +1066,7 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
     String fn  =   fileNameBase;
     if (fn.find (':') == -1) {
         if (fPrivateDirectory.size () > 0) {
-            fn = fPrivateDirectory + TSTR ("\\") + fn;
+            fn = fPrivateDirectory + L"\\" + fn;
         }
         if (fMakeTMPDIRRel) {
             fn = AppTempFileManager::Get ().GetMasterTempDir () + fn;
@@ -1082,7 +1082,7 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
             lock_guard<mutex> enterCriticalSection (fCriticalSection_);
             (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         }
-        s.append (ToTString  (buf));
+        s.append (NarrowSDKStringToWide  (buf));
         if (not FileSystem::DirectoryExists (s)) {
             FileSystem::CreateDirectory (s, true);
             lock_guard<mutex> enterCriticalSection (fCriticalSection_);
@@ -1104,7 +1104,7 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
 
 /*
  ********************************************************************************
- ************************************ FileSystem::ScopedTmpDir **************************
+ **************************** FileSystem::ScopedTmpDir **************************
  ********************************************************************************
  */
 ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
@@ -1118,7 +1118,7 @@ ScopedTmpDir::~ScopedTmpDir ()
         DbgTrace (TSTR ("ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'"), fTmpDir.c_str ());
         DeleteAllFilesInDirectory (fTmpDir);
 #if     qPlatform_Windows
-        Verify (::RemoveDirectory (fTmpDir.c_str ()));
+        Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
 #else
         AssertNotImplemented ();
 #endif
@@ -1146,9 +1146,9 @@ ScopedTmpFile::ScopedTmpFile (const String& fileNameBase):
 ScopedTmpFile::~ScopedTmpFile ()
 {
     try {
-        DbgTrace (TSTR ("ScopedTmpFile::~ScopedTmpFile - removing '%s'"), fTmpFile.c_str ());
+        DbgTrace (L"ScopedTmpFile::~ScopedTmpFile - removing '%s'", fTmpFile.c_str ());
 #if     qPlatform_Windows
-        ThrowIfFalseGetLastError (::DeleteFile (fTmpFile.c_str ()));
+        ThrowIfFalseGetLastError (::DeleteFileW (fTmpFile.c_str ()));
 #else
         AssertNotImplemented ();
 #endif
@@ -1181,7 +1181,7 @@ ThroughTmpFileWriter::~ThroughTmpFileWriter ()
     if (not fRealFilePath.empty ()) {
         DbgTrace (TSTR ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'"), fRealFilePath.c_str ());
 #if     qPlatform_Windows
-        (void)::DeleteFile (fTmpFilePath.c_str ());
+        (void)::DeleteFileW (fTmpFilePath.c_str ());
 #else
         AssertNotImplemented ();
 #endif
@@ -1194,13 +1194,13 @@ void    ThroughTmpFileWriter::Commit ()
     // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
 #if     qPlatform_Windows
     try {
-        ThrowIfFalseGetLastError (::MoveFileEx (fTmpFilePath.c_str (), fRealFilePath.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
+        ThrowIfFalseGetLastError (::MoveFileExW (fTmpFilePath.c_str (), fRealFilePath.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
     }
     catch (const Execution::Platform::Windows::Exception& we) {
         // On Win9x - this fails cuz OS not impl...
         if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
-            ::DeleteFile (fRealFilePath.c_str ());
-            ThrowIfFalseGetLastError (::MoveFile (fTmpFilePath.c_str (), fRealFilePath.c_str ()));
+            ::DeleteFileW (fRealFilePath.c_str ());
+            ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath.c_str (), fRealFilePath.c_str ()));
         }
         else {
             Execution::DoReThrow ();
@@ -1471,7 +1471,7 @@ DirectoryContentsIterator::DirectoryContentsIterator (const String& pathExpr)
         Execution::DoThrow (StringException (L"Cannot find final '\\' in directory path"));
     }
     fDirectory = fDirectory.substr (0, i + 1);
-    fHandle = ::FindFirstFile (pathExpr.c_str (), &fFindFileData);
+    fHandle = ::FindFirstFile (pathExpr.AsTString ().c_str (), &fFindFileData);
 #else
     AssertNotImplemented ();
 #endif
@@ -1502,7 +1502,7 @@ String DirectoryContentsIterator::operator *() const
 {
     Ensure (NotAtEnd ());
 #if         qPlatform_Windows
-    return fDirectory + fFindFileData.cFileName;
+    return fDirectory + String::FromTString (fFindFileData.cFileName);
 #else
     AssertNotImplemented ();
     return String ();

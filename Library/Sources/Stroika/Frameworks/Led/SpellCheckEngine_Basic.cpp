@@ -1152,7 +1152,7 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
 #if     qPlatform_MacOS
         FileReader  reader (&fUDName);
 #else
-        FileReader  reader (fUDName.c_str ());
+        FileReader  reader (String::FromTString (fUDName));
 #endif
 #if     qWideCharacters
         size_t              fileLen     =   reader.GetFileEnd () - reader.GetFileStart ();
@@ -1178,7 +1178,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
 #if     qPlatform_MacOS
     FileWriter  writer (&fUDName);
 #else
-    FileWriter  writer (fUDName.c_str ());
+    FileWriter  writer (String::FromTString (fUDName));
 #endif
 
 #if     qWideCharacters

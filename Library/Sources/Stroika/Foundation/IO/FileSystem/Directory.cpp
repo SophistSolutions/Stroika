@@ -52,7 +52,7 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 
 
-Directory::Directory (const TString& fileFullPath)
+Directory::Directory (const String& fileFullPath)
     : fFileFullPath_ (fileFullPath)
 {
 }
@@ -68,7 +68,7 @@ void    Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
         FileSystem::DeleteAllFilesInDirectory (fFileFullPath_);
     }
 #if     qPlatform_Windows
-    ThrowIfFalseGetLastError (::RemoveDirectory (fFileFullPath_.c_str ()));
+    ThrowIfFalseGetLastError (::RemoveDirectoryW (fFileFullPath_.c_str ()));
 #elif   qPlatform_POSIX
     Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.c_str ()));
 #endif

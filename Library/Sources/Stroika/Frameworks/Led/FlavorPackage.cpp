@@ -252,7 +252,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_FILEData (
 )
 {
     using   Stroika::Foundation::IO::FileSystem::FileReader;
-    FileReader  fileReader (fileName);
+    FileReader  fileReader (String::FromTString (fileName));
     const Byte* fileBuf = fileReader.GetFileStart ();
     size_t      fileLen = fileReader.GetFileEnd () - fileReader.GetFileStart ();
 

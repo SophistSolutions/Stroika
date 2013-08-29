@@ -8,7 +8,7 @@
 
 #include    <fstream>
 
-#include    "../../Characters/TString.h"
+#include    "../../Characters/String.h"
 
 
 
@@ -18,7 +18,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using   Characters::TString;
+                using   Characters::String;
 
 
                 /*
@@ -30,8 +30,8 @@ namespace   Stroika {
                  * to remove the 'ios_base::binary' default.
                  *
                  */
-                ifstream&   OpenInputFileStream (ifstream* ifStream, const TString& fileName, ios_base::openmode _Mode = ios_base::binary);
-                ifstream&   OpenInputFileStream (ifstream& tmpIFStream, const TString& fileName, ios_base::openmode _Mode = ios_base::binary);
+                ifstream&   OpenInputFileStream (ifstream* ifStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
+                ifstream&   OpenInputFileStream (ifstream& tmpIFStream, const String& fileName, ios_base::openmode _Mode = ios_base::binary);
 
 
                 /*
@@ -44,8 +44,8 @@ namespace   Stroika {
                  * Another very common thing to include would be ios_base::trunc (DEFAULT ON).
                  *
                  */
-                ofstream&   OpenOutputFileStream (ofstream* ofStream, const TString& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
-                ofstream&   OpenOutputFileStream (ofstream& tmpOfStream, const TString& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+                ofstream&   OpenOutputFileStream (ofstream* ofStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
+                ofstream&   OpenOutputFileStream (ofstream& tmpOfStream, const String& fileName, ios_base::openmode _Mode = ios_base::trunc | ios_base::binary);
 
 
             }

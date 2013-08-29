@@ -56,12 +56,12 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
         result += TSTR("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or DirectoryExists (result));
+    Ensure (not createIfNotPresent or DirectoryExists (String::FromTString (result)));
     return String::FromTString (result);
 #elif   qPlatform_POSIX
     const char* pPath = getenv ("HOME");
     if (pPath == nullptr) {
-        return TString ();
+        return String ();
     }
     return String::FromTString (pPath);
 #else
@@ -96,7 +96,7 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
         result += TSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or DirectoryExists (result));
+    Ensure (not createIfNotPresent or DirectoryExists (String::FromTString (result)));
     return String::FromTString (result);
 #elif   qPlatform_POSIX
     return L"/var/lib/";
@@ -153,10 +153,10 @@ String FileSystem::WellKnownLocations::GetTemporary ()
 #if     qPlatform_Windows
     TChar   buf[1024];
     if (::GetTempPath (NEltsOf (buf), buf) == 0) {
-        tempPath = TSTR ("c:\\Temp\\");
+        tempPath = L"c:\\Temp\\";
     }
     else {
-        tempPath = buf;
+        tempPath = String::FromTString (buf);
     }
 #elif   qPlatform_POSIX
     return String (L"/tmp/");

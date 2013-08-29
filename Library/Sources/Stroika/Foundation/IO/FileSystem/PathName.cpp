@@ -19,9 +19,9 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 
 #if     !qCompilerAndStdLib_Supports_constexpr
 #if     qPlatform_Windows
-const   TChar   FileSystem::kPathComponentSeperator =   '\\';
+const   wchar_t   FileSystem::kPathComponentSeperator =   '\\';
 #elif   qPlatform_POSIX
-const   TChar   FileSystem::kPathComponentSeperator =   '/';
+const   wchar_t   FileSystem::kPathComponentSeperator =   '/';
 #endif
 #endif
 
@@ -110,12 +110,12 @@ Again:
 String FileSystem::AssureLongFileName (const String& fileName)
 {
 #if     qPlatform_Windows
-    DWORD   r   =   ::GetLongPathName (fileName.c_str (), nullptr, 0);
+    DWORD   r   =   ::GetLongPathName (fileName.AsTString ().c_str (), nullptr, 0);
     if (r != 0) {
         Memory::SmallStackBuffer<TChar> buf (r);
-        r = ::GetLongPathName (fileName.c_str (), buf, r);
+        r = ::GetLongPathName (fileName.AsTString ().c_str (), buf, r);
         if (r != 0) {
-            return TString (buf);
+            return String::FromTString (buf);
         }
     }
 #endif
@@ -139,9 +139,9 @@ String FileSystem::GetFileSuffix (const String& fileName)
     {
         TChar   fNameBuf[4 * MAX_PATH ];
         fNameBuf[0] = '\0';
-        DWORD   r   =   ::GetLongPathName (fileName.c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD   r   =   ::GetLongPathName (fileName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
-            useFName = fNameBuf;
+            useFName = String::FromTString (fNameBuf);
         }
     }
     TChar   fname[_MAX_FNAME];
@@ -152,9 +152,9 @@ String FileSystem::GetFileSuffix (const String& fileName)
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));
     memset (ext, 0, sizeof (ext));
-    ::_tsplitpath_s (useFName.c_str (), drive, dir, fname, ext);
+    ::_tsplitpath_s (useFName.AsTString ().c_str (), drive, dir, fname, ext);
     // returns leading '.' in name...
-    return ext;
+    return String::FromTString (ext);
 #else
     AssertNotImplemented ();
     return String ();
@@ -176,9 +176,9 @@ String FileSystem::GetFileBaseName (const String& pathName)
 
     {
         TChar   fNameBuf[4 * MAX_PATH ];
-        DWORD   r   =   GetLongPathName (pathName.c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD   r   =   GetLongPathName (pathName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
-            useFName = fNameBuf;
+            useFName = String::FromTString (fNameBuf);
         }
     }
     TChar   fname[_MAX_FNAME];
@@ -189,7 +189,7 @@ String FileSystem::GetFileBaseName (const String& pathName)
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));
     memset (ext, 0, sizeof (ext));
-    ::_tsplitpath_s (useFName.c_str (), drive, dir, fname, ext);
+    ::_tsplitpath_s (useFName.AsTString ().c_str (), drive, dir, fname, ext);
     return String::FromTString (fname);
 #elif   qPlatform_POSIX
     String tmp =   pathName;
