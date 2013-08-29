@@ -169,5 +169,32 @@ String FileSystem::WellKnownLocations::GetTemporary ()
 
 
 
+/*
+ ********************************************************************************
+ ************* FileSystem::WellKnownLocations::GetTemporaryT ********************
+ ********************************************************************************
+ */
+TString FileSystem::WellKnownLocations::GetTemporaryT ()
+{
+    TString tempPath;
+#if     qPlatform_Windows
+    TChar   buf[1024];
+    if (::GetTempPath (NEltsOf (buf), buf) == 0) {
+        tempPath = TSTR ("c:\\Temp\\");
+    }
+    else {
+        tempPath = AssureDirectoryPathSlashTerminated (String::FromTString (buf)).AsTString ();
+    }
+#elif   qPlatform_POSIX
+    return TString (L"/tmp/");
+#else
+    AssertNotImplemented ();
+#endif
+    return tempPath;
+}
+
+
+
+
 
 

@@ -205,7 +205,7 @@ namespace   {
                 *i = '-';
             }
         }
-        return IO::FileSystem::WellKnownLocations::GetTemporary () + Format (TSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + Format (TSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
     }
 }
 

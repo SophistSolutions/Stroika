@@ -52,14 +52,14 @@
  *
  * TODO:
  *
- *		@todo	Add AsTString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
- *				not sure of this, but could be a significant performance advantage. Test more...
+ *      @todo   Add AsTString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
+ *              not sure of this, but could be a significant performance advantage. Test more...
  *
- *				Maybe better - AsTChar* - which takes BUFFER arg. And OPTIONALLY uses that buffer arg (depending
- *				on sizeof TCHAR???
+ *              Maybe better - AsTChar* - which takes BUFFER arg. And OPTIONALLY uses that buffer arg (depending
+ *              on sizeof TCHAR???
  *
- *				Or maybe better - just change code that uses TSTring version of APIs to use W version of APIS!!!
- *				I THINK THAT IS BEST!
+ *              Or maybe better - just change code that uses TSTring version of APIs to use W version of APIS!!!
+ *              I THINK THAT IS BEST!
  *
  *      @todo   Add FromISOLatin1()
  *

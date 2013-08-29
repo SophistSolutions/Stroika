@@ -24,6 +24,7 @@ namespace   Stroika {
 
 
                 using   Characters::String;
+                using   Characters::TString;
 
 
                 // These GetSpecialDir_XXX routines always return a valid directory (if createIfNotPresent) - and
@@ -50,6 +51,7 @@ namespace   Stroika {
                      * be preserved across reboots (though the OS may not enforce this). This directory may or may not be current-user-specific.
                      */
                     String GetTemporary ();
+                    TString GetTemporaryT ();
 
 
 #if         qPlatform_Windows
