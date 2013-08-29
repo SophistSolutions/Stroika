@@ -17,10 +17,13 @@
 
 /**
  * TODO:
+ *
+ *      @todo   LimitLength obsolete - lose and use String::LimitLength()
+ *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
  *
- *		@todo	Same changes to HexString2Int() as we did with String2Int()
+ *      @todo   Same changes to HexString2Int() as we did with String2Int()
  *
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
@@ -184,12 +187,12 @@ namespace   Stroika {
             wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
 
 
-            // NEED VARIANT FOR String??
+            /// OBSOLETE - use String::LimitLength()
             string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
             wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
 
 
-            // NEED VARIANT FOR String?? Already a method of String???
+            /// OBSOLETE - use String::LTrim(), RTrim(), and Trim()
             template    <typename TCHAR>
             basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text);
             template    <typename TCHAR>
