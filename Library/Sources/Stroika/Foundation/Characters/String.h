@@ -708,7 +708,7 @@ namespace   Stroika {
                 nonvirtual  const wchar_t*  c_str () const;
 
                 // need more overloads
-                nonvirtual  size_t find (wchar_t c) const;
+                nonvirtual  size_t find (wchar_t c, size_t startAt = 0) const;
                 // need more overloads
                 nonvirtual  size_t rfind (wchar_t c) const;
 

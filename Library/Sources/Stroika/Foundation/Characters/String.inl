@@ -261,9 +261,9 @@ namespace   Stroika {
             {
                 return As<const wchar_t*> ();
             }
-            inline  size_t String::find (wchar_t c) const
+            inline  size_t String::find (wchar_t c, size_t startAt) const
             {
-                return Find (c, CompareOptions::eWithCase);
+                return Find (c, startAt, CompareOptions::eWithCase);
             }
             inline  size_t String::rfind (wchar_t c) const
             {
