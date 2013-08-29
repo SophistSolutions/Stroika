@@ -126,5 +126,5 @@ Characters::String    Configuration::FindLocaleName (const Characters::String& i
 */
 locale    Configuration::FindNamedLocale (const Characters::String& iso2LetterLanguageCode, const Characters::String& iso2LetterTerritoryCode)
 {
-    return locale (Characters::TString2NarrowSDK (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsTString ()).c_str ());
+    return locale (FindLocaleName (iso2LetterLanguageCode, iso2LetterTerritoryCode).AsNarrowSDKString ().c_str ());
 }

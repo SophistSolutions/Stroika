@@ -23,7 +23,7 @@ using   namespace   Stroika::Foundation::Execution::Resources;
 
 
 #if     qPlatform_Windows
-extern const Resources::ResourceType   PredefinedTypes::kRES       =   _T("RES");
+extern const Resources::ResourceType   PredefinedTypes::kRES       =   TSTR("RES");
 #else
 extern const Resources::ResourceType   PredefinedTypes::kRES       =   0;
 #endif

@@ -51,18 +51,18 @@ namespace   Stroika {
                     // If the argument name is not already '/'-terminated, this CTOR will adjust it
                     Directory (const String& fileFullPath);
 
-                    void    Create () const;    // fails if exists
-                    void    AssureExists (bool createParentComponentsIfNeeded = true) const;    // fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)?
-                    bool    Exists () const;    // returns true iff exsits AND is directory (what about slink?)
+                    nonvirtual  void    Create () const;    // fails if exists
+                    nonvirtual  void    AssureExists (bool createParentComponentsIfNeeded = true) const;    // fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)?
+                    nonvirtual  bool    Exists () const;    // returns true iff exsits AND is directory (what about slink?)
 
-                    void    Delete () const;    // fails if exists after teh operaotion - Fails if doest exist
-                    void    AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
+                    nonvirtual  void    Delete () const;    // fails if exists after teh operaotion - Fails if doest exist
+                    nonvirtual  void    AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
                     // only works (For now) with type wstring
                     template    <typename T>
-                    wstring As () const;
+                    nonvirtual  wstring As () const;
 
-                    TString AsTString () const;
+                    nonvirtual  TString AsTString () const;
 
                 private:
                     String fFileFullPath_;

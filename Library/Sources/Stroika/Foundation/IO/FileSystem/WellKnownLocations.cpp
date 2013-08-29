@@ -151,12 +151,12 @@ String FileSystem::WellKnownLocations::GetTemporary ()
 {
     String tempPath;
 #if     qPlatform_Windows
-    TChar   buf[1024];
-    if (::GetTempPath (NEltsOf (buf), buf) == 0) {
+    wchar_t   buf[1024];
+    if (::GetTempPathW (NEltsOf (buf), buf) == 0) {
         tempPath = L"c:\\Temp\\";
     }
     else {
-        tempPath = String::FromTString (buf);
+        tempPath = buf;
     }
 #elif   qPlatform_POSIX
     return String (L"/tmp/");

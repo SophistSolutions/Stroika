@@ -20,7 +20,6 @@ namespace   Stroika {
                 using   namespace   Stroika::Foundation::Characters;
                 using   namespace   Stroika::Foundation::Configuration;
 
-
 #if     qPlatform_Windows
                 // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
                 typedef LPCTSTR ResourceType;

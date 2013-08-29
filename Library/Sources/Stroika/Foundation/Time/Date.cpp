@@ -418,14 +418,14 @@ String Date::Format (const String& format, LCID lcid) const
         return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
-    int nTChars =   ::GetDateFormat (lcid, 0, &st, format.AsTString ().c_str (), nullptr, 0);
+    int nTChars =   ::GetDateFormatW (lcid, 0, &st, format.c_str (), nullptr, 0);
     if (nTChars == 0) {
         return String ();
     }
     else {
-        SmallStackBuffer<TCHAR> buf (nTChars + 1);
-        (void)::GetDateFormat (lcid, 0, &st, format.AsTString ().c_str (), buf, nTChars + 1);
-        return TString2Wide (static_cast<const TCHAR*> (buf));
+        SmallStackBuffer<wchar_t> buf (nTChars + 1);
+        (void)::GetDateFormatW (lcid, 0, &st, format.c_str (), buf, nTChars + 1);
+        return static_cast<const wchar_t*> (buf);
     }
 }
 #endif
@@ -437,14 +437,14 @@ String Date::LongFormat (LCID lcid) const
         return String ();
     }
     SYSTEMTIME  st  =   toSYSTEM_ (*this);
-    int nTChars =   ::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
-    if (nTChars == 0) {
+    int nChars =   ::GetDateFormatW (lcid, DATE_LONGDATE, &st, nullptr, nullptr, 0);
+    if (nChars == 0) {
         return String ();
     }
     else {
-        SmallStackBuffer<TCHAR> buf (nTChars + 1);
-        (void)::GetDateFormat (lcid, DATE_LONGDATE, &st, nullptr, buf, nTChars + 1);
-        return TString2Wide (static_cast<const TCHAR*> (buf));
+        SmallStackBuffer<wchar_t> buf (nChars + 1);
+        (void)::GetDateFormatW (lcid, DATE_LONGDATE, &st, nullptr, buf, nChars + 1);
+        return static_cast<const wchar_t*> (buf);
     }
 }
 #endif

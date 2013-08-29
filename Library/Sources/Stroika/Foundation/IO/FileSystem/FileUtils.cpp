@@ -414,7 +414,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             }
         }
 
-        if (not ::CreateDirectory (directoryPath.AsTString ().c_str (), nullptr)) {
+        if (not ::CreateDirectoryW (directoryPath.c_str (), nullptr)) {
             DWORD error = ::GetLastError ();
             if (error != ERROR_ALREADY_EXISTS) {
                 Execution::DoThrow (Execution::Platform::Windows::Exception (error));
@@ -545,7 +545,7 @@ bool    FileSystem::FileExists (const String& filePath)
 {
 #if     qPlatform_Windows
     RequireNotNull (filePath);
-    DWORD attribs = ::GetFileAttributes (filePath.AsTString ().c_str ());
+    DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
         return false;
     }

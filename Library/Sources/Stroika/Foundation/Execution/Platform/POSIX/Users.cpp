@@ -35,7 +35,7 @@ uid_t   Platform::POSIX::UserName2UID (const String& name)
     struct passwd pwd;
     memset (&pwd, 0, sizeof (pwd));
     struct passwd* result   =   nullptr;
-    int err = getpwnam_r (name.AsTString ().c_str (), &pwd, buf, bufsize, &result);
+    int err = getpwnam_r (name.AsNarrowSDKString ().c_str (), &pwd, buf, bufsize, &result);
     if (err < 0) {
         errno_ErrorException::DoThrow (err);
     }
