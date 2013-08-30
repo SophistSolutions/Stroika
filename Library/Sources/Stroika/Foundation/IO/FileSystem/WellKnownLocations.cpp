@@ -56,7 +56,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
         result += TSTR("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or DirectoryExists (String::FromTString (result)));
+    Ensure (not createIfNotPresent or Directory (String::FromTString (result)).Exists ());
     return String::FromTString (result);
 #elif   qPlatform_POSIX
     const char* pPath = getenv ("HOME");
@@ -96,7 +96,7 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
         result += TSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or DirectoryExists (String::FromTString (result)));
+    Ensure (not createIfNotPresent or Directory (String::FromTString (result)).Exists ());
     return String::FromTString (result);
 #elif   qPlatform_POSIX
     return L"/var/lib/";
@@ -129,10 +129,10 @@ String FileSystem::WellKnownLocations::GetWinSxS ()
     }
     result = AssureDirectoryPathSlashTerminated (result) + L"WinSxS";
     result = AssureDirectoryPathSlashTerminated (result);
-    if (not DirectoryExists (result)) {
+    if (not Directory (result).Exists ()) {
         result.clear ();
     }
-    Ensure (result.empty () or DirectoryExists (result));
+    Ensure (result.empty () or Directory (result).Exists ());
     return result;
 }
 #endif

@@ -16,6 +16,17 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
+                template<>
+                inline  String Directory::As () const
+                {
+                    return fFileFullPath_;
+                }
+                template<>
+                inline  wstring Directory::As () const
+                {
+                    return fFileFullPath_.As<wstring> ();
+                }
+
             }
         }
     }

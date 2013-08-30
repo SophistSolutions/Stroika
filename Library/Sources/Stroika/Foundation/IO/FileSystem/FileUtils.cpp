@@ -565,7 +565,7 @@ bool    FileSystem::FileExists (const String& filePath)
 
 
 
-
+#if 0
 /*
  ********************************************************************************
  ************************** FileSystem::DirectoryExists *************************
@@ -592,7 +592,7 @@ bool    FileSystem::DirectoryExists (const String& filePath)
     return false;
 #endif
 }
-
+#endif
 
 
 
@@ -961,7 +961,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         char    buf[100];
         (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         s += String::FromAscii (buf);
-        if (not DirectoryExists (s)) {
+        if (not Directory (s).Exists ()) {
             CreateDirectory (s, true);
             DbgTrace ("AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
             return s;
@@ -1083,7 +1083,7 @@ String TempFileLibrarian::GetTempDir (const String& fileNameBase)
             (void)::snprintf (buf, NEltsOf (buf), "%d\\", ::rand ());
         }
         s.append (NarrowSDKStringToWide  (buf));
-        if (not FileSystem::DirectoryExists (s)) {
+        if (not Directory (s).Exists ()) {
             FileSystem::CreateDirectory (s, true);
             lock_guard<mutex> enterCriticalSection (fCriticalSection_);
             fFiles.insert (s);
@@ -1115,10 +1115,11 @@ ScopedTmpDir::ScopedTmpDir (const String& fileNameBase)
 ScopedTmpDir::~ScopedTmpDir ()
 {
     try {
-        DbgTrace (TSTR ("ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'"), fTmpDir.c_str ());
-        DeleteAllFilesInDirectory (fTmpDir);
+        String dirName = fTmpDir.As<String> ();
+        DbgTrace (L"ScopedTmpDir::~ScopedTmpDir - removing contents for '%s'", dirName.c_str ());
+        DeleteAllFilesInDirectory (dirName);
 #if     qPlatform_Windows
-        Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
+        Verify (::RemoveDirectoryW (dirName.c_str ()));
 #else
         AssertNotImplemented ();
 #endif

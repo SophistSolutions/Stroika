@@ -113,7 +113,11 @@ namespace   Stroika {
                  ***************************** FileSystem::ScopedTmpDir *************************
                  ********************************************************************************
                  */
-                inline  ScopedTmpDir::operator String () const
+                inline  ScopedTmpDir::operator Directory () const
+                {
+                    return fTmpDir;
+                }
+                inline  Directory ScopedTmpDir::GetDirectory () const
                 {
                     return fTmpDir;
                 }

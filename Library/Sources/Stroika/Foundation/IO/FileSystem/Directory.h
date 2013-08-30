@@ -10,7 +10,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../../Characters/TChar.h"
+#include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Debug/Assertions.h"
 #include    "../../Execution/Exceptions.h"
@@ -36,7 +36,7 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-                using   Characters::TChar;
+                using   Characters::String;
                 using   Characters::TString;
                 using   Time::DateTime;
 
@@ -47,21 +47,39 @@ namespace   Stroika {
                  */
                 class   Directory {
                 public:
-
                     // If the argument name is not already '/'-terminated, this CTOR will adjust it
+                    // CTOR does not create or check for the existence of the given directory (no IO)
                     Directory (const String& fileFullPath);
 
+                public:
                     nonvirtual  void    Create () const;    // fails if exists
-                    nonvirtual  void    AssureExists (bool createParentComponentsIfNeeded = true) const;    // fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)?
-                    nonvirtual  bool    Exists () const;    // returns true iff exsits AND is directory (what about slink?)
 
-                    nonvirtual  void    Delete () const;    // fails if exists after teh operaotion - Fails if doest exist
+                public:
+                    nonvirtual  void    AssureExists (bool createParentComponentsIfNeeded = true) const;    // fails if doesnt exist at the end, or is not a directory (unclear if its a directry but not accessible)?
+
+                public:
+                    // @todo cleanup / clarify docs (first is from old code second is my guess at new code at one point)
+                    // returns true iff given path exists, is accessible, and is a directory
+                    // returns true iff exsits AND is directory (what about slink?)
+                    nonvirtual  bool    Exists () const;
+
+                public:
+                    /**
+                     *   fails if exists after teh operaotion - Fails if doest exist
+                     */
+                    nonvirtual  void    Delete () const;
+
+                public:
                     nonvirtual  void    AssureDeleted (bool autoDeleteContentsAsNeeded = true) const;
 
-                    // only works (For now) with type wstring
+                public:
+                    // only works with type
+                    //      wstring
+                    //      String
                     template    <typename T>
-                    nonvirtual  wstring As () const;
+                    nonvirtual  T As () const;
 
+                public:
                     nonvirtual  TString AsTString () const;
 
                 private:
