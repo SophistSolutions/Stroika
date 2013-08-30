@@ -3,10 +3,11 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <atomic>
 #include    <new>
 #include    <set>
 
-#include    "../Execution/AtomicOperations.h"
+//#include    "../Execution/AtomicOperations.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Execution/ModuleInit.h"
 
@@ -17,7 +18,6 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Memory;
-
 
 
 using   Debug::TraceContextBumper;
@@ -159,8 +159,8 @@ void*   SimpleSizeCountingGeneralPurposeAllocator::Allocate (size_t size)
     p->fPreGuard = kPreGUARD;
     p->fBlockSize = size;
     memcpy (reinterpret_cast<Byte*> (p) + size + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD));
-    Execution::AtomicIncrement (&fNetAllocationCount_);
-    Execution::AtomicAdd (&fNetAllocatedByteCount_, static_cast<int32_t> (size));
+    fNetAllocationCount_++;
+    fNetAllocatedByteCount_ += static_cast<int32_t> (size);
     return (reinterpret_cast<Byte*> (p) + sizeof (MemWithExtraStuff));
 }
 
@@ -170,8 +170,8 @@ void    SimpleSizeCountingGeneralPurposeAllocator::Deallocate (void* ptr)
     MemWithExtraStuff*  p   =   reinterpret_cast<MemWithExtraStuff*> (reinterpret_cast<Byte*> (ptr) - sizeof (MemWithExtraStuff));
     SUPER_ASSERT_ (p->fPreGuard == kPreGUARD);
     SUPER_ASSERT_ (::memcmp (reinterpret_cast<Byte*> (p) + p->fBlockSize + sizeof (MemWithExtraStuff), &kPost_GUARD, sizeof (kPost_GUARD)) == 0);
-    Execution::AtomicDecrement (&fNetAllocationCount_);
-    Execution::AtomicSubtract (&fNetAllocatedByteCount_, p->fBlockSize);
+    --fNetAllocationCount_;
+    fNetAllocatedByteCount_ -= p->fBlockSize;
     fBaseAllocator_.Deallocate (p);
 }
 

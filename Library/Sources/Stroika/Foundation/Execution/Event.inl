@@ -10,7 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "AtomicOperations.h"
 #include    "WaitAbandonedException.h"
 #include    "WaitTimedOutException.h"
 #if     qUseThreads_WindowsNative

@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <atomic>
 #include    <map>
 #include    <memory>
 #include    <mutex>
@@ -163,8 +164,8 @@ namespace   Stroika {
 
             private:
                 AbstractGeneralPurposeAllocator&    fBaseAllocator_;
-                uint32_t                            fNetAllocationCount_;
-                size_t                              fNetAllocatedByteCount_;
+                atomic<uint32_t>                    fNetAllocationCount_;
+                atomic<size_t>                      fNetAllocatedByteCount_;
             };
 
 

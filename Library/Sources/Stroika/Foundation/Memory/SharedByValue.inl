@@ -10,7 +10,6 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "../Execution/AtomicOperations.h"
 
 
 namespace   Stroika {

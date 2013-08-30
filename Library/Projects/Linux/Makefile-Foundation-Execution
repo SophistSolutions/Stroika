@@ -14,7 +14,6 @@ SubDirs	=	\
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)AtomicOperations.o\
 	$(ObjDir)BlockingQueue.o\
 	$(ObjDir)CommandLine.o\
 	$(ObjDir)CopyableMutex.o\

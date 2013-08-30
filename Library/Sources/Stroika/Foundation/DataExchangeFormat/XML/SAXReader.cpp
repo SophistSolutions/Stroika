@@ -6,7 +6,6 @@
 #include    <atomic>
 
 #include    "../../Debug/Trace.h"
-#include    "../../Execution/AtomicOperations.h"
 #include    "../../Execution/ProgressMonitor.h"
 #include    "../../Memory/Common.h"
 #include    "../../Memory/MemoryAllocator.h"
