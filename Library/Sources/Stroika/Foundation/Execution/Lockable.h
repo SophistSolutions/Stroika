@@ -16,6 +16,11 @@
  * TODO:
  *      @todo   Support for POD-types is incomplete, and requires lots of typing. It would be nice to find
  *              a better way. Baring that, implement the remaining cases...
+ *
+ *      @todo   Two styles - one where critical section stored with EACH instance, and one where its stored
+ *              per-class. These can be used somewhat interchangably, except that the per-class one is
+ *              much cheaper, BUT prevents concurency allowed by per-instance locks. Maybe make this choice
+ *              a (default) mixin paramter?
  */
 
 
