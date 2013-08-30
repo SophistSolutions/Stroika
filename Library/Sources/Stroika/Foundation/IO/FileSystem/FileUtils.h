@@ -229,8 +229,20 @@ namespace   Stroika {
                     NO_COPY_CONSTRUCTOR (ThroughTmpFileWriter);
                     NO_ASSIGNMENT_OPERATOR (ThroughTmpFileWriter);
 
+
+                    inline  String GetTmpFilePath () const {
+                        Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
+                        return fTmpFilePath;
+                    }
+                    inline  String GetRealFilePath () const {
+                        Require (not fRealFilePath.empty ());
+                        return fRealFilePath;
+                    }
+
+#if 0
                 public:
                     nonvirtual operator String () const;
+#endif
 
                 public:
                     // tmpfile must have been closed the time we call Commit, and it atomicly renames the file

@@ -47,11 +47,6 @@ namespace   Stroika {
                  ********************* FileSystem::ThroughTmpFileWriter *************************
                  ********************************************************************************
                  */
-                inline  ThroughTmpFileWriter::operator String () const
-                {
-                    Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
-                    return fTmpFilePath;
-                }
 
 
                 /*
