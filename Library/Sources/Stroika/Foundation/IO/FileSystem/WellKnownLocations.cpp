@@ -43,21 +43,21 @@ using   Characters::TChar;
 String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
-    TChar   fileBuf[MAX_PATH];
+    wchar_t   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
-    Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
-    TString result = fileBuf;
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_PERSONAL, createIfNotPresent));
+    String result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = TSTR("c:");    // shouldn't happen
+        result = L"c:";    // shouldn't happen
     }
     // assure ends in '\'
     if (result[result.size () - 1] != '\\') {
-        result += TSTR("\\");
+        result += L"\\";
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or Directory (String::FromTString (result)).Exists ());
-    return String::FromTString (result);
+    Ensure (not createIfNotPresent or Directory (result).Exists ());
+    return result;
 #elif   qPlatform_POSIX
     const char* pPath = getenv ("HOME");
     if (pPath == nullptr) {
@@ -119,10 +119,10 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
  */
 String FileSystem::WellKnownLocations::GetWinSxS ()
 {
-    TChar   fileBuf[MAX_PATH];
+    wchar_t   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
-    Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_WINDOWS, false));
-    String result = String::FromTString (fileBuf);
+    Verify (::SHGetSpecialFolderPathW (nullptr, fileBuf, CSIDL_WINDOWS, false));
+    String result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
         return result;
