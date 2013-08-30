@@ -673,29 +673,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_stdatomic
-@DESCRIPTION:   <p>Controls whether or not the compiler supports std::atomic.</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_stdatomic)
-#if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_stdatomic   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
-#elif   defined (_MSC_VER)
-//#define qCompilerAndStdLib_Supports_stdatomic   (_MSC_VER > _MS_VS_2k10_VER_)
-// really is supported, but fake off for now til we fix it --LGP 2012-10-20
-#define qCompilerAndStdLib_Supports_stdatomic   (_MSC_VER > _MS_VS_2k12_VER_)
-#else
-#define qCompilerAndStdLib_Supports_stdatomic   1
-#endif
-#endif
-
-
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_override
 @DESCRIPTION:   <p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
 */
