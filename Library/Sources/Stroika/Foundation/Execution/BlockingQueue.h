@@ -17,7 +17,15 @@
  * TODO:
  *      @todo   Perhaps rename to Message Queue or EventQueue
  *
+ *              Event Q bad name, cuz misleading (not just for events and could be confused with
+ *              waitable events).
+ *
+ *              Just DOOCUMENT that these are common synonyms.
+ *
  *      @todo   Consider if/how to integrate with Foundation::Containers::Queue
+ *
+ *              I'm pretty sure the right answer is to SUBCLASS from Queue, but for AddTail/RemoveHead - and
+ *              overloads with the timeout logic.
  *
  *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
  *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html
@@ -66,6 +74,8 @@ namespace   Stroika {
                  *  Blocks until item added, and throws if timeout exceeded. About the only way the
                  *  throw can happen is if the Q is full (or timeout is very small).
                  *
+                 *  Typically this will return almost instantly.
+                 *
                  *  Analagous to the java BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
                 nonvirtual  void    Add (T e, Time::DurationSecondsType timeout = Time::kInfinite);
@@ -73,7 +83,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Blocks unti item removed, and throws if timeout exceeded.
+                 *  Blocks until item removed, and throws if timeout exceeded.
+                 *
+                 *  If there are currently no items in the Q, this may indefinitely (up to timeout provided).
                  *
                  *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
                  */
