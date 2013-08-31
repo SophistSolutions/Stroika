@@ -81,7 +81,7 @@ void    ThroughTmpFileWriter::Commit ()
         }
     }
 #elif   qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::rename (fTmpFilePath_.c_str (), fRealFilePath_.c_str ()));
+    Execution::ThrowErrNoIfNegative (::rename (fTmpFilePath_.AsTString ().c_str (), fRealFilePath_.AsTString ().c_str ()));
 #else
     AssertNotImplemented ();
 #endif
