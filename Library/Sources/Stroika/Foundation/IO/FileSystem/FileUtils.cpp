@@ -1163,68 +1163,6 @@ ScopedTmpFile::~ScopedTmpFile ()
 
 
 
-
-/*
- ********************************************************************************
- ************************ FileSystem::ThroughTmpFileWriter **********************
- ********************************************************************************
- */
-ThroughTmpFileWriter::ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix)
-    : fRealFilePath (realFileName)
-    , fTmpFilePath (realFileName + tmpSuffix)
-{
-    Require (not realFileName.empty ());
-    Require (not tmpSuffix.empty ());
-}
-
-ThroughTmpFileWriter::~ThroughTmpFileWriter ()
-{
-    if (not fRealFilePath.empty ()) {
-        DbgTrace (TSTR ("ThroughTmpFileWriter::DTOR - tmpfile not successfully commited to '%s'"), fRealFilePath.c_str ());
-#if     qPlatform_Windows
-        (void)::DeleteFileW (fTmpFilePath.c_str ());
-#else
-        AssertNotImplemented ();
-#endif
-    }
-}
-
-void    ThroughTmpFileWriter::Commit ()
-{
-    Require (not fTmpFilePath.empty ());    // cannot Commit more than once
-    // Also - NOTE - you MUST close fTmpFilePath (any file descriptors that have opened it) BEFORE the Commit!
-#if     qPlatform_Windows
-    try {
-        ThrowIfFalseGetLastError (::MoveFileExW (fTmpFilePath.c_str (), fRealFilePath.c_str (), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH));
-    }
-    catch (const Execution::Platform::Windows::Exception& we) {
-        // On Win9x - this fails cuz OS not impl...
-        if (static_cast<DWORD> (we) == ERROR_CALL_NOT_IMPLEMENTED) {
-            ::DeleteFileW (fRealFilePath.c_str ());
-            ThrowIfFalseGetLastError (::MoveFileW (fTmpFilePath.c_str (), fRealFilePath.c_str ()));
-        }
-        else {
-            Execution::DoReThrow ();
-        }
-    }
-#else
-    AssertNotImplemented ();
-#endif
-    fRealFilePath.clear ();
-    fTmpFilePath.clear ();
-}
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  ********************************************************************************
  ************************************* FileReader *******************************

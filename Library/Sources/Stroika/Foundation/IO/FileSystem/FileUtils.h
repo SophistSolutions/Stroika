@@ -207,54 +207,6 @@ namespace   Stroika {
                 };
 
 
-                /*
-                 * Specify the name of a file to write, and an optional file suffix for a tempfile, and
-                 * support writing through the tempfile, and then atomicly renaming the file when done.
-                 *
-                 * Even in case of failure, assure the tmpfile is removed.
-                 *
-                 * The point of this is to allow writing a file in such a way that the entire file write is
-                 * atomic. We don't want to partially  update a file and upon failure, leave it corrupted.
-                 *
-                 * Using this class, you create a tempfile, write to it, and the Commit () the change. NOTE,
-                 * it is REQUIRED you call Commit () after all writing to tmpfile is done (and closed),
-                 * otehrwise the changes are abandoned.
-                 */
-                class   ThroughTmpFileWriter {
-                public:
-                    ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = L".tmp");
-                    ~ThroughTmpFileWriter ();
-
-                private:
-                    NO_COPY_CONSTRUCTOR (ThroughTmpFileWriter);
-                    NO_ASSIGNMENT_OPERATOR (ThroughTmpFileWriter);
-
-
-                    inline  String GetTmpFilePath () const {
-                        Require (not fTmpFilePath.empty ());    // cannot access after Commit ()
-                        return fTmpFilePath;
-                    }
-                    inline  String GetRealFilePath () const {
-                        Require (not fRealFilePath.empty ());
-                        return fRealFilePath;
-                    }
-
-#if 0
-                public:
-                    nonvirtual operator String () const;
-#endif
-
-                public:
-                    // tmpfile must have been closed the time we call Commit, and it atomicly renames the file
-                    // to the target name. This CAN fail (in which case cleanup is handled automatically)
-                    nonvirtual  void    Commit ();
-
-                private:
-                    String fRealFilePath;
-                    String fTmpFilePath;
-                };
-
-
                 /**
                   * @todo   This FileReader utility needs redesign, and probably should be deprecated.
                   *         It's implementation fails when built for 64 bit mode (we just hide the errors) and you read
