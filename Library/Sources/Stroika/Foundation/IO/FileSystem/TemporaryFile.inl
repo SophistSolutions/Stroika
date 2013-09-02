@@ -32,7 +32,7 @@ namespace   Stroika {
     }
 }
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::FileSystem::Private::FileUtilsModuleData_>  _Stroika_Foundation_IO_FileSystem_FileUtils_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::IO::FileSystem::Private::FileUtilsModuleData_>  _Stroika_Foundation_IO_FileSystem_TemporaryFile_ModuleInit_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 
