@@ -21,6 +21,7 @@
 #include    "Platform/Windows/Exception.h"
 #endif
 #include    "../Execution/ErrNoException.h"
+#include    "../IO/FileSystem/FileSystem.h"
 #include    "../IO/FileSystem/FileUtils.h"
 #include    "../IO/FileSystem/PathName.h"
 #include    "../Streams/BasicBinaryInputOutputStream.h"
@@ -625,7 +626,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
 
 pid_t   Execution::DetachedProcessRunner (const String& executable, const Containers::Sequence<String>& args)
 {
-    IO::FileSystem::CheckFileAccess (executable, true, false);
+    IO::FileSystem::FileSystem::Default ().CheckFileAccess (executable, true, false);
 
     Sequence<String>    useArgs;
     if (args.empty ()) {

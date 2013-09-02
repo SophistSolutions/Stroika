@@ -31,9 +31,6 @@
  *
  *          o   This file is obsolete, and will be gradually replaced - moving its contents out to other modules
 
- **         o   Great IDEA FROM KDJ. I USED TO support abstractfilesystem in stroika. Maybe in old code base. Used for Win32 FS versus UNIX versus MacOS FS.
- *              KDJ's point is this idea should be resurected cuz its useful for stuff like TARFILEs and ZIPFILES or ISO files which act like a FS, and can be treated
- *              that way.
  */
 
 
@@ -43,19 +40,7 @@ namespace   Stroika {
             namespace   FileSystem {
 
 
-                // doesn't actually open the file. It's purely advisory. But its helpful to assure
-                // a consistent set of error reporting across different styles of opens. Just call this first,
-                // and it will throw exceptions if the file doesn't exist, or has access privileges issues.
-                void    CheckFileAccess (const String& fileFullPath, bool checkCanRead = true, bool checkCanWrite = false);
-
-
-                String ResolveShortcut (const String& path2FileOrShortcut);
-
                 String FileSizeToDisplayString (FileOffset_t bytes);
-
-                FileOffset_t    GetFileSize (const String& fileName);
-                DateTime        GetFileLastModificationDate (const String& fileName);
-                DateTime        GetFileLastAccessDate (const String& fileName);
 
                 void    SetFileAccessWideOpened (const String& filePathName);
 
@@ -122,6 +107,7 @@ namespace   Stroika {
 
 
 
+                // MUST REDO USING Iterator<T>... and Move to FileSystem module ...
                 class   DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
