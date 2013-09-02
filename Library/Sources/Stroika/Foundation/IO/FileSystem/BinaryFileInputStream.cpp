@@ -52,7 +52,7 @@ public:
         : fCriticalSection_ ()
         , fFD_ (-1) {
 #if     qPlatform_Windows
-        errno_t e = _tsopen_s (&fFD_, fileName.AsTString ().c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
+        errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
         if (e != 0) {
             Execution::errno_ErrorException::DoThrow (e);
         }
