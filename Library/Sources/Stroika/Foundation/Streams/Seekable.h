@@ -25,6 +25,9 @@
  *              so since I'm unsure, disallow for now. This can always be simulated with an extra
  *              zero write, and it assuming no seek past EOF makes implementations simpler, and
  *              definition more consistent (read).
+ *
+ *      @todo   Consider making GetOffsetToEndOfStream () a virtual part of rep so it can work with the locks
+ *              and be safely atomic.
  */
 
 
@@ -122,6 +125,16 @@ namespace   Stroika {
                  * GetOffset () returns the currently seeked offset. This is the same as Seek (eFromCurrent, 0).
                  */
                 nonvirtual  SeekOffsetType  GetOffset () const;
+
+            public:
+                /**
+                 * GetOffsetToEndOfStream () returns the the distance from the current offset position to the end of the stream.
+                 *  This is equivilent to:
+                 *      size_t  size =  Seek (Whence::eFromEnd, 0);
+                 *      Seek (Whence::eFromStart, savedReadFrom);
+                 *(EXCPET MAYBE GUARNATEED ATOMIC????)
+                 */
+                nonvirtual  SeekOffsetType  GetOffsetToEndOfStream () const;
 
             public:
                 /**
