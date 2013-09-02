@@ -147,12 +147,86 @@ namespace   {
     }
 }
 
+namespace   {
+    void    DoRegressionTests_SimpleMapToFromJSON_3_ ()
+    {
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            int fInt1;
+            unsigned long long fInt2;
+            long long fInt3;
+            int32_t fInt4;
+
+            SharedContactsConfig_ ()
+                : fInt1 (0)
+                , fInt2 (0)
+                , fInt3 (0)
+                , fInt4 (0) {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fInt1 == rhs.fInt1 and
+                    fInt2 == rhs.fInt2 and
+                    fInt3 == rhs.fInt3 and
+                    fInt4 == rhs.fInt4
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+
+        // register each of your mappable (even private) types
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        SharedContactsConfig_   tmp;
+        tmp.fInt1 = 2;
+        tmp.fInt2 = numeric_limits<decltype (tmp.fInt2)>::max ();
+        tmp.fInt3 = numeric_limits<decltype (tmp.fInt3)>::max ();
+        tmp.fInt4 = numeric_limits<decltype (tmp.fInt4)>::min ();
+
+        VariantValue v = mapper.FromObject  (tmp);
+
+        // at this point - we should have VariantValue object with "Enabled" field.
+        // This can then be serialized using
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
 
 namespace   {
     void    DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
         DoRegressionTests_SimpleMapToFromJSON_2_ ();
+        DoRegressionTests_SimpleMapToFromJSON_3_ ();
     }
 }
 
