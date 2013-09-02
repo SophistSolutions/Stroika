@@ -24,12 +24,25 @@ using   namespace   Stroika::Foundation::Streams;
  */
 Memory::BLOB BinaryInputStream::ReadAll () const
 {
-    // Inefficient implementation
-    vector<Byte>    r;
-    size_t          n;
-    Byte            buf[10 * 1024];
-    while ( (n = this->Read (std::begin (buf), std::end (buf))) != 0) {
-        r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
+    if (IsSeekable ()) {
+        size_t  savedReadFrom = this->GetOffset ();
+        size_t  size =  this->Seek (Whence::eFromEnd, 0);
+        Seek (Whence::eFromStart, savedReadFrom);
+        Assert (size >= savedReadFrom);
+        size -= savedReadFrom;
+        Byte* b = new Byte[size];   // if this fails, we had no way to create the BLOB
+        size_t n = this->Read (b, b + size);
+        Assert (n <= size);
+        return Memory::BLOB (b, b + n, Memory::BLOB::AdoptFlag::eAdopt);
     }
-    return Memory::BLOB (r);
+    else {
+        // Less efficient implementation
+        vector<Byte>    r;
+        size_t          n;
+        Byte            buf[32 * 1024];
+        while ( (n = this->Read (std::begin (buf), std::end (buf))) != 0) {
+            r.insert (r.end (), std::begin (buf), std::begin (buf) + n);
+        }
+        return Memory::BLOB (r);
+    }
 }
