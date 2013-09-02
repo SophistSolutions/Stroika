@@ -86,14 +86,7 @@ namespace   Stroika {
 
                 String GetVolumeName (const String& driveLetterAbsPath);
 
-
                 bool    FileExists (const String& filePath);
-
-#if 0
-
-                // returns true iff given path exists, is accessible, and is a directory
-                bool    DirectoryExists (const String& filePath);
-#endif
 
                 vector<String> FindFiles (const String& path, const String& fileNameToMatch = L"*.*");
 
