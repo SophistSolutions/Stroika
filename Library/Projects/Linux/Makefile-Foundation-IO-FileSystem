@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)BinaryFileOutputStream.o\
 	$(ObjDir)Common.o\
 	$(ObjDir)Directory.o\
+	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
 	$(ObjDir)PathName.o\
 	$(ObjDir)ThroughTmpFileWriter.o\
