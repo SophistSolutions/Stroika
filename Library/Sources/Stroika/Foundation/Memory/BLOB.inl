@@ -57,6 +57,18 @@ namespace   Stroika {
             };
 
 
+            struct  BLOB::AdoptRep_ : public _IRep {
+                const Byte* fStart;
+                const Byte* fEnd;
+
+                AdoptRep_ (const Byte* start, const Byte* end);
+                ~AdoptRep_ ();
+                virtual pair<const Byte*, const Byte*>   GetBounds () const override;
+
+                DECLARE_USE_BLOCK_ALLOCATION (AdoptRep_);
+            };
+
+
             /*
              ********************************************************************************
              ************************************** BLOB ************************************
@@ -72,6 +84,10 @@ namespace   Stroika {
             }
             inline  BLOB::BLOB (const Byte* start, const Byte* end)
                 : fRep_ (DEBUG_NEW BasicRep_ (start, end))
+            {
+            }
+            inline  BLOB::BLOB (const Byte* start, const Byte* end, AdoptFlag adopt)
+                : fRep_ (DEBUG_NEW AdoptRep_ (start, end))
             {
             }
             inline  BLOB::BLOB (const shared_ptr<_IRep>& rep)

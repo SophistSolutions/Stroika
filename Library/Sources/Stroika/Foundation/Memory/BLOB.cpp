@@ -44,6 +44,24 @@ pair<const Byte*, const Byte*>   Memory::BLOB::ZeroRep_::GetBounds () const
 
 
 
+Memory::BLOB::AdoptRep_::AdoptRep_ (const Byte* start, const Byte* end)
+    : fStart (start)
+    , fEnd (end)
+{
+    Require (start <= end);
+}
+
+Memory::BLOB::AdoptRep_::~AdoptRep_ ()
+{
+    delete[] fStart;
+}
+
+pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
+{
+    return pair<const Byte*, const Byte*> (fStart, fEnd);
+}
+
+
 
 
 

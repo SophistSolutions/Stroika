@@ -70,10 +70,15 @@ namespace   Stroika {
             class   BLOB {
             public:
                 /**
+                 *  BLOB() overload with AdoptFlag.eAdopt causes 'move semantics' on the pointer - where
+                 *  the BLOB takes over ownership of the pointer, and will call delete[] (start)
+                 *  on the 'start' pointer. Note - DANGEROUS IF MISUSED.
                  */
                 BLOB ();
                 BLOB (const vector<Byte>& data);
                 BLOB (const Byte* start, const Byte* end);
+                enum class AdoptFlag { eAdopt };
+                BLOB (const Byte* start, const Byte* end, AdoptFlag adopt);
 
             protected:
                 struct  _IRep;
@@ -155,6 +160,7 @@ namespace   Stroika {
 #endif
                 struct  BasicRep_;
                 struct  ZeroRep_ ;
+                struct  AdoptRep_ ;
 
             private:
                 shared_ptr<_IRep>   fRep_;
