@@ -200,65 +200,6 @@ namespace   Stroika {
                 };
 
 
-                /**
-                  * @todo   This FileReader utility needs redesign, and probably should be deprecated.
-                  *         It's implementation fails when built for 64 bit mode (we just hide the errors) and you read
-                  *         using a 32-bit API, and fails to possibly work by API design reading a > 4GB file on a
-                  *         32-bit system.
-                  */
-                class   FileReader {
-                public:
-                    FileReader (const String& fileName);
-                    ~FileReader ();
-
-                private:
-                    NO_COPY_CONSTRUCTOR (FileReader);
-                    NO_ASSIGNMENT_OPERATOR (FileReader);
-
-                public:
-                    const Byte* GetFileStart () const;
-                    const Byte* GetFileEnd () const;
-                    size_t      GetFileSize () const;
-
-                private:
-                    const Byte* fFileDataStart;
-                    const Byte* fFileDataEnd;
-                };
-                class   FileWriter {
-                public:
-                    FileWriter (const String& fileName);
-                    ~FileWriter ();
-
-                public:
-                    void    Append (const Byte* data, size_t count);
-
-                private:
-                    int     fFD;
-                };
-
-
-                class   MemoryMappedFileReader {
-                public:
-                    MemoryMappedFileReader (const String& fileName);
-                    ~MemoryMappedFileReader ();
-
-                private:
-                    NO_COPY_CONSTRUCTOR (MemoryMappedFileReader);
-                    NO_ASSIGNMENT_OPERATOR (MemoryMappedFileReader);
-
-                public:
-                    const Byte* GetFileStart () const;
-                    const Byte* GetFileEnd () const;
-                    size_t      GetFileSize () const;
-
-                private:
-                    const Byte* fFileDataStart;
-                    const Byte* fFileDataEnd;
-#if         qPlatform_Windows
-                    HANDLE      fFileHandle;
-                    HANDLE      fFileMapping;
-#endif
-                };
 
 
                 class   DirectoryContentsIterator {

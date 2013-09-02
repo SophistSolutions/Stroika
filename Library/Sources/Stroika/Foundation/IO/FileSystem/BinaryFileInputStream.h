@@ -26,6 +26,11 @@
  *      @todo   We need a BinaryFileInputOutputStream
  *
  *      @todo   Document these are not buffered, (well document). Document how easy to wrap buffered stream around.
+ *
+ *      @todo   Consider either adding directly here (optionally) the code from MemoryMappedFileReader (vintage 2013-09-02
+ *              or earlier). CreateFileMapping etc. Worthless unless that happens to be more efficient, and I have
+ *              no good reason to believe it will be. But maybe? Maybe cuz seeks more efficient (++ not syscall). Same
+ *              for reads - if caller does lots of little reads.
  */
 
 
