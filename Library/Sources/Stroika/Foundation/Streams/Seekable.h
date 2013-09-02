@@ -130,7 +130,7 @@ namespace   Stroika {
                  *
                  *  Seek () past the end of stream is NOT legal (may reconsider).
                  *
-                 *  Seek () returns the new resulting position.
+                 *  Seek () returns the new resulting position (measured from the start of the stream - same as GetOffset).
                  */
                 nonvirtual  SeekOffsetType  Seek (SignedSeekOffsetType offset) const;
                 nonvirtual  SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) const;
