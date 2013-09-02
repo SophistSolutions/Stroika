@@ -434,9 +434,11 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.cpp">
@@ -755,9 +757,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\WellKnownLocations.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.h" />
@@ -985,9 +989,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Exception.inl" />

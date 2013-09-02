@@ -8,8 +8,10 @@
 
 #include    "../../Foundation/Characters/Character.h"
 #include    "../../Foundation/Characters/CodePage.h"
+#include    "../../Foundation/Memory/BLOB.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
-#include    "../../Foundation/IO/FileSystem/FileUtils.h"
+#include    "../../Foundation/IO/FileSystem/BinaryFileInputStream.h"
+#include    "../../Foundation/IO/FileSystem/BinaryFileOutputStream.h"
 
 #include    "SpellCheckEngine_Basic.h"
 
@@ -22,8 +24,6 @@ using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Led;
 
 using   Memory::SmallStackBuffer;
-using   IO::FileSystem::FileReader;
-using   IO::FileSystem::FileWriter;
 
 
 
@@ -1149,18 +1149,14 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-#if     qPlatform_MacOS
-        FileReader  reader (&fUDName);
-#else
-        FileReader  reader (String::FromTString (fUDName));
-#endif
+        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromTString (fUDName)).ReadAll ();
 #if     qWideCharacters
-        size_t              fileLen     =   reader.GetFileEnd () - reader.GetFileStart ();
-        CodePage            useCodePage =   CodePagesGuesser ().Guess (reader.GetFileStart (), fileLen);
+        size_t              fileLen     =   b.size ();
+        CodePage            useCodePage =   CodePagesGuesser ().Guess (b.begin (), fileLen);
         CodePageConverter   cpc         =   CodePageConverter (useCodePage, CodePageConverter::eHandleBOM);
-        size_t              outCharCnt  =   cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (reader.GetFileStart ()), fileLen);
+        size_t              outCharCnt  =   cpc.MapToUNICODE_QuickComputeOutBufSize (reinterpret_cast<const char*> (b.begin ()), fileLen);
         SmallStackBuffer<Led_tChar> fileData2 (outCharCnt);
-        cpc.MapToUNICODE (reinterpret_cast<const char*> (reader.GetFileStart ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
+        cpc.MapToUNICODE (reinterpret_cast<const char*> (b.begin ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
         fUD->ReadFromBuffer (static_cast<Led_tChar*> (fileData2), static_cast<Led_tChar*> (fileData2) + outCharCnt);
 #else
         fUD->ReadFromBuffer (reinterpret_cast<const Led_tChar*> (reader.GetFileStart ()), reinterpret_cast<const Led_tChar*> (reader.GetFileEnd ()));
@@ -1178,7 +1174,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
 #if     qPlatform_MacOS
     FileWriter  writer (&fUDName);
 #else
-    FileWriter  writer (String::FromTString (fUDName));
+    IO::FileSystem::BinaryFileOutputStream  writer (String::FromTString (fUDName));
 #endif
 
 #if     qWideCharacters
@@ -1186,7 +1182,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
     size_t                      outCharCnt  =   cpc.MapFromUNICODE_QuickComputeOutBufSize (&*data.begin (), data.size ());
     SmallStackBuffer<char>  fileData2 (outCharCnt);
     cpc.MapFromUNICODE (&*data.begin (), data.size (), fileData2, &outCharCnt);
-    writer.Append (reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)), outCharCnt);
+    writer.Write (reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)), reinterpret_cast<const Byte*> (static_cast<char*> (fileData2)) + outCharCnt);
 #else
     writer.Append (reinterpret_cast<const Byte*> (&*data.begin ()), data.size ());
 #endif
