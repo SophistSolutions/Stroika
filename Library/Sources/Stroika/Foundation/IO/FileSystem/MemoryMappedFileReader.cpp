@@ -3,6 +3,9 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    <sys/types.h>
+#include    <fcntl.h>
+
 #if     qPlatform_Windows
 #include    <windows.h>
 #elif   qPlatform_POSIX
@@ -20,6 +23,7 @@
 #include    "../../IO/FileAccessException.h"
 #include    "../../IO/FileBusyException.h"
 #include    "../../IO/FileFormatException.h"
+#include    "FileSystem.h"
 #include    "PathName.h"
 
 #include    "MemoryMappedFileReader.h"
@@ -53,10 +57,10 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 #endif
 {
 #if         qPlatform_POSIX
-    int fd = 3;///tmphack....
-    AssertNotImplemented (); // chcek results
-    size_t fileLength = 3;//size of file - compute
-    void* mmap(void*, size_t, int, int, int, __off_t)
+    int fd = -1;
+    Execution::ThrowErrNoIfNegative (fd = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
+    size_t fileLength = IO::FileSystem::FileSystem::Default ().GetFileSize (fileName);//
+    //WRONG BUT NOT GROSSLY - @todo fix -- AssertNotImplemented (); // size of file - compute -- must check for overlflow and throw...
     fFileDataStart_ = reinterpret_cast<const Byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
     fFileDataEnd_ = fFileDataStart_ + fileLength;
     ::close (fd);//http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
