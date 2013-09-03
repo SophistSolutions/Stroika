@@ -7,6 +7,7 @@
 #include    <windows.h>
 #elif   qPlatform_POSIX
 #include    <unistd.h>
+#include    <sys/mman.h>
 #endif
 
 #include    "../../Execution/ErrNoException.h"
@@ -51,7 +52,14 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     , fFileMapping_ (INVALID_HANDLE_VALUE)
 #endif
 {
-#if         qPlatform_Windows
+#if         qPlatform_POSIX
+    int fd = 3;///tmphack....
+    AssertNotImplemented (); // chcek results
+    size_t fileLength = 3;//size of file - compute
+    fFileDataStart_ = ::mmap (nullptr, fileLength, PROT_READ, fd, 0);
+    fFileDataEnd_ = fFileDataStart_ + fileLength;
+    ::close (fd);//http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
+#elif       qPlatform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
         fFileHandle_ = ::CreateFile (fileName.AsTString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -81,7 +89,11 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 
 MemoryMappedFileReader::~MemoryMappedFileReader ()
 {
-#if         qPlatform_Windows
+#if         qPlatform_POSIX
+    int res = munmap(fFileDataStart_, fFileDataEnd_ - fFileDataStart_);
+    // check result!
+    AssertNotImplemented ();
+#elif       qPlatform_Windows
     if (fFileDataStart_ != nullptr) {
         (void)::UnmapViewOfFile (fFileDataStart_);
     }
