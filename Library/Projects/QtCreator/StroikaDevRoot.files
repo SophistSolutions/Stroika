@@ -1819,45 +1819,173 @@ Archive/Stroika_FINAL_for_STERL_1992/ReadMe.Unix
 Archive/Stroika_FINAL_for_STERL_1992/ReleaseLog
 Archive/Stroika_FINAL_for_STERL_1992/StroikaBugs
 Archive/Stroika_FINAL_for_STERL_1992/TODO
-Builds/Platform_Linux/HTMLViewCompiler
-Builds/Platform_Linux/Samples_SimpleService
-Builds/Platform_Linux/Samples_SSDPClient
+Builds/Platform_Linux/stH9J9pd
 Builds/Platform_Linux/Stroika-Foundation.a
 Builds/Platform_Linux/Stroika-Frameworks.a
-Builds/Platform_Linux/Test01
-Builds/Platform_Linux/Test02
-Builds/Platform_Linux/Test03
-Builds/Platform_Linux/Test04
-Builds/Platform_Linux/Test05
-Builds/Platform_Linux/Test06
-Builds/Platform_Linux/Test07
-Builds/Platform_Linux/Test09
-Builds/Platform_Linux/Test10
-Builds/Platform_Linux/Test11
-Builds/Platform_Linux/Test12
-Builds/Platform_Linux/Test13
-Builds/Platform_Linux/Test14
-Builds/Platform_Linux/Test16
-Builds/Platform_Linux/Test17
-Builds/Platform_Linux/Test18
-Builds/Platform_Linux/Test19
-Builds/Platform_Linux/Test20
-Builds/Platform_Linux/Test21
-Builds/Platform_Linux/Test22
-Builds/Platform_Linux/Test23
-Builds/Platform_Linux/Test24
-Builds/Platform_Linux/Test25
-Builds/Platform_Linux/Test26
-Builds/Platform_Linux/Test27
-Builds/Platform_Linux/Test28
-Builds/Platform_Linux/Test29
-Builds/Platform_Linux/Test30
-Builds/Platform_Linux/Test31
-Builds/Platform_Linux/Test32
-Builds/Platform_Linux/Test33
-Builds/Platform_Linux/Test34
-Builds/Platform_Linux/Test35
-Builds/Platform_Linux/Test36
+Builds.noopt/Platform_Linux/HTMLViewCompiler
+Builds.noopt/Platform_Linux/Samples_SimpleService
+Builds.noopt/Platform_Linux/Samples_SSDPClient
+Builds.noopt/Platform_Linux/Stroika-Foundation.a
+Builds.noopt/Platform_Linux/Stroika-Frameworks.a
+Builds.noopt/Platform_Linux/Test01
+Builds.noopt/Platform_Linux/Test02
+Builds.noopt/Platform_Linux/Test03
+Builds.noopt/Platform_Linux/Test04
+Builds.noopt/Platform_Linux/Test05
+Builds.noopt/Platform_Linux/Test06
+Builds.noopt/Platform_Linux/Test07
+Builds.noopt/Platform_Linux/Test08
+Builds.noopt/Platform_Linux/Test09
+Builds.noopt/Platform_Linux/Test10
+Builds.noopt/Platform_Linux/Test11
+Builds.noopt/Platform_Linux/Test12
+Builds.noopt/Platform_Linux/Test13
+Builds.noopt/Platform_Linux/Test14
+Builds.noopt/Platform_Linux/Test15
+Builds.noopt/Platform_Linux/Test16
+Builds.noopt/Platform_Linux/Test17
+Builds.noopt/Platform_Linux/Test18
+Builds.noopt/Platform_Linux/Test19
+Builds.noopt/Platform_Linux/Test20
+Builds.noopt/Platform_Linux/Test21
+Builds.noopt/Platform_Linux/Test22
+Builds.noopt/Platform_Linux/Test23
+Builds.noopt/Platform_Linux/Test24
+Builds.noopt/Platform_Linux/Test25
+Builds.noopt/Platform_Linux/Test26
+Builds.noopt/Platform_Linux/Test27
+Builds.noopt/Platform_Linux/Test28
+Builds.noopt/Platform_Linux/Test29
+Builds.noopt/Platform_Linux/Test30
+Builds.noopt/Platform_Linux/Test31
+Builds.noopt/Platform_Linux/Test32
+Builds.noopt/Platform_Linux/Test33
+Builds.noopt/Platform_Linux/Test34
+Builds.noopt/Platform_Linux/Test35
+Builds.noopt/Platform_Linux/Test36
+Builds.NoStdAtomicFact/Platform_Linux/HTMLViewCompiler
+Builds.NoStdAtomicFact/Platform_Linux/Samples_SimpleService
+Builds.NoStdAtomicFact/Platform_Linux/Samples_SSDPClient
+Builds.NoStdAtomicFact/Platform_Linux/Stroika-Foundation.a
+Builds.NoStdAtomicFact/Platform_Linux/Stroika-Frameworks.a
+Builds.NoStdAtomicFact/Platform_Linux/Test01
+Builds.NoStdAtomicFact/Platform_Linux/Test02
+Builds.NoStdAtomicFact/Platform_Linux/Test03
+Builds.NoStdAtomicFact/Platform_Linux/Test04
+Builds.NoStdAtomicFact/Platform_Linux/Test05
+Builds.NoStdAtomicFact/Platform_Linux/Test06
+Builds.NoStdAtomicFact/Platform_Linux/Test07
+Builds.NoStdAtomicFact/Platform_Linux/Test08
+Builds.NoStdAtomicFact/Platform_Linux/Test09
+Builds.NoStdAtomicFact/Platform_Linux/Test10
+Builds.NoStdAtomicFact/Platform_Linux/Test11
+Builds.NoStdAtomicFact/Platform_Linux/Test12
+Builds.NoStdAtomicFact/Platform_Linux/Test13
+Builds.NoStdAtomicFact/Platform_Linux/Test14
+Builds.NoStdAtomicFact/Platform_Linux/Test15
+Builds.NoStdAtomicFact/Platform_Linux/Test16
+Builds.NoStdAtomicFact/Platform_Linux/Test17
+Builds.NoStdAtomicFact/Platform_Linux/Test18
+Builds.NoStdAtomicFact/Platform_Linux/Test19
+Builds.NoStdAtomicFact/Platform_Linux/Test20
+Builds.NoStdAtomicFact/Platform_Linux/Test21
+Builds.NoStdAtomicFact/Platform_Linux/Test22
+Builds.NoStdAtomicFact/Platform_Linux/Test23
+Builds.NoStdAtomicFact/Platform_Linux/Test24
+Builds.NoStdAtomicFact/Platform_Linux/Test25
+Builds.NoStdAtomicFact/Platform_Linux/Test26
+Builds.NoStdAtomicFact/Platform_Linux/Test27
+Builds.NoStdAtomicFact/Platform_Linux/Test28
+Builds.NoStdAtomicFact/Platform_Linux/Test29
+Builds.NoStdAtomicFact/Platform_Linux/Test30
+Builds.NoStdAtomicFact/Platform_Linux/Test31
+Builds.NoStdAtomicFact/Platform_Linux/Test32
+Builds.NoStdAtomicFact/Platform_Linux/Test33
+Builds.NoStdAtomicFact/Platform_Linux/Test34
+Builds.NoStdAtomicFact/Platform_Linux/Test35
+Builds.NoStdAtomicFact/Platform_Linux/Test36
+Builds.PRE-FACTORYCHANGE/Platform_Linux/HTMLViewCompiler
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Samples_SimpleService
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Samples_SSDPClient
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Stroika-Foundation.a
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Stroika-Frameworks.a
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test01
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test02
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test03
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test04
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test05
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test06
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test07
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test08
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test09
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test10
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test11
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test12
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test13
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test14
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test15
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test16
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test17
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test18
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test19
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test20
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test21
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test22
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test23
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test24
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test25
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test26
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test27
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test28
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test29
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test30
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test31
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test32
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test33
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test34
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test35
+Builds.PRE-FACTORYCHANGE/Platform_Linux/Test36
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/HTMLViewCompiler
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Samples_SimpleService
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Samples_SSDPClient
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Stroika-Foundation.a
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Stroika-Frameworks.a
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test01
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test02
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test03
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test04
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test05
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test06
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test07
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test08
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test09
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test10
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test11
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test12
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test13
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test14
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test15
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test16
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test17
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test18
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test19
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test20
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test21
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test22
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test23
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test24
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test25
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test26
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test27
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test28
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test29
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test30
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test31
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test32
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test33
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test34
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test35
+Builds.PRE-SET_FACTORY_CHANGE/Platform_Linux/Test36
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/all_5f.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/all_5f.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/all_61.html
@@ -2082,8 +2210,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/search_m.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/search_r.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_65.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_65.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_66.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_66.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_6b.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_6b.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/search/typedefs_70.html
@@ -2118,9 +2244,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_assertions_8cpp_so
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_assertions_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_assertions_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_assertions_8h_source.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_atomic_operations_8cpp_source.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_atomic_operations_8h_source.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_atomic_operations_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_b_l_o_b_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_b_l_o_b_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_b_l_o_b_8h_source.html
@@ -2135,7 +2258,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___array_8h.htm
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___array_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___array_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_bag___linked_list_8h.html
@@ -2296,7 +2418,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___doubly_lin
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___doubly_linked_list_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___doubly_linked_list_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_deque___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_device_8cpp_source.html
@@ -2355,6 +2476,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_busy_exceptio
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_format_exception_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_format_exception_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_format_exception_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_system_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_system_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_system_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_utils_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_utils_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_file_utils_8inl_source.html
@@ -2378,6 +2502,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_crypt
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_cryptography_2_s_s_l_2_common_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_cryptography_2_s_s_l_2_common_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_data_exchange_format_2_x_m_l_2_common_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_i_o_2_file_system_2_common_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_i_o_2_file_system_2_common_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_i_o_2_file_system_2_common_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_math_2_common_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_math_2_common_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_foundation_2_memory_2_common_8cpp_source.html
@@ -2443,14 +2570,15 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterable_8inl_sour
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterable_utils_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterable_utils_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_impl_helper_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_iterator_impl_helper_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_reader_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_reader_8h.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_reader_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_writer_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_writer_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_writer_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_j_s_o_n_2_writer_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_jenkins_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_jenkins_8h.html
@@ -2511,7 +2639,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___array_8h
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___array_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___array_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_mapping___linked_list_8h.html
@@ -2527,6 +2654,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_allocator_8
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_allocator_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_allocator_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_allocator_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_mapped_file_reader_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_mapped_file_reader_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_memory_mapped_file_reader_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_methods_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_methods_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_methods_8inl_source.html
@@ -2599,7 +2729,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___doubly_lin
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___doubly_linked_list_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___doubly_linked_list_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_queue___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_r_c4_8cpp_source.html
@@ -2611,8 +2740,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_range_8h_source.ht
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_range_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_reader_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_reader_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_reader_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_reader_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_reader_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_realtime_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_realtime_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_realtime_8h.js
@@ -2634,6 +2763,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_object_reade
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_object_reader_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_object_reader_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_reader_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_reader_8h.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_reader_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_reader_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_a_x_reader_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_s_s_l_socket_8cpp_source.html
@@ -2655,7 +2786,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___doubly_
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___doubly_linked_list_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___doubly_linked_list_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___linked_list_8h.html
@@ -2666,6 +2796,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence___sparse_
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence__stdvector_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence__stdvector_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sequence__stdvector_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_serialization_configuration_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_serialization_configuration_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_serialization_configuration_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_server_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_server_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_server_8inl_source.html
@@ -2674,7 +2807,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_server_context_8h_
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_set___linked_list_8h.html
@@ -2722,7 +2854,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___linked_list_8h.html
@@ -2731,7 +2862,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_bag___linke
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping__stdmap_8h.html
@@ -2740,7 +2870,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_mapping__st
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_set__stdset_8h.html
@@ -2750,7 +2879,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally_8h.ht
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_sorted_tally__stdmap_8h.html
@@ -2766,7 +2894,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_stack___linked_list_8h.html
@@ -2856,7 +2983,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___array_8h.h
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___array_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___array_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___factory_8h.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___factory_8h.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___factory_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___factory_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___linked_list_8h.html
@@ -2865,6 +2991,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally___linked_lis
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally__stdmap_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally__stdmap_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_tally__stdmap_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_temporary_file_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_temporary_file_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_temporary_file_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_testing_data_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_testing_data_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_testing_data_8inl_source.html
@@ -2892,6 +3021,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream_binary_adapter_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream_binary_adapter_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream_binary_adapter_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream_from_o_stream_adapter_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_output_stream_from_o_stream_adapter_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_store_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_store_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_text_stream_8cpp_source.html
@@ -2909,6 +3040,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_thread_abort_excep
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_thread_pool_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_thread_pool_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_thread_pool_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_through_tmp_file_writer_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_through_tmp_file_writer_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_through_tmp_file_writer_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_time_of_day_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_time_of_day_8h.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_time_of_day_8h.js
@@ -2973,9 +3107,19 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_word_wrapped_text_
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_word_wrapped_text_interactor_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_words_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_words_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_8h.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_utils_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_utils_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_writer_utils_8inl_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_reader_8cpp_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_reader_8h.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_reader_8h_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_writer_8cpp_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_writer_8h_source.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/_x_m_l_2_writer_8inl_source.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/annotated.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/annotated.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/bc_s.png
@@ -3076,6 +3220,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___array.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___array.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___array.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_bag___linked_list.js
@@ -3088,10 +3234,14 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_deque___doubly_linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_deque___doubly_linked_list.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_deque___doubly_linked_list.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_deque___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_deque___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___array-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___array.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___array.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___array.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_mapping___linked_list.js
@@ -3104,6 +3254,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_queue___doubly_linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_queue___doubly_linked_list.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_queue___doubly_linked_list.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_queue___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_queue___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___array-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___array.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___array.js
@@ -3112,6 +3264,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___doubly_linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___doubly_linked_list.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___doubly_linked_list.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence___linked_list.js
@@ -3124,6 +3278,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence__stdvector.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence__stdvector.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sequence__stdvector.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set___linked_list.js
@@ -3132,10 +3288,20 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set__stdset.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set__stdset.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_set__stdset.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___linked_list.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_bag___linked_list.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_mapping___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_mapping___factory.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_set___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_set___factory.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_tally___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_sorted_tally___factory.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_stack___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_stack___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_stack___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_stack___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_stack___linked_list.js
@@ -3144,6 +3310,8 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___array.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___array.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___array.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___factory-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___factory.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___linked_list-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___linked_list.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_containers_1_1_concrete_1_1_tally___linked_list.js
@@ -3367,9 +3535,31 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_internet_media_type-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_internet_media_type.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_internet_media_type.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_reader-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_reader.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_reader.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_reader.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_writer-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_writer.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_writer.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_j_s_o_n_1_1_writer.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_object_variant_mapper-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_object_variant_mapper.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_object_variant_mapper.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader_1_1___i_rep-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader_1_1___i_rep.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_reader_1_1___i_rep.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer_1_1___i_rep-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer_1_1___i_rep.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_writer_1_1___i_rep.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_builtin_reader-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_builtin_reader.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_builtin_reader.js
@@ -3392,6 +3582,10 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_optional_types_reader.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_optional_types_reader.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_optional_types_reader.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_reader-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_reader.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_reader.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_reader.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_callback_interface-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_callback_interface.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_callback_interface.js
@@ -3402,6 +3596,13 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_object_reader_1_1_object_base.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_object_reader_1_1_object_base.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_s_a_x_object_reader_1_1_object_base.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_serialization_configuration-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_serialization_configuration.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_serialization_configuration.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_writer-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_writer.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_writer.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_data_exchange_format_1_1_x_m_l_1_1_writer.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_database_1_1_exception-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_database_1_1_exception.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_database_1_1_exception.js
@@ -3592,12 +3793,9 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_directory_contents_iterator-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_directory_contents_iterator.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_directory_contents_iterator.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_reader-members.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_reader.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_reader.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_writer-members.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_writer.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_writer.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_system-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_system.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_file_system.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_memory_mapped_file_reader-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_memory_mapped_file_reader.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_memory_mapped_file_reader.js
@@ -3607,9 +3805,6 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_scoped_tmp_file-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_scoped_tmp_file.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_scoped_tmp_file.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_temp_file_librarian-members.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_temp_file_librarian.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_temp_file_librarian.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_through_tmp_file_writer-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_through_tmp_file_writer.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_i_o_1_1_file_system_1_1_through_tmp_file_writer.js
@@ -3822,6 +4017,10 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_f
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_input_stream_from_i_stream_adapter.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_input_stream_from_i_stream_adapter.js
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_input_stream_from_i_stream_adapter.png
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_output_stream_from_o_stream_adapter-members.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_output_stream_from_o_stream_adapter.html
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_output_stream_from_o_stream_adapter.js
+Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_streams_1_1iostream_1_1_text_output_stream_from_o_stream_adapter.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_time_1_1_date-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_time_1_1_date.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/class_stroika_1_1_foundation_1_1_time_1_1_date.js
@@ -5381,10 +5580,7 @@ Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_shared_by_value___traits-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_shared_by_value___traits.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_shared_by_value___traits.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_variant_value_1_1_t_i_rep__-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_variant_value_1_1_t_i_rep__.html
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_variant_value_1_1_t_i_rep__.js
-Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_memory_1_1_variant_value_1_1_t_i_rep__.png
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_time_1_1_duration_1_1_pretty_print_info-members.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_time_1_1_duration_1_1_pretty_print_info.html
 Documentation/Doxygen/IntermediateFiles/Stroika-Doxygen-Help/struct_stroika_1_1_foundation_1_1_time_1_1_duration_1_1_pretty_print_info.js
@@ -5945,15 +6141,23 @@ Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Common.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Namespace.inl
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Reader.cpp
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Reader.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.inl
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SAXReader.inl
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SerializationConfiguration.cpp
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SerializationConfiguration.h
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/SerializationConfiguration.inl
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/Writer.inl
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/WriterUtils.cpp
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/WriterUtils.h
+Library/Sources/Stroika/Foundation/DataExchangeFormat/XML/WriterUtils.inl
 Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/BadFormatException.inl
@@ -5963,8 +6167,14 @@ Library/Sources/Stroika/Foundation/DataExchangeFormat/InternetMediaType.inl
 Library/Sources/Stroika/Foundation/DataExchangeFormat/ObjectVariantMapper.cpp
 Library/Sources/Stroika/Foundation/DataExchangeFormat/ObjectVariantMapper.h
 Library/Sources/Stroika/Foundation/DataExchangeFormat/ObjectVariantMapper.inl
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Reader.cpp
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Reader.h
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Reader.inl
 Library/Sources/Stroika/Foundation/DataExchangeFormat/ReadMe.md
 Library/Sources/Stroika/Foundation/DataExchangeFormat/ToDo.md
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Writer.cpp
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Writer.h
+Library/Sources/Stroika/Foundation/DataExchangeFormat/Writer.inl
 Library/Sources/Stroika/Foundation/Debug/Assertions.cpp
 Library/Sources/Stroika/Foundation/Debug/Assertions.h
 Library/Sources/Stroika/Foundation/Debug/Debugger.cpp
@@ -6009,9 +6219,6 @@ Library/Sources/Stroika/Foundation/Execution/Resources/Name.h
 Library/Sources/Stroika/Foundation/Execution/Resources/Name.inl
 Library/Sources/Stroika/Foundation/Execution/Resources/ResourceNotFoundException.cpp
 Library/Sources/Stroika/Foundation/Execution/Resources/ResourceNotFoundException.h
-Library/Sources/Stroika/Foundation/Execution/AtomicOperations.cpp
-Library/Sources/Stroika/Foundation/Execution/AtomicOperations.h
-Library/Sources/Stroika/Foundation/Execution/AtomicOperations.inl
 Library/Sources/Stroika/Foundation/Execution/BlockingQueue.cpp
 Library/Sources/Stroika/Foundation/Execution/BlockingQueue.h
 Library/Sources/Stroika/Foundation/Execution/BlockingQueue.inl
@@ -6098,15 +6305,31 @@ Library/Sources/Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.inl
 Library/Sources/Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.cpp
 Library/Sources/Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h
 Library/Sources/Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/Common.cpp
+Library/Sources/Stroika/Foundation/IO/FileSystem/Common.h
+Library/Sources/Stroika/Foundation/IO/FileSystem/Common.inl
 Library/Sources/Stroika/Foundation/IO/FileSystem/Directory.cpp
 Library/Sources/Stroika/Foundation/IO/FileSystem/Directory.h
 Library/Sources/Stroika/Foundation/IO/FileSystem/Directory.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/FileSystem.cpp
+Library/Sources/Stroika/Foundation/IO/FileSystem/FileSystem.h
+Library/Sources/Stroika/Foundation/IO/FileSystem/FileSystem.inl
 Library/Sources/Stroika/Foundation/IO/FileSystem/FileUtils.cpp
 Library/Sources/Stroika/Foundation/IO/FileSystem/FileUtils.h
 Library/Sources/Stroika/Foundation/IO/FileSystem/FileUtils.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/MemoryMappedFileReader.cpp
+Library/Sources/Stroika/Foundation/IO/FileSystem/MemoryMappedFileReader.h
+Library/Sources/Stroika/Foundation/IO/FileSystem/MemoryMappedFileReader.inl
 Library/Sources/Stroika/Foundation/IO/FileSystem/PathName.cpp
 Library/Sources/Stroika/Foundation/IO/FileSystem/PathName.h
 Library/Sources/Stroika/Foundation/IO/FileSystem/PathName.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/TemporaryFile.cpp
+Library/Sources/Stroika/Foundation/IO/FileSystem/TemporaryFile.h
+Library/Sources/Stroika/Foundation/IO/FileSystem/TemporaryFile.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.cpp
+Library/Sources/Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.h
+Library/Sources/Stroika/Foundation/IO/FileSystem/ThroughTmpFileWriter.inl
+Library/Sources/Stroika/Foundation/IO/FileSystem/TODO.md
 Library/Sources/Stroika/Foundation/IO/FileSystem/WellKnownLocations.cpp
 Library/Sources/Stroika/Foundation/IO/FileSystem/WellKnownLocations.h
 Library/Sources/Stroika/Foundation/IO/Network/HTTP/Exception.cpp
@@ -6205,6 +6428,8 @@ Library/Sources/Stroika/Foundation/Streams/iostream/FStreamSupport.cpp
 Library/Sources/Stroika/Foundation/Streams/iostream/FStreamSupport.h
 Library/Sources/Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.cpp
 Library/Sources/Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h
+Library/Sources/Stroika/Foundation/Streams/iostream/TextOutputStreamFromOStreamAdapter.cpp
+Library/Sources/Stroika/Foundation/Streams/iostream/TextOutputStreamFromOStreamAdapter.h
 Library/Sources/Stroika/Foundation/Streams/iostream/Utilities.cpp
 Library/Sources/Stroika/Foundation/Streams/iostream/Utilities.h
 Library/Sources/Stroika/Foundation/Streams/BasicBinaryInputOutputStream.cpp
@@ -6901,567 +7126,7 @@ Tests/Run.pl
 Tests/RunValGrind.sh
 Tests/RunValGrinds.sh
 Tests/Tests-Description.txt
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/clang/analyze.sh
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/clang/copyfiles.sh
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyle
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/astyled
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/libastyle.a
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/libastyle.so
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/libastyled.a
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/gcc/bin/libastyled.so
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vms/descrip.mms
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vms/java.opt
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vms/lib.opt
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vms/vmsbuild.com
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyle/AStyle.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleDll/AStyleDll.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleJava/AStyleJava.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleLib/AStyleLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/All AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleDll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleJava.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2005/AStyleLib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyle/AStyle.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleDll/AStyleDll.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleJava/AStyleJava.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleLib/AStyleLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/All AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleDll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleJava.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2008/AStyleLib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyle/AStyle.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyle/AStyle.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleDll/AStyleDll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleDll/AStyleDll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleJava/AStyleJava.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleJava/AStyleJava.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/All AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleDll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleJava.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2010/AStyleLib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyle/AStyle.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyle/AStyle.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleDll/AStyleDll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleDll/AStyleDll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleJava/AStyleJava.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleJava/AStyleJava.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/All AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyle.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleDll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleJava.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/build/vs2012/AStyleLib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/astyle.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/index.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/install.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/license.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/links.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/news.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/newsArchives.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/notes.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/notesArchives.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/scripts.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/styles.css
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/subversion.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/doc/vsinstall.html
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASBeautifier.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASEnhancer.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASFormatter.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASLocalizer.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASLocalizer.h
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/ASResource.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/astyle.h
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/astyle_main.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyle/src/astyle_main.h
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland Example Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland Example Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland Example Obj.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland Example2 Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland PrintDir.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland PrintDirTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-borland/Borland Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/AStyle.def
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/AStylej.def
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DllMain.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars Example Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars Example Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars Example Obj.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars Example2 Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-dmars/DMars Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC Example Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC Example Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC Example Obj.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC Example2 Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC PrintDir.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC PrintDirTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-ec/EC Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc ColorPrint.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example A.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example O.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example So.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example2 A.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example2 O.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Example2 So.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc PrintDir Test.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc PrintDir.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-gcc/Gcc Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example A.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example O.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example So.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example2 A.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example2 O.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Example2 So.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel PrintDir Test.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel PrintDir.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-intel/Intel Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW AStyle Java.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW AStyle Sharp.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW AStyle.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW ColorPrint.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW Example Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW Example Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW Example Obj.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW Example2 Dll.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW PrintDirTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/cb-mingw/MinGW Workspace.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/AStyleDll/AStyleDll.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/AStyleLib/AStyleLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2Cs/Example2 Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2Dll/Example2 Dll.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2Lib/Example2 Lib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2Obj/Example2 Obj.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/ExampleCs/Example Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/ExampleDll/Example Dll.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/ExampleLib/Example Lib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/ExampleObj/Example Obj.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Glob/Glob.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/PrintDir/PrintDir.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/PrintDirTest/PrintDirTest.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/All Examples.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2 Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2 Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2 Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Example2 Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/Glob.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/PrintDir.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2008/PrintDirTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/AStyleDll/AStyleDll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/AStyleDll/AStyleDll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Cs/Example2 Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Dll/Example2 Dll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Dll/Example2 Dll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Lib/Example2 Lib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Lib/Example2 Lib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Obj/Example2 Obj.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2Obj/Example2 Obj.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleCs/Example Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleDll/Example Dll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleDll/Example Dll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleLib/Example Lib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleLib/Example Lib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleObj/Example Obj.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExampleObj/Example Obj.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/ExamplePy/Example Py.pyproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Glob/Glob.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Glob/Glob.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDir/PrintDir.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDir/PrintDir.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDirTest/PrintDirTest.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDirTest/PrintDirTest.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/All Examples.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2 Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2 Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2 Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Example2 Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/Glob.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDir.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2010/PrintDirTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/AStyleDll/AStyleDll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/AStyleDll/AStyleDll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Cs/Example2 Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Dll/Example2 Dll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Dll/Example2 Dll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Lib/Example2 Lib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Lib/Example2 Lib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Obj/Example2 Obj.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2Obj/Example2 Obj.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleCs/Example Cs.csproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleDll/Example Dll.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleDll/Example Dll.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleLib/Example Lib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleLib/Example Lib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleObj/Example Obj.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/ExampleObj/Example Obj.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Glob/Glob.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Glob/Glob.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDir/PrintDir.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDir/PrintDir.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDirTest/PrintDirTest.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDirTest/PrintDirTest.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/All Examples.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2 Cs.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2 Dll.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2 Lib.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Example2 Obj.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/Glob.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDir.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/build/vs2012/PrintDirTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/cpp.html
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/edit-anjuta.css
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/edit-emacs.css
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/edit-jedit.css
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/index.html
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/jni.html
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/navajo-night.css
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/python.html
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/sharp.html
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/doc/styles.css
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/astyle-clean.bat.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/astyle-clean.py.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/astyle-clean.sh.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/astyle-hooks.el.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/astyle.pl.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/example2-cpp_2.02.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/example2-java_2.02.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/example2-sharp_2.02.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/examples-python_2.02.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/downloads/indent-commit.pl.zip
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/astylebuild-cs.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/astylebuild-src-java.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/astylebuild-src-sharp.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/astylebuild-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/dist-copy.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/dist-format-cpp.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/dist-format-java.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/dist-format-sharp.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/dumpbin.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/profile-print.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-bat/profile-run.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/astyle-gcc.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/astyle-intel.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/astylebuild-src-java.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/astylebuild-src-sharp.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/mac-build.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/mac-test-java.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/mac-test-sharp.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/file-sh/profile-print.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/astyle-clean.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/astyle-clean.py
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/astyle-clean.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/astyle-hooks.el
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/astyle.pl
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/scripts/indent-commit.pl
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-c/Example.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cx/AStyleInterface.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cx/AStyleInterface.h
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cx/Example2.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/ColorPrint.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/Glob.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/PrintDir.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/printdir2lnx.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/printdirlnx.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-cxx/PrintDirTest.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-j/AStyleInterface.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-j/Example.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-j/SciTE.properties
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-jx/AStyleInterface.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-jx/Example2.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-jx/SciTE.properties
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-py/ExampleByte.py
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-py/ExampleExe.py
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-py/ExampleUnicode.py
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-s/AStyleInterface.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-s/Example.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-s/SciTE.properties
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-sx/AStyleInterface.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-sx/Example2.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/src-sx/SciTE.properties
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-c/ASBeautifier.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-c/ASFormatter.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-c/astyle.h
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-j/JSBeautifier.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-j/JSFormatter.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-j/JSLineBreaker.java
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-s/FileUtility.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-s/MainClass.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleDev/test-s/StringParser.cs
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTest.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTestCon.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTestCon.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTestI18n.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC AStyleTestI18n.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC GTest Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC tlib.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-ec/EC tlibd.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-gcc/Gcc AStyleTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-gcc/Gcc AStyleTest.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-gcc/Gcc AStyleTestCon.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-gcc/Gcc AStyleTestI18n.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-gcc/Gcc GTestA.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-intel/Intel AStyleTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-intel/Intel AStyleTest.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-intel/Intel AStyleTestCon.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-intel/Intel AStyleTestI18n.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-intel/Intel GTestA.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTest.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTest.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTestCon.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTestCon.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTestI18n.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW AStyleTestI18n.workspace
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW GMock Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/MinGW GTest Lib.cbp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/cb-mingw/mingw-link.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleConLib/AStyleConLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleLib/AStyleLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTest/AStyleTest.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestCon/AStyleTestCon.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestI18n/AStyleTestI18n.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestLeak/AStyleTestLeak.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/GTestLib/GTestLib.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/TersePrinter/TersePrinter.vcproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestCon.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestI18n.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/AStyleTestLeak.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2008/TersePrinter.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleConLib/AStyleConLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleConLib/AStyleConLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTest/AStyleTest.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTest/AStyleTest.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestCon/AStyleTestCon.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestCon/AStyleTestCon.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestI18n/AStyleTestI18n.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestI18n/AStyleTestI18n.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestLeak/AStyleTestLeak.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestLeak/AStyleTestLeak.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/GTestLib/GTestLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/GTestLib/GTestLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/astyle-scripts.pyproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/astyle-scripts.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/locale-scripts.pyproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/locale-scripts.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/regression2-script.pyproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/PythonScripts/regression2-script.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/TersePrinter/TersePrinter.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/TersePrinter/TersePrinter.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestCon.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestI18n.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/AStyleTestLeak.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2010/TersePrinter.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleConLib/AStyleConLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleConLib/AStyleConLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleLib/AStyleLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleLib/AStyleLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTest/AStyleTest.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTest/AStyleTest.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestCon/AStyleTestCon.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestCon/AStyleTestCon.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestI18n/AStyleTestI18n.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestI18n/AStyleTestI18n.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestLeak/AStyleTestLeak.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestLeak/AStyleTestLeak.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/GTestLib/GTestLib.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/GTestLib/GTestLib.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/TersePrinter/TersePrinter.vcxproj
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/TersePrinter/TersePrinter.vcxproj.filters
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTest.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestCon.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestI18n.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/AStyleTestLeak.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/build/vs2012/TersePrinter.sln
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/#d-build.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/#d-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/#d-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/#d-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/#d-testWait.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/astyle-help.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/astyle-version.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-checkout.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-test-redirect.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cb-test23.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cl-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cl-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/cppcheck.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/diff-print-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/diff-print.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/dist-format-astyle.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/dist-format-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ecl-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ecl-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ecl-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/emacs-copy.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/emacs-cpp-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/emacs-test-cpp.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/emacs-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/gmock-link.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/hman1-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/hman1-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/hman2-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/hman2-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/je-build.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/je-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/je-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/je-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/kd-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/kd-extract.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/kd-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/leakfinder-link.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/libCompile.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/merge-copy.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/merge-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/profile-con-print.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/profile-print.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/sci-copy.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/sci-diff.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/sci-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/sci-testNR.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ut-mingw-make.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ut-mingw-makefile
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-bat/ut-vs2008-make.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-beautifier.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-console.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-enhancer.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-formatter.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-libsvn.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-localizer.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-protected.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-resource.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/astyle-streamiter.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/diff1-print.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/diff2-print.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/dist-copy.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/ex-regression2-test-alt.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/ex-system-test_alt.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/file-extract.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/libastyle.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/libextract.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/libtest.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/locale-enum-i18n.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/locale-testi18n-ec.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/locale-testi18n-mingw.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/locale-testi18n-vc.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/regression1-test.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/regression2-test.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-py/system-test.py
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/astyle-build.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/astylehelp.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/gtest-link.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/md-build.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/profile-con-print.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-sh/profile-print.sh
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-checkout-astyle.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-checkout-astyledev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-checkout-astyletest.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-checkout-astyleweb.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-create-branch-doc.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-create-branch-docdev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-create-release.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-cwrsync-backup.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-cwrsync-restore.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-import-astyle-dev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-import-astyle-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-import-astyle.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-merge-branch-doc.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/sf-merge-branch-docdev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-checkout-astyle.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-checkout-astyledev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-checkout-astyletest.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-checkout-astyleweb.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-create-branch-doc.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-create-branch-docdev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-create-release.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-cwrsync-backup.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-cwrsync-restore.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-dump.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-format-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-format.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-hotcopy.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-hotrestore.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-import-astyle-dev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-import-astyle-test.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-import-astyle.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-load.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-merge-branch-doc.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/file-svn/test-merge-branch-docdev.bat
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest.h
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_BracketsCpp1.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_BracketsCpp2.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_BracketsJava.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_BracketsSharp.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_BugFix.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Format.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Indent.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_LeakFinder.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Main.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Other.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Pad.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Styles1.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Styles2.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/src/AStyleTest_Tabs.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srccon/AStyleTestCon.h
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srccon/AStyleTestCon_Console1.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srccon/AStyleTestCon_Console2.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srccon/AStyleTestCon_Main.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srccon/AStyleTestCon_Print.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srci18n/AStyleTestI18n_I18n.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srci18n/AStyleTestI18n_Localizer.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srci18n/AStyleTestI18n_Utf16.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srcx/gtest-options.lst
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srcx/TersePrinter.cpp
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srcx/TersePrinter.h
-ThirdPartyLibs/astyle/CURRENT/AStyleTest/srcx/TersePrinter_Test.cpp
-ThirdPartyLibs/astyle/Origs/astyle-trunk-2013-02-25.tar.gz
-ThirdPartyLibs/astyle/buildall.pl
-ThirdPartyLibs/astyle/checkall.pl
-ThirdPartyLibs/astyle/FetchLatestAStyle.pl
 ThirdPartyLibs/doxygen/CURRENT/bin/doxygen.exe
-ThirdPartyLibs/doxygen/Origs/doxygen-1.8.2-setup.exe
-ThirdPartyLibs/doxygen/Origs/doxygen-1.8.2-Windows-Installed.tar.gz
 ThirdPartyLibs/doxygen/buildall.pl
 ThirdPartyLibs/doxygen/checkall.pl
 ThirdPartyLibs/openssl/CURRENT/apps/demoCA/private/cakey.pem
@@ -9810,11 +9475,13 @@ ThirdPartyLibs/openssl/CURRENT/README
 ThirdPartyLibs/openssl/CURRENT/README.ASN1
 ThirdPartyLibs/openssl/CURRENT/README.ENGINE
 ThirdPartyLibs/openssl/CURRENT/rehash.time
-ThirdPartyLibs/openssl/Origs/openssl-1.0.1e.tar.gz
 ThirdPartyLibs/openssl/buildall.pl
 ThirdPartyLibs/openssl/checkall.pl
 ThirdPartyLibs/openssl/ReadMe.txt
 ThirdPartyLibs/openssl/REFERENCE_OUTPUT.txt
+ThirdPartyLibs/Origs-Cache/doxygen-1.8.2-setup.exe
+ThirdPartyLibs/Origs-Cache/doxygen-1.8.2-Windows-Installed.tar.gz
+ThirdPartyLibs/Origs-Cache/openssl-1.0.1e.tar.gz
 ThirdPartyLibs/Xerces/CURRENT/config/compile
 ThirdPartyLibs/Xerces/CURRENT/config/config.guess
 ThirdPartyLibs/Xerces/CURRENT/config/config.sub
@@ -12767,7 +12434,6 @@ ThirdPartyLibs/Xerces/CURRENT/version.incl
 ThirdPartyLibs/Xerces/CURRENT/xerces-c.pc
 ThirdPartyLibs/Xerces/CURRENT/xerces-c.pc.in
 ThirdPartyLibs/Xerces/CURRENT/xerces-c.spec
-ThirdPartyLibs/Xerces/Origs/xerces-c-3.1.1.tar.gz
 ThirdPartyLibs/Xerces/Patches/VC11Projects.tar.gz
 ThirdPartyLibs/Xerces/Patches/XercesLib.vcxproj.PATCH
 ThirdPartyLibs/Xerces/buildall.pl
@@ -12775,6 +12441,7 @@ ThirdPartyLibs/Xerces/checkall.pl
 ThirdPartyLibs/Xerces/ReadMe.txt
 ThirdPartyLibs/buildall.pl
 ThirdPartyLibs/checkall.pl
+ThirdPartyLibs/TODO.md
 Tools/Projects/Linux/checkall.pl
 Tools/Projects/VisualStudio.Net-2010/buildall.pl
 Tools/Projects/VisualStudio.Net-2010/checkall.pl
@@ -12790,9 +12457,12 @@ Tools/Sources/Stroika/Frameworks/WebServer/HTMLViewCompiler/HTMLViewCompiler.cpp
 Tools/buildall.pl
 Tools/checkall.pl
 ApplyConfiguration.pl
+Build-System-TODO.md
 buildall.pl
 checkall.pl
 configure.pl
+foo
+foo2
 GenerateConfiguration.pl
 mkCFG.sh
 README.md
