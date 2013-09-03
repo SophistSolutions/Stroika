@@ -46,6 +46,9 @@ namespace   Stroika {
              *  Note - when you Seek() away from the end of a binary output stream, and then write, you automatically
              *  extend the stream to the point seeked to, and if you seek back (less) than the end and write, this overwrites
              *  instead of inserting.
+             *
+             *  Note - Write is sufficient to guarnatee the data is written, but it may be buffered until you call
+             *  the destructor on the BinaryOutputStream (last reference goes away) or until you call Flush ().
              */
             class   BinaryOutputStream : public BinaryStream {
             protected:

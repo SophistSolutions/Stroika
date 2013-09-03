@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
+ *      @todo   Either #include Memory/BLOB.h or document in the forward declare why not.
+ *
  *      @todo   Explain in docs how Stroika streams differ from iostream
  *              o   MUCH MUCH easier to implement your own complaint stream
  *              o   Separarate interface from implementation (thats why easier to implement)
