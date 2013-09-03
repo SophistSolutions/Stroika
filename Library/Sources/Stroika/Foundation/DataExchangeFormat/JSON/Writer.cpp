@@ -114,7 +114,7 @@ namespace   {
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"]");
+        out.Write (L"]\n");
     }
     void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
@@ -131,7 +131,7 @@ namespace   {
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"}");
+        out.Write (L"}\n");
     }
     void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
