@@ -56,7 +56,8 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
     int fd = 3;///tmphack....
     AssertNotImplemented (); // chcek results
     size_t fileLength = 3;//size of file - compute
-    fFileDataStart_ = reinterpret_cast<const Byte*> (::mmap (nullptr, fileLength, PROT_READ, fd, 0));
+    void* mmap(void*, size_t, int, int, int, __off_t)
+    fFileDataStart_ = reinterpret_cast<const Byte*> (::mmap (nullptr, fileLength, PROT_READ, MAP_PRIVATE, fd, 0));
     fFileDataEnd_ = fFileDataStart_ + fileLength;
     ::close (fd);//http://linux.die.net/man/2/mmap says dont need to keep FD open while mmapped
 #elif       qPlatform_Windows
