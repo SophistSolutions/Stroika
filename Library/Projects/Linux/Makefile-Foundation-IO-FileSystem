@@ -15,6 +15,7 @@ Objs	=	\
 	$(ObjDir)Directory.o\
 	$(ObjDir)FileSystem.o\
 	$(ObjDir)FileUtils.o\
+	$(ObjDir)MemoryMappedFileReader.o\
 	$(ObjDir)PathName.o\
 	$(ObjDir)ThroughTmpFileWriter.o\
 	$(ObjDir)WellKnownLocations.o\

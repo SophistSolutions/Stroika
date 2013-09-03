@@ -434,10 +434,30 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileFormatException.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\BinaryFileOutputStream.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Common.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)IO-FileSystem-Common.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.cpp" />
@@ -762,6 +782,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.h" />
@@ -995,6 +1016,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\Directory.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\PathName.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\TemporaryFile.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\ThroughTmpFileWriter.inl" />

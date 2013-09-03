@@ -591,6 +591,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.cpp">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.cpp">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1368,6 +1371,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.h">
       <Filter>Sources\IO\FileSystem</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.h">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2053,6 +2059,9 @@
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\FileSystem.inl">
+      <Filter>Sources\IO\FileSystem</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\FileSystem\MemoryMappedFileReader.inl">
       <Filter>Sources\IO\FileSystem</Filter>
     </None>
   </ItemGroup>
