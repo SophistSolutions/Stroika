@@ -114,7 +114,7 @@ namespace   {
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"]\n");
+        out.Write (L"]");
     }
     void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
@@ -131,7 +131,7 @@ namespace   {
             out.Write (L"\n");
         }
         Indent_ (out, indentLevel);
-        out.Write (L"}\n");
+        out.Write (L"}");
     }
     void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
@@ -188,7 +188,9 @@ public:
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
     virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
-        PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
+        TextOutputStreamBinaryAdapter textOut (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
+        PrettyPrint_ (v, textOut, 0);
+        textOut.Write (L"\n");      // a single elt not LF terminated, but the entire doc SB.
     }
     virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
         PrettyPrint_ (v, out, 0);

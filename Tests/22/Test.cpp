@@ -62,19 +62,19 @@ namespace   {
             {
                 {
                     VariantValue    v1 = L"hello world";
-                    CheckMatchesExpected_WRITER_ (v1, "\"hello world\"");
+                    CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
                 }
                 {
                     VariantValue    v1 =    3;
-                    CheckMatchesExpected_WRITER_ (v1, "3");
+                    CheckMatchesExpected_WRITER_ (v1, "3\n");
                 }
                 {
                     VariantValue    v1 =    4.7;
-                    CheckMatchesExpected_WRITER_ (v1, "4.7");
+                    CheckMatchesExpected_WRITER_ (v1, "4.7\n");
                 }
                 {
                     VariantValue    v1 =    L"\"";
-                    CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"");
+                    CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"\n");
                 }
                 {
                     // array
@@ -83,7 +83,7 @@ namespace   {
                     v.push_back (7);
                     v.push_back (L"cookie");
                     VariantValue    v1 =    v;
-                    CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]");
+                    CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]\n");
                 }
                 {
                     // object
@@ -92,7 +92,7 @@ namespace   {
                     v[L"Arg2"] = L"Cookies";
                     v[L"Arg3"] = Containers::STL::mkV<VariantValue> (19);
                     VariantValue    v1 =    v;
-                    CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}");
+                    CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}\n");
                 }
             }
         }
