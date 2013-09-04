@@ -16,6 +16,7 @@
 #include    "Stroika/Foundation/DataExchangeFormat/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
@@ -379,6 +380,20 @@ namespace   {
         }
 
 
+        namespace Test_08_ReadEmptyStreamShouldNotFail_ {
+            void    DoIt ()
+            {
+                try {
+                    VariantValue    vOut    =   DataExchangeFormat::JSON::Reader ().Read (Streams::BasicBinaryInputStream (nullptr, nullptr));
+                    VerifyTestResult (false);
+                }
+                catch (const DataExchangeFormat::BadFormatException&) {
+                    // Good - this should fail
+                }
+            }
+        }
+
+
         void    DoAll_ ()
         {
             Test_01_BasicWriterTests_::DoIt ();
@@ -388,6 +403,7 @@ namespace   {
             Test_05_ParseRegressionTest_1_::DoIt ();
             Test_06_ParseRegressionTest_2_::DoIt ();
             Test_07_ParserTestReadWriteBasictypes_::DoIt ();
+            Test_08_ReadEmptyStreamShouldNotFail_::DoIt ();
         }
     }
 }
