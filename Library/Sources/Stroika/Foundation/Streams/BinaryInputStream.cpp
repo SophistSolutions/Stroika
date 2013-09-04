@@ -32,6 +32,9 @@ Memory::BLOB BinaryInputStream::ReadAll () const
             Execution::DoThrow<bad_alloc> (bad_alloc ());
         }
         size_t sb = static_cast<size_t> (size);
+        if (sb == 0) {
+            return Memory::BLOB ();
+        }
         Byte* b = new Byte[sb];   // if this fails, we had no way to create the BLOB
         size_t n = Read (b, b + sb);
         Assert (n <= sb);
