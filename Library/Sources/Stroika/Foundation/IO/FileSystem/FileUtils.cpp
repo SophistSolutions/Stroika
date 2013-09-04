@@ -359,7 +359,6 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
 bool    FileSystem::FileExists (const String& filePath)
 {
 #if     qPlatform_Windows
-    RequireNotNull (filePath);
     DWORD attribs = ::GetFileAttributesW (filePath.c_str ());
     if (attribs == INVALID_FILE_ATTRIBUTES) {
         return false;
