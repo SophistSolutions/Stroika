@@ -36,15 +36,15 @@ all-objs:
 	done
 
 
-$(StroikaFoundationLib):	all-objs
+$(StroikaFoundationLib):	$(shell $(MAKE) -s all-objs)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFoundationLib)...
 	@rm -f $(StroikaFoundationLib)
 	@for i in $(SubDirs);\
 	do\
-	    (for oo in `$(MAKE) --directory $$i -s list-objs`; do (ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
+	    (for oo in `$(MAKE) --directory $$i -s list-objs`; do ($(AR) cq $(StroikaFoundationLib) $$i/$$oo); done )\
 	done
-	@ranlib $(StroikaFoundationLib)
+	@$(RANLIB) $(StroikaFrameworksLib)
 
 
 all:	$(StroikaFoundationLib)
