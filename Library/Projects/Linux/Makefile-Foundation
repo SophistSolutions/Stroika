@@ -35,12 +35,13 @@ all-objs:
 	@echo $(ALL_OBJS)
 
 
+DONE=0
 $(ALL_OBJS):
-	@echo Building Objs
-	@for i in $(SubDirs);\
-	do\
-	    $(MAKE) --directory $$i -s all;\
-	done
+        @echo Building Objs
+        @if [ $(DONE) -eq 0 ]; then\
+            (for i in $(SubDirs); do $(MAKE) --directory $$i -s all; done;);\
+        fi
+        @$(eval DONE := 1)
 
 $(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
