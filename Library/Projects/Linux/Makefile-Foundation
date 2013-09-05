@@ -28,12 +28,13 @@ SubDirs=				\
 	Traversal			\
 
 
+ALL_OBJS := $(foreach dir, $(SubDirs), $(addprefix "./$(dir)/", $(shell make --directory $(dir) -s list-objs)))
+
+
+$(StroikaFoundationLib):	$(ALL_OBJS)
 
 all-objs:
-	@for i in $(SubDirs);\
-	do\
-	    $(MAKE) --directory $$i -s all;\
-	done
+	@echo $(ALL_OBJS)
 
 
 $(StroikaFoundationLib):	$(shell $(MAKE) -s all-objs)
