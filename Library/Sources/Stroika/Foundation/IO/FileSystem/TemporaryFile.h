@@ -6,13 +6,6 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    <set>
-#include    <vector>
-
-#if         qPlatform_Windows
-#include    <Windows.h>
-#endif
-
 #include    "../../Characters/TChar.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Debug/Assertions.h"
@@ -64,26 +57,6 @@ namespace   Stroika {
                 private:
                     friend  class   Private::FileUtilsModuleData_;
                 };
-
-#if 0
-
-                class   TempFileLibrarian {
-                public:
-                    TempFileLibrarian (const String& privateDirectory, bool purgeDirectory, bool makeTMPDIRRel = true, bool deleteFilesOnDescruction = true);
-                    ~TempFileLibrarian ();
-
-                public:
-                    nonvirtual  String GetTempFile (const String& fileNameBase);
-                    nonvirtual  String GetTempDir (const String& fileNameBase);
-
-                private:
-                    set<String>                 fFiles;
-                    String                      fPrivateDirectory;
-                    bool                        fMakeTMPDIRRel;
-                    bool                        fDeleteFilesOnDescruction;
-                    mutex                       fCriticalSection_;
-                };
-#endif
 
 
                 class   ScopedTmpDir {
