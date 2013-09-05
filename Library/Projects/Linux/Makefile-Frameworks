@@ -14,11 +14,13 @@ SubDirs=	\
 		WebServer\
 		UPnP\
 
+.PHONY:	$(SubDirs)
+
 
 all-objs:
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; $(MAKE) -s all)\
+	    $(MAKE) --directory $$i -s all;\
 	done
 
 
@@ -28,7 +30,7 @@ $(StroikaFrameworksLib):	all-objs
 	@rm -f $(StroikaFrameworksLib)
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; for oo in `$(MAKE) -s list-objs`; do (cd ..; ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
+	    (for oo in `$(MAKE) --directory $$i -s list-objs`; do (ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
 	done
 	@ranlib $(StroikaFrameworksLib)
 
@@ -39,12 +41,12 @@ all:	$(StroikaFrameworksLib)
 clean::
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; $(MAKE) -s clean;)\
+	     $(MAKE) --directory $$i -s clean;\
 	done
 
 clobber::
 	do\
-	    (cd $$i; $(MAKE) -s clobber;)\
+	    $(MAKE) --directory $$i -s clobber;\
 	done
 	@rm -f $(StroikaFrameworksLib)
 

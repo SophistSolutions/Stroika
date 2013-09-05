@@ -5,8 +5,6 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot	=	../../../../../../
 SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Characters
 
-.PHONY:	Concrete CString
-
 vpath %cpp $(SrcDir)
 
 Objs	=	\
@@ -21,11 +19,13 @@ SubDirs	=	\
 	Concrete \
 	CString \
 
+.PHONY:	$(SubDirs)
+
 all:	$(Objs) $(SubDirs)
 
 
-CONCRETE_OBJS := $(addprefix "./Concrete/", $(shell cd Concrete; $(MAKE) -s list-objs))
-CSTRING_OBJS := $(addprefix "./CString/", $(shell cd CString; $(MAKE) -s list-objs))
+CONCRETE_OBJS := $(addprefix "./Concrete/", $(shell $(MAKE) --directory Concrete -s list-objs))
+CSTRING_OBJS := $(addprefix "./CString/", $(shell $(MAKE) --directory CString -s list-objs))
 
 
 list-objs::
@@ -33,7 +33,7 @@ list-objs::
 
 
 Concrete:
-	(cd Concrete; $(MAKE) -s)
+	@$(MAKE) --directory Concrete -s
 
 CString:
-	(cd CString; $(MAKE) -s)
+	@$(MAKE) --directory CString -s

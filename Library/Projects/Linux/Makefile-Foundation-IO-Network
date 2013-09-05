@@ -5,13 +5,11 @@ include	../../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/IO/Network/
 
-.PHONY:			HTTP	Transfer
-
-
-SubDirs	=	\
-	HTTP	\
+SubDirs	=		\
+	HTTP		\
 	Transfer	\
 
+.PHONY:			$(SubDirs)
 
 vpath %cpp $(SrcDir)
 
@@ -25,19 +23,17 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-HTTP_OBJS := $(shell cd HTTP; $(MAKE) -s list-objs)
-HTTP_OBJS := $(addprefix "./HTTP/", $(HTTP_OBJS))
+HTTP_OBJS		:= $(addprefix "./HTTP/", $(shell $(MAKE) --directory HTTP -s list-objs))
+Transfer_OBJS	:= $(addprefix "./Transfer/", $(shell $(MAKE) --directory Transfer -s list-objs))
 
-Transfer_OBJS := $(shell cd Transfer; $(MAKE) -s list-objs)
-Transfer_OBJS := $(addprefix "./Transfer/", $(Transfer_OBJS))
 
 list-objs::
 	@echo $(HTTP_OBJS) $(Transfer_OBJS)
 
 
 HTTP:
-	$(MAKE) --directory HTTP
+	@$(MAKE) --directory HTTP -s
 
 Transfer:
-	$(MAKE) --directory Transfer
+	@$(MAKE) --directory Transfer -s
 

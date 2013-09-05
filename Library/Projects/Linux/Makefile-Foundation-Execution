@@ -5,11 +5,10 @@ include	../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Execution/
 
-.PHONY:				Platform/POSIX
-
 SubDirs	=	\
 	Platform/POSIX \
 
+.PHONY:				$(SubDirs)
 
 vpath %cpp $(SrcDir)
 
@@ -46,7 +45,7 @@ all:	$(Objs)  $(SubDirs)
 
 
 
-PLATFORMPOSIX_OBJS := $(addprefix "./Platform/POSIX/", $(shell cd Platform/POSIX; $(MAKE) -s list-objs))
+PLATFORMPOSIX_OBJS := $(addprefix "./Platform/POSIX/", $(shell $(MAKE) --directory Platform/POSIX -s list-objs))
 
 
 list-objs::
@@ -54,4 +53,4 @@ list-objs::
 
 
 Platform/POSIX:
-	(cd Platform/POSIX; $(MAKE) -s)
+	@$(MAKE) --directory Platform/POSIX -s
