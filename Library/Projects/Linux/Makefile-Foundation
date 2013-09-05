@@ -52,7 +52,7 @@ $(StroikaFoundationLib):	$(ALL_OBJS)
 	@echo Creating $(StroikaFoundationLib)...
 	@rm -f $(StroikaFoundationLib)
 	@$(AR) cq $(StroikaFoundationLib) $(ALL_OBJS)
-	@$(RANLIB) $(StroikaFrameworksLib)
+	@$(RANLIB) $(StroikaFoundationLib)
 
 
 all:	$(StroikaFoundationLib)
