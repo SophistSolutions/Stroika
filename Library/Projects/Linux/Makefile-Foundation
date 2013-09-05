@@ -31,13 +31,11 @@ SubDirs=				\
 ALL_OBJS := $(foreach dir, $(SubDirs), $(addprefix "./$(dir)/", $(shell make --directory $(dir) -s list-objs)))
 
 
-$(StroikaFoundationLib):	$(ALL_OBJS)
-
 all-objs:
 	@echo $(ALL_OBJS)
 
 
-$(StroikaFoundationLib):	$(shell $(MAKE) -s all-objs)
+$(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFoundationLib)...
 	@rm -f $(StroikaFoundationLib)
