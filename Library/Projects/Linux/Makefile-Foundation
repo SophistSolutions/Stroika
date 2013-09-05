@@ -36,6 +36,7 @@ all-objs:
 
 
 $(ALL_OBJS):
+	@echo Building Objs
 	@for i in $(SubDirs);\
 	do\
 	    $(MAKE) --directory $$i -s all;\
@@ -46,10 +47,6 @@ $(StroikaFoundationLib):	$(ALL_OBJS)
 	@echo Creating $(StroikaFoundationLib)...
 	@rm -f $(StroikaFoundationLib)
 	@$(AR) cq $(StroikaFoundationLib) $(ALL_OBJS)
-	#@for i in $(SubDirs);\
-	#do\
-	#    (for oo in `$(MAKE) --directory $$i -s list-objs`; do ($(AR) cq $(StroikaFoundationLib) $$i/$$oo); done )\
-	#done
 	@$(RANLIB) $(StroikaFrameworksLib)
 
 

@@ -123,6 +123,10 @@ ifeq ($(INCLUDE_SYMBOLS), 1)
 endif
 
 
+ifndef RANLIB
+	RANLIB	= ranlib
+endif
+
 
 
 ifndef HTMLViewCompiler
