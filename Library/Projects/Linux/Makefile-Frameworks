@@ -17,21 +17,30 @@ SubDirs=	\
 .PHONY:	$(SubDirs)
 
 
+ALL_OBJS := $(foreach dir, $(SubDirs), $(addprefix "$(dir)/", $(shell make --directory $(dir) -s list-objs)))
+
+
 all-objs:
-	@for i in $(SubDirs);\
-	do\
-	    $(MAKE) --directory $$i -s all;\
-	done
+	@echo $(ALL_OBJS)
 
 
-$(StroikaFrameworksLib):	$(shell $(MAKE) -s all-objs)
+# In order to get the make dependency rule for $(StroikaFoundationLib) to work for all objs,
+# and yet to not re-run the make subdir objs rule too many times, this was the best trick
+# I could come up with to just run the submakefiles once...
+ALL_OBJS_DONE_HACK=0
+$(ALL_OBJS):
+        @if [ $(ALL_OBJS_DONE_HACK) -eq 0 ]; then\
+			echo "Building Stroika Framework Objs...";\
+            (for i in $(SubDirs); do $(MAKE) --directory $$i -s all; done;);\
+        fi
+        @$(eval ALL_OBJS_DONE_HACK := 1)
+
+
+$(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFrameworksLib)...
 	@rm -f $(StroikaFrameworksLib)
-	@for i in $(SubDirs);\
-	do\
-	    (for oo in `$(MAKE) --directory $$i -s list-objs`; do ($(AR) cq $(StroikaFrameworksLib) $$i/$$oo); done )\
-	done
+	@$(AR) cq $(StroikaFrameworksLib) $(ALL_OBJS)
 	@$(RANLIB) $(StroikaFrameworksLib)
 
 
