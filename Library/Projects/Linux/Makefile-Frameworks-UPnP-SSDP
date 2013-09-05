@@ -18,17 +18,17 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-Client_OBJS := $(shell cd Client; make -s list-objs)
+Client_OBJS := $(shell cd Client; $(MAKE) -s list-objs)
 Client_OBJS := $(addprefix "./Client/", $(Client_OBJS))
 
-Server_OBJS := $(shell cd Server; make -s list-objs)
+Server_OBJS := $(shell cd Server; $(MAKE) -s list-objs)
 Server_OBJS := $(addprefix "./Server/", $(Server_OBJS))
 
 list-objs::
 	@echo $(Client_OBJS) $(Server_OBJS)
 
 Client:
-	(cd Client; make)
+	(cd Client; $(MAKE))
 
 Server:
-	(cd Server; make)
+	(cd Server; $(MAKE))

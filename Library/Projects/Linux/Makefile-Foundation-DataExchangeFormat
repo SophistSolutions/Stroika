@@ -25,8 +25,8 @@ SubDirs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-JSON_OBJS := $(addprefix "./JSON/", $(shell cd JSON; make -s list-objs))
-XML_OBJS := $(addprefix "./XML/", $(shell cd XML; make -s list-objs))
+JSON_OBJS := $(addprefix "./JSON/", $(shell cd JSON; $(MAKE) -s list-objs))
+XML_OBJS := $(addprefix "./XML/", $(shell cd XML; $(MAKE) -s list-objs))
 
 
 list-objs::
@@ -34,9 +34,9 @@ list-objs::
 
 
 JSON:
-	(cd JSON; make -s)
+	(cd JSON; $(MAKE) -s)
 
 XML:
-	(cd XML; make -s)
+	(cd XML; $(MAKE) -s)
 
 

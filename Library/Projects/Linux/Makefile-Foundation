@@ -32,7 +32,7 @@ SubDirs=				\
 all-objs:
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make -s all)\
+	    ($(MAKE) --directory $$i -s all;)\
 	done
 
 
@@ -42,7 +42,7 @@ $(StroikaFoundationLib):	all-objs
 	@rm -f $(StroikaFoundationLib)
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
+	    (cd $$i; for oo in `$(MAKE) -s list-objs`; do (cd ..; ar cq $(StroikaFoundationLib) $$i/$$oo); done )\
 	done
 	@ranlib $(StroikaFoundationLib)
 
@@ -53,7 +53,7 @@ all:	$(StroikaFoundationLib)
 clean::
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make -s clean;)\
+	    $(MAKE) --directory $$i -s clean;\
 	done
 
 

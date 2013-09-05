@@ -18,7 +18,7 @@ SubDirs=	\
 all-objs:
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make -s all)\
+	    (cd $$i; $(MAKE) -s all)\
 	done
 
 
@@ -28,7 +28,7 @@ $(StroikaFrameworksLib):	all-objs
 	@rm -f $(StroikaFrameworksLib)
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; for oo in `make -s list-objs`; do (cd ..; ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
+	    (cd $$i; for oo in `$(MAKE) -s list-objs`; do (cd ..; ar cq $(StroikaFrameworksLib) $$i/$$oo); done )\
 	done
 	@ranlib $(StroikaFrameworksLib)
 
@@ -39,12 +39,12 @@ all:	$(StroikaFrameworksLib)
 clean::
 	@for i in $(SubDirs);\
 	do\
-	    (cd $$i; make -s clean;)\
+	    (cd $$i; $(MAKE) -s clean;)\
 	done
 
 clobber::
 	do\
-	    (cd $$i; make -s clobber;)\
+	    (cd $$i; $(MAKE) -s clobber;)\
 	done
 	@rm -f $(StroikaFrameworksLib)
 

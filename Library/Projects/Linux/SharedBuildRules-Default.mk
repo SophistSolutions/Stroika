@@ -2,6 +2,8 @@
 #
 #
 
+.PHONY:			all clean clobber list-objs Build
+
 .DEFAULT_GOAL := all
 
 .SUFFIXES:	.o .cpp .i .h .swsp .a

@@ -33,11 +33,11 @@ Objs	=	\
 all:	$(Objs)  $(SubDirs)
 
 
-iostream_OBJS := $(shell cd iostream; make -s list-objs)
+iostream_OBJS := $(shell cd iostream; $(MAKE) -s list-objs)
 iostream_OBJS := $(addprefix "./iostream/", $(iostream_OBJS))
 
 list-objs::
 	@echo $(iostream_OBJS)
 
 iostream:
-	(cd iostream; make)
+	(cd iostream; $(MAKE))

@@ -17,11 +17,11 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-SSDP_OBJS := $(shell cd SSDP; make -s list-objs)
+SSDP_OBJS := $(shell cd SSDP; $(MAKE) -s list-objs)
 SSDP_OBJS := $(addprefix "./SSDP/", $(SSDP_OBJS))
 
 list-objs::
 	@echo $(SSDP_OBJS)
 
 SSDP:
-	(cd SSDP; make)
+	(cd SSDP; $(MAKE))

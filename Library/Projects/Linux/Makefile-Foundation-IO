@@ -26,19 +26,19 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-FILE_OBJS := $(shell cd FileSystem; make -s list-objs)
+FILE_OBJS := $(shell cd FileSystem; $(MAKE) -s list-objs)
 FILE_OBJS := $(addprefix "./FileSystem/", $(FILE_OBJS))
 
-NETWORK_OBJS := $(shell cd Network; make -s list-objs)
+NETWORK_OBJS := $(shell cd Network; $(MAKE) -s list-objs)
 NETWORK_OBJS := $(addprefix "./Network/", $(NETWORK_OBJS))
 
 list-objs::
 	@echo $(FILE_OBJS) $(NETWORK_OBJS)
 
 FileSystem:
-	(cd FileSystem; make)
+	$(MAKE) --directory FileSystem
 
 Network:
-	(cd Network; make)
+	$(MAKE) --directory Network
 
 

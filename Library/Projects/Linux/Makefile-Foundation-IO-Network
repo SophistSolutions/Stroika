@@ -25,10 +25,10 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-HTTP_OBJS := $(shell cd HTTP; make -s list-objs)
+HTTP_OBJS := $(shell cd HTTP; $(MAKE) -s list-objs)
 HTTP_OBJS := $(addprefix "./HTTP/", $(HTTP_OBJS))
 
-Transfer_OBJS := $(shell cd Transfer; make -s list-objs)
+Transfer_OBJS := $(shell cd Transfer; $(MAKE) -s list-objs)
 Transfer_OBJS := $(addprefix "./Transfer/", $(Transfer_OBJS))
 
 list-objs::
@@ -36,8 +36,8 @@ list-objs::
 
 
 HTTP:
-	(cd HTTP; make)
+	$(MAKE) --directory HTTP
 
 Transfer:
-	(cd Transfer; make)
+	$(MAKE) --directory Transfer
 

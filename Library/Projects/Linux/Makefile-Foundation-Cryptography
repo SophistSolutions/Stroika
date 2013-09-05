@@ -26,15 +26,15 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Hash_OBJS := $(addprefix "./Hash/", $(shell cd Hash; make -s list-objs))
-SSL_OBJS := $(addprefix "./SSL/", $(shell cd SSL; make -s list-objs))
+Hash_OBJS := $(addprefix "./Hash/", $(shell cd Hash; $(MAKE) -s list-objs))
+SSL_OBJS := $(addprefix "./SSL/", $(shell cd SSL; $(MAKE) -s list-objs))
 
 
 list-objs::
 	@echo $(Hash_OBJS) $(SSL_OBJS)
 
 Hash:
-	(cd Hash; make -s)
+	(cd Hash; $(MAKE) -s)
 
 SSL:
-	(cd SSL; make -s)
+	(cd SSL; $(MAKE) -s)

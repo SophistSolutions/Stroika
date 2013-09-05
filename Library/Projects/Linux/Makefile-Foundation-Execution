@@ -46,7 +46,7 @@ all:	$(Objs)  $(SubDirs)
 
 
 
-PLATFORMPOSIX_OBJS := $(addprefix "./Platform/POSIX/", $(shell cd Platform/POSIX; make -s list-objs))
+PLATFORMPOSIX_OBJS := $(addprefix "./Platform/POSIX/", $(shell cd Platform/POSIX; $(MAKE) -s list-objs))
 
 
 list-objs::
@@ -54,4 +54,4 @@ list-objs::
 
 
 Platform/POSIX:
-	(cd Platform/POSIX; make -s)
+	(cd Platform/POSIX; $(MAKE) -s)
