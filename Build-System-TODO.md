@@ -1,4 +1,9 @@
-﻿>	Redo build scripts so more overtly top-level built around make
+﻿>	Fix makefiles for Founation.a and Frameowrks.a so dependency stuff works right
+	(maybe just lose ./ in prefix we stick on filenames? in subdirs?)
+	
+	But much better/faster now so this isnt critical.
+
+>	Redo build scripts so more overtly top-level built around make
 
 >	Scripting will be in build-scripts and just for utilities hard to write
 	in make, but all will be driven by make rules
