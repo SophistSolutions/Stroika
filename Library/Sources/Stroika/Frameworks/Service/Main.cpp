@@ -297,12 +297,14 @@ void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSec
 void    Main::ReReadConfiguration ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
+#if qPlatform_Windows
     AssertNotImplemented ();
-    // SEND APPROPRIATE SIGNAL
-#if     qPlatform_POSIX
+#elif   qPlatform_POSIX
     pid_t   pid =   GetServicePID ();
     Assert (pid != 0);  // maybe throw if non-zero???
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
+#else
+    AssertNotImplemented ();
 #endif
 }
 
