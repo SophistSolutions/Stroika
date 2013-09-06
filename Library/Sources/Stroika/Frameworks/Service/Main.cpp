@@ -235,9 +235,7 @@ void    Main::Run (const CommandArgs& args)
             }
             break;
         case CommandArgs::MajorOperation::eReloadConfiguration: {
-                //// NYI....
-                AssertNotImplemented ();
-                //ReloadConfiguration ();
+                ReReadConfiguration ();
             }
             break;
         case CommandArgs::MajorOperation::ePause: {
@@ -301,12 +299,10 @@ void    Main::ReReadConfiguration ()
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
     AssertNotImplemented ();
     // SEND APPROPRIATE SIGNAL
-#if 0
 #if     qPlatform_POSIX
     pid_t   pid =   GetServicePID ();
     Assert (pid != 0);  // maybe throw if non-zero???
     Execution::ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
-#endif
 #endif
 }
 
@@ -731,7 +727,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
 #else
         case    SIGHUP:
 #endif
-            //OnReReadConfigurationRequest ();
+            fAppRep_->OnReReadConfigurationRequest ();
             break;
     }
 }

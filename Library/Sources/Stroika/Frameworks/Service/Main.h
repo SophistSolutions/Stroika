@@ -26,6 +26,15 @@
  *
  * TODO:
  *
+ *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_ on kSIG_ReReadConfiguration to somehow q message
+ *              to re-read, and not invoke re-read from thread (avoid possible deadlock with allocating mem in signal handler).
+ *
+ *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
+ *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
+ *              NOT reliably done!!!
+ *
+ *              SEE "ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT" in Execution::Signal module
+ *
  *      @todo   Windows service mgr fails to start from cmdline
  *              SimpleService --start
  *              doesnt work, though net start Test-Service does.
@@ -61,12 +70,6 @@
  *      @todo   Get windows service support working as well as unix one does
  *
  *      @todo   Implement/test (it maybe implemented) --ReloadConfiguraiton operation.
- *
- *      @todo   Fix majorly hacked (and unsafe anyhow cuz of malloc in signal handler)
- *              stuff. Righjt now needed to make Sercice STOP work under posix, but its
- *              NOT reliably done!!!
- *
- *              SEE "ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT" in Execution::Signal module
  *
  *      @todo - Main::CommandNames - consider making these STRING params, and then this could be end-user configurable (good idea!)
  *
@@ -444,7 +447,7 @@ namespace   Stroika {
                 virtual void                MainLoop (std::function<void()> startedCB) = 0;
 
             public:
-                virtual void                OnReReadConfigurationRequest ();    //NOT USED NOW - UNCLEAR IF/HOW WE WANT TODO THIS -- LGP 2011-09-24
+                virtual void                OnReReadConfigurationRequest ();
 
             public:
                 //  returns a readable string about the service status. Note most of this is done by the envelope class, and this is just a way to add
