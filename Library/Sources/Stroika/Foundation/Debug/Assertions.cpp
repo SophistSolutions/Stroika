@@ -11,6 +11,9 @@
 
 #include    "Assertions.h"
 
+#if     qPlatform_POSIX
+#include    <cstdio>
+#endif
 
 
 using   namespace   Stroika;
@@ -30,8 +33,20 @@ namespace   {
                   fileName == nullptr ? "" : fileName,
                   lineNum
                  );
+#if     qPlatform_POSIX
+        fprintf (stderr, "%s (%s) failed in '%s'; %s:%d\n",
+                 assertCategory == nullptr ? "Unknown assertion" : assertCategory,
+                 assertionText == nullptr ? "" : assertionText,
+                 functionName == nullptr ? "" : functionName,
+                 fileName == nullptr ? "" : fileName,
+                 lineNum
+                );
+#endif
         DropIntoDebuggerIfPresent ();
         DbgTrace ("ABORTING...");
+#if     qPlatform_POSIX
+        fprintf (stderr, "ABORTING...\n");
+#endif
         abort ();   // if we ever get that far...
     }
 }
