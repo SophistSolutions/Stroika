@@ -26,6 +26,9 @@
  *
  * TODO:
  *
+ *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_() use of static variable. Race conditions
+ *              accessing static var. Use instance var and proper locking.
+ *
  *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_ on kSIG_ReReadConfiguration to somehow q message
  *              to re-read, and not invoke re-read from thread (avoid possible deadlock with allocating mem in signal handler).
  *

@@ -302,7 +302,7 @@ void    Main::ReReadConfiguration ()
 #if     qPlatform_POSIX
     pid_t   pid =   GetServicePID ();
     Assert (pid != 0);  // maybe throw if non-zero???
-    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), kSIG_ReReadConfiguration));
+    Execution::ThrowErrNoIfNegative (kill (GetServicePID (), Main::BasicUNIXServiceImpl::kSIG_ReReadConfiguration));
 #endif
 }
 
@@ -533,6 +533,7 @@ pid_t   Main::RunTilIdleService::_GetServicePID () const
  */
 namespace {
     Execution::Thread sigHandlerThread2Abort_;
+    shared_ptr<Main::IApplicationRep> sCurrApp_;
 }
 
 Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
@@ -550,6 +551,7 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
         // CLEAR SIGNAL HANDLER
     }
     fAppRep_ = appRep;
+    sCurrApp_ = appRep;
     if (appRep != nullptr) {
         SetupSignalHanlders_ ();
     }
@@ -727,7 +729,8 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
 #else
         case    SIGHUP:
 #endif
-            fAppRep_->OnReReadConfigurationRequest ();
+            Assert (sCurrApp_.get () != nullptr);
+            sCurrApp_->OnReReadConfigurationRequest ();
             break;
     }
 }
