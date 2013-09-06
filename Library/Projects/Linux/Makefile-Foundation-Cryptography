@@ -26,8 +26,8 @@ Objs	=	\
 all:	$(Objs) $(SubDirs)
 
 
-Hash_OBJS := $(addprefix "./Hash/", $(shell $(MAKE) --directory Hash -s list-objs))
-SSL_OBJS := $(addprefix "./SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
+Hash_OBJS := $(addprefix "Hash/", $(shell $(MAKE) --directory Hash -s list-objs))
+SSL_OBJS := $(addprefix "SSL/", $(shell $(MAKE) --directory SSL -s list-objs))
 
 
 list-objs::

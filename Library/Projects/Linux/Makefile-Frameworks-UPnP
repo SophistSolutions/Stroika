@@ -17,7 +17,7 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-SSDP_OBJS := $(addprefix "./SSDP/", $(shell $(MAKE) --directory SSDP -s list-objs))
+SSDP_OBJS := $(addprefix "SSDP/", $(shell $(MAKE) --directory SSDP -s list-objs))
 
 list-objs::
 	@echo $(SSDP_OBJS)

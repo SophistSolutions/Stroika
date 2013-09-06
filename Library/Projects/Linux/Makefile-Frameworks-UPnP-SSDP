@@ -18,8 +18,8 @@ Objs	=	\
 
 all:	$(Objs) $(SubDirs)
 
-Client_OBJS := $(addprefix "./Client/", $(shell $(MAKE) --directory Client -s list-objs))
-Server_OBJS := $(addprefix "./Server/", $(shell $(MAKE) --directory Server -s list-objs))
+Client_OBJS := $(addprefix "Client/", $(shell $(MAKE) --directory Client -s list-objs))
+Server_OBJS := $(addprefix "Server/", $(shell $(MAKE) --directory Server -s list-objs))
 
 list-objs::
 	@echo $(Client_OBJS) $(Server_OBJS)
