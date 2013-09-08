@@ -19,8 +19,6 @@
  *
  *          @todo   implement POSIX mmap()
  *
- *          @todo   Lose GetFileStart/GetFileEnd - just begin/end/size()
- *
  *          @todo   Add API variant that allows multiple sub-regions of a file to be mapped.
  *
  *          @todo   Consider adding a writable MemoryMappedFileReader variant
@@ -46,12 +44,6 @@ namespace   Stroika {
                 private:
                     NO_COPY_CONSTRUCTOR (MemoryMappedFileReader);
                     NO_ASSIGNMENT_OPERATOR (MemoryMappedFileReader);
-
-                public:
-                    // OBSOLETE APIS
-                    const Byte* GetFileStart () const;
-                    const Byte* GetFileEnd () const;
-                    size_t      GetFileSize () const;
 
                 public:
                     /**

@@ -21,25 +21,13 @@ namespace   Stroika {
                  ******************* FileSystem::MemoryMappedFileReader *************************
                  ********************************************************************************
                  */
-                inline  const Byte* MemoryMappedFileReader::GetFileStart () const
-                {
-                    return fFileDataStart_;
-                }
                 inline  const Byte* MemoryMappedFileReader::begin () const
                 {
                     return fFileDataStart_;
                 }
-                inline  const Byte* MemoryMappedFileReader::GetFileEnd () const
-                {
-                    return fFileDataEnd_;
-                }
                 inline  const Byte* MemoryMappedFileReader::end () const
                 {
                     return fFileDataEnd_;
-                }
-                inline  size_t  MemoryMappedFileReader::GetFileSize () const
-                {
-                    return fFileDataEnd_ - fFileDataStart_;
                 }
                 inline  size_t  MemoryMappedFileReader::size () const
                 {

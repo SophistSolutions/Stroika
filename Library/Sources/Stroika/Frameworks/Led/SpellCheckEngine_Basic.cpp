@@ -1159,7 +1159,7 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
         cpc.MapToUNICODE (reinterpret_cast<const char*> (b.begin ()), fileLen, static_cast<wchar_t*> (fileData2), &outCharCnt);
         fUD->ReadFromBuffer (static_cast<Led_tChar*> (fileData2), static_cast<Led_tChar*> (fileData2) + outCharCnt);
 #else
-        fUD->ReadFromBuffer (reinterpret_cast<const Led_tChar*> (reader.GetFileStart ()), reinterpret_cast<const Led_tChar*> (reader.GetFileEnd ()));
+        fUD->ReadFromBuffer (reinterpret_cast<const Led_tChar*> (reader.begin ()), reinterpret_cast<const Led_tChar*> (reader.end ()));
 #endif
     }
     catch (...) {
