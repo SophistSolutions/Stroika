@@ -52,17 +52,17 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (T&&  from)
+            inline  Optional<T, TRAITS>::Optional (T&& from)
                 : fValue_ (new BlockAllocated<T> (std::move (from)))
             {
             }
             template    <typename T, typename TRAITS>
             inline  Optional<T, TRAITS>::Optional (const Optional<T, TRAITS>& from)
-                : fValue_ (from.fValue_ == nullptr ? nullptr : new BlockAllocated<T> (*from.fValue_))
+                : fValue_ (from.fValue_ == nullptr ? nullptr : new BlockAllocated<T> (*from))
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>::Optional (Optional<T, TRAITS>&&  from)
+            inline  Optional<T, TRAITS>::Optional (Optional<T, TRAITS>&& from)
                 : fValue_ (from.fValue_)
             {
                 from.fValue_ = nullptr;
@@ -73,60 +73,60 @@ namespace   Stroika {
                 delete fValue_;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& from)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const T& rhs)
             {
-                if (fValue_->get () == &from) {
+                if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
                     if (fValue_ == nullptr) {
-                        fValue_ = new BlockAllocated<T> (from);
+                        fValue_ = new BlockAllocated<T> (rhs);
                     }
                     else {
-                        *fValue_ = from;
+                        *fValue_ = rhs;
                     }
                 }
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && from)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (T && rhs)
             {
-                if (fValue_->get () == &from) {
+                if (fValue_->get () == &rhs) {
                     // No need to copy in this case and would be bad to try
                     //  Optional<T> x;
                     //  x = *x;
                 }
                 else {
                     if (fValue_ == nullptr) {
-                        fValue_ = new BlockAllocated<T> (std::move (from));
+                        fValue_ = new BlockAllocated<T> (std::move (rhs));
                     }
                     else {
-                        *fValue_ = std::move (from);
+                        *fValue_ = std::move (rhs);
                     }
                 }
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional<T, TRAITS>& from)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (const Optional<T, TRAITS>& rhs)
             {
-                if (fValue_->get () != from.fValue_->get ()) {
+                if (fValue_->get () != rhs.fValue_->get ()) {
                     delete fValue_;
                     fValue_ = nullptr;
-                    if (from.fValue_ != nullptr) {
-                        fValue_ = new BlockAllocated<T> (*from.fValue_);
+                    if (rhs.fValue_ != nullptr) {
+                        fValue_ = new BlockAllocated<T> (*rhs);
                     }
                 }
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional<T, TRAITS> && from)
+            inline  Optional<T, TRAITS>&   Optional<T, TRAITS>::operator= (Optional<T, TRAITS> && rhs)
             {
-                if (fValue_->get () != from.fValue_->get ()) {
+                if (fValue_->get () != rhs.fValue_->get ()) {
                     delete fValue_;
-                    fValue_ = from.fValue_;
-                    from.fValue_ = nullptr;
+                    fValue_ = rhs.fValue_;
+                    rhs.fValue_ = nullptr;
                 }
                 return *this;
             }

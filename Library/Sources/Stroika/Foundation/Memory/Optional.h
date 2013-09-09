@@ -112,7 +112,7 @@ namespace   Stroika {
                 Optional (const T& from);
                 Optional (T&&  from);
                 Optional (const Optional<T, TRAITS>& from);
-                Optional (Optional<T, TRAITS>&&  from);
+                Optional (Optional<T, TRAITS>&& from);
 
             public:
                 ~Optional ();
@@ -120,10 +120,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Optional<T, TRAITS>& operator= (const T& from);
-                nonvirtual  Optional<T, TRAITS>& operator= (T && from);
-                nonvirtual  Optional<T, TRAITS>& operator= (const Optional<T, TRAITS>& from);
-                nonvirtual  Optional<T, TRAITS>& operator= (Optional<T, TRAITS> && from);
+                nonvirtual  Optional<T, TRAITS>& operator= (const T& rhs);
+                nonvirtual  Optional<T, TRAITS>& operator= (T && rhs);
+                nonvirtual  Optional<T, TRAITS>& operator= (const Optional<T, TRAITS>& rhs);
+                nonvirtual  Optional<T, TRAITS>& operator= (Optional<T, TRAITS> && rhs);
 
             public:
                 /**
