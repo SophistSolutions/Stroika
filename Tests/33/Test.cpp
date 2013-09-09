@@ -4,6 +4,7 @@
 //  TEST    Foundation::Memory
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -42,10 +43,10 @@ namespace   {
             VerifyTestResult (x == 3);
         }
     }
-    void    Test1_SharedByValue ()
+    void    Test2_SharedByValue ()
     {
     }
-    void    Test1_VariantValue ()
+    void    Test3_VariantValue ()
     {
         {
             VariantValue v;
@@ -53,6 +54,25 @@ namespace   {
             v = String (L"hi");
             VerifyTestResult (v == L"hi");
         }
+    }
+    void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
+    {
+        using   namespace   Stroika::Foundation::Memory;
+        using   namespace   Stroika::Foundation::Containers;
+        Mapping<int, float>  ml1, ml2;
+        ml1 = ml2;
+
+        Optional<Mapping<int, float>>  ol1, ol2;
+        if (ol2.IsPresent ()) {
+            ml1 = *ol2;
+        }
+        ol1 = ml1;
+        Optional<Mapping<int, float>>  xxxx2 (ml1);
+
+        // fails to compile prior to 2013-09-09
+        Optional<Mapping<int, float>>  xxxx1 (ol1);
+        // fails to compile prior to 2013-09-09
+        ol1 = ol2;
     }
 }
 
@@ -62,8 +82,9 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Optional ();
-        Test1_SharedByValue ();
-        Test1_VariantValue ();
+        Test2_SharedByValue ();
+        Test3_VariantValue ();
+        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
     }
 }
 

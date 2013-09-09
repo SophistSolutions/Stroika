@@ -4,7 +4,6 @@
 //  TEST    Foundation::Math
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -68,23 +67,6 @@ namespace   {
         VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
         VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
     }
-    void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
-    {
-        using   namespace   Stroika::Foundation::Memory;
-        using   namespace   Stroika::Foundation::Containers;
-        Mapping<int, float>  ml1, ml2;
-        ml1 = ml2;
-
-        Optional<Mapping<int, float>>  ol1, ol2;
-        ml1 = *ol2;
-        ol1 = ml1;
-        Optional<Mapping<int, float>>  xxxx2 (ml1);
-
-        // fails to compile prior to 2013-09-09
-        Optional<Mapping<int, float>>  xxxx1 (ol1);
-        // fails to compile prior to 2013-09-09
-        ol1 = ol2;
-    }
 }
 
 
@@ -94,7 +76,6 @@ namespace   {
         Test1_Overlap_ ();
         Test2_Round_ ();
         Test3_Angle_ ();
-        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
     }
 }
 
