@@ -33,6 +33,7 @@ namespace   Stroika {
                 }
             };
 
+
             /*
              ********************************************************************************
              ******************************* AnyVariantValue ********************************
@@ -63,15 +64,13 @@ namespace   Stroika {
                 fVal_.reset ();
             }
             template    <typename   RETURNTYPE>
-#if qCompilerAndStdLib_Supports_ExplicitConversionOperators
-            inline  AnyVariantValue::explicit operator RETURNTYPE () const
-#else
             inline  AnyVariantValue::operator RETURNTYPE () const
-#endif
             {
                 Require (typeid (RETURNTYPE) == GetType ());
                 Require (typeid (RETURNTYPE) != typeid (void));
                 AssertNotNull (fVal_.get ());
+                // Could use dynamic_cast but this should be equally safe (cuz of assert above) and more
+                // efficient
                 const TIRep_<RETURNTYPE>*   t   =   reinterpret_cast<TIRep_<RETURNTYPE>*> (fVal_.get ());
                 return t->fValue;
             }
