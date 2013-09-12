@@ -8,6 +8,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
+#include    "Stroika/Foundation/Memory/AnyVariantValue.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
 #include    "Stroika/Foundation/Memory/VariantValue.h"
@@ -74,6 +75,30 @@ namespace   {
         // fails to compile prior to 2013-09-09
         ol1 = ol2;
     }
+    void    Test_5_AnyVariantValue_ ()
+    {
+        {
+            VerifyTestResult (AnyVariantValue ().empty ());
+            VerifyTestResult (not AnyVariantValue (1).empty ());
+            VerifyTestResult (not AnyVariantValue ("1").empty ());
+            VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));
+            VerifyTestResult (static_cast<int> (AnyVariantValue (1)) == 1);
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = 1;
+            VerifyTestResult (not v.empty ());
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (static_cast<int> (v) == 1);
+            v = L"a";
+            VerifyTestResult (v.GetType () == typeid (L"a"));
+            VerifyTestResult (not v.empty ());
+            v.clear ();
+            VerifyTestResult (v.empty ());
+            VerifyTestResult (v.GetType () == typeid (void));
+        }
+    }
 }
 
 
@@ -85,6 +110,7 @@ namespace   {
         Test2_SharedByValue ();
         Test3_VariantValue ();
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
+        Test_5_AnyVariantValue_ ();
     }
 }
 
