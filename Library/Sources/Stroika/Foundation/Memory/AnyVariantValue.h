@@ -19,6 +19,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *
+ *      @todo   consider using stuff like remove_references and remove_const to 'normalize' the T type
+ *              used here. Might make it a little easier to use.
+ *
  *      @todo   Explain rationale for difference between VariantValue, and AnyVariantValue
  *
  *              HINT: this is useful (and why I created) for a Queue of command objects.
