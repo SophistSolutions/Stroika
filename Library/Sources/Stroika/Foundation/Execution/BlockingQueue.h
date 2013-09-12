@@ -6,15 +6,25 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
+
 #include    "../Configuration/Common.h"
+#include    "../Containers/Queue.h"
 #include    "../Memory/Optional.h"
 
+#include    "Event.h"
 #include    "Exceptions.h"
 
 
 
 /*
+ *  \version    <a href="code_status.html#Alpha">Alpha</a> -- draft - but usable implementation
+ *
  * TODO:
+ *
+ *      @todo   Use condition variables (instead of waitable event?) Or explain why not. Waitable event
+ *              uses them, so maybe thats enouf
+ *
  *      @todo   Perhaps rename to Message Queue or EventQueue
  *
  *              Event Q bad name, cuz misleading (not just for events and could be confused with
@@ -26,6 +36,8 @@
  *
  *              I'm pretty sure the right answer is to SUBCLASS from Queue, but for AddTail/RemoveHead - and
  *              overloads with the timeout logic.
+ *
+ *              maybe just templated or otther param? What about priority Queue?
  *
  *      @todo   Add docs on why no WaitForMultipleObjects, and instead use
  *              http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html
@@ -70,6 +82,9 @@ namespace   Stroika {
             template    <typename T>
             class   BlockingQueue {
             public:
+                BlockingQueue ();
+
+            public:
                 /**
                  *  Blocks until item added, and throws if timeout exceeded. About the only way the
                  *  throw can happen is if the Q is full (or timeout is very small).
@@ -110,6 +125,12 @@ namespace   Stroika {
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */
                 nonvirtual  Memory::Optional<T> PeekFront () const;
+
+            private:
+                mutex                       fMutex_;    //tmphack cuz Queue<> doesnt return optionals...
+                Event                       fDataAvailable_;
+                // Temporarily must use lock_gaurd because API for Queue<> mal-designed for threaded access (need things returing optional)
+                Containers::Queue<T>        fQueue_;
             };
 
 

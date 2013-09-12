@@ -19,6 +19,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   REVIEW BlockingQueue<> code - and add variants returning Optional - so that BlockingQueue.
+ *              can be done without a critical section.
+ *
  *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
  *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
  *
