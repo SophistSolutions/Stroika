@@ -85,14 +85,6 @@ namespace   Stroika {
                 const TIRep_<RETURNTYPE>*   t   =   reinterpret_cast<TIRep_<RETURNTYPE>*> (fVal_.get ());
                 return t->fValue;
             }
-            bool    AnyVariantValue::Equals (const AnyVariantValue& rhs) const
-            {
-                if (empty ()) {
-                    return rhs.empty ();
-                }
-                AssertNotImplemented ();    // I don't need this for now - add virtual method to TIRep_!!!
-                return false;
-            }
             inline  bool    AnyVariantValue::operator== (const AnyVariantValue& rhs) const
             {
                 return Equals (rhs);
