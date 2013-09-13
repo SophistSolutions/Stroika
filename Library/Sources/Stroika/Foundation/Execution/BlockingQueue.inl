@@ -42,9 +42,11 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    lock_guard<mutex> critSec (fMutex_);
-                    if (not fQueue_.empty ()) {
-                        return fQueue_.RemoveHead ();
+                    {
+                        lock_guard<mutex> critSec (fMutex_);
+                        if (not fQueue_.empty ()) {
+                            return fQueue_.RemoveHead ();
+                        }
                     }
                     fDataAvailable_.Wait (waitTil - Time::GetTickCount ());
                 }
