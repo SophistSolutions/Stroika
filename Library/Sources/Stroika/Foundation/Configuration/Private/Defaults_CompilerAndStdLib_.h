@@ -48,10 +48,11 @@
 
 #define _MS_VS_2k10_VER_    1600
 #define _MS_VS_2k12_VER_    1700
+#define _MS_VS_2k13_VER_    1800
 #if      _MSC_VER < _MS_VS_2k12_VER_
 #pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2012")
 #endif
-#if      _MSC_VER > _MS_VS_2k12_VER_
+#if      _MSC_VER > _MS_VS_2k13_VER_
 #pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
 #endif
 
@@ -720,7 +721,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast    (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast    (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast     qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
