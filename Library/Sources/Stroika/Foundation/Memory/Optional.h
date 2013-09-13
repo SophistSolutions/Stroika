@@ -61,6 +61,9 @@ namespace   Stroika {
              *
              *  However, see @ref Value()
              *
+             *  \note   C++14 will be introucing std::optional<> which may possibly make this obsolete.
+             *          We'll see.
+             *
              *  \note   \em Design-Note - why not SharedByValue<T>
              *      -   We considered using the SharedByValue<T> template which would be more efficient
              *          when we copy Optional objects of type T, where T is expensive to copy. But for
