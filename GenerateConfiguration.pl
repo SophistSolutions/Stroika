@@ -78,6 +78,18 @@ sub	SetInitialDefaults_
 		$PROJECTPLATFORMSUBDIR = 'Linux';
 	}
 	if ("$^O" eq "cygwin") {
+		# try vs 2k13
+		if ($PROJECTPLATFORMSUBDIR eq "") {
+			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
+			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
+			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 12.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2013';
+			}
+			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 12.0/VC") {
+				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2013';
+			}
+		}
+
 		# try vs 2k12
 		if ($PROJECTPLATFORMSUBDIR eq "") {
 			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
