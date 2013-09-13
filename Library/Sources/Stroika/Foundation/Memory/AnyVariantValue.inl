@@ -53,7 +53,7 @@ namespace   Stroika {
                 : fVal_ (from.fVal_)
             {
             }
-            inline  const AnyVariantValue& AnyVariantValue::operator= (const AnyVariantValue& rhs)
+            inline  AnyVariantValue& AnyVariantValue::operator= (const AnyVariantValue& rhs)
             {
                 fVal_ = rhs.fVal_;
                 return *this;

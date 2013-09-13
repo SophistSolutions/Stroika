@@ -62,10 +62,10 @@ namespace   Stroika {
                 AnyVariantValue ();
 #if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                 AnyVariantValue (const AnyVariantValue& from) = default;
-                const AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
+                AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
 #else
                 AnyVariantValue (const AnyVariantValue& from);
-                const AnyVariantValue& operator= (const AnyVariantValue& rhs);
+                AnyVariantValue& operator= (const AnyVariantValue& rhs);
 #endif
                 template    <typename   T>
                 AnyVariantValue (T val);
