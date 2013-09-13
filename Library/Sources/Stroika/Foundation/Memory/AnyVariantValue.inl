@@ -48,6 +48,17 @@ namespace   Stroika {
                 : fVal_ (shared_ptr<IRep_> (new TIRep_<T> (val)))
             {
             }
+#if     !qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
+            inline  AnyVariantValue::AnyVariantValue (const AnyVariantValue& from)
+                : fVal_ (from.fVal_)
+            {
+            }
+            inline  const AnyVariantValue& AnyVariantValue::operator= (const AnyVariantValue& rhs)
+            {
+                fVal_ = rhs.fVal_;
+                return *this;
+            }
+#endif
             inline  const type_info&  AnyVariantValue::GetType () const
             {
                 if (fVal_.get () == nullptr) {

@@ -107,6 +107,17 @@ namespace   {
             v = JIM ();
             VerifyTestResult (v.GetType () == typeid (JIM));
         }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = 1;
+            v = v;
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (static_cast<int> (v) == 1);
+            v = AnyVariantValue (v);
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (static_cast<int> (v) == 1);
+        }
     }
 }
 
