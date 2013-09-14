@@ -25,7 +25,6 @@
  * See DOCS in Stroika/Foundation/Execution/Thread.h
  */
 #if     !defined (qUseThreads_WindowsNative)
-#if     qCompilerAndStdLib_Supports_threads
 // On Windows - its quite unclear if one is better off using the stdc++ implementation (since it doesnt yet exist its hard to tell what features it
 // will have) or the stdc++ implemeentation. Luckily - there is only one for unix & one for windoze now, so its clear in the very short term...
 //      --LGP 2011-09-01
@@ -34,16 +33,9 @@
 //      -- LGP 2013-03-24
 //#define   qUseThreads_WindowsNative   qPlatform_Windows
 #define qUseThreads_WindowsNative   0
-#else
-#define qUseThreads_WindowsNative   qPlatform_Windows
-#endif
 #endif
 #if     !defined (qUseThreads_StdCPlusPlus)
-#if     qCompilerAndStdLib_Supports_threads
 #define qUseThreads_StdCPlusPlus    !qUseThreads_WindowsNative
-#else
-#define qUseThreads_StdCPlusPlus    0
-#endif
 #endif
 
 

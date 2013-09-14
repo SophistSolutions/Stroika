@@ -154,7 +154,7 @@
 #if     defined (__GNUC__)  && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
 #endif
@@ -217,7 +217,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_strtoll
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_strtoll  (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_strtoll  (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_strtoll  1
 #endif
@@ -232,7 +232,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
 #endif
@@ -477,7 +477,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_ExplicitConversionOperators
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ExplicitConversionOperators (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_ExplicitConversionOperators (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_ExplicitConversionOperators 1
 #endif
@@ -487,21 +487,6 @@
 
 
 
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_threads
-@DESCRIPTION:   <p>Defined true if the compiler supports the stdc++ threads library</p>
-*/
-#ifndef qCompilerAndStdLib_Supports_threads
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_threads (_MSC_VER >= _MS_VS_2k12_VER_)
-#else
-#define qCompilerAndStdLib_Supports_threads 1
-#endif
-#endif
 
 
 
@@ -536,7 +521,7 @@
 
 #ifndef qCompilerAndStdLib_Supports_initializer_lists
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_initializer_lists   1
 #endif
@@ -549,7 +534,7 @@
 
 #ifndef qCompilerAndStdLib_Supports_TempalteAlias_n2258
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #endif
@@ -561,7 +546,7 @@
 // Hard to detect if it doesn't work...
 #ifndef qCompilerAndStdLib_thread_local_initializersSupported
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_thread_local_initializersSupported (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_thread_local_initializersSupported (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_thread_local_initializersSupported (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #endif
@@ -577,7 +562,7 @@
 #ifndef qCompilerAndStdLib_Supports_isnan
 #if     defined (_MSC_VER)
 // msvc has _isnan
-#define qCompilerAndStdLib_Supports_isnan   (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_isnan   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_isnan   1
 #endif
@@ -655,7 +640,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_varadic_templates  (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_varadic_templates  (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_varadic_templates  1
 #endif
@@ -743,9 +728,7 @@
 </p>
 */
 #ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (_MSC_VER >= _MS_VS_2k12_VER_)
-#elif   defined (__GNUC__) && !defined (__clang__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)) || (__GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ >= 3))
 #else
 #define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
