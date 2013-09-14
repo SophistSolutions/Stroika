@@ -104,7 +104,6 @@ sub	SetInitialDefaults_
 
 		# try vs 2k10 (NOTE - OBSOLETE)
 		if ($PROJECTPLATFORMSUBDIR eq "") {
-			print ("****ERRROR - WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
 			local $PROGRAMFILESDIR= trim (`cygpath \"$ENV{'PROGRAMFILES'}\"`);
 			local $PROGRAMFILESDIR2= "/cygdrive/c/Program Files (x86)/";
 			if (-e "$PROGRAMFILESDIR/Microsoft Visual Studio 10.0/VC") {
@@ -112,6 +111,10 @@ sub	SetInitialDefaults_
 			}
 			if (-e "$PROGRAMFILESDIR2/Microsoft Visual Studio 10.0/VC") {
 				$PROJECTPLATFORMSUBDIR = 'VisualStudio.Net-2010';
+			}
+			if ("$PROJECTPLATFORMSUBDIR" eq "VisualStudio.Net-2010") {
+				print ("****ERRROR - WE NO LONGER SUPPORT VISUAL STUDIO.Net 2010\n");
+				exit (1);
 			}
 		}
 	}
