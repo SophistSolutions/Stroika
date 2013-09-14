@@ -60,14 +60,6 @@ if ($DoCreateSymLink) {
 }
 
 print ("Patching Xerces...\n");
-#For some reason, patch not working with dos-format files, so map to unix (and then return)
-if ("$^O" eq "cygwin") {
-	system ("dos2unix CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
-}
-system ("patch -t CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
-if ("$^O" eq "cygwin") {
-	system ("unix2dos CURRENT/projects/Win32/VC10/xerces-all/XercesLib/XercesLib.vcxproj Patches/XercesLib.vcxproj.PATCH");
-}
 system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
 system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
 
