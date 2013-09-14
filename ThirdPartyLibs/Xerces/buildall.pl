@@ -32,36 +32,37 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 	system ("rm -rf $trgDirName CURRENT");
 }
 
-if (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp") {
-	print ("already up to date\n");
-	goto DONE;
-	exit (0);
-}
-
-require "../../ScriptsLib/ConfigurationReader.pl";
-
-
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
 	#my $MIRROR_PREFIX_ = "http://www.fightrice.com/mirrors/apache/";
 	my $MIRROR_PREFIX_ = "http://psg.mtu.edu/pub/apache/";
 	system ("wget --tries=10 --output-document=../Origs-Cache/$BASENAME.tar.gz $MIRROR_PREFIX_/xerces/c/3/sources/$BASENAME.tar.gz");
 }
+	
+
+require "../../ScriptsLib/ConfigurationReader.pl";
 
 
-print ("Extracting Xerces...\n");
-
-system ("rm -rf $trgDirName CURRENT");
-system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
-sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-system ("mv $EXTRACTED_DIRNAME CURRENT");
-sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-if ($DoCreateSymLink) {
-	system ("ln -s CURRENT $SLINKDIRNAME");
+# Only extract if its not already extracted. Make clobber if its partly 
+# extracted
+if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
+	
+	print ("Extracting Xerces...\n");
+	
+	system ("rm -rf $trgDirName CURRENT");
+	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
+	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+	system ("mv $EXTRACTED_DIRNAME CURRENT");
+	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+	if ($DoCreateSymLink) {
+		system ("ln -s CURRENT $SLINKDIRNAME");
+	}
+	
+	print ("Patching Xerces...\n");
+	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
+	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
 }
 
-print ("Patching Xerces...\n");
-system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
-system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
+
 
 
 sub RunAndPrint
