@@ -24,11 +24,9 @@
 #ifndef qPlatformSupports_snprintf
 #if     __GNUC__ && __cplusplus
 #define qPlatformSupports_snprintf  1
-#elif   defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k10_VER_
-#define qPlatformSupports_snprintf  0
-#elif   defined (_MSC_VER) && _MSC_VER >= _MS_VS_2k12_VER_
+#elif   defined (_MSC_VER)
 // GUESS it will be supported in next major release
-#define qPlatformSupports_snprintf  0
+#define qPlatformSupports_snprintf  (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 // GUESS - if wrong, add appropriate check here
 #define qPlatformSupports_snprintf  1
