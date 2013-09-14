@@ -250,7 +250,7 @@
 // Maybe not totally broken for clang - but broken enough to disable for now...
 #define qCompilerAndStdLib_Supports_constexpr   ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_constexpr   (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_constexpr   (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_constexpr   1
 #endif
@@ -318,8 +318,8 @@
 */
 #ifndef qCompilerAndStdLib_Supports_noexcept
 
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k12_VER_
-#define qCompilerAndStdLib_Supports_noexcept    0
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_Supports_noexcept    (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_noexcept    1
 #endif
@@ -393,7 +393,7 @@
 #ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
 #endif
@@ -524,7 +524,7 @@
 
 #ifndef qCompilerAndStdLib_Supports_thread_local_keyword
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_thread_local_keyword (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_thread_local_keyword (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_thread_local_keyword (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #endif
@@ -639,7 +639,7 @@
 */
 #if     !defined (qCompilerAndStdLib_Supports_stdchrono_diff_double)
 #if   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_stdchrono_diff_double       (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_stdchrono_diff_double       (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_stdchrono_diff_double       qCompilerAndStdLib_Supports_stdchrono
 #endif
@@ -763,7 +763,7 @@
 #if     defined (__clang__)
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
@@ -867,7 +867,7 @@
 */
 #ifndef qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       (_MSC_VER <= _MS_VS_2k12_VER_)
+#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       (_MSC_VER <= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       0
 #endif
@@ -910,7 +910,7 @@
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
 // easy enough to disable ;-)
-#if     defined (_MSC_VER) && _MSC_VER == _MS_VS_2k12_VER_
+#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k13_VER_
 #define _ALLOW_KEYWORD_MACROS
 #endif
 

@@ -23,6 +23,7 @@
 #pragma warning (4 : 4786)
 #endif
 
+#include    <algorithm>
 #include    <cmath>
 #include    <cstdlib>
 #include    <map>
