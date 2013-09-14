@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2012\Stroika-Foundation.vcxproj">
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2012\Stroika-Frameworks-Led.vcxproj">
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Frameworks-Led.vcxproj">
       <Project>{57b01fec-9ad1-46a4-b5f1-9e1c531e59d2}</Project>
     </ProjectReference>
   </ItemGroup>

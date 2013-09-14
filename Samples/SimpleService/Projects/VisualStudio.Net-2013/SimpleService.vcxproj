@@ -472,7 +472,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2012\Stroika-Foundation.vcxproj">
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Foundation.vcxproj">
       <Project>{5afc8e54-efa6-45a6-9e8f-7bb89c84ae5b}</Project>
       <Private>false</Private>
       <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
@@ -480,7 +480,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2012\Stroika-Frameworks-Service.vcxproj">
+    <ProjectReference Include="..\..\..\..\Library\Projects\VisualStudio.Net-2013\Stroika-Frameworks-Service.vcxproj">
       <Project>{76c03e61-1308-4973-abda-2e83210a5b52}</Project>
     </ProjectReference>
   </ItemGroup>
