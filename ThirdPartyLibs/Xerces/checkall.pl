@@ -26,6 +26,9 @@ else {
 	if ($myPlatformSubDir eq 'VisualStudio.Net-2012') {
 		$myBinOutDir = 'VC11';
 	}
+	if ($myPlatformSubDir eq 'VisualStudio.Net-2013') {
+		$myBinOutDir = 'VC12';
+	}
 	$REL32_LIB = "CURRENT/Build/Win32/$myBinOutDir/Static Release/xerces-c_static_3.lib";
 	$DBG32_LIB = "CURRENT/Build/Win32/$myBinOutDir/Static Debug/xerces-c_static_3D.lib";
 	$REL64_LIB = "CURRENT/Build/Win64/$myBinOutDir/Static Release/xerces-c_static_3.lib";
