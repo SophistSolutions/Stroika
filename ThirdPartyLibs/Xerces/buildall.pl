@@ -60,6 +60,7 @@ if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
 	print ("Patching Xerces...\n");
 	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
 	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
+	system ("chmod -R +rw CURRENT/projects");
 }
 
 
