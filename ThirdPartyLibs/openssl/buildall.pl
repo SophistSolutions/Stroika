@@ -40,11 +40,6 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 	system ("rm -rf $trgDirName CURRENT");
 }
 
-#if (-e "CURRENT/e_os.h") {
-#	print ("already up to date\n");
-#	goto DONE;
-#}
-
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
 	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz");
 }
@@ -136,5 +131,4 @@ else {if ("$^O" eq "cygwin") {
 
 system ("perl checkall.pl");
 
-DONE:
 print (">>>>>>>>******************** ENDING ThirdPartyLibs/openssl ******************\n");
