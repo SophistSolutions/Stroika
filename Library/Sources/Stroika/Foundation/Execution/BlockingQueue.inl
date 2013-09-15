@@ -52,7 +52,7 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            Memory::Optional<T>     BlockingQueue<T>::RemoveIfPossible ()
+            Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible ()
             {
                 lock_guard<mutex> critSec (fMutex_);
                 if (fQueue_.empty ()) {

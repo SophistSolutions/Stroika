@@ -91,7 +91,8 @@ namespace   Stroika {
                  *
                  *  Typically this will return almost instantly.
                  *
-                 *  Analagous to the java BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
+                 *  Analagous to the java BlockingQueue<T>::put(e) and similar to the java
+                 *  BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
                 nonvirtual  void    AddTail (T e, Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -99,9 +100,11 @@ namespace   Stroika {
                 /**
                  *  Blocks until item removed, and throws if timeout exceeded.
                  *
-                 *  If there are currently no items in the Q, this may indefinitely (up to timeout provided).
+                 *  If there are currently no items in the Q, this may wait indefinitely (up to timeout provided).
                  *
                  *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
+                 *
+                 *  @see RemoveHeadIfPossible()
                  */
                 nonvirtual  T       RemoveHead (Time::DurationSecondsType timeout = Time::kInfinite);
 
@@ -112,7 +115,7 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::poll() method.
                  */
-                nonvirtual  Memory::Optional<T>     RemoveIfPossible ();
+                nonvirtual  Memory::Optional<T>     RemoveHeadIfPossible ();
 
             public:
                 /**
