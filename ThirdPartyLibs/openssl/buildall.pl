@@ -40,39 +40,30 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 	system ("rm -rf $trgDirName CURRENT");
 }
 
-if (-e "CURRENT/e_os.h") {
-	print ("already up to date\n");
-	goto DONE;
-}
+#if (-e "CURRENT/e_os.h") {
+#	print ("already up to date\n");
+#	goto DONE;
+#}
 
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
-	print ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz ...\n");
-	system ("wget --quiet --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz");
+	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz");
 }
 
 print ("Extracting $BASENAME...\n");
-system ("rm -rf $trgDirName CURRENT");
-system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
-sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-system ("mv $EXTRACTED_DIRNAME CURRENT");
-sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-if ($DoCreateSymLink) {
-	system ("ln -s CURRENT $SLINKDIRNAME");
-}
-
-print ("Patching openssl...\n");
-#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
-
-
-sub RunAndPrint
-{
-	my $cmd2Run = $_[0];
-	print ("$cmd2Run...\n");
-	my $result = system ($cmd2Run);
-	if ($result != 0) {
-		print "Run result = $result\r\n";
+if (not -e "CURRENT/e_os.h") {
+	system ("rm -rf $trgDirName CURRENT");
+	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
+	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+	system ("mv $EXTRACTED_DIRNAME CURRENT");
+	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
+	if ($DoCreateSymLink) {
+		system ("ln -s CURRENT $SLINKDIRNAME");
 	}
+	
+	print ("Patching openssl...\n");
+	#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
 }
+
 
 
 #REM - only reconfigure if we just did the extract
@@ -100,6 +91,7 @@ else {if ("$^O" eq "cygwin") {
 	chdir ("..");
 }}
 
+
 print ("Building openssl...\n");
 if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make -s all");
@@ -110,7 +102,7 @@ else {if ("$^O" eq "cygwin") {
 ###NOT FULLY WORKING - SHOULD BUILD MOST STUFF SO NOT NEEDED REBUILD
 		#this trick make line is just to make build more quiet - it can be elimianted and makes all
 		#To get rid of it - just delete the 2 make lines that use this define
-		if (1) {
+		if (0) {
 			print (" Make Build (first  quietly - output saved to .txt file)...");
 			my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "tmp32 inc32 out32 inc32/openssl headers lib";
 			#my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "";
@@ -125,7 +117,15 @@ else {if ("$^O" eq "cygwin") {
 		print (" ...Make Debug...\n");
 		#nb: lose -s to see each compile line
 		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak 2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
-		
+	chdir ("..");
+}}
+
+
+print ("Testing openssl...\n");
+if ("$^O" eq "linux") {
+}
+else {if ("$^O" eq "cygwin") {
+	chdir ("CURRENT");
 		print (" ...Running openssl tests...");
 		system ("(nmake /NOLOGO -s -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
 		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
@@ -133,8 +133,8 @@ else {if ("$^O" eq "cygwin") {
 	chdir ("..");
 }}
 
+
 system ("perl checkall.pl");
 
 DONE:
 print (">>>>>>>>******************** ENDING ThirdPartyLibs/openssl ******************\n");
-
