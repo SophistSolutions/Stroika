@@ -93,8 +93,7 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::offer() or BlockingQueue<T>::add () method.
                  */
-                nonvirtual  void    Add (T e, Time::DurationSecondsType timeout = Time::kInfinite);
-
+                nonvirtual  void    AddTail (T e, Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -104,8 +103,7 @@ namespace   Stroika {
                  *
                  *  Similar to the java BlockingQueue<T>::take() or BlockingQueue<T>::poll (time) method.
                  */
-                nonvirtual  T       Remove (Time::DurationSecondsType timeout = Time::kInfinite);
-
+                nonvirtual  T       RemoveHead (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
                 /**
@@ -116,7 +114,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Memory::Optional<T>     RemoveIfPossible ();
 
-
             public:
                 /**
                  *  Returns the front element from the Q, if there is one, and an empty Optional<T> if
@@ -124,7 +121,19 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */
-                nonvirtual  Memory::Optional<T> PeekFront () const;
+                nonvirtual  Memory::Optional<T> PeekHead () const;
+
+            public:
+                //OBSOLETE APIS - CHANGED NAMES
+                nonvirtual  void    Add (T e, Time::DurationSecondsType timeout = Time::kInfinite) {
+                    AddTail (e, timeout);
+                }
+                nonvirtual  T       Remove (Time::DurationSecondsType timeout = Time::kInfinite) {
+                    RemoveHead (timeout);
+                }
+                nonvirtual  Memory::Optional<T> PeekFront () const {
+                    return PeekHead ();
+                }
 
             private:
                 mutex                       fMutex_;    //tmphack cuz Queue<> doesnt return optionals...

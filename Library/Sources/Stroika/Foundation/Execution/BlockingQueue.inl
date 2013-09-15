@@ -29,16 +29,16 @@ namespace   Stroika {
             {
             }
             template    <typename T>
-            void    BlockingQueue<T>::Add (T e, Time::DurationSecondsType timeout)
+            void    BlockingQueue<T>::AddTail (T e, Time::DurationSecondsType timeout)
             {
                 {
                     lock_guard<mutex> critSec (fMutex_);
-                    fQueue_.Enqueue (e);
+                    fQueue_.AddTail (e);
                 }
                 fDataAvailable_.Set ();
             }
             template    <typename T>
-            T       BlockingQueue<T>::Remove (Time::DurationSecondsType timeout)
+            T       BlockingQueue<T>::RemoveHead (Time::DurationSecondsType timeout)
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
@@ -61,7 +61,7 @@ namespace   Stroika {
                 return fQueue_.RemoveHead ();
             }
             template    <typename T>
-            Memory::Optional<T> BlockingQueue<T>::PeekFront () const
+            Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
                 lock_guard<mutex> critSec (fMutex_);
                 if (fQueue_.empty ()) {
