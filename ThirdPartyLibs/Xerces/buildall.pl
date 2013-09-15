@@ -61,6 +61,7 @@ if (not (-e "CURRENT/src/xercesc/dom/impl/DOMLocatorImpl.hpp")) {
 	system ("cd CURRENT; tar xf ../Patches/VC11Projects.tar.gz");
 	system ("cd CURRENT; tar xf ../Patches/VC12Projects.tar.gz");
 	system ("chmod -R +rw CURRENT/projects");
+	system ("chmod -R +rwx CURRENT/projects CURRENT/projects/Win32 CURRENT/projects/Win32/VC* CURRENT/projects/Win32/VC*/xerces-all CURRENT/projects/Win32/VC*/xerces-all/*");
 }
 
 
