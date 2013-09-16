@@ -19,7 +19,6 @@ my	$thisScriptDir	=	GetThisScriptDir ();
 
 require ("$thisScriptDir/../../../ScriptsLib/StringUtils.pl");
 
-
 sub PRINT_ENV_
 {
  	my $msg = shift;
@@ -121,16 +120,45 @@ $ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\win8\\um\\x86;";
 
 
 #Mostly for debugging - make sure paths setup properly
+my $x = trim (`cmd /c 'which ml'`);
+if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/ml") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/ml")) {
+	print "[WARNING] - Differnt ML: '$x'\n";
+	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
+}
+$ENV{'AS_32'} 	=	"$x";
+$ENV{'AS_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/ml";
+
 my $x = trim (`cmd /c 'which cl'`);
 if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/cl")) {
 	print "[WARNING] - Differnt CL: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
+$ENV{'CC_32'} 	=	"$x";
+$ENV{'CC_64'} 	=	substr ("$x", 0, -3) . "/x86_amd64/cl";
+
 my $x = trim (`cmd /c 'which link'`);
 if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/link") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/link")) {
 	print "[WARNING] - Differnt link: '$x'\n";
 	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
 }
+$ENV{'LINK_32'} 	=	"$x";
+$ENV{'LINK_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/link";
+
+
+my $x = trim (`cmd /c 'which lib'`);
+if (($x ne "/cygdrive/c/Program Files (x86)/Microsoft Visual Studio $VisualStudioVersion/VC/bin/lib") and ($x ne "/cygdrive/c/Program Files/Microsoft Visual Studio $VisualStudioVersion/VC/bin/lib")) {
+	print "[WARNING] - Differnt lib: '$x'\n";
+	PRINT_PATH_ ("PATH ENV=$ENV{'PATH'}\n");
+}
+$ENV{'LIB_32'} 	=	"$x";
+$ENV{'LIB_64'} 	=	substr ("$x", 0, -5) . "/x86_amd64/lib";
+
+#print "ENV{CC_32}= ", $ENV{'CC_32'}, "\n";
+#print "ENV{CC_64}= ", $ENV{'CC_64'}, "\n";
+#print "ENV{LINK_32}= ", $ENV{'LINK_32'}, "\n";
+#print "ENV{LINK_64}= ", $ENV{'LINK_64'}, "\n";
+#print "ENV{LIB_32}= ", $ENV{'LIB_32'}, "\n";
+#print "ENV{LIB_64}= ", $ENV{'LIB_64'}, "\n";
 
 if (0) {
 	PRINT_PATH_ ("AFTER SETTING PATH ENV=$ENV{'PATH'}\n");

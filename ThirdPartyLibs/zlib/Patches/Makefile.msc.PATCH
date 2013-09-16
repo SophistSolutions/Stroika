@@ -1,0 +1,54 @@
+*** "ORIGS\\win32\\Makefile.msc"	2013-09-16 12:03:48.387640500 -0400
+--- "CURRENT\\win32\\Makefile.msc"	2013-09-16 12:07:17.347172800 -0400
+***************
+*** 39,45 ****
+       example.exe minigzip.exe example_d.exe minigzip_d.exe
+  
+  $(STATICLIB): $(OBJS) $(OBJA)
+! 	$(AR) $(ARFLAGS) -out:$@ $(OBJS) $(OBJA)
+  
+  $(IMPLIB): $(SHAREDLIB)
+  
+--- 39,45 ----
+       example.exe minigzip.exe example_d.exe minigzip_d.exe
+  
+  $(STATICLIB): $(OBJS) $(OBJA)
+! 	"$(AR)" $(ARFLAGS) -out:$@ $(OBJS) $(OBJA)
+  
+  $(IMPLIB): $(SHAREDLIB)
+  
+***************
+*** 70,85 ****
+  	  mt -nologo -manifest $@.manifest -outputresource:$@;1
+  
+  .c.obj:
+! 	$(CC) -c $(WFLAGS) $(CFLAGS) $<
+  
+  {contrib/masmx64}.c.obj:
+! 	$(CC) -c $(WFLAGS) $(CFLAGS) $<
+  
+  {contrib/masmx64}.asm.obj:
+! 	$(AS) -c $(ASFLAGS) $<
+  
+  {contrib/masmx86}.asm.obj:
+! 	$(AS) -c $(ASFLAGS) $<
+  
+  adler32.obj: adler32.c zlib.h zconf.h
+  
+--- 70,85 ----
+  	  mt -nologo -manifest $@.manifest -outputresource:$@;1
+  
+  .c.obj:
+! 	"$(CC)" -c $(WFLAGS) $(CFLAGS) $<
+  
+  {contrib/masmx64}.c.obj:
+! 	"$(CC)" -c $(WFLAGS) $(CFLAGS) $<
+  
+  {contrib/masmx64}.asm.obj:
+! 	"$(AS)" -c $(ASFLAGS) $<
+  
+  {contrib/masmx86}.asm.obj:
+! 	"$(AS)" -c $(ASFLAGS) $<
+  
+  adler32.obj: adler32.c zlib.h zconf.h
+  
