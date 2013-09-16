@@ -61,72 +61,88 @@ if (not -e "CURRENT/e_os.h") {
 
 
 
+sub	CopyBuilds2Out
+{
+	my $trgDir = $_[0];
+	my $bldOutDir = $_[1];
+	system ("mkdir -p CURRENT/Builds/$trgDir");
+	system ("cp -r CURRENT/inc32/ CURRENT/Builds/$trgDir/Includes");
+	system ("cp CURRENT/$bldOutDir/libeay32.* CURRENT/Builds/$trgDir/");
+	system ("cp CURRENT/$bldOutDir/ssleay32.* CURRENT/Builds/$trgDir/");
+	system ("cp CURRENT/$bldOutDir/openssl.* CURRENT/Builds/$trgDir/");
+}
+
+
+system ("rm -rf CURRENT/Builds");
+
 #REM - only reconfigure if we just did the extract
-print ("Configurating openssl...\n");
 if ("$^O" eq "linux") {
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
 	system ("cd CURRENT ; ./config -no-shared");
-}
-else {if ("$^O" eq "cygwin") {
-	chdir ("CURRENT");
-		system ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
-		## FROM ms\do_ms.bat (with one line skipped - dont bother with DLL)
-		system ("perl util/mkfiles.pl >MINFO");
-		system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
-		#system ("perl util\mk1mf.pl dll no-asm VC-WIN32 >ms/ntdll.mak");
-		system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
-		system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
-		
-		###extras
-		# Build 32-bit DEBUG library
-		system ("perl util/mk1mf.pl debug no-asm VC-WIN32 >ms/nt-DBG.mak");
-		
-		system ("rm -f NUL");
-	chdir ("..");
-}}
-
-
-print ("Building openssl...\n");
-if ("$^O" eq "linux") {
 	system ("cd CURRENT ; make -s all");
 }
 else {if ("$^O" eq "cygwin") {
 	chdir ("CURRENT");
+		system ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
+		## BASED ON ms\do_ms.bat
+		system ("perl util/mkfiles.pl >MINFO");
+		system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
+		system ("perl util/mk1mf.pl debug no-asm VC-WIN32 >ms/nt-DBG.mak");
+		system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
+		system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
+		system ("rm -f NUL");
+		system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
 
-###NOT FULLY WORKING - SHOULD BUILD MOST STUFF SO NOT NEEDED REBUILD
-		#this trick make line is just to make build more quiet - it can be elimianted and makes all
-		#To get rid of it - just delete the 2 make lines that use this define
-		if (0) {
-			print (" Make Build (first  quietly - output saved to .txt file)...");
-			my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "tmp32 inc32 out32 inc32/openssl headers lib";
-			#my $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD = "";
-			system ("(nmake /NOLOGO -f ms/nt.mak $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD 2>&1) >> NT.MAK.BUILD-Output.txt");
-			system ("(nmake /NOLOGO -f ms/nt-DBG.mak $JUNK_MUST_BLD_TO_GET_SILENT_BUT_SUCCESSFUL_BUILD 2>&1) >> NT-DBG.MAK.BUILD-Output.txt");
-		}
-		
 		print (" ...Make Release...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO -s -f ms/nt.mak 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
+		system ("(nmake /NOLOGO /S -f ms/nt.mak 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
 
 		print (" ...Make Debug...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak 2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
-	chdir ("..");
-}}
+		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak 2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
 
-
-print ("Testing openssl...\n");
-if ("$^O" eq "linux") {
-}
-else {if ("$^O" eq "cygwin") {
-	chdir ("CURRENT");
 		print (" ...Running openssl tests...");
-		system ("(nmake /NOLOGO -s -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
-		system ("(nmake /NOLOGO -s -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
+		system ("(nmake /NOLOGO /S -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
+		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
 		print ("\n");
 	chdir ("..");
+
+	CopyBuilds2Out ("Release32", "out32");
+	CopyBuilds2Out ("Debug32", "out32.dbg");
+
+	chdir ("CURRENT");
+		system ("perl Configure VC-WIN64I no-asm --prefix=c:/some/openssl/dir");
+		## BASED ON ms\do_win64i.bat
+		system ("perl util/mkfiles.pl >MINFO");
+		system ("perl ms/uplink-ia64.pl > ms/uptable.asm");
+		system ("ias -o ms/uptable.obj ms/uptable.asm");
+		system ("perl util/mk1mf.pl VC-WIN64I >ms/nt.mak");
+		system ("perl util/mk1mf.pl debug VC-WIN64I >ms/nt-DBG.mak");
+		system ("perl util/mkdef.pl 32 libeay > ms/libeay32.def");
+		system ("perl util/mkdef.pl 32 ssleay > ms/ssleay32.def");
+		system ("rm -f NUL");
+		system ("rm -rf tmp32 tmp32.dbg out32 out32.dbg");	# cuz changing proj files might not have right depends
+
+		print (" ...Make Release64...\n");
+		#nb: lose -s to see each compile line
+		system ("(nmake /NOLOGO /S -f ms/nt.mak 2>&1) | tee -a NT64.MAK.BUILD-Output.txt");
+
+		print (" ...Make Debug64...\n");
+		#nb: lose -s to see each compile line
+		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak 2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
+
+		print (" ...Running openssl tests...");
+		system ("(nmake /NOLOGO /S -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
+		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
+		print ("\n");
+	chdir ("..");
+
+	CopyBuilds2Out ("Release64", "out32");
+	CopyBuilds2Out ("Debug64", "out32.dbg");
+
 }}
+
 
 
 system ("perl checkall.pl");
