@@ -5782,7 +5782,7 @@ IntermediateFiles/Platform_Linux/Debug/Test36/Makefile
 IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile
 IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/WebServer/Makefile
 IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/Makefile
-IntermediateFiles/Configuration.xml
+ConfigurationFiles/DefaultConfiguration.xml
 Library/Projects/CodeBlocks/Stroika.cbp
 Library/Projects/CodeBlocks/Stroika.workspace
 Library/Projects/Eclipse/CreateEclipseSymbolicLinks.sh

@@ -12,11 +12,11 @@ use constant false => 0;
 use constant true  => 1;
 use constant DEFAULT_BOOL_OPTIONS => -1;
 
-my $intermediateFiles	=	"IntermediateFiles/";
+my $configurationFiles	=	"ConfigurationFiles/";
 my $platform			=	"";
 my $target			=	"";
 
-my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
+my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
 
 my $forceWriteConfig	=	true;
 
@@ -373,8 +373,7 @@ sub	WriteConfigFile_
 
 #print ("OS: $^O\n");
 
-
-mkdir ($intermediateFiles);
+mkdir ($configurationFiles);
 
 if ($forceWriteConfig) {
 	print("Forcing recreate of \"$masterXMLConfigFile\"...\n");

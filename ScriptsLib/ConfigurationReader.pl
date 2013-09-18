@@ -6,7 +6,8 @@
 ### tesxt reading..
 
 my $intermediateFiles	=	GetThisScriptDir() . "/../IntermediateFiles";
-my $masterXMLConfigFile	=	"$intermediateFiles/Configuration.xml";
+my $configurationFiles	=	GetThisScriptDir() . "/../ConfigurationFiles";
+my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
 
 require (GetThisScriptDir () + "StringUtils.pl");
 
