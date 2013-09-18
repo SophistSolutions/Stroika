@@ -126,18 +126,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Memory::Optional<T> PeekHead () const;
 
-            public:
-                //OBSOLETE APIS - CHANGED NAMES
-                nonvirtual  void    Add (T e, Time::DurationSecondsType timeout = Time::kInfinite) {
-                    AddTail (e, timeout);
-                }
-                nonvirtual  T       Remove (Time::DurationSecondsType timeout = Time::kInfinite) {
-                    RemoveHead (timeout);
-                }
-                nonvirtual  Memory::Optional<T> PeekFront () const {
-                    return PeekHead ();
-                }
-
             private:
                 mutex                       fMutex_;    //tmphack cuz Queue<> doesnt return optionals...
                 Event                       fDataAvailable_;
