@@ -55,8 +55,9 @@ if (not -e "CURRENT/e_os.h") {
 		system ("ln -s CURRENT $SLINKDIRNAME");
 	}
 	
-	print ("Patching openssl...\n");
+	#print ("Patching openssl...\n");
 	#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
+	sleep (1);
 }
 
 
@@ -87,7 +88,7 @@ if ("$^O" eq "linux") {
 }
 else {if ("$^O" eq "cygwin") {
 	chdir ("CURRENT");
-		system ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
+		RunAndStopOnFailure ("perl Configure VC-WIN32 no-asm --prefix=c:/some/openssl/dir");
 		## BASED ON ms\do_ms.bat
 		system ("perl util/mkfiles.pl >MINFO");
 		system ("perl util/mk1mf.pl no-asm VC-WIN32 >ms/nt.mak");
@@ -99,15 +100,15 @@ else {if ("$^O" eq "cygwin") {
 
 		print (" ...Make Release...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO /S -f ms/nt.mak 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
+		RunAndStopOnFailure ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS= 2>&1) | tee -a NT.MAK.BUILD-Output.txt");
 
 		print (" ...Make Debug...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak 2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak MAKEFLAGS=  2>&1) | tee -a NT-DBG.MAK.BUILD-Output.txt");
 
 		print (" ...Running openssl tests...");
-		system ("(nmake /NOLOGO /S -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
-		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");
 		print ("\n");
 	chdir ("..");
 
@@ -129,15 +130,15 @@ else {if ("$^O" eq "cygwin") {
 
 		print (" ...Make Release64...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO /S -f ms/nt.mak 2>&1) | tee -a NT64.MAK.BUILD-Output.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt.mak MAKEFLAGS=  2>&1) | tee -a NT64.MAK.BUILD-Output.txt");
 
 		print (" ...Make Debug64...\n");
 		#nb: lose -s to see each compile line
-		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak 2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak MAKEFLAGS=  2>&1) | tee -a NT64-DBG.MAK.BUILD-Output.txt");
 
 		print (" ...Running openssl tests...");
-		system ("(nmake /NOLOGO /S -f ms/nt.mak test 2>&1) > TEST-OUT.txt");
-		system ("(nmake /NOLOGO /S -f ms/nt-DBG.mak test 2>&1) > TEST-DBG-OUT.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt.mak test MAKEFLAGS=  2>&1) > TEST-OUT.txt");
+		system ("(nmake /NOLOGO /S /f ms/nt-DBG.mak test MAKEFLAGS= 2>&1) > TEST-DBG-OUT.txt");
 		print ("\n");
 	chdir ("..");
 
