@@ -29,6 +29,8 @@ if ("$^O" eq "linux") {
 	$DoCreateSymLink = 1;
 }
 
+$ENV{'MAKEFLAGS'}='';
+
 
 print (">>>>>>>>******************** STARTING ThirdPartyLibs/openssl ******************\n");
 
