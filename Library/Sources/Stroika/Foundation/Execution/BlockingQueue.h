@@ -22,8 +22,12 @@
  *
  * TODO:
  *
+ *      @todo   Add clear example of usage...
+ *
  *      @todo   Use condition variables (instead of waitable event?) Or explain why not. Waitable event
  *              uses them, so maybe thats enouf
+ *
+ *      @todo   Perhaps have PeekHead() take timeout=0 optional param?
  *
  *      @todo   Perhaps rename to Message Queue or EventQueue
  *
@@ -69,8 +73,6 @@ namespace   Stroika {
              *
              *  SEE http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/BlockingQueue.html
              *
-             *  maybe templated like the java one?
-             *
              *                      Throws exception    Special value       Blocks              Times out
              *  Insert              add(e)              offer(e)            put(e)              offer(e, time, unit)
              *  Remove              remove()            poll()              take()              poll(time, unit)
@@ -115,12 +117,12 @@ namespace   Stroika {
                  *
                  *  Analagous to the java BlockingQueue<T>::poll() method.
                  */
-                nonvirtual  Memory::Optional<T>     RemoveHeadIfPossible ();
+                nonvirtual  Memory::Optional<T>     RemoveHeadIfPossible (Time::DurationSecondsType timeout = 0);
 
             public:
                 /**
                  *  Returns the front element from the Q, if there is one, and an empty Optional<T> if
-                 *  there is none.
+                 *  there is none (without blocking).
                  *
                  *  Analagous to the java BlockingQueue<T>::peek() method.
                  */

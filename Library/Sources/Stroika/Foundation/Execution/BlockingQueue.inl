@@ -52,13 +52,24 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible ()
+            Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
-                lock_guard<mutex> critSec (fMutex_);
-                if (fQueue_.empty ()) {
-                    return Memory::Optional<T> ();
+                if (timeout <= 0.0) {
+                    lock_guard<mutex> critSec (fMutex_);
+                    if (fQueue_.empty ()) {
+                        return Memory::Optional<T> ();
+                    }
+                    return fQueue_.RemoveHead ();
                 }
-                return fQueue_.RemoveHead ();
+                else {
+                    // weak but adequate impl
+                    try {
+                        RemoveHead (timeout);
+                    }
+                    catch (...) {
+                        return Memory::Optional<T> ();
+                    }
+                }
             }
             template    <typename T>
             Memory::Optional<T> BlockingQueue<T>::PeekHead () const
