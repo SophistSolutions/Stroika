@@ -12,10 +12,10 @@ my $ssleay32_DBG;
 
 if ("$^O" eq "linux") {
 	###WRONG - MUST FIX
-	$libeay32 = "CURRENT/out32/libeay32.lib";
-	$libeay32_DBG = "CURRENT/out32.dbg/libeay32.lib";
-	$ssleay32 = "CURRENT/out32/ssleay32.lib";
-	$ssleay32_DBG = "CURRENT/out32.dbg/ssleay32.lib";
+	$libeay32 = "CURRENT/libcrypto.a";
+	$libeay32_DBG = "CURRENT/libcrypto.a";
+	$ssleay32 = "CURRENT/libssl.a";
+	$ssleay32_DBG = "CURRENT/libssl.a";
 }
 else {
 	$libeay32 = "CURRENT/out32/libeay32.lib";
