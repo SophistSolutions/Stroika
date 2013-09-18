@@ -66,6 +66,33 @@ namespace   Stroika {
             {
                 return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
+            template <typename T, size_t SZ>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
+            {
+                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                    Sequence<VariantValue> s;
+                    const T*  actualMember    =   reinterpret_cast<const T*> (objOfType);
+                    for (auto i = actualMember; i < actualMember + SZ; ++i) {
+                        s.Append (mapper->FromObject<T> (*i));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                    Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
+                    T*  actualMember    =   reinterpret_cast<T*> (objOfType);
+                    if (s.size () > SZ) {
+                        Execution::DoThrow<BadFormatExcepion> ();
+                    }
+                    size_t idx = 0;
+                    for (auto i : s) {
+                        actualMember[idx++] = mapper->ToObject<T> (i);
+                    }
+                    while (idx < SZ) {
+                        actualMember[idx++] = T ();
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
+            }
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Sequence ()
             {

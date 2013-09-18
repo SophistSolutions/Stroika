@@ -227,6 +227,11 @@ namespace   Stroika {
 
             public:
                 // soon to be private:
+                template <typename T, size_t SZ>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
+
+            public:
+                // soon to be private:
                 template <typename T>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
 
