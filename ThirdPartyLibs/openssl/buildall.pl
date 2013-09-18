@@ -82,9 +82,9 @@ system ("rm -rf CURRENT/Builds");
 if ("$^O" eq "linux") {
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
-	unless (-e "CURRENT/CONFIGURED") {
-		system ("cd CURRENT ; ./config -no-shared");
-		system ("touch CURRENT/CONFIGURED");
+	unless (-e "CURRENT/CONFIG.OUT") {
+		print ("Creating CURRENT/CONFIG.OUT - new configuration\n");
+		system ("cd CURRENT ; ./config -no-shared 2>&1  > CONFIG.OUT");
 	}
 	system ("make --directory CURRENT --no-print-directory -s all");
 }
