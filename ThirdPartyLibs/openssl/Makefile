@@ -1,8 +1,7 @@
 .PHONY:	all clean clobber check
 
 all:
-	pwd
-	./buildall.pl build
+	@./buildall.pl build
 
 clean:
 	@./buildall.pl clean
