@@ -118,6 +118,31 @@ namespace   {
             VerifyTestResult (v.GetType () == typeid (1));
             VerifyTestResult (static_cast<int> (v) == 1);
         }
+        {
+            static int nCopies = 0;
+            struct Copyable {
+                Copyable () {
+                    ++nCopies;
+                }
+                Copyable (const Copyable&) {
+                    ++nCopies;
+                }
+                ~Copyable () {
+                    --nCopies;
+                }
+                NO_ASSIGNMENT_OPERATOR(Copyable);
+            };
+            {
+                AnyVariantValue v;
+                VerifyTestResult (v.empty ());
+                v = Copyable ();
+                v = v;
+                v = AnyVariantValue (AnyVariantValue (v));
+                v = AnyVariantValue (AnyVariantValue (Copyable ()));
+                VerifyTestResult (v.GetType () == typeid (Copyable));
+            }
+            VerifyTestResult (0 == nCopies);
+        }
     }
 }
 
