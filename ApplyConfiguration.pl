@@ -130,6 +130,7 @@ if ($forceRecreate) {
 	print "Forcing recreate...\n";
 }
 
+mkdir ($intermediateFiles);
 
 
 
