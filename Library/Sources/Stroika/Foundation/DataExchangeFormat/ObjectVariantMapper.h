@@ -211,6 +211,34 @@ namespace   Stroika {
                 template    <typename CLASS>
                 nonvirtual  VariantValue    FromObject (const CLASS& from);
 
+            public:
+                /**
+                 *  This creates serializers for many common types.
+                 *      o   Sequence<T> (but this assumes you already have a serializer for T defined)
+                 *      o   Mapping<K,T> (assumes serializer for K,T already defined)
+                 *      o   T[N]
+                 *
+                 *  ... EXPERIEMENTAL
+                 **
+                 *  CANNOT FIGURE OUT HOW TODO...
+                 */
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer ();
+
+            public:
+                // soon to be private:
+                template <typename T>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
+
+            public:
+                // soon to be private:
+                // by default serialize as an array (cuz serializing as mapping only works if LHS is
+                // string).
+                //
+                // For that case - SHOULD use partial specializaiton (not sure how)
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
+
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
 
