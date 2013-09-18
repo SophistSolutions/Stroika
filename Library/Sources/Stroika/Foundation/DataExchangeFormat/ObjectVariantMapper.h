@@ -160,9 +160,9 @@ namespace   Stroika {
                  *
                  *  Builtin types include:
                  *      o   bool
-                 *      o   int
-                 *      o   float
-                 *      o   double
+                 *      o   signed char, short int, int, long int, long long int
+                 *      o   unsigned char, unsigned short int, unsigned int, unsigned long int, unsigned long long int
+                 *      o   float, double, long double
                  *      o   Date
                  *      o   DateTime
                  *      o   String
