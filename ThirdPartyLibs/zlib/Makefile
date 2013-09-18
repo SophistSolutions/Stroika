@@ -65,7 +65,7 @@ endif
 	
 check:
 	@##THMPHACK
-	@echo "[Succeeded]"
+	@echo "ThirdPartyLibs/zlib - [Succeeded]"
 
 clean:
 	@$(MAKE) --directory $(TRGDIR) --no-print-directory MAKEFLAGS=$(MAKEFLAGS) clean
