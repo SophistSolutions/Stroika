@@ -10,7 +10,10 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    "../Execution/Exceptions.h"
+
 #include    "BadFormatException.h"
+
 
 namespace   Stroika {
     namespace   Foundation {
@@ -69,19 +72,19 @@ namespace   Stroika {
             template <typename T, size_t SZ>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
-                    const T*  actualMember    =   reinterpret_cast<const T*> (objOfType);
+                    const T*  actualMember    =   reinterpret_cast<const T*> (fromObjOfTypeT);
                     for (auto i = actualMember; i < actualMember + SZ; ++i) {
                         s.Append (mapper->FromObject<T> (*i));
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
-                    T*  actualMember    =   reinterpret_cast<T*> (objOfType);
+                    T*  actualMember    =   reinterpret_cast<T*> (intoObjOfTypeT);
                     if (s.size () > SZ) {
-                        Execution::DoThrow<BadFormatExcepion> ();
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
                     size_t idx = 0;
                     for (auto i : s) {
@@ -96,17 +99,17 @@ namespace   Stroika {
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Sequence ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
-                    const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (objOfType);
+                    const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
                         s.Append (mapper->FromObject<T> (i));
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
-                    Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (into);
+                    Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
                     actualInto->clear ();
                     for (auto i : s) {
                         actualInto->Append (mapper->ToObject<T> (i));
@@ -117,9 +120,9 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Mapping ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
-                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (objOfType);
+                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
                         Sequence<VariantValue>  encodedPair;
                         encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.first));
@@ -128,16 +131,16 @@ namespace   Stroika {
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
-                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (into);
+                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
                     for (VariantValue encodedPair : s) {
                         Sequence<VariantValue>  p   =   p.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            Execution::DoThrow<BadFormatExcepion> ();
+                            Execution::DoThrow<BadFormatException> (BadFormatException ());
                         }
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]) mapper->ToObject<VALUE_TYPE> (p[1]));
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);

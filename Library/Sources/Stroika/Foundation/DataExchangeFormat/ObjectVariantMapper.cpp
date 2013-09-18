@@ -66,20 +66,20 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
 #endif
 #endif
 
-    fToVariantMapper = [fields] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+    fToVariantMapper = [fields] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
         for (auto i : fields) {
-            const Byte* fieldObj = objOfType + i.fOffset;
-            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, objOfType + i.fOffset));
+            const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
+            m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset));
         }
         return VariantValue (m);
     };
-    fFromVariantMapper = [fields] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+    fFromVariantMapper = [fields] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
         for (auto i : fields) {
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.empty ()) {
-                mapper->ToObject (i.fTypeInfo, *o, into + i.fOffset);
+                mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
             }
         }
     };
@@ -95,11 +95,11 @@ namespace {
     template    <typename T, typename UseVariantType>
     ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
     {
-        auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
-            return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (objOfType)));
+        auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+            return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (fromObjOfTypeT)));
         };
-        auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
-            *reinterpret_cast<T*> (into) = static_cast<T> (d.As<UseVariantType> ());
+        auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+            *reinterpret_cast<T*> (intoObjOfTypeT) = static_cast<T> (d.As<UseVariantType> ());
         };
         return ObjectVariantMapper::TypeMappingDetails (typeid (T), toVariantMapper, fromVariantMapper);
     }
@@ -126,9 +126,9 @@ namespace {
 
         {
             typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
-            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
+            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                 Mapping<String, VariantValue> m;
-                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
+                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
                 for (auto i : *actualMember) {
                     // really could do either way - but second more efficient
                     //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
@@ -136,9 +136,9 @@ namespace {
                 }
                 return VariantValue (m);
             };
-            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
+            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                 Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
+                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
                 actualInto->clear ();
                 for (auto i : m) {
                     // really could do either way - but second more efficient
@@ -151,12 +151,12 @@ namespace {
 
         {
             typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
-            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * objOfType) -> VariantValue {
-                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (objOfType);
+            auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
                 return VariantValue (*actualMember);
             };
-            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * into) -> void {
-                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (into);
+            auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
                 * actualInto = d.As<Mapping<String, VariantValue>> ();
             };
             result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
