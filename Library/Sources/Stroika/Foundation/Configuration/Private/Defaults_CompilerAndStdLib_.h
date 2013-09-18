@@ -674,6 +674,21 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
+@DESCRIPTION:   GCC 4.6 issues misleading warnings (errors without -fpermissive) without this
+*/
+#ifndef qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue     1
+#endif
+#endif
+
+
+
+
 
 
 
