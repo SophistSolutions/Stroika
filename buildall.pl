@@ -88,7 +88,11 @@ if ($isBuildingMode) {
 
 require "ScriptsLib/BuildUtils.pl";
 
-RunAndStopOnFailure ("cd ThirdPartyLibs; perl buildall.pl $BLD_TRG");
+my $useMakeBuild = $BLD_TRG;
+if (lc ($useMakeBuild) eq "build") {
+	$useMakeBuild = "all";
+}
+RunAndStopOnFailure ("make --directory ThirdPartyLibs $useMakeBuild --no-print-directory");
 
 
 my $useBld	=	$BLD_TRG;

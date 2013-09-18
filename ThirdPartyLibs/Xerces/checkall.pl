@@ -36,19 +36,19 @@ else {
 }
 
 if (! (-e "$REL32_LIB")) {
-	print ("Echo [FAILED] - $REL32_LIB is missing\n");
+	print ("ThirdPartyLibs/Xerces - [FAILED] - $REL32_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$DBG32_LIB")) {
-	print ("Echo [FAILED] - $DBG32_LIB is missing\n");
+	print ("ThirdPartyLibs/Xerces - [FAILED] - $DBG32_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$REL64_LIB")) {
-	print ("Echo [FAILED] - $REL64_LIB is missing\n");
+	print ("ThirdPartyLibs/Xerces - [FAILED] - $REL64_LIB is missing\n");
 	exit (1);
 }
 if (! (-e "$DBG64_LIB")) {
-	print ("Echo [FAILED] - $DBG64_LIB is missing\n");
+	print ("ThirdPartyLibs/Xerces - [FAILED] - $DBG64_LIB is missing\n");
 	exit (1);
 }
 print ("ThirdPartyLibs/Xerces -  [SUCCEEDED]\n");
