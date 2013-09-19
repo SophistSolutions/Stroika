@@ -5,6 +5,7 @@
 
 #include    "../Characters/Format.h"
 #include    "../Containers/Tally.h"
+#include    "../Debug/Trace.h"
 #include    "../Time/Date.h"
 #include    "../Time/DateTime.h"
 
@@ -206,6 +207,8 @@ void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const Vari
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
+    Debug::TraceContextBumper   ctx (TSTR ("ObjectVariantMapper::Lookup_"));
+    DbgTrace ("(forTypeInfo = %s)", forTypeInfo.name ());
     TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
     auto i  = fSerializers_.Lookup (foo);
     Require (i.IsPresent ());   // if not present, this is a usage error - only use types which are registered
