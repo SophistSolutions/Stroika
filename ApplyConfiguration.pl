@@ -99,7 +99,7 @@ sub	ReadConfiguration_
 	$ENABLE_TRACE2FILE = ConfigParam2BoolInt (GetConfigurationParameter("ENABLE_TRACE2FILE"));
 	$INCLUDE_SYMBOLS = ConfigParam2BoolInt (GetConfigurationParameter("IncludeDebugSymbtolsInExecutables"));
 	$COPTIMIZE_FLAGS = GetConfigurationParameter("OptimizerFlag");
-	if (undef $COPTIMIZE_FLAGS) {
+	if (not (defined $COPTIMIZE_FLAGS)) {
 		$COPTIMIZE_FLAGS = "";
 	}
 	$STATIC_LINK_GCCRUNTIME = ConfigParam2BoolInt (GetConfigurationParameter("STATIC_LINK_GCCRUNTIME"));

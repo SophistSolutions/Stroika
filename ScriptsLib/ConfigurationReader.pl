@@ -74,6 +74,10 @@ sub	ReadConfigFile_ {
 		if (defined $pps) {
 			$configuration {'Target'} = $pps;
 		}
+		my $pps = ReadValue_($line, "<OptimizerFlag>");
+		if (defined $pps) {
+			$configuration {'OptimizerFlag'} = $pps;
+		}
 		my $pps = ReadValue_($line, "<CompilerDriver>");
 		if (defined $pps) {
 			$configuration {'CompilerDriver'} = $pps;
