@@ -10,7 +10,7 @@
 
 %.o : %.cpp
 	@echo "Compiling $<"
-	@$(CPlusPlus) $(CFLAGS) $< -o $@
+	@$(CPlusPlus) $(CFLAGS) -c $< -o $@
 
 
 %.i : %.swsp

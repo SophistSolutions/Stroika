@@ -51,8 +51,8 @@ ifndef CFLAGS
 endif
 
 #g++-4.6 still only accepts c++0x
-#CFLAGS		+=	-c -std=c++11  $(COPTIMIZE_FLAGS) $(Includes)
-CFLAGS		+=	-c -std=c++0x  $(COPTIMIZE_FLAGS) $(Includes)
+#CFLAGS		+=	-std=c++11  $(COPTIMIZE_FLAGS) $(Includes)
+CFLAGS		+=	-std=c++0x  $(COPTIMIZE_FLAGS) $(Includes)
 
 
 
