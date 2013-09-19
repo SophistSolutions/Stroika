@@ -57,7 +57,8 @@ if (not -e "CURRENT/e_os.h") {
 		system ("ln -s CURRENT $SLINKDIRNAME");
 	}
 	
-	#print ("Patching openssl...\n");
+	print ("Patching openssl...\n");
+	system ("patch -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH");
 	#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
 	sleep (1);
 }
