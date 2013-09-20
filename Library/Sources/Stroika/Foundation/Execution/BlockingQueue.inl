@@ -64,7 +64,7 @@ namespace   Stroika {
                 else {
                     // weak but adequate impl
                     try {
-                        RemoveHead (timeout);
+                        return RemoveHead (timeout);
                     }
                     catch (...) {
                         return Memory::Optional<T> ();
