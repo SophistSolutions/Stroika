@@ -71,6 +71,10 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
     sAssertFailureHandler_ = (assertionHandler == nullptr) ? DefaultAssertionHandler_ : assertionHandler;
 }
 
+#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_no_return_warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-w"
+#endif
 void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 {
     static  bool    s_InTrap    =   false;
@@ -89,6 +93,9 @@ void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char
         throw;
     }
 }
+#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_no_return_warning
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 

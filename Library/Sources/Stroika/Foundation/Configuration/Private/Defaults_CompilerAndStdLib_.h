@@ -835,6 +835,18 @@
 
 
 
+#ifndef qCompilerAndStdLib_gcc_useless_no_return_warning
+#if     defined (__GNUC__) && !defined (__clang__)
+// just early 4.6 builds like using on ARM for re-Vision
+#define qCompilerAndStdLib_gcc_useless_no_return_warning       1
+#else
+#define qCompilerAndStdLib_gcc_useless_no_return_warning       0
+#endif
+#endif
+
+
+
+
 #ifndef qCompilerAndStdLib_gcc_useless_varargs_warning
 #if     defined (__GNUC__) && !defined (__clang__)
 // just early 4.6 builds like using on ARM for re-Vision
@@ -843,6 +855,7 @@
 #define qCompilerAndStdLib_gcc_useless_varargs_warning       0
 #endif
 #endif
+
 
 
 
