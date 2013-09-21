@@ -340,6 +340,9 @@ sub WriteStroikaConfigCHeader
 		print (OUT "// set\n");
 		if ($ENABLE_TRACE2FILE) {
 			print (OUT "#define	qTraceToFile 1\n");
+			# though this is could be separately configured, it almost only makes sense to turn these on together and confusing
+			# if one done but not the other.
+			print (OUT "#define	qDefaultTracingOn 1\n");
 		}	
 		else {
 			print (OUT "#define	qTraceToFile 0\n");
