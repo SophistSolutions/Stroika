@@ -835,7 +835,14 @@
 
 
 
-
+#ifndef qCompilerAndStdLib_gcc_useless_varargs_warning
+#if     defined (__GNUC__) && !defined (__clang__)
+// just early 4.6 builds like using on ARM for re-Vision
+#define qCompilerAndStdLib_gcc_useless_varargs_warning       (__GNUC__ == 4 && (__GNUC_MINOR__ == 6)))
+#else
+#define qCompilerAndStdLib_gcc_useless_varargs_warning       0
+#endif
+#endif
 
 
 

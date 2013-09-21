@@ -128,8 +128,14 @@ namespace   Stroika {
                  */
                 static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
             private:
+#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_varargs_warning
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wno-psabi"
+#endif
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
-
+#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_varargs_warning
+#pragma GCC diagnostic pop
+#endif
 
             private:
                 static  Logger  sThe_;
