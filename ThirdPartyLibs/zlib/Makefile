@@ -40,9 +40,13 @@ $(ZIPEDFILE):
 $(TRGDIR):	$(ZIPEDFILE)
 	@echo Building $(TRGDIR)...
 	@tar xf $(ZIPEDFILE) --no-same-owner
+ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
-	@unix2dos ORIGS/win32/Makefile.msc
+	@cp Patches/Makefile.msc.PATCH Patches/Makefile.msc.PATCH1
+	@dos2unix Patches/Makefile.msc.PATCH1
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH
+	@rm Patches/Makefile.msc.PATCH1
+endif
 
 ORIGS:	$(ZIPEDFILE)
 	@tar xf $(ZIPEDFILE) --no-same-owner
