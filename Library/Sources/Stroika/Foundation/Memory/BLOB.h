@@ -20,9 +20,17 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
+ *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
+ *              might cause some difficultties. So you have Memory::BLOB when you Know i tmust be in ram
+ *              nad oyu have  ptr api. And you have Streams::BLOB when it may not fit in RAM!
+ *
  *      @todo   Redo API - so its all based on SeekOffsetType - not size_t. Document that if you exceed
  *              available in-RAM storage, no biggie - you just throw bad_alloc. But at least you can
  *              construct and operate on large BLOBs (as streams).
+ *              [[NB SEE Streams::BLOB todo/project]]
+ *
+ *      @todo   Use (or document why not) ICompare API for our compare stuff.
  *
  *      @todo   Add MemoryMappedFileBLOB to Foundation/File section – and have it subclass
  *              BLOB (object slicing) – and have different CTOR, and different virtual Rep
