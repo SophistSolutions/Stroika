@@ -27,7 +27,7 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/ --no-print-directory $useBld MAKEFLAGS=");
-	RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/ --no-print-directory$useBld MAKEFLAGS=");
+	RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/ --no-print-directory $useBld MAKEFLAGS=");
 }
 else {
     	my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
