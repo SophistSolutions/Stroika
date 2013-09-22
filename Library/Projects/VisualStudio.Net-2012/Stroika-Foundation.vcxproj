@@ -1108,6 +1108,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextInputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToDo.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl" />

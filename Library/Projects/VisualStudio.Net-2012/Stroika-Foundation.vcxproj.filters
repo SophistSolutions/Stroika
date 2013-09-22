@@ -2073,5 +2073,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Streams\ToDo.md">
+      <Filter>Sources\Streams</Filter>
+    </None>
   </ItemGroup>
 </Project>
