@@ -871,7 +871,7 @@
 #ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 #if     defined (__GNUC__) && !defined (__clang__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       qCompilerAndStdLib_Supports_constexpr
 #endif
