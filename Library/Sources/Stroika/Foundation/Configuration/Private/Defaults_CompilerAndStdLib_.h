@@ -40,7 +40,7 @@
 #if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
 #pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
 #endif
-#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 7))
+#if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 8))
 #pragma message ("Info: Stroika untested with this version of GCC")
 #endif
 
