@@ -838,7 +838,9 @@
 #ifndef qCompilerAndStdLib_gcc_useless_no_return_warning
 #if     defined (__GNUC__) && !defined (__clang__)
 // just early 4.6 builds like using on ARM for re-Vision
-#define qCompilerAndStdLib_gcc_useless_no_return_warning       1
+// still broken but my 'fix' doest seem to work ;-(
+//#define qCompilerAndStdLib_gcc_useless_no_return_warning       1
+#define qCompilerAndStdLib_gcc_useless_no_return_warning       0
 #else
 #define qCompilerAndStdLib_gcc_useless_no_return_warning       0
 #endif
@@ -850,7 +852,9 @@
 #ifndef qCompilerAndStdLib_gcc_useless_varargs_warning
 #if     defined (__GNUC__) && !defined (__clang__)
 // just early 4.6 builds like using on ARM for re-Vision
-#define qCompilerAndStdLib_gcc_useless_varargs_warning       (__GNUC__ == 4 && (__GNUC_MINOR__ == 6))
+//#define qCompilerAndStdLib_gcc_useless_varargs_warning       (__GNUC__ == 4 && (__GNUC_MINOR__ == 6))
+// still broken but my 'fix' doest seem to work ;-(
+#define qCompilerAndStdLib_gcc_useless_varargs_warning       0
 #else
 #define qCompilerAndStdLib_gcc_useless_varargs_warning       0
 #endif
