@@ -560,18 +560,18 @@ namespace   Stroika {
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
-#if     !qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+#if     !qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
                 inline  static  bool    DefaultTrimArg_ (Character c)               {       return c.IsWhitespace ();       }
 #endif
 
-#if     qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+#if     qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
                 /*
                  * String LTrim () scans the characters form the left to right, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
                  * and the resulting string is returned. This does not modify the current string its
                  * applied to - just returns the trimmed string.
                  */
-                nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](const Character& c) -> bool { return c.IsWhitespace (); }) const;
+                nonvirtual  String  LTrim (bool (*shouldBeTrimmmed) (Character) = [](Character c) -> bool { return c.IsWhitespace (); }) const;
                 /*
                  * String RTrim () scans the characters form the right to left, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,

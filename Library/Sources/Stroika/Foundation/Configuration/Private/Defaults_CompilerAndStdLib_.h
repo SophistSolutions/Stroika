@@ -277,7 +277,7 @@
 #if     defined (__clang__)
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 2)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 7)))
+#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #else
 #define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
 #endif
@@ -753,13 +753,14 @@
 
 
 
-#ifndef qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported
+
+#ifndef qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
+#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_lambda_default_argument_WITH_closureCvtToFunctionPtrSupported   qCompilerAndStdLib_Supports_lambda_default_argument
+#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #endif
 #endif
 
