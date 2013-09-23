@@ -487,6 +487,7 @@ void        Main::RunTilIdleService::_RunAsAservice ()
     fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ([] () {});
     });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     float timeTilIdleHack = 3.0;
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack));   //tmphack - as
@@ -499,6 +500,7 @@ void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
     fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ([] () {});
     });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
 }
 
@@ -592,6 +594,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
     fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ([] () {});
     });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;
     {
@@ -967,6 +970,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     fRunThread_ = Execution::Thread ([appRep] () {
         appRep->MainLoop ([] () {});
     });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);

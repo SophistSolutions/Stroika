@@ -527,6 +527,7 @@ void    ProcessRunner::Run (ProgressMontior* progress, Time::DurationSecondsType
     }
     else {
         Thread t (CreateRunnable (progress));
+        t.SetThreadName (L"ProcessRunner thread");
         t.Start ();
         t.WaitForDone (timeout);
     }
