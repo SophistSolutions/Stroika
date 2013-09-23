@@ -61,11 +61,11 @@ namespace   {
 
 HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream outStream, const InternetMediaType& ct)
     : fSocket_ (s)
-    , fUnderlyingOutStream_ (outStream)
-    , fUseOutStream_ (outStream)
     , fState_ (State::eInProgress)
     , fStatus_ (StatusCodes::kOK)
     , fStatusOverrideReason_ ()
+    , fUnderlyingOutStream_ (outStream)
+    , fUseOutStream_ (outStream)
     , fHeaders_ ()
     , fContentType_ (ct)
     , fCodePage_ (Characters::kCodePage_UTF8)

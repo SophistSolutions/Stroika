@@ -24,22 +24,25 @@
 
 /*
  * TODO:
- *      (o)     REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
+ *      @todo   Redo using Mapping, and maybe BLOB - anyhow - use Stroika types...
+ *
+ *      @todo   REDO THE HTTPRESPONSE USING A BINARY OUTPUT STREAM.
  *              INTERNALLY - based on code page - construct a TEXTOUTPUTSTREAM wrapping that binary output stream!!!
  *
- *      (o)     Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
+ *      @todo   Have output CODEPAGE param - used for all unincode-string writes. Create Stream wrapper than does the downshuft
  *              to right codepage.
  *
- *      (o)     Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
+ *      @todo   Need a clear policy about threading / thread safety. PROBABLY just PROTECT all our APIs. But if not - detect unsafe
  *              usage.
  *
- *      (o)     eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
+ *      @todo   eExact is UNTESTED, and should have CHECKING code - so if a user writes a different amount, we detect and assert out.
  *              But that can be deferered because it probably works fine for the the case where its used properly.
  */
 
 namespace   Stroika {
     namespace   Frameworks {
         namespace   WebServer {
+
 
             using   namespace   Stroika::Foundation;
             using   namespace   Stroika::Foundation::IO::Network::HTTP;
