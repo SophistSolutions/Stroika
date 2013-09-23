@@ -273,7 +273,7 @@ namespace   Stroika {
                 };
 
 
-#if qPlatform_Windows
+#if     qPlatform_Windows
                 /**
                  * This must be called before any Sockets are created, otherwise its
                  *  an erorr (requirement failure).

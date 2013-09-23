@@ -34,6 +34,8 @@ namespace   Stroika {
 
 
                 /**
+                 *  Freindly C++ wrapper on berkley socket sockaddr structure (so sockaddr, sockaddr_in, sockaddr_storage, etc).
+                 *  A SocketAddress is the combination of an @see InternetAddress with a port#.
                  */
                 class SocketAddress {
                 public:
