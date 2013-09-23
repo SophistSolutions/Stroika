@@ -306,7 +306,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Note - in the specail case of 'empty' - this returns Date::kMin.GetJulianRep ()
+                 * Note - in the special case of 'empty' - this returns Date::kMin.GetJulianRep ()
                  */
                 nonvirtual  JulianRepType   GetJulianRep () const;
 

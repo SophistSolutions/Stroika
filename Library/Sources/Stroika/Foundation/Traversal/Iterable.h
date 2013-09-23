@@ -289,7 +289,7 @@ namespace   Stroika {
                  *  threads intervening to modify the container.
                  *
                  *  This function returns an iteartor pointing to the element that triggered the abrupt loop
-                 *  end (for example the element you were searching for?). It returns the specail iterator
+                 *  end (for example the element you were searching for?). It returns the special iterator
                  *  end() to indicate no doToElement() functions returned true.
                  *
                  *   Also, note that this function does NOT change any elements of the Iterable.

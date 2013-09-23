@@ -147,7 +147,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * In specail case of empty - this also returns 0
+                 * In special case of empty - this also returns 0
                  */
                 nonvirtual  uint32_t    GetAsSecondsCount () const;     // seconds since StartOfDay (midnight)
 

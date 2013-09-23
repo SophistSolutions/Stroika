@@ -585,7 +585,7 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
         ) {
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
         }
-        // specail case - comparing a string with a bool or bool with a string
+        // special case - comparing a string with a bool or bool with a string
         if (
             (lt == VariantValue::Type::eBoolean and rt == VariantValue::Type::eString) or
             (lt == VariantValue::Type::eString and rt == VariantValue::Type::eBoolean)

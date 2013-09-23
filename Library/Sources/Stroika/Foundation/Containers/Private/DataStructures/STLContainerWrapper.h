@@ -28,7 +28,7 @@
  *      @todo   Redo Contains1 versus Contains using partial template specialization of STLContainerWrapper - easy
  *              cuz such a trivial class. I can use THAT trick to handle the case of forward_list too. And GetLength...
  *
- *      @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
+ *      @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *              that uses forward_list code...
  *
  *      @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using

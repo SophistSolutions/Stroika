@@ -19,7 +19,7 @@
  *      This module genericly wraps STL containers (such as map, vector etc), and facilitates
  *      using them as backends for Stroika containers.
  *
- *  @todo   Add specail subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
+ *  @todo   Add special subclass of ForwardIterator that tracks PREVPTR - and use to cleanup stuff
  *          that uses forward_list code...
  *
  *  @todo   VERY INCOMPLETE Patch support. Unclear if/how I can do patch support generically - perhaps using

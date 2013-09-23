@@ -75,7 +75,7 @@ namespace   Stroika {
              *  *Design Note*:
              *      We considered NOT having Stack<T> inherit from Iterable<T>, but that made copying of
              *      a stack intrinsically more costly, as you had to copy, and then pop items to see them,
-             *      and put them into a new stack. A specail copy API (private to stack) would have limited
+             *      and put them into a new stack. A special copy API (private to stack) would have limited
              *      the ease of interoperating the Stack<T> container with other sorts of containers.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>

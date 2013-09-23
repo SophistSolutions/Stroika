@@ -146,7 +146,7 @@ SecondTry: {
                 if (sce->ScanForUndefinedWord (charBuf, charBuf + (endRegion - startRegion), &cursor, &wordStart, &wordEnd)) {
                     /*
                      * If the undefined word ends at the end of the buffer region we looked at - it might be an artifact of our
-                     * chunking. Retry the word (being careful about the specail case where the 'word' is as big as our buffer).
+                     * chunking. Retry the word (being careful about the special case where the 'word' is as big as our buffer).
                      */
                     if (wordStart != charBuf and wordEnd == charBuf + (endRegion - startRegion)) {
                         startRegion += (wordStart - charBuf); // advance to the start of this word and try again

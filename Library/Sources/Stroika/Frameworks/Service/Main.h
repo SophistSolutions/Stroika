@@ -336,7 +336,7 @@ namespace   Stroika {
                  *  The kRunAsService command is about the only command that tends to NOT be called by users on the command line.
                  *  it tells the code to run indefinitely, (until told to stop) - running the service loop.
                  *
-                 *  This is typically called INDRECTLY via a specail fork/exec as a result of a kStart command, or its called from
+                 *  This is typically called INDRECTLY via a special fork/exec as a result of a kStart command, or its called from
                  *  init as part of system startup.
                  */
                 static  const   wchar_t kRunAsService[];

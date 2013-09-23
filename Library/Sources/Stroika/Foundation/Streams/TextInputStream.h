@@ -59,7 +59,7 @@ namespace   Stroika {
              *          o   Seek backwards after fetching
              *          o   Special 'put back' variable/API - which allows you to put back either one,
              *              or a number of characters back into the input Q
-             *          o   A specail proxy object which stores the extra data, and maintains the context
+             *          o   A special proxy object which stores the extra data, and maintains the context
              *              of the state of pre-reading.
              *
              *      Each of these approaches has some advantages and disadvantages. Just using Seek() is
