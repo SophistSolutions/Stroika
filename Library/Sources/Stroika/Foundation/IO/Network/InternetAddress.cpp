@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::IO::Network;
 
 namespace {
     constexpr   in_addr     kV4AddrAny_ =   { 0 };
-    constexpr   in6_addr    kV6AddrAny_ =   { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } };
+    constexpr   in6_addr    kV6AddrAny_ =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
 }
 
 
@@ -37,7 +37,7 @@ namespace {
         p.s_addr = INADDR_LOOPBACK;
         return p;
     }
-    constexpr   in6_addr    kV6Localhost_   =   { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } };
+    constexpr   in6_addr    kV6Localhost_   =   { { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 } } };
 }
 const   InternetAddress V4::kLocalhost  =   InternetAddress (kV4Localhost_ ());
 const   InternetAddress V6::kLocalhost  =   InternetAddress (kV6Localhost_);
