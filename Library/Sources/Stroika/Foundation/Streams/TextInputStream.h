@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *      @todo   Add Close() as with - binaryinputstream!
+ *
  *      @todo   Consider making LineEnd format (LF,CR,CRLF, or Auto) an optional param to ReadLine().
  *              Then it would ONLY require Seekable() for CRLF or Auto.
  *

@@ -16,6 +16,8 @@
 /**
  *  \file
  *
+ *      @todo   Add Close() as with - binaryoutputstream!
+ *
  *      @todo   Add Flush() like we have for binaryoutputstream!
  *
  */

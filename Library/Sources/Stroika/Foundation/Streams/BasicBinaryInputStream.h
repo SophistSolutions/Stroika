@@ -20,6 +20,13 @@
 /**
  *  \file
  *
+ *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
+ *
+ *              (maybe close ignored).
+ *
+ *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
+ *              have flush/close allowed, and anything else generate an assert error?
+ *
  *      @todo   Re-implement using atomics to avoid critical section (cheaper).
  *
  *      @todo   #if qCompilerAndStdLib_Supports_ConstructorDelegation && 0 -- see why not working on gcc 4.7.2

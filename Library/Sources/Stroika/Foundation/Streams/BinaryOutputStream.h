@@ -18,6 +18,13 @@
 /**
  *  \file
  *
+ *      @todo   Should add Close () method. Any subsequent calls to this stream - would fail?
+ *
+ *              (maybe close/flush ignored).
+ *
+ *              If we allow for that - we may need to have check method - isOpen?. So maybe best to
+ *              have flush/close allowed, and anything else generate an assert error?
+ *
  *      @todo   Consider/document approaches to timeouts. We COULD have a stream class where
  *              it was a PROPERTY OF THE CLASS (or alternate API) where writes timeout after
  *              a certain point.
