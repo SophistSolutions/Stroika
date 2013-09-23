@@ -72,41 +72,41 @@ namespace   {
 }
 DataExchangeFormat::BadFormatException::BadFormatException ()
     : StringException (mkMessage_ ())
-    , fLineNumber ()
-    , fColumnNumber ()
-    , fFileOffset ()
+    , fLineNumber_ ()
+    , fColumnNumber_ ()
+    , fFileOffset_ ()
     , fDetails_ ()
 {
 }
 
 DataExchangeFormat::BadFormatException::BadFormatException (const wstring& details)
     : StringException (mkMessage_ (details))
+    , fLineNumber_ ()
+    , fColumnNumber_ ()
+    , fFileOffset_ ()
     , fDetails_ (details)
-    , fLineNumber ()
-    , fColumnNumber ()
-    , fFileOffset ()
 {
 }
 
 DataExchangeFormat::BadFormatException::BadFormatException (const wstring& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     : StringException (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
+    , fLineNumber_ (lineNumber)
+    , fColumnNumber_ (columnNumber)
+    , fFileOffset_ (fileOffset)
     , fDetails_ (details)
-    , fLineNumber (lineNumber)
-    , fColumnNumber (columnNumber)
-    , fFileOffset (fileOffset)
 {
 }
 
 void    DataExchangeFormat::BadFormatException::GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const
 {
     if (lineNum != nullptr) {
-        *lineNum = fLineNumber;
+        *lineNum = fLineNumber_;
     }
     if (colNumber != nullptr) {
-        *colNumber = fColumnNumber;
+        *colNumber = fColumnNumber_;
     }
     if (fileOffset != nullptr) {
-        *fileOffset = fFileOffset;
+        *fileOffset = fFileOffset_;
     }
 }
 

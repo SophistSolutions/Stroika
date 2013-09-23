@@ -31,9 +31,9 @@ namespace   Stroika {
             public:
                 nonvirtual  void    GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
             private:
-                Memory::Optional<unsigned int>  fLineNumber;
-                Memory::Optional<unsigned int>  fColumnNumber;
-                Memory::Optional<uint64_t>      fFileOffset;
+                Memory::Optional<unsigned int>  fLineNumber_;
+                Memory::Optional<unsigned int>  fColumnNumber_;
+                Memory::Optional<uint64_t>      fFileOffset_;
 
             private:
                 wstring fDetails_;
