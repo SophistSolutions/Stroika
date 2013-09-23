@@ -48,24 +48,24 @@ namespace   Stroika {
                 fSerializers_ = s;
             }
             template    <typename CLASS>
-            void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
+            inline  void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
                 RegisterTypeMapper (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
-            void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
+            inline  void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
             {
                 ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename CLASS>
-            CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
+            inline  CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
             {
                 CLASS tmp;
                 ToObject (v, &tmp);
                 return tmp;
             }
             template    <typename CLASS>
-            VariantValue    ObjectVariantMapper::FromObject (const CLASS& from) const
+            inline  VariantValue    ObjectVariantMapper::FromObject (const CLASS& from) const
             {
                 return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
