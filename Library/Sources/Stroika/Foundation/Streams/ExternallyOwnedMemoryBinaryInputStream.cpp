@@ -29,8 +29,8 @@ public:
     IRep_ (const Byte* start, const Byte* end)
         : fCriticalSection_ ()
         , fStart_ (start)
-        , fEnd_ (end) {
-        , fCursor_ (start)
+        , fEnd_ (end)
+        , fCursor_ (start) {
     }
 
 protected:

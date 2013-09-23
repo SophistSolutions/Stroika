@@ -483,7 +483,7 @@ MonthOfYear Date::GetMonth () const
     DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
     Year        y   =   Year::eEmptyYear;
     mdy (&m, &d, &y);
-    Ensure (empty () or 1 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
+    Ensure (empty () or (1 <= static_cast<int> (m) and static_cast<int> (m) <= 12));
     Ensure (0 <= static_cast<int> (m) and static_cast<int> (m) <= 12);
     return m;
 }
@@ -494,7 +494,7 @@ DayOfMonth  Date::GetDayOfMonth () const
     DayOfMonth  d   =   DayOfMonth::eEmptyDayOfMonth;
     Year        y   =   Year::eEmptyYear;
     mdy (&m, &d, &y);
-    Ensure (empty () or 1 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
+    Ensure (empty () or (1 <= static_cast<int> (d) and static_cast<int> (d) <= 31));
     Ensure (0 <= static_cast<int> (d) and static_cast<int> (d) <= 31);
     return d;
 }
