@@ -43,15 +43,7 @@ namespace   Stroika {
                 nonvirtual  Thread::NativeHandleType    GetNativeHandle ();
 
             private:
-                shared_ptr<IRunnable>    fRunnable_;
-
-            private:
                 nonvirtual  void    Run_ ();
-
-            private:
-                // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
-                // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                bool*   fTLSAbortFlag_;
 
             private:
                 // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
@@ -81,6 +73,10 @@ namespace   Stroika {
 #endif
 
             private:
+                shared_ptr<IRunnable>   fRunnable_;
+                // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
+                // a pointer. This is that pointer - so another thread can terminate/abort this thread.
+                bool*                   fTLSAbortFlag_;
 #if     qUseThreads_StdCPlusPlus
                 std::thread             fThread_;
 #elif   qUseThreads_WindowsNative

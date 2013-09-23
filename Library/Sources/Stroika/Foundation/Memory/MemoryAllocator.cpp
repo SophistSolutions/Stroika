@@ -229,15 +229,15 @@ namespace   {
     }
 }
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator ()
-    : fBaseAllocator_ (sDefaultAllocator)
-    , fCritSection_ ()
+    : fCritSection_ ()
+    , fBaseAllocator_ (sDefaultAllocator)
     , fAllocations_ ()
 {
 }
 
 LeakTrackingGeneralPurposeAllocator::LeakTrackingGeneralPurposeAllocator (AbstractGeneralPurposeAllocator& baseAllocator)
-    : fBaseAllocator_ (baseAllocator)
-    , fCritSection_ ()
+    : fCritSection_ ()
+    , fBaseAllocator_ (baseAllocator)
     , fAllocations_ ()
 {
 }

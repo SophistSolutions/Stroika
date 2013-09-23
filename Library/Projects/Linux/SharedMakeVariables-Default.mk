@@ -58,7 +58,8 @@ ifndef CWARNING_FLAGS
 				-Wno-switch	\
 				-Wno-sign-compare \
 				-Wno-unused-variable \
-				-Wno-unused-but-set-variable
+				-Wno-unused-but-set-variable \
+				-Wno-comment
 endif
 
 

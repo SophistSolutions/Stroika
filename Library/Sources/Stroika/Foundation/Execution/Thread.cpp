@@ -144,7 +144,8 @@ namespace   {
  ********************************************************************************
  */
 Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
-    : fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
+    : fRunnable_ (runnable)
+    , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
 #if     qUseThreads_StdCPlusPlus
     , fThread_ ()
 #elif   qUseThreads_WindowsNative
@@ -152,12 +153,12 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 #endif
     , fStatusCriticalSection_ ()
     , fStatus_ (Status::eNotYetRunning)
+    , fRefCountBumpedEvent_ ()
     , fOK2StartEvent_ ()
 #if     qUseThreads_StdCPlusPlus
     , fThreadDone_ ()
 #endif
-    , fRefCountBumpedEvent_ ()
-    , fRunnable_ (runnable)
+    , fThreadName_ ()
 {
 }
 

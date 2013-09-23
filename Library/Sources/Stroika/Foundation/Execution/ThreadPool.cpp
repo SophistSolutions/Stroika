@@ -20,10 +20,10 @@ using   namespace   Stroika::Foundation::Execution;
 class   ThreadPool::MyRunnable_ : public IRunnable {
 public:
     MyRunnable_ (ThreadPool& threadPool)
-        : fThreadPool_ (threadPool)
+        : fCurTaskUpdateCritSection_ ()
+        , fThreadPool_ (threadPool)
         , fCurTask_ ()
-        , fNextTask_ ()
-        , fCurTaskUpdateCritSection_ () {
+        , fNextTask_ () {
     }
 
 public:
@@ -69,8 +69,8 @@ public:
     }
 
 private:
-    ThreadPool&                 fThreadPool_;
     mutable recursive_mutex     fCurTaskUpdateCritSection_;
+    ThreadPool&                 fThreadPool_;
     ThreadPool::TaskType        fCurTask_;
     ThreadPool::TaskType        fNextTask_;
 

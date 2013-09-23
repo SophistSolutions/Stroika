@@ -594,8 +594,8 @@ namespace   Stroika {
                 virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual pid_t                       _GetServicePID () const override;
             private:
-                Execution::Thread           fRunThread_;
                 shared_ptr<IApplicationRep> fAppRep_;
+                Execution::Thread           fRunThread_;
             };
 
 
