@@ -50,9 +50,18 @@ ifndef CFLAGS
 	CFLAGS		=
 endif
 
+
+ifndef CWARNING_FLAGS
+	CWARNING_FLAGS		=	\
+				-Wall \
+				-Wno-switch	\
+				-Wno-sign-compare
+endif
+
+
 #g++-4.6 still only accepts c++0x
 #CFLAGS		+=	-std=c++11  $(COPTIMIZE_FLAGS) $(Includes)
-CFLAGS		+=	-std=c++0x  $(COPTIMIZE_FLAGS) $(Includes)
+CFLAGS		+=	-std=c++0x  $(COPTIMIZE_FLAGS) $(Includes) $(CWARNING_FLAGS)
 
 
 

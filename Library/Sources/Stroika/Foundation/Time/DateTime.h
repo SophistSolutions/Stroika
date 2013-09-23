@@ -328,9 +328,9 @@ namespace   Stroika {
                 nonvirtual  int Compare (const DateTime& rhs) const;
 
             private:
+                Timezone    fTimezone_;
                 Date        fDate_;
                 TimeOfDay   fTimeOfDay_;
-                Timezone    fTimezone_;
             };
             /*
              *  Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.

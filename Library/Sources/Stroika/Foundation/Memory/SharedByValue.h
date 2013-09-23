@@ -155,8 +155,8 @@ namespace   Stroika {
                 nonvirtual  bool    unique () const;
 
             private:
-                shared_ptr_type fSharedImpl_;
                 copier_type     fCopier_;
+                shared_ptr_type fSharedImpl_;
 
             public:
                 /**

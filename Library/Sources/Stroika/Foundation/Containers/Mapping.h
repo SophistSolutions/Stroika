@@ -289,7 +289,7 @@ namespace   Stroika {
                 virtual bool                Equals (const _IRep& rhs) const                                 =   0;
                 virtual void                RemoveAll ()                                                    =   0;
                 virtual  Iterable<KeyType>  Keys () const                                                   =   0;
-                // always clear/set item, and ensure return value == item->IsValidItem()); \
+                // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual  bool               Lookup (KeyType key, Memory::Optional<ValueType>* item) const   =   0;
                 virtual  void               Add (KeyType key, ValueType newElt)                             =   0;
