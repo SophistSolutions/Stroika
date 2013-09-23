@@ -203,8 +203,8 @@ void    BuiltinReader<String>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<int>::BuiltinReader (int* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
@@ -236,8 +236,8 @@ void    BuiltinReader<int>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<unsigned int>::BuiltinReader (unsigned int* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
@@ -271,8 +271,8 @@ void    BuiltinReader<unsigned int>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<bool>::BuiltinReader (bool* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
@@ -309,8 +309,8 @@ void    BuiltinReader<bool>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<float>::BuiltinReader (float* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
@@ -341,8 +341,8 @@ void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<double>::BuiltinReader (double* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
 }
@@ -374,8 +374,8 @@ void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)
  ********************************************************************************
  */
 BuiltinReader<Time::DateTime>::BuiltinReader (Time::DateTime* intoVal, const Mapping<String, VariantValue>& attrs)
-    : value_ (intoVal)
-    , tmpVal_ ()
+    : tmpVal_ ()
+    , value_ (intoVal)
 {
     RequireNotNull (intoVal);
     *intoVal = Time::DateTime ();
