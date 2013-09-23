@@ -55,7 +55,9 @@ ifndef CWARNING_FLAGS
 	CWARNING_FLAGS		=	\
 				-Wall \
 				-Wno-switch	\
-				-Wno-sign-compare
+				-Wno-sign-compare \
+				-Wunused-variable \
+				-Wunused-but-set-variable
 endif
 
 

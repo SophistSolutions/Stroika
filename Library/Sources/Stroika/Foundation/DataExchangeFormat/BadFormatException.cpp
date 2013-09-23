@@ -72,10 +72,10 @@ namespace   {
 }
 DataExchangeFormat::BadFormatException::BadFormatException ()
     : StringException (mkMessage_ ())
-    , fDetails_ ()
     , fLineNumber ()
     , fColumnNumber ()
     , fFileOffset ()
+    , fDetails_ ()
 {
 }
 

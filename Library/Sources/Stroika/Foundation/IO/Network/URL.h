@@ -266,15 +266,15 @@ namespace   Stroika {
                     nonvirtual  bool    operator!= (const URL& rhs) const;
 
                 private:
-                    String fProtocol_;
-                    String fHost_;
-                    String fRelPath_;
-                    String fQuery_;
-                    String fFragment_;
+                    String      fProtocol_;
+                    String      fHost_;
+                    PortType    fPort_;
+                    String      fRelPath_;
+                    String      fQuery_;
+                    String      fFragment_;
 
                 private:
                     DEFINE_CONSTEXPR_CONSTANT (PortType, kDefaultPortSentinal_, -1);    // sentinal value a more efficient rep than Optional<>
-                    PortType     fPort_;
                 };
 
 
