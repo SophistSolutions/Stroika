@@ -197,19 +197,23 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Convert a VariantValue object into any C++ object - using the type converters already registered in
+                 *  this mapper.
                  */
-                nonvirtual  void    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into);
+                nonvirtual  void    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
                 template    <typename CLASS>
-                nonvirtual  void    ToObject (const Memory::VariantValue& v, CLASS* into);
+                nonvirtual  void    ToObject (const Memory::VariantValue& v, CLASS* into) const;
                 template    <typename CLASS>
-                nonvirtual  CLASS   ToObject (const Memory::VariantValue& v);
+                nonvirtual  CLASS   ToObject (const Memory::VariantValue& v) const;
 
             public:
                 /**
+                 *  Convert a C++ object to a VariantValue object - using the type converters already registered in
+                 *  this mapper.
                  */
-                nonvirtual  VariantValue    FromObject (const type_index& forTypeInfo, const Byte* objOfType);
+                nonvirtual  VariantValue    FromObject (const type_index& forTypeInfo, const Byte* objOfType) const;
                 template    <typename CLASS>
-                nonvirtual  VariantValue    FromObject (const CLASS& from);
+                nonvirtual  VariantValue    FromObject (const CLASS& from) const;
 
             public:
                 /**
@@ -226,17 +230,17 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer ();
 
             public:
-                // soon to be private:
+                // soon to be private:???
                 template <typename T, size_t SZ>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
 
             public:
-                // soon to be private:
+                // soon to be private:???
                 template <typename T>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
 
             public:
-                // soon to be private:
+                // soon to be private:???
                 // by default serialize as an array (cuz serializing as mapping only works if LHS is
                 // string).
                 //
@@ -255,14 +259,14 @@ namespace   Stroika {
             /**
              */
             struct  ObjectVariantMapper::TypeMappingDetails {
-                type_index                                                                          fForType;
-                std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>     fToVariantMapper;
-                std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)> fFromVariantMapper;
+                type_index                                                                                  fForType;
+                std::function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>       fToVariantMapper;
+                std::function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>   fFromVariantMapper;
 
                 TypeMappingDetails (
                     const type_index& forTypeInfo,
-                    const std::function<VariantValue(ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
-                    const std::function<void(ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
+                    const std::function<VariantValue(const ObjectVariantMapper* mapper, const Byte* objOfType)>& toVariantMapper,
+                    const std::function<void(const ObjectVariantMapper* mapper, const VariantValue& d, Byte* into)>& fromVariantMapper
                 );
                 TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 

@@ -53,19 +53,19 @@ namespace   Stroika {
                 RegisterTypeMapper (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
-            void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into)
+            void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
             {
                 ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename CLASS>
-            CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v)
+            CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
             {
                 CLASS tmp;
                 ToObject (v, &tmp);
                 return tmp;
             }
             template    <typename CLASS>
-            VariantValue    ObjectVariantMapper::FromObject (const CLASS& from)
+            VariantValue    ObjectVariantMapper::FromObject (const CLASS& from) const
             {
                 return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
