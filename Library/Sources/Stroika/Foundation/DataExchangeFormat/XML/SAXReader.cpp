@@ -478,8 +478,8 @@ namespace   {
                 return result;
             }
         private:
-            float                       fTotalSize;
             ProgressMontior::SubTask    fProgress;
+            float                       fTotalSize;
         };
 
     public :

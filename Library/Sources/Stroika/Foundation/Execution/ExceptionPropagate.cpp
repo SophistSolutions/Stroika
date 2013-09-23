@@ -18,16 +18,12 @@ using   namespace   Stroika::Foundation::Execution;
  ************************* Execution::ExceptionPropagateHelper ******************
  ********************************************************************************
  */
-
-
-
-//  class   ExceptionPropagateHelper
 ExceptionPropagateHelper::ExceptionPropagateHelper ()
-    : fStringException ()
+    : fRequiredComponentMissingException ()
+    , fStringException ()
     , fFileFormatException ()
     , fFileBusyException ()
     , fSilentException ()
-    , fRequiredComponentMissingException ()
 #if     qPlatform_Windows
     , fHRESULTErrorException ()
     , fWin32ErrorException ()

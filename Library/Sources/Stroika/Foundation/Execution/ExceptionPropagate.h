@@ -84,9 +84,11 @@ namespace   Stroika {
                             <p>This typically doesn't need to be called directly, except when you extend/subclass ExceptionPropagateHelper and provide a new
                             DoRunWithCatchRePropagate ()</p>
             */
-            //#define   CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
-            //  catch (const Stroika::Foundation::Execution::RequiredComponentMissingException& e) {
-            //..
+            /*
+            #define   CATCH_AND_CAPTURE_CATCH_BLOCK(CE)\
+              catch (const Stroika::Foundation::Execution::RequiredComponentMissingException& e) {
+            ..
+            */
 
 
         }

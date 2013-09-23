@@ -52,6 +52,7 @@ endif
 
 
 ifndef CWARNING_FLAGS
+	# @todo - adjust these warnings values - this was just a quick get-started...
 	CWARNING_FLAGS		=	\
 				-Wall \
 				-Wno-switch	\

@@ -144,12 +144,12 @@ namespace   {
  ********************************************************************************
  */
 Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
+    : fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
 #if     qUseThreads_StdCPlusPlus
-    : fThread_ ()
+    , fThread_ ()
 #elif   qUseThreads_WindowsNative
-    : fThread_ (INVALID_HANDLE_VALUE)
+    , fThread_ (INVALID_HANDLE_VALUE)
 #endif
-    , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fStatusCriticalSection_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fOK2StartEvent_ ()
