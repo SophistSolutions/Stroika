@@ -692,8 +692,8 @@ namespace   Stroika {
                 bool    fMustReReadConfig;
 
             private:
-                Execution::Thread           fRunThread_;
                 shared_ptr<IApplicationRep> fAppRep_;
+                Execution::Thread           fRunThread_;
             };
 #endif
 
