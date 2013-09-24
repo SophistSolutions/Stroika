@@ -17,6 +17,7 @@
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
+#include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
 
@@ -221,12 +222,74 @@ namespace   {
     }
 }
 
+
+
+
+namespace   {
+    void    DoRegressionTests_SimpleMapRangeTypes_4_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            Range<int>  fIntRange;
+
+            SharedContactsConfig_ ()
+                : fIntRange (-3, 99) {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fIntRange == rhs.fIntRange
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Range<Range<int>> ());
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        SharedContactsConfig_   tmp;
+        tmp.fIntRange = Range<int> (1, 10);
+        VariantValue v = mapper.FromObject  (tmp);
+
+        // at this point - we should have VariantValue object with "Enabled" field.
+        // This can then be serialized using
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"y.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
         DoRegressionTests_SimpleMapToFromJSON_2_ ();
         DoRegressionTests_SimpleMapToFromJSON_3_ ();
+        DoRegressionTests_SimpleMapRangeTypes_4_ ();
     }
 }
 

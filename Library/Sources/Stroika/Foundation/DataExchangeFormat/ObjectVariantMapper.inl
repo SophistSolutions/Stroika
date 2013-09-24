@@ -178,6 +178,29 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
             }
+            template <typename ENUM_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Enumeration ()
+            {
+                Require (std::is_enum<ENUM_TYPE>::value);
+                typedef std::underlying_type<ENUM_TYPE>::type SerializeAsType;
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+                    Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
+                    const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
+                    return VariantValue (static_cast<SerializeAsType> (*actualMember));
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
+                    * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
+                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+                    Assert (static_cast<SerializeAsType> (*actualMember) == d.As<SerializeAsType> ());  // no round-trip loss
+                    if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)) {
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
+            }
+
 #if 0
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Sequence<T>> ()

@@ -233,22 +233,32 @@ namespace   Stroika {
                  *  ... EXPERIEMENTAL
                  **
                  *  CANNOT FIGURE OUT HOW TODO...
+                 *
+                 *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
+                 *  fit what the deserailizer expects.
                  */
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer ();
 
             public:
-                // soon to be private:???
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
+                // this is for builtin C++ array (int a[3]) - not std::array).
                 template <typename T, size_t SZ>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
 
             public:
-                // soon to be private:???
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
                 template <typename T>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
 
             public:
-                // soon to be private:???
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
                 // by default serialize as an array (cuz serializing as mapping only works if LHS is
                 // string).
                 //
@@ -257,8 +267,24 @@ namespace   Stroika {
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
 
             public:
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
                 template <typename RANGE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range ();
+
+            public:
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
+                //  Note - ENUM_TYPE must use Define_Start_End_Count(), or otherwise define eSTART, eEND to
+                //  use this template.
+                //
+                //  Note - this explicitly allows storing a enum with value eEND (since that is often a sentinal
+                //  value).
+                //
+                template <typename ENUM_TYPE>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Enumeration ();
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
