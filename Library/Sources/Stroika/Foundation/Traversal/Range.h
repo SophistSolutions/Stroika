@@ -64,6 +64,23 @@ namespace   Stroika {
 
 
             /**
+             */
+            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN , T MAX>
+            struct  DefaultIntegerRangeTraits {
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr T kMin = MIN;
+                static  constexpr T kMax = MAX;
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
+            };
+
+
+            /**
              *  Somewhat inspired by, and at least influenced by, the definition in
              *      http://ruby-doc.org/core-2.0/Range.html
              *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties

@@ -39,6 +39,12 @@ namespace   {
             VerifyTestResult (r1.Overlaps (r3));
             VerifyTestResult (r3.Overlaps (r1));
         }
+        {
+            typedef DefaultIntegerRangeTraits < int, int, int, -3, 100 > RT;
+            Range<int, RT> x;
+            VerifyTestResult (x.begin () == -3);
+            VerifyTestResult (x.end () == 100);
+        }
     }
 
     void    Test_2_BasicDiscreteRangeIteration_ ()

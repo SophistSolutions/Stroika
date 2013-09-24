@@ -28,13 +28,26 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ****** DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> ******
+             ********************************************************************************
+             */
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN, T MAX>
+            const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMin   =   MIN;
+            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN, T MAX>
+            const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMax   =   MAX;
+#endif
+
+
+            /*
+             ********************************************************************************
              ***************************** Range<T, TRAITS> *********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
             Range<T, TRAITS>::Range ()
                 : fBegin_ (TRAITS::kMin)
-                , fEnd_ (TRAITS::kMin)
+                , fEnd_ (TRAITS::kMax)
             {
             }
             template    <typename T, typename TRAITS>
