@@ -183,6 +183,11 @@ ObjectVariantMapper::ObjectVariantMapper ()
 {
 }
 
+void    ObjectVariantMapper::Add (const TypeMappingDetails& s)
+{
+    fSerializers_.Add (s);
+}
+
 void    ObjectVariantMapper::Add (const Set<TypeMappingDetails>& s)
 {
     fSerializers_.AddAll (s);

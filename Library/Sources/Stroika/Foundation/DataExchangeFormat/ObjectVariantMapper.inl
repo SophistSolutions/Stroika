@@ -160,16 +160,15 @@ namespace   Stroika {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Sequence<VariantValue>          p  =   d.As<Sequence<VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
-                    actualInto->clear ();
                     if (p.size () != 2) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
                     ElementType from    =   mapper->ToObject<ElementType> (p[0]);
                     ElementType to      =   mapper->ToObject<ElementType> (p[1]);
-                    if (not (RANGE_TYPE::kMin <= from and from <= RANGE_TYPE::kMax)) {
+                    if (not (RANGE_TYPE::TRAITS::kMin <= from and from <= RANGE_TYPE::TRAITS::kMax)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
-                    if (not (RANGE_TYPE::kMin <= to and to <= RANGE_TYPE::kMax)) {
+                    if (not (RANGE_TYPE::TRAITS::kMin <= to and to <= RANGE_TYPE::TRAITS::kMax)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
                     * actualInto = RANGE_TYPE (from, to);

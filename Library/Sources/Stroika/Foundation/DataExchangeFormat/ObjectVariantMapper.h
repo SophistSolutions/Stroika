@@ -156,8 +156,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Adds the given type mappers
+                 *  Adds the given type mapper(s)
                  */
+                nonvirtual  void    Add (const TypeMappingDetails& s);
                 nonvirtual  void    Add (const Set<TypeMappingDetails>& s);
 
             public:
