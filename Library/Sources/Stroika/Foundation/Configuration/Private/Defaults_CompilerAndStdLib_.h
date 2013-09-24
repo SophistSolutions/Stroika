@@ -532,8 +532,8 @@
 //
 //      MAYBE use http://www.mkssoftware.com/docs/man3/pthread_cancel.3.asp
 //
-//  At THIS point - I think qEVENT_GCCTHREADS_LINUX_WAITBUG is probbaly  NOT a GCC bug. Must debug better! But no
-//  reason to think this is a compiler bug...
+//  @todo   At THIS point - I think qEVENT_GCCTHREADS_LINUX_WAITBUG is probbaly  NOT a GCC bug. Must debug better! But no
+//          reason to think this is a compiler bug...
 //
 #ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
