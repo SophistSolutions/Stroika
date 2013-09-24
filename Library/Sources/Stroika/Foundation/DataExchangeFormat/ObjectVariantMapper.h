@@ -274,8 +274,10 @@ namespace   Stroika {
                 // string).
                 //
                 // For that case - SHOULD use partial specializaiton (not sure how)
+                //
+                //  NB: To use this - you must add to your typemapper a mapping from KEY_TYPE to/from String (unless it is String).
                 template <typename KEY_TYPE, typename VALUE_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey (const function<String(KEY_TYPE)>& key2String, const function<KEY_TYPE(String)>& string2Key);
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
             public:
                 //
