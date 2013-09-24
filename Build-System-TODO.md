@@ -2,8 +2,21 @@
 	(maybe just lose ./ in prefix we stick on filenames? in subdirs?)
 	
 	But much better/faster now so this isnt critical.
+	
+	>	see make-depend!!!
+
+>	Instead of autogenerating configuration - ever - detect missing config stuff
+	and issue warning to run make-default-configuration (or give instrucitons on
+	generating your own configs)
 
 >	Redo build scripts so more overtly top-level built around make
+
+	>	make totally - or nearly totally - rewrite just using makefiles
+	
+	>	maybe even for windoze? - not to hard to have both - if the makefiles
+		can be shared with unix.
+		
+	>	similarly for builds of xerces/zlib etc.
 
 >	Scripting will be in build-scripts and just for utilities hard to write
 	in make, but all will be driven by make rules
