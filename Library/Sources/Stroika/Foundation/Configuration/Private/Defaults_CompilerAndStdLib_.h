@@ -421,6 +421,25 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     1
+#endif
+#endif
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
 @DESCRIPTION:
