@@ -154,7 +154,7 @@ namespace   Stroika {
                     for (auto i : *actualMember) {
                         m.Add (mapper->FromObject<String> (i.first), mapper->FromObject<VALUE_TYPE> (i.second));
                     }
-                    return VariantValue (s);
+                    return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
