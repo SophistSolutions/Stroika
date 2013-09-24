@@ -135,28 +135,28 @@ namespace   Stroika {
                  *
                  *  Numerically - what makes the most sense is to contain the edges - so assume yes.
                  */
-                nonvirtual  bool    Contains (const T& v) const;
+                nonvirtual  bool    Contains (const T& r) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    Overlaps (const Range<T, TRAITS>& v) const;
+                nonvirtual  bool    Overlaps (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  bool    Equals (const Range<T, TRAITS>& v) const;
+                nonvirtual  bool    Equals (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  */
-                nonvirtual  Range<T, TRAITS> Intersection (const Range<T, TRAITS>& v) const;
+                nonvirtual  Range<T, TRAITS> Intersection (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
                  * if two regions are disjoint, this can encompass a larger region than the actual union would
                  */
-                nonvirtual  Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& v) const;
+                nonvirtual  Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -167,6 +167,13 @@ namespace   Stroika {
                 /**
                  */
                 nonvirtual  T    end () const;
+
+            public:
+                /**
+                 *      Syntactic sugar on Equals()
+                 */
+                nonvirtual  bool    operator== (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Range<T, TRAITS>& rhs) const;
 
             private:
                 T       fBegin_;

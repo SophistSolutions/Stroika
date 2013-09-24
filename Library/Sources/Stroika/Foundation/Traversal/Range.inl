@@ -68,20 +68,20 @@ namespace   Stroika {
                 return fEnd_ - fBegin_;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::Contains (const T& v) const
+            inline  bool    Range<T, TRAITS>::Contains (const T& r) const
             {
-                return fBegin_ <= v and v < fEnd_;
+                return fBegin_ <= r and r < fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& v) const
+            inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& rhs) const
             {
                 if (empty ()) {
-                    return v.empty ();
+                    return rhs.empty ();
                 }
-                return fBegin_ == v.fBegin_ and fEnd_ == v.fEnd_;
+                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_;
             }
             template    <typename T, typename TRAITS>
-            bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& v) const
+            bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const
             {
                 /*
                  *  @todo   RETHINK - because Range has semantics of exclude end - make sure overlap usuage
@@ -89,14 +89,14 @@ namespace   Stroika {
                  */
                 return Math::Overlaps (
                            pair<T, T> (fBegin_, fEnd_),
-                           pair<T, T> (v.fBegin_, v.fEnd_)
+                           pair<T, T> (rhs.fBegin_, rhs.fEnd_)
                        );
             }
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& v) const
+            Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
-                T   l   =   max (fBegin_, v.fBegin_);
-                T   r   =   min (fEnd_, v.fEnd_);
+                T   l   =   max (fBegin_, rhs.fBegin_);
+                T   r   =   min (fEnd_, rhs.fEnd_);
                 if (l < r) {
                     return Range<T, TRAITS> (l, r);
                 }
@@ -105,17 +105,17 @@ namespace   Stroika {
                 }
             }
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& v) const
+            Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
             {
-                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), v.begin ()), max (end (), v.end ()));
+                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), rhs.begin ()), max (end (), rhs.end ()));
                 Ensure (result.begin () <= begin ());
                 Ensure (result.begin () <= end ());
-                Ensure (result.begin () <= v.begin ());
-                Ensure (result.begin () <= v.end ());
+                Ensure (result.begin () <= rhs.begin ());
+                Ensure (result.begin () <= rhs.end ());
                 Ensure (result.end () >= begin ());
                 Ensure (result.end () >= end ());
-                Ensure (result.end () >= v.begin ());
-                Ensure (result.end () >= v.end ());
+                Ensure (result.end () >= rhs.begin ());
+                Ensure (result.end () >= rhs.end ());
                 return result;
             }
             template    <typename T, typename TRAITS>
@@ -127,6 +127,16 @@ namespace   Stroika {
             inline  T    Range<T, TRAITS>::end () const
             {
                 return fEnd_;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const
+            {
+                return Equals (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Range<T, TRAITS>::operator!= (const Range<T, TRAITS>& rhs) const
+            {
+                return not Equals (rhs);
             }
 
 
