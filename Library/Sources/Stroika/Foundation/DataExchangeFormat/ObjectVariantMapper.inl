@@ -182,7 +182,11 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Enumeration ()
             {
                 Require (std::is_enum<ENUM_TYPE>::value);
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 typedef typename std::underlying_type<ENUM_TYPE>::type SerializeAsType;
+#else
+                typedef long long SerializeAsType;
+#endif
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));

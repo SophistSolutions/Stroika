@@ -55,10 +55,9 @@ DurationSecondsType Stroika::Foundation::Time::GetTickCount ()
 #if     (_WIN32_WINNT >= 0x0600)
         return (float (::GetTickCount64 ()) / 1000.0f);
 #else
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (suppress: 28159)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START(28159)
         return (float (::GetTickCount ()) / 1000.0f);
+        DISABLE_COMPILER_MSC_WARNING_END(28159)
 #endif
     }
     else {

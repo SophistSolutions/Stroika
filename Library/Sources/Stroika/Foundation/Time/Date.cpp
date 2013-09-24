@@ -200,14 +200,9 @@ Date    Date::Parse (const String& rep, ParseFormat pf)
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
                 int nItems  =   ::swscanf (rep.c_str (), L"%d-%d-%d", &year, &month, &day);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_END(4996)
                 if (nItems == 3) {
                     return Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));
                 }
@@ -220,14 +215,9 @@ Date    Date::Parse (const String& rep, ParseFormat pf)
                 int year    =   0;
                 int month   =   0;
                 int day     =   0;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
                 int nItems  =   ::swscanf (rep.c_str (), L"%d/%d/%d", &month, &day, &year);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_END(4996)
                 Date    result;
                 if (nItems == 3) {
                     result = Date (Safe_jday_ (MonthOfYear (month), DayOfMonth (day), Year (year)));

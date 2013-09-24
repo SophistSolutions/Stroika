@@ -277,10 +277,7 @@ RetryWithNoCERTCheck:
         if (request.fData.size () > numeric_limits<DWORD>::max ()) {
             DoThrow (StringException (L"Too large a message to send using WinHTTP"));
         }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4267)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START(4267)
         ThrowIfFalseGetLastError (::WinHttpSendRequest (
                                       hRequest,
                                       useHeaderStrBuf.c_str (), -1,
@@ -289,9 +286,7 @@ RetryWithNoCERTCheck:
                                       NULL
                                   )
                                  );
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END(4267)
         //ProgressStatusCallback::SafeSetProgressAndCheckCanceled (progressCallback, 0.36f);
 
         // this must be called before the 'body' goes out of scope!

@@ -421,6 +421,25 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     1
+#endif
+#endif
+
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
 @DESCRIPTION:
@@ -928,24 +947,22 @@
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)\
-    #pragma GCC diagnostic push \
-    #pragma GCC diagnostic ignored WARNING_TO_DISABLE
+    _Pragma ( GCC diagnostic push) \
+    _Pragma ( GCC diagnostic ignored WARNING_TO_DISABLE )
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)\
-    #pragma GCC diagnostic pop
+    _Pragma ( GCC diagnostic pop )
 #else
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
 
-// Tried todo like with GCC, but doesn't seem to work with MSC? Too bad...Try harder later...
-// -- LGP 2013-09-24
-#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && 0
+#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)\
-    #pragma warning(push) \
-    #pragma warning(4 : WARNING_TO_DISABLE)
+    __pragma ( warning (push) ) \
+    __pragma ( warning (disable : WARNING_TO_DISABLE) )
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)\
-    #pragma warning(pop)
+    __pragma ( warning (pop) )
 #else
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)

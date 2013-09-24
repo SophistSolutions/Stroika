@@ -257,10 +257,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
                 int hour    =   0;
                 int minute  =   0;
                 int secs    =   0;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC SILLY WARNING ABOUT USING swscanf_s
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC SILLY WARNING ABOUT USING swscanf_s
                 if (::swscanf (rep.c_str (), L"%d:%d:%d", &hour, &minute, &secs) >= 2) {
                     hour = max (hour, 0);
                     hour = min (hour, 23);
@@ -270,9 +267,7 @@ TimeOfDay   TimeOfDay::Parse (const String& rep, ParseFormat pf)
                     secs = min (secs, 59);
                     return TimeOfDay ((hour * 60 + minute) * 60 + secs);
                 }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_END(4996)
                 return TimeOfDay ();
             }
         default: {

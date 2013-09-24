@@ -53,10 +53,7 @@ namespace   Stroika {
                 {
                     return String2UInt_ (String (s));
                 }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4018)
-#endif
+                DISABLE_COMPILER_MSC_WARNING_START(4018)
                 template    <typename T, typename STRING_ARG>
                 T     String2IntOrUInt_ (STRING_ARG s)
                 {
@@ -80,9 +77,7 @@ namespace   Stroika {
                     }
                 }
             }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#endif
+            DISABLE_COMPILER_MSC_WARNING_END(4018)
 
             template    <typename TCHAR>
             basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)

@@ -604,10 +604,9 @@ void    Thread::Abort_Forced_Unsafe ()
     if (fRep_->fStatus_ != Status::eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
         // This is VERY bad to do. Put assert here that it never happens...
         AssertNotReached ();
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress: 6258)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START(6258)
         ::TerminateThread (fRep_->fThread_, -1);
+        DISABLE_COMPILER_MSC_WARNING_END(6258)
     }
 #else
     AssertNotImplemented ();

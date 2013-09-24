@@ -113,9 +113,7 @@ URL::URL ()
 
 #if     qPlatform_Windows
 namespace   {
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress: 6262)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START(6262)
     void    OLD_Cracker (const String& w, String* protocol, String* host, String* port, String* relPath, String* query)
     {
         RequireNotNull (protocol);
@@ -164,6 +162,7 @@ namespace   {
             }
         }
     }
+    DISABLE_COMPILER_MSC_WARNING_END(6262)
 }
 #endif
 URL::URL (const String& w)
