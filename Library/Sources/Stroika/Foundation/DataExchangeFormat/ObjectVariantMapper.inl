@@ -72,7 +72,7 @@ namespace   Stroika {
             template <typename T, size_t SZ>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
                     const T*  actualMember    =   reinterpret_cast<const T*> (fromObjOfTypeT);
                     for (auto i = actualMember; i < actualMember + SZ; ++i) {
@@ -80,7 +80,7 @@ namespace   Stroika {
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
                     T*  actualMember    =   reinterpret_cast<T*> (intoObjOfTypeT);
                     if (s.size () > SZ) {
@@ -99,7 +99,7 @@ namespace   Stroika {
             template    <typename T>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Sequence ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
                     const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
@@ -107,7 +107,7 @@ namespace   Stroika {
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
                     Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
                     actualInto->clear ();
@@ -120,7 +120,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Mapping ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     Sequence<VariantValue> s;
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
@@ -131,7 +131,7 @@ namespace   Stroika {
                     }
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
@@ -148,7 +148,7 @@ namespace   Stroika {
             template <typename RANGE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range ()
             {
-                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Sequence<VariantValue> s;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
@@ -156,7 +156,7 @@ namespace   Stroika {
                     s.Append (mapper->FromObject<ElementType> (actualMember->end ()));
                     return VariantValue (s);
                 };
-                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Sequence<VariantValue>          p  =   d.As<Sequence<VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
