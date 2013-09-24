@@ -154,7 +154,7 @@ namespace   Stroika {
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
                     m.Add (L"Begin", mapper->FromObject<ElementType> (actualMember->begin ()));
                     m.Add (L"End", mapper->FromObject<ElementType> (actualMember->end ()));
-                    return VariantValue (s);
+                    return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
