@@ -50,6 +50,7 @@ namespace   Stroika {
              */
             template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultRangeTraits {
+                typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
@@ -67,6 +68,7 @@ namespace   Stroika {
              */
             template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN , T MAX>
             struct  DefaultIntegerRangeTraits {
+                typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 

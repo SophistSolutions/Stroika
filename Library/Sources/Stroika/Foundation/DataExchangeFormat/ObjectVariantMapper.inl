@@ -145,6 +145,37 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
             }
+            template <typename RANGE_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range ()
+            {
+                auto toVariantMapper = [] (ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    Sequence<VariantValue> s;
+                    const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
+                    s.Append (mapper->FromObject<ElementType> (actualMember->begin ()));
+                    s.Append (mapper->FromObject<ElementType> (actualMember->end ()));
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
+                    RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    if (p.size () != 2) {
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    }
+                    ElementType from    =   mapper->ToObject<ElementType> (p[0]);
+                    ElementType to      =   mapper->ToObject<ElementType> (p[1]);
+                    if (not (RANGE_TYPE::kMin <= from and from <= RANGE_TYPE::kMax)) {
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    }
+                    if (not (RANGE_TYPE::kMin <= to and to <= RANGE_TYPE::kMax)) {
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    }
+                    * actualInto = RANGE_TYPE (from, to);
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
+            }
 #if 0
             template    <typename T>
             inline  ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer<Sequence<T>> ()

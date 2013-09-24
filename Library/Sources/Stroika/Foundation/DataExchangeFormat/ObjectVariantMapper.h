@@ -15,6 +15,7 @@
 #include    "../Containers/Set.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/VariantValue.h"
+#include    "../Traversal/Range.h"
 
 
 
@@ -253,6 +254,10 @@ namespace   Stroika {
                 // For that case - SHOULD use partial specializaiton (not sure how)
                 template <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
+
+            public:
+                template <typename RANGE_TYPE>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range ();
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;
