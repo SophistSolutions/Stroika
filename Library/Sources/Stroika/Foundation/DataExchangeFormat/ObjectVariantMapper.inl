@@ -165,10 +165,10 @@ namespace   Stroika {
                     }
                     ElementType from    =   mapper->ToObject<ElementType> (p[0]);
                     ElementType to      =   mapper->ToObject<ElementType> (p[1]);
-                    if (not (RANGE_TYPE::TRAITS::kMin <= from and from <= RANGE_TYPE::TRAITS::kMax)) {
+                    if (not (RANGE_TYPE::TraitsType::kMin <= from and from <= RANGE_TYPE::TraitsType::kMax)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
-                    if (not (RANGE_TYPE::TRAITS::kMin <= to and to <= RANGE_TYPE::TRAITS::kMax)) {
+                    if (not (RANGE_TYPE::TraitsType::kMin <= to and to <= RANGE_TYPE::TraitsType::kMax)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
                     * actualInto = RANGE_TYPE (from, to);

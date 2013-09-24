@@ -100,6 +100,10 @@ namespace   Stroika {
                 /**
                  */
                 typedef T   ElementType;
+            public:
+                /**
+                 */
+                typedef TRAITS   TraitsType;
 
             public:
                 /**
