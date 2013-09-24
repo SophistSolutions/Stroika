@@ -283,6 +283,80 @@ namespace   {
 
 
 
+
+
+
+
+namespace   {
+    void    DoRegressionTests_SimpleEnumTypes_5_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        enum class Fred {
+            a = -3,
+            b,
+            c,
+            d,
+            e,
+            f,
+            g,
+            h,
+
+            Define_Start_End_Count (a, h)
+        };
+        struct SharedContactsConfig_ {
+            Fred fEnum1;
+
+            SharedContactsConfig_ ()
+                : fEnum1 (Fred::a) {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fEnum1 == rhs.fEnum1
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Enumeration<Fred> ());
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        SharedContactsConfig_   tmp;
+        tmp.fEnum1 = Fred::b;
+        VariantValue v = mapper.FromObject  (tmp);
+
+        // at this point - we should have VariantValue object with "Enabled" field.
+        // This can then be serialized using
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -290,6 +364,7 @@ namespace   {
         DoRegressionTests_SimpleMapToFromJSON_2_ ();
         DoRegressionTests_SimpleMapToFromJSON_3_ ();
         DoRegressionTests_SimpleMapRangeTypes_4_ ();
+        DoRegressionTests_SimpleEnumTypes_5_ ();
     }
 }
 
