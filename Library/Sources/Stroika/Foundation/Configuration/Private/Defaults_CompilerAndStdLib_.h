@@ -536,7 +536,7 @@
 //  reason to think this is a compiler bug...
 //
 #ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
-#define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 8)))
+#define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #endif
 
 
