@@ -189,14 +189,18 @@ namespace   Stroika {
 #endif
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+#endif
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
                     return VariantValue (static_cast<SerializeAsType> (*actualMember));
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
                     * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+#endif
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
