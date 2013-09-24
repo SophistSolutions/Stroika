@@ -438,6 +438,22 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
+#if     !defined (__clang__) && defined (__GNUC__)
+#define qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug     1
+#endif
+#endif
+
+
+
+
+
 
 
 /*

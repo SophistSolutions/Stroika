@@ -149,10 +149,15 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    Mapping<String, VariantValue> m;
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember) {
-                        m.Add (mapper->FromObject<String> (i.first), mapper->FromObject<VALUE_TYPE> (i.second));
+                    Mapping<String, VariantValue> m;
+                    for (pair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
+#if     qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
+                        m.Add (mapper->FromObject<KEY_TYPE> (i.first).As<String> (), mapper->FromObject<VALUE_TYPE> (i.second));
+#else
+                        VariantValue tmp2AvoidMaybeCompilerBug = mapper->FromObject<KEY_TYPE> (i.first);
+                        m.Add (tmp2AvoidMaybeCompilerBug.As<String> (), mapper->FromObject<VALUE_TYPE> (i.second));
+#endif
                     }
                     return VariantValue (m);
                 };
@@ -161,7 +166,7 @@ namespace   Stroika {
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
                     for (pair<String, VariantValue> p : m) {
-                        actualInto->Add (mapper->ToObject<String> (p.first), mapper->ToObject<VALUE_TYPE> (p.second));
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.first), mapper->ToObject<VALUE_TYPE> (p.second));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
