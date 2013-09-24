@@ -59,7 +59,9 @@ ifndef CWARNING_FLAGS
 				-Wno-sign-compare \
 				-Wno-unused-variable \
 				-Wno-unused-but-set-variable \
+				-Wno-unused-value \
 				-Wno-strict-aliasing \
+				-Wno-unused-local-typedefs \
 				-Wno-comment
 	#Generates too many bogus warnings I can find no way to disable --LGP 2013-09-24
 	#CWARNING_FLAGS		+=	\
