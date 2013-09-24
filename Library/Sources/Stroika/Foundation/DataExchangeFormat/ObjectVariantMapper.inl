@@ -145,6 +145,27 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
             }
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey (const function<String(KEY_TYPE)>& key2String, const function<KEY_TYPE(String)>& string2Key)
+            {
+                auto toVariantMapper = [key2String] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    Mapping<String, VariantValue> m;
+                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
+                    for (auto i : *actualMember) {
+                        m.Add (key2String (mapper->FromObject<KEY_TYPE> (i.first)), mapper->FromObject<VALUE_TYPE> (i.second));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [string2Key] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
+                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (pair<String, VariantValue> : m) {
+                        actualInto->Add (string2Key (p.first), mapper->ToObject<VALUE_TYPE> (p.second));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
+            }
             template <typename RANGE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range ()
             {
@@ -181,6 +202,10 @@ namespace   Stroika {
             template <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Enumeration ()
             {
+                /*
+                 *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
+                 *  the data, and this is simple and efficient.
+                 */
                 Require (std::is_enum<ENUM_TYPE>::value);
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 typedef typename std::underlying_type<ENUM_TYPE>::type SerializeAsType;

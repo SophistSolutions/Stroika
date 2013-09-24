@@ -270,6 +270,17 @@ namespace   Stroika {
                 //
                 // soon to be private:??? @see MakeCommonSerializer
                 //
+                // by default serialize as an array (cuz serializing as mapping only works if LHS is
+                // string).
+                //
+                // For that case - SHOULD use partial specializaiton (not sure how)
+                template <typename KEY_TYPE, typename VALUE_TYPE>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey (const function<String(KEY_TYPE)>& key2String, const function<KEY_TYPE(String)>& string2Key);
+
+            public:
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
                 template <typename RANGE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range ();
 
