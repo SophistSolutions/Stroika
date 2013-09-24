@@ -298,8 +298,9 @@
 #ifndef qCompilerAndStdLib_Supports_regex
 
 #if     defined (__GNUC__) && !defined (__clang__)
+// @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
 // Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
-#define qCompilerAndStdLib_Supports_regex       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_Supports_regex       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Supports_regex       1
 #endif
