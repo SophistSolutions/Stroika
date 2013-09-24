@@ -60,6 +60,11 @@ ifndef CWARNING_FLAGS
 				-Wno-unused-variable \
 				-Wno-unused-but-set-variable \
 				-Wno-comment
+	#Generates too many bogus warnings I can find no way to disable --LGP 2013-09-24
+	#CWARNING_FLAGS		+=	\
+	#			-Wextra \
+	#			-Wno-unused-parameter \
+	#			-Wno-type-limits
 endif
 
 
