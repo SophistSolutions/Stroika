@@ -155,6 +155,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Adds the given type mappers
+                 */
+                nonvirtual  void    Add (const Set<TypeMappingDetails>& s);
+
+            public:
+                /**
                  *  This clears the registry of type mappers, and resets it to the defaults - a set of builtin types,
                  *  like String, int, etc.
                  *
