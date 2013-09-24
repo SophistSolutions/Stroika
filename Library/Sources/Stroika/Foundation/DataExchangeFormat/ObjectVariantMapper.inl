@@ -158,7 +158,7 @@ namespace   Stroika {
                 };
                 auto fromVariantMapper = [] (ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
-                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
+                    Sequence<VariantValue>          p  =   d.As<Sequence<VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
                     actualInto->clear ();
                     if (p.size () != 2) {
