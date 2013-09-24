@@ -133,14 +133,9 @@ namespace   Stroika {
                     return r;
                 }
                 else {
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4800)
-#endif
+                    DISABLE_COMPILER_MSC_WARNING_START(4800)
                     return isspace (c);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+                    DISABLE_COMPILER_MSC_WARNING_END(4800)
                 }
 #else
                 return isspace (c);
@@ -156,14 +151,9 @@ namespace   Stroika {
                     return r;
                 }
                 else {
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4800)
-#endif
+                    DISABLE_COMPILER_MSC_WARNING_START(4800)
                     return iswspace (c);
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+                    DISABLE_COMPILER_MSC_WARNING_END(4800)
                 }
 #else
                 return iswspace (c);

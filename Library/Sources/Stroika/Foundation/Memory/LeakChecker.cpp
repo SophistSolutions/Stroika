@@ -142,10 +142,7 @@ Memory::Private_::ModuleData_::~ModuleData_ ()
  ******************** ::operator new/::operator delete ETC **********************
  ********************************************************************************
  */
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4: 4290)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START(4290)
 void*   operator new (size_t size) throw (std::bad_alloc)
 {
     // not perfrect - cuz doesn't call 'new handler' and if uninitialized - doesn't do null-->bad_alloc () mapping,
@@ -161,9 +158,7 @@ void*   operator new[] (size_t size) throw (std::bad_alloc)
     //  -- LGP 2009-05-29
     return sInitialized ? GetAllocator_ ().Allocate (size) : malloc (size);
 }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+DISABLE_COMPILER_MSC_WARNING_END(4290)
 
 void    operator delete (void* pUserData)
 {

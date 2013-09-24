@@ -928,24 +928,22 @@
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)\
-    #pragma GCC diagnostic push \
-    #pragma GCC diagnostic ignored WARNING_TO_DISABLE
+    _Pragma ( GCC diagnostic push) \
+    _Pragma ( GCC diagnostic ignored WARNING_TO_DISABLE )
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)\
-    #pragma GCC diagnostic pop
+    _Pragma ( GCC diagnostic pop )
 #else
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
 #endif
 
 
-// Tried todo like with GCC, but doesn't seem to work with MSC? Too bad...Try harder later...
-// -- LGP 2013-09-24
-#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && 0
+#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)\
-    #pragma warning(push) \
-    #pragma warning(4 : WARNING_TO_DISABLE)
+    __pragma ( warning (push) ) \
+    __pragma ( warning (disable : WARNING_TO_DISABLE) )
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)\
-    #pragma warning(pop)
+    __pragma ( warning (pop) )
 #else
 #define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)

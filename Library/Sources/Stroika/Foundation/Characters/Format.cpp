@@ -66,9 +66,7 @@ string  Characters::Format (const char* format, ...)
     return tmp;
 }
 
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning(suppress: 6262)
-#endif
+DISABLE_COMPILER_MSC_WARNING_START(6262)
 wstring Characters::FormatV (const wchar_t* format, va_list argsList)
 {
     RequireNotNull (format);
@@ -139,6 +137,8 @@ wstring Characters::FormatV (const wchar_t* format, va_list argsList)
     Assert (::wcslen (msgBuf) < msgBuf.GetSize ());
     return wstring (msgBuf);
 }
+DISABLE_COMPILER_MSC_WARNING_END(6262)
+
 
 wstring Characters::Format (const wchar_t* format, ...)
 {

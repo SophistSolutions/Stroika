@@ -129,11 +129,11 @@ namespace   Stroika {
                 static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
             private:
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
-				DISABLE_COMPILER_GCC_WARNING_START("-Wno-psabi")
+                DISABLE_COMPILER_GCC_WARNING_START("-Wno-psabi")
 #endif
                 static  void    Log_ (Priority logLevel, const String& format, va_list argList);
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
-				DISABLE_COMPILER_GCC_WARNING_END("-Wno-psabi")
+                DISABLE_COMPILER_GCC_WARNING_END("-Wno-psabi")
 #endif
 
             private:

@@ -24,24 +24,14 @@ bool    Time::IsDaylightSavingsTime ()
 {
     static  bool    sCalledOnce_ = false;
     if (not sCalledOnce_) {
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC warns tzset() unsafe, but I think the way I use it will be safe
-#endif
+        DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC warns tzset() unsafe, but I think the way I use it will be safe
         tzset ();
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+        DISABLE_COMPILER_MSC_WARNING_END(4996)
         sCalledOnce_ = true;
     }
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (push)
-#pragma warning (4 : 4996)      // MSVC warns tzset() unsafe, but I think the way I use it will be safe
-#endif
+    DISABLE_COMPILER_MSC_WARNING_START(4996)// MSVC warns tzset() unsafe, but I think the way I use it will be safe
     return !!daylight;
-#if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
-#pragma warning (pop)
-#endif
+    DISABLE_COMPILER_MSC_WARNING_END(4996)
 }
 
 bool    Time::IsDaylightSavingsTime (const DateTime& d)
