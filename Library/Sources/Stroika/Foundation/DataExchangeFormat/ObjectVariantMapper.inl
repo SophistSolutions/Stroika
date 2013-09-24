@@ -150,25 +150,28 @@ namespace   Stroika {
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
-                    Sequence<VariantValue> s;
+                    Mapping<String, VariantValue> m;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
-                    s.Append (mapper->FromObject<ElementType> (actualMember->begin ()));
-                    s.Append (mapper->FromObject<ElementType> (actualMember->end ()));
+                    m.Add (L"Begin", mapper->FromObject<ElementType> (actualMember->begin ()));
+                    m.Add (L"End", mapper->FromObject<ElementType> (actualMember->end ()));
                     return VariantValue (s);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
-                    Sequence<VariantValue>          p  =   d.As<Sequence<VariantValue>> ();
+                    Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
-                    if (p.size () != 2) {
+                    if (m.size () != 2) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
-                    ElementType from    =   mapper->ToObject<ElementType> (p[0]);
-                    ElementType to      =   mapper->ToObject<ElementType> (p[1]);
-                    if (not (RANGE_TYPE::TraitsType::kMin <= from and from <= RANGE_TYPE::TraitsType::kMax)) {
+                    if (not m.ContainsKey (L"Begin") or not m.ContainsKey (L"End")) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
-                    if (not (RANGE_TYPE::TraitsType::kMin <= to and to <= RANGE_TYPE::TraitsType::kMax)) {
+                    ElementType from    =   mapper->ToObject<ElementType> (*m.Lookup (L"Begin"));
+                    ElementType to      =   mapper->ToObject<ElementType> (*m.Lookup (L"End"));
+                    if (not (RANGE_TYPE::TraitsType::kMin <= from and from < RANGE_TYPE::TraitsType::kMax)) {
+                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    }
+                    if (not (RANGE_TYPE::TraitsType::kMin <= to and to < RANGE_TYPE::TraitsType::kMax)) {
                         Execution::DoThrow<BadFormatException> (BadFormatException ());
                     }
                     * actualInto = RANGE_TYPE (from, to);

@@ -95,7 +95,7 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
-            class  Range {
+            class   Range {
             public:
                 /**
                  */
