@@ -160,7 +160,7 @@ namespace   Stroika {
                     Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
-                    for (pair<String, VariantValue> : m) {
+                    for (pair<String, VariantValue> p : m) {
                         actualInto->Add (mapper->ToObject<String> (p.first), mapper->ToObject<VALUE_TYPE> (p.second));
                     }
                 };
