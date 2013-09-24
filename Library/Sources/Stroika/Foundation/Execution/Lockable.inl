@@ -61,13 +61,16 @@ namespace   Stroika {
                 class   Lockable_POD : public LOCKTYPE {
                 public:
                     Lockable_POD ()
-                        : fBase (BASE ()) {
+                        : LOCKTYPE ()
+                        , fBase (BASE ()) {
                     }
                     Lockable_POD (const BASE& from)
-                        : fBase (from) {
+                        : LOCKTYPE ()
+                        , fBase (from) {
                     }
                     Lockable_POD (const Lockable_POD<BASE, LOCKTYPE>& from)
-                        : fBase (from) {        // intentional object slice
+                        : LOCKTYPE ()
+                        , fBase (from) {        // intentional object slice
                     }
                     const Lockable_POD& operator= (const BASE& rhs) {
                         fBase = rhs;
