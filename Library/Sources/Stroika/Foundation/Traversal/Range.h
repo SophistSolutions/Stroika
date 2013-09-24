@@ -45,19 +45,21 @@ namespace   Stroika {
 
 
             /**
-            // See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
-            * AND wrong type - about singed differnce type =- maybe use declyetype
+             *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
+             *          AND wrong type - about singed differnce type =- maybe use declyetype
              */
-            template    <typename T>
+            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultRangeTraits {
-                //typedef ssize_t SignedDifferenceType;
-                typedef size_t  UnsignedDifferenceType;
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
-                //tmphack to compile on windoze - find better when when I decide what I'm looking for...
-                //DEFINE_CONSTEXPR_CONSTANT(T, kMin, numeric_limits<T>::min ());
-                //DEFINE_CONSTEXPR_CONSTANT(T, kMax, numeric_limits<T>::max ());
-                DEFINE_CONSTEXPR_CONSTANT(T, kMin, -1);
-                DEFINE_CONSTEXPR_CONSTANT(T, kMax, 1);
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr T kMin = numeric_limits<T>::min ();
+                static  constexpr T kMax = numeric_limits<T>::max ();
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
             };
 
 
