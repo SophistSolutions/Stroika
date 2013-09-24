@@ -444,7 +444,7 @@
 */
 #ifndef qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
 #if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#define qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug     1
 #endif
