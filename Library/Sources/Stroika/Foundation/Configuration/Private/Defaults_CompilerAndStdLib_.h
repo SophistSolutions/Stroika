@@ -938,6 +938,19 @@
 #endif
 
 
+// Tried todo like with GCC, but doesn't seem to work with MSC? Too bad...Try harder later...
+// -- LGP 2013-09-24
+#if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER) && 0
+#define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)\
+    #pragma warning(push) \
+    #pragma warning(4 : WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)\
+    #pragma warning(pop)
+#else
+#define DISABLE_COMPILER_MSC_WARNING_START(WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_MSC_WARNING_END(WARNING_TO_DISABLE)
+#endif
+
 
 
 

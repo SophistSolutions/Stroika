@@ -71,10 +71,8 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
     sAssertFailureHandler_ = (assertionHandler == nullptr) ? DefaultAssertionHandler_ : assertionHandler;
 }
 
-#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_no_return_warning
-#pragma GCC diagnostic push
-/// @todo didn't work - not sure how to disable this?
-#pragma GCC diagnostic ignored "-w"
+#if     qCompilerAndStdLib_gcc_useless_no_return_warning
+DISABLE_COMPILER_GCC_WARNING_START("-w")
 #endif
 void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 {
@@ -94,8 +92,8 @@ void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char
         throw;
     }
 }
-#if     qSilenceAnnoyingCompilerWarnings && qCompilerAndStdLib_gcc_useless_no_return_warning
-#pragma GCC diagnostic pop
+#if     qCompilerAndStdLib_gcc_useless_no_return_warning
+DISABLE_COMPILER_GCC_WARNING_END("-w")
 #endif
 #endif
 
