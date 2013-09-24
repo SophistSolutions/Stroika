@@ -926,6 +926,21 @@
  *******************************************************************
  */
 
+#if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
+#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)\
+    #pragma GCC diagnostic push \
+    #pragma GCC diagnostic ignored WARNING_TO_DISABLE
+#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)\
+    #pragma GCC diagnostic pop
+#else
+#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
+#endif
+
+
+
+
+
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
 // easy enough to disable ;-)
