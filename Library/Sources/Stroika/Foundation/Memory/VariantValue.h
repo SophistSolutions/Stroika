@@ -25,6 +25,11 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   Fix VariantValue::Equals () - for case in DoRegressionTests_VariantValue_7_().
+ *
+ *              Key is compare of string versus int, etc.
+ *
  *      @todo   Fix compare of signed and unsigned int (equals) - when comparing different types (signed/unsigned)
  *              if the unsigned number is in range of valid signed numbers then can compare either way, but dont make
  *              max_uint == -some neg #.
