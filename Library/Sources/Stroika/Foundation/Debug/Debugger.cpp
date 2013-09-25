@@ -3,7 +3,12 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     qPlatform_Windows
+#if     qPlatform_POSIX
+#include    <string>
+#include    <unistd.h>
+#include    <sys/ptrace.h>
+#include    <signal.h>
+#elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
 
@@ -17,6 +22,27 @@ void    Debug::DropIntoDebuggerIfPresent ()
     if (::IsDebuggerPresent ()) {
         ::DebugBreak ();
     }
+#elif   qPlatform_POSIX
+#if     0
+    // not sure this is right, but its close...
+    if (ptrace (PTRACE_TRACEME, 0, NULL, 0) == -1) {
+        raise (SIGTRAP);
+    }
+#elif   1
+    // BAD, but least bad, way I know...
+    char pathBuf[1024];
+    sprintf(pathBuf, "/proc/%d/exe", ::getppid ());
+    char dataBuf[1024];
+    ssize_t n   =   :: readlink (pathBuf, dataBuf, sizeof (dataBuf) - 1);
+    n = max (static_cast<size_t> (0), min (sizeof (dataBuf) - 1, static_cast<size_t> (n)));
+    if (n < sizeof (dataBuf));
+    dataBuf[n] = '\0';
+    if (string (dataBuf).find ("gdb") != -1) {
+        ::raise (SIGTRAP);
+    }
+#else
+    // NYI
+#endif
 #else
     // not sure (yet) how to tell if being debugged...
     //abort ();
