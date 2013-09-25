@@ -173,9 +173,12 @@ namespace   Stroika {
                  *      o   float, double, long double
                  *      o   Date
                  *      o   DateTime
+                 *      o   Duration
                  *      o   String
                  *      o   Mapping<String, String>
                  *      o   Mapping<String, VariantValue>
+                 *      o   TimeOfDay
+                 *      o   VariantValue
                  *
                  *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
                  *

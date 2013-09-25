@@ -8,6 +8,7 @@
 #include    "../Debug/Trace.h"
 #include    "../Time/Date.h"
 #include    "../Time/DateTime.h"
+#include    "../Time/Duration.h"
 
 #include    "ObjectVariantMapper.h"
 
@@ -17,6 +18,8 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 using   Time::Date;
 using   Time::DateTime;
+using   Time::Duration;
+using   Time::TimeOfDay;
 
 
 
@@ -124,6 +127,36 @@ namespace {
         result.Add (mkSerializerInfo_<Date, Date> ());
         result.Add (mkSerializerInfo_<DateTime, DateTime> ());
         result.Add (mkSerializerInfo_<String, String> ());
+
+        {
+            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                return *(reinterpret_cast<const VariantValue*> (fromObjOfTypeT));
+            };
+            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
+            };
+            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (VariantValue), toVariantMapper, fromVariantMapper));
+        }
+
+        {
+            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<wstring> ());
+            };
+            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ().As<wstring> ());
+            };
+            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (Duration), toVariantMapper, fromVariantMapper));
+        }
+
+        {
+            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                return VariantValue ((reinterpret_cast<const TimeOfDay*> (fromObjOfTypeT))->GetAsSecondsCount ());
+            };
+            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
+            };
+            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (TimeOfDay), toVariantMapper, fromVariantMapper));
+        }
 
         {
             typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
