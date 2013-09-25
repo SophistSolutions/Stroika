@@ -29,6 +29,9 @@
  *
  * TODO:
  *
+ *
+ *      @todo   Must add As<String> () and Duration(String) CTOR.
+ *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
  *              handles either form of decimal separator! Add to regression tests, and make sure
