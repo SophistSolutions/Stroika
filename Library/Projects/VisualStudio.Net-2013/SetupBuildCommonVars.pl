@@ -95,9 +95,9 @@ $ENV{'PATH'} 	= 	toCygPath_ ($VSDIR) . "/Common7/IDE" . ":" . $ENV{'PATH'};
 
 
 ### GUESS IF NEEDED (AND IF RIGHT PATH)
-my $WindowsSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\8.0";
+my $WindowsSdkDir = "C\:\\Program Files (x86)\\Windows Kits\\8.1";
 if (! (-e toCygPath_ ($WindowsSdkDir))) {
-	$WindowsSdkDir = "C\:\\Program Files\\Windows Kits\\8.0";
+	$WindowsSdkDir = "C\:\\Program Files\\Windows Kits\\8.1";
 } 
 $ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
 
