@@ -723,15 +723,15 @@ namespace   Stroika {
                 nonvirtual  const wchar_t*  data () const;
 
                 /**
-                 *	This will always return a value which is NUL-terminated. Note that Stroika generally
-                 *	does NOT keep strings in NUL-terminated form, so this could be a costly function,
-                 *	requiring a copy of the data.
+                 *  This will always return a value which is NUL-terminated. Note that Stroika generally
+                 *  does NOT keep strings in NUL-terminated form, so this could be a costly function,
+                 *  requiring a copy of the data.
                  *
-                 *	The lifetime of the pointer returned is gauranteed until the next call to this String
-                 *	envelope class (that is if other reps change, or are acceessed this data will not be modified)
-                 *	Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
-                 *	class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
-                 *	confusion elsewhere.
+                 *  The lifetime of the pointer returned is gauranteed until the next call to this String
+                 *  envelope class (that is if other reps change, or are acceessed this data will not be modified)
+                 *  Note also that Stroika strings ALLOW internal nul bytes, so though the Stroika string
+                 *  class NUL-terminates, it does nothing to prevent already existng NUL bytes from causing
+                 *  confusion elsewhere.
                  */
                 nonvirtual  const wchar_t*  c_str () const;
 

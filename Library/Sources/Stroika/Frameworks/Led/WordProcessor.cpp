@@ -5,6 +5,12 @@
 
 #include    <cctype>
 
+#if     qPlatform_Windows
+#include    <Windows.h>
+#include    <commdlg.h>
+#include    <shellapi.h>
+#endif
+
 #include    "../../Foundation/Characters/Character.h"
 #include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/CString/Utilities.h"

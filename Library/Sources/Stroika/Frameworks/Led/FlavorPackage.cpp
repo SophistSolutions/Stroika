@@ -16,6 +16,7 @@
 #elif   qPlatform_Windows
 #include    <fcntl.h>
 #include    <io.h>
+#include    <shellapi.h>
 #elif   qXWindows
 #include    <sys/types.h>
 #include    <sys/stat.h>

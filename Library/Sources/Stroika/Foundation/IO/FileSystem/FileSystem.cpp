@@ -4,8 +4,9 @@
 #include    "../../StroikaPreComp.h"
 
 #if     qPlatform_Windows
-#include    <shlobj.h>
 #include    <windows.h>
+#include    <shellapi.h>
+#include    <shlobj.h>
 #elif   qPlatform_POSIX
 #include    <unistd.h>
 #endif

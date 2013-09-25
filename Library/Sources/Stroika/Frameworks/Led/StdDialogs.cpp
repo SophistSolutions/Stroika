@@ -10,6 +10,9 @@
 #include    <Controls.h>
 #include    <ControlDefinitions.h>
 #include    <Dialogs.h>
+#elif   qPlatform_Windows
+#include    <windows.h>
+#include    <commdlg.h>
 #endif
 
 #include    "../../Foundation/Characters/Format.h"

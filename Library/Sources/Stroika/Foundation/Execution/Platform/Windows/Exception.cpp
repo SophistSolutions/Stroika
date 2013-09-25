@@ -7,6 +7,7 @@
 #include    <Windows.h>
 #include    <winerror.h>
 #include    <wininet.h>     // for error codes
+#include    <shellapi.h>
 #else
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
