@@ -95,10 +95,10 @@ sub BuildVCDotNet
 	chdir ("../../../../../../");
 
 	# cleaning needless objs (leave libs)
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Debug/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Release/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Debug/obj/'");
-	RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Release/obj/'");
+	#RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Debug/obj/'");
+	#RunAndPrint ("rm -rf 'CURRENT/Build/Win32/$SHORTVCVERDIR/Static Release/obj/'");
+	#RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Debug/obj/'");
+	#RunAndPrint ("rm -rf 'CURRENT/Build/Win64/$SHORTVCVERDIR/Static Release/obj/'");
 }
 
 
