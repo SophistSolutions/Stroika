@@ -17,6 +17,7 @@
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
+#include    "Stroika/Foundation/Time/Duration.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -29,7 +30,10 @@ using   namespace   Stroika::Foundation::DataExchangeFormat;
 
 using   Memory::Byte;
 using   Memory::VariantValue;
+using   Time::Date;
 using   Time::DateTime;
+using   Time::Duration;
+using   Time::TimeOfDay;
 
 
 
@@ -357,6 +361,148 @@ namespace   {
 
 
 
+
+
+
+
+namespace   {
+    void    DoRegressionTests_DurationsDateTime_6_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            Duration fDuration1;
+            DateTime fDateTime1;
+            DateTime fDate1;
+            TimeOfDay fTimeOfDay1;
+
+            SharedContactsConfig_ ()
+                : fDuration1 (chrono::milliseconds (200))
+                , fDateTime1 ()
+                , fDate1 ()
+                , fTimeOfDay1 () {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fDuration1 == rhs.fDuration1
+                    and fDateTime1 == rhs.fDateTime1
+                    and fDate1 == rhs.fDate1
+                    and fTimeOfDay1 == rhs.fTimeOfDay1
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        SharedContactsConfig_   tmp;
+        tmp.fDate1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
+        tmp.fDateTime1 = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
+        tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
+        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1.GetAsSecondsCount () + 60);
+        VariantValue v = mapper.FromObject  (tmp);
+
+        // at this point - we should have VariantValue object with "Enabled" field.
+        // This can then be serialized using
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
+
+
+
+namespace   {
+    void    DoRegressionTests_VariantValue_7_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            VariantValue fVV1;
+
+            SharedContactsConfig_ ()
+                : fVV1 () {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fVV1 == rhs.fVV1
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        SharedContactsConfig_   tmp;
+        tmp.fVV1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
+        VariantValue v = mapper.FromObject  (tmp);
+
+        // at this point - we should have VariantValue object with "Enabled" field.
+        // This can then be serialized using
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+//  @todo - FIX COMPARE OF VARIANTS !!!!
+//        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -365,6 +511,8 @@ namespace   {
         DoRegressionTests_SimpleMapToFromJSON_3_ ();
         DoRegressionTests_SimpleMapRangeTypes_4_ ();
         DoRegressionTests_SimpleEnumTypes_5_ ();
+        DoRegressionTests_DurationsDateTime_6_ ();
+        DoRegressionTests_VariantValue_7_ ();
     }
 }
 
