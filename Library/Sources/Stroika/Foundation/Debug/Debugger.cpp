@@ -8,6 +8,7 @@
 #include    <unistd.h>
 #include    <sys/ptrace.h>
 #include    <signal.h>
+#include    <cstring>
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
