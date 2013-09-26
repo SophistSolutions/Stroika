@@ -101,7 +101,7 @@ if (! (-e toCygPath_ ($WindowsSdkDir))) {
 } 
 $ENV{'WindowsSdkDir'}="$WindowsSdkDir\\";
 
-#my $ExtensionSdkDir = "C\:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v8.0\\ExtensionSDKs";
+#my $ExtensionSdkDir = "C\:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v8.1\\ExtensionSDKs";
 #$ENV{'ExtensionSdkDir'}=$ExtensionSdkDir;
 
 $ENV{'INCLUDE'}	=	"";
@@ -116,7 +116,7 @@ $ENV{'INCLUDE'} 	.=	"$WindowsSdkDir\\include\\winrt;";
 $ENV{'LIB'} 	=	"";
 $ENV{'LIB'} 	.=	"$VSDIR_VC\\LIB;";
 $ENV{'LIB'} 	.=	"$VSDIR_VC\\ATLMFC\\LIB;";
-$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\win8\\um\\x86;";
+$ENV{'LIB'} 	.=	"$WindowsSdkDir\\lib\\winv6.3\\um\\x86;";
 
 
 #Mostly for debugging - make sure paths setup properly
