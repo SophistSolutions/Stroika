@@ -22,6 +22,9 @@
  *
  * TODO:
  *
+ *      @todo   Make BlockingQueue<T>::RemoveHeadIfPossible() not use exceptions - if not too hard - since
+ *              timeout exceptions turn up in tracelog and could be confusing.
+ *
  *      @todo   Add clear example of usage...
  *
  *      @todo   Use condition variables (instead of waitable event?) Or explain why not. Waitable event
