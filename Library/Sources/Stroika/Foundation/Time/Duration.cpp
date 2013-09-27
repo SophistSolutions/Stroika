@@ -71,8 +71,8 @@ Duration::Duration ()
 {
 }
 
-Duration::Duration (const wstring& durationStr)
-    : fDurationRep_ (WideStringToASCII (durationStr))
+Duration::Duration (const String& durationStr)
+    : fDurationRep_ (durationStr.AsASCII ())
 {
     (void)ParseTime_ (fDurationRep_);    // call for the side-effect of throw if bad format src string
 }
@@ -176,6 +176,12 @@ std::chrono::milliseconds  Duration::As () const
 }
 #endif
 #endif
+
+template    <>
+String  Duration::As () const
+{
+    return ASCIIStringToWide (fDurationRep_);
+}
 
 template    <>
 wstring Duration::As () const

@@ -17,6 +17,7 @@
 #include    <Windows.h>
 #endif
 
+#include    "../Characters/String.h"
 #include    "../Configuration/Common.h"
 #include    "../Execution/StringException.h"
 
@@ -28,9 +29,6 @@
  *  \version    <a href="code_status.html">Alpha-Late</a>
  *
  * TODO:
- *
- *
- *      @todo   Must add As<String> () and Duration(String) CTOR.
  *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
@@ -94,7 +92,7 @@ namespace   Stroika {
             public:
                 // Throws (FormatException) if bad format
                 Duration ();
-                explicit Duration (const wstring& durationStr);
+                explicit Duration (const Characters::String& durationStr);
                 explicit Duration (int duration);
                 explicit Duration (long duration);
                 explicit Duration (long long duration);
@@ -113,6 +111,7 @@ namespace   Stroika {
                  * Defined for
                  *      time_t
                  *      wstring
+                 *      String
                  *      double
                  *      std::chrono::duration<double>           (if qCompilerAndStdLib_Supports_stdchrono)
                  *      std::chrono::milliseconds               (if qCompilerAndStdLib_Supports_stdchrono)
