@@ -176,11 +176,19 @@ namespace   Stroika {
             template    <>
             wstring Duration::As () const;
             template    <>
+            float  Duration::As () const;
+            template    <>
             double  Duration::As () const;
+            template    <>
+            long double  Duration::As () const;
             template    <>
             chrono::duration<double>  Duration::As () const;
             template    <>
             chrono::milliseconds  Duration::As () const;
+            template    <>
+            chrono::microseconds  Duration::As () const;
+            template    <>
+            chrono::nanoseconds  Duration::As () const;
 
             bool operator< (const Duration& lhs, const Duration& rhs);
             bool operator<= (const Duration& lhs, const Duration& rhs);
