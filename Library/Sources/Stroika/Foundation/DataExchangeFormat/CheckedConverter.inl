@@ -10,6 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+
+
+#include    "../Execution/Exceptions.h"
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
@@ -19,13 +24,13 @@ namespace   Stroika {
             RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e)
             {
                 if (not (RANGE_TYPE::kMin <= s)) {
-                    Exception::DoThrow (BadFormatException ());
+                    Execution::DoThrow (BadFormatException ());
                 }
                 if (not (s <= e)) {
-                    Exception::DoThrow (BadFormatException ());
+                    Execution::DoThrow (BadFormatException ());
                 }
                 if (not (e <= RANGE_TYPE::kMax)) {
-                    Exception::DoThrow (BadFormatException ());
+                    Execution::DoThrow (BadFormatException ());
                 }
             }
 
