@@ -48,7 +48,7 @@ namespace   Stroika {
 
 
             template    <typename   RANGE_TYPE>
-            RANGE_TYPE  CheckedConverter_Range (typename const RANGE_TYPE::ElementType& s, typename const RANGE_TYPE::ElementType& e);
+            RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e);
 
 
         }
