@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Common/Compare.h"
+#include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
@@ -20,11 +21,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
  *
  *  TODO:
- *
- *      @todo   Replace pair<Key,T> with KeyValuePair<Key,T>
- *              Documentent advantages (clearer naming .fKey versus .first, and .fValue versus .second)
- *              and easy mapping to/from pair<> stuff (can be methods of KeyValuePair<>).
- *              (SEE NEW Common/KeyValuePair)
  *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
@@ -44,6 +40,12 @@
 
 
 
+
+#define qBROKEN_MAPPING_CTOR_OF_STDMAP  1
+#if !qBROKEN_MAPPING_CTOR_OF_STDMAP
+#include    <map>
+#endif
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
@@ -51,6 +53,8 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
+
+            using   Common::KeyValuePair;
 
 
             /**
@@ -76,12 +80,16 @@ namespace   Stroika {
              *
              *  @see    SortedMapping<Key,T>
              *
+             *  Design Notes:
+             *      \note   We used Iterable<KeyValuePair<Key,T>> instead of Iterable<pair<Key,T>> because it makes for
+             *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   Mapping : public Iterable<pair<KEY_TYPE, VALUE_TYPE>> {
+            class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                typedef Iterable<pair<KEY_TYPE, VALUE_TYPE>>  inherited;
+                typedef Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  inherited;
 
             protected:
                 class   _IRep;
@@ -121,6 +129,14 @@ namespace   Stroika {
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
+#if     !qBROKEN_MAPPING_CTOR_OF_STDMAP
+#if 1
+                Mapping (const map<KEY_TYPE, VALUE_TYPE>& m);
+#else
+                template    <typename PR, typename ALLOC>
+                Mapping (const map<KEY_TYPE, VALUE_TYPE, PR, ALLOC>& m);
+#endif
+#endif
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -187,10 +203,18 @@ namespace   Stroika {
             public:
                 /**
                  */
+                template    <typename CONTAINER_OF_KEYVALUE>
+                nonvirtual  void    AddAll (const CONTAINER_OF_KEYVALUE& items);
+                template    <typename COPY_FROM_ITERATOR_KEYVALUE>
+                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
+
+            public:
+                /**
+                 */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    AddAll (const CONTAINER_OF_PAIR_KEY_T& items);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                nonvirtual  void    AddAll_pair (const CONTAINER_OF_PAIR_KEY_T& items);
+                template    <typename COPY_FROM_ITERATOR_PAIR_KEY_T>
+                nonvirtual  void    AddAll_pair (COPY_FROM_ITERATOR_PAIR_KEY_T start, COPY_FROM_ITERATOR_PAIR_KEY_T end);
 
             public:
                 /**
@@ -201,7 +225,7 @@ namespace   Stroika {
                  *      answers but review Remove()for other containers as well.
                  */
                 nonvirtual  void    Remove (KeyType key);
-                nonvirtual  void    Remove (const Iterator<pair<KEY_TYPE, VALUE_TYPE>>& i);
+                nonvirtual  void    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
 
             public:
                 /**
@@ -278,7 +302,7 @@ namespace   Stroika {
              *  the Mapping<T> container API.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            class   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
             protected:
                 _IRep ();
 
@@ -294,7 +318,7 @@ namespace   Stroika {
                 virtual  bool               Lookup (KeyType key, Memory::Optional<ValueType>* item) const   =   0;
                 virtual  void               Add (KeyType key, ValueType newElt)                             =   0;
                 virtual  void               Remove (KeyType key)                                            =   0;
-                virtual  void               Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i)                 =   0;
+                virtual  void               Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)         =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

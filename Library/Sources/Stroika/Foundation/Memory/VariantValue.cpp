@@ -197,7 +197,7 @@ namespace {
     {
         map<wstring, VariantValue>   tmp;
         for (auto i : val) {
-            tmp.insert (map<wstring, VariantValue>::value_type (i.first.As<wstring> (), i.second));
+            tmp.insert (map<wstring, VariantValue>::value_type (i.fKey.As<wstring> (), i.fValue));
         }
         return tmp;
     }
@@ -543,7 +543,13 @@ map<wstring, VariantValue>   VariantValue::As () const
 template    <>
 Mapping<String, VariantValue>   VariantValue::As () const
 {
-    return Mapping<String, VariantValue> (As<map<wstring, VariantValue>> ());
+#if     qBROKEN_MAPPING_CTOR_OF_STDMAP
+    Mapping<String, VariantValue>   tmp;
+    tmp.AddAll_pair (As<map<wstring, VariantValue>> ());
+    return tmp;
+#else
+    return Mapping<String, VariantValue> (As <map<wstring, VariantValue>> ());
+#endif
 }
 
 template    <>

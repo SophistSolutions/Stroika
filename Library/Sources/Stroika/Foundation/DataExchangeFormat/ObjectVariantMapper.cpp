@@ -166,7 +166,7 @@ namespace {
                 for (auto i : *actualMember) {
                     // really could do either way - but second more efficient
                     //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
-                    m.Add (i.first, i.second);
+                    m.Add (i.fKey, i.fValue);
                 }
                 return VariantValue (m);
             };
@@ -177,7 +177,7 @@ namespace {
                 for (auto i : m) {
                     // really could do either way - but second more efficient
                     //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
-                    actualInto->Add (i.first, i.second.As<String> ());
+                    actualInto->Add (i.fKey, i.fValue.As<String> ());
                 }
             };
             result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));

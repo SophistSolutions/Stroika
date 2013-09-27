@@ -234,7 +234,7 @@ Response    Connection_WinHTTP::Rep_::SendAndRequest (const Request& request)
     String  useHeaderStrBuf;
     {
         for (auto i = useHeadersMap.begin (); i != useHeadersMap.end (); ++i) {
-            useHeaderStrBuf += i->first + L": " + i->second + L"\r\n";
+            useHeaderStrBuf += i->fKey + L": " + i->fValue + L"\r\n";
         }
     }
 

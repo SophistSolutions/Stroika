@@ -595,7 +595,7 @@ String URLQuery::ComputeQueryString () const
             result += "&";
         }
         //careful - need to encode first/second
-        result += EncodeURLQueryStringField (i->first) + "=" + EncodeURLQueryStringField (i->second);
+        result += EncodeURLQueryStringField (i->fKey) + "=" + EncodeURLQueryStringField (i->fValue);
     }
     return ASCIIStringToWide (result);
 }

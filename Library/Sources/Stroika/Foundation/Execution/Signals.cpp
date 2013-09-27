@@ -75,7 +75,7 @@ set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
     {
         lock_guard<mutex> critSec (sCritSection_);
         for (auto i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
-            result.insert (i->first);
+            result.insert (i->fKey);
         }
     }
     return result;

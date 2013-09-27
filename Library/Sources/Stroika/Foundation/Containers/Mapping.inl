@@ -35,6 +35,24 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (m))
             {
             }
+#if     !qBROKEN_MAPPING_CTOR_OF_STDMAP
+#if 1
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const map<KEY_TYPE, VALUE_TYPE>& m)
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            {
+                AddAll_pair (m);
+            }
+#else
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename PR, typename ALLOC>
+            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const map<KEY_TYPE, VALUE_TYPE, PR, ALLOC>& m)
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            {
+                AddAll_pair (m);
+            }
+#endif
+#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
@@ -124,7 +142,7 @@ namespace   Stroika {
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
             {
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                for (pair<KEY_TYPE, VALUE_TYPE> t : *this) {
+                for (KeyValuePair<KEY_TYPE, VALUE_TYPE> t : *this) {
                     if (t.second == v) {
                         return true;
                     }
@@ -137,16 +155,16 @@ namespace   Stroika {
                 _GetRep ().Add (key, newElt);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            template    <typename COPY_FROM_ITERATOR_KEYVALUE>
+            void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
             {
                 for (auto i = start; i != end; ++i) {
-                    Add (i->first, i->second);
+                    Add (i->fKey, i->fValue);
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            template    <typename CONTAINER_OF_KEYVALUE>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
                  *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
@@ -156,12 +174,31 @@ namespace   Stroika {
                 AddAll (std::begin (items), std::end (items));
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_PAIR_KEY_T>
+            void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll_pair (COPY_FROM_ITERATOR_PAIR_KEY_T start, COPY_FROM_ITERATOR_PAIR_KEY_T end)
+            {
+                for (auto i = start; i != end; ++i) {
+                    Add (i->first, i->second);
+                }
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_PAIR_KEY_T>
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll_pair (const CONTAINER_OF_PAIR_KEY_T& items)
+            {
+                /*
+                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                 *  attempt to add items that already exist, it would do nothing to our iteration
+                 *  and therefore not lead to an infinite loop.
+                 */
+                AddAll_pair (std::begin (items), std::end (items));
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
             {
                 _GetRep ().Remove (key);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (const Iterator<pair<KEY_TYPE, VALUE_TYPE>>& i)
+            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
             {
                 _GetRep ().Remove (i);
             }
@@ -190,7 +227,17 @@ namespace   Stroika {
             template    <typename   CONTAINER_OF_Key_T>
             inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As () const
             {
+                // for now this is (documented) to only support std::map<KEY_TYPE, VALUE_TYPE> ()
+                // but we should extend to do better - somehow using typetraits?...
+#if 1
+                CONTAINER_OF_Key_T  result;
+                for (auto i : *this) {
+                    result.insert (CONTAINER_OF_Key_T::value_type (i.fKey, i.fValue));
+                }
+                return result;
+#else
                 return CONTAINER_OF_Key_T (this->begin (), this->end ());
+#endif
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename   CONTAINER_OF_Key_T>
@@ -262,7 +309,7 @@ namespace   Stroika {
                 // are present, and with the same mapping in the second.
                 for (auto i = this->MakeIterator (); not i.Done (); ++i) {
                     Memory::Optional<ValueType>   tmp;
-                    if (not rhs.Lookup (i->first, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->second)) {
+                    if (not rhs.Lookup (i->fKey, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->fValue)) {
                         return false;
                     }
                 }

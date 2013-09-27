@@ -43,7 +43,7 @@ namespace {
             Optional<ElementType> last;
             for (ElementType i : m) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->first, i.first) <= 0);
+                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }
@@ -62,7 +62,7 @@ namespace {
             Optional<ElementType> last;
             for (ElementType i : m) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->first, i.first) <= 0);
+                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
                 }
                 last = i;
             }

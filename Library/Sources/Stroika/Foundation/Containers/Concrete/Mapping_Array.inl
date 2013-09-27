@@ -42,17 +42,17 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                    virtual typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override {
-                        return Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
+                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override {
+                        return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep     Clone () const override;
+                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep     Clone () const override;
 #endif
-                    virtual Iterator<pair<KEY_TYPE, VALUE_TYPE>>                MakeIterator () const override;
+                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator () const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<KEY_TYPE, VALUE_TYPE>>                ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>                ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep overrides
                 public:
@@ -62,23 +62,23 @@ namespace   Stroika {
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
                     virtual void                Add (KEY_TYPE key, VALUE_TYPE newElt) override;
                     virtual void                Remove (KEY_TYPE key) override;
-                    virtual void                Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i) override;
+                    virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 public:
                     typedef typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
 
                 private:
                     typedef Private::DataStructures::Array <
-                    pair<KEY_TYPE, VALUE_TYPE>
+                    KeyValuePair<KEY_TYPE, VALUE_TYPE>
                     >
                     NonPatchingDataStructureImplType_;
                     typedef Private::PatchingDataStructures::Array_Patch <
-                    pair<KEY_TYPE, VALUE_TYPE>
+                    KeyValuePair<KEY_TYPE, VALUE_TYPE>
                     >
                     DataStructureImplType_;
 
                 private:
-                    typedef typename Private::IteratorImplHelper_<pair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>   IteratorRep_;
+                    typedef typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>   IteratorRep_;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
@@ -111,22 +111,22 @@ namespace   Stroika {
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone () const
+                typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<pair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
+                    return typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                 }
 #endif
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<pair<KEY_TYPE, VALUE_TYPE>>  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator () const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator () const
                 {
-                    typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
+                    typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS  =   const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
-                    return  Iterator<pair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
+                    return  Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> (tmpRep);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 size_t  Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::GetLength () const
@@ -150,7 +150,7 @@ namespace   Stroika {
                     this->_Apply (doToElement);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<pair<KEY_TYPE, VALUE_TYPE>>     Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>     Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
@@ -178,9 +178,9 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 if (item != nullptr) {
-                                    *item = it.Current ().second;
+                                    *item = it.Current ().fValue;
                                 }
                                 return true;
                             }
@@ -197,12 +197,12 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
-                                fData_[it.CurrentIndex ()].second = newElt;
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
+                                fData_[it.CurrentIndex ()].fValue = newElt;
                                 return;
                             }
                         }
-                        fData_.InsertAt (fData_.GetLength (), pair<KEY_TYPE, VALUE_TYPE> (key, newElt));
+                        fData_.InsertAt (fData_.GetLength (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (key, newElt));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -211,7 +211,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                            if (KeyEqualsCompareFunctionType::Equals (it.Current ().fKey, key)) {
                                 fData_.RemoveAt (it.CurrentIndex ());
                                 return;
                             }
@@ -220,9 +220,9 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (Iterator<pair<KEY_TYPE, VALUE_TYPE>> i)
+                void    Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)
                 {
-                    const typename Iterator<pair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
+                    const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
                     auto       mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
