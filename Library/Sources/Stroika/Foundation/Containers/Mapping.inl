@@ -232,7 +232,7 @@ namespace   Stroika {
 #if 1
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
-                    result.insert (CONTAINER_OF_Key_T::value_type (i.fKey, i.fValue));
+                    result.insert (typename CONTAINER_OF_Key_T::value_type (i.fKey, i.fValue));
                 }
                 return result;
 #else
