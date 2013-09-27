@@ -202,6 +202,7 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
@@ -730,6 +731,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.h" />
@@ -1000,6 +1002,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Reader.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.md" />
