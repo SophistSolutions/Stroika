@@ -161,99 +161,43 @@ long double  Duration::As () const
     return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-#if 1
+#if     qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
-            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-            // -- LGP 2012-05-26
+#endif
+
             template    <>
             std::chrono::duration<double>  Duration::As () const
             {
                 return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
             }
-        }
-    }
-}
-#else
-template    <>
-std::chrono::duration<double>  Duration::As () const
-{
-    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
-}
-#endif
-
-#if 1
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-            // -- LGP 2012-05-26
             template    <>
             std::chrono::milliseconds  Duration::As () const
             {
                 return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
             }
-        }
-    }
-}
-#else
-template    <>
-std::chrono::milliseconds  Duration::As () const
-{
-    return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
-}
-#endif
-
-#if 1
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-            // -- LGP 2012-05-26
             template    <>
             std::chrono::microseconds  Duration::As () const
             {
                 return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
             }
-        }
-    }
-}
-#else
-template    <>
-std::chrono::microseconds  Duration::As () const
-{
-    return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
-}
-#endif
-
-#if 1
-namespace   Stroika {
-    namespace   Foundation {
-        namespace   Time {
-            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
-            // -- LGP 2012-05-26
             template    <>
             std::chrono::nanoseconds  Duration::As () const
             {
                 return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
             }
+            template    <>
+            String  Duration::As () const
+            {
+                return ASCIIStringToWide (fDurationRep_);
+            }
+
+#if     qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
         }
     }
 }
-#else
-template    <>
-std::chrono::nanoseconds  Duration::As () const
-{
-    return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
-}
 #endif
-
-template    <>
-String  Duration::As () const
-{
-    return ASCIIStringToWide (fDurationRep_);
-}
 
 template    <>
 wstring Duration::As () const

@@ -651,6 +651,27 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
+@DESCRIPTION:   Not sure if this is a gcc compiler bug or not - but seems wierd
+
+                GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+                 -- LGP 2012-05-26
+*/
+#if     !defined (qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS)
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#else
+#define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS       1
+#endif
+#endif
+
+
+
+
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_varadic_templates
