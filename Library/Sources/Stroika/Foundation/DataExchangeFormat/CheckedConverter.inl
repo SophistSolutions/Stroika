@@ -15,19 +15,19 @@ namespace   Stroika {
         namespace   DataExchangeFormat {
 
 
-			template	<typename	RANGE_TYPE>
-			RANGE_TYPE	CheckedConverter_Range (typename const RANGE_TYPE::ElementType& s, typename const RANGE_TYPE::ElementType& e)
-			{
-				if (not (RANGE_TYPE::kMin <= s)) {
-					Exception::DoThrow (BadFormatException ());
-				}
-				if (not (s <= e)) {
-					Exception::DoThrow (BadFormatException ());
-				}
-				if (not (e <= RANGE_TYPE::kMax)) {
-					Exception::DoThrow (BadFormatException ());
-				}
-			}
+            template    <typename   RANGE_TYPE>
+            RANGE_TYPE  CheckedConverter_Range (typename const RANGE_TYPE::ElementType& s, typename const RANGE_TYPE::ElementType& e)
+            {
+                if (not (RANGE_TYPE::kMin <= s)) {
+                    Exception::DoThrow (BadFormatException ());
+                }
+                if (not (s <= e)) {
+                    Exception::DoThrow (BadFormatException ());
+                }
+                if (not (e <= RANGE_TYPE::kMax)) {
+                    Exception::DoThrow (BadFormatException ());
+                }
+            }
 
 
         }

@@ -8,7 +8,7 @@
 
 #include    "../Characters/String.h"
 
-#include	"BadFormatException.h"
+#include    "BadFormatException.h"
 
 
 
@@ -31,24 +31,24 @@ namespace   Stroika {
 
 
             /**
-			 *	Throws BadFormatException if data bad. This is handy for 'file' reading, as most of the Stroika type constructors
-			 *	Assert valid data (e.g. String::FromUTF8 ()).
+             *  Throws BadFormatException if data bad. This is handy for 'file' reading, as most of the Stroika type constructors
+             *  Assert valid data (e.g. String::FromUTF8 ()).
              */
-			template	<typename FROM, typename TO, typename EXTRA_DATA>
-			TO	CheckedConverter (const FROM& from, const EXTRA_DATA& extraData = EXTRA_DATA ());
+            template    <typename FROM, typename TO, typename EXTRA_DATA>
+            TO  CheckedConverter (const FROM& from, const EXTRA_DATA& extraData = EXTRA_DATA ());
 
 
-			struct UTF8 {};
-			template	<>
-			Characters::String	CheckedConverter<string,Characters::String,UTF8> (const string& from, const UTF8& extraData);
+            struct UTF8 {};
+            template    <>
+            Characters::String  CheckedConverter<string, Characters::String, UTF8> (const string& from, const UTF8& extraData);
 
-			struct ASCII {};
-			template	<>
-			string	CheckedConverter<Characters::String,string,ASCII> (const Characters::String& from, const ASCII& extraData);
+            struct ASCII {};
+            template    <>
+            string  CheckedConverter<Characters::String, string, ASCII> (const Characters::String& from, const ASCII& extraData);
 
 
-			template	<typename	RANGE_TYPE>
-			RANGE_TYPE	CheckedConverter_Range (typename const RANGE_TYPE::ElementType& s, typename const RANGE_TYPE::ElementType& e);
+            template    <typename   RANGE_TYPE>
+            RANGE_TYPE  CheckedConverter_Range (typename const RANGE_TYPE::ElementType& s, typename const RANGE_TYPE::ElementType& e);
 
 
         }
