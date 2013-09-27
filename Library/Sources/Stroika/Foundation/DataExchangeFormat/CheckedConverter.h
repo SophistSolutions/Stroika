@@ -34,17 +34,17 @@ namespace   Stroika {
              *  Throws BadFormatException if data bad. This is handy for 'file' reading, as most of the Stroika type constructors
              *  Assert valid data (e.g. String::FromUTF8 ()).
              */
-            template    <typename FROM, typename TO, typename EXTRA_DATA>
+            template    <typename TO, typename EXTRA_DATA, typename FROM>
             TO  CheckedConverter (const FROM& from, const EXTRA_DATA& extraData = EXTRA_DATA ());
 
 
             struct UTF8 {};
             template    <>
-            Characters::String  CheckedConverter<string, Characters::String, UTF8> (const string& from, const UTF8& extraData);
+            Characters::String  CheckedConverter<Characters::String, UTF8, string> (const string& from, const UTF8& extraData);
 
             struct ASCII {};
             template    <>
-            string  CheckedConverter<Characters::String, string, ASCII> (const Characters::String& from, const ASCII& extraData);
+            string  CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData);
 
 
             template    <typename   RANGE_TYPE>
