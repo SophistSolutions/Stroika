@@ -46,9 +46,7 @@ namespace   Stroika {
             }
             inline  char    Character::GetAsciiCode () const
             {
-                // ASSERT IS ASCII
-                // not sure this is right range...
-                Require ('0' <= fCharacterCode_ and fCharacterCode_ <= 0x8f);
+                Require (IsAscii ());
                 return static_cast<char> (fCharacterCode_);
             }
             inline  wchar_t Character::GetCharacterCode () const
@@ -62,7 +60,7 @@ namespace   Stroika {
             }
             inline  bool    Character::IsAscii () const
             {
-                return fCharacterCode_ <= 0x7f;
+                return 0x0 <= fCharacterCode_ and fCharacterCode_ <= 0x7f;
             }
             inline  bool    Character::IsWhitespace () const
             {

@@ -73,7 +73,9 @@ namespace   Stroika {
                 Character (wchar_t wc);
 
             public:
-                // Asserts the given characer is ascii
+                /**
+                 *  \req IsAscii()
+                 */
                 nonvirtual  char    GetAsciiCode () const;
 
             public:
