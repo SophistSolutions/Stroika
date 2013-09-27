@@ -23,15 +23,16 @@ namespace   Stroika {
             template    <typename   RANGE_TYPE>
             RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e)
             {
-                if (not (RANGE_TYPE::kMin <= s)) {
+                if (not (RANGE_TYPE::TraitsType::kMin <= s)) {
                     Execution::DoThrow (BadFormatException ());
                 }
                 if (not (s <= e)) {
                     Execution::DoThrow (BadFormatException ());
                 }
-                if (not (e <= RANGE_TYPE::kMax)) {
+                if (not (e <= RANGE_TYPE::TraitsType::kMax)) {
                     Execution::DoThrow (BadFormatException ());
                 }
+                return RANGE_TYPE (s, e);
             }
 
 
