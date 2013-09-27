@@ -214,8 +214,8 @@ Response    Connection_LibCurl::Rep_::SendAndRequest (const Request& request)
 
     // grab initial headers and do POST/etc based on args in request...
     curl_slist* tmpH    =   nullptr;
-    for (auto i = request.fOverrideHeaders.begin (); i != request.fOverrideHeaders.end (); ++i) {
-        tmpH = curl_slist_append (tmpH, (i->first + L": " + i->second).AsUTF8 ().c_str ());
+    for (auto i : request.fOverrideHeaders) {
+        tmpH = curl_slist_append (tmpH, (i.fKey + L": " + i.fValue).AsUTF8 ().c_str ());
     }
     AssertNotNull (fCurlHandle_);
     LibCurlException::DoThrowIfError (::curl_easy_setopt (fCurlHandle_, CURLOPT_HTTPHEADER, tmpH));
