@@ -9,6 +9,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)BadFormatException.o\
+	$(ObjDir)CheckedConverter.o\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)Reader.o\
