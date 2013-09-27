@@ -125,8 +125,8 @@ namespace   Stroika {
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
                         Sequence<VariantValue>  encodedPair;
-                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.first));
-                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.second));
+                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
+                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
                         s.Append (VariantValue (encodedPair));
                     }
                     return VariantValue (s);
@@ -151,12 +151,12 @@ namespace   Stroika {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     Mapping<String, VariantValue> m;
-                    for (pair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
+                    for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
 #if     qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
-                        m.Add (mapper->FromObject<KEY_TYPE> (i.first).As<String> (), mapper->FromObject<VALUE_TYPE> (i.second));
+                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
 #else
-                        VariantValue tmp2AvoidMaybeCompilerBug = mapper->FromObject<KEY_TYPE> (i.first);
-                        m.Add (tmp2AvoidMaybeCompilerBug.As<String> (), mapper->FromObject<VALUE_TYPE> (i.second));
+                        VariantValue tmp2AvoidMaybeCompilerBug = mapper->FromObject<KEY_TYPE> (i.fKey);
+                        m.Add (tmp2AvoidMaybeCompilerBug.As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
 #endif
                     }
                     return VariantValue (m);
@@ -165,8 +165,8 @@ namespace   Stroika {
                     Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
-                    for (pair<String, VariantValue> p : m) {
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.first), mapper->ToObject<VALUE_TYPE> (p.second));
+                    for (Common::KeyValuePair<String, VariantValue> p : m) {
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p.fKey), mapper->ToObject<VALUE_TYPE> (p.fValue));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
