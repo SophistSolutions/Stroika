@@ -95,6 +95,8 @@ namespace   Stroika {
                 explicit Duration (long long duration);
                 explicit Duration (double duration);
                 Duration (const std::chrono::milliseconds& d);
+                Duration (const std::chrono::microseconds& d);
+                Duration (const std::chrono::nanoseconds& d);
                 Duration (const std::chrono::duration<double>& d);
 
             public:
@@ -110,6 +112,8 @@ namespace   Stroika {
                  *      double
                  *      std::chrono::duration<double>
                  *      std::chrono::milliseconds
+                 *      std::chrono::microseconds
+                 *      std::chrono::nanoseconds
                  *
                  *  Note - if 'empty' - As<> for numeric types returns 0.
                  */

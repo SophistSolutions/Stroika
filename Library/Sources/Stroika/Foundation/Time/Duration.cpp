@@ -107,6 +107,16 @@ Duration::Duration (const std::chrono::milliseconds& d)
 {
 }
 
+Duration::Duration (const std::chrono::microseconds& d)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / (1000.0 * 1000.0)))
+{
+}
+
+Duration::Duration (const std::chrono::nanoseconds& d)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / (1000.0 * 1000.0 * 1000.0)))
+{
+}
+
 void    Duration::clear ()
 {
     fDurationRep_.clear ();
@@ -169,7 +179,52 @@ namespace   Stroika {
 template    <>
 std::chrono::milliseconds  Duration::As () const
 {
-    return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
+    return std::chrono::milliseconds (static_cast<std::chrono::milliseconds::rep> (ParseTime_ (fDurationRep_) * 1000));
+}
+#endif
+
+#if 1
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
+            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+            // -- LGP 2012-05-26
+            template    <>
+            std::chrono::microseconds  Duration::As () const
+            {
+                return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
+            }
+        }
+    }
+}
+#else
+template    <>
+std::chrono::microseconds  Duration::As () const
+{
+    return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
+}
+#endif
+
+
+#if 1
+namespace   Stroika {
+    namespace   Foundation {
+        namespace   Time {
+            // GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
+            // -- LGP 2012-05-26
+            template    <>
+            std::chrono::nanoseconds  Duration::As () const
+            {
+                return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
+            }
+        }
+    }
+}
+#else
+template    <>
+std::chrono::nanoseconds  Duration::As () const
+{
+    return std::chrono::nanoseconds (static_cast<std::chrono::nanoseconds::rep> (ParseTime_ (fDurationRep_) * 1000.0 * 1000.0 * 1000.0));
 }
 #endif
 
