@@ -92,7 +92,17 @@ Duration::Duration (long long duration)
 {
 }
 
+Duration::Duration (float duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
 Duration::Duration (double duration)
+    : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
+{
+}
+
+Duration::Duration (long double duration)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (duration)))
 {
 }
@@ -134,7 +144,19 @@ time_t  Duration::As () const
 }
 
 template    <>
+float  Duration::As () const
+{
+    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
 double  Duration::As () const
+{
+    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+}
+
+template    <>
+long double  Duration::As () const
 {
     return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
@@ -204,7 +226,6 @@ std::chrono::microseconds  Duration::As () const
     return std::chrono::microseconds (static_cast<std::chrono::microseconds::rep> (ParseTime_ (fDurationRep_) * 1000 * 1000));
 }
 #endif
-
 
 #if 1
 namespace   Stroika {
