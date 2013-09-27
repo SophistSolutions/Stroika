@@ -97,7 +97,6 @@ Duration::Duration (double duration)
 {
 }
 
-#if     qCompilerAndStdLib_Supports_stdchrono
 Duration::Duration (const std::chrono::duration<double>& d)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ())))
 {
@@ -107,7 +106,6 @@ Duration::Duration (const std::chrono::milliseconds& d)
     : fDurationRep_ (UnParseTime_ (static_cast<InternalNumericFormatType_> (d.count ()) / 1000.0))
 {
 }
-#endif
 
 void    Duration::clear ()
 {
@@ -131,7 +129,6 @@ double  Duration::As () const
     return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-#if     qCompilerAndStdLib_Supports_stdchrono
 #if 1
 namespace   Stroika {
     namespace   Foundation {
@@ -174,7 +171,6 @@ std::chrono::milliseconds  Duration::As () const
 {
     return std::chrono::duration<double> (ParseTime_ (fDurationRep_));
 }
-#endif
 #endif
 
 template    <>

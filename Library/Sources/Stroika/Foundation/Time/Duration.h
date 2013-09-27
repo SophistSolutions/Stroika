@@ -6,12 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <chrono>
 #include    <climits>
 #include    <string>
-
-#if     qCompilerAndStdLib_Supports_stdchrono
-#include    <chrono>
-#endif
 
 #if     qPlatform_Windows
 #include    <Windows.h>
@@ -97,10 +94,8 @@ namespace   Stroika {
                 explicit Duration (long duration);
                 explicit Duration (long long duration);
                 explicit Duration (double duration);
-#if     qCompilerAndStdLib_Supports_stdchrono
                 Duration (const std::chrono::milliseconds& d);
                 Duration (const std::chrono::duration<double>& d);
-#endif
 
             public:
                 nonvirtual  void    clear ();
@@ -113,8 +108,8 @@ namespace   Stroika {
                  *      wstring
                  *      String
                  *      double
-                 *      std::chrono::duration<double>           (if qCompilerAndStdLib_Supports_stdchrono)
-                 *      std::chrono::milliseconds               (if qCompilerAndStdLib_Supports_stdchrono)
+                 *      std::chrono::duration<double>
+                 *      std::chrono::milliseconds
                  *
                  *  Note - if 'empty' - As<> for numeric types returns 0.
                  */
@@ -174,12 +169,10 @@ namespace   Stroika {
             wstring Duration::As () const;
             template    <>
             double  Duration::As () const;
-#if     qCompilerAndStdLib_Supports_stdchrono
             template    <>
             chrono::duration<double>  Duration::As () const;
             template    <>
             chrono::milliseconds  Duration::As () const;
-#endif
 
             bool operator< (const Duration& lhs, const Duration& rhs);
             bool operator<= (const Duration& lhs, const Duration& rhs);

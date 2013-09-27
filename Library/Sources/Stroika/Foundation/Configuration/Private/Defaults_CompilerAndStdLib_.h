@@ -634,24 +634,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_stdchrono
-@DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports <chrono>.</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_stdchrono)
-#if     defined (__clang__)
-// Because of constexpr
-#define qCompilerAndStdLib_Supports_stdchrono       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
-#else
-#define qCompilerAndStdLib_Supports_stdchrono       1
-#endif
-#endif
-
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_stdchrono_diff_double
 @DESCRIPTION:   fConditionVariable_.wait_for (lock, Time::Duration (remaining).As<std::chrono::duration<double>> didnt
                 compile without this hack...
@@ -660,7 +642,7 @@
 #if   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_stdchrono_diff_double       (_MSC_VER > _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_stdchrono_diff_double       qCompilerAndStdLib_Supports_stdchrono
+#define qCompilerAndStdLib_Supports_stdchrono_diff_double       1
 #endif
 #endif
 
