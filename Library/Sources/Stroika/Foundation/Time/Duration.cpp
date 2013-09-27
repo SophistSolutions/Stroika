@@ -146,7 +146,7 @@ time_t  Duration::As () const
 template    <>
 float  Duration::As () const
 {
-    return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
+    return static_cast<float> (ParseTime_ (fDurationRep_));     // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
 template    <>
