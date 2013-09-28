@@ -187,6 +187,10 @@ namespace {
             cerr << endl;
         }
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
+#if     qPlatform_Windows
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "          /* Install service (only when debugging - should use real installer like WIX) */" << endl;
+        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "          /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
+#endif
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "                 /* Service/Control Function: Start the service */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "                  /* Service/Control Function: Stop the service */" << endl;
@@ -247,21 +251,22 @@ int main (int argc, const char* argv[])
     /*
      *  Create service handler instance.
      */
-    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
-    if (Execution::MatchesCommandLineArgument (args, L"status")) {
-        cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
-        return EXIT_SUCCESS;
-    }
-    else if (Execution::MatchesCommandLineArgument (args, L"help")) {
-        ShowUsage_ ();
-        return EXIT_SUCCESS;
-    }
-
-    /*
-     *  Run the commands, and capture/display exceptions
-     */
     try {
-        m.Run (args);
+        Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
+        if (Execution::MatchesCommandLineArgument (args, L"status")) {
+            cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
+            return EXIT_SUCCESS;
+        }
+        else if (Execution::MatchesCommandLineArgument (args, L"help")) {
+            ShowUsage_ ();
+            return EXIT_SUCCESS;
+        }
+        else {
+            /*
+             *  Run the commands, and capture/display exceptions
+             */
+            m.Run (args);
+        }
     }
     catch (const Execution::InvalidCommandLineArgument& e) {
         ShowUsage_ (e);

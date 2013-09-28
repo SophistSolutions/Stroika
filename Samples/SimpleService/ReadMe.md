@@ -23,6 +23,11 @@ Read the documentation on Stroika::Frameworks::Service::Main for more details.
 
 Special platform instructions:
 WINDOWS:
+	o	Build
+	o	Install
+		..\..\Builds\Windows\Debug-U-32\Samples-SimpleService\SimpleService.exe --install
+		(this maybe required as administrator)
+				
 
 
 UNIX:
