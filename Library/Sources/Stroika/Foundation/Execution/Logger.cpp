@@ -37,7 +37,13 @@ void    Logger::SetAppender (const shared_ptr<IAppenderRep>& rep)
     fAppender_ = rep;
 }
 
-void    Logger::Log_ (Priority logLevel, const String& format, va_list argList)
+void    Logger::Log_ (Priority logLevel,
+#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
+                      const String& format,
+#else
+                      String format,
+#endif
+                      va_list argList)
 {
     shared_ptr<IAppenderRep> tmp =   sThe_.fAppender_;   // avoid races and critical sections
     if (tmp.get () != nullptr) {

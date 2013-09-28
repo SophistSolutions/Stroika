@@ -124,14 +124,25 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  DoLog
+                 *  Log
                  */
+#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
                 static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
+#else
+                static  void    Log (Priority logLevel, String format, ...); // varargs logger
+#endif
+
             private:
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
                 DISABLE_COMPILER_GCC_WARNING_START("-Wno-psabi")
 #endif
-                static  void    Log_ (Priority logLevel, const String& format, va_list argList);
+                static  void    Log_ (Priority logLevel,
+#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
+                                      const String& format,
+#else
+                                      String format,
+#endif
+                                      va_list argList);
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
                 DISABLE_COMPILER_GCC_WARNING_END("-Wno-psabi")
 #endif

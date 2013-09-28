@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
+#include    <cstdarg>
 
 #include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Foundation/Characters/Format.h"
@@ -853,7 +854,6 @@ namespace {
 
 }
 
-#define qxxx_CompilerSupportsVarArgsOfRef 0
 namespace   {
     String  Test23_help1_ (String format, va_list argsList)
     {
@@ -890,7 +890,7 @@ namespace   {
     void    Test23_FormatV_ ()
     {
         VerifyTestResult (Test23_help1_HELPER (L"joe%s", L"1") == L"joe1");
-#if qxxx_CompilerSupportsVarArgsOfRef
+#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
         VerifyTestResult (Test23_help2_HELPER (L"joe%s", L"1") == L"joe1");
         VerifyTestResult (Test23_help3_HELPER (L"joe%s", L"1") == L"joe1");
 #endif
