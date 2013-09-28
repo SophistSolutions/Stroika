@@ -113,6 +113,13 @@ namespace   Stroika {
 
 
             /**
+             *  A service is a program that runs in the background on your computer, and has no user interface.
+             *
+             *  This is often very handy - and often useful to mix together with a related non-service (UI)
+             *  program component.
+             *
+             *  This concept exists on both UNIX and Windows, but is implemented differently.
+             *
              *  There are two different dimentions along which you can subtype the behavior of a service application:
              *      (1) the functionality the service provides
              *      (2) the OS service mechanism to use
