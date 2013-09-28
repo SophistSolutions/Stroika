@@ -124,6 +124,11 @@ namespace {
  *********************** Platform::Windows::Exception ***************************
  ********************************************************************************
  */
+Exception::Exception (DWORD error)
+    : StringException (TString2Wide (Win32Error2String_ (error)))
+    , fError (error)
+{
+}
 void    Execution::Platform::Windows::Exception::DoThrow (DWORD error)
 {
     switch (error) {

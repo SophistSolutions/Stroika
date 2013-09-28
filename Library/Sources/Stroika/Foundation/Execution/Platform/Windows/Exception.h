@@ -14,6 +14,7 @@
 
 #include    "../../../Configuration/Common.h"
 #include    "../../../Characters/TString.h"
+#include    "../../../Execution/StringException.h"
 
 
 
@@ -29,7 +30,7 @@ namespace   Stroika {
                 namespace   Windows {
 
 
-                    class   Exception {
+                    class   Exception : public Execution::StringException {
                     public:
                         explicit Exception (DWORD error);
 

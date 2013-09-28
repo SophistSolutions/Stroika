@@ -20,10 +20,6 @@ namespace   Stroika {
                 namespace   Windows {
 
                     //  class   Exception
-                    inline  Exception::Exception (DWORD error)
-                        : fError (error)
-                    {
-                    }
                     inline  Exception::operator DWORD () const
                     {
                         return fError;
