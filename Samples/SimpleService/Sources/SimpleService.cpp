@@ -180,17 +180,17 @@ namespace {
 
 
 namespace {
-    void    ShowUsage_ (const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
+    void    ShowUsage_ (const Main& m, const Execution::InvalidCommandLineArgument& e = Execution::InvalidCommandLineArgument ())
     {
         if (not e.fMessage.empty ()) {
             cerr << "Error: " << e.fMessage.AsUTF8 () << endl;
             cerr << endl;
         }
         cerr << "Usage: Sample-SimpleService [options] where options can be:\n";
-#if     qPlatform_Windows
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "          /* Install service (only when debugging - should use real installer like WIX) */" << endl;
-        cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "          /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
-#endif
+        if (m.GetServiceIntegrationFeatures ().Contains (Main::ServiceIntegrationFeatures::eInstall)) {
+            cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kInstall) << "               /* Install service (only when debugging - should use real installer like WIX) */" << endl;
+            cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kUnInstall) << "             /* UnInstall service (only when debugging - should use real installer like WIX) */" << endl;
+        }
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kRunAsService) << "        /* Run this process as a service (doesn't exit until the serivce is done ...) */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStart) << "                 /* Service/Control Function: Start the service */" << endl;
         cerr << "\t--" << Characters::WideStringToNarrowSDKString (Main::CommandNames::kStop) << "                  /* Service/Control Function: Stop the service */" << endl;
@@ -251,14 +251,18 @@ int main (int argc, const char* argv[])
     /*
      *  Create service handler instance.
      */
+    Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
+
+    /*
+     *  Run request.
+     */
     try {
-        Main    m (shared_ptr<AppRep_> (new AppRep_ ()), serviceIntegrationRep);
         if (Execution::MatchesCommandLineArgument (args, L"status")) {
             cout << m.GetServiceStatusMessage ().AsUTF8<string> ();
             return EXIT_SUCCESS;
         }
         else if (Execution::MatchesCommandLineArgument (args, L"help")) {
-            ShowUsage_ ();
+            ShowUsage_ (m);
             return EXIT_SUCCESS;
         }
         else {
@@ -269,7 +273,7 @@ int main (int argc, const char* argv[])
         }
     }
     catch (const Execution::InvalidCommandLineArgument& e) {
-        ShowUsage_ (e);
+        ShowUsage_ (m, e);
     }
     catch (const std::exception& e) {
 #if     qUseLogger

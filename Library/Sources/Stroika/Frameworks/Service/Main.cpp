@@ -366,6 +366,11 @@ shared_ptr<Main::IApplicationRep>      Main::LoggerServiceWrapper::_GetAttachedA
     return fDelegateTo_->_GetAttachedAppRep ();
 }
 
+Set<Main::ServiceIntegrationFeatures>   Main::LoggerServiceWrapper::_GetSupportedFeatures () const
+{
+    return fDelegateTo_->_GetSupportedFeatures ();
+}
+
 Main::State     Main::LoggerServiceWrapper::_GetState () const
 {
     return fDelegateTo_->_GetState ();
@@ -460,6 +465,11 @@ shared_ptr<Main::IApplicationRep>      Main::RunTilIdleService::_GetAttachedAppR
     return fAppRep_;
 }
 
+Set<Main::ServiceIntegrationFeatures>   Main::RunTilIdleService::_GetSupportedFeatures () const
+{
+    return Set<Main::ServiceIntegrationFeatures> ();
+}
+
 Main::State             Main::RunTilIdleService::_GetState () const
 {
     //tmphack.... must think through states...
@@ -520,8 +530,7 @@ void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType 
 
 pid_t   Main::RunTilIdleService::_GetServicePID () const
 {
-    // VERY WEAK TO WRONG IMPL
-    return 0;
+    Execution::DoThrow (Execution::OperationNotSupportedException (L"GetServicePID"));
 }
 
 
@@ -566,6 +575,13 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 shared_ptr<Main::IApplicationRep>      Main::BasicUNIXServiceImpl::_GetAttachedAppRep () const
 {
     return fAppRep_;
+}
+
+Set<Main::ServiceIntegrationFeatures>   Main::BasicUNIXServiceImpl::_GetSupportedFeatures () const
+{
+    Set<Main::ServiceIntegrationFeatures>   result;
+    result.Add (Main::ServiceIntegrationFeatures::eGetServicePID);
+    return result;
 }
 
 Main::State             Main::BasicUNIXServiceImpl::_GetState () const
@@ -775,6 +791,14 @@ void    Main::WindowsService::_Attach (shared_ptr<IApplicationRep> appRep)
 shared_ptr<Main::IApplicationRep>   Main::WindowsService::_GetAttachedAppRep () const
 {
     return fAppRep_;
+}
+
+Set<Main::ServiceIntegrationFeatures>   Main::WindowsService::_GetSupportedFeatures () const
+{
+    Set<Main::ServiceIntegrationFeatures>   result;
+    result.Add (Main::ServiceIntegrationFeatures::eGetServicePID);
+    result.Add (Main::ServiceIntegrationFeatures::eInstall);
+    return result;
 }
 
 Main::State     Main::WindowsService::_GetState () const

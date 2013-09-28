@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Process.h"
 #include    "../../Foundation/Execution/Thread.h"
@@ -25,9 +26,6 @@
  *              (note - basic functionality works on linux - start/stop/restart etc), but nothing on windoze yet.
  *
  * TODO:
- *
- *      @todo   have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
- *              Use that in SampleApp - to optionally show --Install/--Uninstall options.
  *
  *      @todo   Window service not fully working - see why when you start/stop we dont see
  *              Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
@@ -191,6 +189,26 @@ namespace   Stroika {
 
             public:
                 struct  CommandArgs;
+
+
+            public:
+                /**
+                 *  The caller COULD just call these operations and see if they fail, but the operations have side-effects.
+                 *  This lets the caller detect the features without the side-effects.
+                 */
+                enum    class   ServiceIntegrationFeatures {
+                    eInstall,
+                    eGetServicePID,
+                };
+
+
+            public:
+                /**
+                 *  The caller COULD just call these operations and see if they fail, but the operations have side-effects.
+                 *  This lets the caller detect the features without the side-effects.
+                 */
+                nonvirtual  Containers::Set<ServiceIntegrationFeatures> GetServiceIntegrationFeatures () const;
+
 
             public:
                 /**
@@ -498,6 +516,11 @@ namespace   Stroika {
                  */
                 virtual shared_ptr<IApplicationRep>     _GetAttachedAppRep () const    =   0;
 
+
+            protected:
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const = 0;
+
+
             protected:
                 virtual  State      _GetState () const =   0;
 
@@ -564,16 +587,17 @@ namespace   Stroika {
             public:
                 LoggerServiceWrapper (shared_ptr<Main::IServiceIntegrationRep> delegateTo);
             protected:
-                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State                      _GetState () const override;
-                virtual void                        _Install () override;
-                virtual void                        _UnInstall () override;
-                virtual void                        _RunAsAservice () override;
-                virtual void                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                       _GetServicePID () const override;
+                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
+                virtual  State                                      _GetState () const override;
+                virtual void                                        _Install () override;
+                virtual void                                        _UnInstall () override;
+                virtual void                                        _RunAsAservice () override;
+                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                                       _GetServicePID () const override;
             private:
                 shared_ptr<Main::IServiceIntegrationRep> fDelegateTo_;
             };
@@ -586,16 +610,17 @@ namespace   Stroika {
             public:
                 RunTilIdleService ();
             protected:
-                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State                      _GetState () const override;
-                virtual void                        _Install () override;
-                virtual void                        _UnInstall () override;
-                virtual void                        _RunAsAservice () override;
-                virtual void                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                       _GetServicePID () const override;
+                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
+                virtual State                                       _GetState () const override;
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
+                virtual void                                        _Install () override;
+                virtual void                                        _UnInstall () override;
+                virtual void                                        _RunAsAservice () override;
+                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                                       _GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
                 Execution::Thread           fRunThread_;
@@ -608,16 +633,17 @@ namespace   Stroika {
              */
             class   Main::RunNoFrillsService : public Main::IServiceIntegrationRep {
             protected:
-                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State                      _GetState () const override;
-                virtual void                        _Install () override;
-                virtual void                        _UnInstall () override;
-                virtual void                        _RunAsAservice () override;
-                virtual void                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                       _GetServicePID () const override;
+                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
+                virtual State                                       _GetState () const override;
+                virtual void                                        _Install () override;
+                virtual void                                        _UnInstall () override;
+                virtual void                                        _RunAsAservice () override;
+                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                                       _GetServicePID () const override;
             private:
                 shared_ptr<IApplicationRep> fAppRep_;
             };
@@ -631,16 +657,17 @@ namespace   Stroika {
             public:
                 BasicUNIXServiceImpl ();
             protected:
-                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State                      _GetState () const override;
-                virtual void                        _Install () override;
-                virtual void                        _UnInstall () override;
-                virtual void                        _RunAsAservice () override;
-                virtual void                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                       _GetServicePID () const override;
+                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
+                virtual  State                                      _GetState () const override;
+                virtual void                                        _Install () override;
+                virtual void                                        _UnInstall () override;
+                virtual void                                        _RunAsAservice () override;
+                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                                       _GetServicePID () const override;
 
             protected:
                 virtual String              _GetPIDFileName () const;
@@ -709,16 +736,17 @@ namespace   Stroika {
             public:
                 WindowsService ();
             protected:
-                virtual void                        _Attach (shared_ptr<IApplicationRep> appRep) override;
-                virtual shared_ptr<IApplicationRep> _GetAttachedAppRep () const override;
-                virtual  State                      _GetState () const override;
-                virtual void                        _Install () override;
-                virtual void                        _UnInstall () override;
-                virtual void                        _RunAsAservice () override;
-                virtual void                        _Start (Time::DurationSecondsType timeout) override;
-                virtual void                        _Stop (Time::DurationSecondsType timeout) override;
-                virtual void                        _ForcedStop (Time::DurationSecondsType timeout) override;
-                virtual pid_t                       _GetServicePID () const override;
+                virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
+                virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
+                virtual Containers::Set<ServiceIntegrationFeatures> _GetSupportedFeatures () const override;
+                virtual  State                                      _GetState () const override;
+                virtual void                                        _Install () override;
+                virtual void                                        _UnInstall () override;
+                virtual void                                        _RunAsAservice () override;
+                virtual void                                        _Start (Time::DurationSecondsType timeout) override;
+                virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
+                virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
+                virtual pid_t                                       _GetServicePID () const override;
             private:
                 nonvirtual  Characters::TString GetSvcName_ () const;
                 nonvirtual  bool                IsInstalled_ () const noexcept;

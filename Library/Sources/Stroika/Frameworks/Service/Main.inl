@@ -69,6 +69,10 @@ namespace   Stroika {
                 RequireNotNull (GetServiceRep_ ()._GetAttachedAppRep ());
                 return *GetServiceRep_ ()._GetAttachedAppRep ();
             }
+            inline  Containers::Set<Main::ServiceIntegrationFeatures>   Main::GetServiceIntegrationFeatures () const
+            {
+                return GetServiceRep_ ()._GetSupportedFeatures ();
+            }
             inline  void    Main::Install ()
             {
                 Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Install"));
