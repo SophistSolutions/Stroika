@@ -260,7 +260,7 @@ String      Main::GetServiceStatusMessage () const
     ServiceDescription  svd =   GetServiceDescription ();
     wstringstream   tmp;
     tmp << L"Service '" << svd.fPrettyName.As<wstring> () << "'" << endl;
-    switch (this->GetState ()) {
+    switch (GetState ()) {
         case    State::eStopped:
             tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "STOPPED" << endl;
             break;
@@ -779,13 +779,49 @@ shared_ptr<Main::IApplicationRep>   Main::WindowsService::_GetAttachedAppRep () 
 
 Main::State     Main::WindowsService::_GetState () const
 {
-    AssertNotImplemented ();
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_GetState"));
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SERVICE_QUERY_STATUS);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup1 ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SERVICE_QUERY_STATUS);
+    Execution::Finally cleanup2 ([hService] () {
+        ::CloseServiceHandle (hService);
+    });
+
+    const bool  kUseQueryServiceStatusEx_   =    false;
+    if (kUseQueryServiceStatusEx_) {
+        SERVICE_STATUS_PROCESS  serviceProcess;
+        memset (&serviceProcess, 0, sizeof (serviceProcess));
+        DWORD ignored = 0;
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+        switch (serviceProcess.dwCurrentState) {
+            case SERVICE_RUNNING:
+                return Main::State::eRunning;
+            case SERVICE_PAUSED:
+                return Main::State::ePaused;
+        }
+    }
+    else {
+        SERVICE_STATUS  serviceStatus;
+        memset (&serviceStatus, 0, sizeof (serviceStatus));
+        Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatus (hService, &serviceStatus));
+        switch (serviceStatus.dwCurrentState) {
+            case SERVICE_RUNNING:
+                return Main::State::eRunning;
+            case SERVICE_PAUSED:
+                return Main::State::ePaused;
+        }
+    }
     return Main::State::eStopped;
 }
 
 void    Main::WindowsService::_Install ()
 {
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
     if (IsInstalled_ ()) {
+        DbgTrace ("short-circuited install because already installed");
         return;
     }
 
@@ -808,7 +844,9 @@ void    Main::WindowsService::_Install ()
 
 void    Main::WindowsService::_UnInstall ()
 {
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_UnInstall"));
     if (not IsInstalled_ ()) {
+        DbgTrace ("short-circuited uninstall because not installed");
         return;
     }
 
@@ -840,6 +878,7 @@ void    Main::WindowsService::_UnInstall ()
 
 void    Main::WindowsService::_RunAsAservice ()
 {
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAservice"));
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 
@@ -861,31 +900,29 @@ void    Main::WindowsService::_RunAsAservice ()
 
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
+    // @todo - timeout not supported
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
-    // SEE UNIX IMPL - WE WANT REST OF CRAP THEY HAVE THERE TOO (except using processrunner)
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SC_MANAGER_ALL_ACCESS);
+    Execution::Finally cleanup2 ([hService] () {
+        ::CloseServiceHandle (hService);
+    });
 
-#if      qCompilerAndStdLib_Supports_initializer_lists
-    Execution::DetachedProcessRunner (Execution::GetEXEPath (), Sequence<String> ( {String (), (String (L"--") + String (CommandNames::kRunAsService))}));
-#else
-    Sequence<String>    tmp;
-    tmp += String ();
-    tmp += (String (L"--") + String (CommandNames::kRunAsService));
-    Execution::DetachedProcessRunner (Execution::GetEXEPath (), tmp);
-#endif
-
-
-
-
-#if 0
-    && & no - this must shellexec my exe with / run - as - service
-#endif
-
+    DWORD dwNumServiceArgs = 0;
+    LPCTSTR* lpServiceArgVectors = 0;
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
 }
 
 void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
+    // @todo - timeout not supported
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Stop"));
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
@@ -928,6 +965,7 @@ TString Main::WindowsService::GetSvcName_ () const
 
 bool    Main::WindowsService::IsInstalled_ () const noexcept
 {
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_"));
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, READ_CONTROL);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
@@ -949,6 +987,7 @@ void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
 }
 
 void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
+    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_"));
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
     // do file create stuff here
