@@ -26,6 +26,22 @@
  *
  * TODO:
  *
+ *      @todo   have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
+ *              Use that in SampleApp - to optionally show --Install/--Uninstall options.
+ *
+ *      @todo   Window service not fully working - see why when you start/stop we dont see
+ *              Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
+ *              message printed out. Basic startup/shutdown seems roughly OK though.
+ *
+ *      @todo   Decide if we want PIDFILE support on windows or not? Maybe not need. But also we have
+ *              static  TString GetServerRunningFilePath_ () {
+ *                  return IO::FileSystem::WellKnownLocations::GetApplicationData () + Options::kServiceConfigAppRelPathDir +  _T ("HFWServer.running");
+ *              }
+ *              support (so we can detect crash) and warn. Maybe include that  - maybe not. Maybe merge with pidfile - maybe not?
+ *              Document reaosns for choices.
+ *
+ *              <OK - NO PIDFILE needed - but there is way in service control mgr - we should report back pid - in status display>
+ *
  *      @todo   Fix Main::BasicUNIXServiceImpl::SignalHandler_() use of static variable. Race conditions
  *              accessing static var. Use instance var and proper locking.
  *
@@ -38,23 +54,8 @@
  *
  *              SEE "ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT" in Execution::Signal module
  *
- *      @todo   Windows service mgr fails to start from cmdline
- *              SimpleService --start
- *              doesnt work, though net start Test-Service does.
- *
- *      @todo   Window service not fully working - see why when you start/stop we dont see
- *              Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
- *              message printed out. Basic startup/shutdown seems roughly OK though.
- *
  *      @todo   Carefully review Windows service code for thread locking and races. Complete missing cases, and
  *              bullet proof.
- *
- *      @todo   Decide if we want PIDFILE support on windows or not? Maybe not need. But also we have
- *              static  TString GetServerRunningFilePath_ () {
- *                  return IO::FileSystem::WellKnownLocations::GetApplicationData () + Options::kServiceConfigAppRelPathDir +  _T ("HFWServer.running");
- *              }
- *              support (so we can detect crash) and warn. Maybe include that  - maybe not. Maybe merge with pidfile - maybe not?
- *              Document reaosns for choices.
  *
  *      @todo   Support passing extra args to subprocess. For example, if we do --start --logfile=xxx,
  *              We need the invocation of EXE --Run-As-Service to ALSO take --logfile=xxx param. NYI
@@ -66,11 +67,6 @@
  *
  *              Added the startedCB method - just so fewer incompatible API-breaking changes needed in the
  *              future.
- *
- *      @todo   have 'feature supported' mechanism to check if you can instlal/uninstlal and adjust usage help accordingly)
- *              Use that in SampleApp - to optionally show --Install/--Uninstall options.
- *
- *      @todo   Get windows service support working as well as unix one does
  *
  *      @todo   Implement/test (it maybe implemented) --ReloadConfiguraiton operation.
  *
