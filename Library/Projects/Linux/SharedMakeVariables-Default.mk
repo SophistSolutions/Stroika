@@ -68,6 +68,9 @@ ifndef CWARNING_FLAGS
 	#			-Wextra \
 	#			-Wno-unused-parameter \
 	#			-Wno-type-limits
+
+	# We run against too many different compilers, and doing they have a variety of different warning options.
+	CWARNING_FLAGS		+=	-Wno-unknown-warning-option
 endif
 
 
