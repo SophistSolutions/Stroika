@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/TChar.h"
+#include    "../Characters/SDKChar.h"
 #include    "../Configuration/Common.h"
 
 

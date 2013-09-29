@@ -46,7 +46,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
-using   Characters::TString;
+using   Characters::SDKString;
 using   Execution::Logger;
 
 
@@ -255,7 +255,7 @@ void    Main::Run (const CommandArgs& args)
 
 String      Main::GetServiceStatusMessage () const
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
     const   wchar_t kTAB[]  =   L"    ";    // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription  svd =   GetServiceDescription ();
     wstringstream   tmp;
@@ -285,7 +285,7 @@ String      Main::GetServiceStatusMessage () const
 
 void    Main::RunAsService ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     GetServiceRep_ ()._RunAsAservice ();
 }
 
@@ -296,7 +296,7 @@ void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSec
 
 void    Main::ReReadConfiguration ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
 #if qPlatform_Windows
     AssertNotImplemented ();
 #elif   qPlatform_POSIX
@@ -325,7 +325,7 @@ Main::ServiceDescription    Main::GetServiceDescription () const
 
 void    Main::Restart (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Restart"));
     DbgTrace ("(timeout = %f)", timeout);
 
     /////// WRONG HANDLING OF TIMEOUT
@@ -517,14 +517,14 @@ void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
 void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
@@ -628,7 +628,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
     Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
@@ -675,7 +675,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
 
 void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
@@ -706,7 +706,7 @@ String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
     pid_t   servicePID  =   _GetServicePID ();
     if (servicePID > 0) {
         return not _IsServiceActuallyRunning ();
@@ -716,7 +716,7 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
 
 void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
     // REALY should WAIT for server to stop and only do this it fails -
     unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
@@ -736,7 +736,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
     // @todo        TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
     //
 
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
