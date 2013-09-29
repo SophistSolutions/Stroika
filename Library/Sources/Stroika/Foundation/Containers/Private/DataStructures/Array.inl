@@ -480,12 +480,12 @@ namespace   Stroika {
                         : inherited (data)
                     {
                         this->_fCurrent = this->_fStart;
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  bool    Array<T, TRAITS>::ForwardIterator::More (T* current, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
                             if (not this->_fSuppressMore and not this->Done ()) {
                                 Assert (this->_fCurrent < this->_fEnd);
@@ -497,7 +497,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::ForwardIterator::More (Memory::Optional<T>* result, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
                             if (this->_fSuppressMore) {
                                 this->_fSuppressMore = false;
@@ -509,7 +509,7 @@ namespace   Stroika {
                                 }
                             }
                         }
-                        Invariant ();
+                        this->Invariant ();
                         if (this->Done ()) {
                             result->clear ();
                         }
@@ -534,12 +534,12 @@ namespace   Stroika {
                         else {
                             this->_fCurrent = this->_fEnd - 1; // last valid item
                         }
-                        Invariant ();
+                        this->Invariant ();
                     }
                     template      <typename  T, typename TRAITS>
                     inline  bool    Array<T, TRAITS>::BackwardIterator::More (T* current, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
                             if (not this->_fSuppressMore and not this->Done ()) {
                                 if (this->_fCurrent == this->_fStart) {
@@ -557,7 +557,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     inline  void    Array<T, TRAITS>::BackwardIterator::More (Memory::Optional<T>* result, bool advance)
                     {
-                        Invariant ();
+                        this->Invariant ();
                         if (advance) {
                             if (this->_fSuppressMore) {
                                 this->_fSuppressMore = false;
@@ -575,7 +575,7 @@ namespace   Stroika {
                                 }
                             }
                         }
-                        Invariant ();
+                        this->Invariant ();
                         if (this->Done ()) {
                             result->clear ();
                         }
