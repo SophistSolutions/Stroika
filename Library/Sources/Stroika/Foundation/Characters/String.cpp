@@ -529,17 +529,17 @@ String  String::FromUTF8 (const std::string& from)
 
 String  String::FromTString (const TChar* from)
 {
-    return TString2Wide (from);
+    return SDKString2Wide (from);
 }
 
 String  String::FromTString (const TChar* from, const TChar* to)
 {
-    return TString2Wide (TString (from, to));
+    return SDKString2Wide (TString (from, to));
 }
 
 String  String::FromTString (const basic_string<TChar>& from)
 {
-    return TString2Wide (from);
+    return SDKString2Wide (from);
 }
 
 String  String::FromNarrowSDKString (const char* from)
@@ -1043,7 +1043,7 @@ TString String::AsTString () const
 void    String::AsTString (TString* into) const
 {
     RequireNotNull (into);
-    *into = Wide2TString (As<wstring> ());  // poor inefficient implementation
+    *into = Wide2SDKString (As<wstring> ());  // poor inefficient implementation
 }
 
 string  String::AsNarrowSDKString () const

@@ -402,7 +402,7 @@ String Date::Format (LCID lcid) const
     else {
         SmallStackBuffer<TCHAR> buf (nTChars + 1);
         (void)::GetDateFormat (lcid, DATE_SHORTDATE, &st, nullptr, buf, nTChars + 1);
-        return TString2Wide (static_cast<const TCHAR*> (buf));
+        return SDKString2Wide (static_cast<const TCHAR*> (buf));
     }
 }
 

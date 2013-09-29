@@ -92,7 +92,7 @@ public:
 // And ONLY thorw exceptions on ERROR!
                 SQLRETURN return_value = SQLConnect (
                                              fConnectionHandle,
-                                             reinterpret_cast<SQLTCHAR*>(const_cast<TCHAR*>(ToTString (dsn).c_str())),
+                                             reinterpret_cast<SQLTCHAR*>(const_cast<TCHAR*>(ToSDKString (dsn).c_str())),
                                              SQL_NTS,
                                              nullptr, SQL_NTS,
                                              nullptr, SQL_NTS
@@ -113,7 +113,7 @@ public:
                     if (errValue == SQL_SUCCESS) {
                         // TCHAR isn't the same SQLTCHAR for 'ANSI' because for some crazy reason, they
                         // used unsigned char for SQLCHAR!
-                        errorString += TString2Wide (reinterpret_cast<TCHAR*> (errorMessage));
+                        errorString += SDKString2Wide (reinterpret_cast<TCHAR*> (errorMessage));
                     }
                     else if (errValue == SQL_SUCCESS_WITH_INFO) {
                         errorString = L"Error message too long at";

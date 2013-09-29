@@ -33,7 +33,7 @@ using   Debug::TraceContextBumper;
  ********************************************************************************
  */
 errno_ErrorException::errno_ErrorException (errno_t e)
-    : StringException (TString2Wide (LookupMessage (e)))
+    : StringException (SDKString2Wide (LookupMessage (e)))
     , fError (e)
 {
 }

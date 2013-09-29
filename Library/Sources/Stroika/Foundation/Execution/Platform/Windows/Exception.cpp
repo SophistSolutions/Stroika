@@ -125,7 +125,7 @@ namespace {
  ********************************************************************************
  */
 Exception::Exception (DWORD error)
-    : StringException (TString2Wide (Win32Error2String_ (error)))
+    : StringException (SDKString2Wide (Win32Error2String_ (error)))
     , fError (error)
 {
 }
