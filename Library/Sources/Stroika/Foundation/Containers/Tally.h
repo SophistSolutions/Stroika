@@ -133,7 +133,7 @@ namespace   Stroika {
                 nonvirtual  void    Add (const TallyEntry<T>& item);
 
             public:
-                nonvirtual  void    AddAll (const T* begin, const T* end);
+                nonvirtual  void    AddAll (const T* start, const T* end);
                 nonvirtual  void    AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end);
                 template <typename CONTAINER_OF_T>
                 nonvirtual  void    AddAll (const CONTAINER_OF_T& src);

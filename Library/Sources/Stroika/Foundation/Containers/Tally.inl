@@ -239,16 +239,16 @@ namespace   Stroika {
                 _GetRep ().Add (item.fItem, item.fCount);
             }
             template    <typename T, typename TRAITS>
-            void   Tally<T, TRAITS>::AddAll (const T* begin, const T* end)
+            void   Tally<T, TRAITS>::AddAll (const T* start, const T* end)
             {
-                for (const T* i = begin; i != end; ++i) {
+                for (const T* i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
             template    <typename T, typename TRAITS>
             inline  void    Tally<T, TRAITS>::AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end)
             {
-                for (auto i = begin; i != end; ++i) {
+                for (auto i = start; i != end; ++i) {
                     _GetRep ().Add (i->fItem, i->fEnd);
                 }
             }
