@@ -869,7 +869,7 @@ namespace   {
     }
     void    Test23_FormatV_ ()
     {
-        VerifyTestResult (Test23_help1_HELPER (L"joe%s", L"1") == L"joe1");
+        VerifyTestResult (Test23_help1_HELPER (L"joe%sx", L"1") == L"joe1x");
     }
 }
 
