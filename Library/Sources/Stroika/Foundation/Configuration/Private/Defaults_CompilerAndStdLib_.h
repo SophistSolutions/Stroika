@@ -333,6 +333,24 @@
 
 
 
+
+/**
+@CONFIGVAR:     qCompilerAndStdLib_Supports_toupper_tolower_overload
+@DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
+*/
+#ifndef qCompilerAndStdLib_Supports_toupper_tolower_overload
+#if     defined (__clang__)
+#define qCompilerAndStdLib_Supports_toupper_tolower_overload       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#else
+#define qCompilerAndStdLib_Supports_toupper_tolower_overload        1
+#endif
+#endif
+
+
+
+
+
+
 /**
 @CONFIGVAR:     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
 @DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
