@@ -336,7 +336,7 @@ void    Main::Restart (Time::DurationSecondsType timeout)
     IgnoreExceptionsForCall (Stop (timeout));
 #if     qPlatform_POSIX
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_sAppRep->_GetPIDFileName ().AsTString ().c_str ());
+    unlink (_sAppRep->_GetPIDFileName ().AsSDKString ().c_str ());
 #endif
     Start (endAt - Time::GetTickCount ());
 #endif
@@ -614,15 +614,15 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
     fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;
     {
-        ofstream    out (_GetPIDFileName ().AsTString ().c_str ());
+        ofstream    out (_GetPIDFileName ().AsSDKString ().c_str ());
         out << getpid () << endl;
     }
     try {
         fRunThread_.WaitForDone ();
-        ::unlink (_GetPIDFileName ().AsTString ().c_str ());
+        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     }
     catch (...) {
-        ::unlink (_GetPIDFileName ().AsTString ().c_str ());
+        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     }
 }
 
@@ -679,12 +679,12 @@ void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeo
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_GetPIDFileName ().AsTString ().c_str ());
+    unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
 
 pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 {
-    ifstream    in (_GetPIDFileName ().AsTString ().c_str ());
+    ifstream    in (_GetPIDFileName ().AsSDKString ().c_str ());
     if (in) {
         pid_t   n = 0;
         in >> n;
@@ -718,7 +718,7 @@ void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
     // REALY should WAIT for server to stop and only do this it fails -
-    unlink (_GetPIDFileName ().AsTString ().c_str ());
+    unlink (_GetPIDFileName ().AsSDKString ().c_str ());
 }
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
@@ -865,7 +865,7 @@ void    Main::WindowsService::_Install ()
                              hSCM, GetSvcName_ ().c_str (), GetSvcName_ ().c_str (),
                              kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS,
                              SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-                             cmdLineForRunSvc.AsTString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL
+                             cmdLineForRunSvc.AsSDKString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL
                          );
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
 }
@@ -1007,7 +1007,7 @@ pid_t   Main::WindowsService::_GetServicePID () const
 SDKString Main::WindowsService::GetSvcName_ () const
 {
     RequireNotNull (fAppRep_);  // must attach first
-    return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
+    return fAppRep_->GetServiceDescription ().fRegistrationName.AsSDKString ();
 }
 
 bool    Main::WindowsService::IsInstalled_ () const noexcept

@@ -139,9 +139,9 @@ String FileSystem::GetFileSuffix (const String& fileName)
     {
         SDKChar   fNameBuf[4 * MAX_PATH ];
         fNameBuf[0] = '\0';
-        DWORD   r   =   ::GetLongPathName (fileName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD   r   =   ::GetLongPathName (fileName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
-            useFName = String::FromTString (fNameBuf);
+            useFName = String::FromSDKString (fNameBuf);
         }
     }
     SDKChar   fname[_MAX_FNAME];
@@ -152,9 +152,9 @@ String FileSystem::GetFileSuffix (const String& fileName)
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));
     memset (ext, 0, sizeof (ext));
-    ::_tsplitpath_s (useFName.AsTString ().c_str (), drive, dir, fname, ext);
+    ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
     // returns leading '.' in name...
-    return String::FromTString (ext);
+    return String::FromSDKString (ext);
 #else
     AssertNotImplemented ();
     return String ();
@@ -176,9 +176,9 @@ String FileSystem::GetFileBaseName (const String& pathName)
 
     {
         SDKChar   fNameBuf[4 * MAX_PATH ];
-        DWORD   r   =   GetLongPathName (pathName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
+        DWORD   r   =   GetLongPathName (pathName.AsSDKString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
-            useFName = String::FromTString (fNameBuf);
+            useFName = String::FromSDKString (fNameBuf);
         }
     }
     SDKChar   fname[_MAX_FNAME];
@@ -189,8 +189,8 @@ String FileSystem::GetFileBaseName (const String& pathName)
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));
     memset (ext, 0, sizeof (ext));
-    ::_tsplitpath_s (useFName.AsTString ().c_str (), drive, dir, fname, ext);
-    return String::FromTString (fname);
+    ::_tsplitpath_s (useFName.AsSDKString ().c_str (), drive, dir, fname, ext);
+    return String::FromSDKString (fname);
 #elif   qPlatform_POSIX
     String tmp =   pathName;
     {

@@ -26,9 +26,9 @@ namespace   Stroika {
                 {
                     return fFileFullPath_.As<wstring> ();
                 }
-                inline  SDKString Directory::AsTString () const
+                inline  SDKString Directory::AsSDKString () const
                 {
-                    return fFileFullPath_.AsTString ();
+                    return fFileFullPath_.AsSDKString ();
                 }
 
 

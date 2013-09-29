@@ -70,7 +70,7 @@ void    Directory::AssureDeleted (bool autoDeleteContentsAsNeeded) const
 #if     qPlatform_Windows
     ThrowIfFalseGetLastError (::RemoveDirectoryW (fFileFullPath_.c_str ()));
 #elif   qPlatform_POSIX
-    Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.AsTString ().c_str ()));
+    Execution::ThrowErrNoIfNegative (::rmdir (fFileFullPath_.AsSDKString ().c_str ()));
 #endif
 }
 
@@ -84,7 +84,7 @@ bool    Directory::Exists () const
     return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 #elif   qPlatform_POSIX
     struct  stat    s;
-    if (::stat (fFileFullPath_.AsTString ().c_str (), &s) < 0) {
+    if (::stat (fFileFullPath_.AsSDKString ().c_str (), &s) < 0) {
         // If file doesn't exist - or other error reading, just say not exist
         return false;
     }

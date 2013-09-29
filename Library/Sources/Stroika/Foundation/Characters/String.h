@@ -55,7 +55,7 @@
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *
- *      @todo   Add AsTString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
+ *      @todo   Add AsSDKString(TCHAR BUF) overload - as performance tweek. Not sure can be easily done safely so
  *              not sure of this, but could be a significant performance advantage. Test more...
  *
  *              Maybe better - AsTChar* - which takes BUFFER arg. And OPTIONALLY uses that buffer arg (depending
@@ -318,11 +318,19 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Create a String object from a 'TChar' (os-setting - current code page) encoded string.
+                 *  Create a String object from a 'SDKChar' (os-setting - current code page) encoded string.
+                 *  See @SDKChar
+                 *  See @SDKString
                  */
                 static  String  FromTString (const SDKChar* from);
                 static  String  FromTString (const SDKChar* from, const SDKChar* to);
                 static  String  FromTString (const SDKString& from);
+
+
+                // tmphack
+                static  String  FromSDKString (const SDKChar* from) { return FromTString (from); }
+                static  String  FromSDKString (const SDKChar* from, const SDKChar* to) { return FromTString (from, to); }
+                static  String  FromSDKString (const SDKString& from) { return FromTString (from); }
 
             public:
                 /**

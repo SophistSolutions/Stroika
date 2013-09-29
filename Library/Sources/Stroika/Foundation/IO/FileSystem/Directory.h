@@ -80,7 +80,7 @@ namespace   Stroika {
                     nonvirtual  T As () const;
 
                 public:
-                    nonvirtual  SDKString AsTString () const;
+                    nonvirtual  SDKString AsSDKString () const;
 
                 private:
                     String fFileFullPath_;

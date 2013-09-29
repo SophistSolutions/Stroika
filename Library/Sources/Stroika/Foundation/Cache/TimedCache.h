@@ -57,7 +57,7 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Cache {
 
-            using Stroika::Foundation::Characters::TChar;
+            using Stroika::Foundation::Characters::SDKChar;
 
 
             namespace   TimedCacheSupport {
@@ -73,7 +73,7 @@ namespace   Stroika {
 
                     nonvirtual  void    IncrementHits ();
                     nonvirtual  void    IncrementMisses ();
-                    nonvirtual  void    DbgTraceStats (const Characters::TChar* label) const;
+                    nonvirtual  void    DbgTraceStats (const Characters::SDKChar* label) const;
                 };
 
 
@@ -83,7 +83,7 @@ namespace   Stroika {
                 struct  Stats_Null {
                     nonvirtual  void    IncrementHits ();
                     nonvirtual  void    IncrementMisses ();
-                    nonvirtual  void    DbgTraceStats (const Characters::TChar* label) const;
+                    nonvirtual  void    DbgTraceStats (const Characters::SDKChar* label) const;
                 };
 
 

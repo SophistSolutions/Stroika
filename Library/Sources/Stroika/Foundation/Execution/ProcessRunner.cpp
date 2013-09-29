@@ -600,7 +600,7 @@ pid_t   Execution::DetachedProcessRunner (const String& commandLine)
     {
         bool    bInheritHandles     =   true;
         TCHAR   cmdLineBuf[32768];          // crazy MSFT definition! - why this should need to be non-const!
-        Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), commandLine.AsTString ().c_str ());
+        Characters::CString::Copy (cmdLineBuf, NEltsOf (cmdLineBuf), commandLine.AsSDKString ().c_str ());
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
             ::CreateProcess (nullptr, cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
@@ -671,15 +671,15 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
             if (cmdLineBuf[0] != '\0') {
                 Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), SDKSTR(" "));
             }
-            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsTString ().c_str ());
+            Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsSDKString ().c_str ());
         }
         Execution::Platform::Windows::ThrowIfFalseGetLastError (
-            ::CreateProcess (executable.AsTString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
+            ::CreateProcess (executable.AsSDKString ().c_str (), cmdLineBuf, nullptr, nullptr, bInheritHandles, createProcFlags, nullptr, nullptr, &startInfo, &processInfo)
         );
     }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
-    Characters::SDKString thisEXEPath =   executable.AsTString ();
+    Characters::SDKString thisEXEPath =   executable.AsSDKString ();
     pid_t   pid =   Execution::ThrowErrNoIfNegative (fork ());
     if (pid == 0) {
         /*
@@ -699,7 +699,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         vector<SDKString> tmpTStrArgs;
         tmpTStrArgs.reserve (args.size ());
         for (String i : useArgs) {
-            tmpTStrArgs.push_back (i.AsTString ());
+            tmpTStrArgs.push_back (i.AsSDKString ());
         }
         vector<char*>   useArgsV;
         for (auto i = tmpTStrArgs.begin (); i != tmpTStrArgs.end (); ++i) {

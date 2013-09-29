@@ -199,7 +199,7 @@ namespace   {
                 }
             }
         }
-        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsTString ();
+        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsSDKString ();
         for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
             if (*i == ':') {
                 *i = '-';

@@ -63,7 +63,7 @@ ifstream&   Streams::iostream::OpenInputFileStream (ifstream* ifStream, const St
 {
     RequireNotNull (ifStream);
     try {
-        ifStream->open (fileName.AsTString ().c_str (), mode | ios_base::in);
+        ifStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::in);
         if (!(*ifStream)) {
 #if     qPlatform_Windows
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());
@@ -100,7 +100,7 @@ ofstream&   Streams::iostream::OpenOutputFileStream (ofstream* ofStream, const S
 {
     RequireNotNull (ofStream);
     try {
-        ofStream->open (fileName.AsTString ().c_str (), mode | ios_base::out);
+        ofStream->open (fileName.AsSDKString ().c_str (), mode | ios_base::out);
         if (!(*ofStream)) {
 #if     qPlatform_Windows
             Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetLastError ());

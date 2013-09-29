@@ -32,7 +32,7 @@ using   namespace   Stroika::Foundation::Execution;
  */
 String Execution::GetEXEDir ()
 {
-    return String::FromTString (GetEXEDirT ());
+    return String::FromSDKString (GetEXEDirT ());
 }
 
 
@@ -47,7 +47,7 @@ SDKString Execution::GetEXEDirT ()
 {
     // Currently this impl depends on String - we may want to redo one cleanly without any dependency on String()...
     // Docs call for this - but I'm not sure its needed
-    return IO::FileSystem::GetFileDirectory (GetEXEPath ()).AsTString ();
+    return IO::FileSystem::GetFileDirectory (GetEXEPath ()).AsSDKString ();
 }
 
 
@@ -61,7 +61,7 @@ SDKString Execution::GetEXEDirT ()
  */
 String Execution::GetEXEPath ()
 {
-    return String::FromTString (GetEXEPathT ());
+    return String::FromSDKString (GetEXEPathT ());
 }
 
 

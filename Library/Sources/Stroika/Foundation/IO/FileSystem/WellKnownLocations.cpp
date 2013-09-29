@@ -63,7 +63,7 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
     if (pPath == nullptr) {
         return String ();
     }
-    return String::FromTString (pPath);
+    return String::FromSDKString (pPath);
 #else
     AssertNotImplemented ();
     return String ();
@@ -96,8 +96,8 @@ String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPrese
         result += SDKSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
-    Ensure (not createIfNotPresent or Directory (String::FromTString (result)).Exists ());
-    return String::FromTString (result);
+    Ensure (not createIfNotPresent or Directory (String::FromSDKString (result)).Exists ());
+    return String::FromSDKString (result);
 #elif   qPlatform_POSIX
     return L"/var/lib/";
 #else
@@ -183,7 +183,7 @@ SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
         tempPath = SDKSTR ("c:\\Temp\\");
     }
     else {
-        tempPath = AssureDirectoryPathSlashTerminated (String::FromTString (buf)).AsTString ();
+        tempPath = AssureDirectoryPathSlashTerminated (String::FromSDKString (buf)).AsSDKString ();
     }
 #elif   qPlatform_POSIX
     return SDKSTR ("/tmp/");

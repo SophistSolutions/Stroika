@@ -1149,7 +1149,7 @@ void    SpellCheckEngine_Basic_Simple::ReadFromUD ()
      *  Ignore any errors reading from the UD (at least file-not-found errors).
      */
     try {
-        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromTString (fUDName)).ReadAll ();
+        Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromSDKString (fUDName)).ReadAll ();
 #if     qWideCharacters
         size_t              fileLen     =   b.size ();
         CodePage            useCodePage =   CodePagesGuesser ().Guess (b.begin (), fileLen);
@@ -1174,7 +1174,7 @@ void    SpellCheckEngine_Basic_Simple::WriteToUD ()
 #if     qPlatform_MacOS
     FileWriter  writer (&fUDName);
 #else
-    IO::FileSystem::BinaryFileOutputStream  writer (String::FromTString (fUDName));
+    IO::FileSystem::BinaryFileOutputStream  writer (String::FromSDKString (fUDName));
 #endif
 
 #if     qWideCharacters

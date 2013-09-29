@@ -172,7 +172,7 @@ void    Logger::WindowsEventLogAppender::Log (Priority logLevel, const String& m
     const   DWORD   kEventID            =   EVENT_Message;
     HANDLE  hEventSource = RegisterEventSource (NULL, kEventSourceName);
     Verify (hEventSource != NULL);
-    SDKString tmp = message.AsTString ();
+    SDKString tmp = message.AsSDKString ();
     const Characters::SDKChar* msg = tmp.c_str ();
     Verify (::ReportEvent (
                 hEventSource,

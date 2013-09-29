@@ -163,7 +163,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
 
         // Try to modify the object's DACL.
         DWORD dwRes  = SetNamedSecurityInfo(
-                           const_cast<SDKChar*> (filePathName.AsTString ().c_str ()),          // name of the object
+                           const_cast<SDKChar*> (filePathName.AsSDKString ().c_str ()),          // name of the object
                            SE_FILE_OBJECT,              // type of object
                            DACL_SECURITY_INFORMATION,   // change only the object's DACL
                            nullptr, nullptr,                  // don't change owner or group
@@ -177,7 +177,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
             Execution::DoThrow (StringException (L"bad filename"));
         }
         struct  stat    s;
-        ThrowErrNoIfNegative (::stat (filePathName.AsTString ().c_str (), &s));
+        ThrowErrNoIfNegative (::stat (filePathName.AsSDKString ().c_str (), &s));
 
         mode_t  desiredMode =   (S_IRUSR | S_IRGRP | S_IROTH) | (S_IWUSR | S_IWGRP | S_IWOTH);
         if (S_ISDIR (s.st_mode)) {
@@ -187,7 +187,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
         int result = 0;
         // Don't call chmod if mode is already open (because doing so could fail even though we already have what we wnat if were not the owner)
         if ((s.st_mode & desiredMode) != desiredMode) {
-            result = chmod (filePathName.AsTString ().c_str (), desiredMode);
+            result = chmod (filePathName.AsSDKString ().c_str (), desiredMode);
         }
         ThrowErrNoIfNegative (result);
 #else
@@ -254,7 +254,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             // Now go in reverse order - checking if the exist - and if so - stop going back
             for (auto i = paths.rbegin (); i != paths.rend (); ++i) {
                 //NB: this avoids matching files - we know dir - cuz name ends in /
-                if (access(i->AsTString ().c_str (), R_OK) == 0) {
+                if (access(i->AsSDKString ().c_str (), R_OK) == 0) {
                     // ignore this one
                 }
                 else {
@@ -269,7 +269,7 @@ void    FileSystem::CreateDirectory (const String& directoryPath, bool createPar
             }
         }
         // Horrible - needs CLEANUP!!! -- LGP 2011-09-26
-        if (::mkdir (directoryPath.AsTString ().c_str (), 0755) != 0) {
+        if (::mkdir (directoryPath.AsSDKString ().c_str (), 0755) != 0) {
             if (errno != 0 and errno != EEXIST) {
                 Execution::DoThrow (errno_ErrorException (errno));
             }
@@ -327,7 +327,7 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     SDKChar   igBuf[1024];
     memset (igBuf, 0, sizeof (igBuf));
     BOOL    result  =   ::GetVolumeInformation (
-                            AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsTString ().c_str (),
+                            AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsSDKString ().c_str (),
                             volNameBuf,
                             NEltsOf (volNameBuf),
                             nullptr,
@@ -337,7 +337,7 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
                             NEltsOf (igBuf)
                         );
     if (result) {
-        return String::FromTString (volNameBuf);
+        return String::FromSDKString (volNameBuf);
     }
 #else
     AssertNotImplemented ();
@@ -367,7 +367,7 @@ bool    FileSystem::FileExists (const String& filePath)
 #elif   qPlatform_POSIX
     // Not REALLY right - but an OK hack for now... -- LGP 2011-09-26
     //http://linux.die.net/man/2/access
-    return access (filePath.AsTString().c_str (), R_OK) == 0;
+    return access (filePath.AsSDKString().c_str (), R_OK) == 0;
 #else
     AssertNotImplemented ();
     return false;
@@ -396,7 +396,7 @@ bool    FileSystem::DirectoryExists (const String& filePath)
     return !! (attribs & FILE_ATTRIBUTE_DIRECTORY);
 #elif   qPlatform_POSIX
     struct  stat    s;
-    if (::stat (filePath.AsTString ().c_str (), &s) < 0) {
+    if (::stat (filePath.AsSDKString ().c_str (), &s) < 0) {
         // If file doesn't exist - or other error reading, just say not exist
         return false;
     }
@@ -428,7 +428,7 @@ void    FileSystem::CopyFile (const String& srcFile, const String& destPath)
         Execution::DoThrow (FileAccessException (srcFile, IO::FileAccessMode::eRead_FAM));
     }
     CreateDirectoryForFile (destPath);
-    ThrowIfFalseGetLastError (::CopyFile (destPath.AsTString ().c_str (), srcFile.AsTString ().c_str (), false));
+    ThrowIfFalseGetLastError (::CopyFile (destPath.AsSDKString ().c_str (), srcFile.AsSDKString ().c_str (), false));
 #else
     AssertNotImplemented ();
 #endif
@@ -458,11 +458,11 @@ vector<String> FileSystem::FindFiles (const String& path, const String& fileName
     String matchFullPath   =   usePath + (fileNameToMatch.empty () ? L"*" : fileNameToMatch);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile (matchFullPath.AsTString ().c_str (), &fd);
+    HANDLE hFind = ::FindFirstFile (matchFullPath.AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
-                String fileName = String::FromTString (fd.cFileName);
+                String fileName = String::FromSDKString (fd.cFileName);
                 if (not (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
                     result.push_back (usePath + fileName);
                 }
@@ -504,12 +504,12 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
     String usePath =   AssureDirectoryPathSlashTerminated (path);
     WIN32_FIND_DATA fd;
     memset (&fd, 0, sizeof (fd));
-    HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsTString ().c_str (), &fd);
+    HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
             SDKString fileName = (LPCTSTR) &fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-                String fileName = String::FromTString ((LPCTSTR) &fd.cFileName);
+                String fileName = String::FromSDKString ((LPCTSTR) &fd.cFileName);
                 const   String kDOT    =   L".";
                 const   String kDOTDOT =   L"..";
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
@@ -549,16 +549,16 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
 
     WIN32_FIND_DATA fd;
     (void)::memset (&fd, 0, sizeof (fd));
-    HANDLE          hFind = ::FindFirstFile ((dir2Use + L"*").AsTString ().c_str (), &fd);
+    HANDLE          hFind = ::FindFirstFile ((dir2Use + L"*").AsSDKString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         try {
             do {
-                String fileName = String::FromTString (fd.cFileName);
+                String fileName = String::FromSDKString (fd.cFileName);
                 if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                     if ((fileName != L".") and (fileName != L"..")) {
                         DeleteAllFilesInDirectory (dir2Use + fileName + L"\\", ignoreErrors);
                         try {
-                            ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).AsTString ().c_str ()));
+                            ThrowIfFalseGetLastError (::RemoveDirectory ((dir2Use + fileName).AsSDKString ().c_str ()));
                         }
                         catch (...) {
                             DbgTrace ("Exception %s calling RemoveDirectory on file '%s'", ignoreErrors ? L"(ignored)" : L"", (dir2Use + fileName).c_str ());
@@ -570,7 +570,7 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
                 }
                 else {
                     try {
-                        ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).AsTString ().c_str ()));
+                        ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).AsSDKString ().c_str ()));
                     }
                     catch (...) {
                         DbgTrace (SDKSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors ? SDKSTR ("(ignored)") : SDKSTR (""), (dir2Use + fileName).c_str ());
@@ -608,7 +608,7 @@ FileSystem::DirectoryChangeWatcher::DirectoryChangeWatcher (const String& direct
     , fWatchSubTree (watchSubTree)
     , fThread ()
     , fDoneEvent (::CreateEvent (nullptr, false, false, nullptr))
-    , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsTString ().c_str (), fWatchSubTree, notifyFilter))
+    , fWatchEvent (::FindFirstChangeNotification (fDirectory.AsSDKString ().c_str (), fWatchSubTree, notifyFilter))
     , fQuitting (false)
 {
     fThread = Execution::Thread (bind (&ThreadProc, this));
@@ -707,7 +707,7 @@ DirectoryContentsIterator::DirectoryContentsIterator (const String& pathExpr)
         Execution::DoThrow (StringException (L"Cannot find final '\\' in directory path"));
     }
     fDirectory = fDirectory.substr (0, i + 1);
-    fHandle = ::FindFirstFile (pathExpr.AsTString ().c_str (), &fFindFileData);
+    fHandle = ::FindFirstFile (pathExpr.AsSDKString ().c_str (), &fFindFileData);
 #else
     AssertNotImplemented ();
 #endif
@@ -738,7 +738,7 @@ String DirectoryContentsIterator::operator *() const
 {
     Ensure (NotAtEnd ());
 #if         qPlatform_Windows
-    return fDirectory + String::FromTString (fFindFileData.cFileName);
+    return fDirectory + String::FromSDKString (fFindFileData.cFileName);
 #else
     AssertNotImplemented ();
     return String ();

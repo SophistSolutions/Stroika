@@ -253,7 +253,7 @@ bool    FlavorPackageInternalizer::InternalizeFlavor_FILEData (
     size_t from, size_t to
 )
 {
-    Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromTString (fileName)).ReadAll ();
+    Memory::BLOB    b = IO::FileSystem::BinaryFileInputStream (String::FromSDKString (fileName)).ReadAll ();
     const Byte* fileBuf = b.begin ();
     size_t      fileLen = b.size ();
 

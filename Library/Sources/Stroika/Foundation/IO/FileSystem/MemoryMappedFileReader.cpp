@@ -67,7 +67,7 @@ MemoryMappedFileReader::MemoryMappedFileReader (const String& fileName)
 #elif       qPlatform_Windows
     try {
         // FILE_READ_DATA fails on WinME - generates ERROR_INVALID_PARAMETER - so use GENERIC_READ
-        fFileHandle_ = ::CreateFile (fileName.AsTString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+        fFileHandle_ = ::CreateFile (fileName.AsSDKString ().c_str (), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
         ThrowIfFalseGetLastError (fFileHandle_ != INVALID_HANDLE_VALUE);
         DWORD   fileSize    =   ::GetFileSize (fFileHandle_, nullptr);
         if (fileSize != 0) {

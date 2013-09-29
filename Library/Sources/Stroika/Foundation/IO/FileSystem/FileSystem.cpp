@@ -75,7 +75,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
     {
         SHFILEINFO   info;
         memset (&info, 0, sizeof (info));
-        if (::SHGetFileInfo (path2FileOrShortcut.AsTString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
+        if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
             return path2FileOrShortcut;
         }
         // not a shortcut?
@@ -102,7 +102,7 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
                         ppf = nullptr;
                         psl->Release ();
                         psl = nullptr;
-                        return String::FromTString (path);
+                        return String::FromSDKString (path);
                     }
                 }
             }

@@ -70,7 +70,7 @@ String  Platform::POSIX::uid_t2UserName (uid_t uid)
     if (result == nullptr) {
         Execution::DoThrow (StringException (L"No such username"));
     }
-    return String::FromTString (pwd.pw_name);
+    return String::FromSDKString (pwd.pw_name);
 }
 
 
