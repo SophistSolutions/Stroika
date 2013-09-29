@@ -159,6 +159,7 @@ namespace   Stroika {
             template    <typename   T>
             T   PinInRange (T initialValue, T lowerBound, T upperBound)
             {
+                Require (lowerBound <= upperBound);
                 return  max (lowerBound, min (upperBound, initialValue));
             }
 
