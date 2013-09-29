@@ -811,6 +811,7 @@ Main::State     Main::WindowsService::_GetState () const
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
     });
@@ -939,6 +940,7 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
     });
@@ -991,6 +993,7 @@ pid_t   Main::WindowsService::_GetServicePID () const
         ::CloseServiceHandle (hSCM);
     });
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
     });
@@ -1019,6 +1022,7 @@ bool    Main::WindowsService::IsInstalled_ () const noexcept
     });
 
     SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         if (hService != nullptr) {
             ::CloseServiceHandle (hService);
