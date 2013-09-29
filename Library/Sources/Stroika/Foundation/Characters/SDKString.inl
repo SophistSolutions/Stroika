@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Characters_TString_inl_
-#define _Stroika_Foundation_Characters_TString_inl_ 1
+#ifndef _Stroika_Foundation_Characters_SDKString_inl_
+#define _Stroika_Foundation_Characters_SDKString_inl_    1
 
 
 /*
@@ -17,8 +17,6 @@ namespace   Stroika {
         namespace   Characters {
 
 
-
-
             inline  wstring NarrowSDKStringToWide (const string& s)
             {
                 return NarrowStringToWide (s, GetDefaultSDKCodePage ());
@@ -28,8 +26,7 @@ namespace   Stroika {
                 return WideStringToNarrow (ws, GetDefaultSDKCodePage ());
             }
 
-
-            inline  string  TString2NarrowSDK (const TString& s)
+            inline  string  SDKString2NarrowSDK (const SDKString& s)
             {
 #if     qTargetPlatformSDKUseswchar_t
                 return WideStringToNarrowSDKString (s);
@@ -37,7 +34,7 @@ namespace   Stroika {
                 return s;
 #endif
             }
-            inline  TString NarrowSDK2TString (const string& s)
+            inline  SDKString NarrowSDK2SDKString (const string& s)
             {
 #if     qTargetPlatformSDKUseswchar_t
                 return NarrowSDKStringToWide (s);
@@ -46,9 +43,7 @@ namespace   Stroika {
 #endif
             }
 
-
-
-            inline  wstring TString2Wide (const TString& s)
+            inline  wstring SDKString2Wide (const SDKString& s)
             {
 #if     qTargetPlatformSDKUseswchar_t
                 return s;
@@ -56,7 +51,7 @@ namespace   Stroika {
                 return NarrowSDKStringToWide (s);
 #endif
             }
-            inline  TString Wide2TString (const wstring& s)
+            inline  SDKString Wide2SDKString (const wstring& s)
             {
 #if     qTargetPlatformSDKUseswchar_t
                 return s;
@@ -64,16 +59,17 @@ namespace   Stroika {
                 return WideStringToNarrowSDKString (s);
 #endif
             }
-            inline  TString ToTString (const string& s)
+            inline  SDKString ToSDKString (const string& s)
             {
-                return NarrowSDK2TString (s);
+                return NarrowSDK2SDKString (s);
             }
-            inline  TString ToTString (const wstring& s)
+            inline  SDKString ToSDKString (const wstring& s)
             {
-                return Wide2TString (s);
+                return Wide2SDKString (s);
             }
+
+
         }
     }
 }
-
-#endif  /*_Stroika_Foundation_Characters_TString_inl_*/
+#endif  /*_Stroika_Foundation_Characters_SDKString_inl_*/

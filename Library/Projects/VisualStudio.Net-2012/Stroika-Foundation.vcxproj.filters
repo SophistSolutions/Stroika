@@ -600,6 +600,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.cpp">
       <Filter>Sources\DataExchangeFormat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1389,6 +1395,12 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.h">
       <Filter>Sources\DataExchangeFormat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2087,6 +2099,12 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\CheckedConverter.inl">
       <Filter>Sources\DataExchangeFormat</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl">
+      <Filter>Sources\Characters</Filter>
     </None>
   </ItemGroup>
 </Project>

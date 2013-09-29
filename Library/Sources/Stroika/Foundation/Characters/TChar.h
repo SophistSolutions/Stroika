@@ -8,19 +8,14 @@
 
 #include    <cstdlib>
 
-#if     qPlatform_Windows
-#include    <tchar.h>
-#endif
-
-#include    "../Configuration/Common.h"
+#include    "SDKChar.h"
+#include    "SDKString.h"
 
 
 
 /*
-@MODULE:    CodePage
-@DESCRIPTION:
-        <p>This module is designed to provide mappings between wide UNICODE and various other code pages
-    and UNICODE encodings.</p>
+ *  MODULE OBSOLETE - TO BE RETIRED SOON
+ *      -- LGP 2013-09-28
  */
 
 
@@ -30,28 +25,15 @@ namespace   Stroika {
         namespace   Characters {
 
 
-            /*
-            @CONFIGVAR:     qTargetPlatformSDKUseswchar_t
-            @DESCRIPTION:   <p>defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)</p>
-             */
-#if     !defined (qTargetPlatformSDKUseswchar_t)
-#error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
-#endif
+
+            // SOON TO BE OBSOLETE - USE SDKChar
+            //  -- LGP 2013-09-28
+            typedef Characters::SDKChar TChar;
 
 
-#if     qTargetPlatformSDKUseswchar_t
-            typedef wchar_t TChar;
-#else
-            typedef char    TChar;
-#endif
-
-
-            // MACRO to wrap strings to get const TChar*
-#if     qTargetPlatformSDKUseswchar_t
-#define TSTR(x)    _TEXT(x)
-#else
-#define TSTR(x)    x
-#endif
+            // SOON TO BE OBSOLETE - USE SDKChar
+            //  -- LGP 2013-09-28
+#define TSTR(x)    SDKSTR(x)
 
 
         }

@@ -10,56 +10,56 @@
 #include    <string>
 
 #include    "TChar.h"
+#include    "SDKString.h"
 
 
+/*
+ *  MODULE OBSOLETE - TO BE RETIRED SOON
+ *      -- LGP 2013-09-28
+ */
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
 
-            typedef std::basic_string<TChar>    TString;
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            typedef SDKString    TString;
 
 
-            /*
-             * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
-             * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). WideStringToNarrowSDKString will
-             * perform that mapping.
-             */
-            string  WideStringToNarrowSDKString (const wstring& ws);
-
-
-            /*
-             * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
-             * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). NarrowSDKStringToWide will
-             * perform that mapping.
-             */
-            wstring NarrowSDKStringToWide (const string& s);
-
-
-            string  TString2NarrowSDK (const TString& s);
-            TString NarrowSDK2TString (const string& s);
-
-
-            wstring TString2Wide (const TString& s);
-            TString Wide2TString (const wstring& s);
-
-            TString ToTString (const string& s);
-            TString ToTString (const wstring& s);
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  string  TString2NarrowSDK (const TString& s)
+            {
+                return SDKString2NarrowSDK (s);
+            }
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  TString NarrowSDK2TString (const string& s)
+            {
+                return NarrowSDK2SDKString (s);
+            }
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  wstring TString2Wide (const TString& s)
+            {
+                return SDKString2Wide (s);
+            }
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  TString Wide2TString (const wstring& s)
+            {
+                return Wide2SDKString (s);
+            }
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  TString ToTString (const string& s)
+            {
+                return ToSDKString (s);
+            }
+            ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
+            inline  TString ToTString (const wstring& s)
+            {
+                return ToSDKString (s);
+            }
 
 
         }
     }
 }
-
-
-
-
-/*
- ********************************************************************************
- ***************************** Implementation Details ***************************
- ********************************************************************************
- */
-#include    "TString.inl"
-
 #endif  /*_Stroika_Foundation_Characters_TString_h_*/
