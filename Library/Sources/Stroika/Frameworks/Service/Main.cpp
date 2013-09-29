@@ -266,15 +266,15 @@ String      Main::GetServiceStatusMessage () const
             break;
         case    State::eRunning:
             tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "Running" << endl;
-#if     qPlatform_POSIX
-            tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB << GetServicePID () << endl;
-#endif
+            if (GetServiceIntegrationFeatures ().Contains (ServiceIntegrationFeatures::eGetServicePID)) {
+                tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB << GetServicePID () << endl;
+            }
             break;
         case    State::ePaused:
             tmp << kTAB << L"State:  " << kTAB << kTAB << kTAB << kTAB << "PAUSED" << endl;
-#if     qPlatform_POSIX
-            tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB << GetServicePID () << endl;
-#endif
+            if (GetServiceIntegrationFeatures ().Contains (ServiceIntegrationFeatures::eGetServicePID)) {
+                tmp << kTAB << L"PID:    " << kTAB << kTAB << kTAB << kTAB << GetServicePID () << endl;
+            }
             break;
         default:
             AssertNotReached ();
@@ -804,12 +804,13 @@ Set<Main::ServiceIntegrationFeatures>   Main::WindowsService::_GetSupportedFeatu
 Main::State     Main::WindowsService::_GetState () const
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_GetState"));
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SERVICE_QUERY_STATUS);
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup1 ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
-    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SERVICE_QUERY_STATUS);
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
     });
@@ -844,22 +845,24 @@ Main::State     Main::WindowsService::_GetState () const
 void    Main::WindowsService::_Install ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
+#if 0
     if (IsInstalled_ ()) {
         DbgTrace ("short-circuited install because already installed");
         return;
     }
+#endif
 
+    const DWORD   kServiceMgrAccessPrivs   =   SC_MANAGER_CREATE_SERVICE;
     String  cmdLineForRunSvc = L"\"" + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
 
-    TString svcName = GetSvcName_ ();
     SC_HANDLE hService = ::CreateService (
-                             hSCM, svcName.c_str (), svcName.c_str (),
-                             SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
+                             hSCM, GetSvcName_ ().c_str (), GetSvcName_ ().c_str (),
+                             kServiceMgrAccessPrivs, SERVICE_WIN32_OWN_PROCESS,
                              SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
                              cmdLineForRunSvc.AsTString ().c_str (), NULL, NULL, _T("RPCSS\0"), NULL, NULL
                          );
@@ -869,19 +872,21 @@ void    Main::WindowsService::_Install ()
 void    Main::WindowsService::_UnInstall ()
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_UnInstall"));
+#if 0
     if (not IsInstalled_ ()) {
         DbgTrace ("short-circuited uninstall because not installed");
         return;
     }
+#endif
 
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_STOP | DELETE;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
 
-    TString svcName = GetSvcName_ ();
-    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), SERVICE_STOP | DELETE);
+    SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
@@ -915,11 +920,10 @@ void    Main::WindowsService::_RunAsAservice ()
     if (::StartServiceCtrlDispatcher (st) == 0) {
         fServiceStatus_.dwWin32ExitCode = ::GetLastError ();
         if (fServiceStatus_.dwWin32ExitCode ==      ERROR_FAILED_SERVICE_CONTROLLER_CONNECT) {
-            //cerr << "fServiceStatus_.dwWin32ExitCode=" << "ERROR_FAILED_SERVICE_CONTROLLER_CONNECT" << endl;
+            DbgTrace ("fServiceStatus_.dwWin32ExitCode = ERROR_FAILED_SERVICE_CONTROLLER_CONNECT");
         }
-        //cerr << "fServiceStatus_.dwWin32ExitCode=" << fServiceStatus_.dwWin32ExitCode << endl;
+        DbgTrace ("fServiceStatus_.dwWin32ExitCode = %d", fServiceStatus_.dwWin32ExitCode);
     }
-    //cerr << "exint WindowsService::_RunAsAservice" << endl;
 }
 
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
@@ -928,18 +932,19 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_START;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
-    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SC_MANAGER_ALL_ACCESS);
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
     });
 
     DWORD dwNumServiceArgs = 0;
-    LPCTSTR* lpServiceArgVectors = 0;
+    LPCTSTR* lpServiceArgVectors = nullptr;
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::StartService (hService, dwNumServiceArgs, lpServiceArgVectors));
 }
 
@@ -947,14 +952,15 @@ void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Stop"));
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, SC_MANAGER_ALL_ACCESS);
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_STOP;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
 
     TString svcName = GetSvcName_ ();
-    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), SERVICE_STOP | DELETE);
+    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
@@ -978,7 +984,22 @@ void    Main::WindowsService::_ForcedStop (Time::DurationSecondsType timeout)
 
 pid_t   Main::WindowsService::_GetServicePID () const
 {
-    return 0;
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
+    Execution::Finally cleanup1 ([hSCM] () {
+        ::CloseServiceHandle (hSCM);
+    });
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Finally cleanup2 ([hService] () {
+        ::CloseServiceHandle (hService);
+    });
+
+    SERVICE_STATUS_PROCESS  serviceProcess;
+    memset (&serviceProcess, 0, sizeof (serviceProcess));
+    DWORD ignored = 0;
+    Execution::Platform::Windows::ThrowIfFalseGetLastError (::QueryServiceStatusEx (hService, SC_STATUS_PROCESS_INFO, reinterpret_cast<LPBYTE> (&serviceProcess), sizeof (serviceProcess), &ignored));
+    return serviceProcess.dwProcessId;
 }
 
 TString Main::WindowsService::GetSvcName_ () const
@@ -990,16 +1011,19 @@ TString Main::WindowsService::GetSvcName_ () const
 bool    Main::WindowsService::IsInstalled_ () const noexcept
 {
     Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_"));
-    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, READ_CONTROL);
+    const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_CONFIG;
+    SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
-    Execution::Finally cleanup ([hSCM] () {
+    Execution::Finally cleanup1 ([hSCM] () {
         ::CloseServiceHandle (hSCM);
     });
 
-    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), SERVICE_QUERY_CONFIG);
-    if (hService != nullptr) {
-        ::CloseServiceHandle (hService);
-    }
+    SC_HANDLE   hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
+    Execution::Finally cleanup2 ([hService] () {
+        if (hService != nullptr) {
+            ::CloseServiceHandle (hService);
+        }
+    });
     return hService != NULL;
 }
 
@@ -1040,25 +1064,6 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
 
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());   //tmphack - as
     fServiceStatus_.dwWin32ExitCode = 0;
-
-    //    fServiceStatus_.dwWin32ExitCode = ServiceRun_ ();
-
-
-/// THIS BELEOW LOGIC BELONGS IN SERVICEMAIN!!!
-
-    // Run ACTUAL code in separate thread. This must wiat on fStopServiceEvent_, if thread terminates otehrwise, it
-    // must also set fStopServiceEvent_...
-    // then this will bottom out.
-
-    // At START of this code - we do file (PIDFILE) etc create, and after - PIDFILE cleanup
-
-    //  fStopServiceEvent_.Wait ();
-
-    /// DO ABORT ON THREAD HERE...AND WIAT TIL ITS DONE
-
-#if 0
-    ::DeleteFile (GetServerRunningFilePath_ ().c_str ());
-#endif
 
     //Logger::EmitMessage (Logger::eInformation_MT, "Service stopped");
     SetServiceStatus_ (SERVICE_STOPPED);
