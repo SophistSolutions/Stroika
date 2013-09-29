@@ -664,6 +664,13 @@ namespace   Stroika {
                 nonvirtual  SDKString   AsTString () const;
                 nonvirtual  void        AsTString (SDKString* into) const;
 
+
+            public:
+                //tmphack - fix soon
+                nonvirtual  SDKString   AsSDKString () const { return AsTString (); }
+                nonvirtual  void        AsSDKString (SDKString* into) const { AsTString (into); };
+
+
             public:
                 /**
                  */
