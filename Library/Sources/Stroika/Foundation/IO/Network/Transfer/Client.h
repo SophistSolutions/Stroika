@@ -66,6 +66,11 @@ namespace   Stroika {
                     using   Time::DurationSecondsType;
 
 
+#if     !qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+                    const   Mapping<String, String>   kEmptyMapString2MapVal_;
+#endif
+
+
                     struct  Request {
                         Request ();
 
@@ -169,11 +174,19 @@ namespace   Stroika {
 
                         // Simple wrappers, with hardwired methods
                     public:
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                         nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
+#else
+                        nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
+                        nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
+                        nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
+                        nonvirtual  Response    Put (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
+                        nonvirtual  Response    Options (const Mapping<String, String>& extraHeaders = kEmptyMapString2MapVal_);
+#endif
 
                     private:
                         shared_ptr<_IRep>    fRep_;
