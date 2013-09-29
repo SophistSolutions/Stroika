@@ -645,6 +645,10 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
 
 void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
 {
+    if (_IsServiceActuallyRunning ()) {
+        Execution::DoThrow (StringException (L"Service Already Running"));
+    }
+
     // VERY WEAK IMPL
     auto appRep = fAppRep_;
     fRunThread_ = Execution::Thread ([appRep] () {
@@ -653,17 +657,14 @@ void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
     fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;
+    Execution::Finally cleanup ([] () {
+        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
+    });
     {
         ofstream    out (_GetPIDFileName ().AsSDKString ().c_str ());
         out << getpid () << endl;
     }
-    try {
-        fRunThread_.WaitForDone ();
-        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
-    }
-    catch (...) {
-        ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
-    }
+    fRunThread_.WaitForDone ();
 }
 
 void    Main::BasicUNIXServiceImpl::_RunDirectly ()
