@@ -67,7 +67,7 @@ DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPat
 }
 
 #if     !qPlatform_Windows
-DLLHandle   DLLLoader::LoadDLL (const TChar* dllName, int flags)
+DLLHandle   DLLLoader::LoadDLL (const SDKChar* dllName, int flags)
 {
 #if qTargetPlatformSDKUseswchar_t
     DLLHandle module = dlopen (Characters::WideStringToUTF8 (dllName).c_str (), flags);

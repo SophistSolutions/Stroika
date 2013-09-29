@@ -93,11 +93,11 @@ using   Execution::Logger;
 
 #if     qRegisterFatalErrorHandlers
 namespace   {
-    void    _FatalErorrHandler_ (const Characters::TChar* msg)
+    void    _FatalErorrHandler_ (const Characters::SDKChar* msg)
     {
-        DbgTrace (TSTR ("Fatal Error %s encountered"), msg);
+        DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
 #if     qUseLogger
-        Logger::Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::TString2NarrowSDK (msg).c_str ());
+        Logger::Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::SDKString2NarrowSDK (msg).c_str ());
 #endif
         _exit (1);
     }

@@ -6,11 +6,18 @@
 
 #include    "../StroikaPreComp.h"
 
+
+
+#define qUSE_BACKWARD_COMPAT_TSTRING_CODE   1
+
+
+
+#if     qUSE_BACKWARD_COMPAT_TSTRING_CODE
 #include    <cstdlib>
 
 #include    "SDKChar.h"
 #include    "SDKString.h"
-
+#endif
 
 
 /*
@@ -25,7 +32,6 @@ namespace   Stroika {
         namespace   Characters {
 
 
-#define qUSE_BACKWARD_COMPAT_TSTRING_CODE   1
 
 
 #if     qUSE_BACKWARD_COMPAT_TSTRING_CODE

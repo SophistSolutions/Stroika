@@ -34,14 +34,14 @@ public:
     CompilerApp ():
         fInputFile (),
         fOutputFile (),
-        fFormGeneratorName (TSTR ("Form_Generator")) {
+        fFormGeneratorName (SDKSTR ("Form_Generator")) {
     }
 
     ~CompilerApp () {
     }
 
 public:
-    nonvirtual  void    Run (int argc, const TChar* argv[]) {
+    nonvirtual  void    Run (int argc, const SDKChar* argv[]) {
         if (ParseArgs_ (argc, argv)) {
             fstream in;
             in.open (fInputFile.c_str (), ios_base::in);
@@ -68,15 +68,15 @@ private:
     }
 
 private:
-    nonvirtual  bool    ParseArgs_ (int argc, const TChar* argv[]) {
+    nonvirtual  bool    ParseArgs_ (int argc, const SDKChar* argv[]) {
         int fileCount   =   0;
         bool    gettingName = false;
         for (int i = 1; i < argc; ++i) {
-            const TChar*    argi    =   argv[i];
+            const SDKChar*    argi    =   argv[i];
             if (argi != NULL) {
                 if (argi[0] == '-' or argi[0] == '/') {
                     size_t  optCharIdx  =   1;
-                    TChar   optChar     =   argi[optCharIdx];
+                    SDKChar   optChar     =   argi[optCharIdx];
                     if (optChar == '-' and argi[0] == '-') {
                         optCharIdx++;
                         optChar = argi[optCharIdx];
@@ -133,8 +133,8 @@ private:
     nonvirtual  void    ProcessFile_ (istream& in, ostream& out) {
         wstring orig    =   Streams::iostream::ReadTextStream (in);
 
-        out << "/*Auto-Generated C++ file from the Source HTML file '" << TString2NarrowSDK (fInputFile) << "'*/" << endl;
-        out << "void	" << TString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
+        out << "/*Auto-Generated C++ file from the Source HTML file '" << SDKString2NarrowSDK (fInputFile) << "'*/" << endl;
+        out << "void	" << SDKString2NarrowSDK (fFormGeneratorName) << " ()" << endl;
         out << "{" << endl;
         {
             bool    inCode  =   false;
@@ -269,9 +269,9 @@ private:
         return end;
     }
 private:
-    TString     fInputFile;
-    TString     fOutputFile;
-    TString     fFormGeneratorName;
+    SDKString     fInputFile;
+    SDKString     fOutputFile;
+    SDKString     fFormGeneratorName;
 };
 
 
