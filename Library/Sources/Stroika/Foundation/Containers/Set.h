@@ -151,7 +151,7 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll ();
 
             public:
-                /*
+                /**
                  *  Two Sets are considered equal if they contain the same elements (by comparing them with operator==).
                  *
                  *  Equals is commutative().
