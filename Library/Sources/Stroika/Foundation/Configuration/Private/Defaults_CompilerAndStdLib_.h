@@ -339,8 +339,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
 #if     defined (__clang__)
-#define
-((__clang_major__ > 3) || ((__clang_major__ == 3)&&  (__clang_minor__ >= 3)))
+#define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
 #else
 #define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors        1
 #endif
