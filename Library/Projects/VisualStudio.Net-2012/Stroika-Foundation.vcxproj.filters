@@ -1448,9 +1448,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
-      <Filter>Sources\Characters</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
       <Filter>Sources\Memory\Platform\Windows</Filter>
     </None>

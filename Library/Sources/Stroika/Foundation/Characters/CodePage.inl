@@ -10,8 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    <cstring>
 #include    <algorithm>
+#include    <cstring>
 #include    "../Debug/Assertions.h"
 
 #if     qPlatform_Windows
@@ -24,6 +24,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
 
+
+            /*
+             ********************************************************************************
+             ****************************** GetDefaultSDKCodePage ***************************
+             ********************************************************************************
+             */
             inline  CodePage    GetDefaultSDKCodePage ()
             {
 #if     qPlatform_Windows
@@ -42,9 +48,11 @@ namespace   Stroika {
             }
 
 
-
-
-            //  class   UTF8Converter
+            /*
+             ********************************************************************************
+             *********************************** UTF8Converter ******************************
+             ********************************************************************************
+             */
             inline  size_t  UTF8Converter::MapToUNICODE_QuickComputeOutBufSize (const char* /*inMBChars*/, size_t inMBCharCnt) const
             {
                 return inMBCharCnt;
@@ -76,9 +84,11 @@ namespace   Stroika {
 
 
 
-
-
-            //  class   CodePageConverter
+            /*
+             ********************************************************************************
+             ******************************* CodePageConverter ******************************
+             ********************************************************************************
+             */
             inline  CodePageConverter::CodePageConverter (CodePage codePage)
                 : fHandleBOM (false)
                 , fCodePage (codePage)
@@ -128,9 +138,11 @@ namespace   Stroika {
 
 
 
-
-
-            //  class   CodePageConverter::CodePageNotSupportedException
+            /*
+             ********************************************************************************
+             ************ CodePageConverter::CodePageNotSupportedException ******************
+             ********************************************************************************
+             */
             inline  CodePageConverter::CodePageNotSupportedException::CodePageNotSupportedException (CodePage codePage):
                 fCodePage (codePage)
             {
@@ -138,7 +150,12 @@ namespace   Stroika {
 
 
 
-            //  class   CodePagesInstalled
+
+            /*
+             ********************************************************************************
+             ****************************** CodePagesInstalled ******************************
+             ********************************************************************************
+             */
             inline  vector<CodePage>    CodePagesInstalled::GetAll ()
             {
                 return fCodePages_;
