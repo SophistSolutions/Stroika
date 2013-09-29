@@ -266,10 +266,29 @@ namespace   Stroika {
                  *  RunAsService () will not return until the service has terminated. It runs the service 'MainLoop'.
                  *  When that happens, the calling application should exit.
                  *
-                 *  This should NOT be called directly - except when command line arguments say "RunAsService".
-                 *  .... TO BE CLARIFIED .. RETHOUGHT>...
+                 *  This should NOT be called directly - except when command line arguments say "Run-As-Service".
+                 *
+                 *  This function / operation WILL FAIL if the service is already running (so this automatically implements
+                 *  protection against running multiple instances of the same service - singleton pattern.
+                 *
+                 *  @see RunDirectly
                  */
                 nonvirtual  void            RunAsService ();
+
+            public:
+                /**
+                 *  RunDirectly () is mostly a debug-handy/debug-friendly variant of RunAsService().
+                 *
+                 *  RunDirectly () will not return until the program has terminated. It runs the service 'MainLoop'.
+                 *  When that happens, the calling application should exit.
+                 *
+                 *  When using RunDirectly - other operations like 'status' and 'kill' etc - will NOT function.
+                 *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
+                 *  so that can be debugged, but possibly also for testing or other purposes).
+                 *
+                 *  @see RunAsService
+                 */
+                nonvirtual  void            RunDirectly ();
 
             public:
                 /**
@@ -362,6 +381,18 @@ namespace   Stroika {
                  */
                 static  const   wchar_t kRunAsService[];
 
+                /**
+                 *  kRunDirectly is mostly a debug-handy/debug-friendly variant of RunAsService().
+                 *
+                 *  kRunDirectly will not return until the program has terminated. It runs the service 'MainLoop'.
+                 *  When that happens, the calling application should exit.
+                 *
+                 *  When using kRunDirectly - other operations like 'status' and 'kill' etc - will NOT function.
+                 *  This bypasses the backend service mechanism - and just runs the applicaiton-specific code (typically
+                 *  so that can be debugged, but possibly also for testing or other purposes).
+                 */
+                static  const   wchar_t kRunDirectly[];
+
                 /*
                  *  The kStart command tells the service to start running. It returns an error
                  *  if the service is already started.
@@ -402,6 +433,7 @@ namespace   Stroika {
                     eInstall,
                     eUnInstall,
                     eRunServiceMain,
+                    eRunDirectly,
                     eStart,
                     eStop,
                     eForcedStop,
@@ -558,6 +590,11 @@ namespace   Stroika {
             protected:
                 /**
                  */
+                virtual void    _RunDirectly ()     =   0;
+
+            protected:
+                /**
+                 */
                 virtual     void    _Start (Time::DurationSecondsType timeout)  =   0;
 
             protected:
@@ -594,6 +631,7 @@ namespace   Stroika {
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsAservice () override;
+                virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -617,6 +655,7 @@ namespace   Stroika {
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsAservice () override;
+                virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -640,6 +679,7 @@ namespace   Stroika {
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsAservice () override;
+                virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -664,6 +704,7 @@ namespace   Stroika {
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsAservice () override;
+                virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
@@ -743,6 +784,7 @@ namespace   Stroika {
                 virtual void                                        _Install () override;
                 virtual void                                        _UnInstall () override;
                 virtual void                                        _RunAsAservice () override;
+                virtual void                                        _RunDirectly () override;
                 virtual void                                        _Start (Time::DurationSecondsType timeout) override;
                 virtual void                                        _Stop (Time::DurationSecondsType timeout) override;
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;

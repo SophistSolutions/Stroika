@@ -82,6 +82,7 @@ Main::CommandArgs::CommandArgs (const Sequence<String>& args)
             pair<String, MajorOperation> (Main::CommandNames::kInstall, MajorOperation::eInstall),
             pair<String, MajorOperation> (Main::CommandNames::kUnInstall, MajorOperation::eUnInstall),
             pair<String, MajorOperation> (Main::CommandNames::kRunAsService, MajorOperation::eRunServiceMain),
+            pair<String, MajorOperation> (Main::CommandNames::kRunDirectly, MajorOperation::eRunDirectly),
             pair<String, MajorOperation> (Main::CommandNames::kStart, MajorOperation::eStart),
             pair<String, MajorOperation> (Main::CommandNames::kStop, MajorOperation::eStop),
             pair<String, MajorOperation> (Main::CommandNames::kForcedStop, MajorOperation::eForcedStop),
@@ -143,6 +144,10 @@ bool    Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s
     return _GetAttachedAppRep ()->HandleCommandLineArgument (s);
 }
 
+void    Main::IServiceIntegrationRep::_RunDirectly ()
+{
+}
+
 
 
 /*
@@ -153,6 +158,7 @@ bool    Main::IServiceIntegrationRep::HandleCommandLineArgument (const String& s
 const   wchar_t Service::Main::CommandNames::kInstall[]             =   L"Install";
 const   wchar_t Service::Main::CommandNames::kUnInstall[]           =   L"UnInstall";
 const   wchar_t Service::Main::CommandNames::kRunAsService[]        =   L"Run-As-Service";
+const   wchar_t Service::Main::CommandNames::kRunDirectly[]         =   L"Run-Directly";
 const   wchar_t Service::Main::CommandNames::kStart[]               =   L"Start";
 const   wchar_t Service::Main::CommandNames::kStop[]                =   L"Stop";
 const   wchar_t Service::Main::CommandNames::kForcedStop[]          =   L"ForcedStop";
@@ -211,6 +217,10 @@ void    Main::Run (const CommandArgs& args)
             break;
         case CommandArgs::MajorOperation::eRunServiceMain: {
                 RunAsService ();
+            }
+            break;
+        case CommandArgs::MajorOperation::eRunDirectly: {
+                RunDirectly ();
             }
             break;
         case CommandArgs::MajorOperation::eStart: {
@@ -287,6 +297,12 @@ void    Main::RunAsService ()
 {
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     GetServiceRep_ ()._RunAsAservice ();
+}
+
+void    Main::RunDirectly ()
+{
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
+    GetServiceRep_ ()._RunDirectly ();
 }
 
 void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSecondsType unforcedStopTimeout)
@@ -415,6 +431,19 @@ void    Main::LoggerServiceWrapper::_RunAsAservice ()
     Logger::Log (Logger::Priority::eInfo, L"Service Stopped Normally");
 }
 
+void    Main::LoggerServiceWrapper::_RunDirectly ()
+{
+    Logger::Log (Logger::Priority::eInfo, L"Service Starting in Run-Direct (non service) mode.");
+    try {
+        fDelegateTo_->_RunDirectly ();
+    }
+    catch (...) {
+        Logger::Log (Logger::Priority::eCriticalError, L"Exception running service directly - aborting...");
+        Execution::DoReThrow ();
+    }
+    Logger::Log (Logger::Priority::eInfo, L"Service Stopped Normally");
+}
+
 void  Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
 {
     fDelegateTo_->_Start (timeout);
@@ -501,6 +530,17 @@ void        Main::RunTilIdleService::_RunAsAservice ()
     fRunThread_.Start ();
     float timeTilIdleHack = 3.0;
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone (timeTilIdleHack));   //tmphack - as
+}
+
+void    Main::RunTilIdleService::_RunDirectly ()
+{
+    auto appRep = fAppRep_;
+    fRunThread_ = Execution::Thread ([appRep] () {
+        appRep->MainLoop ([] () {});
+    });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
+    fRunThread_.Start ();
+    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
 void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
@@ -624,6 +664,17 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
     catch (...) {
         ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     }
+}
+
+void    Main::BasicUNIXServiceImpl::_RunDirectly ()
+{
+    auto appRep = fAppRep_;
+    fRunThread_ = Execution::Thread ([appRep] () {
+        appRep->MainLoop ([] () {});
+    });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
+    fRunThread_.Start ();
+    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
@@ -918,6 +969,17 @@ void    Main::WindowsService::_RunAsAservice ()
         }
         DbgTrace ("fServiceStatus_.dwWin32ExitCode = %d", fServiceStatus_.dwWin32ExitCode);
     }
+}
+
+void    Main::WindowsService::_RunDirectly ()
+{
+    auto appRep = fAppRep_;
+    fRunThread_ = Execution::Thread ([appRep] () {
+        appRep->MainLoop ([] () {});
+    });
+    fRunThread_.SetThreadName (L"Service 'Run' thread");
+    fRunThread_.Start ();
+    IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());
 }
 
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
