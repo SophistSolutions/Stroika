@@ -15,10 +15,10 @@
 
 
 /**
- *  Each platform SDK has its own policy for representing characters. Some use narrow characters, and a predefined code page,
- *  and others use wide-characters (unicode).
+ *  Each platform SDK has its own policy for representing characters. Some use narrow characters (char),
+ *  and a predefined code page (often configured via locale), and others use wide-characters (wchar_t unicode).
  *
- *  SDKChar is the underlying represenation of the SDK's characters.
+ *  SDKChar is the underlying represenation of the SDK's characters - whether it be narrow or wide.
  */
 
 
@@ -29,14 +29,18 @@ namespace   Stroika {
 
 
             /**
-            @CONFIGVAR:     qTargetPlatformSDKUseswchar_t
-            @DESCRIPTION:   <p>defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)</p>
+             *  qTargetPlatformSDKUseswchar_t
+             *
+             *  Defines if we use wchar_t or char for most platform interfaces (mostly applicable/useful for windows)
              */
 #if     !defined (qTargetPlatformSDKUseswchar_t)
 #error "qTargetPlatformSDKUseswchar_t should normally be defined indirectly by StroikaConfig.h"
 #endif
 
 
+            /**
+             *  SDKChar is the kind of character passed to most/default platform SDK APIs.
+             */
 #if     qTargetPlatformSDKUseswchar_t
             typedef wchar_t SDKChar;
 #else

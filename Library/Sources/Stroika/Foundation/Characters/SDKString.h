@@ -24,6 +24,9 @@ namespace   Stroika {
 
 
             /**
+             *  This is the kind of String passedt to most platform APIs.
+             *
+             *  @see SDKChar
              */
             typedef basic_string<SDKChar>   SDKString;
 
@@ -37,7 +40,7 @@ namespace   Stroika {
 #define SDKSTR(x)    x
 #endif
 
-            /*
+            /**
              * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). WideStringToNarrowSDKString will
              * perform that mapping.
@@ -45,7 +48,7 @@ namespace   Stroika {
             string  WideStringToNarrowSDKString (const wstring& ws);
 
 
-            /*
+            /**
              * Even when the platform sdk uses wide strings (but more especailly when it does not) it will typically have
              * a prefered code-page for mapping narrow characters to/from wide ones (part of locale?). NarrowSDKStringToWide will
              * perform that mapping.
