@@ -18,7 +18,7 @@
 
 #include    "RegularExpression.h"
 #include    "Concrete/String_BufferedArray.h"
-#include    "TString.h"
+#include    "SDKString.h"
 
 #include    "String.h"
 

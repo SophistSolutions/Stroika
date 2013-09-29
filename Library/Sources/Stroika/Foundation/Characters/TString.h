@@ -7,11 +7,11 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <string>
-
 #include    "TChar.h"
+#if     qUSE_BACKWARD_COMPAT_TSTRING_CODE
+#include    <string>
 #include    "SDKString.h"
-
+#endif
 
 /*
  *  MODULE OBSOLETE - TO BE RETIRED SOON

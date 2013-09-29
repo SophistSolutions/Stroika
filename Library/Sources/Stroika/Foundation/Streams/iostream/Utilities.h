@@ -8,7 +8,7 @@
 
 #include    <iostream>
 
-#include    "../../Characters/TString.h"
+#include    "../../Characters/SDKString.h"
 
 
 

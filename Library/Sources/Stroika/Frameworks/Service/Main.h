@@ -748,14 +748,14 @@ namespace   Stroika {
                 virtual void                                        _ForcedStop (Time::DurationSecondsType timeout) override;
                 virtual pid_t                                       _GetServicePID () const override;
             private:
-                nonvirtual  Characters::TString GetSvcName_ () const;
-                nonvirtual  bool                IsInstalled_ () const noexcept;
-                nonvirtual  void                SetServiceStatus_ (DWORD dwState) noexcept;
-                nonvirtual  void                ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-                static      void    WINAPI      StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
-                nonvirtual  void                Handler_ (DWORD dwOpcode) noexcept;
-                static void WINAPI              StaticHandler_ (DWORD dwOpcode) noexcept;
-                nonvirtual  void                OnStopRequest_ () noexcept;
+                nonvirtual  Characters::SDKString   GetSvcName_ () const;
+                nonvirtual  bool                    IsInstalled_ () const noexcept;
+                nonvirtual  void                    SetServiceStatus_ (DWORD dwState) noexcept;
+                nonvirtual  void                    ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+                static      void    WINAPI          StaticServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept;
+                nonvirtual  void                    Handler_ (DWORD dwOpcode) noexcept;
+                static void WINAPI                  StaticHandler_ (DWORD dwOpcode) noexcept;
+                nonvirtual  void                    OnStopRequest_ () noexcept;
             private:
                 static  WindowsService*     s_SvcRunningTHIS_;
                 Execution::Thread           fRunThread_;

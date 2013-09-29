@@ -41,7 +41,7 @@ namespace   Stroika {
             }
 
 #if     !qDefaultTracingOn
-            inline  TraceContextBumper::TraceContextBumper (const TChar* contextName)
+            inline  TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
             {
             }
             inline  TraceContextBumper::~TraceContextBumper ()

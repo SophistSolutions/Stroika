@@ -10,7 +10,7 @@
 #include    <mutex>
 
 #include    "../Configuration/Common.h"
-#include    "../Characters/TChar.h"
+#include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
 #include    "../Time/Realtime.h"
 

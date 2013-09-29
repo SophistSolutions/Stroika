@@ -7,7 +7,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../../Characters/TChar.h"
+#include    "../../Characters/SDKChar.h"
 #include    "../../Configuration/Common.h"
 #include    "../../Debug/Trace.h"
 

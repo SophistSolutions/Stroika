@@ -10,7 +10,7 @@
 
 #include    "../Execution/ModuleInit.h"
 #include    "../Memory/SharedByValue.h"
-#include    "TString.h"
+#include    "SDKString.h"
 
 #include    "Character.h"
 

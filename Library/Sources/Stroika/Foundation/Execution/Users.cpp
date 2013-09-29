@@ -7,7 +7,7 @@
 #include    <Windows.h>
 #endif
 
-#include    "../Characters/TChar.h"
+#include    "../Characters/SDKChar.h"
 #if     qPlatform_Windows
 #include    "../Execution/Platform/Windows/Exception.h"
 #endif

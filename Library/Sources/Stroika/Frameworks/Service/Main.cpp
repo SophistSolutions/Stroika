@@ -19,7 +19,7 @@
 #endif
 
 #include    "../../Foundation/Characters/Format.h"
-#include    "../../Foundation/Characters/TString.h"
+#include    "../../Foundation/Characters/SDKString.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Debug/Trace.h"
@@ -46,7 +46,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Frameworks;
 using   namespace   Stroika::Frameworks::Service;
 
-using   Characters::TString;
+using   Characters::SDKString;
 using   Execution::Logger;
 
 
@@ -255,7 +255,7 @@ void    Main::Run (const CommandArgs& args)
 
 String      Main::GetServiceStatusMessage () const
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::GetServiceStatusMessage"));
     const   wchar_t kTAB[]  =   L"    ";    // use spaces instead of tab so formatting independent of tabstop settings
     ServiceDescription  svd =   GetServiceDescription ();
     wstringstream   tmp;
@@ -285,7 +285,7 @@ String      Main::GetServiceStatusMessage () const
 
 void    Main::RunAsService ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
     GetServiceRep_ ()._RunAsAservice ();
 }
 
@@ -296,7 +296,7 @@ void   Main::ForcedRestart (Time::DurationSecondsType timeout, Time::DurationSec
 
 void    Main::ReReadConfiguration ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::ReReadConfiguration"));
 #if qPlatform_Windows
     AssertNotImplemented ();
 #elif   qPlatform_POSIX
@@ -325,7 +325,7 @@ Main::ServiceDescription    Main::GetServiceDescription () const
 
 void    Main::Restart (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Restart"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Restart"));
     DbgTrace ("(timeout = %f)", timeout);
 
     /////// WRONG HANDLING OF TIMEOUT
@@ -517,14 +517,14 @@ void  Main::RunTilIdleService::_Start (Time::DurationSecondsType timeout)
 void            Main::RunTilIdleService::_Stop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
 void            Main::RunTilIdleService::_ForcedStop (Time::DurationSecondsType timeout)
 {
     // VERY WEAK TO WRONG IMPL
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunTilIdleService::_Stop"));
     fRunThread_.AbortAndWaitForDone (timeout);
 }
 
@@ -628,7 +628,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
 
 void    Main::BasicUNIXServiceImpl::_Start (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::Start"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
     Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
@@ -675,7 +675,7 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
 
 void    Main::BasicUNIXServiceImpl::_ForcedStop (Time::DurationSecondsType timeout)
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::_ForcedStop"));
     // Send signal to server to stop
     Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGKILL));
     // REALY should WAIT for server to stop and only do this it fails -
@@ -706,7 +706,7 @@ String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
 
 bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::_IsServiceFailed"));
     pid_t   servicePID  =   _GetServicePID ();
     if (servicePID > 0) {
         return not _IsServiceActuallyRunning ();
@@ -716,7 +716,7 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceFailed ()
 
 void    Main::BasicUNIXServiceImpl::_CleanupDeadService ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::_CleanupDeadService"));
     // REALY should WAIT for server to stop and only do this it fails -
     unlink (_GetPIDFileName ().AsTString ().c_str ());
 }
@@ -736,7 +736,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
     // @todo        TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
     //
 
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::BasicUNIXServiceImpl::SignalHandler_"));
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
@@ -803,7 +803,7 @@ Set<Main::ServiceIntegrationFeatures>   Main::WindowsService::_GetSupportedFeatu
 
 Main::State     Main::WindowsService::_GetState () const
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_GetState"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_GetState"));
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_STATUS;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
@@ -845,7 +845,7 @@ Main::State     Main::WindowsService::_GetState () const
 
 void    Main::WindowsService::_Install ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
 #if 0
     if (IsInstalled_ ()) {
         DbgTrace ("short-circuited install because already installed");
@@ -872,7 +872,7 @@ void    Main::WindowsService::_Install ()
 
 void    Main::WindowsService::_UnInstall ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_UnInstall"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_UnInstall"));
 #if 0
     if (not IsInstalled_ ()) {
         DbgTrace ("short-circuited uninstall because not installed");
@@ -908,12 +908,12 @@ void    Main::WindowsService::_UnInstall ()
 
 void    Main::WindowsService::_RunAsAservice ()
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAservice"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAservice"));
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 
     // MSFT docs unclear on lifetime requirements on these args but for now assume data copied...
-    TString svcName =   GetSvcName_ ();
+    SDKString svcName =   GetSvcName_ ();
     SERVICE_TABLE_ENTRY st[] = {
         { const_cast<TCHAR*> (svcName.c_str ()), StaticServiceMain_ },
         { nullptr, nullptr }
@@ -930,7 +930,7 @@ void    Main::WindowsService::_RunAsAservice ()
 void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::Start"));
     DbgTrace ("(timeout = %f)", timeout);
 
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_START;
@@ -953,7 +953,7 @@ void    Main::WindowsService::_Start (Time::DurationSecondsType timeout)
 void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
 {
     // @todo - timeout not supported
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Stop"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Stop"));
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_STOP;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
@@ -961,8 +961,7 @@ void    Main::WindowsService::_Stop (Time::DurationSecondsType timeout)
         ::CloseServiceHandle (hSCM);
     });
 
-    TString svcName = GetSvcName_ ();
-    SC_HANDLE hService = ::OpenService (hSCM, svcName.c_str (), kServiceMgrAccessPrivs);
+    SC_HANDLE hService = ::OpenService (hSCM, GetSvcName_ ().c_str (), kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hService != NULL);
     Execution::Finally cleanup2 ([hService] () {
         ::CloseServiceHandle (hService);
@@ -1005,7 +1004,7 @@ pid_t   Main::WindowsService::_GetServicePID () const
     return serviceProcess.dwProcessId;
 }
 
-TString Main::WindowsService::GetSvcName_ () const
+SDKString Main::WindowsService::GetSvcName_ () const
 {
     RequireNotNull (fAppRep_);  // must attach first
     return fAppRep_->GetServiceDescription ().fRegistrationName.AsTString ();
@@ -1013,7 +1012,7 @@ TString Main::WindowsService::GetSvcName_ () const
 
 bool    Main::WindowsService::IsInstalled_ () const noexcept
 {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::IsInstalled_"));
     const DWORD   kServiceMgrAccessPrivs   =   SERVICE_QUERY_CONFIG;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
@@ -1039,7 +1038,7 @@ void    Main::WindowsService::SetServiceStatus_ (DWORD dwState) noexcept {
 }
 
 void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noexcept {
-    Debug::TraceContextBumper traceCtx (TSTR ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::ServiceMain_"));
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
     // do file create stuff here

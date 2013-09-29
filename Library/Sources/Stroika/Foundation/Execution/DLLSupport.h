@@ -12,7 +12,7 @@
 #include    <dlfcn.h>
 #endif
 
-#include    "../Characters/TString.h"
+#include    "../Characters/SDKString.h"
 #include    "../Execution/StringException.h"
 
 

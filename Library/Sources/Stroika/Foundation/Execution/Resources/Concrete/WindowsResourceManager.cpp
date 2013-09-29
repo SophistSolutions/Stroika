@@ -3,7 +3,7 @@
  */
 #include    "../../../StroikaPreComp.h"
 
-#include    "../../../Characters/TString.h"
+#include    "../../../Characters/SDKString.h"
 #include    "../../../Configuration/Common.h"
 
 #include    "../ResourceNotFoundException.h"

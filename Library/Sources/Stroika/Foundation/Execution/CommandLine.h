@@ -7,7 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
-#include    "../Characters/TChar.h"
+#include    "../Characters/SDKChar.h"
 #include    "../Characters/String.h"
 #include    "../Containers/Sequence.h"
 #include    "../Execution/StringException.h"
