@@ -259,7 +259,7 @@ string  Linguistics::UnCapitalizeFirstWord (const string& s)
  */
 bool    Linguistics::IsAllCaps (const string& s)
 {
-#if qCompilerAndStdLib_Supports_toupper_tolower_overload
+#if     qCompilerAndStdLib_Supports_toupper_tolower_overload
     return not s.empty () and s == toupper (s);
 #else
     return not s.empty () and s == Characters::toupper (s);
@@ -268,7 +268,7 @@ bool    Linguistics::IsAllCaps (const string& s)
 
 bool    Linguistics::IsAllCaps (const wstring& s)
 {
-#if qCompilerAndStdLib_Supports_toupper_tolower_overload
+#if     qCompilerAndStdLib_Supports_toupper_tolower_overload
     return not s.empty () and s == toupper (s);
 #else
     return not s.empty () and s == Characters::toupper (s);
