@@ -677,8 +677,8 @@ namespace   Stroika {
             public:
                 // tmphack - LOSE SOON - LGP 2013-09-29
                 // qUSE_BACKWARD_COMPAT_TSTRING_CODE
-                nonvirtual  SDKString   AsTString () const                  { return AsTString (); }
-                nonvirtual  void        AsTString (SDKString* into) const   { AsTString (into); };
+                nonvirtual  SDKString   AsTString () const                  { return AsSDKString (); }
+                nonvirtual  void        AsTString (SDKString* into) const   { AsSDKString (into); };
 
 
             public:
