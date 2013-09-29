@@ -97,7 +97,7 @@ namespace   {
     {
         DbgTrace (TSTR ("Fatal Error %s encountered"), msg);
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::TString2NarrowSDK (msg).c_str ());
+        Logger::Log (Logger::Priority::eCriticalError, L"Fatal Error: %s; Aborting...", Characters::TString2NarrowSDK (msg).c_str ());
 #endif
         _exit (1);
     }
@@ -125,7 +125,7 @@ namespace {
                  */
                 fSomeOtherTaskDoingRealWork.AbortAndWaitForDone ();
 #if     qUseLogger
-                Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is shut down");
+                Logger::Log (Logger::Priority::eInfo, L"User-service code is shut down");
 #endif
             });
 
@@ -141,7 +141,7 @@ namespace {
             startedCB ();       // Notify service control mgr that the service has started
 
 #if     qUseLogger
-            Logger::Get ().Log (Logger::Priority::eInfo, L"User-service code is started");
+            Logger::Log (Logger::Priority::eInfo, L"User-service code is started");
 #endif
             if (false) {
                 Execution::Event forever;
@@ -277,21 +277,21 @@ int main (int argc, const char* argv[])
     }
     catch (const std::exception& e) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
+        Logger::Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
 #endif
         cerr << "FAILED: '" << e.what () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
+        Logger::Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
 #endif
         cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
 #if     qUseLogger
-        Logger::Get ().Log (Logger::Priority::eError, L"Unknown Exception...");
+        Logger::Log (Logger::Priority::eError, L"Unknown Exception...");
 #endif
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;

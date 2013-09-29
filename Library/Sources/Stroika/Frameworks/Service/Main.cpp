@@ -378,41 +378,41 @@ Main::State     Main::LoggerServiceWrapper::_GetState () const
 
 void    Main::LoggerServiceWrapper::_Install ()
 {
-    Logger::Get ().Log (Logger::Priority::eInfo, L"Installing Service...");
+    Logger::Log (Logger::Priority::eInfo, L"Installing Service...");
     try {
         fDelegateTo_->_Install ();
     }
     catch (...) {
         // @todo - capture useful message
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to install - aborting...");
+        Logger::Log (Logger::Priority::eCriticalError, L"Failed to install - aborting...");
         Execution::DoReThrow ();
     }
 }
 
 void    Main::LoggerServiceWrapper::_UnInstall ()
 {
-    Logger::Get ().Log (Logger::Priority::eInfo, L"UnInstalling Service...");
+    Logger::Log (Logger::Priority::eInfo, L"UnInstalling Service...");
     try {
         fDelegateTo_->_UnInstall ();
     }
     catch (...) {
         // @todo - capture useful message
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Failed to uninstall - aborting...");
+        Logger::Log (Logger::Priority::eCriticalError, L"Failed to uninstall - aborting...");
         Execution::DoReThrow ();
     }
 }
 
 void    Main::LoggerServiceWrapper::_RunAsAservice ()
 {
-    Logger::Get ().Log (Logger::Priority::eInfo, L"Service Starting");
+    Logger::Log (Logger::Priority::eInfo, L"Service Starting");
     try {
         fDelegateTo_->_RunAsAservice ();
     }
     catch (...) {
-        Logger::Get ().Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
+        Logger::Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
         Execution::DoReThrow ();
     }
-    Logger::Get ().Log (Logger::Priority::eInfo, L"Service Stopped Normally");
+    Logger::Log (Logger::Priority::eInfo, L"Service Stopped Normally");
 }
 
 void  Main::LoggerServiceWrapper::_Start (Time::DurationSecondsType timeout)
@@ -1015,7 +1015,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     ///@TODO - FIXUP EXCEPTION HANLDING HERE!!!
 
     // do file create stuff here
-    //Logger::Get ().Log (Logger::Priority::eInfo, L"entering ServiceMain_");
+    //Logger::Log (Logger::Priority::eInfo, L"entering ServiceMain_");
 
     // Register the control request handler
     fServiceStatus_.dwCurrentState = SERVICE_START_PENDING;
@@ -1035,7 +1035,7 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
-    //Logger::Get ().Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
+    //Logger::Log (Logger::Priority::eInfo, L"in ServiceMain_ about to set SERVICE_RUNNING");
     SetServiceStatus_ (SERVICE_RUNNING);
 
     IgnoreExceptionsExceptThreadAbortForCall (fRunThread_.WaitForDone ());   //tmphack - as
