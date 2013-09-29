@@ -32,7 +32,7 @@ namespace   Stroika {
 
 
             /**
-             *  MACRO to wrap strings to get const TChar*
+             *  MACRO to wrap strings to get const SDKChar*
              */
 #if     qTargetPlatformSDKUseswchar_t
 #define SDKSTR(x)    L ## x

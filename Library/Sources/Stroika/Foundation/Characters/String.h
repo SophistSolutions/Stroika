@@ -259,7 +259,7 @@ namespace   Stroika {
              *
              *  The Stroika String class is conceptually a sequence of (UNICODE) Characters, and so there is
              *  no obvious way to map the Stroika String to a std::string. However, if you specify a codepage
-             *  for conversion, or are converting to/from TString/TChar, there is builtin support for that.
+             *  for conversion, or are converting to/from SDKString/SDKChar, there is builtin support for that.
              *
              *
              *  EOS Handling:
@@ -322,15 +322,16 @@ namespace   Stroika {
                  *  See @SDKChar
                  *  See @SDKString
                  */
-                static  String  FromTString (const SDKChar* from);
-                static  String  FromTString (const SDKChar* from, const SDKChar* to);
-                static  String  FromTString (const SDKString& from);
+                static  String  FromSDKString (const SDKChar* from);
+                static  String  FromSDKString (const SDKChar* from, const SDKChar* to);
+                static  String  FromSDKString (const SDKString& from);
 
 
                 // tmphack
-                static  String  FromSDKString (const SDKChar* from) { return FromTString (from); }
-                static  String  FromSDKString (const SDKChar* from, const SDKChar* to) { return FromTString (from, to); }
-                static  String  FromSDKString (const SDKString& from) { return FromTString (from); }
+                // qUSE_BACKWARD_COMPAT_TSTRING_CODE
+                static  String  FromTString (const SDKChar* from)                       { return FromSDKString (from); }
+                static  String  FromTString (const SDKChar* from, const SDKChar* to)    { return FromSDKString (from, to); }
+                static  String  FromTString (const SDKString& from)                     { return FromSDKString (from); }
 
             public:
                 /**
@@ -669,14 +670,15 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  SDKString   AsTString () const;
-                nonvirtual  void        AsTString (SDKString* into) const;
+                nonvirtual  SDKString   AsSDKString () const;
+                nonvirtual  void        AsSDKString (SDKString* into) const;
 
 
             public:
-                //tmphack - fix soon
-                nonvirtual  SDKString   AsSDKString () const { return AsTString (); }
-                nonvirtual  void        AsSDKString (SDKString* into) const { AsTString (into); };
+                // tmphack - LOSE SOON - LGP 2013-09-29
+                // qUSE_BACKWARD_COMPAT_TSTRING_CODE
+                nonvirtual  SDKString   AsTString () const                  { return AsTString (); }
+                nonvirtual  void        AsTString (SDKString* into) const   { AsTString (into); };
 
 
             public:

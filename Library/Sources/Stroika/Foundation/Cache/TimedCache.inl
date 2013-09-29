@@ -34,7 +34,7 @@ namespace   Stroika {
             {
                 fCachedCollected_Misses++;
             }
-            inline  void    TimedCacheSupport::Stats_Basic::DbgTraceStats (const TChar* label) const
+            inline  void    TimedCacheSupport::Stats_Basic::DbgTraceStats (const SDKChar* label) const
             {
                 size_t  total   =   fCachedCollected_Hits + fCachedCollected_Misses;
                 if (total == 0) {
@@ -55,7 +55,7 @@ namespace   Stroika {
             inline  void    TimedCacheSupport::Stats_Null::IncrementMisses ()
             {
             }
-            inline  void    TimedCacheSupport::Stats_Null::DbgTraceStats (const TChar* label) const
+            inline  void    TimedCacheSupport::Stats_Null::DbgTraceStats (const SDKChar* label) const
             {
             }
 

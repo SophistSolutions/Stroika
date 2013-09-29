@@ -1033,14 +1033,14 @@ void    String::AsUTF8 (string* into) const
     *into = WideStringToUTF8 (As<wstring> ());  //tmphack impl (but shoudl work)
 }
 
-SDKString String::AsTString () const
+SDKString String::AsSDKString () const
 {
     SDKString result;
-    AsTString (&result);
+    AsSDKString (&result);
     return result;
 }
 
-void    String::AsTString (SDKString* into) const
+void    String::AsSDKString (SDKString* into) const
 {
     RequireNotNull (into);
     *into = Wide2SDKString (As<wstring> ());  // poor inefficient implementation
