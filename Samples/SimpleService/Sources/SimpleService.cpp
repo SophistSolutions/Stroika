@@ -279,14 +279,14 @@ int main (int argc, const char* argv[])
 #if     qUseLogger
         Logger::Log (Logger::Priority::eError, L"%s", String::FromNarrowSDKString (e.what ()).c_str ());
 #endif
-        cerr << "FAILED: '" << e.what () << "'" << endl;
+        cerr << "FAILED: " << e.what () << endl;
         return EXIT_FAILURE;
     }
     catch (const Execution::StringException& e) {
 #if     qUseLogger
         Logger::Log (Logger::Priority::eError, L"%s", e.As<String> ().c_str ());
 #endif
-        cerr << "FAILED: '" << e.As<String> ().AsNarrowSDKString () << "'" << endl;
+        cerr << "FAILED: " << e.As<String> ().AsNarrowSDKString () << endl;
         return EXIT_FAILURE;
     }
     catch (...) {
