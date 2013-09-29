@@ -36,7 +36,7 @@ void    Debug::DropIntoDebuggerIfPresent ()
     sprintf(pathBuf, "/proc/%d/exe", ::getppid ());
     char dataBuf[1024];
     ssize_t n   =   :: readlink (pathBuf, dataBuf, sizeof (dataBuf) - 1);
-    n = Math::PinInRange<size_t> (0, sizeof (dataBuf) - 1, static_cast<size_t> (n));
+    n = Math::PinInRange<size_t> (static_cast<size_t> (n), 0, sizeof (dataBuf) - 1);
     dataBuf[n] = '\0';
     if (string (dataBuf).find ("gdb") != -1) {
         ::raise (SIGTRAP);
