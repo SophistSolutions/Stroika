@@ -150,8 +150,12 @@ namespace   {
         Memory::Optional<String> middleName;
     };
     struct PersonReader_ : public ComplexObjectReader<Person_> {
-        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
-            ComplexObjectReader<Person_> (v) {
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ())
+#else
+        PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_)
+#endif
+            : ComplexObjectReader<Person_> (v) {
         }
         virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
             RequireNotNull (fValuePtr);
