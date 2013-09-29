@@ -132,7 +132,7 @@ AppTempFileManager::AppTempFileManager ()
         }
         // strip trailing .EXE
         i = exeFileName.rfind ('.');
-        if (i != TString::npos) {
+        if (i != SDKString::npos) {
             exeFileName = exeFileName.erase (i);
         }
         // no biggie, but avoid spaces in tmpfile path name (but dont try too hard, should be
@@ -193,8 +193,8 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
     String fn  =   AppTempFileManager::Get ().GetMasterTempDir () + fileNameBase;
     FileSystem::CreateDirectoryForFile (fn);
 
-    TString::size_type  suffixStart = fn.rfind ('.');
-    if (suffixStart == TString::npos) {
+    SDKString::size_type  suffixStart = fn.rfind ('.');
+    if (suffixStart == SDKString::npos) {
         fn += L".txt";
         suffixStart = fn.rfind ('.');
     }
@@ -208,7 +208,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
             HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 ::CloseHandle (f);
-                DbgTrace (TSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
+                DbgTrace (SDKSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
                 return s;
             }
         }
@@ -300,8 +300,8 @@ String TempFileLibrarian::GetTempFile (const String& fileNameBase)
     }
     FileSystem::CreateDirectoryForFile (fn);
 
-    TString::size_type  suffixStart = fn.rfind ('.');
-    if (suffixStart == TString::npos) {
+    SDKString::size_type  suffixStart = fn.rfind ('.');
+    if (suffixStart == SDKString::npos) {
         fn += L".txt";
         suffixStart = fn.rfind ('.');
     }

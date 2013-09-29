@@ -25,7 +25,10 @@ namespace   Stroika {
         namespace   Characters {
 
 
+#define qUSE_BACKWARD_COMPAT_TSTRING_CODE   1
 
+
+#if     qUSE_BACKWARD_COMPAT_TSTRING_CODE
             // SOON TO BE OBSOLETE - USE SDKChar
             //  -- LGP 2013-09-28
             typedef Characters::SDKChar TChar;
@@ -34,6 +37,7 @@ namespace   Stroika {
             // SOON TO BE OBSOLETE - USE SDKChar
             //  -- LGP 2013-09-28
 #define TSTR(x)    SDKSTR(x)
+#endif
 
 
         }

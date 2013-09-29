@@ -36,35 +36,35 @@ using   namespace   Stroika::Foundation::Execution::Platform::Windows;
  ********** Platform::Windows::HRESULTErrorException ****************************
  ********************************************************************************
  */
-TString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
+SDKString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
 {
     switch (hr) {
         case    E_FAIL:
-            return TSTR ("HRESULT failure (E_FAIL)");
+            return SDKSTR ("HRESULT failure (E_FAIL)");
         case    E_ACCESSDENIED:
-            return TSTR ("HRESULT failure (E_ACCESSDENIED)");
+            return SDKSTR ("HRESULT failure (E_ACCESSDENIED)");
         case    E_INVALIDARG:
-            return TSTR ("HRESULT failure (E_INVALIDARG)");
+            return SDKSTR ("HRESULT failure (E_INVALIDARG)");
         case    E_NOINTERFACE:
-            return TSTR ("HRESULT failure (E_NOINTERFACE)");
+            return SDKSTR ("HRESULT failure (E_NOINTERFACE)");
         case    E_POINTER:
-            return TSTR ("HRESULT failure (E_POINTER)");
+            return SDKSTR ("HRESULT failure (E_POINTER)");
         case    E_HANDLE:
-            return TSTR ("HRESULT failure (E_HANDLE)");
+            return SDKSTR ("HRESULT failure (E_HANDLE)");
         case    E_ABORT:
-            return TSTR ("HRESULT failure (E_ABORT)");
+            return SDKSTR ("HRESULT failure (E_ABORT)");
         case    DISP_E_TYPEMISMATCH:
-            return TSTR ("HRESULT failure (DISP_E_TYPEMISMATCH)");
+            return SDKSTR ("HRESULT failure (DISP_E_TYPEMISMATCH)");
         case    DISP_E_EXCEPTION:
-            return TSTR ("HRESULT failure (DISP_E_EXCEPTION)");
+            return SDKSTR ("HRESULT failure (DISP_E_EXCEPTION)");
         case    INET_E_RESOURCE_NOT_FOUND:
-            return TSTR ("HRESULT failure (INET_E_RESOURCE_NOT_FOUND)");
+            return SDKSTR ("HRESULT failure (INET_E_RESOURCE_NOT_FOUND)");
         case    REGDB_E_CLASSNOTREG:
-            return TSTR ("HRESULT failure (REGDB_E_CLASSNOTREG)");
+            return SDKSTR ("HRESULT failure (REGDB_E_CLASSNOTREG)");
         case    ERROR_NOT_ENOUGH_MEMORY:
-            return TSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
+            return SDKSTR ("Not enough memory to complete that operation (ERROR_NOT_ENOUGH_MEMORY)");
         case    ERROR_OUTOFMEMORY:
-            return TSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
+            return SDKSTR ("Not enough memory to complete that operation (ERROR_OUTOFMEMORY)");
     }
     if (HRESULT_FACILITY (hr) == FACILITY_WIN32) {
         return Exception::LookupMessage (HRESULT_CODE (hr));
@@ -78,6 +78,6 @@ TString Platform::Windows::HRESULTErrorException::LookupMessage (HRESULT hr)
         return Exception::LookupMessage (wCode);
     }
     TCHAR   buf[1024];
-    (void)::_stprintf_s (buf, TSTR ("HRESULT error code: 0x%x"), hr);
+    (void)::_stprintf_s (buf, SDKSTR ("HRESULT error code: 0x%x"), hr);
     return buf;
 }

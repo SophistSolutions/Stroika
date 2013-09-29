@@ -527,17 +527,17 @@ String  String::FromUTF8 (const std::string& from)
     return UTF8StringToWide (from);
 }
 
-String  String::FromTString (const TChar* from)
+String  String::FromTString (const SDKChar* from)
 {
     return SDKString2Wide (from);
 }
 
-String  String::FromTString (const TChar* from, const TChar* to)
+String  String::FromTString (const SDKChar* from, const SDKChar* to)
 {
-    return SDKString2Wide (TString (from, to));
+    return SDKString2Wide (SDKString (from, to));
 }
 
-String  String::FromTString (const basic_string<TChar>& from)
+String  String::FromTString (const basic_string<SDKChar>& from)
 {
     return SDKString2Wide (from);
 }
@@ -1033,14 +1033,14 @@ void    String::AsUTF8 (string* into) const
     *into = WideStringToUTF8 (As<wstring> ());  //tmphack impl (but shoudl work)
 }
 
-TString String::AsTString () const
+SDKString String::AsTString () const
 {
-    TString result;
+    SDKString result;
     AsTString (&result);
     return result;
 }
 
-void    String::AsTString (TString* into) const
+void    String::AsTString (SDKString* into) const
 {
     RequireNotNull (into);
     *into = Wide2SDKString (As<wstring> ());  // poor inefficient implementation

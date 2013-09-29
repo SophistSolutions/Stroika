@@ -176,21 +176,21 @@ namespace   {
 
 #if     qTraceToFile
 namespace   {
-    TString mkTraceFileName_ ()
+    SDKString mkTraceFileName_ ()
     {
         // Use TempDir instead of EXEDir because on vista, installation permissions prevent us from (easily) writing in EXEDir.
         // (could fix of course, but I'm not sure desirable - reasonable defaults)
         //
         // Don't want to use TempFileLibrarian cuz we dont want these deleted on app exit
-        TString mfname;
+        SDKString mfname;
         {
             mfname = Execution::GetEXEPathT ();
             size_t i = mfname.rfind (IO::FileSystem::kPathComponentSeperator);
-            if (i != TString::npos) {
+            if (i != SDKString::npos) {
                 mfname = mfname.substr (i + 1);
             }
             i = mfname.rfind ('.');
-            if (i != TString::npos) {
+            if (i != SDKString::npos) {
                 mfname.erase (i);
             }
             for (auto i = mfname.begin (); i != mfname.end (); ++i) {
@@ -199,19 +199,19 @@ namespace   {
                 }
             }
         }
-        TString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsTString ();
+        SDKString nowstr  =   Time::DateTime::Now ().Format (Time::DateTime::PrintFormat::eXML).AsTString ();
         for (auto i = nowstr.begin (); i != nowstr.end (); ++i) {
             if (*i == ':') {
                 *i = '-';
             }
         }
-        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + Format (TSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
+        return IO::FileSystem::WellKnownLocations::GetTemporaryT () + Format (SDKSTR ("TraceLog_%s_PID#%d-%s.txt"), mfname.c_str (), (int)Execution::GetCurrentProcessID (), nowstr.c_str ());
     }
 }
 
-TString Emitter::GetTraceFileName () const
+SDKString Emitter::GetTraceFileName () const
 {
-    static  TString sTraceFileName_ =   mkTraceFileName_ ();
+    static  SDKString sTraceFileName_ =   mkTraceFileName_ ();
     return sTraceFileName_;
 }
 #endif
@@ -544,13 +544,13 @@ namespace   {
     }
 }
 #if     qDefaultTracingOn
-TraceContextBumper::TraceContextBumper (const TChar* contextName)
+TraceContextBumper::TraceContextBumper (const SDKChar* contextName)
     : fDoEndMarker (true)
     //,fSavedContextName_ ()
 {
-    fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + strlen (GetEOL<char> ()), TSTR ("<%s> {"), contextName);
-    size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<TChar>::length (contextName));
-    char_traits<TChar>::copy (fSavedContextName_, contextName, len);
+    fLastWriteToken_ = Emitter::Get ().EmitTraceMessage (3 + strlen (GetEOL<char> ()), SDKSTR ("<%s> {"), contextName);
+    size_t  len =   min (NEltsOf (fSavedContextName_), char_traits<SDKChar>::length (contextName));
+    char_traits<SDKChar>::copy (fSavedContextName_, contextName, len);
     *(std::end (fSavedContextName_) - 1) = '\0';
     fSavedContextName_[len] = '\0';
     IncCount ();
@@ -582,7 +582,7 @@ TraceContextBumper::~TraceContextBumper ()
             Emitter::Get ().EmitUnadornedText (GetEOL<char> ());
         }
         else {
-            Emitter::Get ().EmitTraceMessage (TSTR ("} </%s>"), fSavedContextName_);
+            Emitter::Get ().EmitTraceMessage (SDKSTR ("} </%s>"), fSavedContextName_);
         }
     }
 }

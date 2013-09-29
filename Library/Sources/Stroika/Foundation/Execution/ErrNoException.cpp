@@ -38,15 +38,15 @@ errno_ErrorException::errno_ErrorException (errno_t e)
 {
 }
 
-TString errno_ErrorException::LookupMessage (errno_t e)
+SDKString errno_ErrorException::LookupMessage (errno_t e)
 {
-    TChar   buf[2048];
+    SDKChar   buf[2048];
     buf[0] = '\0';
 #if     qPlatform_Windows
     if (_tcserror_s (buf, e) != 0) {
         return buf;
     }
-    (void)::_stprintf_s (buf, TSTR ("errno_t error code: 0x%x"), e);
+    (void)::_stprintf_s (buf, SDKSTR ("errno_t error code: 0x%x"), e);
 #elif   qPlatform_POSIX
     /*
      * A bit quirky - gcc and POSIX handle this API fairly differently. Hopefully I have both cases correct???
@@ -61,7 +61,7 @@ TString errno_ErrorException::LookupMessage (errno_t e)
         return res;
     }
 #endif
-    (void) ::snprintf (buf, NEltsOf (buf), TSTR ("errno_t error code: 0x%x"), e);
+    (void) ::snprintf (buf, NEltsOf (buf), SDKSTR ("errno_t error code: 0x%x"), e);
 #else
     AssertNotImplemented ();
 #endif

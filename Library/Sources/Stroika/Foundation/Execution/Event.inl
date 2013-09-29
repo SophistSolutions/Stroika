@@ -64,7 +64,7 @@ namespace   Stroika {
             }
             inline  void    Event::Reset ()
             {
-                //Debug::TraceContextBumper ctx (TSTR ("Event::Reset"));
+                //Debug::TraceContextBumper ctx (SDKSTR ("Event::Reset"));
 #if         qUseThreads_WindowsNative
                 AssertNotNull (fEventHandle);
                 Verify (::ResetEvent (fEventHandle));
@@ -79,7 +79,7 @@ namespace   Stroika {
             }
             inline  void    Event::Set ()
             {
-                //Debug::TraceContextBumper ctx (TSTR ("Event::Set"));
+                //Debug::TraceContextBumper ctx (SDKSTR ("Event::Set"));
 #if         qUseThreads_WindowsNative
                 AssertNotNull (fEventHandle);
                 Verify (::SetEvent (fEventHandle));

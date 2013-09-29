@@ -28,9 +28,9 @@ using   Debug::TraceContextBumper;
  **************************** DLLSupport::DLLLoader *****************************
  ********************************************************************************
  */
-DLLLoader::DLLLoader (const TChar* dllName)
+DLLLoader::DLLLoader (const SDKChar* dllName)
 {
-    DbgTrace (TSTR ("DLLLoader - loading DLL %s"), dllName);
+    DbgTrace (SDKSTR ("DLLLoader - loading DLL %s"), dllName);
     RequireNotNull (dllName);
 #if     qPlatform_Windows
     Execution::Platform::Windows::ThrowIfFalseGetLastError ((fModule = ::LoadLibrary (dllName)) != nullptr);
@@ -39,9 +39,9 @@ DLLLoader::DLLLoader (const TChar* dllName)
 #endif
 }
 
-DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
+DLLLoader::DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath)
 {
-    DbgTrace (TSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
+    DbgTrace (SDKSTR ("DLLLoader - loading DLL %s (with searchPath)"), dllName);
     RequireNotNull (dllName);
     try {
 #if     qPlatform_Windows
@@ -52,7 +52,7 @@ DLLLoader::DLLLoader (const TChar* dllName, const vector<TString>& searchPath)
     }
     catch (...) {
         for (auto i = searchPath.begin (); i != searchPath.end (); ++i) {
-            TString modulePath = *i + TSTR ("\\") + dllName;
+            SDKString modulePath = *i + SDKSTR ("\\") + dllName;
 #if     qPlatform_Windows
             fModule = ::LoadLibrary (modulePath.c_str ());
 #else
@@ -88,7 +88,7 @@ DLLHandle   DLLLoader::LoadDLL (const TChar* dllName, int flags)
 
 DLLLoader::~DLLLoader ()
 {
-    DbgTrace (TSTR ("DLLLoader - unloading dll"));
+    DbgTrace (SDKSTR ("DLLLoader - unloading dll"));
     AssertNotNull (fModule);
 #if     qPlatform_Windows
     ::FreeLibrary (fModule);

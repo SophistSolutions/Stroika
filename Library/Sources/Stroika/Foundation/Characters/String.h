@@ -320,9 +320,9 @@ namespace   Stroika {
                 /**
                  *  Create a String object from a 'TChar' (os-setting - current code page) encoded string.
                  */
-                static  String  FromTString (const TChar* from);
-                static  String  FromTString (const TChar* from, const TChar* to);
-                static  String  FromTString (const TString& from);
+                static  String  FromTString (const SDKChar* from);
+                static  String  FromTString (const SDKChar* from, const SDKChar* to);
+                static  String  FromTString (const SDKString& from);
 
             public:
                 /**
@@ -661,8 +661,8 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  TString AsTString () const;
-                nonvirtual  void    AsTString (TString* into) const;
+                nonvirtual  SDKString   AsTString () const;
+                nonvirtual  void        AsTString (SDKString* into) const;
 
             public:
                 /**

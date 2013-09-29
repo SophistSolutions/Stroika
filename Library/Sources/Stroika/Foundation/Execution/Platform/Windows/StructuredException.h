@@ -22,7 +22,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
 
 
             namespace   Platform {
@@ -38,8 +38,8 @@ namespace   Stroika {
                         operator unsigned int () const;
 
                     public:
-                        static  TString LookupMessage (unsigned int n);
-                        nonvirtual  TString LookupMessage () const;
+                        static      SDKString LookupMessage (unsigned int n);
+                        nonvirtual  SDKString LookupMessage () const;
 
                     public:
                         static  void    RegisterHandler ();

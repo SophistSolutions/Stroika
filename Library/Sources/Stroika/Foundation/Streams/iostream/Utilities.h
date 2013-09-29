@@ -26,9 +26,7 @@ namespace   Stroika {
             namespace   iostream {
 
 
-                using   Characters::TString;
                 using   Memory::Byte;
-
 
                 wstring ReadTextStream (istream& in);
                 wstring ReadTextStream (wistream& in);

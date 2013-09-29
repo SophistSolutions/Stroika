@@ -22,7 +22,7 @@ using   namespace   Stroika::Foundation::Execution;
 template    <>
 void    _NoReturn_  Execution::DoThrow (const UserCanceledException& e2Throw)
 {
-    DbgTrace (TSTR ("Throwing UserCanceledException"));
+    DbgTrace (SDKSTR ("Throwing UserCanceledException"));
     throw e2Throw;
 }
 

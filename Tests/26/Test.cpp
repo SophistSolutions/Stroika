@@ -26,7 +26,7 @@ namespace   {
         Streams::BasicBinaryOutputStream myStdOut;
 #if         qPlatform_Windows
         // quickie about to test..
-        ProcessRunner pr (TSTR ("echo hi mom"), nullptr, myStdOut);
+        ProcessRunner pr (SDKSTR ("echo hi mom"), nullptr, myStdOut);
         pr.Run ();
 #endif
     }
@@ -35,7 +35,7 @@ namespace   {
         Streams::BasicBinaryOutputStream myStdOut;
 #if         qPlatform_Windows
         // quickie about to test..
-        ProcessRunner pr (TSTR ("echo hi mom"));
+        ProcessRunner pr (SDKSTR ("echo hi mom"));
         String out = pr.Run (L"");
         VerifyTestResult (out.Trim () == L"hi mom");
 #endif
@@ -44,9 +44,9 @@ namespace   {
     {
         Streams::BasicBinaryOutputStream myStdOut;
 #if         qPlatform_Windows
-        ProcessRunner pr1 (TSTR ("echo hi mom"));
+        ProcessRunner pr1 (SDKSTR ("echo hi mom"));
         Streams::BasicBinaryInputOutputStream pipe;
-        ProcessRunner pr2 (TSTR ("cat"));
+        ProcessRunner pr2 (SDKSTR ("cat"));
         pr1.SetStdOut (pipe);
         pr2.SetStdIn (pipe);
 

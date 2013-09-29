@@ -162,14 +162,14 @@ namespace {
 
 
 namespace {
-    TString GetCWD_ ()
+    SDKString GetCWD_ ()
     {
 #if     qPlatform_Windows
         TCHAR pwd[MAX_PATH];
         GetCurrentDirectory(MAX_PATH, pwd);
         return pwd;
 #else
-        return TString ();  // NYI
+        return SDKString ();  // NYI
 #endif
     }
 }
@@ -181,7 +181,7 @@ namespace {
  ************************** Execution::ProcessRunner ****************************
  ********************************************************************************
  */
-ProcessRunner::ProcessRunner (const TString& commandLine, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const SDKString& commandLine, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ (commandLine)
     , fExecutable_ ()
     , fArgs_ ()
@@ -192,7 +192,7 @@ ProcessRunner::ProcessRunner (const TString& commandLine, Streams::BinaryInputSt
 {
 }
 
-ProcessRunner::ProcessRunner (const TString& executable, const Containers::Sequence<TString>& args, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
+ProcessRunner::ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in, Streams::BinaryOutputStream out, Streams::BinaryOutputStream error)
     : fCommandLine_ ()
     , fExecutable_ (executable)
     , fArgs_ (args)
@@ -203,12 +203,12 @@ ProcessRunner::ProcessRunner (const TString& executable, const Containers::Seque
 {
 }
 
-TString ProcessRunner::GetWorkingDirectory ()
+SDKString ProcessRunner::GetWorkingDirectory ()
 {
     return fWorkingDirectory_;
 }
 
-void    ProcessRunner::SetWorkingDirectory (const TString& d)
+void    ProcessRunner::SetWorkingDirectory (const SDKString& d)
 {
     fWorkingDirectory_ = d;
 }
@@ -250,23 +250,23 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
 
 IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
 {
-    TString cmdLine;
+    SDKString cmdLine;
     if (fCommandLine_.empty ()) {
     }
     else {
         cmdLine = *fCommandLine_;
     }
 
-    TString currentDir  =   GetWorkingDirectory ();
+    SDKString currentDir  =   GetWorkingDirectory ();
 
     Streams::BinaryInputStream  in  =   GetStdIn ();
     Streams::BinaryOutputStream out =   GetStdOut ();
     Streams::BinaryOutputStream err =   GetStdErr ();
 
     return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
-        TraceContextBumper  traceCtx (TSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
-        DbgTrace (TSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
-        DbgTrace (TSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
+        TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
+        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
+        DbgTrace (SDKSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
 
 
         // Horrible implementation - just designed to be quickie get started...
@@ -669,7 +669,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         for (String i : useArgs) {
             //quickie/weak impl...
             if (cmdLineBuf[0] != '\0') {
-                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), TSTR(" "));
+                Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), SDKSTR(" "));
             }
             Characters::CString::Cat (cmdLineBuf, NEltsOf (cmdLineBuf), i.AsTString ().c_str ());
         }
@@ -679,7 +679,7 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
     }
     return processInfo.dwProcessId;
 #elif   qPlatform_POSIX
-    Characters::TString thisEXEPath =   executable.AsTString ();
+    Characters::SDKString thisEXEPath =   executable.AsTString ();
     pid_t   pid =   Execution::ThrowErrNoIfNegative (fork ());
     if (pid == 0) {
         /*
@@ -695,8 +695,8 @@ pid_t   Execution::DetachedProcessRunner (const String& executable, const Contai
         dup2 (id, 1);
         dup2 (id, 2);
 
-        // must map args to TString, and then right lifetime c-string pointers
-        vector<TString> tmpTStrArgs;
+        // must map args to SDKString, and then right lifetime c-string pointers
+        vector<SDKString> tmpTStrArgs;
         tmpTStrArgs.reserve (args.size ());
         for (String i : useArgs) {
             tmpTStrArgs.push_back (i.AsTString ());

@@ -24,8 +24,8 @@ namespace   Stroika {
         namespace   Debug {
 
 
-            using   Characters::TString;
-            using   Characters::TChar;
+            using   Characters::SDKString;
+            using   Characters::SDKChar;
 
 
             /*
@@ -69,7 +69,7 @@ namespace   Stroika {
 
 #if     qTraceToFile
             public:
-                nonvirtual  TString GetTraceFileName () const;
+                nonvirtual  SDKString GetTraceFileName () const;
 #endif
 
             public:
@@ -124,7 +124,7 @@ namespace   Stroika {
             class   TraceContextBumper {
             public:
                 TraceContextBumper ();
-                TraceContextBumper (const TChar* contextName);
+                TraceContextBumper (const SDKChar* contextName);
                 ~TraceContextBumper ();
 
             private:
@@ -135,7 +135,7 @@ namespace   Stroika {
             public:
                 bool    fDoEndMarker;
             private:
-                TChar                                       fSavedContextName_[64];
+                SDKChar                                     fSavedContextName_[64];
                 Emitter::TraceLastBufferedWriteTokenType    fLastWriteToken_;           // used to COMBINE items into a single line if they happen quickly enuf
 
             public:

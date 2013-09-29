@@ -32,7 +32,7 @@ namespace   Stroika {
             template    <>
             inline  void    _NoReturn_  DoThrow (const IO::FileAccessException& e2Throw)
             {
-                DbgTrace (TSTR ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.GetFileName ().c_str (), e2Throw.GetFileAccessMode ());
+                DbgTrace (SDKSTR ("Throwing FileAccessException: fFileName = '%s'; FileAccessMode=%d"), e2Throw.GetFileName ().c_str (), e2Throw.GetFileAccessMode ());
                 throw e2Throw;
             }
         }

@@ -22,8 +22,8 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
-            using   Characters::TChar;
+            using   Characters::SDKString;
+            using   Characters::SDKChar;
 
 
 #if     qPlatform_Windows
@@ -44,8 +44,8 @@ namespace   Stroika {
 
             class   DLLLoader {
             public:
-                DLLLoader (const TChar* dllName);
-                DLLLoader (const TChar* dllName, const vector<TString>& searchPath);
+                DLLLoader (const SDKChar* dllName);
+                DLLLoader (const SDKChar* dllName, const vector<SDKString>& searchPath);
                 ~DLLLoader ();
 
             public:
@@ -58,7 +58,7 @@ namespace   Stroika {
 #if     !qPlatform_Windows
                 // ssw: not sure what to set for flags here, or if we should leave up to user
                 // see linux.die.net/man/3/dlopen
-                nonvirtual  DLLHandle   LoadDLL (const TChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
+                nonvirtual  DLLHandle   LoadDLL (const SDKChar* dllName, int flags = RTLD_NOW | RTLD_GLOBAL);
 #endif
             private:
                 DLLHandle   fModule;

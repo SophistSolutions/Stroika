@@ -23,6 +23,9 @@ namespace   Stroika {
         namespace   Characters {
 
 
+
+#if     qUSE_BACKWARD_COMPAT_TSTRING_CODE
+
             ///// FILE TYPE ETC ALL OBSOLETE - USE SDKString
             typedef SDKString    TString;
 
@@ -57,7 +60,7 @@ namespace   Stroika {
             {
                 return ToSDKString (s);
             }
-
+#endif
 
         }
     }

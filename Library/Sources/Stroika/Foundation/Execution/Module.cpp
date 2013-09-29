@@ -43,7 +43,7 @@ String Execution::GetEXEDir ()
  ***************************** Execution::GetEXEDirT *****************************
  ********************************************************************************
  */
-TString Execution::GetEXEDirT ()
+SDKString Execution::GetEXEDirT ()
 {
     // Currently this impl depends on String - we may want to redo one cleanly without any dependency on String()...
     // Docs call for this - but I'm not sure its needed
@@ -71,7 +71,7 @@ String Execution::GetEXEPath ()
  **************************** Execution::GetEXEPathT ****************************
  ********************************************************************************
  */
-TString Execution::GetEXEPathT ()
+SDKString Execution::GetEXEPathT ()
 {
     // See also http://stackoverflow.com/questions/1023306/finding-current-executables-path-without-proc-self-exe
     //      Mac OS X: _NSGetExecutablePath() (man 3 dyld)
@@ -82,7 +82,7 @@ TString Execution::GetEXEPathT ()
     //      Windows: GetModuleFileName() with hModule = nullptr
     //
 #if     qPlatform_Windows
-    Characters::TChar   buf[MAX_PATH];
+    Characters::SDKChar   buf[MAX_PATH];
     memset (buf, 0, sizeof (buf));
     Verify (::GetModuleFileName (nullptr, buf, NEltsOf (buf)));
     return buf;
@@ -102,7 +102,7 @@ TString Execution::GetEXEPathT ()
     return buf.begin ();
 #else
     AssertNotImplemented ();
-    return TString ();
+    return SDKString ();
 #endif
 }
 

@@ -32,7 +32,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
 
 
 #if     !qCompilerAndStdLib_Supports_errno_t
@@ -47,8 +47,8 @@ namespace   Stroika {
                 operator errno_t () const;
 
             public:
-                static  TString LookupMessage (errno_t e);
-                nonvirtual  TString LookupMessage () const;
+                static  SDKString LookupMessage (errno_t e);
+                nonvirtual  SDKString LookupMessage () const;
 
             public:
                 // throw errno_ErrorException () - unless I can find another Win32Exception, or bad_alloc() or some such which is

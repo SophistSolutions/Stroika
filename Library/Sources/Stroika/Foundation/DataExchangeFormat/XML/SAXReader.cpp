@@ -170,7 +170,7 @@ namespace   {
     public:
 #if     qXMLDBTrackAllocs
         void    DUMPCurMemStats () {
-            TraceContextBumper ctx (TSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
+            TraceContextBumper ctx (SDKSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
             lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
             fAllocator.DUMPCurMemStats (fLastSnapshot);
             // now copy current map to prev for next time this gets called
@@ -341,7 +341,7 @@ namespace   {
                 XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
             }
             ~UsingLibInterHelper_XERCES () {
-                TraceContextBumper ctx (TSTR ("~UsingLibInterHelper_XERCES"));
+                TraceContextBumper ctx (SDKSTR ("~UsingLibInterHelper_XERCES"));
                 XMLPlatformUtils::Terminate ();
                 Assert (sStdIStream_InputStream_COUNT_ == 0);
 #if     qUseMyXMLDBMemManager
@@ -378,14 +378,14 @@ public:
 
 UsingModuleHelper::UsingModuleHelper ()
 {
-    TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::UsingModuleHelper"));
+    TraceContextBumper ctx (SDKSTR ("XMLDB::Private::UsingModuleHelper::UsingModuleHelper"));
     Require (sUsingLibInterHelper == nullptr);
     sUsingLibInterHelper = DEBUG_NEW UsingLibInterHelper ();
 }
 
 UsingModuleHelper::~UsingModuleHelper ()
 {
-    TraceContextBumper ctx (TSTR ("XMLDB::Private::UsingModuleHelper::~UsingModuleHelper"));
+    TraceContextBumper ctx (SDKSTR ("XMLDB::Private::UsingModuleHelper::~UsingModuleHelper"));
     RequireNotNull (sUsingLibInterHelper);
     delete sUsingLibInterHelper;
     sUsingLibInterHelper = nullptr;

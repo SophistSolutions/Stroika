@@ -41,14 +41,14 @@ namespace   {
 
         exit (EXIT_FAILURE);
     }
-    void    _FatalErrorHandler_ (const Characters::TChar* msg)
+    void    _FatalErrorHandler_ (const Characters::SDKChar* msg)
     {
 #if     qTargetPlatformSDKUseswchar_t
         cerr << "FAILED: " <<  Characters::WideStringToNarrowSDKString (msg) << endl;
 #else
         cerr << "FAILED: " <<  msg << endl;
 #endif
-        DbgTrace (TSTR ("FAILED: %s"), msg);
+        DbgTrace (SDKSTR ("FAILED: %s"), msg);
         Debug::DropIntoDebuggerIfPresent ();
         exit (EXIT_FAILURE);
     }

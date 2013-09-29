@@ -32,7 +32,7 @@ namespace   {
 
     void    MyHandler_ (int signal)
     {
-        Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
         DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
         set<SignalHandlerType>  handlers;
         {
@@ -100,7 +100,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHan
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
 {
-    Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
     lock_guard<mutex> critSec (sCritSection_);
     if (handlers.empty ()) {
@@ -239,7 +239,7 @@ wstring Execution::SignalToName (SignalIDType signal)
  */
 void    Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
 {
-    Debug::TraceContextBumper trcCtx (TSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
 #if     qPlatform_POSIX
     DbgTrace (L"(signal = %s, 0x%lx)", SignalToName (signal).c_str (), static_cast<unsigned long> (h));
 #else

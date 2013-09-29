@@ -24,7 +24,7 @@ namespace   Stroika {
                     {
                         return fSECode;
                     }
-                    inline  TString StructuredException::LookupMessage () const
+                    inline  SDKString StructuredException::LookupMessage () const
                     {
                         return LookupMessage (fSECode);
                     }

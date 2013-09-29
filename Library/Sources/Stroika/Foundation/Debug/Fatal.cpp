@@ -13,26 +13,26 @@ using   namespace   Stroika::Foundation::Debug;
 
 
 namespace   {
-    void    _DefaultFatalErorrHandler_ (const TChar* msg)
+    void    _DefaultFatalErorrHandler_ (const SDKChar* msg)
     {
-        DbgTrace (TSTR ("Fatal Error %s encountered"), msg);
+        DbgTrace (SDKSTR ("Fatal Error %s encountered"), msg);
         Debug::DropIntoDebuggerIfPresent ();
         abort ();
     }
-    void (*sFatalErrorHandler_) (const TChar* msg)      =   nullptr;        // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
+    void (*sFatalErrorHandler_) (const SDKChar* msg)      =   nullptr;        // our handlers can never get called until  RegisterDefaultFatalErrorHandlers () is called
 
     void    TerminateHandler_ ()
     {
-        (sFatalErrorHandler_) (TSTR ("std::terminate () called"));
+        (sFatalErrorHandler_) (SDKSTR ("std::terminate () called"));
     }
     void    UnexpectedHandler_ ()
     {
-        (sFatalErrorHandler_) (TSTR ("std::unexpected () called"));
+        (sFatalErrorHandler_) (SDKSTR ("std::unexpected () called"));
     }
 #if     qPlatform_Windows
     void    PurecallHandler_ ()
     {
-        (sFatalErrorHandler_) (TSTR ("purecall_handler_ () called"));
+        (sFatalErrorHandler_) (SDKSTR ("purecall_handler_ () called"));
     }
 #endif
 }
@@ -41,7 +41,7 @@ namespace   {
 
 
 
-void    Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const TChar* msg))
+void    Debug::RegisterDefaultFatalErrorHandlers (void (*fatalErrorHandler) (const SDKChar* msg))
 {
     sFatalErrorHandler_ = (fatalErrorHandler == nullptr) ? _DefaultFatalErorrHandler_ : fatalErrorHandler;
     set_terminate (TerminateHandler_);

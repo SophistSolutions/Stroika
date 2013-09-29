@@ -103,7 +103,7 @@ namespace   {
         // See details in http://www.codeguru.com/forum/showthread.php?t=355572 on this... - backcompat - only support
         // GetThreadId (HANDLE) in Win 2003 Server or later
         using namespace XXX;
-        static  DLLLoader   ntdll (TSTR ("ntdll.dll"));
+        static  DLLLoader   ntdll (SDKSTR ("ntdll.dll"));
         static  pfnNtQueryInformationThread NtQueryInformationThread = (pfnNtQueryInformationThread)ntdll.GetProcAddress ("NtQueryInformationThread");
         if (NtQueryInformationThread == nullptr)
             return 0;   // failed to get proc address
@@ -164,7 +164,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 
 void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 {
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::DoCreate"));
+    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::DoCreate"));
     RequireNotNull (repSharedPtr);
     RequireNotNull (*repSharedPtr);
 
@@ -226,7 +226,7 @@ void    Thread::Rep_::Run_ ()
 
 void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
     RequireNotNull (thisThreadRep);
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::ThreadMain_"));
+    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::ThreadMain_"));
 
     try {
         /*
@@ -344,7 +344,7 @@ unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
 void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 {
     Require (fStatus_ == Status::eAborting or fStatus_ == Status::eCompleted);
-    //TraceContextBumper ctx (TSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
+    //TraceContextBumper ctx (SDKSTR ("Thread::Rep_::NotifyOfAbortFromAnyThread_"));
 
     // Harmless todo multiple times - even if already set
     AssertNotNull (fTLSAbortFlag_);
@@ -398,7 +398,7 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 #if     qPlatform_POSIX
 void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalIDType signal)
 {
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
     //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
     s_Aborting_ = true;
     /*
@@ -410,7 +410,7 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalIDType signal)
 #elif           qPlatform_Windows
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
-    TraceContextBumper ctx (TSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+    TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
     s_Aborting_ = true;
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus_ == Status::eAborting || rep->fStatus_ == Status::eCompleted);
@@ -507,7 +507,7 @@ void    Thread::SetThreadName (const wstring& threadName)
 {
     RequireNotNull (fRep_);
     if (fRep_->fThreadName_ != threadName) {
-        TraceContextBumper  ctx (TSTR ("Execution::Thread::SetThreadName"));
+        TraceContextBumper  ctx (SDKSTR ("Execution::Thread::SetThreadName"));
         DbgTrace (L"(ThreadName = '%s')", threadName.c_str ());
         fRep_->fThreadName_ = threadName;
 #if     qSupportSetThreadNameDebuggerCall
@@ -555,7 +555,7 @@ void    Thread::Start ()
 
 void    Thread::Abort ()
 {
-    Debug::TraceContextBumper ctx (TSTR ("Thread::Abort"));
+    Debug::TraceContextBumper ctx (SDKSTR ("Thread::Abort"));
     if (fRep_.get () == nullptr) {
         // then its effectively already stopped.
         return;
@@ -642,7 +642,7 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 
 void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
 {
-    Debug::TraceContextBumper ctx (TSTR ("Thread::WaitForDone"));
+    Debug::TraceContextBumper ctx (SDKSTR ("Thread::WaitForDone"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     if (fRep_.get () == nullptr) {
         // then its effectively already done.

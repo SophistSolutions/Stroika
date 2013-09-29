@@ -250,7 +250,7 @@ void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const Vari
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
-    Debug::TraceContextBumper   ctx (TSTR ("ObjectVariantMapper::Lookup_"));
+    Debug::TraceContextBumper   ctx (SDKSTR ("ObjectVariantMapper::Lookup_"));
     DbgTrace ("(forTypeInfo = %s)", forTypeInfo.name ());
     TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
     auto i  = fSerializers_.Lookup (foo);

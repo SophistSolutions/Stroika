@@ -22,7 +22,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
 
 
             namespace   Platform {
@@ -36,8 +36,8 @@ namespace   Stroika {
                         operator HRESULT () const;
 
                     public:
-                        static  TString LookupMessage (HRESULT hr);
-                        nonvirtual  TString LookupMessage () const;
+                        static  SDKString       LookupMessage (HRESULT hr);
+                        nonvirtual  SDKString   LookupMessage () const;
 
                     private:
                         HRESULT fHResult;

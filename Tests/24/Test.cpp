@@ -52,7 +52,7 @@ namespace   {
 namespace   {
     void    Test_1_SAXParser_ ()
     {
-        TraceContextBumper ctx (TSTR ("Test_1_SAXParser_"));
+        TraceContextBumper ctx (SDKSTR ("Test_1_SAXParser_"));
         const wstring   kNSTest =   L"Test-NAMESPACE";
         //NYI
         //Schema    gSchema     =   Schema (kNSTest);
@@ -200,7 +200,7 @@ namespace   {
 
     void    Test_2_SAXObjectReader_ ()
     {
-        TraceContextBumper ctx (TSTR ("Test_2_SAXObjectReader_"));
+        TraceContextBumper ctx (SDKSTR ("Test_2_SAXObjectReader_"));
         const wstring   kNSTest =   L"Test-NAMESPACE";
         wstring newDocXML   =
             L"<Calendar xmlns=\"" + wstring (kNSTest) + L"\">\n"

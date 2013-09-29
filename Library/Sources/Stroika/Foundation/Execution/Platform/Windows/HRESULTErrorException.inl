@@ -23,7 +23,7 @@ namespace   Stroika {
             {
                 return fHResult;
             }
-            inline  TString Platform::Windows::HRESULTErrorException::LookupMessage () const
+            inline  SDKString Platform::Windows::HRESULTErrorException::LookupMessage () const
             {
                 return LookupMessage (fHResult);
             }

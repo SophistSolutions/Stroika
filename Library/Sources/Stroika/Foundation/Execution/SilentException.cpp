@@ -20,7 +20,7 @@ using   namespace   Stroika::Foundation::Execution;
 template    <>
 void    _NoReturn_  Execution::DoThrow (const SilentException& e2Throw)
 {
-    DbgTrace (TSTR ("Throwing SilentException"));
+    DbgTrace (SDKSTR ("Throwing SilentException"));
     throw e2Throw;
 }
 

@@ -41,13 +41,13 @@ void    Platform::Windows::StructuredException::RegisterHandler ()
 
 void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXCEPTION_POINTERS* pExp)
 {
-    TraceContextBumper  ctx (TSTR ("Platform::Windows::StructuredException::trans_func_"));
+    TraceContextBumper  ctx (SDKSTR ("Platform::Windows::StructuredException::trans_func_"));
     {
         // I wish I knew how to get a PROCNAME of where the caller was...
-        DbgTrace (TSTR ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
+        DbgTrace (SDKSTR ("u = 0x%x (%s)"), u, LookupMessage (u).c_str ());
         if (pExp != nullptr) {
             if (pExp->ContextRecord != nullptr) {
-                TraceContextBumper  ctx (TSTR ("ContextRecord"));
+                TraceContextBumper  ctx (SDKSTR ("ContextRecord"));
                 DbgTrace ("ContextRecord->ContextFlags = 0x%x", pExp->ContextRecord->ContextFlags);
                 DbgTrace ("ContextRecord->Dr0 = 0x%x", pExp->ContextRecord->Dr0);
 #if     qPlatform_Win32
@@ -55,7 +55,7 @@ void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXC
 #endif
             }
             if (pExp->ExceptionRecord != nullptr) {
-                TraceContextBumper  ctx (TSTR ("ExceptionRecord"));
+                TraceContextBumper  ctx (SDKSTR ("ExceptionRecord"));
                 DbgTrace ("ExceptionRecord->ExceptionAddress = 0x%x", pExp->ExceptionRecord->ExceptionAddress);
                 DbgTrace ("ExceptionRecord->ExceptionCode = 0x%x", pExp->ExceptionRecord->ExceptionCode);
                 DbgTrace ("ExceptionRecord->ExceptionFlags = 0x%x", pExp->ExceptionRecord->ExceptionFlags);
@@ -68,52 +68,52 @@ void    Platform::Windows::StructuredException::trans_func_ (unsigned int u, EXC
     throw Platform::Windows::StructuredException (u);
 }
 
-TString Platform::Windows::StructuredException::LookupMessage (unsigned int u)
+SDKString Platform::Windows::StructuredException::LookupMessage (unsigned int u)
 {
     switch (u) {
         case    EXCEPTION_ACCESS_VIOLATION:
-            return TSTR ("EXCEPTION_ACCESS_VIOLATION");
+            return SDKSTR ("EXCEPTION_ACCESS_VIOLATION");
         case    EXCEPTION_DATATYPE_MISALIGNMENT:
-            return TSTR ("EXCEPTION_DATATYPE_MISALIGNMENT");
+            return SDKSTR ("EXCEPTION_DATATYPE_MISALIGNMENT");
         case    EXCEPTION_ARRAY_BOUNDS_EXCEEDED:
-            return TSTR ("EXCEPTION_ARRAY_BOUNDS_EXCEEDED");
+            return SDKSTR ("EXCEPTION_ARRAY_BOUNDS_EXCEEDED");
         case    EXCEPTION_FLT_DENORMAL_OPERAND:
-            return TSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
+            return SDKSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
         case    EXCEPTION_FLT_DIVIDE_BY_ZERO:
-            return TSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
+            return SDKSTR ("EXCEPTION_FLT_DENORMAL_OPERAND");
         case    EXCEPTION_FLT_INEXACT_RESULT:
-            return TSTR ("EXCEPTION_FLT_INEXACT_RESULT");
+            return SDKSTR ("EXCEPTION_FLT_INEXACT_RESULT");
         case    EXCEPTION_FLT_INVALID_OPERATION:
-            return TSTR ("EXCEPTION_FLT_INVALID_OPERATION");
+            return SDKSTR ("EXCEPTION_FLT_INVALID_OPERATION");
         case    EXCEPTION_FLT_OVERFLOW:
-            return TSTR ("EXCEPTION_FLT_OVERFLOW");
+            return SDKSTR ("EXCEPTION_FLT_OVERFLOW");
         case    EXCEPTION_FLT_STACK_CHECK:
-            return TSTR ("EXCEPTION_FLT_STACK_CHECK");
+            return SDKSTR ("EXCEPTION_FLT_STACK_CHECK");
         case    EXCEPTION_FLT_UNDERFLOW:
-            return TSTR ("EXCEPTION_FLT_UNDERFLOW");
+            return SDKSTR ("EXCEPTION_FLT_UNDERFLOW");
         case    EXCEPTION_INT_DIVIDE_BY_ZERO:
-            return TSTR ("EXCEPTION_INT_DIVIDE_BY_ZERO");
+            return SDKSTR ("EXCEPTION_INT_DIVIDE_BY_ZERO");
         case    EXCEPTION_INT_OVERFLOW:
-            return TSTR ("EXCEPTION_INT_OVERFLOW");
+            return SDKSTR ("EXCEPTION_INT_OVERFLOW");
         case    EXCEPTION_PRIV_INSTRUCTION:
-            return TSTR ("EXCEPTION_PRIV_INSTRUCTION");
+            return SDKSTR ("EXCEPTION_PRIV_INSTRUCTION");
         case    EXCEPTION_IN_PAGE_ERROR:
-            return TSTR ("EXCEPTION_IN_PAGE_ERROR");
+            return SDKSTR ("EXCEPTION_IN_PAGE_ERROR");
         case    EXCEPTION_ILLEGAL_INSTRUCTION:
-            return TSTR ("EXCEPTION_ILLEGAL_INSTRUCTION");
+            return SDKSTR ("EXCEPTION_ILLEGAL_INSTRUCTION");
         case    EXCEPTION_NONCONTINUABLE_EXCEPTION:
-            return TSTR ("EXCEPTION_NONCONTINUABLE_EXCEPTION");
+            return SDKSTR ("EXCEPTION_NONCONTINUABLE_EXCEPTION");
         case    EXCEPTION_STACK_OVERFLOW:
-            return TSTR ("EXCEPTION_STACK_OVERFLOW");
+            return SDKSTR ("EXCEPTION_STACK_OVERFLOW");
         case    EXCEPTION_INVALID_DISPOSITION:
-            return TSTR ("EXCEPTION_INVALID_DISPOSITION");
+            return SDKSTR ("EXCEPTION_INVALID_DISPOSITION");
         case    EXCEPTION_GUARD_PAGE:
-            return TSTR ("EXCEPTION_GUARD_PAGE");
+            return SDKSTR ("EXCEPTION_GUARD_PAGE");
         case    EXCEPTION_INVALID_HANDLE:
-            return TSTR ("EXCEPTION_INVALID_HANDLE");
+            return SDKSTR ("EXCEPTION_INVALID_HANDLE");
         default: {
                 TCHAR   buf[1024];
-                (void)::_stprintf_s (buf, TSTR ("Windows Structured Exception Code - 0x%x"), u);
+                (void)::_stprintf_s (buf, SDKSTR ("Windows Structured Exception Code - 0x%x"), u);
                 return buf;
             }
     }

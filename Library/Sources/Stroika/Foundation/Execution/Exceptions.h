@@ -35,7 +35,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
 
 
             /**

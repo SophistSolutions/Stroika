@@ -16,7 +16,12 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            //  class   DLLLoader
+
+            /*
+             ********************************************************************************
+             *********************************** DLLLoader **********************************
+             ********************************************************************************
+             */
             inline  DLLLoader::operator DLLHandle ()
             {
                 EnsureNotNull (fModule);
@@ -54,6 +59,8 @@ namespace   Stroika {
             {
             }
 #endif
+
+
         }
     }
 }

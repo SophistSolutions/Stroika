@@ -57,7 +57,7 @@ uint32_t    Event::sCurAllocatedHandleCount     =   0;
 #endif
 void    Event::Wait (Time::DurationSecondsType timeout)
 {
-    //Debug::TraceContextBumper ctx (TSTR ("Event::Wait"));
+    //Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     CheckForThreadAborting ();
 #if         qUseThreads_WindowsNative

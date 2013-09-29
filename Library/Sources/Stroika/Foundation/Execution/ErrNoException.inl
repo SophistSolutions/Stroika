@@ -22,7 +22,7 @@ namespace   Stroika {
             {
                 return fError;
             }
-            inline  TString errno_ErrorException::LookupMessage () const
+            inline  SDKString errno_ErrorException::LookupMessage () const
             {
                 return LookupMessage (fError);
             }

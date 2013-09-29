@@ -111,7 +111,7 @@ namespace   Stroika {
              *              This deviation from the c++ standard (technically not a deviation because Stroika::Foundation::Characters::Format() isn't
              *              covered by the stdc++ ;-)) - is because of two reasons:
              *                  a)  Microsoft has this interpretation.
-             *                  b)  Its a BETTER interpretation (allowing for stuff like (Format (TSTR("time%s"), count==1? TSTR (""): TSTR ("s"));
+             *                  b)  Its a BETTER interpretation (allowing for stuff like (Format (SDKSTR("time%s"), count==1? SDKSTR (""): SDKSTR ("s"));
              *
              *      See also qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
              */

@@ -23,7 +23,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
 
 
             namespace   Platform {
@@ -42,8 +42,8 @@ namespace   Stroika {
                         static  void    DoThrow (DWORD error);
 
                     public:
-                        static  TString LookupMessage (DWORD hr);
-                        nonvirtual  TString LookupMessage () const;
+                        static      SDKString   LookupMessage (DWORD hr);
+                        nonvirtual  SDKString   LookupMessage () const;
 
                     private:
                         DWORD   fError;

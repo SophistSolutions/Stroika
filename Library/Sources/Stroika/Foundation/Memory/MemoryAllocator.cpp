@@ -145,7 +145,7 @@ SimpleSizeCountingGeneralPurposeAllocator::SimpleSizeCountingGeneralPurposeAlloc
 
 SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator ()
 {
-    //TraceContextBumper trcCtx (TSTR ("SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator"));
+    //TraceContextBumper trcCtx (SDKSTR ("SimpleSizeCountingGeneralPurposeAllocator::~SimpleSizeCountingGeneralPurposeAllocator"));
     //DbgTrace (L"fNetAllocationCount=%d, fNetAllocatedByteCount=%d", fNetAllocationCount, fNetAllocatedByteCount);
     // caller must free all entries before destroying allocator
     Require (fNetAllocationCount_ == 0);
@@ -375,7 +375,7 @@ namespace   {
 void    LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats (const Snapshot& sinceSnapshot)
 {
     Snapshot    curSnapshot =   GetSnapshot ();
-    TraceContextBumper ctx (TSTR ("LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats"));
+    TraceContextBumper ctx (SDKSTR ("LeakTrackingGeneralPurposeAllocator::DUMPCurMemStats"));
     DUMPCurMemStats_ (curSnapshot, sinceSnapshot);
 }
 

@@ -37,7 +37,7 @@ namespace   Stroika {
 
 
                 using   Characters::String;
-                using   Characters::TString;
+                using   Characters::SDKString;
                 using   Time::DateTime;
 
 
@@ -80,7 +80,7 @@ namespace   Stroika {
                     nonvirtual  T As () const;
 
                 public:
-                    nonvirtual  TString AsTString () const;
+                    nonvirtual  SDKString AsTString () const;
 
                 private:
                     String fFileFullPath_;

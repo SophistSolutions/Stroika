@@ -100,7 +100,7 @@ namespace   Stroika {
             //
             // Simple portable wrapper.
             //
-            // Could use simple singly threaded approach used in TypeNValue ReportDefinition::RunExternalProcess_ (const TString& cmdLine, const TString& currentDir, const BLOBs::BLOB& stdinBLOB, const ContentType& resultFormat, float timeout)
+            // Could use simple singly threaded approach used in TypeNValue ReportDefinition::RunExternalProcess_ (const SDKString& cmdLine, const SDKString& currentDir, const BLOBs::BLOB& stdinBLOB, const ContentType& resultFormat, float timeout)
             // except that code has the defect that when the input pipe is full, and there is nothing in the output piples
             // it busy waits. We COULD fix this by doing a select.
             //
@@ -117,15 +117,15 @@ namespace   Stroika {
                 NO_COPY_CONSTRUCTOR (ProcessRunner);
                 NO_ASSIGNMENT_OPERATOR (ProcessRunner);
             public:
-                ProcessRunner (const TString& commandLine, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
-                ProcessRunner (const TString& executable, const Containers::Sequence<TString>& args, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
+                ProcessRunner (const SDKString& commandLine, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
+                ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
 
             public:
                 /**
                  * defaults to CWD at the time the ProcessRunner was created
                  */
-                nonvirtual  TString GetWorkingDirectory ();
-                nonvirtual  void    SetWorkingDirectory (const TString& d);
+                nonvirtual  SDKString GetWorkingDirectory ();
+                nonvirtual  void    SetWorkingDirectory (const SDKString& d);
 
             public:
                 /**
@@ -175,10 +175,10 @@ namespace   Stroika {
                 nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
-                Memory::Optional<TString>       fCommandLine_;
-                Memory::Optional<TString>       fExecutable_;
-                Containers::Sequence<TString>   fArgs_;         // ignored if fExecutable empty
-                TString                         fWorkingDirectory_;
+                Memory::Optional<SDKString>     fCommandLine_;
+                Memory::Optional<SDKString>     fExecutable_;
+                Containers::Sequence<SDKString> fArgs_;         // ignored if fExecutable empty
+                SDKString                       fWorkingDirectory_;
                 Streams::BinaryInputStream      fStdIn_;
                 Streams::BinaryOutputStream     fStdOut_;
                 Streams::BinaryOutputStream     fStdErr_;

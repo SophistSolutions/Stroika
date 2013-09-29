@@ -137,17 +137,17 @@ String FileSystem::GetFileSuffix (const String& fileName)
     String useFName    =   fileName;
 
     {
-        TChar   fNameBuf[4 * MAX_PATH ];
+        SDKChar   fNameBuf[4 * MAX_PATH ];
         fNameBuf[0] = '\0';
         DWORD   r   =   ::GetLongPathName (fileName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
             useFName = String::FromTString (fNameBuf);
         }
     }
-    TChar   fname[_MAX_FNAME];
-    TChar   drive[_MAX_DRIVE];
-    TChar   dir[_MAX_DIR];
-    TChar   ext[_MAX_EXT];
+    SDKChar   fname[_MAX_FNAME];
+    SDKChar   drive[_MAX_DRIVE];
+    SDKChar   dir[_MAX_DIR];
+    SDKChar   ext[_MAX_EXT];
     memset (drive, 0, sizeof (drive));
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));
@@ -175,16 +175,16 @@ String FileSystem::GetFileBaseName (const String& pathName)
     String useFName    =   pathName;
 
     {
-        TChar   fNameBuf[4 * MAX_PATH ];
+        SDKChar   fNameBuf[4 * MAX_PATH ];
         DWORD   r   =   GetLongPathName (pathName.AsTString ().c_str (), fNameBuf, NEltsOf (fNameBuf) - 1);
         if (r != 0) {
             useFName = String::FromTString (fNameBuf);
         }
     }
-    TChar   fname[_MAX_FNAME];
-    TChar   drive[_MAX_DRIVE];
-    TChar   dir[_MAX_DIR];
-    TChar   ext[_MAX_EXT];
+    SDKChar   fname[_MAX_FNAME];
+    SDKChar   drive[_MAX_DRIVE];
+    SDKChar   dir[_MAX_DIR];
+    SDKChar   ext[_MAX_EXT];
     memset (drive, 0, sizeof (drive));
     memset (dir, 0, sizeof (dir));
     memset (fname, 0, sizeof (fname));

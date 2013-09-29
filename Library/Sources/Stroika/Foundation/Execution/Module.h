@@ -16,7 +16,7 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            using   Characters::TString;
+            using   Characters::SDKString;
             using   Characters::String;
 
 
@@ -36,16 +36,16 @@ namespace   Stroika {
              *  The variant returning TString is useful especially when you need to avoid other Stroika
              *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
              */
-            TString GetEXEDirT ();
+            SDKString GetEXEDirT ();
 
 
             /**
              *  @see GetEXEPath
              *
-             *  The variant returning TString is useful especially when you need to avoid other Stroika
+             *  The variant returning SDKString is useful especially when you need to avoid other Stroika
              *  dependencies, such as low level coding and avoiding deadly embraces with tracelog code.
              */
-            TString GetEXEPathT ();
+            SDKString GetEXEPathT ();
 
 
         }

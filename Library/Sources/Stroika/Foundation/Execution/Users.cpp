@@ -45,7 +45,7 @@ String  Execution::GetCurrentUserName (UserNameFormat format)
 #elif   qPlatform_Windows
     ULONG                   sz          =   0;
     ::GetUserName (nullptr, &sz);
-    Memory::SmallStackBuffer<Characters::TChar> buf (sz + 1);
+    Memory::SmallStackBuffer<Characters::SDKChar> buf (sz + 1);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::GetUserName (buf, &sz));
     return String::FromTString (buf);
 #elif   qPlatform_POSIX

@@ -27,7 +27,7 @@ using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::FileSystem;
 
-using   Characters::TChar;
+using   Characters::SDKChar;
 
 
 
@@ -83,17 +83,17 @@ String FileSystem::WellKnownLocations::GetMyDocuments (bool createIfNotPresent)
 String FileSystem::WellKnownLocations::GetApplicationData (bool createIfNotPresent)
 {
 #if     qPlatform_Windows
-    TChar   fileBuf[MAX_PATH];
+    SDKChar   fileBuf[MAX_PATH];
     memset (fileBuf, 0, sizeof (fileBuf));
     Verify (::SHGetSpecialFolderPath (nullptr, fileBuf, CSIDL_COMMON_APPDATA, createIfNotPresent));
-    TString result = fileBuf;
+    SDKString result = fileBuf;
     // Assure non-empty result
     if (result.empty ()) {
-        result = TSTR ("c:");   // shouldn't happen
+        result = SDKSTR ("c:");   // shouldn't happen
     }
     // assure ends in '\'
     if (result[result.size () - 1] != '\\') {
-        result += TSTR ("\\");
+        result += SDKSTR ("\\");
     }
     Ensure (result[result.size () - 1] == '\\');
     Ensure (not createIfNotPresent or Directory (String::FromTString (result)).Exists ());
@@ -174,19 +174,19 @@ String FileSystem::WellKnownLocations::GetTemporary ()
  ************* FileSystem::WellKnownLocations::GetTemporaryT ********************
  ********************************************************************************
  */
-TString FileSystem::WellKnownLocations::GetTemporaryT ()
+SDKString FileSystem::WellKnownLocations::GetTemporaryT ()
 {
-    TString tempPath;
+    SDKString tempPath;
 #if     qPlatform_Windows
-    TChar   buf[1024];
+    SDKChar   buf[1024];
     if (::GetTempPath (NEltsOf (buf), buf) == 0) {
-        tempPath = TSTR ("c:\\Temp\\");
+        tempPath = SDKSTR ("c:\\Temp\\");
     }
     else {
         tempPath = AssureDirectoryPathSlashTerminated (String::FromTString (buf)).AsTString ();
     }
 #elif   qPlatform_POSIX
-    return TSTR ("/tmp/");
+    return SDKSTR ("/tmp/");
 #else
     AssertNotImplemented ();
 #endif

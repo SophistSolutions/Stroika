@@ -163,7 +163,7 @@ void    FileSystem::SetFileAccessWideOpened (const String& filePathName)
 
         // Try to modify the object's DACL.
         DWORD dwRes  = SetNamedSecurityInfo(
-                           const_cast<TChar*> (filePathName.AsTString ().c_str ()),          // name of the object
+                           const_cast<SDKChar*> (filePathName.AsTString ().c_str ()),          // name of the object
                            SE_FILE_OBJECT,              // type of object
                            DACL_SECURITY_INFORMATION,   // change only the object's DACL
                            nullptr, nullptr,                  // don't change owner or group
@@ -322,9 +322,9 @@ String FileSystem::GetVolumeName (const String& driveLetterAbsPath)
     AdjustSysErrorMode  errorModeAdjuster (AdjustSysErrorMode::GetErrorMode () | SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
 
     DWORD   ignored =   0;
-    TChar   volNameBuf[1024];
+    SDKChar   volNameBuf[1024];
     memset (volNameBuf, 0, sizeof (volNameBuf));
-    TChar   igBuf[1024];
+    SDKChar   igBuf[1024];
     memset (igBuf, 0, sizeof (igBuf));
     BOOL    result  =   ::GetVolumeInformation (
                             AssureDirectoryPathSlashTerminated (driveLetterAbsPath).AsTString ().c_str (),
@@ -507,7 +507,7 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
     HANDLE hFind = ::FindFirstFile ((usePath + L"*").AsTString ().c_str (), &fd);
     if (hFind != INVALID_HANDLE_VALUE) {
         do {
-            TString fileName = (LPCTSTR) &fd.cFileName;
+            SDKString fileName = (LPCTSTR) &fd.cFileName;
             if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
                 String fileName = String::FromTString ((LPCTSTR) &fd.cFileName);
                 const   String kDOT    =   L".";
@@ -573,7 +573,7 @@ void    FileSystem::DeleteAllFilesInDirectory (const String& path, bool ignoreEr
                         ThrowIfFalseGetLastError (::DeleteFile ((dir2Use + fileName).AsTString ().c_str ()));
                     }
                     catch (...) {
-                        DbgTrace (TSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors ? TSTR ("(ignored)") : TSTR (""), (dir2Use + fileName).c_str ());
+                        DbgTrace (SDKSTR ("Exception %s calling ::DeleteFile on file '%s'"), ignoreErrors ? SDKSTR ("(ignored)") : SDKSTR (""), (dir2Use + fileName).c_str ());
                         if (!ignoreErrors) {
                             Execution::DoReThrow ();
                         }
