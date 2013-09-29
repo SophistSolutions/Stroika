@@ -296,8 +296,10 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
 */
 #ifndef qCompilerAndStdLib_Supports_regex
-
-#if     defined (__GNUC__) && !defined (__clang__)
+#if     defined (__clang__)
+// @todo - this seems broken with clang 3.2 - so probably MY bug - not gcc/clang bug... debug soon!
+#define qCompilerAndStdLib_Supports_regex       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#elif   defined (__GNUC__)
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
 // Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
 #define qCompilerAndStdLib_Supports_regex       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
