@@ -527,17 +527,17 @@ String  String::FromUTF8 (const std::string& from)
     return UTF8StringToWide (from);
 }
 
-String  String::FromTString (const SDKChar* from)
+String  String::FromSDKString (const SDKChar* from)
 {
     return SDKString2Wide (from);
 }
 
-String  String::FromTString (const SDKChar* from, const SDKChar* to)
+String  String::FromSDKString (const SDKChar* from, const SDKChar* to)
 {
     return SDKString2Wide (SDKString (from, to));
 }
 
-String  String::FromTString (const basic_string<SDKChar>& from)
+String  String::FromSDKString (const basic_string<SDKChar>& from)
 {
     return SDKString2Wide (from);
 }
