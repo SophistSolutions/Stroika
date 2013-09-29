@@ -37,7 +37,7 @@ namespace   Stroika {
             namespace   XML {
 
 #if     !qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                const   map<String, Memory::VariantValue>   kEmptyMapString2VariantVal_;
+                const   Mapping<String, Memory::VariantValue>   kEmptyMapString2VariantVal_;
 #endif
 
 
@@ -105,9 +105,9 @@ namespace   Stroika {
                 class   BuiltinReader : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (T* intoVal, const map<String, Memory::VariantValue>& attrs = map<String, Memory::VariantValue> ());
+                    BuiltinReader (T* intoVal, const Mapping<String, Memory::VariantValue>& attrs = Mapping<String, Memory::VariantValue> ());
 #else
-                    BuiltinReader (T* intoVal, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (T* intoVal, const Mapping<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
 
                 private:
@@ -221,7 +221,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const map<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
 
                     virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;

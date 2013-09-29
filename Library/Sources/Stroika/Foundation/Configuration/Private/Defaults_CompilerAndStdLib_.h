@@ -338,14 +338,12 @@
 @DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
 */
 #ifndef qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-
 #if     defined (__clang__)
-// Because of constexpr
-#define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+#define
+((__clang_major__ > 3) || ((__clang_major__ == 3)&&  (__clang_minor__ >= 3)))
 #else
 #define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors        1
 #endif
-
 #endif
 
 
