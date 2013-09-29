@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Execution_Logger_h_
@@ -65,7 +65,7 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            class   Logger {
+            class   Logger final    {
             public:
                 // See syslog for enumeration of various targets/etc.
 
@@ -125,24 +125,28 @@ namespace   Stroika {
             public:
                 /**
                  *  Log
+                 *
+                 *  Design Note:
+                 *      The 'format' parameter must be defined a String, not const String&, because:
+                 *
+                 *      18.10 Other runtime support [support.runtime]
+                 *      ...
+                 *      3 The restrictions that ISO C places on the second parameter to the va_start()
+                 *      macro in header <stdarg.h> are diﬀerent in this International Standard.
+                 *      The parameter parmN is the identiﬁer of the rightmost parameter in the variable parameter
+                 *      list of the function deﬁnition (the one just before the ...). If the parameter
+                 *      parmN is declared with a function, array, or reference type, or with a type that is
+                 *      not compatible with the type that results when passing an argument for which there
+                 *      is no parameter, the behavior is undeﬁned.
                  */
-#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-                static  void    Log (Priority logLevel, const String& format, ...); // varargs logger
-#else
                 static  void    Log (Priority logLevel, String format, ...); // varargs logger
-#endif
+
 
             private:
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
                 DISABLE_COMPILER_GCC_WARNING_START("-Wno-psabi")
 #endif
-                static  void    Log_ (Priority logLevel,
-#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-                                      const String& format,
-#else
-                                      String format,
-#endif
-                                      va_list argList);
+                static  void    Log_ (Priority logLevel, const String& format, va_list argList);
 #if     qCompilerAndStdLib_gcc_useless_varargs_warning
                 DISABLE_COMPILER_GCC_WARNING_END("-Wno-psabi")
 #endif

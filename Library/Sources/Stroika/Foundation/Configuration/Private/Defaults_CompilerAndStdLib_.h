@@ -919,22 +919,6 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_va_startOnReferenceParameter       (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_va_startOnReferenceParameter       1
-#endif
-#endif
-
-
-
-
-
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_string_conversions

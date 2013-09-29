@@ -23,13 +23,7 @@ namespace   Stroika {
             {
                 return fAppender_;
             }
-            inline  void    Logger::Log (Priority logLevel,
-#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-                                         const String& format,
-#else
-                                         String format,
-#endif
-                                         ...)
+            inline  void    Logger::Log (Priority logLevel, String format, ...)
             {
                 // CANNOT DO NUMBNERIC FILTERING TIL I WORK OUT IF I WANT THE SAME GOOFY NUMBERING AS SYSLOG?
                 if (/*logLevel >= sThe_.fMinLogLevel_ and*/ sThe_.fAppender_.get () != nullptr) {

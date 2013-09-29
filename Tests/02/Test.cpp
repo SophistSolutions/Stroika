@@ -867,34 +867,9 @@ namespace   {
         va_end (argsList);
         return tmp;
     }
-    String  Test23_help2_HELPER (const String& format, ...)
-    {
-        va_list     argsList;
-        va_start (argsList, format);
-        String tmp = Test23_help1_ (format, argsList);
-        va_end (argsList);
-        return tmp;
-    }
-    String  Test23_help3_ (const String& format, va_list argsList)
-    {
-        return Characters::FormatV (format.c_str (), argsList);
-    }
-    String  Test23_help3_HELPER (const String& format, ...)
-    {
-        va_list     argsList;
-        va_start (argsList, format);
-        String tmp = Test23_help3_ (format, argsList);
-        va_end (argsList);
-        return tmp;
-    }
     void    Test23_FormatV_ ()
     {
         VerifyTestResult (Test23_help1_HELPER (L"joe%s", L"1") == L"joe1");
-#if     qCompilerAndStdLib_Supports_va_startOnReferenceParameter
-        VerifyTestResult (Test23_help2_HELPER (L"joe%s", L"1") == L"joe1");
-        VerifyTestResult (Test23_help3_HELPER (L"joe%s", L"1") == L"joe1");
-#endif
-
     }
 }
 
