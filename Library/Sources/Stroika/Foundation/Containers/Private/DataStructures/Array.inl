@@ -528,7 +528,7 @@ namespace   Stroika {
                     inline  Array<T, TRAITS>::BackwardIterator::BackwardIterator (const Array<T, TRAITS>* data)
                         : inherited (data)
                     {
-                        if (data.GetLength () == 0) {
+                        if (data->GetLength () == 0) {
                             this->_fCurrent = this->_fEnd;    // magic to indicate done
                         }
                         else {
