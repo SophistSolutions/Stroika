@@ -12,6 +12,7 @@
 #elif   qPlatform_Windows
 #include    <Windows.h>
 #endif
+#include    "../Math/Common.h"
 
 #include    "Debugger.h"
 
@@ -35,8 +36,7 @@ void    Debug::DropIntoDebuggerIfPresent ()
     sprintf(pathBuf, "/proc/%d/exe", ::getppid ());
     char dataBuf[1024];
     ssize_t n   =   :: readlink (pathBuf, dataBuf, sizeof (dataBuf) - 1);
-    n = max (static_cast<size_t> (0), min (sizeof (dataBuf) - 1, static_cast<size_t> (n)));
-    if (n < sizeof (dataBuf));
+    n = Math::PinInRange<size_t> (0, sizeof (dataBuf) - 1, static_cast<size_t> (n));
     dataBuf[n] = '\0';
     if (string (dataBuf).find ("gdb") != -1) {
         ::raise (SIGTRAP);

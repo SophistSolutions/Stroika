@@ -151,6 +151,18 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ********************************* Math::Pin ************************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            T   PinInRange (T initialValue, T lowerBound, T upperBound)
+            {
+                return  max (lowerBound, min (upperBound, initialValue));
+            }
+
+
         }
     }
 }

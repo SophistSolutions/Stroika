@@ -68,6 +68,10 @@ namespace   Stroika {
 #endif
 
 
+            template    <typename   T>
+            T   PinInRange (T initialValue, T lowerBound, T upperBound);
+
+
         }
     }
 }
