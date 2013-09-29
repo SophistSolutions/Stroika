@@ -646,7 +646,7 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
 void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
 {
     if (_IsServiceActuallyRunning ()) {
-        Execution::DoThrow (StringException (L"Service Already Running"));
+        Execution::DoThrow (Execution::StringException (L"Service Already Running"));
     }
 
     // VERY WEAK IMPL
@@ -657,7 +657,7 @@ void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
     fRunThread_.SetThreadName (L"Service 'Run' thread");
     fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;
-    Execution::Finally cleanup ([] () {
+    Execution::Finally cleanup ([this] () {
         ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     });
     {
