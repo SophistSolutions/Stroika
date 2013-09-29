@@ -152,12 +152,7 @@ namespace   Stroika {
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     Mapping<String, VariantValue> m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
-#if     qCompilerAndStdLib_Workaround_DoesntStrangeNeedsTemporaryTemplateBug
-                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
-#else
-                        VariantValue tmp2AvoidMaybeCompilerBug = mapper->FromObject<KEY_TYPE> (i.fKey);
-                        m.Add (tmp2AvoidMaybeCompilerBug.As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
-#endif
+                        m.Add (mapper->FromObject<KEY_TYPE> (i.fKey).template As<String> (), mapper->FromObject<VALUE_TYPE> (i.fValue));
                     }
                     return VariantValue (m);
                 };
