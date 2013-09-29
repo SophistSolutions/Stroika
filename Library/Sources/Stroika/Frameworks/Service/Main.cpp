@@ -296,7 +296,7 @@ String      Main::GetServiceStatusMessage () const
 void    Main::RunAsService ()
 {
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
-    GetServiceRep_ ()._RunAsAservice ();
+    GetServiceRep_ ()._RunAsAsService ();
 }
 
 void    Main::RunDirectly ()
@@ -418,11 +418,11 @@ void    Main::LoggerServiceWrapper::_UnInstall ()
     }
 }
 
-void    Main::LoggerServiceWrapper::_RunAsAservice ()
+void    Main::LoggerServiceWrapper::_RunAsAsService ()
 {
     Logger::Log (Logger::Priority::eInfo, L"Service Starting");
     try {
-        fDelegateTo_->_RunAsAservice ();
+        fDelegateTo_->_RunAsAsService ();
     }
     catch (...) {
         Logger::Log (Logger::Priority::eCriticalError, L"Exception running service - aborting...");
@@ -519,7 +519,7 @@ void    Main::RunTilIdleService::_UnInstall ()
     Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
-void        Main::RunTilIdleService::_RunAsAservice ()
+void        Main::RunTilIdleService::_RunAsAsService ()
 {
     // VERY WEAK TO WRONG IMPL
     auto appRep = fAppRep_;
@@ -643,7 +643,7 @@ void    Main::BasicUNIXServiceImpl::_UnInstall ()
     Execution::DoThrow (Execution::OperationNotSupportedException (L"UnInstall"));
 }
 
-void    Main::BasicUNIXServiceImpl::_RunAsAservice ()
+void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
 {
     // VERY WEAK IMPL
     auto appRep = fAppRep_;
@@ -950,9 +950,9 @@ void    Main::WindowsService::_UnInstall ()
     Execution::Platform::Windows::ThrowIfFalseGetLastError (::DeleteService (hService));
 }
 
-void    Main::WindowsService::_RunAsAservice ()
+void    Main::WindowsService::_RunAsAsService ()
 {
-    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAservice"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_RunAsAsService"));
     Assert (s_SvcRunningTHIS_ == nullptr);
     s_SvcRunningTHIS_ = this;
 
