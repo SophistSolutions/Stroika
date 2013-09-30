@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-A-32|Win32">
@@ -142,6 +142,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)Characters-Platform-Windows-CodePage.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
@@ -624,11 +626,11 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\LineEndings.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Common.h" />
@@ -908,10 +910,11 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Platform\Windows\CodePage.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\RegularExpression.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\Common.inl" />
