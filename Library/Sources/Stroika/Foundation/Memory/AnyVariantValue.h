@@ -23,10 +23,6 @@
  *      @todo   consider using stuff like remove_references and remove_const to 'normalize' the T type
  *              used here. Might make it a little easier to use.
  *
- *      @todo   Explain rationale for difference between VariantValue, and AnyVariantValue
- *
- *              HINT: this is useful (and why I created) for a Queue of command objects.
- *
  *      @todo   Consider making operator T () less restrictive - and work if conertable. But then not
  *              sure how to get the right type (can I do decltype (GetType())??? - in other words make a T out of
  *              the type_info? I think not...
@@ -54,6 +50,30 @@ namespace   Stroika {
              *  implement a @BlockingQueue<> of Command objects, where you have a bunch of differnt kinds of
              *  commands (objects). The party enquing messages needs to know the types, and the party dequing them
              *  does, but nobody else.
+             *
+             *  Example Rationale:
+             *      Often in more complex applications, one wants to have a producer - consumer system, with type safety
+             *      and some kind of generic message routing. For example - consider the idea of the SOAP Envelope / Body
+             *      distinction.
+             *
+             *      This also can easily be constructed with the Stroika BlockingQueue<>.
+             *
+             *      If you want to have type safety on construction of the shared objects to be safely know about on
+             *      two ends (the producer and the consumer) but want to have a layer of software in between that handles
+             *      the routing (as with SOAP) - having the ability to genericify an object, and then undo that (could also use
+             *      serializaiton) - can be handy.
+             *
+             *      Note - this CAN be accomplished using templates as the in-between routing layer. But that approach has a
+             *      number of defects including:
+             *          o   Very complex message routing libraries - all in tempaltes - are hard to use because of bad
+             *              compiler diagnostics when there is some mis-match.
+             *
+             *          o   Code bloat from complex/duplicative middle layers (routing layers).
+             *
+             *          o   Lack of modularity/hiding - all the template code needs to be in header files to be expanded.
+             *
+             *      Using AnyVariantValue can be a simple remedy to this. At the message routing (between producer/consumer) layer
+             *      you wrap your objects in AnyVariantValue, and then (type safely) unpack them on the other end.
              *
              *  @see VariantValue
              */
