@@ -20,6 +20,14 @@
  *
  *  TODO:
  *
+ *      @todo   Lose static cast stuff - and instead use As<> - for consistency with the rest
+ *              of Stroika. Document (in some overall design doc) - the choice of As<> versus
+ *              explicit conversion operator. I THINK the rationale is that:
+ *                  static_cast<T> (n) is about the same as n.As<T> () - except that overload
+ *                  semantics work better for static_cast<T> (n) - THINK ABOUT THIS - verus
+ *                  .As<T> () is somewhat shorter, and more clear, and works with compilers that
+ *                  dont have explicit operators.
+ *
  *      @todo   consider using stuff like remove_references and remove_const to 'normalize' the T type
  *              used here. Might make it a little easier to use.
  *
@@ -107,7 +115,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename   RETURNTYPE>
-#if qCompilerAndStdLib_Supports_ExplicitConversionOperators
+#if     qCompilerAndStdLib_Supports_ExplicitConversionOperators
                 nonvirtual explicit operator RETURNTYPE () const;
 #else
                 nonvirtual operator RETURNTYPE () const;
