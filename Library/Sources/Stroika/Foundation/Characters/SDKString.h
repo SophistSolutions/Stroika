@@ -24,7 +24,7 @@ namespace   Stroika {
 
 
             /**
-             *  This is the kind of String passedt to most platform APIs.
+             *  This is the kind of String passed to most platform APIs.
              *
              *  @see SDKChar
              */
@@ -32,7 +32,7 @@ namespace   Stroika {
 
 
             /**
-             *  MACRO to wrap strings to get const SDKChar*
+             *  SDKSTR is a macro to wrap constant string literals to get const SDKChar*
              */
 #if     qTargetPlatformSDKUseswchar_t
 #define SDKSTR(x)    L ## x
