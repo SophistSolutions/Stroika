@@ -6,7 +6,7 @@
 #include    <fstream>
 #include    <iostream>
 
-#include    "Stroika/Foundation/Characters/TString.h"
+#include    "Stroika/Foundation/Characters/SDKString.h"
 #include    "Stroika/Foundation/Characters/StringUtils.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
