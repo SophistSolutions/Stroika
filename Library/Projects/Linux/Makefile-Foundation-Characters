@@ -10,6 +10,8 @@ vpath %cpp $(SrcDir)
 Objs	=	\
 	$(ObjDir)CodePage.o\
 	$(ObjDir)Format.o\
+	$(ObjDir)SDKChar.o\
+	$(ObjDir)SDKString.o\
 	$(ObjDir)String.o\
 	$(ObjDir)StringUtils.o\
 	$(ObjDir)RegularExpression.o\

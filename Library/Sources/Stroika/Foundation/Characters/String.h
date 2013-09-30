@@ -326,13 +326,6 @@ namespace   Stroika {
                 static  String  FromSDKString (const SDKChar* from, const SDKChar* to);
                 static  String  FromSDKString (const SDKString& from);
 
-
-                // tmphack
-                // qUSE_BACKWARD_COMPAT_TSTRING_CODE
-                static  String  FromTString (const SDKChar* from)                       { return FromSDKString (from); }
-                static  String  FromTString (const SDKChar* from, const SDKChar* to)    { return FromSDKString (from, to); }
-                static  String  FromTString (const SDKString& from)                     { return FromSDKString (from); }
-
             public:
                 /**
                  *  Create a String object from a 'char-based' (os-setting - current code page) encoded string.
@@ -672,14 +665,6 @@ namespace   Stroika {
                  */
                 nonvirtual  SDKString   AsSDKString () const;
                 nonvirtual  void        AsSDKString (SDKString* into) const;
-
-
-            public:
-                // tmphack - LOSE SOON - LGP 2013-09-29
-                // qUSE_BACKWARD_COMPAT_TSTRING_CODE
-                nonvirtual  SDKString   AsTString () const                  { return AsSDKString (); }
-                nonvirtual  void        AsTString (SDKString* into) const   { AsSDKString (into); };
-
 
             public:
                 /**
