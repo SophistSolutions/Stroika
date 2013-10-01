@@ -60,7 +60,7 @@ namespace   Stroika {
              *  and not treated as out of range.
              */
             template    <typename   RANGE_TYPE>
-            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const typename RANGE_TYPE& r);
+            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r);
 
 
         }

@@ -61,7 +61,7 @@ namespace   Stroika {
 
 
             template    <typename   RANGE_TYPE>
-            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const typename RANGE_TYPE& r)
+            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r)
             {
                 typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kMin, RANGE_TYPE::TraitsType::kMax);
                 if (not (RANGE_TYPE::TraitsType::kMin <= useVal)) {
