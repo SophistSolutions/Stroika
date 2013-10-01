@@ -47,8 +47,20 @@ namespace   Stroika {
             string  CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData);
 
 
+            /**
+             *  Note - for floating point ElementType - if the values are 'really close' - they are pinned to the min/max
+             *  and not treated as out of range.
+             */
             template    <typename   RANGE_TYPE>
             RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e);
+
+
+            /**
+             *  Note - for floating point ElementType - if the values are 'really close' - they are pinned to the min/max
+             *  and not treated as out of range.
+             */
+            template    <typename   RANGE_TYPE>
+            typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const typename RANGE_TYPE& r);
 
 
         }
