@@ -13,6 +13,7 @@
 #include    "../Execution/Exceptions.h"
 
 #include    "BadFormatException.h"
+#include    "CheckedConverter.h"
 
 
 namespace   Stroika {
@@ -189,13 +190,7 @@ namespace   Stroika {
                     }
                     ElementType from    =   mapper->ToObject<ElementType> (*m.Lookup (L"Begin"));
                     ElementType to      =   mapper->ToObject<ElementType> (*m.Lookup (L"End"));
-                    if (not (RANGE_TYPE::TraitsType::kMin <= from and from < RANGE_TYPE::TraitsType::kMax)) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
-                    }
-                    if (not (RANGE_TYPE::TraitsType::kMin <= to and to < RANGE_TYPE::TraitsType::kMax)) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
-                    }
-                    * actualInto = RANGE_TYPE (from, to);
+                    * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
             }
