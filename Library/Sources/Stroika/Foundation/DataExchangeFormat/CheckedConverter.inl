@@ -11,18 +11,21 @@
  ********************************************************************************
  */
 
-
 #include    <type_traits>
 
+#include    "../Math/Common.h"
 #include    "../Execution/Exceptions.h"
-
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   DataExchangeFormat {
 
 
-
+            /*
+             ********************************************************************************
+             *********************** DataExchangeFormat::Private_ ***************************
+             ********************************************************************************
+             */
             namespace Private_ {
                 template    <typename T>
                 inline  typename std::enable_if < !std::is_floating_point<T>::value, T >::type CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
@@ -42,6 +45,12 @@ namespace   Stroika {
                 }
             }
 
+
+            /*
+             ********************************************************************************
+             ************** DataExchangeFormat::CheckedConverter_Range **********************
+             ********************************************************************************
+             */
             template    <typename   RANGE_TYPE>
             RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e)
             {
@@ -60,6 +69,11 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ********* DataExchangeFormat::CheckedConverter_ValueInRange ********************
+             ********************************************************************************
+             */
             template    <typename   RANGE_TYPE>
             typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r)
             {
