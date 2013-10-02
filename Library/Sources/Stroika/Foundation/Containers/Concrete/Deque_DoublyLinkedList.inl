@@ -52,7 +52,7 @@ namespace   Stroika {
                     virtual T                   RemoveHead () override;
                     virtual Memory::Optional<T> RemoveHeadIf () override;
                     virtual T                   Head () const override;
-                    virtual Memory::Optional<T> HeadIf () override;
+                    virtual Memory::Optional<T> HeadIf () const override;
                     virtual void                RemoveAll () override;
 
                     // Deque<T, TRAITS>::_IRep overrides

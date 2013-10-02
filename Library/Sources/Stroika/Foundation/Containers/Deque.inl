@@ -46,7 +46,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                this->AddAllToTail (start, end);
+                this->AddAllToTail (src);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const _SharedPtrIRep& rep)
