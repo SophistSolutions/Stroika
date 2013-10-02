@@ -132,9 +132,7 @@ namespace   Stroika {
                 nonvirtual  Memory::Optional<T> PeekHead () const;
 
             private:
-                mutex                       fMutex_;    //tmphack cuz Queue<> doesnt return optionals...
                 Event                       fDataAvailable_;
-                // Temporarily must use lock_gaurd because API for Queue<> mal-designed for threaded access (need things returing optional)
                 Containers::Queue<T>        fQueue_;
             };
 

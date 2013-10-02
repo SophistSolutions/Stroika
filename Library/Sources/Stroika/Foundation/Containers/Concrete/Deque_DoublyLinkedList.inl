@@ -48,10 +48,12 @@ namespace   Stroika {
 
                     // Queue<T, TRAITS>::_IRep overrides
                 public:
-                    virtual void        AddTail (T item) override;
-                    virtual T           RemoveHead () override;
-                    virtual T           Head () const override;
-                    virtual void        RemoveAll () override;
+                    virtual void                AddTail (T item) override;
+                    virtual T                   RemoveHead () override;
+                    virtual Memory::Optional<T> RemoveHeadIf () override;
+                    virtual T                   Head () const override;
+                    virtual Memory::Optional<T> HeadIf () override;
+                    virtual void                RemoveAll () override;
 
                     // Deque<T, TRAITS>::_IRep overrides
                 public:
@@ -154,10 +156,34 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
+                Memory::Optional<T>    Deque_DoublyLinkedList<T, TRAITS>::Rep_::RemoveHeadIf ()
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        if (fData_.IsEmpty ()) {
+                            return Memory::Optional<T> ();
+                        }
+                        T   item =  fData_.GetFirst ();
+                        fData_.RemoveFirst ();
+                        return item;
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
                 T    Deque_DoublyLinkedList<T, TRAITS>::Rep_::Head () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetFirst ());
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename T, typename TRAITS>
+                Memory::Optional<T>    Deque_DoublyLinkedList<T, TRAITS>::Rep_::HeadIf () const
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        if (fData_.IsEmpty ()) {
+                            return Memory::Optional<T> ();
+                        }
+                        return fData_.GetFirst ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

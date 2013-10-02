@@ -23,18 +23,14 @@ namespace   Stroika {
              */
             template    <typename T>
             BlockingQueue<T>::BlockingQueue ()
-                : fMutex_ ()
-                , fDataAvailable_ ()
+                : fDataAvailable_ ()
                 , fQueue_ ()
             {
             }
             template    <typename T>
             void    BlockingQueue<T>::AddTail (T e, Time::DurationSecondsType timeout)
             {
-                {
-                    lock_guard<mutex> critSec (fMutex_);
-                    fQueue_.AddTail (e);
-                }
+                fQueue_.AddTail (e);
                 fDataAvailable_.Set ();
             }
             template    <typename T>
@@ -42,11 +38,9 @@ namespace   Stroika {
             {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
-                    {
-                        lock_guard<mutex> critSec (fMutex_);
-                        if (not fQueue_.empty ()) {
-                            return fQueue_.RemoveHead ();
-                        }
+                    Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ();
+                    if (not t.empty ()) {
+                        return t
                     }
                     fDataAvailable_.Wait (waitTil - Time::GetTickCount ());
                 }
@@ -54,31 +48,12 @@ namespace   Stroika {
             template    <typename T>
             Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
-                if (timeout <= 0.0) {
-                    lock_guard<mutex> critSec (fMutex_);
-                    if (fQueue_.empty ()) {
-                        return Memory::Optional<T> ();
-                    }
-                    return fQueue_.RemoveHead ();
-                }
-                else {
-                    // weak but adequate impl
-                    try {
-                        return RemoveHead (timeout);
-                    }
-                    catch (...) {
-                        return Memory::Optional<T> ();
-                    }
-                }
+                return fQueue_.RemoveHeadIf ();
             }
             template    <typename T>
             Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
-                lock_guard<mutex> critSec (fMutex_);
-                if (fQueue_.empty ()) {
-                    return Memory::Optional<T> ();
-                }
-                return fQueue_.Head ();
+                return fQueue_.HeadIf ();
             }
 
 

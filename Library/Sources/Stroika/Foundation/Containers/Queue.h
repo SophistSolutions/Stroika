@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Common/Compare.h"
+#include    "../Memory/Optional.h"
 #include    "../Traversal/Iterable.h"
 
 
@@ -157,7 +158,17 @@ namespace   Stroika {
             public:
                 /**
                  */
+                nonvirtual  Memory::Optional<T>       HeadIf () const;
+
+            public:
+                /**
+                 */
                 nonvirtual  T       RemoveHead ();
+
+            public:
+                /**
+                 */
+                nonvirtual  Memory::Optional<T>       RemoveHeadIf ();
 
             public:
                 /**
@@ -257,10 +268,12 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual void        AddTail (T item)                        =   0;
-                virtual T           RemoveHead ()                           =   0;
-                virtual T           Head () const                           =   0;
-                virtual void        RemoveAll ()                            =   0;
+                virtual void                AddTail (T item)                        =   0;
+                virtual T                   RemoveHead ()                           =   0;
+                virtual Memory::Optional<T> RemoveHeadIf ()                         =   0;
+                virtual T                   Head () const                           =   0;
+                virtual Memory::Optional<T> HeadIf () const                         =   0;
+                virtual void                RemoveAll ()                            =   0;
             };
 
 

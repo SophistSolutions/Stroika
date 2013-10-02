@@ -89,9 +89,19 @@ namespace   Stroika {
                 return _GetRep ().Head ();
             }
             template    <typename T, typename TRAITS>
+            inline  Memory::Optional<T>       Queue<T, TRAITS>::HeadIf () const
+            {
+                return _GetRep ().HeadIf ();
+            }
+            template    <typename T, typename TRAITS>
             inline  T       Queue<T, TRAITS>::RemoveHead ()
             {
                 return _GetRep ().RemoveHead ();
+            }
+            template    <typename T, typename TRAITS>
+            inline  Memory::Optional<T>       Queue<T, TRAITS>::RemoveHeadIf ()
+            {
+                return _GetRep ().RemoveHeadIf ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Queue<T, TRAITS>::Enqueue (T item)
