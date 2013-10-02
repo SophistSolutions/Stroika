@@ -81,7 +81,10 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Simple wait. Can use operator HANDLE() to do fancier waits
+                 *  Simple wait. Can use operator HANDLE() to do fancier waits.
+                 *  timeout can be negative (which triggers an immediate exception).
+                 *
+                 *  WaitTimedOutException throw when the timeout is exceeeded.
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
