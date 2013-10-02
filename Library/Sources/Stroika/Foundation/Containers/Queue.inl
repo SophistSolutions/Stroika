@@ -39,7 +39,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-//                AddAll (src);   // @todo - use new EnqueueAll()
+                AddAllToTail (q);
             }
 #endif
             template    <typename T, typename TRAITS>
@@ -49,7 +49,7 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AssertNotImplemented ();
-//                AddAll (src);   // @todo - use new EnqueueAll()
+                AddAllToTail (src);
             }
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const _SharedPtrIRep& rep)
@@ -64,8 +64,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AssertNotImplemented ();            // @todo - use new EnqueueAll()
-//                AddAll (start, end);
+                AddAllToTail (start, end);
             }
             template    <typename T, typename TRAITS>
             inline  const typename  Queue<T, TRAITS>::_IRep&    Queue<T, TRAITS>::_GetRep () const
@@ -103,6 +102,27 @@ namespace   Stroika {
             inline  T       Queue<T, TRAITS>::Dequeue ()
             {
                 return _GetRep ().RemoveHead ();
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename CONTAINER_OF_T>
+            inline  void    Queue<T, TRAITS>::AddAllToTail (const CONTAINER_OF_T& s)
+            {
+                for (auto i : s) {
+                    _GetRep ().AddTail ( &i, &i + 1);
+                }
+            }
+            template    <typename T, typename TRAITS>
+            template    <typename COPY_FROM_ITERATOR_OF_T>
+            inline void Queue<T, TRAITS>::AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+            {
+                for (auto i = start; i != end; ++i) {
+#if     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
+                    _GetRep ().AddTail (&*i, (&*i) + 1);
+#else
+                    T   tmp =   *i;
+                    _GetRep ().AddTail (&tmp, &tmp + 1);
+#endif
+                }
             }
             template    <typename T, typename TRAITS>
             inline  void    Queue<T, TRAITS>::RemoveAll ()

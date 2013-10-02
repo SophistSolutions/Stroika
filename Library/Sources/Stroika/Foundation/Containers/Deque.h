@@ -17,8 +17,7 @@
  *
  *  TODO:
  *
- *      @todo   Implement first draft of code based on
- *                  http://github.com/SophistSolutions/Stroika/blob/master/Archive/Stroika_FINAL_for_STERL_1992/Library/Foundation/Headers/Deque.hh
+ *      @todo   Add CTOR(Iterator<T>) after next release....
  *
  *      @todo   Consider  using the words front/back and push_front/pop_back etc - like with STL
  *
@@ -59,9 +58,6 @@ namespace   Stroika {
              *      A Deque is a Queue that allows additions and removals at either end.
              *
              *      Deques - like Queues - iterate from Head to Tail.
-             *
-             * TODO:
-             *      +   Add CTOR(Iterator<T>) after next release....
              *
              * Notes:
              *

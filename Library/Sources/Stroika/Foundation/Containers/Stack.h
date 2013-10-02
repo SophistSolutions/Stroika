@@ -18,6 +18,9 @@
  *
  *
  *  TODO:
+ *      @todo   Add AddAll()  for now - that creates a temporary stack to revserse. But then use
+ *              enable_if - to check if you can create reverse iterator, and then use that to go backwards?
+ *
  *      @todo   Actual implmeentaitons incomplete - especailly cuz CTOR with params arg ambiguious -
  *              clarify... and implement copy
  *

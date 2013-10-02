@@ -37,7 +37,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (b);
+                this->AddAllToTail (d);
             }
 #endif
             template    <typename T, typename TRAITS>
@@ -46,8 +46,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AssertNotImplemented ();    // must reverse items
-//                AddAll (s);
+                this->AddAllToTail (start, end);
             }
             template    <typename T, typename TRAITS>
             inline  Deque<T, TRAITS>::Deque (const _SharedPtrIRep& rep)
@@ -62,8 +61,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AssertNotImplemented ();    // must reverse items
-//                AddAll (start, end);
+                this->AddAllToTail (start, end);
             }
             template    <typename T, typename TRAITS>
             inline  const typename  Deque<T, TRAITS>::_IRep&    Deque<T, TRAITS>::_GetRep () const
