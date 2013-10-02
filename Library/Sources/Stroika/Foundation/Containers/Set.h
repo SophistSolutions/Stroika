@@ -101,6 +101,9 @@ namespace   Stroika {
                  */
                 Set ();
                 Set (const Set<T, TRAITS>& s);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Set (const std::initializer_list<T>& s);
+#endif
                 template <typename CONTAINER_OF_T>
                 explicit Set (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>

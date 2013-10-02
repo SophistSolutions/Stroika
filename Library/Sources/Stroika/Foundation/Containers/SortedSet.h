@@ -72,6 +72,9 @@ namespace   Stroika {
             public:
                 SortedSet ();
                 SortedSet (const SortedSet<T, TRAITS>& s);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                SortedSet (const std::initializer_list<T>& s);
+#endif
                 template <typename CONTAINER_OF_T>
                 explicit SortedSet (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>

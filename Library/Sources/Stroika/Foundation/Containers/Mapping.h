@@ -22,6 +22,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo   Get rid of AddAll_pair() by using std::enable_if<> - I think I can chekc if its pair or KeyValuePair
+ *              that way. That will simplify alot!
+ *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
@@ -129,6 +133,10 @@ namespace   Stroika {
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
+                Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
+#endif
 #if     !qBROKEN_MAPPING_CTOR_OF_STDMAP
 #if 1
                 Mapping (const map<KEY_TYPE, VALUE_TYPE>& m);

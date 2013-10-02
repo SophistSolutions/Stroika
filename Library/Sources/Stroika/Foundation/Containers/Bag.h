@@ -152,6 +152,9 @@ namespace   Stroika {
             public:
                 Bag ();
                 Bag (const Bag<T, TRAITS>& b);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Bag (const std::initializer_list<T>& b);
+#endif
                 template <typename CONTAINER_OF_T>
                 explicit Bag (const CONTAINER_OF_T& b);
                 template <typename COPY_FROM_ITERATOR_OF_T>

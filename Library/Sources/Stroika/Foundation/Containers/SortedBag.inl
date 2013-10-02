@@ -36,6 +36,15 @@ namespace   Stroika {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
+#if      qCompilerAndStdLib_Supports_initializer_lists
+            template    <typename T, typename TRAITS>
+            inline  SortedBag<T, TRAITS>::SortedBag (const std::initializer_list<T>& sb)
+                : inherited (static_cast<const inherited&> (Concrete::SortedBag_Factory<T, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (sb);
+            }
+#endif
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedBag<T, TRAITS>::SortedBag (const CONTAINER_OF_T& s)

@@ -31,12 +31,22 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
+#if     qCompilerAndStdLib_Supports_initializer_lists
+            template    <typename T, typename TRAITS>
+            inline  Deque<T, TRAITS>::Deque (const std::initializer_list<T>& d)
+                : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (b);
+            }
+#endif
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Deque<T, TRAITS>::Deque (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
+                AssertNotImplemented ();    // must reverse items
 //                AddAll (s);
             }
             template    <typename T, typename TRAITS>
@@ -52,6 +62,7 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (Concrete::Deque_Factory<T, TRAITS>::mk ()))
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
+                AssertNotImplemented ();    // must reverse items
 //                AddAll (start, end);
             }
             template    <typename T, typename TRAITS>

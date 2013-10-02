@@ -26,6 +26,10 @@
  *      @todo   Embelish docs about iteration order, and order of interpretation of Iteratorbased copy CTOR
  *              and then implement properly. Maybe add AddAll() method? Or EnqueAll??
  *
+ *              MUST add 'bad' enqueueall' for now - that creates a temporary stack to revserse. But then use
+ *              enable_if - to check if you can create reverse iterator, and then use that to go backwards?
+ *
+ *
  *      @todo   Select carefully thoguht through principle descriptive documemtatnion (probably: HEAD/TAIL)
  *              and use that docuemntation PRINCIPLALLY THORUHGOUT THE API (and class docs).
  *
@@ -127,6 +131,9 @@ namespace   Stroika {
                  */
                 Queue ();
                 Queue (const Queue<T, TRAITS>& src);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Queue (const std::initializer_list<T>& q);
+#endif
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>

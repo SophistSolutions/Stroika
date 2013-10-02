@@ -112,6 +112,10 @@ namespace   Stroika {
             public:
                 Tally ();
                 Tally (const Tally<T, TRAITS>& src);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                Tally (const std::initializer_list<T>& s);
+                Tally (const std::initializer_list<TallyEntry<T>>& s);
+#endif
                 template    <typename CONTAINER_OF_T>
                 explicit Tally (const CONTAINER_OF_T& src);
                 Tally (const T* start, const T* end);
