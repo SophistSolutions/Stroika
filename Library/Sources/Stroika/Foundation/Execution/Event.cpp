@@ -60,6 +60,9 @@ void    Event::Wait (Time::DurationSecondsType timeout)
     //Debug::TraceContextBumper ctx (SDKSTR ("Event::Wait"));
     //DbgTrace ("(timeout = %.2f)", timeout);
     CheckForThreadAborting ();
+    if (timeout < 0) {
+        DoThrow (WaitTimedOutException ());
+    }
 #if         qUseThreads_WindowsNative
     AssertNotNull (fEventHandle);
     // must be careful about rounding errors in int->DurationSecondsType->int
