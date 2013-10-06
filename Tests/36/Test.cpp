@@ -115,13 +115,12 @@ namespace {
 namespace {
     void    Test4_MapTest_ ()
     {
-        using   namespace   Containers;
         {
-            Sequence<int>   n;
+            Containers::Sequence<int>   n;
             n.Append (1);
             n.Append (2);
             n.Append (3);
-            Sequence<int>   n1 = Traversal::Map (n, [] (int i) -> int { return i + 1;});
+            Containers::Sequence<int>   n1 = Containers::Sequence<int> (FunctionApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1;}));
             VerifyTestResult (n1.size () == 3);
             VerifyTestResult (n1[0] == 2);
             VerifyTestResult (n1[1] == 3);
@@ -139,13 +138,12 @@ namespace {
 namespace {
     void    Test5_ReduceTest_ ()
     {
-        using   namespace   Containers;
         {
-            Sequence<int>   n;
+            Containers::Sequence<int>   n;
             n.Append (1);
             n.Append (2);
             n.Append (3);
-            int sum = Traversal::Reduce (n, [] (int l, int r) -> int { return l + r; }, 0);
+            int sum = FunctionApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
             VerifyTestResult (sum == 6);
         }
     }
@@ -155,19 +153,17 @@ namespace {
 namespace {
     void    Test6_platying_with_map_reduce_ ()
     {
-        using namespace SuperPreDraftExperiment_;
         using Containers::Sequence;
 
-        BasicMapper     m;
         //Sequence<int> s = { L"a", L"b", L"c" };
-        Sequence<int> s;
+        Containers::Sequence<int> s;
         s.Append (1);
         s.Append (2);
         s.Append (3);
         {
             int countSoFar = 0;
             int answer =
-                DoIt(m, s).
+                FunctionApplicationContext<int>(s).
                 Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
             Map<int> ([] (int s) { return s + 5; }).
             Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
@@ -175,11 +171,11 @@ namespace {
         }
         {
             int countSoFar = 0;
-            Sequence<int> r = Sequence<int> (
-                                  DoIt(m, s).
-                                  Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+            Containers::Sequence<int> r = Containers::Sequence<int> (
+                                              FunctionApplicationContext<int>(s).
+                                              Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
             Map<int> ([] (int s) { return s + 5; })
-                              );
+                                          );
             VerifyTestResult (r.length () == 2);
             VerifyTestResult (r[0] == 6 and r[1] == 8);
         }
