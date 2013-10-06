@@ -54,7 +54,8 @@ namespace   {
             DiscreteRange<int> r (3, 5);
             VerifyTestResult (not r.empty ());
             VerifyTestResult (r.Contains (3));
-        } {
+        }
+        {
             int nItemsHit = 0;
             int lastItemHit = 0;
             for (auto i : DiscreteRange<int> (3, 5)) {

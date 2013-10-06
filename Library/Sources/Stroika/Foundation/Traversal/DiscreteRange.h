@@ -99,10 +99,10 @@ namespace   Stroika {
                         return fStart == fEnd;
                     }
                     virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const {
-                        return _Apply (doToElement);
+                        return this->_Apply (doToElement);
                     }
                     virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const {
-                        return _ApplyUntilTrue (doToElement);
+                        return this->_ApplyUntilTrue (doToElement);
                     }
                 };
 
