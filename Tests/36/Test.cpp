@@ -245,7 +245,23 @@ namespace {
             }
         }
     }
+    void    Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
+    {
+        using   Containers::Sequence;
+        {
+            const uint32_t  kRefCheck_[] = { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97 };
+            auto isPrimeCheck = [] (uint32_t n) -> bool { return Math::IsPrime (n); };
+            for (auto i : FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck)) {
+                VerifyTestResult (Math::IsPrime (i));
+            }
+            Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck));
+            VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
+            VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck).GetLength ());
+        }
+    }
 }
+
+
 
 
 namespace   {
@@ -258,6 +274,7 @@ namespace   {
         Test4_MapTest_ ();
         Test5_ReduceTest_ ();
         Test6_FunctionApplicationContext_ ();
+        Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
     }
 }
 
