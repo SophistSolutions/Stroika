@@ -9,7 +9,7 @@
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
-#include    "Stroika/Foundation/Traversal/MapReduce.h"
+#include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -120,7 +120,7 @@ namespace {
             n.Append (1);
             n.Append (2);
             n.Append (3);
-            Containers::Sequence<int>   n1 = Containers::Sequence<int> (FunctionApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1;}));
+            Containers::Sequence<int>   n1 = Containers::Sequence<int> (FunctionalApplicationContext<int> (n).Map<int> ([] (int i) -> int { return i + 1;}));
             VerifyTestResult (n1.size () == 3);
             VerifyTestResult (n1[0] == 2);
             VerifyTestResult (n1[1] == 3);
@@ -143,7 +143,7 @@ namespace {
             n.Append (1);
             n.Append (2);
             n.Append (3);
-            int sum = FunctionApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
+            int sum = FunctionalApplicationContext<int> (n).Reduce<int> ([] (int l, int r) -> int { return l + r; }, 0);
             VerifyTestResult (sum == 6);
         }
     }
@@ -163,7 +163,7 @@ namespace {
         {
             int countSoFar = 0;
             int answer =
-                FunctionApplicationContext<int>(s).
+                FunctionalApplicationContext<int>(s).
                 Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
             Map<int> ([] (int s) { return s + 5; }).
             Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
@@ -172,7 +172,7 @@ namespace {
         {
             int countSoFar = 0;
             Containers::Sequence<int> r = Containers::Sequence<int> (
-                                              FunctionApplicationContext<int>(s).
+                                              FunctionalApplicationContext<int>(s).
                                               Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
             Map<int> ([] (int s) { return s + 5; })
                                           );

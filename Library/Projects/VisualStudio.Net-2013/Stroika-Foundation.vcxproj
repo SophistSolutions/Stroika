@@ -888,7 +888,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Range.h" />
   </ItemGroup>
   <ItemGroup>
@@ -1120,7 +1120,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Traversal\MapReduce.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Range.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\TODO.md" />

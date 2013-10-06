@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Traversal_MapReduce_inl_
-#define _Stroika_Foundation_Traversal_MapReduce_inl_
+#ifndef _Stroika_Foundation_Traversal_FunctionalApplication_inl_
+#define _Stroika_Foundation_Traversal_FunctionalApplication_inl_
 
 #include    "../Debug/Assertions.h"
 #include    "../Containers/Sequence.h"
@@ -52,35 +52,35 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************** Traversal::FunctionApplicationContext *********************
+             ******************** Traversal::FunctionalApplicationContext *********************
              ********************************************************************************
              */
             template    <typename T, typename MAPPER>
-            inline  FunctionApplicationContext<T, MAPPER>::FunctionApplicationContext (Iterable<T> i, MAPPER m)
+            inline  FunctionalApplicationContext<T, MAPPER>::FunctionalApplicationContext (Iterable<T> i, MAPPER m)
                 : inherited (i)
-                , fMappingEngine (m)
+                , fMappingEngine_ (m)
             {
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            inline  FunctionApplicationContext<OUT_T, MAPPER>   FunctionApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each) const
+            inline  FunctionalApplicationContext<OUT_T, MAPPER>   FunctionalApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each) const
             {
-                return FunctionApplicationContext<OUT_T, MAPPER>  (fMappingEngine.Map (inherited (*this), do2Each), fMappingEngine);
+                return FunctionalApplicationContext<OUT_T, MAPPER>  (fMappingEngine_.Map (inherited (*this), do2Each), fMappingEngine_);
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            inline  T                                           FunctionApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
+            inline  T                                           FunctionalApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
             {
-                return  fMappingEngine.Reduce (inherited (*this), do2Each, memo);
+                return  fMappingEngine_.Reduce (inherited (*this), do2Each, memo);
             }
             template    <typename T, typename MAPPER>
-            inline  FunctionApplicationContext<T, MAPPER>       FunctionApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest) const
+            inline  FunctionalApplicationContext<T, MAPPER>       FunctionalApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest) const
             {
-                return FunctionApplicationContext<T>  (fMappingEngine.Filter (inherited (*this), includeTest), fMappingEngine);
+                return FunctionalApplicationContext<T>  (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
             }
 
 
         }
     }
 }
-#endif /* _Stroika_Foundation_Traversal_MapReduce_inl_ */
+#endif /* _Stroika_Foundation_Traversal_FunctionalApplication_inl_ */
