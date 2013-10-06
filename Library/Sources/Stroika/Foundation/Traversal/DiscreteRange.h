@@ -86,23 +86,22 @@ namespace   Stroika {
                         : fStart (start)
                         , fEnd (end) {
                     }
-                    virtual _SharedPtrIRep      Clone () const {
-                        return _SharedPtrIRep(new MyIteratableRep_ (fStart, fEnd));
+                    virtual typename Iterable<T>::_SharedPtrIRep      Clone () const {
+                        return typename Iterable<T>::_SharedPtrIRep(new MyIteratableRep_ (fStart, fEnd));
                     }
                     virtual Iterator<T>         MakeIterator () const {
-                        return Iterator<T> (Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
+                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
                     }
                     virtual size_t              GetLength () const {
-                        // off by one???
                         return fEnd - fStart;
                     }
                     virtual bool                IsEmpty () const {
-                        return _IsEmpty ();
+                        return fStart == fEnd;
                     }
-                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const {
+                    virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const {
                         return _Apply (doToElement);
                     }
-                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const {
+                    virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const {
                         return _ApplyUntilTrue (doToElement);
                     }
                 };
