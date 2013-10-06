@@ -152,18 +152,32 @@ namespace {
 
 
 namespace {
-    void    Test6_platying_with_map_reduce_ ()
+    void    Test6_FunctionApplicationContext_ ()
     {
         using Containers::Sequence;
 
         {
-            //Sequence<int> s = { L"a", L"b", L"c" };
+#if     qCompilerAndStdLib_Supports_initializer_lists
+            Containers::Sequence<int> s =   { 1, 2, 3};
+#else
             Containers::Sequence<int> s;
             s.Append (1);
             s.Append (2);
             s.Append (3);
+#endif
             {
-                int countSoFar = 0;
+                shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
+                int answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
+                Map<int> ([] (int s) { return s + 5; }).
+                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
+                ;
+                VerifyTestResult (answer == 2);
+            }
+            {
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
                 int answer =
                     FunctionalApplicationContext<int>(s).
                     Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
@@ -172,7 +186,8 @@ namespace {
                 VerifyTestResult (answer == 2);
             }
             {
-                int countSoFar = 0;
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
                 Containers::Sequence<int> r = Containers::Sequence<int> (
                                                   FunctionalApplicationContext<int>(s).
                                                   Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
@@ -185,13 +200,17 @@ namespace {
 
         {
             using   Characters::String;
-            //Sequence<String> s = { L"alpha", L"beta", L"gamma" };
+#if     qCompilerAndStdLib_Supports_initializer_lists
+            Sequence<String> s = { L"alpha", L"beta", L"gamma" };
+#else
             Containers::Sequence<String> s;
             s.Append (L"alpha");
             s.Append ( L"beta");
             s.Append (L"gamma");
+#endif
             {
-                int countSoFar = 0;
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
                 int answer =
                     FunctionalApplicationContext<String>(s).
                     Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
@@ -200,7 +219,8 @@ namespace {
                 VerifyTestResult (answer == 2);
             }
             {
-                int countSoFar = 0;
+                int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
+                // out of scope before this does
                 Containers::Sequence<String> r = Containers::Sequence<String> (
                                                      FunctionalApplicationContext<String>(s).
                                                      Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
@@ -223,7 +243,7 @@ namespace   {
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
         Test4_MapTest_ ();
         Test5_ReduceTest_ ();
-        Test6_platying_with_map_reduce_ ();
+        Test6_FunctionApplicationContext_ ();
     }
 }
 

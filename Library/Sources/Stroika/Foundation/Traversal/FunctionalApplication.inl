@@ -19,7 +19,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename IN_T, typename OUT_T>
-            Iterable<OUT_T>     DirectPushMapEngine::Map (const Iterable<IN_T>& from, const function<OUT_T(IN_T)>& do2Each) const
+            Iterable<OUT_T>     DirectPushMapEngine::Map (const Iterable<IN_T>& from, const function<OUT_T(IN_T)>& do2Each)
             {
                 Containers::Sequence<OUT_T>  result;
                 for (IN_T i : from) {
@@ -29,7 +29,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename IN_T, typename OUT_T>
-            OUT_T                   DirectPushMapEngine::Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo) const
+            OUT_T                   DirectPushMapEngine::Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo)
             {
                 OUT_T    result  =   memo;
                 for (IN_T i : from) {
@@ -38,7 +38,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T>
-            Iterable<T>         DirectPushMapEngine::Filter (const Iterable<T>& from, const function<bool(T)>& includeTest) const
+            Iterable<T>         DirectPushMapEngine::Filter (const Iterable<T>& from, const function<bool(T)>& includeTest)
             {
                 Containers::Sequence<T>  result;
                 for (T i : from) {
@@ -52,7 +52,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************** Traversal::FunctionalApplicationContext *********************
+             ******************** Traversal::FunctionalApplicationContext *******************
              ********************************************************************************
              */
             template    <typename T, typename MAPPER>
@@ -63,18 +63,18 @@ namespace   Stroika {
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            inline  FunctionalApplicationContext<OUT_T, MAPPER>   FunctionalApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each) const
+            inline  FunctionalApplicationContext<OUT_T, MAPPER>   FunctionalApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each)
             {
                 return FunctionalApplicationContext<OUT_T, MAPPER>  (fMappingEngine_.Map (inherited (*this), do2Each), fMappingEngine_);
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            inline  OUT_T                                           FunctionalApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
+            inline  OUT_T                                           FunctionalApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo)
             {
                 return  fMappingEngine_.Reduce (inherited (*this), do2Each, memo);
             }
             template    <typename T, typename MAPPER>
-            inline  FunctionalApplicationContext<T, MAPPER>       FunctionalApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest) const
+            inline  FunctionalApplicationContext<T, MAPPER>       FunctionalApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest)
             {
                 return FunctionalApplicationContext<T>  (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
             }
