@@ -56,25 +56,25 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename MAPPER>
-            FunctionApplicationContext<T, MAPPER>::FunctionApplicationContext (Iterable<T> i, MAPPER m)
+            inline  FunctionApplicationContext<T, MAPPER>::FunctionApplicationContext (Iterable<T> i, MAPPER m)
                 : inherited (i)
                 , fMappingEngine (m)
             {
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            FunctionApplicationContext<OUT_T, MAPPER>     FunctionApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each) const
+            inline  FunctionApplicationContext<OUT_T, MAPPER>   FunctionApplicationContext<T, MAPPER>::Map (const function<OUT_T(T)>& do2Each) const
             {
                 return FunctionApplicationContext<OUT_T, MAPPER>  (fMappingEngine.Map (inherited (*this), do2Each), fMappingEngine);
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            T                       FunctionApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo = OUT_T ()) const
+            inline  T                                           FunctionApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
             {
                 return  fMappingEngine.Reduce (inherited (*this), do2Each, memo);
             }
             template    <typename T, typename MAPPER>
-            FunctionApplicationContext<T, MAPPER>         FunctionApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest) const
+            inline  FunctionApplicationContext<T, MAPPER>       FunctionApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest) const
             {
                 return FunctionApplicationContext<T>  (fMappingEngine.Filter (inherited (*this), includeTest), fMappingEngine);
             }
