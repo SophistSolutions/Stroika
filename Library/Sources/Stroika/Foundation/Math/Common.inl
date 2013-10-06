@@ -202,6 +202,9 @@ namespace   Stroika {
                 if (v == 1) {
                     return false;
                 }
+                if (v == 2) {
+                    return true;    // special case
+                }
                 T   checkUpTo = T (sqrt (v) + 1);
                 // Check each number from 3 up to checkUpTo and see if its a divisor
                 for (T d = 2; d <= checkUpTo; ++d) {

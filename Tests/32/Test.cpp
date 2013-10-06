@@ -69,6 +69,7 @@ namespace   {
     }
     void    Test4_OddEvenPrime_ ()
     {
+        VerifyTestResult (IsPrime (2));
         VerifyTestResult (IsOdd (3));
         VerifyTestResult (IsEven (4));
         VerifyTestResult (IsPrime (5));
