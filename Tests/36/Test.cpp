@@ -50,7 +50,6 @@ namespace   {
 
     void    Test_2_BasicDiscreteRangeIteration_ ()
     {
-#if 0
         {
             DiscreteRange<int> r (3, 5);
             VerifyTestResult (not r.empty ());
@@ -63,10 +62,9 @@ namespace   {
                 VerifyTestResult (lastItemHit < i);
                 lastItemHit = i;
             }
+            VerifyTestResult (nItemsHit == 3);
             VerifyTestResult (lastItemHit == 5);    /// IN DISCUSSION - OPEN ENDED RHS?
         }
-#endif
-
     }
 
 }
