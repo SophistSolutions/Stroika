@@ -26,6 +26,9 @@
  * TODO:
  *
  *
+ *      @todo   Add factory for 'CreateConnection'  - so you can do 'dependnecy injection' or other
+ *              way to configure http client support library (winhttp versus libcurl or other).
+ *
  *      (o)     Decide on and DOCUMENT threading policy. For example - do we need locks internally in the connection object or DEFINE that its
  *              the callers resposabiltiy. PROBABLY best to do in the Connection object itself?
  *
