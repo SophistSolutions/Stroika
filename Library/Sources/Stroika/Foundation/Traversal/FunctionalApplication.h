@@ -23,6 +23,10 @@
  *  NOTES:
  *
  *  TODO:
+ *
+ *      @todo   Need to simplify usage further. Example usage is too wordy. See if we can better use templates
+ *              and defaulting to make more brief basic filter usage.
+ *
  *      @todo   See http://underscorejs.org/#filter - and add filter, and probably others - but not sure what
  *              to call these (functional helpers?)
  *              Same for http://underscorejs.org/#pluck
