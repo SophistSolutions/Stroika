@@ -29,6 +29,13 @@
  *              mapper (doesnt exist yet) - showing how to run multiple IsPrime's at a time in the
  *              context of this mapping stuff.
  *
+ *		@todo	Consider that we COULD implement something like http://underscorejs.org/#pluck
+ *				if we used VariantValue - instead of "T" types. That would have some merrits.
+ *
+ *				Also - using that style (along with ObjectVariantMapper) could allow us to have
+ *				the mapping-engine's not be template based - which might make them easier to
+ *				implement (private/.cpp file).
+ *
  *      @todo    do impl of pull-based iterator stuff
  *
  *              (or at least document deisgn basics)
@@ -195,16 +202,16 @@ namespace   Stroika {
              *          >   each() - not reason to include because Iterable has 'Apply' - use that instead.
              *          >   reject() - not included cuz its the same as filter() - except with NOT on lambda
              */
-            template    <typename T, typename MAPPER = DirectPushMapEngine>
+            template    <typename T, typename MAPPER_ENGINE = DirectPushMapEngine>
             class  FunctionalApplicationContext : public Iterable<T> {
                 typedef Iterable<T> inherited;
 
-                MAPPER      fMappingEngine_;
+                MAPPER_ENGINE      fMappingEngine_;
 
             public:
                 /**
                  */
-                FunctionalApplicationContext (Iterable<T> i, MAPPER m = MAPPER ());
+                FunctionalApplicationContext (Iterable<T> i, MAPPER_ENGINE m = MAPPER_ENGINE ());
 
             public:
                 /**
@@ -212,7 +219,7 @@ namespace   Stroika {
                  *          o   @see http://www.ruby-doc.org/core-2.0/Array.html#method-i-map
                  */
                 template    <typename OUT_T>
-                FunctionalApplicationContext<OUT_T, MAPPER>     Map (const function<OUT_T(T)>& do2Each);
+                FunctionalApplicationContext<OUT_T, MAPPER_ENGINE>     Map (const function<OUT_T(T)>& do2Each);
 
             public:
                 /**
@@ -226,7 +233,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename INOUT_T>
-                FunctionalApplicationContext<INOUT_T, MAPPER>     Filter (const function<bool(INOUT_T)>& includeTest);
+                FunctionalApplicationContext<INOUT_T, MAPPER_ENGINE>     Filter (const function<bool(INOUT_T)>& includeTest);
 
             public:
                 /**
