@@ -10,7 +10,6 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Memory/Optional.h"
-#include    "../Containers/Sequence.h"  //tmp impl hack
 
 #include    "Iterator.h"
 

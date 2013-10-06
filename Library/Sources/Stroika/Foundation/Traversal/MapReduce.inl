@@ -5,6 +5,7 @@
 #define _Stroika_Foundation_Traversal_MapReduce_inl_
 
 #include    "../Debug/Assertions.h"
+#include    "../Containers/Sequence.h"
 
 
 namespace   Stroika {
