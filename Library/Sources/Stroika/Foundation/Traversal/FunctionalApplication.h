@@ -115,13 +115,13 @@ namespace   Stroika {
              */
             struct  DirectPushMapEngine {
                 template    <typename IN_T, typename OUT_T>
-                Iterable<OUT_T>		Map (const Iterable<IN_T>& from, const function<OUT_T(IN_T)>& do2Each) const;
+                Iterable<OUT_T>     Map (const Iterable<IN_T>& from, const function<OUT_T(IN_T)>& do2Each) const;
 
                 template    <typename IN_T, typename OUT_T>
-                OUT_T				Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo) const;
+                OUT_T               Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo) const;
 
                 template    <typename T>
-                Iterable<T>			Filter (const Iterable<T>& from, const function<bool(T)>& includeTest) const;
+                Iterable<T>         Filter (const Iterable<T>& from, const function<bool(T)>& includeTest) const;
             };
 
 
@@ -185,12 +185,12 @@ namespace   Stroika {
 
                 MAPPER      fMappingEngine_;
 
-			public:
-				/**
-				 */
+            public:
+                /**
+                 */
                 FunctionalApplicationContext (Iterable<T> i, MAPPER m = MAPPER ());
 
-			public:
+            public:
                 /**
                  *          o   @see http://en.wikipedia.org/wiki/MapReduce
                  *          o   @see http://www.ruby-doc.org/core-2.0/Array.html#method-i-map
@@ -198,15 +198,15 @@ namespace   Stroika {
                 template    <typename OUT_T>
                 FunctionalApplicationContext<OUT_T, MAPPER>     Map (const function<OUT_T(T)>& do2Each) const;
 
-			public:
+            public:
                 /**
                  *          o   @see http://en.wikipedia.org/wiki/MapReduce
                  *          o   @see http://underscorejs.org/#reduce
                  */
                 template    <typename OUT_T>
-                T                       Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo = OUT_T ()) const;
+                OUT_T                       Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo = OUT_T ()) const;
 
-			public:
+            public:
                 /**
                  */
                 FunctionalApplicationContext<T, MAPPER>         Filter (const function<bool(T)>& includeTest) const;

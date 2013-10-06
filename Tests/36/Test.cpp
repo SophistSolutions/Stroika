@@ -4,10 +4,11 @@
 //  TEST    Foundation::Traveral
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Characters/String.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
 #include    "Stroika/Foundation/Configuration/Enumeration.h"
+#include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
@@ -155,32 +156,60 @@ namespace {
     {
         using Containers::Sequence;
 
-        //Sequence<int> s = { L"a", L"b", L"c" };
-        Containers::Sequence<int> s;
-        s.Append (1);
-        s.Append (2);
-        s.Append (3);
         {
-            int countSoFar = 0;
-            int answer =
-                FunctionalApplicationContext<int>(s).
-                Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
-            Map<int> ([] (int s) { return s + 5; }).
-            Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
-            VerifyTestResult (answer == 2);
-        }
-        {
-            int countSoFar = 0;
-            Containers::Sequence<int> r = Containers::Sequence<int> (
-                                              FunctionalApplicationContext<int>(s).
-                                              Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
-            Map<int> ([] (int s) { return s + 5; })
-                                          );
-            VerifyTestResult (r.length () == 2);
-            VerifyTestResult (r[0] == 6 and r[1] == 8);
+            //Sequence<int> s = { L"a", L"b", L"c" };
+            Containers::Sequence<int> s;
+            s.Append (1);
+            s.Append (2);
+            s.Append (3);
+            {
+                int countSoFar = 0;
+                int answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<int> ([] (int s) { return s + 5; }).
+                Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
+                VerifyTestResult (answer == 2);
+            }
+            {
+                int countSoFar = 0;
+                Containers::Sequence<int> r = Containers::Sequence<int> (
+                                                  FunctionalApplicationContext<int>(s).
+                                                  Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<int> ([] (int s) { return s + 5; })
+                                              );
+                VerifyTestResult (r.length () == 2);
+                VerifyTestResult (r[0] == 6 and r[1] == 8);
+            }
         }
 
-
+        {
+            using   Characters::String;
+            //Sequence<String> s = { L"alpha", L"beta", L"gamma" };
+            Containers::Sequence<String> s;
+            s.Append (L"alpha");
+            s.Append ( L"beta");
+            s.Append (L"gamma");
+            {
+                int countSoFar = 0;
+                int answer =
+                    FunctionalApplicationContext<String>(s).
+                    Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<String> ([] (String s) { return s + L" hello"; }).
+                Reduce<size_t> ([] (String s, size_t memo) { return memo + 1; });
+                VerifyTestResult (answer == 2);
+            }
+            {
+                int countSoFar = 0;
+                Containers::Sequence<String> r = Containers::Sequence<String> (
+                                                     FunctionalApplicationContext<String>(s).
+                                                     Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                Map<String> ([] (String s) { return s + L" hello"; })
+                                                 );
+                VerifyTestResult (r.length () == 2);
+                VerifyTestResult (r[0] == L"alpha hello" and r[1] == L"gamma hello");
+            }
+        }
     }
 }
 

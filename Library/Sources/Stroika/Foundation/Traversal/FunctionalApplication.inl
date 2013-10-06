@@ -69,7 +69,7 @@ namespace   Stroika {
             }
             template    <typename T, typename MAPPER>
             template    <typename OUT_T>
-            inline  T                                           FunctionalApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
+            inline  OUT_T                                           FunctionalApplicationContext<T, MAPPER>::Reduce (const function<OUT_T(T, OUT_T)>& do2Each, OUT_T memo) const
             {
                 return  fMappingEngine_.Reduce (inherited (*this), do2Each, memo);
             }
