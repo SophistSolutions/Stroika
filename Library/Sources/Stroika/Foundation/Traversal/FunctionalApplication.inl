@@ -37,16 +37,26 @@ namespace   Stroika {
                 }
                 return result;
             }
-            template    <typename T>
-            Iterable<T>         DirectPushMapEngine::Filter (const Iterable<T>& from, const function<bool(T)>& includeTest)
+            template    <typename IN_OUT_T>
+            Iterable<IN_OUT_T>         DirectPushMapEngine::Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest)
             {
-                Containers::Sequence<T>  result;
-                for (T i : from) {
+                Containers::Sequence<IN_OUT_T>  result;
+                for (IN_OUT_T i : from) {
                     if (includeTest (i)) {
                         result.Append (i);
                     }
                 }
                 return result;
+            }
+            template    <typename IN_OUT_T>
+            Memory::Optional<IN_OUT_T>         DirectPushMapEngine::Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest)
+            {
+                for (IN_OUT_T i : from) {
+                    if (thatPassesThisTest (i)) {
+                        return i;
+                    }
+                }
+                return Memory::Optional<IN_OUT_T> ();
             }
 
 
@@ -74,9 +84,16 @@ namespace   Stroika {
                 return  fMappingEngine_.Reduce (inherited (*this), do2Each, memo);
             }
             template    <typename T, typename MAPPER>
-            inline  FunctionalApplicationContext<T, MAPPER>       FunctionalApplicationContext<T, MAPPER>::Filter (const function<bool(T)>& includeTest)
+            template    <typename INOUT_T>
+            inline  FunctionalApplicationContext<INOUT_T, MAPPER>       FunctionalApplicationContext<T, MAPPER>::Filter (const function<bool(INOUT_T)>& includeTest)
             {
-                return FunctionalApplicationContext<T>  (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
+                return FunctionalApplicationContext<INOUT_T, MAPPER>  (fMappingEngine_.Filter (inherited (*this), includeTest), fMappingEngine_);
+            }
+            template    <typename T, typename MAPPER>
+            template    <typename INOUT_T>
+            Memory::Optional<INOUT_T>         FunctionalApplicationContext<T, MAPPER>::Find (const function<bool(INOUT_T)>& thatPassesThisTest)
+            {
+                return fMappingEngine_.Find (inherited (*this), thatPassesThisTest);
             }
 
 

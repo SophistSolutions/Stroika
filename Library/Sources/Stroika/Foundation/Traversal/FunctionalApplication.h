@@ -24,6 +24,11 @@
  *
  *  TODO:
  *
+ *      @todo   DOCUMENT/think through the design choice if Map, and Filter etc - MUST return
+ *              items IN-ORDER. By allowing them to return stuff out of order, they CAN
+ *              by implemented much more efficeintly. Probaly have two functions - Map and Map_UO
+ *              where they do the same thing but Map_UO is not necessarily ordreed.
+ *
  *      @todo   NOTE that DirectPushMapEngine is bad, and we want a pull-based one ASAP.
  *
  *      @todo   Mapper's must be written in such a way that they are smart-pointers nad
@@ -89,8 +94,11 @@ namespace   Stroika {
                 template    <typename IN_T, typename OUT_T>
                 OUT_T               Reduce (const Iterable<IN_T>& from, const function<OUT_T(IN_T, OUT_T)>& do2Each, OUT_T memo);
 
-                template    <typename T>
-                Iterable<T>         Filter (const Iterable<T>& from, const function<bool(T)>& includeTest);
+                template    <typename IN_OUT_T>
+                Iterable<IN_OUT_T>         Filter (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& includeTest);
+
+                template    <typename IN_OUT_T>
+                Memory::Optional<IN_OUT_T>         Find (const Iterable<IN_OUT_T>& from, const function<bool(IN_OUT_T)>& thatPassesThisTest);
             };
 
 
@@ -164,7 +172,13 @@ namespace   Stroika {
              *  comprehensible error messages from the compiler. We can always relax the definition to
              *  use typename FUNCTION in the future - hopefully - without breaking existing using code.
              *
-             *  @see http://underscorejs.org/#reduce for a list of methods we provide here (or should).
+             *  \em What Methods and why?
+             *      Much of this list of methods is based on @see http://underscorejs.org/#reduce
+             *      But much doesn't make sense in stroika. So here is a rough partial summary of what
+             *      is NOT included from there and why
+             *
+             *          >   each() - not reason to include because Iterable has 'Apply' - use that instead.
+             *          >   reject() - not included cuz its the same as filter() - except with NOT on lambda
              */
             template    <typename T, typename MAPPER = DirectPushMapEngine>
             class  FunctionalApplicationContext : public Iterable<T> {
@@ -196,7 +210,14 @@ namespace   Stroika {
             public:
                 /**
                  */
-                FunctionalApplicationContext<T, MAPPER>     Filter (const function<bool(T)>& includeTest);
+                template    <typename INOUT_T>
+                FunctionalApplicationContext<INOUT_T, MAPPER>     Filter (const function<bool(INOUT_T)>& includeTest);
+
+            public:
+                /**
+                 */
+                template    <typename INOUT_T>
+                Memory::Optional<INOUT_T>         Find (const function<bool(INOUT_T)>& thatPassesThisTest);
             };
 
 

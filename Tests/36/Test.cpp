@@ -169,7 +169,7 @@ namespace {
                 shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
                 int answer =
                     FunctionalApplicationContext<int>(s).
-                    Filter ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
+                    Filter<int> ([countSoFar] (int) -> bool { ++(*countSoFar); return (*countSoFar) & 1; }).
                 Map<int> ([] (int s) { return s + 5; }).
                 Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; })
                 ;
@@ -180,7 +180,7 @@ namespace {
                 // out of scope before this does
                 int answer =
                     FunctionalApplicationContext<int>(s).
-                    Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                    Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<int> ([] (int s) { return s + 5; }).
                 Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
@@ -190,11 +190,27 @@ namespace {
                 // out of scope before this does
                 Containers::Sequence<int> r = Containers::Sequence<int> (
                                                   FunctionalApplicationContext<int>(s).
-                                                  Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+                                                  Filter<int> ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<int> ([] (int s) { return s + 5; })
                                               );
                 VerifyTestResult (r.length () == 2);
                 VerifyTestResult (r[0] == 6 and r[1] == 8);
+            }
+            {
+                Memory::Optional<int> answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
+                    Find<int> ([] (int i) -> bool { return i == 1 ; })
+                    ;
+                VerifyTestResult (*answer == 1);
+            }
+            {
+                Memory::Optional<int> answer =
+                    FunctionalApplicationContext<int>(s).
+                    Filter<int> ([] (int i) -> bool { return (i & 1); }).
+                    Find<int> ([] (int i) -> bool { return i == 8 ; })
+                    ;
+                VerifyTestResult (answer.empty ());
             }
         }
 
@@ -213,7 +229,7 @@ namespace {
                 // out of scope before this does
                 int answer =
                     FunctionalApplicationContext<String>(s).
-                    Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                    Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<String> ([] (String s) { return s + L" hello"; }).
                 Reduce<size_t> ([] (String s, size_t memo) { return memo + 1; });
                 VerifyTestResult (answer == 2);
@@ -223,7 +239,7 @@ namespace {
                 // out of scope before this does
                 Containers::Sequence<String> r = Containers::Sequence<String> (
                                                      FunctionalApplicationContext<String>(s).
-                                                     Filter ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
+                                                     Filter<String> ([&countSoFar] (String) -> bool { ++countSoFar; return countSoFar & 1; }).
                 Map<String> ([] (String s) { return s + L" hello"; })
                                                  );
                 VerifyTestResult (r.length () == 2);
