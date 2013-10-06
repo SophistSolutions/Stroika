@@ -164,6 +164,55 @@ namespace   Stroika {
             }
 
 
+            /*
+             ********************************************************************************
+             ********************************** Math::IsOdd *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            bool    IsOdd (T v)
+            {
+                return v % 2 == 1;
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************************* Math::IsEven *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            bool    IsEven (T v)
+            {
+                return v % 2 == 0;
+            }
+
+
+            /*
+             ********************************************************************************
+             ******************************** Math::IsPrime *********************************
+             ********************************************************************************
+             */
+            template    <typename   T>
+            bool    IsPrime (T v)
+            {
+                Require  (v >= 0);  // no negative numbers
+                // @todo - redo this as http://en.wikipedia.org/wiki/Sieve_of_Eratosthenes but this is simpler and
+                // good enuf for me to test...
+                if (v == 1) {
+                    return false;
+                }
+                T   checkUpTo = T (sqrt (v) + 1);
+                // Check each number from 3 up to checkUpTo and see if its a divisor
+                for (T d = 2; d <= checkUpTo; ++d) {
+                    if (v % d == 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
         }
     }
 }

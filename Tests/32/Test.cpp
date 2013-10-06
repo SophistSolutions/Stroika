@@ -67,7 +67,23 @@ namespace   {
         VerifyTestResult (Angle (1.1) + Angle (1.1) < Angle (180, Angle::AngleFormat::eDegrees));
         VerifyTestResult (Angle (1.1) + Angle (1.1) > Angle (120, Angle::AngleFormat::eDegrees));
     }
+    void    Test4_OddEvenPrime_ ()
+    {
+        VerifyTestResult (IsOdd (3));
+        VerifyTestResult (IsEven (4));
+        VerifyTestResult (IsPrime (5));
+        for (int i = 1; i < 1000; ++i) {
+            VerifyTestResult (IsOdd (i) != IsEven (i));
+            if (IsPrime (i)) {
+                VerifyTestResult (i == 2 or IsOdd (i));
+            }
+            if (IsEven (i)) {
+                VerifyTestResult (i == 2 or not IsPrime (i));
+            }
+        }
+    }
 }
+
 
 
 namespace   {
@@ -76,6 +92,7 @@ namespace   {
         Test1_Overlap_ ();
         Test2_Round_ ();
         Test3_Angle_ ();
+        Test4_OddEvenPrime_ ();
     }
 }
 

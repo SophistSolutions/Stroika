@@ -72,6 +72,32 @@ namespace   Stroika {
             T   PinInRange (T initialValue, T lowerBound, T upperBound);
 
 
+            /**
+             *  Note - when we port stroika bignum package - this shoudl support those bignums.
+             */
+            template    <typename   T>
+            bool    IsOdd (T v);
+
+
+            /**
+             *  Note - when we port stroika bignum package - this shoudl support those bignums.
+             */
+            template    <typename   T>
+            bool    IsEven (T v);
+
+
+            /**
+             *  Note - when we port stroika bignum package - this shoudl support those bignums.
+             *
+             *  @todo   Also - we want multiple algiorths for this - including simple search (done now), sieve, and
+             *          partitioned sieves (so use less ram).
+             *
+             *  \req v >= 0
+             */
+            template    <typename   T>
+            bool    IsPrime (T v);
+
+
         }
     }
 }
