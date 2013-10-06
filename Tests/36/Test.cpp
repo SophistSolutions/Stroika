@@ -152,6 +152,42 @@ namespace {
 }
 
 
+namespace {
+    void    Test6_platying_with_map_reduce_ ()
+    {
+        using namespace SuperPreDraftExperiment_;
+        using Containers::Sequence;
+
+        BasicMapper     m;
+        //Sequence<int> s = { L"a", L"b", L"c" };
+        Sequence<int> s;
+        s.Append (1);
+        s.Append (2);
+        s.Append (3);
+        {
+            int countSoFar = 0;
+            int answer =
+                DoIt(m, s).
+                Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+            Map<int> ([] (int s) { return s + 5; }).
+            Reduce<size_t> ([] (int s, size_t memo) { return memo + 1; });
+            VerifyTestResult (answer == 2);
+        }
+        {
+            int countSoFar = 0;
+            Sequence<int> r = Sequence<int> (
+                                  DoIt(m, s).
+                                  Filter ([&countSoFar] (int) -> bool { ++countSoFar; return countSoFar & 1; }).
+            Map<int> ([] (int s) { return s + 5; })
+                              );
+            VerifyTestResult (r.length () == 2);
+            VerifyTestResult (r[0] == 6 and r[1] == 8);
+        }
+
+
+    }
+}
+
 
 namespace   {
 
@@ -162,6 +198,7 @@ namespace   {
         Test_3_SimpleDiscreteRangeWithEnumsTest_ ();
         Test4_MapTest_ ();
         Test5_ReduceTest_ ();
+        Test6_platying_with_map_reduce_ ();
     }
 }
 
