@@ -23,6 +23,61 @@
  *  NOTES:
  *
  *  TODO:
+ *      @todo   MAJOR REDESIGN NEEDED (COLLABORATION WITH KDJ 2013-10-05)
+ *
+ *              >   Consider something like java8 streams - have STREAM<T> - where you have input and
+ *                  output iterator like things.
+ *
+ *                  In fact - better model MAYBE Iteraotr<T> (really input iteraotr) and OutputIterator<T>
+ *
+ *                  Key is defered evalution - and not materializiang inpout and oputput until needed.
+ *
+ *                  Proabbly way to do this is abstract MAPPER engine - and one engine might be trivial thing
+ *                  I have impelmtend below. But another might extenralize - mutltihread, thread pool etc
+ *                  do execute in and out.
+ *
+ *                  See example from http://java.dzone.com/articles/exploring-java8-lambdas-part-1
+ *                  List<String> result =  Arrays.asList("Larry", "Moe", "Curly")
+ *                  .stream()
+ *                  .map(s -> "Hello " + s)
+ *                  .collect(Collectors.toList());
+ *
+ *                  result will be a List<String> containing "Hello Larry", "Hello Moe" and "Hello Curly"
+ *
+ *                  In my model this would be:
+ *                  Mapper m = BasicMapper (or threadedpoolmapper);
+ *                  Sequence<String>  s = {"Larry", "Moe", "Curly"};
+ *                  s = m.Map (s, [] (String s) { return "Hello " + s ; });
+ *
+ *                  as above - result will be String list of "Hello Larry", "Hello Moe" and "Hello Curly"
+ *
+ *                  Key is Map() - thogh not obvious above - takes ITERASTOR as arg, and returns another INOPUT ITERATOR as result.
+ *
+ *                  So we can add Mapper::Filter(InputItarotr, Lambda) - which skips some values, and then chain mappings as in:
+ *                  s = m.Map(m.filter (s, [] { static int i = 0; ++i; return i & 1; }),  [] (String s) { return "Hello " + s ; });
+ *                  That would return "Hello Larry", and "Hello Curly" (skips one in middle cuz i & 1 returns false);
+ *
+ *                  KDJ really wants chaining sort of syntax - like in languages like python wiht ORMs.
+ *
+ *                  e.g. cout >> b >> c >> d;
+ *                  or
+ *                  personTable.select(name.equals('jim')).order_by(date);
+ *
+ *                  Perhaps use << with Mapper.
+ *                  Mapper m;
+ *                  m(s).
+ *                  Filter ([] { static int i = 0; ++i; return i & 1; }).
+ *                  Map (s, [] (String s) { return "Hello " + s ; }).
+ *                  s;
+ *                  (could use operator . effecitly )methods) or operator -> or whatever.
+ *
+ *                  does the same thing. m(s) (function operator applied to Iterator or ocntianer) produces intermeidate object
+ *                  which combines mapper and resulting iterator.
+ *                  Filter (lambda) returns specail object - packing name of function todo iwth arg (lambda)
+ *                  Then the operator>> calls the mapper.thatFunction filter).
+ *
+ *
+ *
  *      @todo   Placeholder - so I know its work todo... but not really even started
  *
  *      @todo   Consider renaming this module to
