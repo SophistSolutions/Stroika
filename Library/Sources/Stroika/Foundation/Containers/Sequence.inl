@@ -269,6 +269,11 @@ namespace   Stroika {
                 AppendAll (items);
                 return *this;
             }
+            template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator== (const Sequence<T, TRAITS>& rhs) const
+            {
+                return Equals (rhs);
+            }
 
 
             /*

@@ -25,6 +25,10 @@
  *
  *  TODO:
  *
+ *
+ *      @todo       Review how we handle Sequence<T>::operaotr== - we have Equals - but not operator==/operator!=. Maybe do
+ *                  in iterable? Or maybe ??? not sure... Hacked in operator== for now - here...
+ *
  *      @todo       Review with Sterl the choice (and better document) - that Sequence<> can be used on type T
  *                  without operator==, but when you got to call Contains/IndexOf/Equals() you get a compile
  *                  error. Can always fix with explicit TRIATS.
@@ -408,6 +412,9 @@ namespace   Stroika {
             public:
                 nonvirtual  Sequence<T, TRAITS>&    operator-= (T item);
                 nonvirtual  Sequence<T, TRAITS>&    operator-= (const Sequence<T, TRAITS>& items);
+
+            public:
+                nonvirtual  bool operator== (const Sequence<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
