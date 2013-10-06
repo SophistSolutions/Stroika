@@ -24,6 +24,21 @@
  *
  *  TODO:
  *
+ *      @todo   add demo project so shows how to use (cleaned up versions of the regtest code)
+ *              Maybe something using bignums (dont exist yet) and the multithreaded threadpool
+ *              mapper (doesnt exist yet) - showing how to run multiple IsPrime's at a time in the
+ *              context of this mapping stuff.
+ *
+ *      @todo    do impl of pull-based iterator stuff
+ *
+ *              (or at least document deisgn basics)
+ *              .. mujst have filter etc funtions not do anything but acuulate lambdas.
+ *              then construct inverted compuation as iterator.
+ *
+ *              MAYBE can do by having each peice that reutrns an iterator do the work
+ *              of priducing apull based iteraotr?
+ *                  THAT SEEM BEST!
+ *
  *      @todo   DOCUMENT/think through the design choice if Map, and Filter etc - MUST return
  *              items IN-ORDER. By allowing them to return stuff out of order, they CAN
  *              by implemented much more efficeintly. Probaly have two functions - Map and Map_UO
