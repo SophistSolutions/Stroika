@@ -16,6 +16,21 @@ namespace   Stroika {
                 namespace   Private {
 
 
+                    /*
+                     ********************************************************************************
+                     ***************************** ReadWriteRep::_Rep *******************************
+                     ********************************************************************************
+                     */
+                    inline ReadWriteRep::_Rep:: _Rep (wchar_t* start, wchar_t* end)
+                        : inherited (start, end)
+                    {
+                    }
+                    inline  wchar_t*    ReadWriteRep::_Rep::_PeekStart ()
+                    {
+                        return const_cast<wchar_t*> (_fStart);
+                    }
+
+
                 }
             }
         }

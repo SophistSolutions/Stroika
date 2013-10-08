@@ -63,8 +63,8 @@ namespace   Stroika {
                                 size_t  len     =   end - start;
                                 ReserveAtLeast_ (len);
                                 if (len != 0) {
-                                    AssertNotNull (PeekStart ());
-                                    (void)::memcpy (PeekStart (), start, len * sizeof (wchar_t));
+                                    AssertNotNull (_PeekStart ());
+                                    (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
                                     _fEnd = _fStart + len;
                                 }
                             }
@@ -74,19 +74,19 @@ namespace   Stroika {
                                 size_t  len     =   end - start;
                                 ReserveAtLeast_ (max (len, reserve));
                                 if (len != 0) {
-                                    AssertNotNull (PeekStart ());
-                                    (void)::memcpy (PeekStart (), start, len * sizeof (wchar_t));
+                                    AssertNotNull (_PeekStart ());
+                                    (void)::memcpy (_PeekStart (), start, len * sizeof (wchar_t));
                                     _fEnd = _fStart + len;
                                 }
                             }
                             ~_Rep () {
 #if     qUseBlockAllocatedForSmallBufStrings
                                 if (fCapacity_ == kBlockAllocMinSizeInwchars) {
-                                    Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (PeekStart ());
+                                    Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (_PeekStart ());
                                     return;
                                 }
 #endif
-                                delete[] PeekStart ();
+                                delete[] _PeekStart ();
                             }
                             virtual     void    InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override {
                                 Require (index >= 0);
@@ -102,7 +102,7 @@ namespace   Stroika {
                                 SetLength (origLen + amountToAdd);
                                 size_t      newLen      =   origLen + amountToAdd;
                                 Assert (newLen == GetLength ());
-                                wchar_t*    gapStart    =   PeekStart () + index;
+                                wchar_t*    gapStart    =   _PeekStart () + index;
                                 // make space for insertion
                                 (void)::memmove (gapStart + amountToAdd, gapStart, (origLen - index) * sizeof (wchar_t));
                                 // now copy in new characters
@@ -163,13 +163,13 @@ namespace   Stroika {
                                     }
 #if     qUseBlockAllocatedForSmallBufStrings
                                     if (fCapacity_ == kBlockAllocMinSizeInwchars) {
-                                        Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (PeekStart ());
+                                        Memory::BlockAllocated<BufferedStringRepBlock_>::operator delete (_PeekStart ());
                                     }
                                     else {
-                                        delete[] PeekStart ();
+                                        delete[] _PeekStart ();
                                     }
 #else
-                                    delete[] PeekStart ();
+                                    delete[] _PeekStart ();
 #endif
                                     _SetData (newBuf, newBuf + len);
                                     fCapacity_ = newCapacity;

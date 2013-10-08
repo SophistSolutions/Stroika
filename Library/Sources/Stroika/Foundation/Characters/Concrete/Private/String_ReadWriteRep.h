@@ -13,6 +13,7 @@
 #include    "String_ReadOnlyRep.h"
 
 
+
 /**
  *  \file
  *
@@ -21,7 +22,6 @@
  *
  */
 
-////// DOPCUMENT SEMI_PRIVATE
 
 
 namespace   Stroika {
@@ -32,41 +32,33 @@ namespace   Stroika {
 
 
                     /**
-                     * This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
-                     * since we don't know in general we can (thats left to subtypes)
+                     *  This is a utility class to implement most of the basic String::_IRep functionality.
+                     *  This implements functions that change the string, but dont GROW it,
+                     *  since we don't know in general we can (thats left to subtypes)
                      *
                      *  explain queer wrapper class cuz protected
                      */
                     struct  ReadWriteRep : String {
-                        struct  _Rep : public ReadOnlyRep::_Rep {
-                            _Rep (wchar_t* start, wchar_t* end)
-                                : ReadOnlyRep::_Rep (start, end) {
-                            }
-                            virtual void    RemoveAll () override {
-                                Assert (_fStart <= _fEnd);
-                                _fEnd = _fStart;
-                            }
-                            virtual void    SetAt (Character item, size_t index) {
-                                Assert (_fStart <= _fEnd);
-                                Require (index < GetLength ());
-                                PeekStart ()[index] = item.As<wchar_t> ();
-                            }
-                            virtual void    RemoveAt (size_t index, size_t amountToRemove) {
-                                Assert (_fStart <= _fEnd);
-                                Require (index + amountToRemove <= GetLength ());
-                                wchar_t*    lhs =   &PeekStart () [index];
-                                wchar_t*    rhs =   &lhs [amountToRemove];
-                                for (size_t i = (_fEnd - _fStart) - index - amountToRemove; i > 0; i--) {
-                                    *lhs++ = *rhs++;
-                                }
-                                _fEnd -= amountToRemove;
-                                Ensure (_fStart <= _fEnd);
-                            }
+                        struct  _Rep : ReadOnlyRep::_Rep {
+                        private:
+                            typedef ReadOnlyRep::_Rep   inherited;
 
+                        protected:
+                            NO_DEFAULT_CONSTRUCTOR(_Rep);
+                            NO_COPY_CONSTRUCTOR(_Rep);
+                            NO_ASSIGNMENT_OPERATOR(_Rep);
+
+                        protected:
+                            _Rep (wchar_t* start, wchar_t* end);
+
+                        protected:
                             //Presume fStart is really a WRITABLE pointer
-                            nonvirtual  wchar_t*    PeekStart () {
-                                return const_cast<wchar_t*> (_fStart);
-                            }
+                            nonvirtual  wchar_t*    _PeekStart ();
+
+                        public:
+                            virtual void    RemoveAll () override;
+                            virtual void    SetAt (Character item, size_t index) override;
+                            virtual void    RemoveAt (size_t index, size_t amountToRemove) override;
                         };
                     };
 
