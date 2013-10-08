@@ -8,6 +8,7 @@ SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Charac
 vpath %cpp $(SrcDir)
 
 Objs	=	\
+	$(ObjDir)String_BufferedStringRep.o\
 	$(ObjDir)String_ReadOnlyRep.o\
 	$(ObjDir)String_ReadWriteRep.o\
 

@@ -75,21 +75,6 @@
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
  *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
  *
- *      @todo   NEED
- *              struct  HELPER_ : String {
- *                  struct  _ReadOnlyRep : public String::_IRep {
- *                      public:
- *              ...
- *              Moved to common place so shared among various impls.
- *
- *              IMPORTANT! Do like we did with CONTAINERS - With better declared public/private/protected REPS and share
- *              as needed among implementations.
- *
- *              VERY IMPORTANT TODO NEXT CUZ REMOVES LOTS OF DUPLICATED CODE!
- *
- *              May need special area/folder for helper backend reps (see String_AsciiOnlyOptimized and
- *              its backend rep?)
- *
  *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
  *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
  *              commutativity issues (wchar* == String versus String == wchar*).

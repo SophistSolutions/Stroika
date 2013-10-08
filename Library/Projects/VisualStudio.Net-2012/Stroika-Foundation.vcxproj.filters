@@ -615,6 +615,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1410,6 +1413,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2116,6 +2122,9 @@
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
   </ItemGroup>

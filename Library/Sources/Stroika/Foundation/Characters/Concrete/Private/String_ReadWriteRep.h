@@ -31,11 +31,11 @@ namespace   Stroika {
                 namespace   Private {
 
                     /**
-                    // This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
-                         // since we don't know in general we can (thats left to subtypes)
-                                     *
-                                      *  explain queer wrapper class cuz protected
-                                      */
+                     * This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
+                     * since we don't know in general we can (thats left to subtypes)
+                     *
+                     *  explain queer wrapper class cuz protected
+                     */
                     struct  ReadWriteRep : String {
                         struct  _Rep : public ReadOnlyRep::_Rep {
                             _Rep (wchar_t* start, wchar_t* end)
