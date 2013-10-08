@@ -16,8 +16,6 @@
  * TODO:
  *      @todo   Add move CTOR
  *
- *      @todo   Evaluate and document effacacy of qUseBlockAllocatedForSmallBufStrings in implementaiton.
- *
  *      @todo   Make rep-type available so that other sibling types can easiy use it to construct/morph
  *              into this type (maybe not needed - cuz they can use String_BufferedArray(xxx).GetRep()().
  *
