@@ -29,12 +29,12 @@
  *              mapper (doesnt exist yet) - showing how to run multiple IsPrime's at a time in the
  *              context of this mapping stuff.
  *
- *		@todo	Consider that we COULD implement something like http://underscorejs.org/#pluck
- *				if we used VariantValue - instead of "T" types. That would have some merrits.
+ *      @todo   Consider that we COULD implement something like http://underscorejs.org/#pluck
+ *              if we used VariantValue - instead of "T" types. That would have some merrits.
  *
- *				Also - using that style (along with ObjectVariantMapper) could allow us to have
- *				the mapping-engine's not be template based - which might make them easier to
- *				implement (private/.cpp file).
+ *              Also - using that style (along with ObjectVariantMapper) could allow us to have
+ *              the mapping-engine's not be template based - which might make them easier to
+ *              implement (private/.cpp file).
  *
  *      @todo    do impl of pull-based iterator stuff
  *
