@@ -6,6 +6,7 @@
 
 #include    "../../../StroikaPreComp.h"
 
+#include    "../../../Containers/Common.h"
 #include    "../../../Debug/Assertions.h"
 #include    "../../../Execution/Exceptions.h"
 
