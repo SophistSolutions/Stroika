@@ -44,6 +44,7 @@ namespace   Stroika {
                             NO_ASSIGNMENT_OPERATOR(_Rep);
                         protected:
                             _Rep (const wchar_t* start, const wchar_t* end);
+
                         protected:
                             // PROTECTED INLINE UTILITY
                             nonvirtual  void    _SetData (const wchar_t* start, const wchar_t* end);
