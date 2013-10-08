@@ -190,6 +190,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
 		mkDirWithLinks2("Foundation/Characters/CString", "Makefile-Foundation-Characters-CString");
 		mkDirWithLinks2("Foundation/Characters/Concrete", "Makefile-Foundation-Characters-Concrete");
+		mkDirWithLinks3("Foundation/Characters/Concrete/Private", "Makefile-Foundation-Characters-Concrete-Private");
 		mkDirWithLinks("Foundation/Common", "Makefile-Foundation-Common");
 		mkDirWithLinks("Foundation/Configuration", "Makefile-Foundation-Configuration");
 		mkDirWithLinks("Foundation/Containers", "Makefile-Foundation-Containers");

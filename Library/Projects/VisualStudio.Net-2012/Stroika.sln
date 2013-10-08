@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-
 		..\Linux\Makefile-Foundation-Cache = ..\Linux\Makefile-Foundation-Cache
 		..\Linux\Makefile-Foundation-Characters = ..\Linux\Makefile-Foundation-Characters
 		..\Linux\Makefile-Foundation-Characters-Concrete = ..\Linux\Makefile-Foundation-Characters-Concrete
+		..\Linux\Makefile-Foundation-Characters-Concrete-Private = ..\Linux\Makefile-Foundation-Characters-Concrete-Private
 		..\Linux\Makefile-Foundation-Characters-CString = ..\Linux\Makefile-Foundation-Characters-CString
 		..\Linux\Makefile-Foundation-Common = ..\Linux\Makefile-Foundation-Common
 		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration

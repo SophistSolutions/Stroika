@@ -5,6 +5,9 @@ include	../../../SharedMakeVariables.mk
 RelPathToStroikaDevRoot	=	../../../../../../../
 SrcDir					=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Characters/Concrete
 
+SubDirs	=	\
+	Private \
+
 vpath %cpp $(SrcDir)
 
 Objs	=	\
@@ -14,5 +17,16 @@ Objs	=	\
 	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime_ReadOnly.o\
 	$(ObjDir)String_ExternalMemoryOwnership_StackLifetime_ReadWrite.o\
 
-all:	$(Objs)
+.PHONY:	$(SubDirs)
 
+all:	$(Objs) $(SubDirs)
+
+PRIVATE_OBJS := $(addprefix "Private/", $(shell $(MAKE) --directory Private -s list-objs))
+
+
+list-objs::
+	@echo $(PRIVATE_OBJS)
+
+
+Private:
+	@$(MAKE) --directory Private -s

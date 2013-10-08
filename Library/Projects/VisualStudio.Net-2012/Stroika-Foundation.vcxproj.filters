@@ -136,6 +136,9 @@
     <Filter Include="Sources\Traversal">
       <UniqueIdentifier>{6d8e7b2e-8462-4c11-9524-5b47803066fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Characters\Concrete\Private">
+      <UniqueIdentifier>{7ea026ed-8aff-4db6-841d-207e93b1ba12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -605,6 +608,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
       <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.cpp">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1395,6 +1401,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.h">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2096,6 +2105,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl">
       <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.inl">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
   </ItemGroup>
 </Project>
