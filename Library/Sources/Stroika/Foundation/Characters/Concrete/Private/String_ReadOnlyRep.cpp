@@ -53,7 +53,7 @@ inline  int ReadOnlyRep::_Rep::Compare_CS_ (const Character* rhsStart, const Cha
 {
 // TODO: Need a more efficient implementation - but this should do for starters...
     Assert (_fStart <= _fEnd);
-    size_t lLen = GetLength ();
+    size_t lLen = _GetLength ();
     size_t rLen = (rhsEnd - rhsStart);
     size_t length   =   min (lLen, rLen);
     for (size_t i = 0; i < length; i++) {
@@ -70,7 +70,7 @@ inline  int ReadOnlyRep::_Rep::Compare_CI_ (const Character* rhsStart, const Cha
     Assert (_fStart <= _fEnd);
     // Not sure wcscasecmp even helps because of convert to c-str
     //return ::wcscasecmp (l.c_str (), r.c_str ());;
-    size_t lLen = GetLength ();
+    size_t lLen = _GetLength ();
     size_t rLen = (rhsEnd - rhsStart);
     size_t length   =   min (lLen, rLen);
     for (size_t i = 0; i < length; i++) {
