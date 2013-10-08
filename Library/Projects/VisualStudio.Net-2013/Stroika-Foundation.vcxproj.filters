@@ -136,6 +136,9 @@
     <Filter Include="Sources\Traversal">
       <UniqueIdentifier>{6d8e7b2e-8462-4c11-9524-5b47803066fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Characters\Concrete\Private">
+      <UniqueIdentifier>{f38efb24-6d94-455e-946a-6b618d7abe71}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp">
@@ -597,6 +600,17 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.cpp">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -668,12 +682,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Module.h">
       <Filter>Sources\Execution</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TChar.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\TString.h">
-      <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h">
       <Filter>Sources\Memory\Platform\Windows</Filter>
@@ -1380,6 +1388,17 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.h">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1426,9 +1445,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Module.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\TString.inl">
-      <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.inl">
       <Filter>Sources\Memory\Platform\Windows</Filter>
@@ -2072,6 +2088,17 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl">
       <Filter>Sources\Memory</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadOnlyRep.inl">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl">
+      <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
   </ItemGroup>
 </Project>
