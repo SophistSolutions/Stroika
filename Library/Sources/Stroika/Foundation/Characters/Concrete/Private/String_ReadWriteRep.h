@@ -30,6 +30,7 @@ namespace   Stroika {
             namespace   Concrete {
                 namespace   Private {
 
+
                     /**
                      * This is a utility class to implement most of the basic String::_IRep functionality. This implements functions that change the string, but dont GROW it,
                      * since we don't know in general we can (thats left to subtypes)
