@@ -274,6 +274,11 @@ namespace   Stroika {
             {
                 return Equals (rhs);
             }
+            template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator!= (const Sequence<T, TRAITS>& rhs) const
+            {
+                return not Equals (rhs);
+            }
 
 
             /*
