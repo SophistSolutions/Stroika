@@ -8,6 +8,8 @@
 
 #include    <cstdint>
 
+#include    "../Characters/String.h"
+
 #include    "VersionDefs.h"
 
 
@@ -42,7 +44,7 @@ namespace   Stroika {
              */
             struct  Version {
                 Version (FullVersionType fullVersionNumber = 0);
-                //Version (const SDKString& hfWin32Version4DoTString);
+                Version (const Characters::String& win32Version4DoTString);
                 Version (uint8_t majorVer, uint8_t minorVer, VersionStage verStage, uint8_t verSubStage, bool finalBuild = true);
 
                 uint8_t     fMajorVer;
@@ -51,9 +53,9 @@ namespace   Stroika {
                 uint8_t     fVerSubStage;
                 bool        fFinalBuild;
 
-                FullVersionType AsFullVersionNum () const;
-                //SDKString         AsHFWin32Version4DotString () const;
-                //SDKString         AsHFPrettyVersionString () const;
+                nonvirtual  FullVersionType         AsFullVersionNum () const;
+                nonvirtual  Characters::String      AsWin32Version4DotString () const;
+                nonvirtual  Characters::String      AsPrettyVersionString () const;
             };
 
 
