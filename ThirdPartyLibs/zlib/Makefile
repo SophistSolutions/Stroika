@@ -3,8 +3,7 @@
 
 DoCreateSymLink=0
 
-VERSION=1.2.5
-#VERSION=1.2.8
+VERSION=1.2.7
 BASENAME=zlib-$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -35,15 +34,17 @@ BUILDS_DIR=	CURRENT/Builds/
 all:	$(TRGDIR)
 
 $(ZIPEDFILE):
-	wget --tries=5 --no-check-certificate -O $(ZIPEDFILE)  $(FETCHURL) 
+	wget --tries=10 --no-check-certificate -O $(ZIPEDFILE)  $(FETCHURL) 
 
 $(TRGDIR):	$(ZIPEDFILE)
 	@echo Building $(TRGDIR)...
 	@tar xf $(ZIPEDFILE) --no-same-owner
 ifneq (,$(findstring CYGWIN,$(UNAME)))
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
+	@dos2unix CURRENT/win32/Makefile.msc
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.PATCH
 	@patch -p0 CURRENT/win32/Makefile.msc Patches/Makefile.msc.Z7.PATCH
+	@unix2dos CURRENT/win32/Makefile.msc
 endif
 
 ORIGS:	$(ZIPEDFILE)
