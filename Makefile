@@ -9,7 +9,7 @@ clean:
 
 clobber:
 	./buildall.pl clobber
-	rm -f check-tools
+	rm -f TOOLS_CHECKED
 
 tests:	TOOLS_CHECKED
 	./buildall.pl build+
