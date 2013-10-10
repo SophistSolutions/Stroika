@@ -172,7 +172,6 @@ sub mkDirWithLinks3
 
 
 sub MakeUnixDirs {
-print ("curnte config=$currentConfiguration\n");
 	if ($forceRecreate) {
 		system ("rm -rf $intermediateFiles/$currentConfiguration");
 	}
