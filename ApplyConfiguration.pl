@@ -172,13 +172,15 @@ sub mkDirWithLinks3
 
 
 sub MakeUnixDirs {
+print ("curnte config=$currentConfiguration\n");
 	if ($forceRecreate) {
 		system ("rm -rf $intermediateFiles/$currentConfiguration");
 	}
 	unless (-e "$intermediateFiles/$currentConfiguration") {
-		mkdir "$intermediateFiles/$currentConfiguration/Library";
-		mkdir "$intermediateFiles/$currentConfiguration/Library/Foundation";
-		mkdir "$intermediateFiles/$currentConfiguration/Library/Frameworks";
+		mkdir "$intermediateFiles$currentConfiguration";
+		mkdir "$intermediateFiles$currentConfiguration/Library";
+		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation";
+		mkdir "$intermediateFiles$currentConfiguration/Library/Frameworks";
 
 		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$currentConfiguration/Library/Foundation/Makefile");
 		#system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles$currentConfiguration/Library/Configuration.mk");

@@ -3,6 +3,8 @@
 require "../ScriptsLib/BuildUtils.pl";
 require "../ScriptsLib/ConfigurationReader.pl";
 
+my $activeConfig = GetActiveConfigurationName ();
+
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
@@ -22,12 +24,12 @@ if ("$^O" eq "linux") {
 	#       -- LGP 2013-04-27
 	#
 	if ($useBld eq "rebuild") {
-		RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/ --no-print-directory clobber MAKEFLAGS=");
-		RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/ --no-print-directory clobber MAKEFLAGS=");
+		RunAndStopOnFailure ("make --directory ../IntermediateFiles/$activeConfig/Library/Foundation/ --no-print-directory clobber MAKEFLAGS=");
+		RunAndStopOnFailure ("make --directory ../IntermediateFiles/$activeConfig/Library/Frameworks/ --no-print-directory clobber MAKEFLAGS=");
 		$useBld = "all";
 	}
-	RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Foundation/ --no-print-directory $useBld MAKEFLAGS=");
-	RunAndStopOnFailure ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Library/Frameworks/ --no-print-directory $useBld MAKEFLAGS=");
+	RunAndStopOnFailure ("make --directory ../IntermediateFiles/$activeConfig/Library/Foundation/ --no-print-directory $useBld MAKEFLAGS=");
+	RunAndStopOnFailure ("make --directory ../IntermediateFiles/$activeConfig/Library/Frameworks/ --no-print-directory $useBld MAKEFLAGS=");
 }
 else {
     	my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
