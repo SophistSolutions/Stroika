@@ -1,7 +1,8 @@
 .PHONY:	tests
 .FORCE:	check-tools
+.FORCE:	apply-configurations
 
-all:		TOOLS_CHECKED
+all:		TOOLS_CHECKED APPLIED_CONFIGURATIONS
 	./buildall.pl build
 
 clean:
@@ -9,12 +10,12 @@ clean:
 
 clobber:
 	./buildall.pl clobber
-	rm -f TOOLS_CHECKED
+	rm -f TOOLS_CHECKED APPLIED_CONFIGURATIONS
 
-tests:	TOOLS_CHECKED
+tests:	TOOLS_CHECKED APPLIED_CONFIGURATIONS
 	./buildall.pl build+
 
-run-tests:
+run-tests:	TOOLS_CHECKED APPLIED_CONFIGURATIONS
 	./buildall.pl build+
 
 
@@ -37,3 +38,15 @@ endif
 # Force TOOLS_CHECKED test
 check-tools:	TOOLS_CHECKED
 	@echo "Tools present"
+
+
+APPLIED_CONFIGURATIONS:
+	#todo - must enahnce to support multiple configs
+	# must check here/fail if zero configs and direct user to call make default-configuration
+	@perl ApplyConfiguration.pl --only-if-unconfigured
+	@touch APPLIED_CONFIGURATIONS
+
+apply-configurations:	APPLIED_CONFIGURATIONS
+
+default-configuration:
+	@perl GenerateConfiguration.pl --default-for-platform
