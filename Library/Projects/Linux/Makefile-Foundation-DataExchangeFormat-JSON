@@ -2,7 +2,7 @@ include ../../../Configuration.mk
 include	../../../SharedBuildRules.mk
 include	../../../SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../../../
+RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchangeFormat/JSON/
 
 vpath %cpp $(SrcDir)

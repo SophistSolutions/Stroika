@@ -3,7 +3,7 @@ include	../../../SharedMakeVariables.mk
 include	../../../SharedBuildRules.mk
 
 
-RelPathToStroikaDevRoot		=	../../../../../../../
+RelPathToStroikaDevRoot		=	../../../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/Cryptography/SSL/
 
 vpath %cpp $(SrcDir)
