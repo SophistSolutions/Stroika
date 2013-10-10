@@ -14,7 +14,7 @@ print "Starting regression test #[NNN]: $date ------------------------------\r\n
 
 local $testName = "TestNNN";
 
-DoRunSimpleTestArgv ($ARGV[0], "[NNN]", "../../../../Builds/Platform_Linux/", "$testName");
+DoRunSimpleTestArgv ($ARGV[0], "[NNN]", "../../../../Builds/DefaultConfiguration/", "$testName");
 
 local $date = `sh -c date`;
 chomp ($date);

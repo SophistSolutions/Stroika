@@ -5,7 +5,7 @@
 ###DoCheckBuilds (NNN);
 
 
-CheckFileExists ("../../../../Builds/Platform_Linux/TestNNN");
+CheckFileExists ("../../../../Builds/DefaultConfiguration/TestNNN");
 
 print "[SUCCEEDED]\r\n";
 

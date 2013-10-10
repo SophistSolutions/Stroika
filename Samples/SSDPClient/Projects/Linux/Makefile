@@ -8,7 +8,7 @@ RelPathToStroikaDevRoot	=	../../../
 SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SSDPClient/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Samples_SSDPClient
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_SSDPClient
 
 
 VPATH	=			$(SrcDir)/Sources/

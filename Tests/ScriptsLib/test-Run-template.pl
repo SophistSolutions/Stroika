@@ -15,7 +15,7 @@ sub DoRun {
 	}
 	
 	if ("$^O" eq "linux") {
-		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Platform_Linux/", "Test$testNumber");
+		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/DefaultConfiguration/", "Test$testNumber");
 	}
 	else {
 		DoRunSimpleTestArgv ($ARGV[0], "[$testNumber] $testName", "../../../../Builds/Windows/", "Test$testNumber/Test$testNumber.exe");
