@@ -8,11 +8,11 @@ ifndef TEST_NUM
 endif
 
 
-RelPathToStroikaDevRoot	=	../../../../
+RelPathToStroikaDevRoot	=	../../../
 SrcDir				=	$(RelPathToStroikaDevRoot)Tests/$(TEST_NUM)/
 Includes				+=	-I.
 
-TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/Test$(TEST_NUM)
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Test$(TEST_NUM)
 
 
 VPATH	=			$(SrcDir):$(SrcDir)../TestHarness/

@@ -4,7 +4,7 @@ include	../Library/SharedMakeVariables.mk
 
 
 
-RelPathToStroikaDevRoot	=	../../../../
+RelPathToStroikaDevRoot	=	../../../
 SrcDir				=	$(RelPathToStroikaDevRoot)Samples/SSDPClient/
 Includes				+=	-I.
 

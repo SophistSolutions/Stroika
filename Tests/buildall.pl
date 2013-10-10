@@ -4,6 +4,8 @@ require "../ScriptsLib/ConfigurationReader.pl";
 require ("ScriptsLib/TestsList.pl");
 
 
+my $activeConfig = GetActiveConfigurationName ();
+
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
 	$BLD_TRG = 'Build';
@@ -27,7 +29,7 @@ if ("$^O" eq "linux") {
 		system ("perl BuildProjectsFiles.pl");
 	chdir ($savedDir);
 
-	chdir ("../IntermediateFiles/Platform_Linux/Debug/");
+	chdir ("../IntermediateFiles/$activeConfig/");
 	if ($useBld eq "rebuild") {
 		foreach $tst (GetAllTests ()) {
 			my $tstName = GetTestName ($tst);

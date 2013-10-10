@@ -3,6 +3,8 @@
 require "../../ScriptsLib/ConfigurationReader.pl";
 require "../../ScriptsLib/BuildUtils.pl";
 
+my $activeConfig = GetActiveConfigurationName ();
+
 my $useBld = NormalizeBuildArg ($ARGV[0]);
 
 my @kConfigurations = (	
@@ -22,7 +24,7 @@ if ("$^O" eq "linux") {
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());
 
-	chdir ("../../IntermediateFiles/Platform_Linux/Debug/");
+	chdir ("../../IntermediateFiles/$activeConfig/");
 	if ($useBld eq "rebuild") {
 		print ("Samples_SimpleService; clobber...\n");
 		system ("cd Samples_SimpleService; make -s clobber");
