@@ -6,6 +6,9 @@
 
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include    "../../Foundation/Configuration/StroikaVersion.h"
+#include    "../../Foundation/Configuration/VersionDefs.h"
+
 /*
 @MODULE:    LedConfig
 @DESCRIPTION:
@@ -41,39 +44,19 @@
  *      #endif
  */
 
-///REDO ALL THIS BASED ON STROIKA VERIONS - BUT TO BE CONSISTNET WITH EARLIER VERSIONING, INCRMENMET BASE VERSION
-
-// Support declarations for version#
-#define qLed_Version_Stage_Dev              0x1
-#define qLed_Version_Stage_Alpha            0x2
-#define qLed_Version_Stage_Beta             0x3
-#define qLed_Version_Stage_ReleaseCandidate 0x4
-#define qLed_Version_Stage_Release          0x5
-
-#define MAKE_LED_FULL_VERSION(_Major_,_Minor_,_Stage_,_SubStage_,_FinalBuild_) \
-    ( (_Major_ << 25) | \
-      (_Minor_ << 17) | \
-      (_Stage_ << 9) | \
-      (_SubStage_ << 1) | \
-      (_FinalBuild_) \
-    )
-
-#define qLed_FullVersion        MAKE_LED_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
-
-
-
 
 // This part is where we actually update the version#
 #define qLed_Version_Major                  4
 #define qLed_Version_Minor                  0
 #define qLed_Version_MajorMinor             0x40
-#define qLed_Version_Stage                  qLed_Version_Stage_Dev
-#define qLed_Version_SubStage               1
-#define qLed_Version_FinalBuild             0
+#define qLed_Version_Stage                  kStroika_Version_Stage
+#define qLed_Version_SubStage               kStroika_Version_SubStage
+#define qLed_Version_FinalBuild             kStroika_Version_FinalBuild
 
 #define qLed_MajorMinorVersionString        "4.0"
 #define qLed_ShortVersionString             "4.0d1x"
 
+#define qLed_FullVersion        Stroika_Make_FULL_VERSION (qLed_Version_Major, qLed_Version_Minor, qLed_Version_Stage, qLed_Version_SubStage, qLed_Version_FinalBuild)
 
 
 

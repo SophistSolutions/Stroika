@@ -10,12 +10,17 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#if     defined (__cplusplus)
 namespace   Stroika {
     namespace   Foundation {
         namespace   Configuration {
+#endif
 
 
+#if     defined (__cplusplus)
         }
     }
 }
+#endif
+
 #endif  /*_Stroika_Foundation_Configuration_StroikaVersion_inl_*/
