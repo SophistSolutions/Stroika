@@ -5,6 +5,9 @@
 all:		TOOLS_CHECKED APPLIED_CONFIGURATIONS
 	./buildall.pl build
 
+check:
+	./checkall.pl
+
 clean:
 	./buildall.pl clean
 

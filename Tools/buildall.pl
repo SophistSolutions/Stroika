@@ -15,10 +15,10 @@ if ("$^O" eq "linux") {
 		$useBld = "all";
 	}
 	if ($useBld eq "rebuild") {
-		system ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/ --no-print-directory clobber");
+		system ("make --directory ../IntermediateFiles/DefaultConfiguration/Tools/Frameworks/ --no-print-directory clobber");
 		$useBld = "all";
 	}
-    system ("make --directory ../IntermediateFiles/Platform_Linux/Debug/Tools/Frameworks/ --no-print-directory $useBld");
+    system ("make --directory ../IntermediateFiles/DefaultConfiguration/Tools/Frameworks/ --no-print-directory $useBld");
 }
 else {
     my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();

@@ -2,7 +2,7 @@ include	../../Library/Configuration.mk
 include	../../Library/SharedBuildRules.mk
 include	../../Library/SharedMakeVariables.mk
 
-RelPathToStroikaDevRoot		=	../../../../../
+RelPathToStroikaDevRoot		=	../../../../
 SrcDir						=	$(RelPathToStroikaDevRoot)Tools/Sources/Stroika/Frameworks/
 
 

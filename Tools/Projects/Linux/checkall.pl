@@ -1,5 +1,5 @@
 
-CheckFileExists ("../../../Builds/Platform_Linux/HTMLViewCompiler");
+CheckFileExists ("../../../Builds/DefaultConfiguration/HTMLViewCompiler");
 #CheckFileExists ("../../../Builds/Windows/Release-A-32/HTMLViewCompiler.exe");
 
 #CheckFileExists ("../../../Builds/Windows/Debug-U-32/HTMLViewCompiler.exe");
