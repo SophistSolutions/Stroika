@@ -14,8 +14,8 @@
 #CheckFileExists ("../../../Builds/Windows/Lib/Release-DbgMemLeaks-U-32/Stroika-Foundation.lib");
 
 
-CheckFileExists ("../../../Builds/Platform_Linux/Stroika-Foundation.a");
-CheckFileExists ("../../../Builds/Platform_Linux/Stroika-Frameworks.a");
+CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Foundation.a");
+CheckFileExists ("../../../Builds/DefaultConfiguration/Stroika-Frameworks.a");
 
 
 print "[SUCCEEDED]\r\n";

@@ -20,7 +20,7 @@ endif
 
 
 ifndef StroikaPlatformTargetBuildDir
-	StroikaPlatformTargetBuildDir		=	$(RelPathToStroikaDevRoot)Builds/Platform_Linux/
+	StroikaPlatformTargetBuildDir		=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/
 endif
 
 ifndef StroikaLibDir
@@ -159,5 +159,5 @@ endif
 
 
 ifndef HTMLViewCompiler
-	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/Platform_Linux/HTMLViewCompiler"
+	HTMLViewCompiler	=	"$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/HTMLViewCompiler"
 endif

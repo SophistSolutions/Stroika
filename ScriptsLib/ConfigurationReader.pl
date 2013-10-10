@@ -166,8 +166,18 @@ sub	GetConfigurationParameter {
 }
 
 
+###tmphack - later enum configs and make above stuff 
+sub	GetConfigurations {
+	@names = ("DefaultConfiguration");
+	return @names;
+}
 
-
+### we probably will run makefiles with 'all configs' or specific config. We 
+### may set that current config into an environent var. But for now - just
+### return magic value - config NAME
+sub	GetActiveConfigurationName {
+	return "DefaultConfiguration";
+}
 
 
 

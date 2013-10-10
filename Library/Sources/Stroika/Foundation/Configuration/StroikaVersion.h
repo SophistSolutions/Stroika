@@ -44,9 +44,11 @@ namespace   Stroika {
 #define kStroika_Version_FullVersion                    Stroika_Make_FULL_VERSION (kStroika_Version_Major, kStroika_Version_Minor, kStroika_Version_Stage, kStroika_Version_SubStage, kStroika_Version_FinalBuild)
 
 
+#if     defined (__cplusplus)
         }
     }
 }
+#endif
 
 
 

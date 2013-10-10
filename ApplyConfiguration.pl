@@ -19,6 +19,7 @@ use constant DEFAULT_BOOL_OPTIONS => -1;
 my $intermediateFiles	=	"IntermediateFiles/";
 my $platform			=	"Platform_Linux";
 my $target			=	"Debug";
+my $currentConfiguration	=	"DefaultConfiguration";
 
 my $PROJECTPLATFORMSUBDIR='';
 
@@ -138,7 +139,7 @@ mkdir ($intermediateFiles);
 # For now KISS - just check if the file doesn't exist, and if so write a default value.
 #
 my $configFileCName		=	"Library/Sources/Stroika/Foundation/Configuration/StroikaConfig.h";
-my $configFileMakeName	=	"$intermediateFiles$platform/$target/Library/Configuration.mk";
+my $configFileMakeName	=	"$intermediateFiles$currentConfiguration/Library/Configuration.mk";
 
 
 
@@ -149,42 +150,40 @@ sub mkDirWithLinks
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
-	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
+	system ("ln -s ../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks2
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
-	system ("ln -s ../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
+	system ("ln -s ../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 sub mkDirWithLinks3
 {
 	local $relPath = $_[0];
 	local $makefileName = $_[1];
 
-	mkdir "$intermediateFiles/$platform/$target/Library/$relPath";
-	system ("ln -s ../../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$platform/$target/Library/$relPath/Makefile");
+	mkdir "$intermediateFiles/$currentConfiguration/Library/$relPath";
+	system ("ln -s ../../../../../../../Library/Projects/Linux/$makefileName $intermediateFiles$currentConfiguration/Library/$relPath/Makefile");
 }
 
 
 sub MakeUnixDirs {
 	if ($forceRecreate) {
-		system ("rm -rf $intermediateFiles/$platform");
+		system ("rm -rf $intermediateFiles/$currentConfiguration");
 	}
-	unless (-e "$intermediateFiles/$platform") {
-		mkdir "$intermediateFiles/$platform";
-		mkdir "$intermediateFiles/$platform/$target";
-		mkdir "$intermediateFiles/$platform/$target/Library";
-		mkdir "$intermediateFiles/$platform/$target/Library/Foundation";
-		mkdir "$intermediateFiles/$platform/$target/Library/Frameworks";
+	unless (-e "$intermediateFiles/$currentConfiguration") {
+		mkdir "$intermediateFiles/$currentConfiguration/Library";
+		mkdir "$intermediateFiles/$currentConfiguration/Library/Foundation";
+		mkdir "$intermediateFiles/$currentConfiguration/Library/Frameworks";
 
-		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$platform/$target/Library/Foundation/Makefile");
-		#system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles/$platform/$target/Library/Configuration.mk");
-		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles/$platform/$target/Library/SharedBuildRules.mk");
-		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles/$platform/$target/Library/SharedMakeVariables.mk");
+		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Foundation $intermediateFiles/$currentConfiguration/Library/Foundation/Makefile");
+		#system ("cp Library/Projects/Linux/Configuration-Default.mk $intermediateFiles$currentConfiguration/Library/Configuration.mk");
+		system ("cp Library/Projects/Linux/SharedBuildRules-Default.mk $intermediateFiles$currentConfiguration/Library/SharedBuildRules.mk");
+		system ("cp Library/Projects/Linux/SharedMakeVariables-Default.mk $intermediateFiles$currentConfiguration/Library/SharedMakeVariables.mk");
 
 		mkDirWithLinks("Foundation/Cache", "Makefile-Foundation-Cache");
 		mkDirWithLinks("Foundation/Characters", "Makefile-Foundation-Characters");
@@ -204,7 +203,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks2("Foundation/DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
-		mkdir "$intermediateFiles/$platform/$target/Library/Foundation/Execution/Platform";
+		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation/Execution/Platform";
 		mkDirWithLinks3("Foundation/Execution/Platform/POSIX", "Makefile-Foundation-Execution-Platform-POSIX");
 		mkDirWithLinks("Foundation/IO", "Makefile-Foundation-IO");
 		mkDirWithLinks2("Foundation/IO/FileSystem", "Makefile-Foundation-IO-FileSystem");
@@ -219,7 +218,7 @@ sub MakeUnixDirs {
 		mkDirWithLinks("Foundation/Time", "Makefile-Foundation-Time");
 		mkDirWithLinks("Foundation/Traversal", "Makefile-Foundation-Traversal");
 
-		system ("ln -s ../../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Library/Frameworks/Makefile");
+		system ("ln -s ../../../../Library/Projects/Linux/Makefile-Frameworks $intermediateFiles$currentConfiguration/Library/Frameworks/Makefile");
 
 		mkDirWithLinks("Frameworks/Service", "Makefile-Frameworks-Service");
 		mkDirWithLinks("Frameworks/UPnP", "Makefile-Frameworks-UPnP");
@@ -228,22 +227,22 @@ sub MakeUnixDirs {
 		mkDirWithLinks3("Frameworks/UPnP/SSDP/Server", "Makefile-Frameworks-UPnP-SSDP-Server");
 		mkDirWithLinks("Frameworks/WebServer", "Makefile-Frameworks-WebServer");
 
-		mkdir "$intermediateFiles/$platform/$target/Tools";
-		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/";
-		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/WebServer";
-		mkdir "$intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompiler";
-		system ("ln -s ../../../../../Tools/Projects/Linux/Makefile-Frameworks $intermediateFiles/$platform/$target/Tools/Frameworks/Makefile");
-		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/Makefile");
-		system ("ln -s ../../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles/$platform/$target/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
+		mkdir "$intermediateFiles$currentConfiguration/Tools";
+		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/";
+		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer";
+		mkdir "$intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler";
+		system ("ln -s ../../../../Tools/Projects/Linux/Makefile-Frameworks $intermediateFiles$currentConfiguration/Tools/Frameworks/Makefile");
+		system ("ln -s ../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/Makefile");
+		system ("ln -s ../../../../../../Tools/Projects/Linux/Makefile-Frameworks-WebServer-HTMLViewCompiler $intermediateFiles$currentConfiguration/Tools/Frameworks/WebServer/HTMLViewCompiler/Makefile");
 
-		mkdir "$intermediateFiles/$platform/$target/Samples_SSDPClient";
-		system ("ln -s ../../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SSDPClient/Makefile");
-		mkdir "$intermediateFiles/$platform/$target/Samples_SimpleService";
-		system ("ln -s ../../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles/$platform/$target/Samples_SimpleService/Makefile");
+		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPClient";
+		system ("ln -s ../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
+		mkdir "$intermediateFiles$currentConfiguration/Samples_SimpleService";
+		system ("ln -s ../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
 
 		foreach $tst (GetAllTests ()) {
-			mkdir "$intermediateFiles/$platform/$target/Test$tst";
-			system ("ln -s ../../../../Tests/Projects/Linux/$tst/Makefile $intermediateFiles/$platform/$target/Test$tst/Makefile");
+			mkdir "$intermediateFiles$currentConfiguration/Test$tst";
+			system ("ln -s ../../../Tests/Projects/Linux/$tst/Makefile $intermediateFiles$currentConfiguration/Test$tst/Makefile");
 		}
 	}
 }
