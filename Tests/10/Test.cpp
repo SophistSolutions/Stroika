@@ -59,6 +59,16 @@ namespace {
 }
 
 
+namespace {
+    void    Test2_SimpleBaseClassConversionTraitsConfusion_ ()
+    {
+#if 0
+        /// SERIOUS BUG - WITH HOW I DID BASE CLASS FOR Mapping_stdmap<> -.... second line needs to work!!!
+        SortedMapping<int, float> xxxyy = Concrete::SortedMapping_stdmap<int, float> ();
+        Mapping<int, float> xxxyy = Concrete::Mapping_stdmap<int, float> ();
+#endif
+    }
+}
 
 
 namespace   {
@@ -106,6 +116,8 @@ namespace   {
             >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
             DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
+
+        Test2_SimpleBaseClassConversionTraitsConfusion_ ();
     }
 }
 
