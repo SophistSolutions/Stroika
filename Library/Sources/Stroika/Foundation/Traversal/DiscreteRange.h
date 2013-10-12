@@ -28,12 +28,43 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+
+            template    <typename T, typename SIGNED_DIFF_TYPE = size_t, typename UNSIGNED_DIFF_TYPE = size_t>
+            struct  DefaultENUM_TESTTRAITS {
+                typedef T                   ElementType;
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr T kMin = T::eSTART;
+                static  constexpr T kMax = eEND;
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
+                static bool GetNext (T* n) {
+                    //tmphack
+                    *n = static_cast<T> (static_cast<int> (*n) + 1);
+                    return true;
+                }
+            };
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            constexpr T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin = T::eSTART;
+            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            constexpr T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax = T::eLAST;
+#endif
+
             /**
              */
             template    <typename T>
             struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T> {
                 // needed for iterator - return false if no more
-                static bool GetNext (T* n);
+                static bool GetNext (T* n) {
+                    //tmphack
+                    *n = static_cast<T> (static_cast<int> (*n) + 1);
+                    return true;
+                }
             };
 
 
@@ -59,8 +90,15 @@ namespace   Stroika {
             public:
                 /**
                  */
+#if 0
                 DiscreteRange ();
+#endif
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+
+            public:
+                /**
+                 */
+                static  DiscreteRange<T, TRAITS> FullRange ();
 
             public:
                 nonvirtual  bool empty () const;

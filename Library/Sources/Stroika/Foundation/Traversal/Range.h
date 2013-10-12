@@ -212,8 +212,8 @@ namespace   Stroika {
             private:
                 T           fBegin_;
                 T           fEnd_;
-                Openness    fBeginOpenness_: 1;
-                Openness    fEndOpenness_: 1;
+                Openness    fBeginOpenness_;
+                Openness    fEndOpenness_;
             };
 
 

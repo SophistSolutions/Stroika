@@ -24,17 +24,25 @@ namespace   Stroika {
                 DECLARE_USE_BLOCK_ALLOCATION(MyIteratorRep_);
                 T fCur;
                 T fEnd;
+                bool fAtEnd;
                 MyIteratorRep_ (T start, T end)
                     : fCur (start)
-                    , fEnd (end) {
+                    , fEnd (end)
+                    , fAtEnd (false) {
                 }
                 virtual void    More (Memory::Optional<T>* result, bool advance) override {
                     RequireNotNull (result);
                     result->clear ();
                     if (advance) {
-                        fCur++;     // use traits
+                        Require (not fAtEnd);
+                        if (fCur == fEnd) {
+                            fAtEnd = true;
+                        }
+                        else {
+                            TRAITS::GetNext (&fCur);
+                        }
                     }
-                    if (fCur <= fEnd) {// use traits
+                    if (not fAtEnd) {
                         *result = fCur;
                     }
                 }
@@ -71,7 +79,8 @@ namespace   Stroika {
                     return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
                 }
                 virtual size_t              GetLength () const {
-                    return fEnd - fStart;
+                    typedef TRAITS::SignedDifferenceType    SignedDifferenceType;
+                    return static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
                 }
                 virtual bool                IsEmpty () const {
                     return fStart == fEnd;
@@ -90,17 +99,24 @@ namespace   Stroika {
              ***************************** DiscreteRange<T> *********************************
              ********************************************************************************
              */
+#if 0
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange ()
                 : Range<T, TRAITS> (TRAITS::kMin, TRAITS::kMax, Openness::eClosed, Openness::eClosed)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
             {
             }
+#endif
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : Range<T, TRAITS> (begin, end, Openness::eClosed, Openness::eClosed)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
             {
+            }
+            template    <typename T, typename TRAITS>
+            inline  DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::FullRange ()
+            {
+                return DiscreteRange<T, TRAITS> (TRAITS::kMin, TRAITS::kMax);
             }
             template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const

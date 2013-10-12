@@ -71,18 +71,49 @@ namespace   {
 }
 
 
+
 namespace {
     void    Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
     {
         // NYI - but do stuff like:
 
-        enum class Color {
+        enum    class   Color {
             red, blue, green,
 
             Define_Start_End_Count (red, green)
         };
 
+        using   Memory::Optional;
+
+
+        {
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color, DefaultENUM_TESTTRAITS<Color>>::FullRange ()) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                lastItemHit = i;
+            }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
+        }
 #if 0
+        {
+
+            Color a = DefaultRangeTraits<Color>::kMin;
+            Color b = DefaultRangeTraits<Color>::kMax;
+            Color c = numeric_limits<Color>::max ();
+
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color>::FullRange ()) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                lastItemHit = i;
+            }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
+        }
         {
             int nItemsHit = 0;
             Color lastItemHit = Color::red;
