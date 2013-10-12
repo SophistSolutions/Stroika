@@ -50,9 +50,9 @@ namespace   Stroika {
             };
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            constexpr T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin = T::eSTART;
+            const T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin = T::eSTART;
             template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            constexpr T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax = T::eLAST;
+            const T DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax = T::eLAST;
 #endif
 
             /**

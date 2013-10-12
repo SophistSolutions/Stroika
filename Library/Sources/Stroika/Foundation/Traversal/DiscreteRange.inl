@@ -79,7 +79,7 @@ namespace   Stroika {
                     return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
                 }
                 virtual size_t              GetLength () const {
-                    typedef TRAITS::SignedDifferenceType    SignedDifferenceType;
+                    typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
                     return static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
                 }
                 virtual bool                IsEmpty () const {
