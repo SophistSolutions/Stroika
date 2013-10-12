@@ -44,6 +44,7 @@ namespace   Stroika {
              ***************************** Range<T, TRAITS> *********************************
              ********************************************************************************
              */
+#if 0
             template    <typename T, typename TRAITS>
             Range<T, TRAITS>::Range ()
                 : fBegin_ (TRAITS::kMin)
@@ -52,6 +53,7 @@ namespace   Stroika {
                 , fEndOpenness_ (Openness::eOpen)
             {
             }
+#endif
             template    <typename T, typename TRAITS>
             Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen, Openness endOpen)
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
@@ -60,6 +62,11 @@ namespace   Stroika {
                 , fEndOpenness_ (endOpen)
             {
                 Require (fBegin_ <= fEnd_);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
+            {
+                return Range<T, TRAITS> (TRAITS::kMin, TRAITS::kMax);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const

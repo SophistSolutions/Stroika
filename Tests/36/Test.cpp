@@ -42,7 +42,7 @@ namespace   {
         }
         {
             typedef DefaultIntegerRangeTraits < int, int, int, -3, 100 > RT;
-            Range<int, RT> x;
+            Range<int, RT> x    =   Range<int, RT>::FullRange ();
             VerifyTestResult (x.begin () == -3);
             VerifyTestResult (x.end () == 100);
         }
