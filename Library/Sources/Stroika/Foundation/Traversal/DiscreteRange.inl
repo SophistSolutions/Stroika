@@ -92,13 +92,13 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange ()
-                : Range<T, TRAITS> ()
+                : Range<T, TRAITS> (TRAITS::kMin, TRAITS::kMax, Openness::eClosed, Openness::eClosed)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
             {
             }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
-                : Range<T, TRAITS> (begin, end)
+                : Range<T, TRAITS> (begin, end, Openness::eClosed, Openness::eClosed)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
             {
             }
@@ -116,16 +116,6 @@ namespace   Stroika {
             inline  Iterator<T> DiscreteRange<T, TRAITS>::end () const
             {
                 return Iterable<T>::end ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  T   DiscreteRange<T, TRAITS>::GetFirst () const
-            {
-                return Range<T, TRAITS>::begin ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  T   DiscreteRange<T, TRAITS>::GetLast () const
-            {
-                return Range<T, TRAITS>::end () - 1;
             }
 
 

@@ -25,6 +25,9 @@
  *
  *  TODO:
  *
+ *          @todo   we could allow begin > end as a trick to force empty? Not assert failure? else
+ *                  closed/closed can ever be empty. So - wehther discrete range can ever be empty?
+ *
  *          @todo   Range<T, TRAITS>::Overlaps and Range<T, TRAITS>::Intersection and Range<T, TRAITS>::UnionBounds
  *                  need fixing for new open/closed flag
  *

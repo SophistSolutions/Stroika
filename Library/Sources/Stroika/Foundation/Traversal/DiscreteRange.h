@@ -68,18 +68,6 @@ namespace   Stroika {
             public:
                 nonvirtual  Iterator<T> begin () const;
                 nonvirtual  Iterator<T> end () const;
-
-            public:
-                /**
-                 *  returns same as begin
-                 */
-                nonvirtual  T   GetFirst () const;
-
-            public:
-                /**
-                 * returns one less than end!!! - the last valid value
-                 */
-                nonvirtual  T   GetLast () const;
             };
 
 
