@@ -99,14 +99,6 @@ namespace   Stroika {
              ***************************** DiscreteRange<T> *********************************
              ********************************************************************************
              */
-#if 0
-            template    <typename T, typename TRAITS>
-            DiscreteRange<T, TRAITS>::DiscreteRange ()
-                : Range<T, TRAITS> (TRAITS::kMin, TRAITS::kMax, Openness::eClosed, Openness::eClosed)
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
-            {
-            }
-#endif
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : Range<T, TRAITS> (begin, end, Range<T, TRAITS>::Openness::eClosed, Range<T, TRAITS>::Openness::eClosed)

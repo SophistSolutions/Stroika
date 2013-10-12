@@ -90,9 +90,6 @@ namespace   Stroika {
             public:
                 /**
                  */
-#if 0
-                DiscreteRange ();
-#endif
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
             public:

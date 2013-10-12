@@ -126,7 +126,6 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-//                Range ();
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen = Openness::eClosed, Openness endOpen = Openness::eOpen);
 
 #if 0
