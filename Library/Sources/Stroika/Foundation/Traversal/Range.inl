@@ -146,7 +146,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  typename    Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetBeginOpenness () const
             {
-                return fBeginOpenness;
+                return fBeginOpenness_;
             }
             template    <typename T, typename TRAITS>
             inline typename Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetEndOpenness () const
