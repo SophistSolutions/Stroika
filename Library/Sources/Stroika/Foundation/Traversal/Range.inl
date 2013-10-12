@@ -48,19 +48,28 @@ namespace   Stroika {
             Range<T, TRAITS>::Range ()
                 : fBegin_ (TRAITS::kMin)
                 , fEnd_ (TRAITS::kMax)
+                , fBeginOpenness_ (Openness::eClosed)
+                , fEndOpenness_ (Openness::eOpen)
             {
             }
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen, Openness endOpen)
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
+                , fBeginOpenness_ (beginOpen)
+                , fEndOpenness_ (endOpen)
             {
                 Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const
             {
-                return fBegin_ == fEnd_;
+                if (fBeginOpenness_ == Openness::eClosed and fEndOpenness_ == Openness::eClosed) {
+                    return false;
+                }
+                else {
+                    return fBegin_ == fEnd_;
+                }
             }
             template    <typename T, typename TRAITS>
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::size () const
@@ -70,15 +79,21 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Contains (const T& r) const
             {
-                return fBegin_ <= r and r < fEnd_;
+                if (fBegin_ < r and r < fEnd_) {
+                    return true;
+                }
+                if (fBeginOpenness_ == Openness::eClosed and r == fBegin_) {
+                    return true;
+                }
+                if (fEndOpenness_ == Openness::eClosed and r == fEnd_) {
+                    return true;
+                }
+                return false;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& rhs) const
             {
-                if (empty ()) {
-                    return rhs.empty ();
-                }
-                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_;
+                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_ and fBeginOpenness_ == rhs.fBeginOpenness_ and fEndOpenness_ == rhs.fEndOpenness_;
             }
             template    <typename T, typename TRAITS>
             bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const
@@ -127,6 +142,16 @@ namespace   Stroika {
             inline  T    Range<T, TRAITS>::end () const
             {
                 return fEnd_;
+            }
+            template    <typename T, typename TRAITS>
+            inline  typename    Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetBeginOpenness () const
+            {
+                return fBeginOpenness;
+            }
+            template    <typename T, typename TRAITS>
+            inline typename Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetEndOpenness () const
+            {
+                return fEndOpenness_;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const

@@ -24,9 +24,15 @@
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
+ *
+ *          @todo   Range<T, TRAITS>::Overlaps and Range<T, TRAITS>::Intersection and Range<T, TRAITS>::UnionBounds
+ *                  need fixing for new open/closed flag
+ *
  *          @todo   Make Range<T> a smartptr interface (like with containers). Have one rep for HalfOpen and
  *                  another for fullyClosed (subtypes). And Discrte is subtype of FullyClosed.
  *                  I THINK that will go a long way towards addressing sterls (2013-07-05) email issues raised.
+ *
+ *                  RETHINK in light of new open/closed support
  *
  *          @todo   Add operator< support (compare interface)
  *
@@ -106,6 +112,9 @@ namespace   Stroika {
                 typedef TRAITS   TraitsType;
 
             public:
+                enum    class   Openness { eOpen, eClosed };
+
+            public:
                 /**
                  *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
                  *  end refers to past the end).
@@ -115,7 +124,7 @@ namespace   Stroika {
                  *  \req begin <= end (after substitution of optional values)
                  */
                 Range ();
-                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
+                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen = Openness::eClosed, Openness endOpen = Openness::eOpen);
 
             public:
                 /**
@@ -170,14 +179,26 @@ namespace   Stroika {
 
             public:
                 /**
+                 */
+                nonvirtual  Openness    GetBeginOpenness () const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Openness    GetEndOpenness () const;
+
+            public:
+                /**
                  *      Syntactic sugar on Equals()
                  */
                 nonvirtual  bool    operator== (const Range<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator!= (const Range<T, TRAITS>& rhs) const;
 
             private:
-                T       fBegin_;
-                T       fEnd_;
+                T           fBegin_;
+                T           fEnd_;
+                Openness    fBeginOpenness_: 1;
+                Openness    fEndOpenness_: 1;
             };
 
 
