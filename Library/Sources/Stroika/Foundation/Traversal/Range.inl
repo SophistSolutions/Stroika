@@ -13,34 +13,30 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-            /*
-             ********************************************************************************
-             ********* DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> **********
-             ********************************************************************************
-             */
-#if 0
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultRangeTraits_Template_numericLimitsBWA {
+                typedef T                   ElementType;
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  constexpr T kMin = MIN;
+                static  constexpr T kMax = MAX;
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
+            };
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   numeric_limits<T>::min ();
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   numeric_limits<T>::max ();
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
-#endif
-
-
-#if 0
-
-            /*
-             ********************************************************************************
-             ****** DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> ******
-             ********************************************************************************
-             */
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN, T MAX>
-            const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMin   =   MIN;
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN, T MAX>
-            const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMax   =   MAX;
-#endif
+            template    <>
+            struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
+            template    <>
+            struct  DefaultRangeTraits<unsigned int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, 0, UINT_MAX> {};
 #endif
 
 
