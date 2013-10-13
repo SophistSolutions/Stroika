@@ -627,6 +627,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp">
       <Filter>Sources\Configuration</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
+      <Filter>Sources\Traversal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">

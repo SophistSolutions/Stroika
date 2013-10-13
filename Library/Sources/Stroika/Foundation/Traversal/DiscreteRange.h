@@ -79,8 +79,6 @@ namespace   Stroika {
 #endif
 
 
-
-
             /**
              *  EXAMPLE USAGE:
              *      vector<int> v = DiscreteRange (1,10).As<vector<int>> ();

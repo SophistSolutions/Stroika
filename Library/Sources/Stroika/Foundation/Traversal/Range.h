@@ -119,7 +119,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  Range<T, TRAITS> MakeEmpty ();
+                static  Range<T, TRAITS> EmptyRange ();
 #endif
 
             public:

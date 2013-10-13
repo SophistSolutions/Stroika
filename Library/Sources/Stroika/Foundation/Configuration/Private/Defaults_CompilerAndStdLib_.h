@@ -322,7 +322,7 @@
 #elif   defined (_MSC_VER)
 #define qSupportTemplateParamterOfNumericLimitsMinMax           (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
-#define qSupportTemplateParamterOfNumericLimitsMinMax            0
+#define qSupportTemplateParamterOfNumericLimitsMinMax            1
 #endif
 #endif
 
