@@ -92,6 +92,14 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+#endif
+
+
             template    <>
             struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
             template    <>
