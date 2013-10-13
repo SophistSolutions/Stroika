@@ -56,23 +56,48 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            /*
+             *  Common defines for range-types.
+             *
+             *  \em Design Note
+             *      We used base class instead of namespace so 'Openness' name can be injected directly into the used classes.
+             *      There maybe a better way...
+             */
+            class   RangeBase {
+            public:
+                enum    class   Openness { eOpen, eClosed };
+            };
+
+
             /**
              *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
              *          AND wrong type - about singed differnce type =- maybe use declyetype
              */
+            template    <
+            typename T,
+                     RangeBase::Openness beginOpen = RangeBase::Openness::eClosed,
+                     RangeBase::Openness endOpen = RangeBase::Openness::eOpen,
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-#else
-            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+                     T MIN = numeric_limits<T>::min (),
+                     T MAX = numeric_limits<T>::max (),
 #endif
-            struct  DefaultRangeTraits {
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
+            struct  DefaultRangeTraits : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
+                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
+                static  constexpr   Openness    kEndOpenness    =   endOpen;
+
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
                 static  constexpr T kMin = MIN;
                 static  constexpr T kMax = MAX;
+#else
+                static  const T kMin;
+                static  const T kMax;
 #endif
             };
 
@@ -90,7 +115,7 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
-            class   Range {
+            class   Range : public RangeBase {
             public:
                 /**
                  */
@@ -102,9 +127,6 @@ namespace   Stroika {
                 typedef TRAITS   TraitsType;
 
             public:
-                enum    class   Openness { eOpen, eClosed };
-
-            public:
                 /**
                  *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
                  *  end refers to past the end).
@@ -113,14 +135,12 @@ namespace   Stroika {
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
-                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen = Openness::eClosed, Openness endOpen = Openness::eOpen);
+                explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
-#if 0
             public:
                 /**
                  */
                 static  Range<T, TRAITS> EmptyRange ();
-#endif
 
             public:
                 /**
@@ -147,10 +167,12 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    Contains (const T& r) const;
 
+#if 0
             public:
                 /**
                  */
                 nonvirtual  bool    Overlaps (const Range<T, TRAITS>& rhs) const;
+#endif
 
             public:
                 /**
@@ -166,7 +188,7 @@ namespace   Stroika {
                 /**
                  * if two regions are disjoint, this can encompass a larger region than the actual union would
                  */
-                nonvirtual  Range<T, TRAITS> UnionBounds (const Range<T, TRAITS>& rhs) const;
+                nonvirtual  Range<T, TRAITS>    UnionBounds (const Range<T, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -181,12 +203,22 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Openness    GetBeginOpenness () const;
+                static  constexpr   Openness    GetBeginOpenness ();
 
             public:
                 /**
                  */
-                nonvirtual  Openness    GetEndOpenness () const;
+                static  constexpr   Openness    GetEndOpenness ();
+
+            public:
+                /**
+                 */
+                static  constexpr   T    GetBeginMin ();
+
+            public:
+                /**
+                 */
+                static  constexpr   T    GetEndMax ();
 
             public:
                 /**
@@ -198,8 +230,6 @@ namespace   Stroika {
             private:
                 T           fBegin_;
                 T           fEnd_;
-                Openness    fBeginOpenness_;
-                Openness    fEndOpenness_;
             };
 
 

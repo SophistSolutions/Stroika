@@ -14,11 +14,15 @@ namespace   Stroika {
 
 
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultRangeTraits_Template_numericLimitsBWA {
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultRangeTraits_Template_numericLimitsBWA : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+
+                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
+                static  constexpr   Openness    kEndOpenness    =   endOpen;
+
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin = MIN;
                 static  constexpr T kMax = MAX;
@@ -28,15 +32,30 @@ namespace   Stroika {
 #endif
             };
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
+#if 0
             template    <>
-            struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
+            struct  DefaultRangeTraits<int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, INT_MIN, INT_MAX> {};
             template    <>
-            struct  DefaultRangeTraits<unsigned int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, 0, UINT_MAX> {};
+            struct  DefaultRangeTraits<unsigned int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, 0, UINT_MAX> {};
+#endif
+#endif
+
+
+            /*
+             ********************************************************************************
+             DefaultRangeTraits<T,Openness,Openness,T,T,SIGNED_DIFF_TYPE,UNSIGNED_DIFF_TYPE>
+             ********************************************************************************
+             */
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   numeric_limits<T>::min ();
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   numeric_limits<T>::max ();
 #endif
 
 
@@ -46,13 +65,15 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end, Openness beginOpen, Openness endOpen)
+            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
-                , fBeginOpenness_ (beginOpen)
-                , fEndOpenness_ (endOpen)
             {
-                Require (fBegin_ <= fEnd_);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>    Range<T, TRAITS>::EmptyRange ()
+            {
+                return Range<T, TRAITS> (TRAITS::kMax, TRAITS::kMin);
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
@@ -62,28 +83,38 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const
             {
-                if (fBeginOpenness_ == Openness::eClosed and fEndOpenness_ == Openness::eClosed) {
+                if (TRAITS::kMin == TRAITS::kMax) {
                     return false;
                 }
+                if (TRAITS::kBeginOpenness == Openness::eClosed and TRAITS::kEndOpenness == Openness::eClosed) {
+                    return fBegin_ > fEnd_;
+                    //return false;
+                }
                 else {
-                    return fBegin_ == fEnd_;
+                    return fBegin_ >= fEnd_;
                 }
             }
             template    <typename T, typename TRAITS>
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::size () const
             {
+                if (empty ()) {
+                    return 0;
+                }
                 return fEnd_ - fBegin_;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Contains (const T& r) const
             {
+                if (empty ()) {
+                    return false;
+                }
                 if (fBegin_ < r and r < fEnd_) {
                     return true;
                 }
-                if (fBeginOpenness_ == Openness::eClosed and r == fBegin_) {
+                if (TRAITS::kBeginOpenness == Openness::eClosed and r == fBegin_) {
                     return true;
                 }
-                if (fEndOpenness_ == Openness::eClosed and r == fEnd_) {
+                if (TRAITS::kEndOpenness == Openness::eClosed and r == fEnd_) {
                     return true;
                 }
                 return false;
@@ -91,8 +122,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::Equals (const Range<T, TRAITS>& rhs) const
             {
-                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_ and fBeginOpenness_ == rhs.fBeginOpenness_ and fEndOpenness_ == rhs.fEndOpenness_;
+                if (empty ()) {
+                    return rhs.empty ();
+                }
+                return fBegin_ == rhs.fBegin_ and fEnd_ == rhs.fEnd_;
             }
+#if 0
             template    <typename T, typename TRAITS>
             bool    Range<T, TRAITS>::Overlaps (const Range<T, TRAITS>& rhs) const
             {
@@ -105,9 +140,11 @@ namespace   Stroika {
                            pair<T, T> (rhs.fBegin_, rhs.fEnd_)
                        );
             }
+#endif
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
+                // @todo - FIX FOR NEW OPEN/CLOSED FLAGS
                 T   l   =   max (fBegin_, rhs.fBegin_);
                 T   r   =   min (fEnd_, rhs.fEnd_);
                 if (l < r) {
@@ -120,6 +157,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
             {
+                // @todo - FIX FOR NEW OPEN/CLOSED FLAGS
                 Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), rhs.begin ()), max (end (), rhs.end ()));
                 Ensure (result.begin () <= begin ());
                 Ensure (result.begin () <= end ());
@@ -142,14 +180,24 @@ namespace   Stroika {
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline  typename    Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetBeginOpenness () const
+            inline  constexpr   RangeBase::Openness    Range<T, TRAITS>::GetBeginOpenness ()
             {
-                return fBeginOpenness_;
+                return TRAITS::kBeginOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline typename Range<T, TRAITS>::Openness    Range<T, TRAITS>::GetEndOpenness () const
+            inline constexpr    RangeBase::Openness    Range<T, TRAITS>::GetEndOpenness ()
             {
-                return fEndOpenness_;
+                return TRAITS::kEndOpenness;
+            }
+            template    <typename T, typename TRAITS>
+            inline  constexpr   T    Range<T, TRAITS>::GetBeginMin ()
+            {
+                return TRAITS::kMin;
+            }
+            template    <typename T, typename TRAITS>
+            inline constexpr    T    Range<T, TRAITS>::GetEndMax ()
+            {
+                return TRAITS::kMax;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const
