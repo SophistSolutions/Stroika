@@ -84,17 +84,22 @@ namespace   Stroika {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin = MIN;
                 static  constexpr T kMax = MAX;
-            };
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+#else
+                static  const T kMin;
+                static  const T kMax;
 #endif
+            };
             template    <>
             struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <>
+            const int DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX, int, unsigned int>::kMin   =   INT_MIN;
+            template    <>
+            const int DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX, int, unsigned int>::kMax   =   INT_MAX;
+#endif
             template    <>
             struct  DefaultRangeTraits<unsigned int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, 0, UINT_MAX> {};
 #endif
