@@ -48,6 +48,9 @@
 
 
 
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#include    <cstdint>
+#endif
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
@@ -129,6 +132,7 @@ namespace   Stroika {
                 /**
                  */
                 typedef T   ElementType;
+
             public:
                 /**
                  */
