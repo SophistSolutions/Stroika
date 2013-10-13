@@ -41,7 +41,11 @@ namespace   {
             VerifyTestResult (r3.Overlaps (r1));
         }
         {
-            typedef DefaultIntegerRangeTraits < int, int, int, -3, 100 > RT;
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+            typedef DefaultRangeTraits < int, -3, 100 > RT;
+#else
+            typedef DefaultRangeTraits_Template_numericLimitsBWA < int, -3, 100 > RT;
+#endif
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
             VerifyTestResult (x.begin () == -3);
             VerifyTestResult (x.end () == 100);

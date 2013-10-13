@@ -28,6 +28,8 @@ namespace   Stroika {
 #endif
 
 
+#if 0
+
             /*
              ********************************************************************************
              ****** DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> ******
@@ -38,6 +40,7 @@ namespace   Stroika {
             const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMin   =   MIN;
             template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN, T MAX>
             const T DefaultIntegerRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE, MIN, MAX>::kMax   =   MAX;
+#endif
 #endif
 
 

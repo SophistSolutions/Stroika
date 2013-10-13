@@ -52,20 +52,6 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
 
-            /*
-            @CONFIGVAR:     qSupportTemplateParamterOfNumericLimitsMinMax
-            @DESCRIPTION:
-            */
-#ifndef qSupportTemplateParamterOfNumericLimitsMinMax
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qSupportTemplateParamterOfNumericLimitsMinMax           (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
-#elif   defined (_MSC_VER)
-#define qSupportTemplateParamterOfNumericLimitsMinMax           (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qSupportTemplateParamterOfNumericLimitsMinMax            0
-#endif
-#endif
-
 
             /**
              *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
@@ -88,6 +74,7 @@ namespace   Stroika {
             };
 
 
+
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultRangeTraits_Template_numericLimitsBWA {
@@ -104,7 +91,7 @@ namespace   Stroika {
 #endif
 
 
-
+#if 0
             /**
              */
             template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE, T MIN , T MAX>
@@ -121,6 +108,7 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
+#endif
 
 
             /**

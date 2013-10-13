@@ -312,6 +312,21 @@
 
 
 
+/*
+@CONFIGVAR:     qSupportTemplateParamterOfNumericLimitsMinMax
+@DESCRIPTION:
+*/
+#ifndef qSupportTemplateParamterOfNumericLimitsMinMax
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qSupportTemplateParamterOfNumericLimitsMinMax           (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#elif   defined (_MSC_VER)
+#define qSupportTemplateParamterOfNumericLimitsMinMax           (_MSC_VER >= _MS_VS_2k13_VER_)
+#else
+#define qSupportTemplateParamterOfNumericLimitsMinMax            0
+#endif
+#endif
+
+
 
 
 
