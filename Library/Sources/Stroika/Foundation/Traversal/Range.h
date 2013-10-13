@@ -203,22 +203,22 @@ namespace   Stroika {
             public:
                 /**
                  */
-                static  constexpr   Openness    GetBeginOpenness ();
+                static  Openness    GetBeginOpenness ();
 
             public:
                 /**
                  */
-                static  constexpr   Openness    GetEndOpenness ();
+                static  Openness    GetEndOpenness ();
 
             public:
                 /**
                  */
-                static  constexpr   T    GetBeginMin ();
+                static  T    GetBeginMin ();
 
             public:
                 /**
                  */
-                static  constexpr   T    GetEndMax ();
+                static  T    GetEndMax ();
 
             public:
                 /**

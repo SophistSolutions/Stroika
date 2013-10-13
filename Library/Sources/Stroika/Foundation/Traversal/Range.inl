@@ -180,22 +180,22 @@ namespace   Stroika {
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   RangeBase::Openness    Range<T, TRAITS>::GetBeginOpenness ()
+            inline     RangeBase::Openness    Range<T, TRAITS>::GetBeginOpenness ()
             {
                 return TRAITS::kBeginOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline constexpr    RangeBase::Openness    Range<T, TRAITS>::GetEndOpenness ()
+            inline     RangeBase::Openness    Range<T, TRAITS>::GetEndOpenness ()
             {
                 return TRAITS::kEndOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline  constexpr   T    Range<T, TRAITS>::GetBeginMin ()
+            inline     T    Range<T, TRAITS>::GetBeginMin ()
             {
                 return TRAITS::kMin;
             }
             template    <typename T, typename TRAITS>
-            inline constexpr    T    Range<T, TRAITS>::GetEndMax ()
+            inline     T    Range<T, TRAITS>::GetEndMax ()
             {
                 return TRAITS::kMax;
             }
