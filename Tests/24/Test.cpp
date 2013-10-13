@@ -178,7 +178,11 @@ namespace   {
         Person_         withWhom;
     };
     struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
+#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
         AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
+#else
+        AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_):
+#endif
             ComplexObjectReader<Appointment_> (v, attrs) {
         }
         virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
