@@ -39,7 +39,7 @@ namespace   Stroika {
                             fAtEnd = true;
                         }
                         else {
-                            TRAITS::GetNext (&fCur);
+                            fCur = TRAITS::GetNext (fCur);
                         }
                     }
                     if (not fAtEnd) {
@@ -101,8 +101,8 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
-                : Range<T, TRAITS> (begin, end, Range<T, TRAITS>::Openness::eClosed, Range<T, TRAITS>::Openness::eClosed)
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (Range<T, TRAITS>::begin (), Range<T, TRAITS>::end ())))
+                : inherited_RangeType (begin, end, inherited_RangeType::Openness::eClosed, inherited_RangeType::Openness::eClosed)
+                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (inherited_RangeType::begin (), inherited_RangeType::end ())))
             {
             }
             template    <typename T, typename TRAITS>
@@ -113,7 +113,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const
             {
-                return Range<T, TRAITS>::empty ();
+                return inherited_RangeType::empty ();
             }
             template    <typename T, typename TRAITS>
             inline  Iterator<T> DiscreteRange<T, TRAITS>::begin () const

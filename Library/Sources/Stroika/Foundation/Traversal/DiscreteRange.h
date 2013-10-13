@@ -28,8 +28,6 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-#if 1
-
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultDiscreteRangeTraits_Enum  : DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
@@ -37,65 +35,32 @@ namespace   Stroika {
             template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultDiscreteRangeTraits_Enum  : DefaultRangeTraits_Template_numericLimitsBWA<T, T::eSTART, T::eLAST, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #endif
-                static bool GetNext (T* n) {
-                    //tmphack
-                    *n = static_cast<T> (static_cast<int> (*n) + 1);
-                    return true;
+                static T GetNext (T n) {
+                    return static_cast<T> (static_cast<int> (n) + 1);
                 }
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                typedef DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>   RangeTraitsType;
+#else
+                typedef DefaultRangeTraits_Template_numericLimitsBWA<T, T::eSTART, T::eLAST, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
+#endif
             };
 
-
-
-#else
-            template    <typename T, typename SIGNED_DIFF_TYPE = size_t, typename UNSIGNED_DIFF_TYPE = size_t>
-            struct  DefaultDiscreteRangeTraits_Enum {
-                typedef T                   ElementType;
-                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
-                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
-
-#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin = T::eSTART;
-                static  constexpr T kMax = eEND;
-#else
-                static  const T kMin;
-                static  const T kMax;
-#endif
-                static bool GetNext (T* n) {
-                    //tmphack
-                    *n = static_cast<T> (static_cast<int> (*n) + 1);
-                    return true;
-                }
-            };
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultDiscreteRangeTraits_Enum<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin = T::eSTART;
-            template    <typename T, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultDiscreteRangeTraits_Enum<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax = T::eLAST;
-#endif
-#endif
 
             /**
              */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultDiscreteRangeTraits_Arithmetic : DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                // needed for iterator - return false if no more
-                static bool GetNext (T* n) {
-                    //tmphack
-                    *n = static_cast<T> (static_cast<int> (*n) + 1);
-                    return true;
+                static T GetNext (T n) {
+                    return static_cast<T> (static_cast<int> (n) + 1);
                 }
-
                 typedef DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>   RangeTraitsType;
             };
 #else
             template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultDiscreteRangeTraits_Arithmetic : DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                // needed for iterator - return false if no more
-                static bool GetNext (T* n) {
-                    //tmphack
-                    *n = static_cast<T> (static_cast<int> (*n) + 1);
-                    return true;
+                static T GetNext (T n) {
+                    return static_cast<T> (static_cast<int> (n) + 1);
                 }
                 typedef DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> RangeTraitsType;
             };
@@ -127,7 +92,10 @@ namespace   Stroika {
              *      }
              */
             template    <typename T, typename TRAITS = DefaultDiscreteRangeTraits<T>>
-            class  DiscreteRange : public Range<T, TRAITS>, public Iterable<T> {
+            class  DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, public Iterable<T> {
+            private:
+                typedef Range<T, typename TRAITS::RangeTraitsType>  inherited_RangeType;
+
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
