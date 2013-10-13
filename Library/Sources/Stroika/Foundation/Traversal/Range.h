@@ -49,7 +49,7 @@
 
 
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
-#include    <cstdint>
+#include    <climits>
 #endif
 namespace   Stroika {
     namespace   Foundation {
@@ -94,12 +94,6 @@ namespace   Stroika {
             };
             template    <>
             struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <>
-            const int DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX, int, unsigned int>::kMin   =   INT_MIN;
-            template    <>
-            const int DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX, int, unsigned int>::kMax   =   INT_MAX;
-#endif
             template    <>
             struct  DefaultRangeTraits<unsigned int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, 0, UINT_MAX> {};
 #endif
