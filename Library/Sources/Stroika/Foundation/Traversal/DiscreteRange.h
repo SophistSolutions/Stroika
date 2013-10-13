@@ -59,7 +59,7 @@ namespace   Stroika {
              */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            struct  DefaultDiscreteRangeTraits_DEF : DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                 // needed for iterator - return false if no more
                 static bool GetNext (T* n) {
                     //tmphack
@@ -69,7 +69,7 @@ namespace   Stroika {
             };
 #else
             template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            struct  DefaultDiscreteRangeTraits_DEF : DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                 // needed for iterator - return false if no more
                 static bool GetNext (T* n) {
                     //tmphack
@@ -78,6 +78,20 @@ namespace   Stroika {
                 }
             };
 #endif
+
+
+
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>, DefaultDiscreteRangeTraits_DEF<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
+            };
+#else
+            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultENUM_TESTTRAITS<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>, DefaultDiscreteRangeTraits_DEF<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
+            };
+#endif
+
+
 
 
             /**

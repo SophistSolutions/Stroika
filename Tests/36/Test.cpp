@@ -93,23 +93,6 @@ namespace {
         {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
-            for (auto i : DiscreteRange<Color, DefaultENUM_TESTTRAITS<Color>>::FullRange ()) {
-                nItemsHit++;
-                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
-                lastItemHit = i;
-            }
-            VerifyTestResult (nItemsHit == 3);
-            VerifyTestResult (lastItemHit == Color::green);
-        }
-#if 0
-        {
-
-            Color a = DefaultRangeTraits<Color>::kMin;
-            Color b = DefaultRangeTraits<Color>::kMax;
-            Color c = numeric_limits<Color>::max ();
-
-            int nItemsHit = 0;
-            Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color>::FullRange ()) {
                 nItemsHit++;
                 VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
@@ -120,15 +103,27 @@ namespace {
         }
         {
             int nItemsHit = 0;
-            Color lastItemHit = Color::red;
-            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color, DefaultDiscreteRangeTraits<Color>>::FullRange ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit < i);
+                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
                 lastItemHit = i;
             }
-            nItemsHit (lastItemHit == 3);
+            VerifyTestResult (nItemsHit == 3);
             VerifyTestResult (lastItemHit == Color::green);
         }
+        {
+            int nItemsHit = 0;
+            Optional<Color> lastItemHit;
+            for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
+                nItemsHit++;
+                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                lastItemHit = i;
+            }
+            VerifyTestResult (nItemsHit == 3);
+            VerifyTestResult (lastItemHit == Color::green);
+        }
+#if 0
         {
             int nItemsHit = 0;
             Color lastItemHit = Color::red;
