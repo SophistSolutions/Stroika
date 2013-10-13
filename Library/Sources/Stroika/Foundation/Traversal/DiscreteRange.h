@@ -57,8 +57,9 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename T>
-            struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T> {
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                 // needed for iterator - return false if no more
                 static bool GetNext (T* n) {
                     //tmphack
@@ -66,6 +67,17 @@ namespace   Stroika {
                     return true;
                 }
             };
+#else
+            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultDiscreteRangeTraits : DefaultRangeTraits<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                // needed for iterator - return false if no more
+                static bool GetNext (T* n) {
+                    //tmphack
+                    *n = static_cast<T> (static_cast<int> (*n) + 1);
+                    return true;
+                }
+            };
+#endif
 
 
             /**

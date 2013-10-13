@@ -52,29 +52,46 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
 
+// gcc48 this works
+#define qSupportTemplateParamterOfNumericLimitsMinMax 0
+
 
             /**
              *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
              *          AND wrong type - about singed differnce type =- maybe use declyetype
              */
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+#else
+            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+#endif
             struct  DefaultRangeTraits {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
-                static  const T kMin = MIN;
-                static  const T kMax = MAX;
-#if 0
-#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin = numeric_limits<T>::min ();
-                static  constexpr T kMax = numeric_limits<T>::max ();
-#else
-                static  const T kMin;
-                static  const T kMax;
-#endif
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                static  constexpr T kMin = MIN;
+                static  constexpr T kMax = MAX;
 #endif
             };
+
+
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            struct  DefaultRangeTraits_Template_numericLimitsBWA {
+                typedef T                   ElementType;
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+                static  constexpr T kMin = MIN;
+                static  constexpr T kMax = MAX;
+            };
+            template    <>
+            struct  DefaultRangeTraits<int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, INT_MIN, INT_MAX> {};
+            template    <>
+            struct  DefaultRangeTraits<unsigned int, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, 0, UINT_MAX> {};
+#endif
+
 
 
             /**
