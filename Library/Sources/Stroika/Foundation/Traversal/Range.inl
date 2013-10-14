@@ -15,14 +15,14 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+             ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
 
@@ -51,11 +51,16 @@ namespace   Stroika {
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
             {
+                Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::EmptyRange ()
             {
-                return Range<T, TRAITS> (TRAITS::kMax, TRAITS::kMin);
+                Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
+                Range<T, TRAITS>    tmp (TRAITS::kMin, TRAITS::kMin);
+                tmp.fBegin_ = TRAITS::kMax;
+                Ensure (empty ());
+                return tmp;
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
@@ -65,16 +70,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const
             {
-                if (TRAITS::kMin == TRAITS::kMax) {
-                    return false;
+                if (fBegin_ > fEnd_) {
+                    // internal hack done in Range<T, TRAITS>::EmptyRange () - otherwise not possible to create this situation
+                    return true;
                 }
-                if (TRAITS::kBeginOpenness == Openness::eClosed and TRAITS::kEndOpenness == Openness::eClosed) {
-                    return fBegin_ > fEnd_;
-                    //return false;
+                else if (fBegin_ == fEnd_) {
+                    return not (TRAITS::kBeginOpenness == Openness::eClosed and TRAITS::kEndOpenness == Openness::eClosed);
                 }
-                else {
-                    return fBegin_ >= fEnd_;
-                }
+                return false;
             }
             template    <typename T, typename TRAITS>
             inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::size () const
@@ -126,20 +129,27 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
-                // @todo - FIX FOR NEW OPEN/CLOSED FLAGS
+                if (empty () or rhs.empty ()) {
+                    return MakeEmpty ();
+                }
                 T   l   =   max (fBegin_, rhs.fBegin_);
                 T   r   =   min (fEnd_, rhs.fEnd_);
-                if (l < r) {
+                if (l <= r) {
                     return Range<T, TRAITS> (l, r);
                 }
                 else {
-                    return Range<T, TRAITS> ();
+                    return MakeEmpty ();
                 }
             }
             template    <typename T, typename TRAITS>
             Range<T, TRAITS> Range<T, TRAITS>::UnionBounds (const Range<T, TRAITS>& rhs) const
             {
-                // @todo - FIX FOR NEW OPEN/CLOSED FLAGS
+                if (empty ()) {
+                    return rhs;
+                }
+                if (rhs.empty ()) {
+                    return *this;
+                }
                 Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), rhs.begin ()), max (end (), rhs.end ()));
                 Ensure (result.begin () <= begin ());
                 Ensure (result.begin () <= end ());
@@ -154,11 +164,13 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T    Range<T, TRAITS>::begin () const
             {
+                Require (not empty ());
                 return fBegin_;
             }
             template    <typename T, typename TRAITS>
             inline  T    Range<T, TRAITS>::end () const
             {
+                Require (not empty ());
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>

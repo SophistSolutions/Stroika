@@ -36,14 +36,13 @@ namespace   Stroika {
                 static T GetNext (T n) {
                     return static_cast<T> (static_cast<int> (n) + 1);
                 }
-                typedef
-                ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
-                RangeTraitsType
-                ;
+                typedef ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
             };
 
 
             /**
+             *  DefaultDiscreteRangeTraits_Enum<> can be used to generate an automatic traits object (with bounds)
+             *  if you've applied the Define_Start_End_Count() macro to the given enumeration.
              */
             template    <typename T>
             struct  DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {

@@ -25,25 +25,16 @@
  *
  *  TODO:
  *
- *          @todo   we could allow begin > end as a trick to force empty? Not assert failure? else
- *                  closed/closed can ever be empty. So - wehther discrete range can ever be empty?
+ *          @todo   Consider possibly defining some default parameters for ExplicitRangeTraits<> - like
+ *                  size/diff types - probably automatically computed from traits info.
  *
- *          @todo   Range<T, TRAITS>::Overlaps and Range<T, TRAITS>::Intersection and Range<T, TRAITS>::UnionBounds
- *                  need fixing for new open/closed flag
+ *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
+ *                  definition clearly.
  *
- *          @todo   Make Range<T> a smartptr interface (like with containers). Have one rep for HalfOpen and
- *                  another for fullyClosed (subtypes). And Discrte is subtype of FullyClosed.
- *                  I THINK that will go a long way towards addressing sterls (2013-07-05) email issues raised.
+ *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering? Could well order on
+ *                  LHS, and then when equal on RHS, but that wouldn't make sense for all applicaitons.
  *
- *                  RETHINK in light of new open/closed support
- *
- *          @todo   Add operator< support (compare interface)
- *
- *          @todo   When this works with basic numbers, then add specializations to the Time module so that
- *                  this stuff all works with dates, and datetime etc.
- *
- *          @todo   One open question is should we treat all empty intersections as equal? I think yes. So then
- *                  Range(1,1) == Range(3,3)?
+ *          @todo   This this code with Date/Time/etc - and add specailizations if needed to make it work well.
  */
 
 
@@ -65,20 +56,26 @@ namespace   Stroika {
              */
             class   RangeBase {
             public:
+                /**
+                 *  Openness is used to define whether an end of a range is open or closed. Open means
+                 *  not containing the endpoint, and closed means containing the endpoint.
+                 */
                 enum    class   Openness { eOpen, eClosed };
             };
 
 
             /**
+             *  ExplicitRangeTraits<> can be used to specify in line line (type) all the details for the range functionality
+             *  for a given type T.
              */
-            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitRangeTraits : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
-                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
-                static  constexpr   Openness    kEndOpenness    =   endOpen;
+                static  constexpr   Openness    kBeginOpenness  =   BEGIN_OPEN;
+                static  constexpr   Openness    kEndOpenness    =   END_OPEN;
 
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   MIN;
@@ -91,6 +88,10 @@ namespace   Stroika {
 
 
             /**
+             *  DefaultRangeTraits<> is generally used automatically - when you construct a Range<> object without
+             *  specifying traits.
+             *
+             *  This defaults to a half-open (lhs closed, rhs-open) range.
              */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T>
@@ -111,6 +112,11 @@ namespace   Stroika {
 
 
             /**
+             *  A Range<> is analagous to a mathematical range. It's left and and its right side can
+             *  be optionally open or closed.
+             *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
+             *  end refers to past the end).
+             *
              *  Somewhat inspired by, and at least influenced by, the definition in
              *      http://ruby-doc.org/core-2.0/Range.html
              *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties
@@ -118,8 +124,11 @@ namespace   Stroika {
              *
              *  Note - you can do Range<float>, but cannot do DiscreteRange<float> - but can do DiscreteRange<int>.
              *
-             *  KEY NOTE!!!
-             *      HALF OPEN INTERVAL!!!! - LHS is INCLUDED. RHS (END) is NOT INCLUDED!!!!
+             *  A note about an empty range. All empty ranges (of the same type) are equal to one another. It is illegal
+             *  to ask for the start or end of an empty range. Empty ranges contain no points.
+             *
+             *  Since a range is half/open/closed by default, this means that
+             *      Range<int> (1,1) == Range(3,3) would be true, since the are both empty.
              *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
@@ -136,12 +145,11 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
-                 *  end refers to past the end).
-                 *
                  *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
                  *
                  *  \req begin <= end (after substitution of optional values)
+                 *
+                 *  Use @EmptyRange () to create an empty range object.
                  */
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
@@ -184,6 +192,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  If two ranges are both empty, they will both be equal.
                  */
                 nonvirtual  bool    Equals (const Range<T, TRAITS>& rhs) const;
 
@@ -200,11 +209,13 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \req not empty ();
                  */
                 nonvirtual  T    begin () const;
 
             public:
                 /**
+                 *  \req not empty ();
                  */
                 nonvirtual  T    end () const;
 
