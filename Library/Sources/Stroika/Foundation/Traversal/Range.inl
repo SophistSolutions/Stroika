@@ -13,12 +13,12 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             /*
              ********************************************************************************
              ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
             template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>

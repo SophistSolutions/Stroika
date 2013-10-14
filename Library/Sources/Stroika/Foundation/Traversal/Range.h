@@ -56,7 +56,7 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-            /*
+            /**
              *  Common defines for range-types.
              *
              *  \em Design Note
@@ -71,7 +71,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitRangeTraits : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
