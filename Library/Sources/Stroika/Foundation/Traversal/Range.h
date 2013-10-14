@@ -69,15 +69,9 @@ namespace   Stroika {
             };
 
 
-            template    <
-            typename T,
-                     T MIN,
-                     T MAX ,
-                     RangeBase::Openness beginOpen,
-                     RangeBase::Openness endOpen,
-                     typename SIGNED_DIFF_TYPE,
-                     typename UNSIGNED_DIFF_TYPE
-                     >
+            /**
+             */
+            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitRangeTraits : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
@@ -86,10 +80,20 @@ namespace   Stroika {
                 static  constexpr   Openness    kBeginOpenness  =   beginOpen;
                 static  constexpr   Openness    kEndOpenness    =   endOpen;
 
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   MIN;
                 static  constexpr T kMax    =   MAX;
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
             };
-
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+#endif
 
 
 #if 0

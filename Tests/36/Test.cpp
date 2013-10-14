@@ -94,6 +94,21 @@ namespace {
 
 
         {
+            Color min1 = DefaultDiscreteRangeTraits<Color>::kMin;
+            Color max1 = DefaultDiscreteRangeTraits<Color>::kMax;
+            Color min2 = DefaultDiscreteRangeTraits_Enum<Color>::kMin;
+            Color max2 = DefaultDiscreteRangeTraits_Enum<Color>::kMax;
+            Color min3 = ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMin;
+            Color max3 = ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMax;
+            Color min4 = ExplicitRangeTraits<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMin;
+            Color max4 = ExplicitRangeTraits<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMax;
+            VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
+            VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
+            VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
+            VerifyTestResult (min3 == Color::eSTART and max3 == Color::eLAST);
+            VerifyTestResult (min4 == Color::eSTART and max4 == Color::eLAST);
+        }
+        {
             int nItemsHit = 0;
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color>::FullRange ()) {

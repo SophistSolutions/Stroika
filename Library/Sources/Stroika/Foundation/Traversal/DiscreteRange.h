@@ -98,7 +98,7 @@ namespace   Stroika {
              *      }
              */
             template    <typename T, typename TRAITS = DefaultDiscreteRangeTraits<T>>
-            class  DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, public Iterable<T> {
+            class   DiscreteRange : public Range<T, typename TRAITS::RangeTraitsType>, public Iterable<T> {
             private:
                 typedef Range<T, typename TRAITS::RangeTraitsType>  inherited_RangeType;
 
@@ -126,7 +126,6 @@ namespace   Stroika {
                 nonvirtual  Iterator<T> begin () const;
                 nonvirtual  Iterator<T> end () const;
             };
-
 
 
         }
