@@ -45,9 +45,9 @@ namespace   {
         }
         {
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-            typedef DefaultRangeTraits < int, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, -3, 100 > RT;
+            typedef DefaultRangeTraits < int, -3, 100 , RangeBase::Openness::eClosed, RangeBase::Openness::eClosed > RT;
 #else
-            typedef DefaultRangeTraits_Template_numericLimitsBWA < int, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, -3, 100 > RT;
+            typedef DefaultRangeTraits_Template_numericLimitsBWA < int, -3, 100, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed > RT;
 #endif
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
             VerifyTestResult (x.begin () == -3);

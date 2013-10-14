@@ -28,55 +28,83 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+            template    <
+            typename T,
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN = T::eSTART, T MAX = T::eLAST, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits_Enum  : DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-#else
-            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits_Enum  : DefaultRangeTraits_Template_numericLimitsBWA<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, T::eSTART, T::eLAST, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                     T MIN = T::eSTART,
+                     T MAX = T::eLAST,
 #endif
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
+            struct  DefaultDiscreteRangeTraits_Enum  :
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                    DefaultRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+#else
+                    DefaultRangeTraits_Template_numericLimitsBWA<T, T::eSTART, T::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+#endif
+            {
                 static T GetNext (T n) {
                     return static_cast<T> (static_cast<int> (n) + 1);
                 }
+                typedef
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-                typedef DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>   RangeTraitsType;
+                DefaultRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
 #else
-                typedef DefaultRangeTraits_Template_numericLimitsBWA<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, T::eSTART, T::eLAST, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
+                DefaultRangeTraits_Template_numericLimitsBWA<T, T::eSTART, T::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
 #endif
+                RangeTraitsType
+                ;
             };
 
 
             /**
              */
+            template    <
+            typename T,
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits_Arithmetic : DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                static T GetNext (T n) {
-                    return static_cast<T> (static_cast<int> (n) + 1);
-                }
-                typedef DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>   RangeTraitsType;
-            };
-#else
-            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits_Arithmetic : DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                static T GetNext (T n) {
-                    return static_cast<T> (static_cast<int> (n) + 1);
-                }
-                typedef DefaultRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> RangeTraitsType;
-            };
+                     T MIN = numeric_limits<T>::min (),
+                     T MAX = numeric_limits<T>::max (),
 #endif
-
-
-
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
+            struct  DefaultDiscreteRangeTraits_Arithmetic :
+                    DefaultRangeTraits <
+                    T,
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN = numeric_limits<T>::min (), T MAX = numeric_limits<T>::max (), typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultDiscreteRangeTraits_Enum<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>, DefaultDiscreteRangeTraits_Arithmetic<T, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
+                    MIN,
+                    MAX,
+#endif
+                    RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE
+                    > {
+                static T GetNext (T n) {
+                    return static_cast<T> (static_cast<int> (n) + 1);
+                }
+                typedef
+                DefaultRangeTraits <
+                T,
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                MIN,
+                MAX,
+#endif
+                RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE
+                >
+                RangeTraitsType;
             };
-#else
-            template    <typename T, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+
+
+            template    <
+            typename T,
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                     T MIN = numeric_limits<T>::min (),
+                     T MAX = numeric_limits<T>::max (),
+#endif
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
             struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultDiscreteRangeTraits_Enum<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>, DefaultDiscreteRangeTraits_Arithmetic<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
             };
-#endif
 
 
             /**

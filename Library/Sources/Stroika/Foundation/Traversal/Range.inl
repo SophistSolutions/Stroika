@@ -14,7 +14,7 @@ namespace   Stroika {
 
 
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
+            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
             struct  DefaultRangeTraits_Template_numericLimitsBWA : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
@@ -32,16 +32,10 @@ namespace   Stroika {
 #endif
             };
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
-#endif
-#if 0
-            template    <>
-            struct  DefaultRangeTraits<int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, INT_MIN, INT_MAX> {};
-            template    <>
-            struct  DefaultRangeTraits<unsigned int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> : DefaultRangeTraits_Template_numericLimitsBWA<unsigned int, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, 0, UINT_MAX> {};
+            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 #endif
 
@@ -51,7 +45,12 @@ namespace   Stroika {
              DefaultRangeTraits<T,Openness,Openness,T,T,SIGNED_DIFF_TYPE,UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, T MIN,  T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN,  T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+#else
             template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   numeric_limits<T>::min ();
             template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
