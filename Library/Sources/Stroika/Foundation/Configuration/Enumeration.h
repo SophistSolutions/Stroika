@@ -28,7 +28,7 @@ namespace   Stroika {
             /**
              *  \brief  Increment the given enumeration safely, without a bunch of casts.
              *
-             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              */
             template    <typename   ENUM>
@@ -38,7 +38,7 @@ namespace   Stroika {
             /**
              *  \brief  Cast the given enum to an int (like static_cast<int>()) - but check range.
              *
-             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              *
              *  This function is hadny since class enum's cannot be automatically promoted to integers.
@@ -52,7 +52,7 @@ namespace   Stroika {
             /**
              *  \brief  offset of given enum from ENUM::eSTART
              *
-             *      \req    ENUM uses  Define_Start_End_Count() to define eSTART, eEND
+             *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              *
              *  @todo   See if there is some better way for this.
@@ -62,16 +62,23 @@ namespace   Stroika {
 
 
             /**
-             *  \def Define_Start_End_Count
+             *  \def Define_Enum_Bounds
              *
              *      Define meta information on enums using standardized names, so you can generically
-             *      write things like Can do for (i = eSTART; i != eEND; i = Inc (i));
+             *      write things like:
+			 *			for (auto i = X::eSTART; i != X::eEND; i = Inc (i));
              */
-#define Define_Start_End_Count(FIRST_ITEM,LAST_ITEM)\
+#define Stroika_Define_Enum_Bounds(FIRST_ITEM,LAST_ITEM)\
     eSTART      =   FIRST_ITEM,\
                     eEND        =   LAST_ITEM + 1,\
                                     eLAST        =  LAST_ITEM,\
                                             eCOUNT      =   eEND - eSTART,
+
+
+			/**
+             *  Temporary backward compat... v2.0a2x -LGP 2013-10-14
+             */
+#define Define_Start_End_Count(FIRST_ITEM,LAST_ITEM)    Stroika_Define_Enum_Bounds(FIRST_ITEM,LAST_ITEM)
 
 
         }

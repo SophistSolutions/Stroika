@@ -142,7 +142,7 @@ namespace   Stroika {
                     eArray,
                     eMap,           // Mapping<String,VariantValue>
 
-                    Define_Start_End_Count(eNull, eMap)
+                    Stroika_Define_Enum_Bounds(eNull, eMap)
                 };
 
             public:

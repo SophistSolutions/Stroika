@@ -120,7 +120,7 @@ namespace   Stroika {
                     eISO8601,
                     eXML,
 
-                    Define_Start_End_Count (eCurrentLocale, eXML)
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eXML)
                 };
 
             public:
@@ -198,7 +198,7 @@ namespace   Stroika {
                     eXML,
                     eCurrentLocale_WithZerosStripped,
 
-                    Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
 
                     eDEFAULT    =   eCurrentLocale_WithZerosStripped,
                 };

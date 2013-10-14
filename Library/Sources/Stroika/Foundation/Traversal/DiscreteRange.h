@@ -42,7 +42,7 @@ namespace   Stroika {
 
             /**
              *  DefaultDiscreteRangeTraits_Enum<> can be used to generate an automatic traits object (with bounds)
-             *  if you've applied the Define_Start_End_Count() macro to the given enumeration.
+             *  if you've applied the Stroika_Define_Enum_Bounds() macro to the given enumeration.
              */
             template    <typename T>
             struct  DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {

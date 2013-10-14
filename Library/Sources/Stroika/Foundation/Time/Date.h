@@ -102,7 +102,7 @@ namespace   Stroika {
                 eFirstDayOfWeek = eMonday,
                 eLastDayOfWeek = eSunday,
 
-                Define_Start_End_Count(eFirstDayOfWeek, eLastDayOfWeek)
+                Stroika_Define_Enum_Bounds(eFirstDayOfWeek, eLastDayOfWeek)
             };
 
 
@@ -125,7 +125,7 @@ namespace   Stroika {
                 eFirstMonthOfYear = eJanuary,
                 eLastMonthOfYear = eDecember,
 
-                Define_Start_End_Count (eFirstMonthOfYear, eLastMonthOfYear)
+                Stroika_Define_Enum_Bounds (eFirstMonthOfYear, eLastMonthOfYear)
             };
 
 
@@ -140,7 +140,7 @@ namespace   Stroika {
                 eFirstDayOfMonth = 1,
                 eLastDayOfMonth = 31,
 
-                Define_Start_End_Count (eFirstDayOfMonth, eLastDayOfMonth)
+                Stroika_Define_Enum_Bounds (eFirstDayOfMonth, eLastDayOfMonth)
             };
 
 
@@ -150,7 +150,7 @@ namespace   Stroika {
                 eFirstDayOfYear = 1,
                 eLastDayOfYear = 366,
 
-                Define_Start_End_Count (eFirstDayOfYear, eLastDayOfYear)
+                Stroika_Define_Enum_Bounds (eFirstDayOfYear, eLastDayOfYear)
             };
 
 
@@ -161,7 +161,7 @@ namespace   Stroika {
                 eFirstYear = 1752,      // Gregorian calendar started on Sep. 14, 1752.
                 eLastfYear = SHRT_MAX - 1,
 
-                Define_Start_End_Count (eFirstYear, eLastfYear)
+                Stroika_Define_Enum_Bounds (eFirstYear, eLastfYear)
             };
 
 
@@ -222,7 +222,7 @@ namespace   Stroika {
                     eXML,
                     eJavascript,
 
-                    Define_Start_End_Count (eCurrentLocale, eJavascript)
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eJavascript)
                 };
 
             public:
@@ -277,7 +277,7 @@ namespace   Stroika {
                     eJavascript,
                     eCurrentLocale_WithZerosStripped,
 
-                    Define_Start_End_Count (eCurrentLocale, eCurrentLocale_WithZerosStripped)
+                    Stroika_Define_Enum_Bounds (eCurrentLocale, eCurrentLocale_WithZerosStripped)
 
                     eDEFAULT    =   eCurrentLocale_WithZerosStripped,
                 };

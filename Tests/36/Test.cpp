@@ -83,7 +83,7 @@ namespace {
         enum    class   Color {
             red, blue, green,
 
-            Define_Start_End_Count (red, green)
+            Stroika_Define_Enum_Bounds (red, green)
         };
 
         using   Memory::Optional;

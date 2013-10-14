@@ -49,7 +49,7 @@ namespace   Stroika {
                 e256_CFB8,
                 e256_CFB128,
 
-                Define_Start_End_Count (e128_CBC, e256_CFB128)
+                Stroika_Define_Enum_Bounds (e128_CBC, e256_CFB128)
                 eDEFAULT = e256_CBC,
             };
 

@@ -293,7 +293,7 @@ namespace   Stroika {
                 //
                 // soon to be private:??? @see MakeCommonSerializer
                 //
-                //  Note - ENUM_TYPE must use Define_Start_End_Count(), or otherwise define eSTART, eEND to
+                //  Note - ENUM_TYPE must use Stroika_Define_Enum_Bounds(), or otherwise define eSTART, eEND to
                 //  use this template.
                 //
                 //  Note - this explicitly allows storing a enum with value eEND (since that is often a sentinal

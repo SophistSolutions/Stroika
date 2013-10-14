@@ -46,7 +46,7 @@ namespace   Stroika {
                 eFromCurrent,
                 eFromEnd,
 
-                Define_Start_End_Count(eFromStart, eFromEnd)
+                Stroika_Define_Enum_Bounds(eFromStart, eFromEnd)
             };
 
 

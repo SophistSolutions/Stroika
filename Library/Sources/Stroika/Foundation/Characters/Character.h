@@ -58,7 +58,7 @@ namespace   Stroika {
                 eWithCase,
                 eCaseInsensitive,
 
-                Define_Start_End_Count(eWithCase, eCaseInsensitive)
+                Stroika_Define_Enum_Bounds(eWithCase, eCaseInsensitive)
             };
 
 

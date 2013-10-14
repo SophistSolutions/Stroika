@@ -307,7 +307,7 @@ namespace   {
             g,
             h,
 
-            Define_Start_End_Count (a, h)
+            Stroika_Define_Enum_Bounds (a, h)
         };
         struct SharedContactsConfig_ {
             Fred fEnum1;
