@@ -13,49 +13,30 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE = int, typename UNSIGNED_DIFF_TYPE = unsigned int>
-            struct  DefaultRangeTraits_Template_numericLimitsBWA : public RangeBase {
-                typedef T                   ElementType;
-                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
-                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
-
-                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
-                static  constexpr   Openness    kEndOpenness    =   endOpen;
-
-#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin = MIN;
-                static  constexpr T kMax = MAX;
-#else
-                static  const T kMin;
-                static  const T kMax;
-#endif
-            };
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits_Template_numericLimitsBWA<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
-#endif
+            /*
+             ********************************************************************************
+             ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+             ********************************************************************************
+             */
+            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
 
             /*
              ********************************************************************************
-             DefaultRangeTraits<T,Openness,Openness,T,T,SIGNED_DIFF_TYPE,UNSIGNED_DIFF_TYPE>
+             *************************** DefaultRangeTraits<T> ******************************
              ********************************************************************************
              */
-#if 0
-#if     qSupportTemplateParamterOfNumericLimitsMinMax
-            template    <typename T, T MIN,  T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN,  T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
-#else
-            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   numeric_limits<T>::min ();
-            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   numeric_limits<T>::max ();
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T>
+            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::min ();
+            template    <typename T>
+            const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
 #endif
 #endif
 
@@ -66,7 +47,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
+            inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
             {

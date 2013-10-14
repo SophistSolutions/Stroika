@@ -88,21 +88,10 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX , RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
-#endif
 
 
-#if 1
-
-
-
-
-
-
+            /**
+             */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T>
             struct  DefaultRangeTraits  : ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
@@ -120,61 +109,6 @@ namespace   Stroika {
             };
 #endif
 
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T>
-            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::min ();
-            template    <typename T>
-            const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
-#endif
-#endif
-
-
-
-
-
-
-
-
-
-
-
-
-#else
-
-
-            /**
-             *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
-             *          AND wrong type - about singed differnce type =- maybe use declyetype
-             */
-            template    <
-            typename T,
-#if     qSupportTemplateParamterOfNumericLimitsMinMax
-                     T MIN = numeric_limits<T>::min (),
-                     T MAX = numeric_limits<T>::max (),
-#endif
-                     RangeBase::Openness beginOpen = RangeBase::Openness::eClosed,
-                     RangeBase::Openness endOpen = RangeBase::Openness::eOpen,
-                     typename SIGNED_DIFF_TYPE = int,
-                     typename UNSIGNED_DIFF_TYPE = unsigned int
-                     >
-            struct  DefaultRangeTraits : public RangeBase {
-                typedef T                   ElementType;
-                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
-                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
-
-                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
-                static  constexpr   Openness    kEndOpenness    =   endOpen;
-
-#if     qSupportTemplateParamterOfNumericLimitsMinMax
-                static  const T kMin;
-                static  const T kMax;
-#else
-                static  const T kMin;
-                static  const T kMax;
-#endif
-            };
-#endif
 
             /**
              *  Somewhat inspired by, and at least influenced by, the definition in
