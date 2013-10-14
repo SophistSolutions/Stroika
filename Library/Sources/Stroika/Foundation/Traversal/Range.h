@@ -96,20 +96,50 @@ namespace   Stroika {
 #endif
 
 
-#if 0
-            template    <
-            typename T,
+#if 1
+
+
+
+
+
+
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-                     T MIN = numeric_limits<T>::min (),
-                     T MAX = numeric_limits<T>::max (),
-#endif
-                     RangeBase::Openness beginOpen = RangeBase::Openness::eClosed,
-                     RangeBase::Openness endOpen = RangeBase::Openness::eOpen,
-                     typename SIGNED_DIFF_TYPE = int,
-                     typename UNSIGNED_DIFF_TYPE = unsigned int
-                     >
-            struct  DefaultRangeTraits : public ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            template    <typename T>
+            struct  DefaultRangeTraits  : ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
             };
+#else
+            template    <typename T>
+            struct  DefaultRangeTraits  : ExplicitRangeTraits<T, 0, 1, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
+#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+                static  const T kMin    =   numeric_limits<T>::min ();
+                static  const T kMax    =   numeric_limits<T>::max ();
+#else
+                static  const T kMin;
+                static  const T kMax;
+#endif
+            };
+#endif
+
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T>
+            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::min ();
+            template    <typename T>
+            const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
+#endif
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
 #else
 
 

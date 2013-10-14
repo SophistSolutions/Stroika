@@ -45,6 +45,7 @@ namespace   Stroika {
              DefaultRangeTraits<T,Openness,Openness,T,T,SIGNED_DIFF_TYPE,UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
+#if 0
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T, T MIN,  T MAX, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T DefaultRangeTraits<T, MIN, MAX, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
@@ -55,6 +56,7 @@ namespace   Stroika {
             const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   numeric_limits<T>::min ();
             template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T DefaultRangeTraits<T, beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   numeric_limits<T>::max ();
+#endif
 #endif
 
 
