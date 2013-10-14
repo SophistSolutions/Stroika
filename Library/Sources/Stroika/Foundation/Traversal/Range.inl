@@ -130,7 +130,7 @@ namespace   Stroika {
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
                 if (empty () or rhs.empty ()) {
-                    return MakeEmpty ();
+                    return EmptyRange ();
                 }
                 T   l   =   max (fBegin_, rhs.fBegin_);
                 T   r   =   min (fEnd_, rhs.fEnd_);
@@ -138,7 +138,7 @@ namespace   Stroika {
                     return Range<T, TRAITS> (l, r);
                 }
                 else {
-                    return MakeEmpty ();
+                    return EmptyRange ();
                 }
             }
             template    <typename T, typename TRAITS>
