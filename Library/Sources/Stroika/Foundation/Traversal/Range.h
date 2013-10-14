@@ -93,13 +93,19 @@ namespace   Stroika {
                 static  constexpr   Openness    kEndOpenness    =   endOpen;
 
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
-                static  constexpr T kMin = MIN;
-                static  constexpr T kMax = MAX;
+                static  const T kMin;
+                static  const T kMax;
 #else
                 static  const T kMin;
                 static  const T kMax;
 #endif
             };
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen,  T MIN,  T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, RangeBase::Openness beginOpen, RangeBase::Openness endOpen,  T MIN,  T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T DefaultRangeTraits<T, beginOpen, endOpen, MIN, MAX, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+#endif
 
 
             /**
