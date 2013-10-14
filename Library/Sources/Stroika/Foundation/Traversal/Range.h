@@ -69,6 +69,46 @@ namespace   Stroika {
             };
 
 
+            template    <
+            typename T,
+                     T MIN,
+                     T MAX ,
+                     RangeBase::Openness beginOpen,
+                     RangeBase::Openness endOpen,
+                     typename SIGNED_DIFF_TYPE,
+                     typename UNSIGNED_DIFF_TYPE
+                     >
+            struct  ExplicitRangeTraits : public RangeBase {
+                typedef T                   ElementType;
+                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+
+                static  constexpr   Openness    kBeginOpenness  =   beginOpen;
+                static  constexpr   Openness    kEndOpenness    =   endOpen;
+
+                static  constexpr T kMin    =   MIN;
+                static  constexpr T kMax    =   MAX;
+            };
+
+
+
+#if 0
+            template    <
+            typename T,
+#if     qSupportTemplateParamterOfNumericLimitsMinMax
+                     T MIN = numeric_limits<T>::min (),
+                     T MAX = numeric_limits<T>::max (),
+#endif
+                     RangeBase::Openness beginOpen = RangeBase::Openness::eClosed,
+                     RangeBase::Openness endOpen = RangeBase::Openness::eOpen,
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
+            struct  DefaultRangeTraits : public ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), beginOpen, endOpen, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            };
+#else
+
+
             /**
              *  @todo   See if some way todo TYPETRAITS - to see if IS ENUMERATION - and if so - use eSTART, eEND for min/max
              *          AND wrong type - about singed differnce type =- maybe use declyetype
@@ -100,7 +140,7 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
-
+#endif
 
             /**
              *  Somewhat inspired by, and at least influenced by, the definition in

@@ -28,6 +28,26 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+
+#if 0
+            template    <
+            typename T,
+                     T MIN = T::eSTART,
+                     T MAX = T::eLAST,
+                     typename SIGNED_DIFF_TYPE = int,
+                     typename UNSIGNED_DIFF_TYPE = unsigned int
+                     >
+            struct  DefaultDiscreteRangeTraits_Enum  :
+                    ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                static T GetNext (T n) {
+                    return static_cast<T> (static_cast<int> (n) + 1);
+                }
+                typedef
+                ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+                RangeTraitsType
+                ;
+            };
+#else
             template    <
             typename T,
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
@@ -56,6 +76,7 @@ namespace   Stroika {
                 RangeTraitsType
                 ;
             };
+#endif
 
 
             /**
@@ -103,7 +124,7 @@ namespace   Stroika {
                      typename SIGNED_DIFF_TYPE = int,
                      typename UNSIGNED_DIFF_TYPE = unsigned int
                      >
-            struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultDiscreteRangeTraits_Enum<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>, DefaultDiscreteRangeTraits_Arithmetic<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
+            struct  DefaultDiscreteRangeTraits : conditional<is_enum<T>::value, DefaultDiscreteRangeTraits_Enum<T>, DefaultDiscreteRangeTraits_Arithmetic<T, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>>::type {
             };
 
 
