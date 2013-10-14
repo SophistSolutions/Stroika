@@ -67,12 +67,6 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T>
-            const T DefaultDiscreteRangeTraits_Arithmetic<T>::kMin   =   numeric_limits<T>::min ();
-            template    <typename T>
-            const T DefaultDiscreteRangeTraits_Arithmetic<T>::kMax   =   numeric_limits<T>::max ();
-#endif
 #endif
 
 

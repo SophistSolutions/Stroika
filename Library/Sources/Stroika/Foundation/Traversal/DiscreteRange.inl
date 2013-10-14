@@ -16,6 +16,21 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
+             ******************** DefaultDiscreteRangeTraits_Arithmetic *********************
+             ********************************************************************************
+             */
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+            template    <typename T>
+            const T DefaultDiscreteRangeTraits_Arithmetic<T>::kMin   =   numeric_limits<T>::min ();
+            template    <typename T>
+            const T DefaultDiscreteRangeTraits_Arithmetic<T>::kMax   =   numeric_limits<T>::max ();
+#endif
+#endif
+
+
+            /*
+             ********************************************************************************
              ***************** DiscreteRange<T, TRAITS>::MyIteratorRep_ *********************
              ********************************************************************************
              */
