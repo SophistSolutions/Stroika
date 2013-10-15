@@ -611,6 +611,21 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
+      <Filter>Sources\Traversal</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1399,6 +1414,21 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2099,6 +2129,21 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
+      <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl">
+      <Filter>Sources\Time</Filter>
     </None>
   </ItemGroup>
 </Project>

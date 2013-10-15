@@ -609,11 +609,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStreamBinaryAdapter.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Date.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTime.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Duration.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Timezone.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\BloomFilter.h" />
@@ -892,12 +896,16 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\StroikaPreComp.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Date.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTime.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Timezone.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.h" />
@@ -1130,12 +1138,16 @@
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\TextStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Date.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Duration.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\Realtime.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Time\TimeOfDay.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DiscreteRange.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterable.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Iterator.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\FunctionalApplication.inl" />
