@@ -27,6 +27,12 @@
  *
  * TODO:
  *
+ *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
+ *              use ModuleInit<> code to assure proper construction order.
+ *
+ *              So far this doesnt appear to have caused problems by the DurationRange<> code refrences
+ *              these constants at its module init time.
+ *
  *      @todo   PT3,4S and PT3.4S both must  be interpretted as 3.4 seconds. I think we can generate
  *              either, but parser must accept either. Right now we use atof(), and I'm not sure that
  *              handles either form of decimal separator! Add to regression tests, and make sure

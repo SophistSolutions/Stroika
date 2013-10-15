@@ -32,6 +32,12 @@
  *
  * TODO:
  *
+ *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
+ *              use ModuleInit<> code to assure proper construction order.
+ *
+ *              So far this doesnt appear to have caused problems by the DurationRange<> code refrences
+ *              these constants at its module init time.
+ *
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *

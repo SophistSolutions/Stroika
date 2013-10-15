@@ -27,6 +27,12 @@
  *
  * TODO:
  *
+ *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
+ *              use ModuleInit<> code to assure proper construction order.
+ *
+ *              So far this doesnt appear to have caused problems by the DateRange<> code refrences
+ *              these constants at its module init time.
+ *
  *      @todo   See if Year should maybe be based on uint16_t.
  *
  *      @todo   Maybe get rid of eFirstDayOfWeek/eLastDayOfWeek, and eFirstDayOfMonth/...
