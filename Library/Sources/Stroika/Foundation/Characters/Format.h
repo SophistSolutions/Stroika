@@ -18,6 +18,11 @@
 /**
  * TODO:
  *
+ *      @todo   Move anything that is C-string based into the CString namespace (and file)
+ *              The rest here - either goes into the String class itself, or stays here but is
+ *              Stroika-String based.
+ *
+ *
  *      @todo   LimitLength obsolete - lose and use String::LimitLength()
  *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
