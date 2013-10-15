@@ -52,6 +52,9 @@ Duration::FormatException::FormatException ()
  *********************************** Duration ***********************************
  ********************************************************************************
  */
+const   Duration    Duration::kMin = Duration (numeric_limits<InternalNumericFormatType_>::min ());
+const   Duration    Duration::kMax = Duration (numeric_limits<InternalNumericFormatType_>::max ());
+
 const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
     {
         L"year", L"years",

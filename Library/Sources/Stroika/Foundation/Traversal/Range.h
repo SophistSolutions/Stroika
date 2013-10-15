@@ -28,6 +28,12 @@
  *          @todo   Consider possibly defining some default parameters for ExplicitRangeTraits<> - like
  *                  size/diff types - probably automatically computed from traits info.
  *
+ *                  Or - at least - provide alternate template that has those two diff types autocomputed.
+ *
+ *          @todo   Carefully review intersection/unionbounds code for new open/closed parameters. Either make sure
+ *                  it works or at least more carefully document in method headers the quirks of the
+ *                  chosen definition.
+ *
  *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
  *                  definition clearly.
  *

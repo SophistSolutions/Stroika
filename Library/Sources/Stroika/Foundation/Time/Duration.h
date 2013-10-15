@@ -152,6 +152,16 @@ namespace   Stroika {
 
 
             public:
+                /*
+                 * Duration::kMin is the least duration this Duration class supports representing.
+                 */
+                static  const   Duration    kMin;
+                /*
+                 * DateTime::kMax is the largest duration this Duration class supports representing.
+                 */
+                static  const   Duration    kMax;
+
+            public:
                 // Unary negation
                 nonvirtual  Duration    operator- () const;
 

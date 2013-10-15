@@ -59,7 +59,7 @@ namespace   Stroika {
                 Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
                 Range<T, TRAITS>    tmp (TRAITS::kMin, TRAITS::kMin);
                 tmp.fBegin_ = TRAITS::kMax;
-                Ensure (empty ());
+                Ensure (tmp.empty ());
                 return tmp;
             }
             template    <typename T, typename TRAITS>

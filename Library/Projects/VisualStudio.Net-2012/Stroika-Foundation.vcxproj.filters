@@ -630,6 +630,15 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
       <Filter>Sources\Traversal</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
+      <Filter>Sources\Time</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1440,6 +1449,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h">
+      <Filter>Sources\Time</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2162,6 +2180,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
       <Filter>Sources\Traversal</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateRange.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DateTimeRange.inl">
+      <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl">
+      <Filter>Sources\Time</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -4,10 +4,7 @@
 //  TEST    Foundation::Time
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#if     qCompilerAndStdLib_Supports_stdchrono
 #include    <chrono>
-#endif
-
 #include    <iostream>
 #include    <sstream>
 
@@ -16,8 +13,11 @@
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Time/Date.h"
+#include    "Stroika/Foundation/Time/DateRange.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
+#include    "Stroika/Foundation/Time/DateTimeRange.h"
 #include    "Stroika/Foundation/Time/Duration.h"
+#include    "Stroika/Foundation/Time/DurationRange.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -463,14 +463,53 @@ namespace   {
 namespace   {
     void    Test_10_std_duration_ ()
     {
-#if     qCompilerAndStdLib_Supports_stdchrono
         const   Duration    k30Seconds      =   Duration (30.0);
         VerifyTestResult (k30Seconds.As<time_t> () == 30);
         VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
         VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
-#endif
     }
 }
+
+
+
+namespace   {
+    void    Test_11_DurationRange_ ()
+    {
+        DurationRange d1    =   DurationRange::EmptyRange ();
+        DurationRange d2    =   DurationRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.begin () == Duration::kMin);
+        VerifyTestResult (d2.end () == Duration::kMax);
+    }
+}
+
+
+namespace   {
+    void    Test_12_DateRange_ ()
+    {
+        DateRange d1    =   DateRange::EmptyRange ();
+        DateRange d2    =   DateRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.begin () == Date::kMin);
+        VerifyTestResult (d2.end () == Date::kMax);
+    }
+}
+
+
+namespace   {
+    void    Test_13_DateTimeRange_ ()
+    {
+        DateTimeRange d1    =   DateTimeRange::EmptyRange ();
+        DateTimeRange d2    =   DateTimeRange::FullRange ();
+        VerifyTestResult (d1.empty ());
+        VerifyTestResult (not d2.empty ());
+        VerifyTestResult (d2.begin () == DateTime::kMin);
+        VerifyTestResult (d2.end () == DateTime::kMax);
+    }
+}
+
 
 
 namespace   {
@@ -487,6 +526,9 @@ namespace   {
         Test_8_DateTimeWithDuration_ ();
         Test_9_TZOffsetAndDaylightSavingsTime_ ();
         Test_10_std_duration_ ();
+        Test_11_DurationRange_ ();
+        Test_12_DateRange_ ();
+        Test_13_DateTimeRange_ ();
     }
 }
 
