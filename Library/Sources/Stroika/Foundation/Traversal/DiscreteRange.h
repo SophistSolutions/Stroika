@@ -19,6 +19,8 @@
  *  TODO:
  *      @todo   Conflict in names begin/end between Iterator and Range<> are INCONVENIENT and UNSESIRBALE.
  *
+ *      @todo   Try to rewrite using Generator<> code... See if that simplifies things...
+ *
  */
 
 

@@ -112,7 +112,7 @@ namespace   Stroika {
              *
              */
             template    <typename T>
-            class  Iterable {
+            class   Iterable {
             public:
                 /**
                  *      \brief  ElementType is just a handly copy of the *T* template type which this

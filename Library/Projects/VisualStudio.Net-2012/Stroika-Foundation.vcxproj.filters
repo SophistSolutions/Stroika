@@ -1437,6 +1437,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h">
       <Filter>Sources\Configuration</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2156,6 +2159,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl">
       <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
+      <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
 </Project>
