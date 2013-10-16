@@ -20,13 +20,16 @@
  *
  *  TODO:
  *
- *      @todo   Lose static cast stuff - and instead use As<> - for consistency with the rest
- *              of Stroika. Document (in some overall design doc) - the choice of As<> versus
+ *      @todo   Document (in some overall design doc) - the choice of As<> versus
  *              explicit conversion operator. I THINK the rationale is that:
  *                  static_cast<T> (n) is about the same as n.As<T> () - except that overload
  *                  semantics work better for static_cast<T> (n) - THINK ABOUT THIS - verus
  *                  .As<T> () is somewhat shorter, and more clear, and works with compilers that
  *                  dont have explicit operators.
+ *
+ *              But I think its too easy to accidentally get conversions with the conversion/cast operator.
+ *              That maybe due to bugs/incomplete implementation of explicit conversion operators? But we can always
+ *              add explicit conversion operators later, and gradually phase-out As<> usage.
  *
  *      @todo   consider using stuff like remove_references and remove_const to 'normalize' the T type
  *              used here. Might make it a little easier to use.

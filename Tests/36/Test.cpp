@@ -31,6 +31,13 @@ namespace   {
             VerifyTestResult (not r.empty ());
             VerifyTestResult (r.Contains (3));
         }
+#if 0
+        {
+            Range<double> r (3, 5);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.Contains (3));
+        }
+#endif
         {
 #if 0
             ////// MAYBE GET RID OF THIS???

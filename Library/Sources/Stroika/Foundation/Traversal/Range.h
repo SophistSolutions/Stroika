@@ -150,6 +150,11 @@ namespace   Stroika {
                 typedef TRAITS   TraitsType;
 
             public:
+                Range() {
+                    *this = EmptyRange ();//tmphack - so works with objectvariantmapper -- LGP 2013-10-15
+                }
+
+            public:
                 /**
                  *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
                  *
