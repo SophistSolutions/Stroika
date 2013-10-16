@@ -82,7 +82,7 @@ namespace   {
             VerifyTestResult (not AnyVariantValue (1).empty ());
             VerifyTestResult (not AnyVariantValue ("1").empty ());
             //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
-            VerifyTestResult (static_cast<int> (AnyVariantValue (1)) == 1);
+            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
         }
         {
             AnyVariantValue v;
@@ -90,7 +90,7 @@ namespace   {
             v = 1;
             VerifyTestResult (not v.empty ());
             VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (static_cast<int> (v) == 1);
+            VerifyTestResult (v.As<int> () == 1);
             v = L"a";
             //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
             VerifyTestResult (not v.empty ());
@@ -113,10 +113,10 @@ namespace   {
             v = 1;
             v = v;
             VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (static_cast<int> (v) == 1);
+            VerifyTestResult (v.As<int> () == 1);
             v = AnyVariantValue (v);
             VerifyTestResult (v.GetType () == typeid (1));
-            VerifyTestResult (static_cast<int> (v) == 1);
+            VerifyTestResult (v.As<int> () == 1);
         }
         {
             static int nCopies = 0;

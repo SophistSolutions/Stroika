@@ -115,11 +115,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename   RETURNTYPE>
-#if     qCompilerAndStdLib_Supports_ExplicitConversionOperators
-                nonvirtual explicit operator RETURNTYPE () const;
-#else
-                nonvirtual operator RETURNTYPE () const;
-#endif
+                nonvirtual  RETURNTYPE  As () const;
 
             public:
                 /**

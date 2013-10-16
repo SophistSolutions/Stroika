@@ -75,7 +75,7 @@ namespace   Stroika {
                 fVal_.reset ();
             }
             template    <typename   RETURNTYPE>
-            inline  AnyVariantValue::operator RETURNTYPE () const
+            inline  RETURNTYPE  AnyVariantValue::As () const
             {
                 Require (typeid (RETURNTYPE) == GetType ());
                 Require (typeid (RETURNTYPE) != typeid (void));
