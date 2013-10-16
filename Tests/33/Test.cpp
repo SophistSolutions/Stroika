@@ -87,11 +87,11 @@ namespace   {
         {
             AnyVariantValue v;
             VerifyTestResult (v.empty ());
-            v = 1;
+            v = AnyVariantValue (1);
             VerifyTestResult (not v.empty ());
             VerifyTestResult (v.GetType () == typeid (1));
             VerifyTestResult (v.As<int> () == 1);
-            v = L"a";
+            v = AnyVariantValue (L"a");
             //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
             VerifyTestResult (not v.empty ());
             v.clear ();
@@ -104,13 +104,13 @@ namespace   {
             };
             AnyVariantValue v;
             VerifyTestResult (v.empty ());
-            v = JIM ();
+            v = AnyVariantValue (JIM ());
             VerifyTestResult (v.GetType () == typeid (JIM));
         }
         {
             AnyVariantValue v;
             VerifyTestResult (v.empty ());
-            v = 1;
+            v = AnyVariantValue (1);
             v = v;
             VerifyTestResult (v.GetType () == typeid (1));
             VerifyTestResult (v.As<int> () == 1);
@@ -135,7 +135,7 @@ namespace   {
             {
                 AnyVariantValue v;
                 VerifyTestResult (v.empty ());
-                v = Copyable ();
+                v = AnyVariantValue (Copyable ());
                 v = v;
                 v = AnyVariantValue (AnyVariantValue (v));
                 v = AnyVariantValue (AnyVariantValue (Copyable ()));

@@ -90,6 +90,10 @@ namespace   Stroika {
              */
             class   AnyVariantValue {
             public:
+                /**
+                 *  Note that its is important that the AnyVariantValue (T) CTOR is explicit, because otherwise its too easy to
+                 *  accidentally assign the wrong type and get surprising results.
+                 */
                 AnyVariantValue ();
 #if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                 AnyVariantValue (const AnyVariantValue& from) = default;
@@ -99,7 +103,7 @@ namespace   Stroika {
                 AnyVariantValue& operator= (const AnyVariantValue& rhs);
 #endif
                 template    <typename   T>
-                AnyVariantValue (T val);
+                explicit AnyVariantValue (T val);
 
             public:
                 nonvirtual  const type_info&    GetType () const;
