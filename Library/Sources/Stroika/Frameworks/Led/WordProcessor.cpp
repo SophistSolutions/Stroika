@@ -2676,7 +2676,7 @@ void    WordProcessor::OnUpdateFontSizeChangeCommand (CommandUpdater* enabler)
                         int pointSize   =   fCachedCurSelFontSpec.GetPointSize ();
                         if (not GetDialogSupport ().IsPredefinedFontSize (pointSize)) {
                             enabler->SetChecked (true);
-                            enabler->SetText (Characters::Format (GetCommandNames ().fFontSizeChange_Other_OneArg.c_str (), pointSize).c_str ());
+                            enabler->SetText (Characters::CString::Format (GetCommandNames ().fFontSizeChange_Other_OneArg.c_str (), pointSize).c_str ());
                             return;
                         }
                     }

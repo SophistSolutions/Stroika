@@ -3,6 +3,7 @@
  */
 #include    "../../Foundation/StroikaPreComp.h"
 
+#include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/Format.h"
 
 #include    "OptionsSupport.h"
@@ -228,7 +229,7 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<stri
     RequireNotNull (value);
     value->clear ();
     string  tmp;
-    while (LookupPref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
+    while (LookupPref (Characters::CString::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
         value->push_back (tmp);
     }
     return not value->empty ();
@@ -239,7 +240,7 @@ bool    OptionsFileHelper::LookupPref (const Led_SDK_Char* prefName, vector<wstr
     RequireNotNull (value);
     value->clear ();
     wstring tmp;
-    while (LookupPref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
+    while (LookupPref (Characters::CString::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, value->size ()).c_str (), &tmp)) {
         value->push_back (tmp);
     }
     return not value->empty ();
@@ -301,7 +302,7 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector
 {
     RequireNotNull (prefName);
     for (auto i = value.begin (); i != value.end (); ++i) {
-        StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
+        StorePref (Characters::CString::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
     }
 }
 
@@ -309,7 +310,7 @@ void    OptionsFileHelper::StorePref (const Led_SDK_Char* prefName, const vector
 {
     RequireNotNull (prefName);
     for (auto i = value.begin (); i != value.end (); ++i) {
-        StorePref (Characters::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
+        StorePref (Characters::CString::Format (Led_SDK_TCHAROF ("%s_%d"), prefName, i - value.begin ()).c_str (), *i);
     }
 }
 
