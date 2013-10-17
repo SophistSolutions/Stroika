@@ -14,6 +14,7 @@ using   namespace   Stroika::Foundation::Time;
 
 using   namespace   Time;
 
-
+#if 0
 const Duration Time::Private_::DurationRangeTraitsType_::kMin   =   Duration::kMin;
 const Duration Time::Private_::DurationRangeTraitsType_::kMax   =   Duration::kMax;;
+#endif

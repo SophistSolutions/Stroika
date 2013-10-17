@@ -39,8 +39,8 @@
  *                  definition clearly.
  *
  *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering?
- *					Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
- *					all applicaitons.
+ *                  Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
+ *                  all applicaitons.
  */
 
 
@@ -82,6 +82,26 @@ namespace   Stroika {
             };
 
 
+
+
+            template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            struct  ExplicitRangeTraits_C : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                static  constexpr T kMin    =   MIN;
+                static  constexpr T kMax    =   MAX;
+            };
+
+            template    <typename T, const T& MIN, const T& MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            struct  ExplicitRangeTraits_NC : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                static  const T kMin;
+                static  const T kMax;
+            };
+            template    <typename T, const T& MIN, const T& MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits_NC<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            template    <typename T, const T& MIN, const T& MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T ExplicitRangeTraits_NC<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+
+
+
             /**
              */
             template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
@@ -110,8 +130,8 @@ namespace   Stroika {
             template    <typename T>
             struct  DefaultRangeTraits  : ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  const T kMin    =   numeric_limits<T>::min ();
-                static  const T kMax    =   numeric_limits<T>::max ();
+                static  constexpr T kMin    =   numeric_limits<T>::min ();
+                static  constexpr T kMax    =   numeric_limits<T>::max ();
 #else
                 static  const T kMin;
                 static  const T kMax;
