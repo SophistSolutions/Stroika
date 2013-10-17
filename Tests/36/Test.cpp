@@ -31,13 +31,11 @@ namespace   {
             VerifyTestResult (not r.empty ());
             VerifyTestResult (r.Contains (3));
         }
-#if 0
         {
             Range<double> r (3, 5);
             VerifyTestResult (not r.empty ());
             VerifyTestResult (r.Contains (3));
         }
-#endif
         {
 #if 0
             ////// MAYBE GET RID OF THIS???
@@ -51,7 +49,7 @@ namespace   {
 #endif
         }
         {
-            typedef ExplicitRangeTraits < int, -3, 100 , RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int > RT;
+            typedef ExplicitRangeTraitsWithMinMax < int, -3, 100 , RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int > RT;
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
             VerifyTestResult (x.begin () == -3);
             VerifyTestResult (x.end () == 100);
@@ -103,8 +101,8 @@ namespace {
             Color max2 = DefaultDiscreteRangeTraits_Enum<Color>::kMax;
             Color min3 = ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMin;
             Color max3 = ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMax;
-            Color min4 = ExplicitRangeTraits<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMin;
-            Color max4 = ExplicitRangeTraits<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMax;
+            Color min4 = ExplicitRangeTraitsWithMinMax<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMin;
+            Color max4 = ExplicitRangeTraitsWithMinMax<Color, Color::eSTART, Color::eLAST, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>::kMax;
             VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
             VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
             VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);
