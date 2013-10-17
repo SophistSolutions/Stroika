@@ -165,7 +165,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if     !qCompilerAndStdLib_Supports_constexpr || 0
+#if     !qCompilerAndStdLib_Supports_constexpr || 1
 const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif
