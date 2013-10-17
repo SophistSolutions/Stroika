@@ -1394,7 +1394,7 @@ BOOL    LedItApplication::InitInstance ()
 
         };
         MyRegistrationHelper    fileAssocHelper;
-        Led_SDK_String  rtfDocIcon  =   Characters::Format (Led_SDK_TCHAROF ("$EXE$,%d"), -kLedItRTFDocumentIconID);
+        Led_SDK_String  rtfDocIcon  =   Characters::CString::Format (Led_SDK_TCHAROF ("$EXE$,%d"), -kLedItRTFDocumentIconID);
         fileAssocHelper.Add (Win32UIFileAssociationInfo (Led_SDK_TCHAROF (".rtf"), Led_SDK_TCHAROF ("rtffile"), Led_SDK_TCHAROF ("Rich Text Document"), rtfDocIcon, Led_SDK_TCHAROF ("$EXE$ \"%1\"")));
         fileAssocHelper.DoIt ();
     }

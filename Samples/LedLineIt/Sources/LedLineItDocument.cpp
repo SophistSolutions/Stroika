@@ -7,6 +7,7 @@
 #include    <afxwin.h>
 
 #include    "Stroika/Foundation/Characters/Format.h"
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Frameworks/Led/FlavorPackage.h"
 
 #include    "LedLineItServerItem.h"
@@ -16,11 +17,15 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Frameworks::Led;
 
-
-
+using   Stroika::Foundation::Characters::CodePagePrettyNameMapper;
+using   Stroika::Foundation::Characters::kCodePage_INVALID;
+using   Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE;
+using   Stroika::Foundation::Characters::kCodePage_UTF7;
+using   Stroika::Foundation::Characters::kCodePage_UNICODE_WIDE_BIGENDIAN;
+using   Stroika::Foundation::Characters::CodePageConverter;
+using   Stroika::Foundation::Characters::CodePagesGuesser;
 using   Stroika::Foundation::Memory::SmallStackBuffer;
 
 
@@ -373,7 +378,7 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             }
 
             if (maxLineSize > kMaxLineSize) {
-                LineTooLongOnReadDialog dlg (Characters::Format (Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce editor performance, and make viewing the file awkward. Long lines can optionally be automatically broken up if they exceed the 'Break at characer count' value below."), maxLineSize / 100 * 100), kMaxLineSize);
+                LineTooLongOnReadDialog dlg (Characters::CString::Format (Led_SDK_TCHAROF ("This file contains at least one very long line (approximately %d characters). This may reduce editor performance, and make viewing the file awkward. Long lines can optionally be automatically broken up if they exceed the 'Break at characer count' value below."), maxLineSize / 100 * 100), kMaxLineSize);
                 fBreakLongLines = (dlg.DoModal () == IDOK);
                 fBreakWidths = dlg.fBreakCount;
             }
