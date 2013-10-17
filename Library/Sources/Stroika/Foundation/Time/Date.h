@@ -27,6 +27,8 @@
  *
  * TODO:
  *
+ *      @todo   Debug why/if we can make work the qCompilerAndStdLib_Supports_constexpr/constexpr stuff for kMin/kMax
+ *
  *      @todo   I think we either need to use constexpr for kMin/kMax and declare stuff in headers, or
  *              use ModuleInit<> code to assure proper construction order.
  *
@@ -250,7 +252,7 @@ namespace   Stroika {
                 /*
                  * Date::kMin is the first date this Date class supports representing.
                  */
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     qCompilerAndStdLib_Supports_constexpr && 0
                 static  constexpr   Date    kMin    =   Date (Date::JulianRepType (Date::kMinJulianRep)));
 #else
                 static  const  Date&        kMin;
@@ -258,7 +260,7 @@ namespace   Stroika {
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  */
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     qCompilerAndStdLib_Supports_constexpr && 0
                 static  constexpr   Date    kMax    =   Date (Date::JulianRepType (UINT_MAX - 1));
 #else
                 static  const Date&         kMax;

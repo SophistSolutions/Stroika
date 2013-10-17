@@ -165,7 +165,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if     !qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_Supports_constexpr || 0
 const   Date&    Date::kMin  =   Date (Date::JulianRepType (Date::kMinJulianRep));
 const   Date&    Date::kMax  =   Date (Date::JulianRepType (UINT_MAX - 1));
 #endif
