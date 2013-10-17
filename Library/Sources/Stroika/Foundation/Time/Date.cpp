@@ -664,14 +664,3 @@ String Time::GetFormattedAgeWithUnit (const Date& birthDate, const Date& deathDa
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
