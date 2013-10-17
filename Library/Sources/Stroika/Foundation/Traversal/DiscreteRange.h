@@ -21,6 +21,8 @@
  *
  *      @todo   Try to rewrite using Generator<> code... See if that simplifies things...
  *
+ *      @todo   DefaultDiscreteRangeTraits_Enum and DefaultDiscreteRangeTraits_Integral<> should do better
+ *              auto-computing the 'differnce' type
  */
 
 
@@ -55,11 +57,11 @@ namespace   Stroika {
              */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T>
-            struct  DefaultDiscreteRangeTraits_Arithmetic  : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), int, unsigned int> {
+            struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), int, unsigned int> {
             };
 #else
             template    <typename T>
-            struct  DefaultDiscreteRangeTraits_Arithmetic  : ExplicitDiscreteRangeTraits<T, 0, 1, int, unsigned int> {
+            struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits<T, 0, 1, int, unsigned int> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  const T kMin    =   numeric_limits<T>::min ();
                 static  const T kMax    =   numeric_limits<T>::max ();
@@ -77,7 +79,7 @@ namespace   Stroika {
             struct  DefaultDiscreteRangeTraits : conditional <
                     is_enum<T>::value,
                     DefaultDiscreteRangeTraits_Enum<T>,
-                    DefaultDiscreteRangeTraits_Arithmetic<T>
+                    DefaultDiscreteRangeTraits_Integral<T>
                     >::type {
             };
 

@@ -21,10 +21,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  \em Design Note
- *      INSPIRED BY READING ABOUT RUBY, but in the end, mostly based on HealthFrame's
+ *      This module was inspired by Ruby Range class, but in the end, it was mostly based on HealthFrame's
  *      DateRangeType/DateTimeRangeType code.
  *
- *      Tried to find a way to implement a TRAITS based solution for including MIN-MAX automatically, but
+ *      I tried to find a way to implement a TRAITS based solution for including MIN-MAX automatically, but
  *      this was very difficult due to the restrictions in C++11 that non-type parameters must be
  *      (essentially) integers. There is the ability to use const-reference data, but attempts to
  *      use that triggered issues with inter-module construction order.
@@ -91,7 +91,8 @@ namespace   Stroika {
 
             /**
              *  Shorthand helper to generate a traits object with an explicit min/max. Due to limitations
-             *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
+             *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
+             *  14.3.2 Template non-type arguments - about integral types).
              */
             template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
@@ -114,7 +115,7 @@ namespace   Stroika {
             template    <typename T>
             struct  DefaultRangeTraits : enable_if <
                     is_arithmetic<T>::value,
-                    ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>
+                    ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int>
                     >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   numeric_limits<T>::min ();

@@ -1,7 +1,15 @@
 ﻿TODO (Foundation::Traversal)
 
+	o		Add new FuzzyRange, and DiscreteFuzzyRange classes, just like Range<> and DiscreteRange<>
+			but replace methods like Contains with MayContain, and DefinitelyContains.
+			
+			THIS can be used to replace the HealthFrameWorks DateRange code - which currently has
+			endpoints UNKNOWN versus ENDOFTIME.
+
 	o		Add RandomNumbers as DiscreteRange subclass, and take templated STL generator to make 
 			Stroika iterator/genreator
+
+	o		ALSO must add IComparable support somehow - not thought through yet!
 
 
 Could also do for strings:
@@ -11,9 +19,6 @@ Could also do for strings:
 	(PROBABY DONT DO FOR STRINGS)
 
 
-DOCUMENT ABOUT CONNECTION TO RUBY, AND GENERATORS
-
-
 FROM RUBY DOCS:
 	So far we've shown ranges of numbers and strings. However, as you'd expect from an object-oriented language, 
 	Ruby can create ranges based on objects that you define. The only constraints are that the 
@@ -21,10 +26,3 @@ FROM RUBY DOCS:
 	comparable using <=>, the general comparison operator. 
 	Sometimes called the spaceship operator, <=>compares two values, returning -1, 0, or +1 
 	depending on whether the first is less than, equal to, or greater than the second.
-
-	SOOOO - FOR STROIKA - ALSO must add IComparable support somehow - not thought through yet!
-
-o	Look closely at Stroika DateRange code – for definitions of ends of range (when missing data)
-
-
-

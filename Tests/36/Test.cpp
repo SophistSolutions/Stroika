@@ -83,8 +83,6 @@ namespace   {
 namespace {
     void    Test_3_SimpleDiscreteRangeWithEnumsTest_ ()
     {
-        // NYI - but do stuff like:
-
         enum    class   Color {
             red, blue, green,
 
@@ -92,7 +90,6 @@ namespace {
         };
 
         using   Memory::Optional;
-
 
         {
             Color min1 = DefaultDiscreteRangeTraits<Color>::kMin;
@@ -142,19 +139,17 @@ namespace {
             VerifyTestResult (nItemsHit == 3);
             VerifyTestResult (lastItemHit == Color::green);
         }
-#if 0
         {
             int nItemsHit = 0;
-            Color lastItemHit = Color::red;
-            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color c) {
+            Optional<Color> lastItemHit;
+            DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color i) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit < i);
+                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
                 lastItemHit = i;
             });
-            nItemsHit (lastItemHit == 3);
+            VerifyTestResult (nItemsHit == 3);
             VerifyTestResult (lastItemHit == Color::green);
         }
-#endif
     }
 }
 
