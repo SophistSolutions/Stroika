@@ -136,7 +136,7 @@ namespace   Stroika {
             Range<T, TRAITS> Range<T, TRAITS>::Intersection (const Range<T, TRAITS>& rhs) const
             {
                 if (empty () or rhs.empty ()) {
-                    return EmptyRange ();
+                    return Range ();
                 }
                 T   l   =   max (fBegin_, rhs.fBegin_);
                 T   r   =   min (fEnd_, rhs.fEnd_);
