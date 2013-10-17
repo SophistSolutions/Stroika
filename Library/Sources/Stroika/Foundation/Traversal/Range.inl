@@ -20,9 +20,9 @@ namespace   Stroika {
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraitsWithMinMax<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
             template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraitsWithMinMax<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
 
@@ -52,7 +52,7 @@ namespace   Stroika {
                 , fEnd_ (TRAITS::kMin)
             {
                 Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
-				Ensure (empty ());
+                Ensure (empty ());
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range (const T& begin, const T& end)

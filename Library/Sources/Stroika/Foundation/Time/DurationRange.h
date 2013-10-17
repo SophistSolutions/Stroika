@@ -31,7 +31,7 @@ namespace   Stroika {
 
             namespace Private_ {
                 using namespace Traversal;
-                struct DurationRangeTraitsType_ : ExplicitRangeTraits<Duration, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int> {
+                struct DurationRangeTraitsType_ : ExplicitRangeTraitsWithoutMinMax<Duration, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int> {
                     static  const ElementType kMin;
                     static  const ElementType kMax;
                 };

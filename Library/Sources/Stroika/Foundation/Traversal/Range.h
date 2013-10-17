@@ -71,11 +71,11 @@ namespace   Stroika {
 
 
             /**
-             *  ExplicitRangeTraits<> can be used to specify in line line (type) all the details for the range functionality
+             *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
              *  for a given type T.
              */
             template    <typename T, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraits : public RangeBase {
+            struct  ExplicitRangeTraitsWithoutMinMax : public RangeBase {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
@@ -88,7 +88,7 @@ namespace   Stroika {
             /**
              */
             template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraitsWithMinMax : public ExplicitRangeTraits<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            struct  ExplicitRangeTraits : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   MIN;
                 static  constexpr T kMax    =   MAX;
@@ -107,11 +107,11 @@ namespace   Stroika {
              */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T>
-            struct  DefaultRangeTraits  : ExplicitRangeTraitsWithMinMax<T, numeric_limits<T>::min (), numeric_limits<T>::max (), RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
+            struct  DefaultRangeTraits  : ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
             };
 #else
             template    <typename T>
-            struct  DefaultRangeTraits  : ExplicitRangeTraits<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
+            struct  DefaultRangeTraits  : ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  const T kMin    =   numeric_limits<T>::min ();
                 static  const T kMax    =   numeric_limits<T>::max ();
@@ -157,8 +157,8 @@ namespace   Stroika {
 
             public:
                 /**
-				 *	Range/0 creates an empty range.
-				 *
+                 *  Range/0 creates an empty range.
+                 *
                  *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
                  *
                  *  \req begin <= end (after substitution of optional values)

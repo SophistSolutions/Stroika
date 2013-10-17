@@ -34,11 +34,11 @@ namespace   Stroika {
              */
             template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitDiscreteRangeTraits  :
-                    ExplicitRangeTraitsWithMinMax<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                    ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                 static T GetNext (T n) {
                     return static_cast<T> (static_cast<int> (n) + 1);
                 }
-                typedef ExplicitRangeTraitsWithMinMax<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
+                typedef ExplicitRangeTraits<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
             };
 
 
@@ -107,6 +107,7 @@ namespace   Stroika {
             public:
                 /**
                  */
+                explicit DiscreteRange (T begin, T end);
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
             public:

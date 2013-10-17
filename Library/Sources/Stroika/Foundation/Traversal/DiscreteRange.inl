@@ -115,6 +115,12 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
+                : inherited_RangeType (begin, end)
+                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (begin, end)))
+            {
+            }
+            template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : inherited_RangeType (begin, end)
                 , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (inherited_RangeType::begin (), inherited_RangeType::end ())))
