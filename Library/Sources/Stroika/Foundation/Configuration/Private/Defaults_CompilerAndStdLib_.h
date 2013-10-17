@@ -438,7 +438,7 @@
 
 
 
-
+#if 0
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_TemplateUsingEquals
 @DESCRIPTION:   <p>Unclear if my usage is right, and what compiler purports to support it.
@@ -446,6 +446,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_TemplateUsingEquals
 #define qCompilerAndStdLib_Supports_TemplateUsingEquals 0
+#endif
 #endif
 
 
@@ -490,13 +491,14 @@
 
 
 
-
+#if 0
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
 @DESCRIPTION:   <p>http://stackoverflow.com/questions/2447458/default-template-arguments-for-function-templates</p>
 */
 #ifndef qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
 #define qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions 0
+#endif
 #endif
 
 
@@ -507,8 +509,7 @@
 
 
 
-
-
+#if 0
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
 */
@@ -519,7 +520,7 @@
 #define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates    1
 #endif
 #endif
-
+#endif
 
 
 
