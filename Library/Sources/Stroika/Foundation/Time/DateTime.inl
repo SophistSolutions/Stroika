@@ -10,14 +10,19 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
+#include    "../Execution/Exceptions.h"
+#include    "../Execution/ModuleInit.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
 
-            //  class DateTime
+            /*
+             ********************************************************************************
+             ********************************** DateTime ************************************
+             ********************************************************************************
+             */
             inline  DateTime::DateTime (const Date& date, const TimeOfDay& timeOfDay, Timezone tz)
                 : fTimezone_ (tz)
                 , fDate_ (date)
@@ -56,9 +61,6 @@ namespace   Stroika {
             {
                 return fTimezone_;
             }
-
-
-
             inline  bool operator< (const DateTime& lhs, const DateTime& rhs)
             {
                 return lhs.Compare (rhs) < 0;
@@ -83,7 +85,25 @@ namespace   Stroika {
             {
                 return lhs.Compare (rhs) != 0;
             }
+
+
+            namespace Private_ {
+
+
+                struct DateTime_ModuleData_ {
+                    DateTime_ModuleData_ ();
+                    DateTime    fMin;
+                    DateTime    fMax;
+                };
+
+
+            }
+
+
         }
     }
+}
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::DateTime_ModuleData_>    _Stroika_Foundation_Time_DateTime_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Time_DateTime_inl_*/

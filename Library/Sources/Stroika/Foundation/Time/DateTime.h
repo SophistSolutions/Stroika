@@ -222,11 +222,11 @@ namespace   Stroika {
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
-                static  const   DateTime    kMin;
+                static  const   DateTime&    kMin;
                 /*
                  * DateTime::kMin is the first date this DateTime class supports representing.
                  */
-                static  const   DateTime    kMax;
+                static  const   DateTime&    kMax;
 
             public:
                 nonvirtual  Timezone    GetTimezone () const;

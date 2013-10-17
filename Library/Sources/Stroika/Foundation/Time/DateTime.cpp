@@ -109,12 +109,28 @@ namespace   {
 
 
 
+/*
+ ********************************************************************************
+ ********************* Private_::DateTime_ModuleData_ ***************************
+ ********************************************************************************
+ */
+
+Time::Private_::DateTime_ModuleData_::DateTime_ModuleData_ ()
+//  unclear if this should use empty time or midnight?
+//  unclear if this should use end of day time or not?
+    : fMin (DateTime (Date (Date::JulianRepType (Date::kMinJulianRep)), TimeOfDay (0)))
+    , fMax (DateTime (Date (Date::JulianRepType (UINT_MAX - 1)), TimeOfDay (24 * 60 * 60 - 1)))
+{
+}
+
+
 
 /*
  ********************************************************************************
  *********************************** DateTime ***********************************
  ********************************************************************************
  */
+#if 0
 namespace   {
     // Once we have all our compilers supporting constexp - this can go in header (Date.inl) - and then be shared
     // across OBJS
@@ -124,8 +140,10 @@ namespace   {
     const   TimeOfDay   kMinT_  =   TimeOfDay (0);
     const   TimeOfDay   kMaxT_  =   TimeOfDay (24 * 60 * 60 - 1);
 }
-const   DateTime    DateTime::kMin  =   DateTime (kMin_, kMinT_);       //  unclear if this should use empty time or midnight?
-const   DateTime    DateTime::kMax  =   DateTime (kMax_, kMaxT_);       //  unclear if this should use end of day time or not?
+#endif
+;
+const   DateTime&    DateTime::kMin  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMin;
+const   DateTime&    DateTime::kMax  =   Execution::ModuleInitializer<Time::Private_::DateTime_ModuleData_>::Actual ().fMax;
 
 DateTime::DateTime (time_t unixTime, Timezone tz)
     : fTimezone_ (tz)

@@ -166,8 +166,8 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ********************************************************************************
  */
 #if     !qCompilerAndStdLib_Supports_constexpr || 0
-const   Date&    Date::kMin  =   Date (Date::JulianRepType (Date::kMinJulianRep));
-const   Date&    Date::kMax  =   Date (Date::JulianRepType (UINT_MAX - 1));
+const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
+const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
