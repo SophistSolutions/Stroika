@@ -509,7 +509,6 @@
 
 
 
-#if 0
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
 */
@@ -518,7 +517,6 @@
 #define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #else
 #define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates    1
-#endif
 #endif
 #endif
 
