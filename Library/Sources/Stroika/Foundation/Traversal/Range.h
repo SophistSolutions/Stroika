@@ -38,15 +38,13 @@
  *          @todo   Consider if we want to re-instate Range<T, TRAITS>::Overlaps - but think through and document
  *                  definition clearly.
  *
- *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering? Could well order on
- *                  LHS, and then when equal on RHS, but that wouldn't make sense for all applicaitons.
+ *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering?
+ *					Could well order on LHS, and then when equal on RHS, but that wouldn't make sense for
+ *					all applicaitons.
  */
 
 
 
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
-#include    <climits>
-#endif
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
