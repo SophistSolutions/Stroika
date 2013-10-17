@@ -400,6 +400,9 @@ namespace   {
         for (time_t i = 60 * 60 * 24 * 365 - 40; i < 3 * 60 * 60 * 24 * 365; i += 263) {
             VerifyTestResult (Duration (Duration (i).As<wstring> ()).As<time_t> () == i);
         }
+        VerifyTestResult (Duration::kMin < Duration::kMax);
+        VerifyTestResult (Duration::kMin != Duration::kMax);
+        VerifyTestResult (Duration::kMin < Duration (L"P30S") and Duration (L"P30S") < Duration::kMax);
     }
 
 }

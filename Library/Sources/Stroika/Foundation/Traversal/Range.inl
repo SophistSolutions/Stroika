@@ -51,7 +51,8 @@ namespace   Stroika {
                 : fBegin_ (TRAITS::kMax)
                 , fEnd_ (TRAITS::kMin)
             {
-                Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
+                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
+                Require (TRAITS::kMin != TRAITS::kMax);     // you cannot make an empty range if min=max
                 Ensure (empty ());
             }
             template    <typename T, typename TRAITS>
@@ -59,6 +60,7 @@ namespace   Stroika {
                 : fBegin_ (begin)
                 , fEnd_ (end)
             {
+                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
                 Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
@@ -66,6 +68,7 @@ namespace   Stroika {
                 : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
             {
+                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
                 Require (fBegin_ <= fEnd_);
             }
             template    <typename T, typename TRAITS>
@@ -77,7 +80,7 @@ namespace   Stroika {
             inline  bool    Range<T, TRAITS>::empty () const
             {
                 if (fBegin_ > fEnd_) {
-                    // internal hack done in Range<T, TRAITS>::EmptyRange () - otherwise not possible to create this situation
+                    // internal hack done in Range<T, TRAITS>::Range/0 () - empty range - otherwise not possible to create this situation
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
