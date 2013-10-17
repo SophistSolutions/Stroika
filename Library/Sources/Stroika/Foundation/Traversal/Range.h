@@ -20,8 +20,9 @@
  *
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
- *  NOTES:      INSPIRED BY READING ABOUT RUBY, but in the end, mostly
- *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
+ *  \em Design Note
+ *      INSPIRED BY READING ABOUT RUBY, but in the end, mostly based on HealthFrame's
+ *      DateRangeType/DateTimeRangeType code.
  *
  *  TODO:
  *
@@ -39,8 +40,6 @@
  *
  *          @todo   Document why no operator< support (compare interface) - cuz no obvious well-ordering? Could well order on
  *                  LHS, and then when equal on RHS, but that wouldn't make sense for all applicaitons.
- *
- *          @todo   This this code with Date/Time/etc - and add specailizations if needed to make it work well.
  */
 
 

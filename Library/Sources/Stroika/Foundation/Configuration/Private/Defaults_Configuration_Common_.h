@@ -11,60 +11,6 @@
  */
 
 
-#if 0
-
-IF WE NEEDED THIS - WE COULD USE
-#define LITTLE_ENDIAN 0x41424344UL
-#define BIG_ENDIAN    0x44434241UL
-#define PDP_ENDIAN    0x42414443UL
-#define ENDIAN_ORDER  ('ABCD')
-
-#if ENDIAN_ORDER==LITTLE_ENDIAN
-#error "machine is little endian"
-#elif ENDIAN_ORDER==BIG_ENDIAN
-#error "machine is big endian"
-#elif ENDIAN_ORDER==PDP_ENDIAN
-#error "jeez, machine is PDP!"
-#else
-#error "What kind of hardware is this?!"
-#endif
-from http://stackoverflow.com/questions/2100331/c-macro-definition-to-determine-big-endian-or-little-endian-machine - but I dont
-see why we eve rneed to ask - so for now - get rid of this .. and see if tehre was a need ?
-
-
-// We should automate detecing this, but I don't know any portable way todo so at compile time - just runtime.
-#if     !defined (qEndian_Little) && !defined (qEndian_Big)
-#if     defined (_LITTLE_ENDIAN_)
-#define qEndian_Little      1
-#elif   defined (_BIG_ENDIAN_)
-#define qEndian_Big     1
-#elif   defined(__hppa__)
-#define qEndian_Big     1
-#elif   defined(__m68k__) || defined(mc68000) || defined(_M_M68K)
-#define qEndian_Big     1
-#elif   defined(__MIPS__) && defined(__MISPEB__)
-#define qEndian_Big     1
-#elif   defined(__ppc__) || defined(__POWERPC__) || defined(_M_PPC)
-#define qEndian_Big     1
-#elif   defined(__sparc__)
-#define qEndian_Big     1
-#else
-// DEFAULT
-#define qEndian_Little      1
-#endif
-
-// Be sure other defined
-#if     qEndian_Little
-#define qEndian_Big         0
-#elif   qEndian_Big
-#define qEndian_Little      0
-#else
-#error  INCONSISTENT DEFINES
-#endif
-#endif
-#endif
-
-
 
 // Define qPlatform_Windows (by inference from other defines)
 #if     !defined (qPlatform_Windows)
@@ -104,26 +50,26 @@ see why we eve rneed to ask - so for now - get rid of this .. and see if tehre w
 #define STRICT
 #endif
 
-    /*
-     *  See http://msdn2.microsoft.com/en-us/library/aa383745.aspx
-     *
-     *  ...
-     *      Windows Vista/Windows Server 2008   _WIN32_WINNT>=0x0600
-     *                  WINVER>=0x0600
-     *
-     *  ...
-     *      Windows Server 2003     _WIN32_WINNT>=0x0502
-     *                  WINVER>=0x0502
-     *  ...
-     *      Windows XP  _WIN32_WINNT>=0x0501
-     *                  WINVER>=0x0501
-     *  ...
-     *      Windows Me  _WIN32_WINDOWS=0x0500
-     *                  WINVER>=0x0500
-     *
-     *      Internet Explorer 6.0
-     *                  _WIN32_IE>=0x0600
-     */
+/*
+ *  See http://msdn2.microsoft.com/en-us/library/aa383745.aspx
+ *
+ *  ...
+ *      Windows Vista/Windows Server 2008   _WIN32_WINNT>=0x0600
+ *                  WINVER>=0x0600
+ *
+ *  ...
+ *      Windows Server 2003     _WIN32_WINNT>=0x0502
+ *                  WINVER>=0x0502
+ *  ...
+ *      Windows XP  _WIN32_WINNT>=0x0501
+ *                  WINVER>=0x0501
+ *  ...
+ *      Windows Me  _WIN32_WINDOWS=0x0500
+ *                  WINVER>=0x0500
+ *
+ *      Internet Explorer 6.0
+ *                  _WIN32_IE>=0x0600
+ */
 
 // We COULD easily use an earlier build (was using 0x501 until 2011-02-22) - but use 0x502 because
 // MyGetThreadId () can be more efficient using builtin version if we define 0x502 - and no real reason not to...
@@ -197,18 +143,18 @@ see why we eve rneed to ask - so for now - get rid of this .. and see if tehre w
 
 
 
-    /*
-    @CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
-    @DESCRIPTION:   <p>Replaces 'qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings', 'qQuiteAnnoyingDominanceWarnings',
-        'qQuiteAnnoyingDebugSymbolTruncationWarnings'</p>
-     *
-     *  &note   I looked into doing a simple set of macros to hide the
-     *          #if qSilenceAnnoyingCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having
-     *          the pragmas that disable warnings inside of a macro - so that won't work (I think by definition
-     *          of how the C++ spec is written, that should have worked - macros should work as if separate phase
-     *          before compiler ahnd then these are compiler pragmas). But if it doesnt work, cannot use it ;-)
-     *          -- LGP 2012-11-14
-     */
+/*
+@CONFIGVAR:     qSilenceAnnoyingCompilerWarnings
+@DESCRIPTION:   <p>Replaces 'qUsePragmaWarningToSilenceNeedlessBoolConversionWarnings', 'qQuiteAnnoyingDominanceWarnings',
+    'qQuiteAnnoyingDebugSymbolTruncationWarnings'</p>
+ *
+ *  &note   I looked into doing a simple set of macros to hide the
+ *          #if qSilenceAnnoyingCompilerWarnings && __MSVCVER \n#pragma stuff, but VC11 didn't like having
+ *          the pragmas that disable warnings inside of a macro - so that won't work (I think by definition
+ *          of how the C++ spec is written, that should have worked - macros should work as if separate phase
+ *          before compiler ahnd then these are compiler pragmas). But if it doesnt work, cannot use it ;-)
+ *          -- LGP 2012-11-14
+ */
 #ifndef qSilenceAnnoyingCompilerWarnings
 #define qSilenceAnnoyingCompilerWarnings            1
 #endif
@@ -216,14 +162,14 @@ see why we eve rneed to ask - so for now - get rid of this .. and see if tehre w
 
 
 
-    /**
-     *      qSupportDeprecatedStroikaFeatures
-     *
-     *      This will be set to off for the near future, but once Stroika stabalizes, this can be used
-     *  when new features are added to deprecate older code. Compatability can be written conditionally
-     *  and users can transition thier Stroika-based code by temporarily turning this on, when they
-     *  upgrade to a new Stroika version.
-     */
+/**
+ *      qSupportDeprecatedStroikaFeatures
+ *
+ *      This will be set to off for the near future, but once Stroika stabalizes, this can be used
+ *  when new features are added to deprecate older code. Compatability can be written conditionally
+ *  and users can transition thier Stroika-based code by temporarily turning this on, when they
+ *  upgrade to a new Stroika version.
+ */
 #ifndef qSupportDeprecatedStroikaFeatures
 #define qSupportDeprecatedStroikaFeatures            0
 #endif
