@@ -24,8 +24,15 @@
  *      INSPIRED BY READING ABOUT RUBY, but in the end, mostly based on HealthFrame's
  *      DateRangeType/DateTimeRangeType code.
  *
- *  TODO:
+ *      Tried to find a way to implement a TRAITS based solution for including MIN-MAX automatically, but
+ *      this was very difficult due to the restrictions in C++11 that non-type parameters must be
+ *      (essentially) integers. There is the ability to use const-reference data, but attempts to
+ *      use that triggered issues with inter-module construction order.
  *
+ *      Just explicitly defining traits objects with min/max seems like the way to do for now...
+ *          -- LGP 2013-10-17
+ *
+ *  TODO:
  *          @todo   Consider possibly defining some default parameters for ExplicitRangeTraits<> - like
  *                  size/diff types - probably automatically computed from traits info.
  *
@@ -82,30 +89,12 @@ namespace   Stroika {
             };
 
 
-
-
-            template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraits_C : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                static  constexpr T kMin    =   MIN;
-                static  constexpr T kMax    =   MAX;
-            };
-
-            template    <typename T, const T& MIN, const T& MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraits_NC : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
-                static  const T kMin;
-                static  const T kMax;
-            };
-            template    <typename T, const T& MIN, const T& MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits_NC<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, const T& MIN, const T& MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits_NC<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
-
-
-
             /**
+             *  Shorthand helper to generate a traits object with an explicit min/max. Due to limitations
+             *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf
              */
             template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraits : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+            struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   MIN;
                 static  constexpr T kMax    =   MAX;
@@ -122,13 +111,11 @@ namespace   Stroika {
              *
              *  This defaults to a half-open (lhs closed, rhs-open) range.
              */
-#if     qSupportTemplateParamterOfNumericLimitsMinMax
             template    <typename T>
-            struct  DefaultRangeTraits  : ExplicitRangeTraits<T, numeric_limits<T>::min (), numeric_limits<T>::max (), RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
-            };
-#else
-            template    <typename T>
-            struct  DefaultRangeTraits  : ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int> {
+            struct  DefaultRangeTraits : enable_if <
+                    is_arithmetic<T>::value,
+                    ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int>
+                    >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   numeric_limits<T>::min ();
                 static  constexpr T kMax    =   numeric_limits<T>::max ();
@@ -137,7 +124,6 @@ namespace   Stroika {
                 static  const T kMax;
 #endif
             };
-#endif
 
 
             /**

@@ -18,7 +18,6 @@
  *  \version    <a href="code_status.html">Alpha-Early</a>
  *
  * TODO:
- *      @todo   Find way to cleanup/better share code with ExplicitRangeTraits<> code (BETTER) - and fix diff-type
  *
  */
 
@@ -30,14 +29,10 @@ namespace   Stroika {
 
             namespace Private_ {
                 using namespace Traversal;
-#if 0
-                typedef ExplicitRangeTraits_NC<DateTime, DateTime::kMin, DateTime::kMax, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int> DateTimeRangeTraitsType_;
-#else
                 struct DateTimeRangeTraitsType_ : ExplicitRangeTraitsWithoutMinMax<DateTime, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, int, unsigned int> {
                     static  const ElementType kMin;
                     static  const ElementType kMax;
                 };
-#endif
             };
 
 

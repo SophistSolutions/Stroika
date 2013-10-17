@@ -15,14 +15,14 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+             ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
             template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
 
@@ -31,13 +31,11 @@ namespace   Stroika {
              *************************** DefaultRangeTraits<T> ******************************
              ********************************************************************************
              */
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
             const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::min ();
             template    <typename T>
             const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
-#endif
 #endif
 
 
