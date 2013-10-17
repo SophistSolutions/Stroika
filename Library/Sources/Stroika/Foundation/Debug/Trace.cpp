@@ -12,7 +12,6 @@
 
 #include    "../Characters/Format.h"
 #include    "../Characters/LineEndings.h"
-#include    "../Characters/StringUtils.h"
 #include    "../Execution/Module.h"
 #include    "../Execution/Process.h"
 #include    "../Execution/Thread.h"

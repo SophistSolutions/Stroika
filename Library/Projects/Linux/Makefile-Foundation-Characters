@@ -13,7 +13,6 @@ Objs	=	\
 	$(ObjDir)SDKChar.o\
 	$(ObjDir)SDKString.o\
 	$(ObjDir)String.o\
-	$(ObjDir)StringUtils.o\
 	$(ObjDir)RegularExpression.o\
 	$(ObjDir)Tokenize.o\
 

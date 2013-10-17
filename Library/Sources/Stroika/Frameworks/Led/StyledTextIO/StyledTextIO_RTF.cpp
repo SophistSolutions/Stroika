@@ -13,7 +13,6 @@
 #endif
 #include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/String.h"
-#include    "../../../Foundation/Characters/StringUtils.h"
 
 #include    "../Config.h"
 

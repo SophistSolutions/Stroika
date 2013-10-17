@@ -3,7 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/StringUtils.h"
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
 #include    "../Memory/SmallStackBuffer.h"

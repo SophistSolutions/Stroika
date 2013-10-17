@@ -4,7 +4,6 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Characters/CString/Utilities.h"
-#include    "../Characters/StringUtils.h"
 #include    "../Characters/Format.h"
 
 #include    "FileFormatException.h"

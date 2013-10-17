@@ -162,9 +162,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.cpp">
       <Filter>Sources\Characters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp">
-      <Filter>Sources\Characters</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\Realtime.cpp">
       <Filter>Sources\Time</Filter>
     </ClCompile>
@@ -669,9 +666,6 @@
       <Filter>Sources\Execution</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.h">
-      <Filter>Sources\Characters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Realtime.h">
@@ -1480,9 +1474,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\ModuleInit.inl">
       <Filter>Sources\Execution</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl">
-      <Filter>Sources\Characters</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\CodePage.inl">
       <Filter>Sources\Characters</Filter>

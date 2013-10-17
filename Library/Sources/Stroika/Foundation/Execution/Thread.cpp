@@ -14,7 +14,6 @@
 #include    "DLLSupport.h"
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
-#include    "../Characters/StringUtils.h"
 #include    "../Containers/STL/VectorUtils.h"
 #include    "../Debug/Trace.h"
 #include    "../Execution/ErrNoException.h"

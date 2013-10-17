@@ -10,7 +10,6 @@
 #include    <URLMon.h>
 #endif
 
-#include    "../../Characters/StringUtils.h"
 #include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Exceptions.h"

@@ -207,6 +207,59 @@ namespace   Stroika {
                 wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 
 
+                /*
+                @CONFIGVAR:     qPlatformSupports_snprintf
+                @DESCRIPTION:   <p>Defines if the compiler stdC++ library supports the std::snprintf() function</p>
+                    */
+#ifndef qPlatformSupports_snprintf
+#error "qPlatformSupports_snprintf should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+                /*
+                @CONFIGVAR:     qPlatformSupports_wcscasecmp
+                @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
+                    */
+#ifndef qPlatformSupports_wcscasecmp
+#error "qPlatformSupports_wcscasecmp should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+                /*
+                @CONFIGVAR:     qPlatformSupports_wcsncasecmp
+                @DESCRIPTION:   <p>Defines if the compiler supports the wcscasecmp function/p>
+                    */
+#ifndef qPlatformSupports_wcsncasecmp
+#error "qPlatformSupports_wcsncasecmp should normally be defined indirectly by StroikaConfig.h"
+#endif
+
+
+#if     !qPlatformSupports_snprintf
+#if _MSC_VER
+                //#define snprintf _snprintf
+#define snprintf _snprintf_s
+#else
+#error "NYI"
+#endif
+#endif
+
+#if     !qPlatformSupports_wcscasecmp
+#if _MSC_VER
+#define wcscasecmp  _wcsicmp
+#else
+#error "NYI"
+#endif
+#endif
+
+#if     !qPlatformSupports_wcsncasecmp
+#if _MSC_VER
+#define wcsncasecmp _wcsnicmp
+#else
+#error "NYI"
+#endif
+#endif
+
+
             }
         }
     }

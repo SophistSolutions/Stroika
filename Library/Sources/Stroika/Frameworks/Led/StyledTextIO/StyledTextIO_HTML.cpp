@@ -7,7 +7,7 @@
 #include    <cstdio>    // for sprintf()
 
 #include    "../../../Foundation/Characters/CodePage.h"
-#include    "../../../Foundation/Characters/StringUtils.h"
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 
 #include    "../Config.h"
 

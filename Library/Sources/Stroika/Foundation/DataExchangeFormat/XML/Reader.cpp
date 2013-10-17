@@ -3,7 +3,6 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#include    "../../Characters/StringUtils.h"
 #include    "../../Characters/Format.h"
 #include    "../../Streams/TextInputStreamBinaryAdapter.h"
 

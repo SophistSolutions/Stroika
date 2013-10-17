@@ -6,7 +6,7 @@
 #include    <algorithm>
 #include    <cstdlib>
 
-#include    "../Characters/StringUtils.h"
+#include    "../Characters/CString/Utilities.h"
 #include    "../Containers/Common.h"
 #include    "../Debug/Assertions.h"
 #include    "../Memory/SmallStackBuffer.h"

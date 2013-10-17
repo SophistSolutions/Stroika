@@ -13,9 +13,14 @@
 
 
 /**
+ *
+ *  \version    <a href="code_status.html#Early-Alpha">Early-Alpha</a>
+ *
  * TODO:
  *      (o)     Very VERY primitive linguistic support, but this could easily evolve over time. Led has a bunch of
  *              lingusitic code I could move here, and I'm sure I could dig up more...
+ *
+ *      @todo   Lose CString variants - do purely with String class.
  */
 
 
