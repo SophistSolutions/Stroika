@@ -46,6 +46,30 @@
  *              When serializing / deserializing - (e.g to/from JSON or XML) - we construct DOM tree which is
  *              intrinsically not very cost effective. We DO have the XML sax parser (but that wont work with this).
  *
+ *      @todo   Current serializer/deserializer API needlessly requires that objects have default CTOR.
+ *
+ *              template    <typename CLASS>
+ *                  inline  CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
+ *                  {
+ *                      CLASS tmp;
+ *                      ToObject (v, &tmp);
+ *                      return tmp;
+ *                  }
+ *
+ *                  I THINK - if we redefined the to-mapper - to return a "T" instead of taking a Byte* array
+ *                  to fill in, we could avoid this issue. However, doing so is NOT possible for the
+ *                  automated 'struct' mapper (key). This is its core strategy - to construct an object and
+ *                  then fill in (possibly a subset) of its fields. We would need to somehow automate
+ *                  calling a particular CTOR instead and that seems tricky given C++'s meager metapramming
+ *                  features.
+ *
+ *                  But I THINK it would be possible to define the TypeMappingDetails object to take EITHER
+ *                  soemthing in the currnet form, or something using "T" - and map between them. And then
+ *                  users of a particular type (e.g. Range()) - could avoid calling the default ctor, and just
+ *                  explicitly call the right CTOR.
+ *
+ *                  Probably relatively LOW priority to fix, however.
+ *
  *      @todo   NOTE and TODO
  *              The cast to Byte* loses some type safety (we may want to store the class size htrough template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
