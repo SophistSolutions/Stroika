@@ -3,6 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
 #include    "../BadFormatException.h"
 
@@ -444,7 +445,7 @@ void    IgnoreNodeReader::HandleEndTag (SAXObjectReader& r)
  */
 void    XML::ThrowUnRecognizedStartElt (const String& uri, const String& localName)
 {
-    Execution::DoThrow (BadFormatException (Characters::Format (L"Unrecognized start tag '%s'", localName.c_str ())));
+    Execution::DoThrow (BadFormatException (Characters::CString::Format (L"Unrecognized start tag '%s'", localName.c_str ())));
 }
 
 

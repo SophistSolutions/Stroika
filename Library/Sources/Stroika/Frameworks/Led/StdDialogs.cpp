@@ -15,6 +15,7 @@
 #include    <commdlg.h>
 #endif
 
+#include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/Format.h"
 
 #include    "GDI.h"
@@ -62,7 +63,7 @@ namespace {
 #endif
     Led_SDK_String  FormatINTAsString (int t)
     {
-        return Characters::Format (Led_SDK_TCHAROF ("%d"), t);
+        return Characters::CString::Format (Led_SDK_TCHAROF ("%d"), t);
     }
     bool    ParseStringToINT (const Led_SDK_String& s, int* t)
     {

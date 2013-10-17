@@ -19,43 +19,11 @@ namespace   Stroika {
 
 
             namespace Private_ {
-                long long int           String2Int_ (const string& s);
-                long long int           String2Int_ (const String& s);
-                long long int           String2Int_ (const char* s);
-                long long int           String2Int_ (const wchar_t* s);
-                long long int           String2Int_ (const wstring& s);
-                unsigned long long int  String2UInt_ (const string& s);
                 unsigned long long int  String2UInt_ (const String& s);
-                unsigned long long int  String2UInt_ (const char* s);
-                unsigned long long int  String2UInt_ (const wchar_t* s);
-                unsigned long long int  String2UInt_ (const wstring& s);
-                inline  long long int     String2Int_ (const char* s)
-                {
-                    return String2Int_ (string (s));
-                }
-                inline  long long int     String2Int_ (const wchar_t* s)
-                {
-                    return String2Int_ (String (s));
-                }
-                inline  long long int     String2Int_ (const wstring& s)
-                {
-                    return String2Int_ (String (s));
-                }
-                inline  unsigned long long int     String2UInt_ (const char* s)
-                {
-                    return String2UInt_ (string (s));
-                }
-                inline  unsigned long long int     String2UInt_ (const wchar_t* s)
-                {
-                    return String2UInt_ (String (s));
-                }
-                inline  unsigned long long int     String2UInt_ (const wstring& s)
-                {
-                    return String2UInt_ (String (s));
-                }
+                long long int  String2Int_ (const String& s);
                 DISABLE_COMPILER_MSC_WARNING_START(4018)
-                template    <typename T, typename STRING_ARG>
-                T     String2IntOrUInt_ (STRING_ARG s)
+                template    <typename T>
+                T     String2IntOrUInt_ (const String& s)
                 {
                     using   std::numeric_limits;
                     if (numeric_limits<T>::is_signed) {
@@ -79,52 +47,11 @@ namespace   Stroika {
             }
             DISABLE_COMPILER_MSC_WARNING_END(4018)
 
-            template    <typename TCHAR>
-            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text)
-            {
-                std::locale loc1;   // default locale
-                const ctype<TCHAR>& ct = use_facet<ctype<TCHAR>>(loc1);
-                typename basic_string<TCHAR>::const_iterator i = text.begin ();
-                for (; i != text.end () and ct.is (ctype<TCHAR>::space, *i); ++i)
-                    ;
-                return basic_string<TCHAR> (i, text.end ());
-            }
-            template    <typename TCHAR>
-            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text)
-            {
-                std::locale loc1;   // default locale
-                const ctype<TCHAR>& ct = use_facet<ctype<TCHAR>>(loc1);
-                typename basic_string<TCHAR>::const_iterator i = text.end ();
-                for (; i != text.begin () and ct.is (ctype<TCHAR>::space, *(i - 1)); --i)
-                    ;
-                return basic_string<TCHAR> (text.begin (), i);
-            }
-            template    <typename TCHAR>
-            inline  basic_string<TCHAR> Trim (const basic_string<TCHAR>& text)
-            {
-                return LTrim (RTrim (text));
-            }
 
-
-            template    <typename T>
-            inline  T     String2Int (const string& s)
-            {
-                return Private_::String2IntOrUInt_<T, const string&> (s);
-            }
-            template    <typename T>
-            inline  T     String2Int (const wchar_t* s)
-            {
-                return Private_::String2IntOrUInt_<T, const wchar_t*> (s);
-            }
-            template    <typename T>
-            inline  T     String2Int (const wstring& s)
-            {
-                return Private_::String2IntOrUInt_<T, const wstring&> (s);
-            }
             template    <typename T>
             inline  T     String2Int (const String& s)
             {
-                return Private_::String2IntOrUInt_<T, const String&> (s);
+                return Private_::String2IntOrUInt_<T> (s);
             }
 
 

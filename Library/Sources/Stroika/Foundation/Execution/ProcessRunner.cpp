@@ -265,8 +265,8 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMontior* progress)
 
     return Execution::mkIRunnablePtr ([progress, cmdLine, currentDir, in, out, err] () {
         TraceContextBumper  traceCtx (SDKSTR ("ProcessRunner::CreateRunnable::{}::Runner..."));
-        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::LimitLength (cmdLine, 50, false).c_str ());
-        DbgTrace (SDKSTR ("currentDir: %s"), Characters::LimitLength (currentDir, 50, false).c_str ());
+        DbgTrace (SDKSTR ("cmdLine: %s"), Characters::CString::LimitLength (cmdLine, 50, false).c_str ());
+        DbgTrace (SDKSTR ("currentDir: %s"), Characters::CString::LimitLength (currentDir, 50, false).c_str ());
 
 
         // Horrible implementation - just designed to be quickie get started...

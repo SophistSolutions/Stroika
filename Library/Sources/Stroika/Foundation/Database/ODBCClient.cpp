@@ -12,6 +12,7 @@
 #include    <sqlext.h>
 #endif
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "ODBCClient.h"
@@ -35,7 +36,7 @@ using   namespace   Stroika::Foundation::Database;
  ********************************************************************************
  */
 Database::Exception::Exception (const wstring& message):
-    StringException (Format (L"Database connection error: %s", message.c_str ()))
+    StringException (CString::Format (L"Database connection error: %s", message.c_str ()))
 {
 }
 

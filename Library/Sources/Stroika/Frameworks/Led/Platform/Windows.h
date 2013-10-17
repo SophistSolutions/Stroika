@@ -18,6 +18,7 @@
 #include    <Windows.h>
 
 #include    "../../../Foundation/Characters/CodePage.h"
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Debug/Trace.h"
 #include    "../../../Foundation/Memory/SmallStackBuffer.h"
@@ -3052,7 +3053,7 @@ namespace   Stroika {
                 {
                     Led_SDK_String  tmpClassName;
                     if (lpClassName == NULL) {
-                        tmpClassName    =   Characters::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
+                        tmpClassName    =   Characters::CString::Format (_T("Led_Win32_SimpleWndProc_Helper<>-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
                         lpClassName = tmpClassName.c_str ();
                         {
                             static  bool    sRegistered =   false;

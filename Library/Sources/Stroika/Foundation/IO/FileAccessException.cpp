@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/StringUtils.h"
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "FileAccessException.h"
@@ -38,7 +38,7 @@ namespace   {
         }
         DISABLE_COMPILER_MSC_WARNING_END(4800)
         if (not fileName.empty ()) {
-            message = Characters::Format (L"%s: '%.200s'", message.c_str (), fileName.LimitLength (100, false).c_str ());
+            message = Characters::CString::Format (L"%s: '%.200s'", message.c_str (), fileName.LimitLength (100, false).c_str ());
         }
         return message;
     }

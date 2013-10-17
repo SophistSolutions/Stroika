@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "RequiredComponentMissingException.h"
@@ -31,7 +32,7 @@ namespace   {
         wstring cName   =   component;
         if (cName == RequiredComponentMissingException::kPDFViewer)         { cName = L"PDF Viewer";        }
         else if (cName == RequiredComponentMissingException::kPDFOCXViewer) { cName = L"PDF Viewer (OCX)";  }
-        wstring x   =   Characters::Format (L"A required component - %s - is missing, or is out of date", component.c_str ());
+        wstring x   =   Characters::CString::Format (L"A required component - %s - is missing, or is out of date", component.c_str ());
         return x;
     }
 }

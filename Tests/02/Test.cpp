@@ -639,11 +639,12 @@ namespace   {
 namespace   {
     void    Test16_Format_ ()
     {
-        VerifyTestResult (Format ("%d", 123) == "123");
-        VerifyTestResult (Format ("%s", "123") == "123");
+        VerifyTestResult (CString::Format ("%d", 123) == "123");
+        VerifyTestResult (CString::Format ("%s", "123") == "123");
 
         // SUBTLE - this would FAIL with vsnprintf on gcc -- See docs in Header for
         // Format string
+        VerifyTestResult (CString::Format (L"%s", L"123") == L"123");
         VerifyTestResult (Format (L"%s", L"123") == L"123");
 
         VerifyTestResult (Format (L"%20s", L"123") == L"                 123");
@@ -651,7 +652,7 @@ namespace   {
 
         for (int i = 1; i < 1000; ++i) {
             String  format  =   Format (L"%%%ds", i);
-            VerifyTestResult (Format (format.As<wstring> ().c_str (), L"x").length () == i);
+            VerifyTestResult (Format (format.c_str (), L"x").length () == i);
         }
     }
 }
@@ -783,36 +784,37 @@ namespace {
     void    Test21_StringToIntEtc_ ()
     {
         {
-            VerifyTestResult (String2Int<int> ("-3") == -3);
-            VerifyTestResult (String2Int<int> ("3") == 3);
-            VerifyTestResult (String2Int<int> (wstring (L"3")) == 3);
+            VerifyTestResult (CString::String2Int<int> ("-3") == -3);
+            VerifyTestResult (CString::String2Int<int> ("3") == 3);
+            VerifyTestResult (CString::String2Int<int> (wstring (L"3")) == 3);
             VerifyTestResult (String2Int<int> (String (L"3")) == 3);
         }
         {
-            VerifyTestResult (String2Int<int> ("") == 0);
+            VerifyTestResult (CString::String2Int<int> ("") == 0);
             VerifyTestResult (String2Int<int> (L"") == 0);
-            VerifyTestResult (String2Int<int> (wstring (L"")) == 0);
+            VerifyTestResult (CString::String2Int<int> (wstring (L"")) == 0);
             VerifyTestResult (String2Int<int> (String ()) == 0);
-            VerifyTestResult (String2Int<int> ("     ") == 0);
+            VerifyTestResult (CString::String2Int<int> ("     ") == 0);
         }
         {
-            VerifyTestResult (HexString2Int ("") == 0);
-            VerifyTestResult (HexString2Int (L"") == 0);
-            VerifyTestResult (HexString2Int (wstring (L"")) == 0);
+            VerifyTestResult (CString::HexString2Int ("") == 0);
+            VerifyTestResult (CString::HexString2Int (L"") == 0);
+            VerifyTestResult (CString::HexString2Int (wstring (L"")) == 0);
             VerifyTestResult (HexString2Int (String ()) == 0);
-            VerifyTestResult (HexString2Int ("     ") == 0);
+            VerifyTestResult (CString::HexString2Int ("     ") == 0);
         }
         {
             VerifyTestResult (std::isnan (String2Float (String ())));
-            VerifyTestResult (std::isnan (String2Float (string ())));
+            VerifyTestResult (std::isnan (CString::String2Float (string ())));
             VerifyTestResult (std::isnan (String2Float (wstring ())));
-            VerifyTestResult (std::isnan (String2Float ("")));
-            VerifyTestResult (std::isnan (String2Float (wstring (L""))));
+            VerifyTestResult (std::isnan (CString::String2Float ("")));
+            VerifyTestResult (std::isnan (CString::String2Float (wstring (L""))));
             VerifyTestResult (std::isnan (String2Float (String ())));
-            VerifyTestResult (std::isnan (String2Float ("     ")));
+            VerifyTestResult (std::isnan (CString::String2Float ("     ")));
         }
         {
-            VerifyTestResult (Math::NearlyEquals (String2Float ("-44.4"), -44.4));
+            VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
+            VerifyTestResult (Math::NearlyEquals (CString::String2Float (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float (L"-44.4"), -44.4));
             VerifyTestResult (Math::NearlyEquals (String2Float (String (L"44.4333")), 44.4333));
         }

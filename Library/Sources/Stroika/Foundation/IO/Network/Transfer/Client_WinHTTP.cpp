@@ -10,6 +10,7 @@
 
 #include    <list>
 
+#include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
 #include    "../../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../../Containers/STL/VectorUtils.h"
@@ -447,8 +448,8 @@ RetryWithNoCERTCheck:
                 // stuff  before the colon is the key, and stuff after the colon (both trimmed) is the value
                 size_t  colonI  =   thisLine.find (':');
                 if (colonI != wstring::npos) {
-                    wstring key =   Characters::Trim (thisLine.substr (0, colonI));
-                    wstring val =   Characters::Trim (thisLine.substr (colonI + 1));
+                    wstring key =   Characters::CString::Trim (thisLine.substr (0, colonI));
+                    wstring val =   Characters::CString::Trim (thisLine.substr (colonI + 1));
                     if (not key.empty ()) {
                         response.fHeaders.Add (key, val);
                     }

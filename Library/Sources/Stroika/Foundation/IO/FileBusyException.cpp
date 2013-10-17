@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/StringUtils.h"
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "FileBusyException.h"
@@ -25,10 +25,10 @@ namespace   {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
-            return Characters::Format (L"File busy");
+            return Characters::CString::Format (L"File busy");
         }
         else {
-            return Characters::Format (L"File busy: '%.200s'", fileName.LimitLength (100, false).c_str ());
+            return Characters::CString::Format (L"File busy: '%.200s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }

@@ -12,7 +12,7 @@
 #error "WINDOWS REQUIRED FOR THIS MODULE"
 #endif
 
-#include    "../../../Characters/StringUtils.h"
+#include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
 #include    "../../../Configuration/Common.h"
 #include    "../../../Containers/Common.h"
@@ -102,11 +102,11 @@ namespace {
                                  0,
                                  nullptr)
            ) {
-            return Format (SDKSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
+            return CString::Format (SDKSTR ("Win32 error# %d"), static_cast<DWORD> (win32Err));
         }
         SDKString result  =   lpMsgBuf;
         ::LocalFree (lpMsgBuf);
-        return Trim (result);
+        return CString::Trim (result);
     }
 }
 

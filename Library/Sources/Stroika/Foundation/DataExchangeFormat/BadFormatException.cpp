@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "BadFormatException.h"
@@ -30,16 +31,16 @@ namespace   {
     {
         wstring result;
         if (not lineNumber.empty ()) {
-            result += Characters::Format (L"Line %d", *lineNumber);
+            result += Characters::CString::Format (L"Line %d", *lineNumber);
             if (not columnNumber.empty ()) {
-                result += Characters::Format (L"; Column %d", *columnNumber);
+                result += Characters::CString::Format (L"; Column %d", *columnNumber);
             }
         }
         if (not fileOffset.empty ()) {
             if (not result.empty ()) {
                 result += L"; ";
             }
-            result += Characters::Format (L"; FileOffset %d", *fileOffset);
+            result += Characters::CString::Format (L"; FileOffset %d", *fileOffset);
         }
         return result;
     }

@@ -11,6 +11,7 @@
 #endif
 
 #include    "../../Characters/StringUtils.h"
+#include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/StringException.h"
@@ -515,7 +516,7 @@ string  Network::EncodeURLQueryStringField (const String& s)
                         result += static_cast<char> (utf8Query[i]);
                     }
                     else {
-                        result +=  Format ("%%%.2x", ccode);
+                        result +=  CString::Format ("%%%.2x", ccode);
                     }
                 }
         }

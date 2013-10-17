@@ -3,6 +3,7 @@
  */
 #include    "../../../StroikaPreComp.h"
 
+#include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
 #include    "../../../Execution/Exceptions.h"
 
@@ -63,7 +64,7 @@ namespace   {
     {
         wstring effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
         if (effectiveReason.empty ()) {
-            return Format (L"HTTP exception: status %d", status);
+            return CString::Format (L"HTTP exception: status %d", status);
         }
         else {
             return effectiveReason;
@@ -73,10 +74,10 @@ namespace   {
     {
         wstring effectiveReason =   mkCanBeEmptyReason_ (status, reason);;
         if (effectiveReason.empty ()) {
-            return Format (L"HTTP exception: status %d", status);
+            return CString::Format (L"HTTP exception: status %d", status);
         }
         else {
-            return Format (L"HTTP exception: status %d (%s)", status, effectiveReason.c_str ());
+            return CString::Format (L"HTTP exception: status %d (%s)", status, effectiveReason.c_str ());
         }
     }
 }

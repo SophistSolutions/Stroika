@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/StringUtils.h"
 #include    "../Characters/Format.h"
 
@@ -23,10 +24,10 @@ namespace   {
     wstring mkMessage_ (const String& fileName)
     {
         if (fileName.empty ()) {
-            return Characters::Format (L"Invalid file format");
+            return Characters::CString::Format (L"Invalid file format");
         }
         else {
-            return Characters::Format (L"Invalid file format: '%.200s'", fileName.LimitLength (100, false).c_str ());
+            return Characters::CString::Format (L"Invalid file format: '%.200s'", fileName.LimitLength (100, false).c_str ());
         }
     }
 }

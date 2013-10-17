@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/Character.h"
 #include    "../../Foundation/Characters/CodePage.h"
+#include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/Format.h"
 
 #include    "Config.h"
@@ -658,13 +659,13 @@ void    TextInteractor::OnUpdateUndoRedoCommand (CommandUpdater* enabler)
         if (enabler->GetCmdID () == kUndo_CmdID) {
             enabler->SetEnabled (GetCommandHandler ()->CanUndo ());
 
-            Led_SDK_String  menuItemText    =   Characters::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
+            Led_SDK_String  menuItemText    =   Characters::CString::Format (GetCommandNames ().fUndoFormatString.c_str (), GetCommandHandler ()->GetUndoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
         else if (enabler->GetCmdID () == kRedo_CmdID)  {
             enabler->SetEnabled (GetCommandHandler ()->CanRedo ());
 
-            Led_SDK_String  menuItemText    =   Characters::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
+            Led_SDK_String  menuItemText    =   Characters::CString::Format (GetCommandNames ().fRedoFormatString.c_str (), GetCommandHandler ()->GetRedoCmdName ());
             enabler->SetText (menuItemText.c_str ());
         }
     }

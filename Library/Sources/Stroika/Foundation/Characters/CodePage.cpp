@@ -7,6 +7,7 @@
 #include    <mutex>
 #include    <set>
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Configuration/Common.h"
 #include    "../Containers/Common.h"
@@ -101,7 +102,7 @@ wstring Characters::GetCharsetString (CodePage cp)
         case        kCodePage_UTF8:
             return L"UTF-8";
         default:
-            return Characters::Format (L"CodePage %d", cp);
+            return Characters::CString::Format (L"CodePage %d", cp);
     }
 }
 
@@ -1818,7 +1819,7 @@ wstring  CodePagePrettyNameMapper::GetName (CodePage cp)
         case    50220:
             return sCodePageNames_.f50220;
         default: {
-                return Characters::Format (L"%d", cp);
+                return Characters::CString::Format (L"%d", cp);
             }
     }
 }

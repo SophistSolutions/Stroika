@@ -5,6 +5,7 @@
 
 #include    <mutex>
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/Trace.h"
@@ -223,7 +224,7 @@ wstring Execution::SignalToName (SignalIDType signal)
 #endif
 
         default:
-            return Characters::Format (L"Signal# %d", signal);
+            return Characters::CString::Format (L"Signal# %d", signal);
     }
 }
 

@@ -3,6 +3,7 @@
  */
 #include    "../../../Foundation/StroikaPreComp.h"
 
+#include    "../../../Foundation/Characters/CString/Utilities.h"
 #include    "../../../Foundation/Characters/Format.h"
 
 #include    "../IdleManager.h"
@@ -189,7 +190,7 @@ namespace   Stroika {
                 {
                     Led_SDK_String  tmpClassName;
                     if (lpClassName == NULL) {
-                        tmpClassName    =   Characters::Format (_T("LED_SimpleWin32WndProcHelper-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
+                        tmpClassName    =   Characters::CString::Format (_T("LED_SimpleWin32WndProcHelper-%d-%d"), ::GetCurrentProcessId (), reinterpret_cast<int> (StaticWndProc));
                         lpClassName = tmpClassName.c_str ();
                         {
                             static  bool    sRegistered =   false;
@@ -349,7 +350,7 @@ namespace   Stroika {
                 {
                     if (fIdleWnd == NULL) {
                         // Because of SPR#1549 - make sure the className depends on the ADDRESS of StaticWndProc
-                        Led_SDK_String  className   =   Characters::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (0x%x)"), reinterpret_cast<int> (StaticWndProc));
+                        Led_SDK_String  className   =   Characters::CString::Format (Led_SDK_TCHAROF ("Led::IdleManagerOSImpl_Win32 (0x%x)"), reinterpret_cast<int> (StaticWndProc));
                         static  Led_SDK_String  sRegisteredClassName;
                         if (sRegisteredClassName != className) {
                             WNDCLASSEX wcex;

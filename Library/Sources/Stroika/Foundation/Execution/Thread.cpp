@@ -12,10 +12,11 @@
 #endif
 
 #include    "DLLSupport.h"
-#include    "../Debug/Trace.h"
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Characters/StringUtils.h"
 #include    "../Containers/STL/VectorUtils.h"
+#include    "../Debug/Trace.h"
 #include    "../Execution/ErrNoException.h"
 #include    "../Execution/Lockable.h"
 #include    "../Time/Realtime.h"
@@ -744,7 +745,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
     Assert (sizeof (threadID) >= sizeof (int));
     if (sizeof (Thread::IDType) >= sizeof (uint64_t)) {
         uint64_t    threadIDInt =   *reinterpret_cast<uint64_t*> (&threadID);
-        return Characters::Format (L"0x%016lx", threadIDInt);
+        return Characters::CString::Format (L"0x%016lx", threadIDInt);
     }
     else {
         //
@@ -752,18 +753,18 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
         //
         unsigned int    threadIDInt =   *reinterpret_cast<unsigned int*> (&threadID);
         if (threadIDInt <= 0xffff) {
-            return Characters::Format (L"0x%04x", threadIDInt);
+            return Characters::CString::Format (L"0x%04x", threadIDInt);
         }
         else {
-            return Characters::Format (L"0x%08x", threadIDInt);
+            return Characters::CString::Format (L"0x%08x", threadIDInt);
         }
     }
 #elif   qUseThreads_WindowsNative
     if (threadID <= 0xffff) {
-        return Characters::Format (L"0x%04x", threadID);
+        return Characters::CString::Format (L"0x%04x", threadID);
     }
     else {
-        return Characters::Format (L"0x%08x", threadID);
+        return Characters::CString::Format (L"0x%08x", threadID);
     }
 #else
     AssertNotImplemented ();

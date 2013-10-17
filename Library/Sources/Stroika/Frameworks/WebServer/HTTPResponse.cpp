@@ -7,6 +7,7 @@
 #include    <cstdlib>
 #include    <sstream>
 
+#include    "../../Foundation/Characters/CString/Utilities.h"
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Containers/Common.h"
 #include    "../../Foundation/Containers/STL/SetUtils.h"
@@ -174,7 +175,7 @@ void    HTTPResponse::Flush ()
         {
             String  statusMsg   =   fStatusOverrideReason_.empty () ? IO::Network::HTTP::Exception::GetStandardTextForStatus (fStatus_, true) : fStatusOverrideReason_;
             wstring version =   L"1.1";
-            wstring tmp =   Characters::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
+            wstring tmp =   Characters::CString::Format (L"HTTP/%s %d %s\r\n", version.c_str (), fStatus_, statusMsg.c_str ());
             string  utf8    =   String (tmp).AsUTF8 ();
             fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
         }
@@ -182,7 +183,7 @@ void    HTTPResponse::Flush ()
         {
             map<String, String>  headers2Write   =   GetEffectiveHeaders ();
             for (auto i = headers2Write.begin (); i != headers2Write.end (); ++i) {
-                wstring tmp =   Characters::Format (L"%s: %s\r\n", i->first.c_str (), i->second.c_str ());
+                wstring tmp =   Characters::CString::Format (L"%s: %s\r\n", i->first.c_str (), i->second.c_str ());
                 string  utf8    =   String (tmp).AsUTF8 ();
                 fUseOutStream_.Write (reinterpret_cast<const Byte*> (Containers::Start (utf8)), reinterpret_cast<const Byte*> (Containers::End (utf8)));
             }

@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Assertions.h"
 #include    "../Debug/Trace.h"
@@ -268,7 +269,7 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result += L", ";
             }
-            result += Format (L"%d ", nYears) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
+            result += CString::Format (L"%d ", nYears) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fYear, prettyPrintInfo.fLabels.fYears, static_cast<int> (nYears));
             timeLeft -= nYears * kSecondsPerYear;
         }
     }
@@ -278,7 +279,7 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result += L", ";
             }
-            result += Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
+            result += CString::Format (L"%d ", nMonths) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMonth, prettyPrintInfo.fLabels.fMonths, static_cast<int> (nMonths));
             timeLeft -= nMonths * kSecondsPerMonth;
         }
     }
@@ -288,7 +289,7 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
             if (not result.empty ()) {
                 result += L", ";
             }
-            result += Format (L"%d ", nDays) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
+            result += CString::Format (L"%d ", nDays) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fDay, prettyPrintInfo.fLabels.fDays, static_cast<int> (nDays));
             timeLeft -= nDays * kSecondsPerDay;
         }
     }
@@ -299,7 +300,7 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result += L", ";
                 }
-                result += Format (L"%d ", nHours) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
+                result += CString::Format (L"%d ", nHours) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fHour, prettyPrintInfo.fLabels.fHours, static_cast<int> (nHours));
                 timeLeft -= nHours * kSecondsPerHour;
             }
         }
@@ -309,7 +310,7 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 if (not result.empty ()) {
                     result += L", ";
                 }
-                result += Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
+                result += CString::Format (L"%d ", nMinutes) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMinute, prettyPrintInfo.fLabels.fMinutes, static_cast<int> (nMinutes));
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
         }
@@ -322,11 +323,11 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 }
                 // Map 3.242 to printing out 3.242, but 0.234 prints out as 234 milliseconds
                 if (fabs (timeLeft - timeLeftAsInt) < 0.001) {
-                    result += Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
+                    result += CString::Format (L"%d ", static_cast<int> (timeLeft)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fSecond, prettyPrintInfo.fLabels.fSeconds, timeLeftAsInt);
                     timeLeft -= static_cast<int> (timeLeft);
                 }
                 else {
-                    result += Format (L"%.3f ", timeLeft) + prettyPrintInfo.fLabels.fSeconds;
+                    result += CString::Format (L"%.3f ", timeLeft) + prettyPrintInfo.fLabels.fSeconds;
                     timeLeft = 0.0;
                 }
             }
@@ -338,13 +339,13 @@ wstring Duration::PrettyPrint (const PrettyPrintInfo& prettyPrintInfo) const
                 result += L", ";
             }
             if (nNanoSeconds < 1000) {
-                result += Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
+                result += CString::Format (L"%d ", nNanoSeconds) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fNanoSecond, prettyPrintInfo.fLabels.fNanoSeconds, nNanoSeconds);
             }
             else if (nNanoSeconds < 1000 * 1000) {
-                result += Format (L"%d ", nNanoSeconds / 1000) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nNanoSeconds / 1000);
+                result += CString::Format (L"%d ", nNanoSeconds / 1000) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMicroSecond, prettyPrintInfo.fLabels.fMicroSeconds, nNanoSeconds / 1000);
             }
             else  {
-                result += Format (L"%d ", nNanoSeconds / (1000 * 1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds / (1000 * 1000));
+                result += CString::Format (L"%d ", nNanoSeconds / (1000 * 1000)) + Linguistics::PluralizeNoun (prettyPrintInfo.fLabels.fMilliSecond, prettyPrintInfo.fLabels.fMilliSeconds, nNanoSeconds / (1000 * 1000));
             }
         }
     }
@@ -449,21 +450,21 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     if (timeLeft >= kSecondsPerYear) {
         unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
         if (nYears != 0) {
-            result += Format ("%dY", nYears);
+            result += CString::Format ("%dY", nYears);
             timeLeft -= nYears * kSecondsPerYear;
         }
     }
     if (timeLeft >= kSecondsPerMonth) {
         unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
-            result += Format ("%dM", nMonths);
+            result += CString::Format ("%dM", nMonths);
             timeLeft -= nMonths * kSecondsPerMonth;
         }
     }
     if (timeLeft >= kSecondsPerDay) {
         unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
-            result += Format ("%dD", nDays);
+            result += CString::Format ("%dD", nDays);
             timeLeft -= nDays * kSecondsPerDay;
         }
     }
@@ -472,19 +473,19 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         if (timeLeft >= kSecondsPerHour) {
             unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
             if (nHours != 0) {
-                result += Format ("%dH", nHours);
+                result += CString::Format ("%dH", nHours);
                 timeLeft -= nHours * kSecondsPerHour;
             }
         }
         if (timeLeft >= kSecondsPerMinute) {
             unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
-                result += Format ("%dM", nMinutes);
+                result += CString::Format ("%dM", nMinutes);
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
         }
         if (timeLeft != 0) {
-            result += Format ("%fS", timeLeft);
+            result += CString::Format ("%fS", timeLeft);
         }
     }
     if (isNeg) {

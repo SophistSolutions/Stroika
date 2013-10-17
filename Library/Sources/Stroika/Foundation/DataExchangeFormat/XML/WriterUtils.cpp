@@ -5,6 +5,7 @@
 
 #include    <ostream>
 
+#include    "../../Characters/CString/Utilities.h"
 #include    "../../Characters/Format.h"
 
 #include    "WriterUtils.h"
@@ -81,7 +82,7 @@ string  XML::QuoteForXMLAttribute (const wstring& s)
             default:        {
                     wchar_t ccode   =   *i;
                     if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 || ccode > 127)) {
-                        r +=  Format ("&#%d;", ccode);
+                        r +=  CString::Format ("&#%d;", ccode);
                     }
                     else {
                         r.push_back (static_cast<char> (ccode));
@@ -195,7 +196,7 @@ string  XML::QuoteForXML (const wstring& s)
             default:        {
                     wchar_t ccode   =   *i;
                     if (ccode != '\t' and ccode != '\n' and ccode != '\r' and (ccode < 32 || ccode > 127)) {
-                        r +=  Format ("&#%d;", ccode);
+                        r +=  CString::Format ("&#%d;", ccode);
                     }
                     else {
                         r.push_back (static_cast<char> (ccode));

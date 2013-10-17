@@ -18,13 +18,6 @@
 /**
  * TODO:
  *
- *      @todo   Move anything that is C-string based into the CString namespace (and file)
- *              The rest here - either goes into the String class itself, or stays here but is
- *              Stroika-String based.
- *
- *
- *      @todo   LimitLength obsolete - lose and use String::LimitLength()
- *
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
  *
@@ -120,10 +113,8 @@ namespace   Stroika {
              *
              *      See also qStdLibSprintfAssumesPctSIsWideInFormatIfWideFormat
              */
-            string  FormatV (const char* format, va_list argsList);
-            wstring FormatV (const wchar_t* format, va_list argsList);
-            string  Format (const char* format, ...);
-            wstring Format (const wchar_t* format, ...);
+            String FormatV (const wchar_t* format, va_list argsList);
+            String Format (const wchar_t* format, ...);
 
 
             /**
@@ -134,10 +125,8 @@ namespace   Stroika {
              *  strtoul() etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtoul etc directly to see if the string parsed properly.
              */
-            unsigned int     HexString2Int (const string& s);
-            unsigned int     HexString2Int (const wchar_t* s);
-            unsigned int     HexString2Int (const wstring& s);
             unsigned int     HexString2Int (const String& s);
+
 
             /**
              *  Convert the given decimal-format integral string to any integer type
@@ -155,13 +144,8 @@ namespace   Stroika {
              *  Use strtoll etc directly to see if the string parsed properly.
              */
             template    <typename T>
-            T     String2Int (const string& s);
-            template    <typename T>
-            T     String2Int (const wchar_t* s);
-            template    <typename T>
-            T     String2Int (const wstring& s);
-            template    <typename T>
             T     String2Int (const String& s);
+
 
             /**
              *  Convert the given decimal-format floating point string to an double.
@@ -173,37 +157,22 @@ namespace   Stroika {
              *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtod etc directly to see if the string parsed properly.
              */
-            double  String2Float (const string& s);
-            double  String2Float (const wchar_t* s);
-            double  String2Float (const wstring& s);
             double  String2Float (const String& s);
+
 
             /**
              *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
              */
-            wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
+            String Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
 
 
             /**
              *  This could be generalized to accomodate TRIM/merge with TRIM, but it sometimes used to trim other
              *  characters (like trailing CRLF, or trailing '.').
+             *
+             *  @todo   Should this be part of String class? Or deleted?
              */
-            string  StripTrailingCharIfAny (const string& s, char c);
-            wstring StripTrailingCharIfAny (const wstring& s, wchar_t c);
-
-
-            /// OBSOLETE - use String::LimitLength()
-            string  LimitLength (const string& str, size_t maxLen, bool keepLeft = true);
-            wstring LimitLength (const wstring& str, size_t maxLen, bool keepLeft = true);
-
-
-            /// OBSOLETE - use String::LTrim(), RTrim(), and Trim()
-            template    <typename TCHAR>
-            basic_string<TCHAR> LTrim (const basic_string<TCHAR>& text);
-            template    <typename TCHAR>
-            basic_string<TCHAR> RTrim (const basic_string<TCHAR>& text);
-            template    <typename TCHAR>
-            basic_string<TCHAR> Trim (const basic_string<TCHAR>& text);
+            String StripTrailingCharIfAny (const String& s, wchar_t c);
 
 
         }

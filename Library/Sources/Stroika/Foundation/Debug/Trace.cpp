@@ -272,7 +272,7 @@ void    Emitter::EmitTraceMessage (const char* format, ...)
     try {
         va_list     argsList;
         va_start (argsList, format);
-        string  tmp =   Characters::FormatV (format, argsList);
+        string  tmp =   Characters::CString::FormatV (format, argsList);
         va_end (argsList);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
@@ -289,7 +289,7 @@ void    Emitter::EmitTraceMessage (const wchar_t* format, ...)
     try {
         va_list     argsList;
         va_start (argsList, format);
-        wstring tmp =   Characters::FormatV (format, argsList);
+        wstring tmp =   Characters::CString::FormatV (format, argsList);
         va_end (argsList);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
@@ -306,7 +306,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     try {
         va_list     argsList;
         va_start (argsList, format);
-        string  tmp =   Characters::FormatV (format, argsList);
+        string  tmp =   Characters::CString::FormatV (format, argsList);
         va_end (argsList);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
@@ -324,7 +324,7 @@ Emitter::TraceLastBufferedWriteTokenType    Emitter::EmitTraceMessage (size_t bu
     try {
         va_list     argsList;
         va_start (argsList, format);
-        wstring tmp =   Characters::FormatV (format, argsList);
+        wstring tmp =   Characters::CString::FormatV (format, argsList);
         va_end (argsList);
         SquishBadCharacters_ (&tmp);
         AssureHasLineTermination (&tmp);
