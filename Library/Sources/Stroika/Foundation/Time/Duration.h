@@ -68,6 +68,11 @@ namespace   Stroika {
         namespace   Time {
 
 
+            namespace Private_ {
+                struct  Duration_ModuleData_;
+            }
+
+
             /**
              * (basic) support for ISO 8601 Durations
              *      http://en.wikipedia.org/wiki/ISO_8601#Durations
@@ -161,11 +166,11 @@ namespace   Stroika {
                 /*
                  * Duration::kMin is the least duration this Duration class supports representing.
                  */
-                static  const   Duration    kMin;
+                static  const   Duration&   kMin;
                 /*
                  * DateTime::kMax is the largest duration this Duration class supports representing.
                  */
-                static  const   Duration    kMax;
+                static  const   Duration&   kMax;
 
             public:
                 // Unary negation
@@ -183,6 +188,10 @@ namespace   Stroika {
                 typedef double  InternalNumericFormatType_;
                 static  InternalNumericFormatType_  ParseTime_ (const string& s);
                 static  string                      UnParseTime_ (InternalNumericFormatType_ t);
+
+
+            private:
+                friend  Stroika::Foundation::Time::Private_::Duration_ModuleData_;
 
             private:
                 string  fDurationRep_;

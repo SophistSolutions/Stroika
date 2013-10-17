@@ -122,6 +122,6 @@ namespace   Stroika {
     }
 }
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Date_ModuleData_>    _Stroika_Foundation_Time_Datee_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Date_ModuleData_>    _Stroika_Foundation_Time_Date_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Time_Date_inl_*/

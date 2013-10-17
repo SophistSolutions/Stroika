@@ -157,7 +157,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
     : fMin (Date::JulianRepType (Date::kMinJulianRep))
     , fMax (Date::JulianRepType (UINT_MAX - 1))
 {
-};
+}
 
 
 /*

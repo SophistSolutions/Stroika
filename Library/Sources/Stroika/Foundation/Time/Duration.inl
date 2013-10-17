@@ -45,6 +45,20 @@ namespace   Stroika {
                 return lhs.Compare (rhs) != 0;
             }
 
+
+            namespace Private_ {
+
+
+                struct Duration_ModuleData_ {
+                    Duration_ModuleData_ ();
+                    Duration    fMin;
+                    Duration    fMax;
+                };
+
+
+            }
+
+
         }
 
         namespace   Execution {
@@ -57,5 +71,8 @@ namespace   Stroika {
         }
 
     }
+}
+namespace   {
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::Time::Private_::Duration_ModuleData_>    _Stroika_Foundation_Time_Duration_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 #endif  /*_Stroika_Foundation_Time_Duration_inl_*/

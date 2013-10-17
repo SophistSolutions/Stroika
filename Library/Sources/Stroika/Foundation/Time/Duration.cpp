@@ -47,13 +47,30 @@ Duration::FormatException::FormatException ()
 
 
 
+
+
+
+/*
+ ********************************************************************************
+ ********************* Private_::Duration_ModuleData_ ***************************
+ ********************************************************************************
+ */
+
+Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
+    : fMin (numeric_limits<Duration::InternalNumericFormatType_>::min ())
+    , fMax (numeric_limits<Duration::InternalNumericFormatType_>::max ())
+{
+}
+
+
+
 /*
  ********************************************************************************
  *********************************** Duration ***********************************
  ********************************************************************************
  */
-const   Duration    Duration::kMin = Duration (numeric_limits<InternalNumericFormatType_>::min ());
-const   Duration    Duration::kMax = Duration (numeric_limits<InternalNumericFormatType_>::max ());
+const   Duration&    Duration::kMin = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMin;
+const   Duration&    Duration::kMax = Execution::ModuleInitializer<Time::Private_::Duration_ModuleData_>::Actual ().fMax;
 
 const   Duration::PrettyPrintInfo   Duration::kDefaultPrettyPrintInfo = {
     {
