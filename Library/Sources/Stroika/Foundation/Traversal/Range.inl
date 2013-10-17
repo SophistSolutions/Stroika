@@ -47,6 +47,14 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
+            inline  Range<T, TRAITS>::Range ()
+                : fBegin_ (TRAITS::kMax)
+                , fEnd_ (TRAITS::kMin)
+            {
+                Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
+				Ensure (empty ());
+            }
+            template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range (const T& begin, const T& end)
                 : fBegin_ (begin)
                 , fEnd_ (end)
@@ -59,15 +67,6 @@ namespace   Stroika {
                 , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
             {
                 Require (fBegin_ <= fEnd_);
-            }
-            template    <typename T, typename TRAITS>
-            inline  Range<T, TRAITS>    Range<T, TRAITS>::EmptyRange ()
-            {
-                Require (TRAITS::kMin != TRAITS::kMax); // you cannot make an empty range if min=max
-                Range<T, TRAITS>    tmp (TRAITS::kMin, TRAITS::kMin);
-                tmp.fBegin_ = TRAITS::kMax;
-                Ensure (tmp.empty ());
-                return tmp;
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
@@ -145,7 +144,7 @@ namespace   Stroika {
                     return Range<T, TRAITS> (l, r);
                 }
                 else {
-                    return EmptyRange ();
+                    return Range ();
                 }
             }
             template    <typename T, typename TRAITS>

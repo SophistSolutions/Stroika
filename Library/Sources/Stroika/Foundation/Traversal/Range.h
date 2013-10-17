@@ -156,25 +156,16 @@ namespace   Stroika {
                 typedef TRAITS   TraitsType;
 
             public:
-                Range() {
-                    *this = EmptyRange ();//tmphack - so works with objectvariantmapper -- LGP 2013-10-15
-                }
-
-            public:
                 /**
+				 *	Range/0 creates an empty range.
+				 *
                  *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
                  *
                  *  \req begin <= end (after substitution of optional values)
-                 *
-                 *  Use @EmptyRange () to create an empty range object.
                  */
+                explicit Range ();
                 explicit Range (const T& begin, const T& end);
                 explicit Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
-
-            public:
-                /**
-                 */
-                static  Range<T, TRAITS> EmptyRange ();
 
             public:
                 /**
@@ -184,7 +175,7 @@ namespace   Stroika {
             public:
                 /**
                  *  A range is considered empty if it contains no points. If begin < end, then clearly this is
-                 *  non-empty. If created with EmptyRange() - then clearly this is empty.
+                 *  non-empty. If created with Range/0() - then the range this is empty.
                  *
                  *  But if begin == end - this is a trickier case. With both ends CLOSED - that means the begin value
                  *  is contained in the range, so that is not empty.

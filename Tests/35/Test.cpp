@@ -475,7 +475,7 @@ namespace   {
 namespace   {
     void    Test_11_DurationRange_ ()
     {
-        DurationRange d1    =   DurationRange::EmptyRange ();
+        DurationRange d1;
         DurationRange d2    =   DurationRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
@@ -488,7 +488,7 @@ namespace   {
 namespace   {
     void    Test_12_DateRange_ ()
     {
-        DateRange d1    =   DateRange::EmptyRange ();
+        DateRange d1;
         DateRange d2    =   DateRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
@@ -501,7 +501,7 @@ namespace   {
 namespace   {
     void    Test_13_DateTimeRange_ ()
     {
-        DateTimeRange d1    =   DateTimeRange::EmptyRange ();
+        DateTimeRange d1;
         DateTimeRange d2    =   DateTimeRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
