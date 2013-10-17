@@ -18,7 +18,7 @@
 /**
  *  \file
  *
- *  STATUS:     PRELIMINARY DRAFT.
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  NOTES:      INSPIRED BY READING ABOUT RUBY, but in the end, mostly
  *              based on HealthFrame's DateRangeType/DateTimeRangeType code.
@@ -126,13 +126,14 @@ namespace   Stroika {
             /**
              *  A Range<> is analagous to a mathematical range. It's left and and its right side can
              *  be optionally open or closed.
-             *  begin/end similar to Ruby range - except that end is always EXCLUDED (like C++ iterators -
-             *  end refers to past the end).
+             *
+             *  This Range<> template is similar to Ruby range -
              *
              *  Somewhat inspired by, and at least influenced by, the definition in
              *      http://ruby-doc.org/core-2.0/Range.html
              *  However - where Ruby has one type "Range" - we have "Range" and DiscreteRange" - and some ruby Range methods/properties
-             *  are expressed only in DiscreteRange<>
+             *  are expressed only in DiscreteRange<>. Also Stroika Range has openneess as an optional/configurable
+             *  feature of both endpoints, whereas in Ruby, the LHS is always closed and its RHS is optionally open.
              *
              *  Note - you can do Range<float>, but cannot do DiscreteRange<float> - but can do DiscreteRange<int>.
              *

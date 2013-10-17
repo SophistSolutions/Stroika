@@ -17,6 +17,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  * TODO:
  *      @todo   verify and document if for windows this is LOCALE_USER_DEFAULT or LOCALE_SYSTEM_DEFAULT.
  *              SB USER!

@@ -17,6 +17,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  * TODO:
  *      @todo   RETHINK MAPPING TO FULL_VERSION_NUMBER type? VersionStage only needs 3 bits (??)
  *              But maybe useful compat with windows format?

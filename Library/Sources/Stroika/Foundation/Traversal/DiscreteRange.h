@@ -14,7 +14,7 @@
 /**
  *  \file
  *
- *  STATUS:     PRELIMINARY DRAFT.
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
  *      @todo   Conflict in names begin/end between Iterator and Range<> are INCONVENIENT and UNSESIRBALE.

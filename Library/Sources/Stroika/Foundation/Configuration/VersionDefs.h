@@ -10,6 +10,8 @@
 /**
  *  \file
  *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  *  This file defines the part of the version stuff that can be safely included anywhere - even in a
  *  non-C++ file (e.g. resource compiler).
  *

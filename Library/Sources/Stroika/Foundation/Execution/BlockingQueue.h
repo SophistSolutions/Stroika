@@ -18,7 +18,7 @@
 
 
 /*
- *  \version    <a href="code_status.html#Alpha">Alpha</a> -- draft - but usable implementation
+ *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
  *
