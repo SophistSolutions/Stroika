@@ -147,7 +147,17 @@ Date::FormatException::FormatException ()
 
 
 
+/*
+ ********************************************************************************
+ ************************* Private_::Date_ModuleData_ ***************************
+ ********************************************************************************
+ */
 
+Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
+    : fMin (Date::JulianRepType (Date::kMinJulianRep))
+    , fMax (Date::JulianRepType (UINT_MAX - 1))
+{
+};
 
 
 /*
@@ -155,18 +165,10 @@ Date::FormatException::FormatException ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-const   Date    Date::kMin  =   Date (Date::JulianRepType (Date::kMinJulianRep));
-const   Date    Date::kMax  =   Date (Date::JulianRepType (UINT_MAX - 1));
-
-Date::Date ()
-    : fJulianDateRep_ (kEmptyJulianRep)
-{
-}
-
-Date::Date (JulianRepType julianRep)
-    : fJulianDateRep_ (julianRep)
-{
-}
+#if     !qCompilerAndStdLib_Supports_constexpr
+const   Date&    Date::kMin  =   Date (Date::JulianRepType (Date::kMinJulianRep));
+const   Date&    Date::kMax  =   Date (Date::JulianRepType (UINT_MAX - 1));
+#endif
 
 Date::Date (Year year, MonthOfYear month, DayOfMonth day)
     : fJulianDateRep_ (jday_ (month, day, year))

@@ -210,8 +210,16 @@ namespace   Stroika {
             public:
                 /**
                  */
+#if     qCompilerAndStdLib_Supports_constexpr
+                constexpr Date ();
+#else
                 Date ();
+#endif
+#if     qCompilerAndStdLib_Supports_constexpr
+                explicit constexpr Date (JulianRepType julianRep);
+#else
                 explicit Date (JulianRepType julianRep);
+#endif
                 explicit Date (Year year, MonthOfYear month, DayOfMonth day);
 
             public:
@@ -242,11 +250,19 @@ namespace   Stroika {
                 /*
                  * Date::kMin is the first date this Date class supports representing.
                  */
-                static  const   Date    kMin;
+#if     qCompilerAndStdLib_Supports_constexpr
+                static  constexpr   Date    kMin    =   Date (Date::JulianRepType (Date::kMinJulianRep)));
+#else
+                static  const  Date&        kMin;
+#endif
                 /*
                  * Date::kMax is the last date this Date class supports representing.
                  */
-                static  const   Date    kMax;
+#if     qCompilerAndStdLib_Supports_constexpr
+                static  constexpr   Date    kMax    =   Date (Date::JulianRepType (UINT_MAX - 1));
+#else
+                static  const Date&         kMax;
+#endif
 
             public:
                 nonvirtual  bool    empty () const;
