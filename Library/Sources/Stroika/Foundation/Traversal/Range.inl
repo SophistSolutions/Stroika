@@ -82,7 +82,7 @@ namespace   Stroika {
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
-                    return not (TRAITS::kBeginOpenness == RangeBase::Openness::eClosed and TRAITS::kEndOpenness == RangeBase::Openness::eClosed);
+                    return TRAITS::kBeginOpenness == RangeBase::Openness::eClosed or TRAITS::kEndOpenness == RangeBase::Openness::eClosed;
                 }
                 return false;
             }

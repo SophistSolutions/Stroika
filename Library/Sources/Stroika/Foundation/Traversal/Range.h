@@ -140,7 +140,7 @@ namespace   Stroika {
              *  to ask for the start or end of an empty range. Empty ranges contain no points.
              *
              *  Since a range is half/open/closed by default, this means that
-             *      Range<int> (1,1) == Range(3,3) would be true, since the are both empty.
+             *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
              *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
@@ -183,6 +183,16 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  A range is considered empty if it contains no points. If begin < end, then clearly this is
+                 *  non-empty. If created with EmptyRange() - then clearly this is empty.
+                 *
+                 *  But if begin == end - this is a trickier case. With both ends CLOSED - that means the begin value
+                 *  is contained in the range, so that is not empty.
+                 *
+                 *  if begin == end, and both ends open, then there are no points contained.
+                 *
+                 *  But if begin == end, and one one side is open, and the other closed, the one closed point endpoint
+                 *  is in the range, so the range is non-empty.
                  */
                 nonvirtual  bool    empty () const;
 
