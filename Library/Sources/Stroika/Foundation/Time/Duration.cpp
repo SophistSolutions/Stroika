@@ -383,6 +383,8 @@ int Duration::Compare (const Duration& rhs) const
 
 Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
 {
+    //Debug::TraceContextBumper   ctx (SDKSTR ("Duration::ParseTime_"));
+    //DbgTrace ("(s = %s)", s.c_str ());
     if (s.empty ()) {
         return 0;
     }
@@ -443,6 +445,8 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
 
 string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
+    //Debug::TraceContextBumper   ctx (SDKSTR ("Duration::UnParseTime_"));
+    //DbgTrace ("(t = %f)", t);
     bool                        isNeg       =   (t < 0);
     InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
     string  result  =   "P";
