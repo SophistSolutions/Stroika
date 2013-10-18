@@ -205,6 +205,8 @@ namespace   Stroika {
             template    <>
             wstring Duration::As () const;
             template    <>
+            Characters::String Duration::As () const;
+            template    <>
             float  Duration::As () const;
             template    <>
             double  Duration::As () const;
