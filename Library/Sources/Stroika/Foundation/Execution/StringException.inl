@@ -22,14 +22,14 @@ namespace   Stroika {
              ******************************** StringException *******************************
              ********************************************************************************
              */
-            inline  StringException::StringException (const wstring& reasonForError)
+            inline  StringException::StringException (const Characters::String& reasonForError)
                 : fError_ (reasonForError)
             {
             }
             template    <>
             inline  wstring StringException::As () const
             {
-                return fError_;
+                return fError_.As<wstring> ();
             }
             template    <>
             inline  Characters::String StringException::As () const
@@ -41,7 +41,7 @@ namespace   Stroika {
             template    <>
             inline  void    _NoReturn_  DoThrow (const StringException& e2Throw)
             {
-                DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<wstring> ().substr (0, 20).c_str ());
+                DbgTrace (L"Throwing StringException: '%s'", e2Throw.As<Characters::String> ().LimitLength (20).c_str ());
                 throw e2Throw;
             }
 

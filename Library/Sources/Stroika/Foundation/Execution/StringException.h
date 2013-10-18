@@ -27,16 +27,22 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /**
+             */
             class   StringException {
             public:
-                StringException (const wstring& reasonForError);
+                StringException (const Characters::String& reasonForError);
 
-                // Only implemented for wstring, String
+                /**
+                 * Only implemented for
+                 *      o   wstring
+                 *      o   String
+                 */
                 template    <typename T>
                 nonvirtual  T   As () const;
 
             private:
-                wstring fError_;
+                Characters::String fError_;
             };
 
             template    <>
