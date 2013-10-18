@@ -1364,8 +1364,8 @@ void    UTF8Converter::MapToUNICODE (const char* inMBChars, size_t inMBCharCnt, 
         UTF16* target = reinterpret_cast<UTF16*> (outChars);
         UTF16* targetEnd = target + *outCharCnt;
         while (source < sourceEnd) {
-            register UCS4 ch = 0;
-            register unsigned short extraBytesToWrite = bytesFromUTF8[*source];
+            UCS4 ch = 0;
+            unsigned short extraBytesToWrite = bytesFromUTF8[*source];
             if (source + extraBytesToWrite > sourceEnd) {
                 result = sourceExhausted;
                 break;
@@ -1485,14 +1485,14 @@ void    UTF8Converter::MapFromUNICODE (const char16_t* inChars, size_t inCharCnt
         UTF8* target = reinterpret_cast<UTF8*> (outChars);
         const UTF8* targetEnd = target + *outCharCnt;
         while (source < sourceEnd) {
-            register UCS4 ch;
-            register unsigned short bytesToWrite = 0;
-            register const UCS4 byteMask = 0xBF;
-            register const UCS4 byteMark = 0x80;
+            UCS4 ch;
+            unsigned short bytesToWrite = 0;
+            const UCS4 byteMask = 0xBF;
+            const UCS4 byteMark = 0x80;
             ch = *source++;
             if (ch >= kSurrogateHighStart && ch <= kSurrogateHighEnd
                     && source < sourceEnd) {
-                register UCS4 ch2 = *source;
+                UCS4 ch2 = *source;
                 if (ch2 >= kSurrogateLowStart && ch2 <= kSurrogateLowEnd) {
                     ch = ((ch - kSurrogateHighStart) << halfShift)
                          + (ch2 - kSurrogateLowStart) + halfBase;
