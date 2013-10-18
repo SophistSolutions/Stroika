@@ -7,6 +7,7 @@
 #include    <syslog.h>
 #endif
 
+#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
 #include    "Process.h"
@@ -75,7 +76,7 @@ Logger::IAppenderRep::~IAppenderRep ()
 namespace   {
     string mkMsg_ (const String& applicationName)
     {
-        return Characters::Format ("%s[%d]", applicationName.AsNarrowSDKString ().c_str (), GetCurrentProcessID ());
+        return Characters::CString::Format ("%s[%d]", applicationName.AsNarrowSDKString ().c_str (), GetCurrentProcessID ());
     }
 }
 Logger::SysLogAppender::SysLogAppender (const String& applicationName)
