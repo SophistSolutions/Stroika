@@ -914,8 +914,8 @@
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
 #if     defined (__clang__)
-// Seems to compile with clang 3.2, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember      ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
+// Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
+#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember      ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
 #elif     defined (__GNUC__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
 #define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
