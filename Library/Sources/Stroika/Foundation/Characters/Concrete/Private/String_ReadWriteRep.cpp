@@ -34,11 +34,13 @@ void    ReadWriteRep::_Rep::SetAt (Character item, size_t index)
 
 void    ReadWriteRep::_Rep::RemoveAt (size_t from, size_t to)
 {
+    Require (from <= to);
+    Require (to < GetLength ());
     Assert (_fStart <= _fEnd);
-    Require (index + amountToRemove <= GetLength ());
-    wchar_t*    lhs =   &_PeekStart () [index];
+    wchar_t*    lhs =   &_PeekStart () [from];
+    size_t      amountToRemove  =   to - from;
     wchar_t*    rhs =   &lhs [amountToRemove];
-    for (size_t i = (_fEnd - _fStart) - index - amountToRemove; i > 0; i--) {
+    for (size_t i = (_fEnd - _fStart) - from - amountToRemove; i > 0; i--) {
         *lhs++ = *rhs++;
     }
     _fEnd -= amountToRemove;

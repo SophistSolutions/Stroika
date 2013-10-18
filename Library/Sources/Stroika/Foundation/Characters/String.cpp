@@ -333,8 +333,8 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
 
 void    String::RemoveAt (size_t from, size_t to)
 {
-	Require (from <= to);
-	Require (to < GetLength ());
+    Require (from <= to);
+    Require (to < GetLength ());
     try {
         _fRep->RemoveAt (from, to);
     }

@@ -380,12 +380,12 @@ namespace   Stroika {
             public:
                 /**
                  * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to'.
-				 *
+                 *
                  * It is an error if this implies removing characters off the end of the string.
-				 *
-				 *	\req (charAt < GetLength ())
-				 *	\req (from <= to)
-				 *	\req (to < GetLength ())
+                 *
+                 *  \req (charAt < GetLength ())
+                 *  \req (from <= to)
+                 *  \req (to < GetLength ())
                  */
                 nonvirtual  void        RemoveAt (size_t charAt);
                 nonvirtual  void        RemoveAt (size_t from, size_t to);
@@ -846,7 +846,7 @@ namespace   Stroika {
                 virtual void                SetAt (Character item, size_t index)    = 0;
                 // This rep is NEVER called with nullptr src/end nor start==end
                 virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
-                virtual void                RemoveAt (size_t from, size_t to)		= 0;
+                virtual void                RemoveAt (size_t from, size_t to)       = 0;
 
                 virtual void                SetLength (size_t newLength)            = 0;
 
