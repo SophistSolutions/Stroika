@@ -118,7 +118,7 @@ namespace   Stroika {
                     ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int>
                     >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin    =   numeric_limits<T>::min ();
+                static  constexpr T kMin    =   numeric_limits<T>::lowest ();
                 static  constexpr T kMax    =   numeric_limits<T>::max ();
 #else
                 static  const T kMin;

@@ -22,7 +22,7 @@ namespace   Stroika {
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T DefaultDiscreteRangeTraits_Integral<T>::kMin   =   numeric_limits<T>::min ();
+            const T DefaultDiscreteRangeTraits_Integral<T>::kMin   =   numeric_limits<T>::lowest ();
             template    <typename T>
             const T DefaultDiscreteRangeTraits_Integral<T>::kMax   =   numeric_limits<T>::max ();
 #endif

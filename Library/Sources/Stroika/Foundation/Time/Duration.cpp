@@ -58,7 +58,7 @@ Duration::FormatException::FormatException ()
  */
 
 Time::Private_::Duration_ModuleData_::Duration_ModuleData_ ()
-    : fMin (numeric_limits<Duration::InternalNumericFormatType_>::min ())
+    : fMin (numeric_limits<Duration::InternalNumericFormatType_>::lowest ())
     , fMax (numeric_limits<Duration::InternalNumericFormatType_>::max ())
 {
 }

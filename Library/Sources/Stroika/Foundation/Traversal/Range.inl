@@ -33,7 +33,7 @@ namespace   Stroika {
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::min ();
+            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::lowest ();
             template    <typename T>
             const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
 #endif

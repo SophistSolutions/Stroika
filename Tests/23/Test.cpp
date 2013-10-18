@@ -50,7 +50,7 @@ namespace   {
         template    <typename T>
         void    RoundTripMinMax_ ()
         {
-            RoundTripTest_ (numeric_limits<T>::min ());
+            RoundTripTest_ (numeric_limits<T>::lowest ());
             RoundTripTest_ (numeric_limits<T>::max ());
         }
         void    DoAll ()
