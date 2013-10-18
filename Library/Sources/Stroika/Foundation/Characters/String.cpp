@@ -334,7 +334,7 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
 void    String::RemoveAt (size_t from, size_t to)
 {
     Require (from <= to);
-    Require (to < GetLength ());
+    Require (to <= GetLength ());
     try {
         _fRep->RemoveAt (from, to);
     }
@@ -349,7 +349,7 @@ void    String::Remove (Character c)
 {
     size_t index = Find (c, CompareOptions::eWithCase);
     if (index != kBadIndex) {
-        RemoveAt (index, 1);
+        RemoveAt (index);
     }
 }
 
@@ -803,10 +803,10 @@ void    String::erase (size_t from, size_t count)
     // TODO: Double check STL definition - but I think they allow for count to be 'too much' - and silently trim to end...
     size_t  max2Erase    =   static_cast<size_t> (max (static_cast<ptrdiff_t> (0), static_cast<ptrdiff_t> (GetLength ()) - static_cast<ptrdiff_t> (from)));
     if (count == kBadIndex) {
-        RemoveAt (from, max2Erase);
+        RemoveAt (from, GetLength ());
     }
     else {
-        RemoveAt (from,  min (count, max2Erase));
+        RemoveAt (from,  from + min (count, max2Erase));
     }
 }
 

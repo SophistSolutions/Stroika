@@ -876,6 +876,17 @@ namespace   {
 }
 
 
+namespace {
+    void    Test32_RemoveAt_ ()
+    {
+        String x = L"123";
+        x.RemoveAt (1);
+        VerifyTestResult (x == L"13");
+        x.RemoveAt (0, 2);
+        VerifyTestResult (x.empty ());
+    }
+}
+
 
 namespace   {
 

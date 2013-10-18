@@ -35,7 +35,7 @@ void    ReadWriteRep::_Rep::SetAt (Character item, size_t index)
 void    ReadWriteRep::_Rep::RemoveAt (size_t from, size_t to)
 {
     Require (from <= to);
-    Require (to < GetLength ());
+    Require (to <= GetLength ());
     Assert (_fStart <= _fEnd);
     wchar_t*    lhs =   &_PeekStart () [from];
     size_t      amountToRemove  =   to - from;

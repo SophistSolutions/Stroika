@@ -385,7 +385,7 @@ namespace   Stroika {
                  *
                  *  \req (charAt < GetLength ())
                  *  \req (from <= to)
-                 *  \req (to < GetLength ())
+                 *  \req (to <= GetLength ())
                  */
                 nonvirtual  void        RemoveAt (size_t charAt);
                 nonvirtual  void        RemoveAt (size_t from, size_t to);
