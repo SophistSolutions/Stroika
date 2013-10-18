@@ -3,7 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 
 #include    "BadFormatException.h"
@@ -19,6 +18,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Characters;
 
 
 /*
@@ -27,44 +27,44 @@ using   namespace   Stroika::Foundation;
  ********************************************************************************
  */
 namespace   {
-    wstring mkMessage_OffsetInfo_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_OffsetInfo_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     {
-        wstring result;
+        String result;
         if (not lineNumber.empty ()) {
-            result += Characters::CString::Format (L"Line %d", *lineNumber);
+            result += Format (L"Line %d", *lineNumber);
             if (not columnNumber.empty ()) {
-                result += Characters::CString::Format (L"; Column %d", *columnNumber);
+                result += Format (L"; Column %d", *columnNumber);
             }
         }
         if (not fileOffset.empty ()) {
             if (not result.empty ()) {
                 result += L"; ";
             }
-            result += Characters::CString::Format (L"; FileOffset %d", *fileOffset);
+            result += Format (L"; FileOffset %d", *fileOffset);
         }
         return result;
     }
-    wstring mkMessage_ ()
+    inline  String mkMessage_ ()
     {
         return L"Badly formatted input";
     }
-    wstring mkMessage_ (const wstring& details)
+    inline  String mkMessage_ (const String& details)
     {
         return details.empty () ? mkMessage_ () : details;
     }
-    wstring mkMessage_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     {
-        wstring msg             =   mkMessage_ ();
-        wstring lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        String msg             =   mkMessage_ ();
+        String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
             msg += L" (" + lineInfoExtra + L").";
         }
         return msg;
     }
-    wstring mkMessage_ (const wstring& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    String mkMessage_ (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     {
-        wstring msg             =   mkMessage_ (details);
-        wstring lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
+        String msg             =   mkMessage_ (details);
+        String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
             msg += L" (" + lineInfoExtra + L").";
         }
@@ -72,7 +72,7 @@ namespace   {
     }
 }
 DataExchangeFormat::BadFormatException::BadFormatException ()
-    : StringException (mkMessage_ ())
+    : inherited (mkMessage_ ())
     , fLineNumber_ ()
     , fColumnNumber_ ()
     , fFileOffset_ ()
@@ -80,8 +80,8 @@ DataExchangeFormat::BadFormatException::BadFormatException ()
 {
 }
 
-DataExchangeFormat::BadFormatException::BadFormatException (const wstring& details)
-    : StringException (mkMessage_ (details))
+DataExchangeFormat::BadFormatException::BadFormatException (const String& details)
+    : inherited (mkMessage_ (details))
     , fLineNumber_ ()
     , fColumnNumber_ ()
     , fFileOffset_ ()
@@ -89,26 +89,13 @@ DataExchangeFormat::BadFormatException::BadFormatException (const wstring& detai
 {
 }
 
-DataExchangeFormat::BadFormatException::BadFormatException (const wstring& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
-    : StringException (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
+DataExchangeFormat::BadFormatException::BadFormatException (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+    : inherited (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
     , fLineNumber_ (lineNumber)
     , fColumnNumber_ (columnNumber)
     , fFileOffset_ (fileOffset)
     , fDetails_ (details)
 {
-}
-
-void    DataExchangeFormat::BadFormatException::GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const
-{
-    if (lineNum != nullptr) {
-        *lineNum = fLineNumber_;
-    }
-    if (colNumber != nullptr) {
-        *colNumber = fColumnNumber_;
-    }
-    if (fileOffset != nullptr) {
-        *fileOffset = fFileOffset_;
-    }
 }
 
 
@@ -129,7 +116,7 @@ void    _NoReturn_  Execution::DoThrow (const DataExchangeFormat::BadFormatExcep
     e2Throw.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
     int useLineNum  =   lineNum.empty () ? -1 : *lineNum;
     int useColNum   =   colNumber.empty () ? -1 : *colNumber;
-    DbgTrace (L"Throwing exception: DataExchangeFormat::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().c_str (), useLineNum, useColNum);
+    DbgTrace (L"Throwing exception: DataExchangeFormat::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), useLineNum, useColNum);
 #endif
     throw e2Throw;
 }

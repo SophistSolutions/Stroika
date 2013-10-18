@@ -13,9 +13,27 @@
 namespace   Stroika {
     namespace   Foundation {
 
-        inline  wstring DataExchangeFormat::BadFormatException::GetDetails () const
+
+        /*
+         ********************************************************************************
+         ******************** DataExchangeFormat::BadFormatException ********************
+         ********************************************************************************
+         */
+        inline  Characters::String DataExchangeFormat::BadFormatException::GetDetails () const
         {
             return fDetails_;
+        }
+        inline  void    DataExchangeFormat::BadFormatException::GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const
+        {
+            if (lineNum != nullptr) {
+                *lineNum = fLineNumber_;
+            }
+            if (colNumber != nullptr) {
+                *colNumber = fColumnNumber_;
+            }
+            if (fileOffset != nullptr) {
+                *fileOffset = fFileOffset_;
+            }
         }
 
 
@@ -23,6 +41,7 @@ namespace   Stroika {
             template    <>
             void    _NoReturn_  DoThrow (const DataExchangeFormat::BadFormatException& e2Throw);
         }
+
 
     }
 }

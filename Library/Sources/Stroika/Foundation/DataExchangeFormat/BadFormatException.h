@@ -20,13 +20,16 @@ namespace   Stroika {
              * Use when reading from a structured stream the data is ill-formed
              */
             class   BadFormatException : public Execution::StringException {
-            public:
-                BadFormatException ();
-                BadFormatException (const wstring& details);
-                BadFormatException (const wstring& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset);
+            private:
+                typedef Execution::StringException  inherited;
 
             public:
-                nonvirtual  wstring GetDetails () const;
+                BadFormatException ();
+                BadFormatException (const Characters::String& details);
+                BadFormatException (const Characters::String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset);
+
+            public:
+                nonvirtual  Characters::String GetDetails () const;
 
             public:
                 nonvirtual  void    GetPositionInfo (Memory::Optional<unsigned int>* lineNum, Memory::Optional<unsigned int>* colNumber, Memory::Optional<uint64_t>* fileOffset) const;
@@ -36,7 +39,7 @@ namespace   Stroika {
                 Memory::Optional<uint64_t>      fFileOffset_;
 
             private:
-                wstring fDetails_;
+                Characters::String fDetails_;
             };
 
 
