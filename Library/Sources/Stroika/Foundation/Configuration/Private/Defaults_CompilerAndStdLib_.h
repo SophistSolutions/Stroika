@@ -481,7 +481,7 @@
 */
 #ifndef qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 3)))
+#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
 #elif   defined (__GNUC__)
 #define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
