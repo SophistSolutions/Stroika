@@ -6,11 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <locale>
-#include    <string>
-
 #include    "../Configuration/Common.h"
-#include    "CodePage.h"
 #include    "String.h"
 
 
@@ -21,7 +17,7 @@
  *      @todo   DOCUMENT BEHAVIOR OF STRING2INT() for bad strings. What does it do?
  *              AND SIMILARPT FOR hexString2Int. And for btoh – probably rewrite to use strtoul/strtol etc
  *
- *      @todo   Same changes to HexString2Int() as we did with String2Int()
+ *      @todo   Same changes to HexString2Int() as we did with String2Int() - template on return value.
  *
  *      @todo   Consdier if we should have variants of these funtions taking a locale, or
  *              always using C/currnet locale. For the most part - I find it best to use the C locale.
@@ -86,13 +82,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Characters {
-
-
-            using   std::string;
-            using   std::wstring;
-
-
-            using   Characters::CodePage;
 
 
             /*

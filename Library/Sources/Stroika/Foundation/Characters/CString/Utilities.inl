@@ -10,6 +10,8 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <limits>
+
 #include    "../../Debug/Assertions.h"
 
 namespace   Stroika {
