@@ -148,7 +148,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\String.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\Compare.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.cpp" />
@@ -642,7 +641,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\String.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.h" />
@@ -936,7 +934,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\String.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\StringUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Tokenize.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Common\KeyValuePair.inl" />
