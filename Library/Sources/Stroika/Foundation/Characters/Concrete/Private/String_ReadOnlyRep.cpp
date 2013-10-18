@@ -113,7 +113,7 @@ void    ReadOnlyRep::_Rep::SetAt (Character item, size_t index)
     Execution::DoThrow (UnsupportedFeatureException ());
 }
 
-void    ReadOnlyRep::_Rep::RemoveAt (size_t index, size_t amountToRemove)
+void    ReadOnlyRep::_Rep::RemoveAt (size_t from, size_t to)
 {
     Execution::DoThrow (UnsupportedFeatureException ());
 }

@@ -86,6 +86,10 @@ namespace   Stroika {
             {
                 return (_fRep->GetLength ());
             }
+			inline	void    String::RemoveAt (size_t charAt)
+			{
+				RemoveAt (charAt, charAt + 1);
+			}
             inline  bool    String::empty () const
             {
                 return _fRep->GetLength () == 0;

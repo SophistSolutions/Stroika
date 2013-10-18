@@ -32,7 +32,7 @@ void    ReadWriteRep::_Rep::SetAt (Character item, size_t index)
     _PeekStart ()[index] = item.As<wchar_t> ();
 }
 
-void    ReadWriteRep::_Rep::RemoveAt (size_t index, size_t amountToRemove)
+void    ReadWriteRep::_Rep::RemoveAt (size_t from, size_t to)
 {
     Assert (_fStart <= _fEnd);
     Require (index + amountToRemove <= GetLength ());

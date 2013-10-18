@@ -114,9 +114,6 @@
  *      @todo   RFind() API should be embellished to include startAt etc, like regular Find () - but not 100%
  *              sure - think through...
  *
- *      @todo   Consider changing API for RemoveAt() - so second argument is ENDPOINT - to be more consistent
- *               with other APIs.
- *
  *      @todo   Document better what APIs CHANGE the string, and what APIs have no effect. Verbs like
  *              "ToLowerCase" are AMBIGUOUS.
  *
@@ -382,10 +379,16 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Remove the characters start at 'index' - removing nCharsToRemove (defaults to 1).
+                 * Remove the characters at 'charAt' (RemoveAt/1) or between 'from' and 'to'.
+				 *
                  * It is an error if this implies removing characters off the end of the string.
+				 *
+				 *	\req (charAt < GetLength ())
+				 *	\req (from <= to)
+				 *	\req (to < GetLength ())
                  */
-                nonvirtual  void        RemoveAt (size_t index, size_t nCharsToRemove = 1);
+                nonvirtual  void        RemoveAt (size_t charAt);
+                nonvirtual  void        RemoveAt (size_t from, size_t to);
 
             public:
                 /**
@@ -843,7 +846,7 @@ namespace   Stroika {
                 virtual void                SetAt (Character item, size_t index)    = 0;
                 // This rep is NEVER called with nullptr src/end nor start==end
                 virtual void                InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) = 0;
-                virtual void                RemoveAt (size_t index, size_t nCharsToRemove)  = 0;
+                virtual void                RemoveAt (size_t from, size_t to)		= 0;
 
                 virtual void                SetLength (size_t newLength)            = 0;
 

@@ -331,16 +331,17 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
     }
 }
 
-void    String::RemoveAt (size_t index, size_t nCharsToRemove)
+void    String::RemoveAt (size_t from, size_t to)
 {
-    Require (index + nCharsToRemove <= GetLength ());
+	Require (from <= to);
+	Require (to < GetLength ());
     try {
-        _fRep->RemoveAt (index, nCharsToRemove);
+        _fRep->RemoveAt (from, to);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
         Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
         _fRep = tmp._fRep;
-        _fRep->RemoveAt (index, nCharsToRemove);
+        _fRep->RemoveAt (from, to);
     }
 }
 
