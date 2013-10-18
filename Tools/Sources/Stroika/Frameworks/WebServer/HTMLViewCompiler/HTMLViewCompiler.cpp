@@ -7,7 +7,7 @@
 #include    <iostream>
 
 #include    "Stroika/Foundation/Characters/SDKString.h"
-#include    "Stroika/Foundation/Characters/StringUtils.h"
+#include    "Stroika/Foundation/Characters/CString/Utilities.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Execution/StringException.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
