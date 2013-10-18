@@ -157,11 +157,6 @@ namespace   Stroika {
                  */
                 bool    operator== (const BLOB& rhs) const;
 
-            protected:
-                /**
-                 */
-                struct  _IRep;
-
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
