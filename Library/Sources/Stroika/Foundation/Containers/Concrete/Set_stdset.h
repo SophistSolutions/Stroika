@@ -70,6 +70,9 @@ namespace   Stroika {
                      */
                     Set_stdset ();
                     Set_stdset (const Set_stdset<T, TRAITS>& src);
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                    Set_stdset (const std::initializer_list<T>& src);
+#endif
                     template    <typename CONTAINER_OF_T>
                     explicit Set_stdset (const CONTAINER_OF_T& src);
                     template    <typename COPY_FROM_ITERATOR_T>

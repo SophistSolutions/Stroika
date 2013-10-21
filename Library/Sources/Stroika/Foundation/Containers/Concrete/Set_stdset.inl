@@ -33,6 +33,15 @@ namespace   Stroika {
                     : inherited (static_cast<const inherited&> (src))
                 {
                 }
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                template    <typename T, typename TRAITS>
+                inline  Set_stdset<T, TRAITS>::Set_stdset (const std::initializer_list<T>& src)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    this->AddAll (src);
+                }
+#endif
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Set_stdset<T, TRAITS>::Set_stdset (const CONTAINER_OF_T& src)
