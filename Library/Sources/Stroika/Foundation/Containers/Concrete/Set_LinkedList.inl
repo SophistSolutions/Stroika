@@ -231,7 +231,16 @@ namespace   Stroika {
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     this->AddAll (s);
+                }
+                template    <typename T, typename TRAITS>
+                template    <typename COPY_FROM_ITERATOR_OF_T>
+                inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>&   Set_LinkedList<T, TRAITS>::operator= (const Set_LinkedList<T, TRAITS>& rhs)

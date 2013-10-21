@@ -43,10 +43,10 @@ namespace   Stroika {
                 public:
                     Set_LinkedList ();
                     Set_LinkedList (const Set_LinkedList<T, TRAITS>& m);
-                    template    <typename CONTAINER_OF_PAIR_KEY_T>
-                    explicit Set_LinkedList (const CONTAINER_OF_PAIR_KEY_T& cp);
-                    template    <typename COPY_FROM_ITERATOR_KEY_T>
-                    explicit Set_LinkedList (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
+                    template    <typename CONTAINER_OF_T>
+                    explicit Set_LinkedList (const CONTAINER_OF_T& s);
+                    template    <typename COPY_FROM_ITERATOR_OF_T>
+                    explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
 
                 public:
