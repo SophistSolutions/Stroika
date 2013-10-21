@@ -104,12 +104,35 @@ namespace CommonTests {
         }
 
 
+        namespace Test4_UnionDifferenceIntersectionEtc {
+            template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_SET_CONTAINER s1;
+                s1.Add (1);
+                s1.Add (2);
+                USING_SET_CONTAINER s2 = s1;
+
+                VerifyTestResult (s2 == s1.Union (s2));
+                VerifyTestResult (s2 == s1 + s2);
+
+                VerifyTestResult (s1.Difference (s2).empty ());
+                VerifyTestResult ((s1 - s2).empty ());
+                s2.Add (3);
+
+                Verify (s1.Intersects (s2));
+                Verify (s1.Intersection (s2).length () == 1);
+            }
+        }
+
+
         template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
         void    Test_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
             Test3_Equals::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test4_UnionDifferenceIntersectionEtc::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
         }
 
 

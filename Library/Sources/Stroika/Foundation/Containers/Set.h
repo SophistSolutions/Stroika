@@ -33,13 +33,14 @@
  *              >   Set_stlunordered_set (really is hashset)
  *              >   Set_Treap
  *
- *      @todo   Add Union/Interesection/Difference methods (and maybe global functions?)
+ *      @todo   Experiment with new operator+/operator- set difference/union functions for ease of use
+ *              Would it be better to have global functions (overloading issues?). Or is this OK.
+ *
  *              Then see if we can lose the STL/SetUtils code? Gradually ...
  *
- *              maybe redo impls using Stroika impl, and use that to encourage
- *              redo of calling code - or at least for each function in that code - document
- *              how todo equiv in Stroika!
- *
+ *      @todo   Consider if Union/Difference etc methods should delegate to virtual reps? Or other better
+ *              performance approaches? One closely related issue is the backend type returned. Now we use
+ *              default but maybe should use left or right side type?
  */
 
 
@@ -129,6 +130,7 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Add when T is already present has no effect on the container (not an error or exception).
                  */
                 nonvirtual  void    Add (T item);
 
@@ -165,14 +167,51 @@ namespace   Stroika {
 
             public:
                 /**
-                 *      +=/-= are equivilent Add(), AddAll(), Remove() and RemoveAll(). They are just syntactic sugar.
+                 */
+                nonvirtual  bool    Intersects (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Set<T, TRAITS>   Intersection (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Set<T, TRAITS>   Union (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Set<T, TRAITS>   Difference (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 */
+                nonvirtual  Set<T, TRAITS>   operator- (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 *      Synonym for Add/AddAll.
+                 *
+                 *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
                  */
                 nonvirtual  Set<T, TRAITS>& operator+= (T item);
-                template    <typename CONTAINER_OF_T>
-                nonvirtual  Set<T, TRAITS>& operator+= (const CONTAINER_OF_T& items);
+                nonvirtual  Set<T, TRAITS>& operator+= (const Set<T, TRAITS>& items);
+
+            public:
+                /**
+                 *      Synonym for Remove/RemoveAll.
+                 *
+                 *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
+                 */
                 nonvirtual  Set<T, TRAITS>& operator-= (T item);
-                template    <typename CONTAINER_OF_T>
-                nonvirtual  Set<T, TRAITS>& operator-= (const CONTAINER_OF_T& items);
+                nonvirtual  Set<T, TRAITS>& operator-= (const Set<T, TRAITS>& items);
 
             public:
                 /**

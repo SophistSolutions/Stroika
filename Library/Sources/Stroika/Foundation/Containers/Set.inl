@@ -148,6 +148,55 @@ namespace   Stroika {
                 return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T, typename TRAITS>
+            bool    Set<T, TRAITS>::Intersects (const Set<T, TRAITS>& rhs) const
+            {
+                for (T i : *this) {
+                    if (rhs.Contains (i)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   Set<T, TRAITS>::Intersection (const Set<T, TRAITS>& rhs) const
+            {
+                Set<T, TRAITS>  result;
+                for (T i : *this) {
+                    if (rhs.Contains (i)) {
+                        result.Add (i);
+                    }
+                }
+                return result;
+            }
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   Set<T, TRAITS>::Union (const Set<T, TRAITS>& rhs) const
+            {
+                Set<T, TRAITS>   r   =   *this;
+                r.AddAll (rhs);
+                return r;
+            }
+            template    <typename T, typename TRAITS>
+            Set<T, TRAITS>   Set<T, TRAITS>::Difference (const Set<T, TRAITS>& rhs) const
+            {
+                Set<T, TRAITS>  result;
+                for (T i : *this) {
+                    if (not rhs.Contains (i)) {
+                        result.Add (i);
+                    }
+                }
+                return result;
+            }
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator+ (const Set<T, TRAITS>& rhs) const
+            {
+                return Union (rhs);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator- (const Set<T, TRAITS>& rhs) const
+            {
+                return Difference (rhs);
+            }
+            template    <typename T, typename TRAITS>
             inline  bool  Set<T, TRAITS>::operator== (const Set<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
@@ -164,11 +213,10 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
-            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const CONTAINER_OF_T& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const Set<T, TRAITS>& items)
             {
                 AddAll (items);
-                return (*this);
+                return *this;
             }
             template    <typename T, typename TRAITS>
             inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (T item)
@@ -177,8 +225,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
-            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const CONTAINER_OF_T& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator-= (const Set<T, TRAITS>& items)
             {
                 RemoveAll (items);
                 return *this;
