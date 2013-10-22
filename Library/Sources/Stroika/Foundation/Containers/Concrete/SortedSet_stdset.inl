@@ -220,11 +220,20 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& m)
-                    : inherited (m)
+                inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s)
+                    : inherited (s)
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                template    <typename T, typename TRAITS>
+                SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const std::initializer_list<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), Rep_);
+                    this->AddAll (s);
+                }
+#endif
                 template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const CONTAINER_OF_T& s)
