@@ -39,6 +39,16 @@ namespace CommonTests {
                 VerifyTestResult (s3.Contains (3));
                 VerifyTestResult (s3.Contains (4));
                 VerifyTestResult (not s3.Contains (5));
+#if      qCompilerAndStdLib_Supports_initializer_lists
+                {
+                    USING_SET_CONTAINER s1 = {1};
+                    USING_SET_CONTAINER s2 = USING_SET_CONTAINER ({1});
+                    USING_BASESET_CONTAINER s3 = USING_SET_CONTAINER ({1});
+                    VerifyTestResult (s1.length () == 1);
+                    VerifyTestResult (s2.length () == 1);
+                    VerifyTestResult (s3.length () == 1);
+                }
+#endif
             }
         }
 
