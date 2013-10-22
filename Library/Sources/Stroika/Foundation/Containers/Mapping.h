@@ -183,6 +183,13 @@ namespace   Stroika {
                 nonvirtual  bool                        Lookup (KeyType key, ValueType* item) const;
                 nonvirtual  bool                        Lookup (KeyType key, nullptr_t) const;
 
+
+            public:
+                /**
+                 *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+                 */
+                nonvirtual  ValueType   LookupValue (KeyType key, ValueType defaultValue = ValueType ()) const;
+
             public:
                 /**
                  *  Synonym for not (Lookup (key).empty ())

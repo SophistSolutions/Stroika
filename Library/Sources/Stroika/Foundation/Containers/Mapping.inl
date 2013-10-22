@@ -150,6 +150,12 @@ namespace   Stroika {
                 return _GetRep ().Lookup (key, nullptr);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  VALUE_TYPE   Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
+            {
+                Memory::Optional<VALUE_TYPE>   r    =   Lookup (key);
+                return r.IsPresent () ? *r : defaultValue;
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
             {
                 return _GetRep ().Lookup (key, nullptr);
