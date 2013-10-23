@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <type_traits>
+
 #include    "Common.h"
 
 
@@ -16,8 +18,6 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
- *      @todo - maybe stuff like Add(ENUM, ENUM), and DIFF (ENum,ENUM) to workouarnd
- *              issues with too-strong typing with enum class?? (avoid so many casts)
  */
 
 
@@ -43,12 +43,24 @@ namespace   Stroika {
              *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
              *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
              *
-             *  This function is hadny since class enum's cannot be automatically promoted to integers.
+             *  This function is handy since class enum's cannot be automatically promoted to integers.
              *
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
-            int    Int (ENUM e);
+            typename underlying_type<ENUM>::type    ToInt (ENUM e);
+
+
+            /**
+             *  \brief  Cast the given int to the given ENUM type - (like static_cast<int>()) - but check range.
+             *
+             *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND
+             *      \req    e >= typename ENUM::eSTART and e < typename ENUM::eEND
+             *
+             *  This function is handy since class enum's cannot be automatically promoted to integers.
+             */
+            template    <typename   ENUM>
+            ENUM    ToEnum (typename underlying_type<ENUM>::type e);
 
 
             /**
@@ -60,7 +72,7 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
-            unsigned int    OffsetFromStart (ENUM e);
+            typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
 
 
             /**

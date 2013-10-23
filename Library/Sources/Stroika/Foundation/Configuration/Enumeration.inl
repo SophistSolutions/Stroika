@@ -25,25 +25,33 @@ namespace   Stroika {
             template    <typename   ENUM>
             inline  ENUM    Inc (ENUM e)
             {
-                Require (ENUM::eSTART <= e and e < ENUM::eEND);
-                //
-                //  @todo   The ideal would not be to cast to int, but to the appropriate underlying integral type
-                //          for 'e' - which maybe now possible with new meta-type info in C++11.
-                //
-                return static_cast<ENUM> (static_cast<int> (e) + 1);
+                return ToEnum<ENUM> (ToInt (e) + 1);
             }
 
 
             /*
              ********************************************************************************
-             ******************************** Configuration::Int ****************************
+             ****************************** Configuration::ToInt ****************************
              ********************************************************************************
              */
             template    <typename   ENUM>
-            inline  int    Int (ENUM e)
+            inline  typename underlying_type<ENUM>::type    ToInt (ENUM e)
             {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
-                return static_cast<int> (e);
+                return static_cast<typename underlying_type<ENUM>::type> (e);
+            }
+
+
+            /*
+             ********************************************************************************
+             ***************************** Configuration::ToEnum ****************************
+             ********************************************************************************
+             */
+            template    <typename   ENUM>
+            inline   ENUM   ToEnum (typename underlying_type<ENUM>::type e)
+            {
+                Require (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
+                return static_cast<ENUM> (e);
             }
 
 
@@ -53,10 +61,10 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ENUM>
-            inline  unsigned int    OffsetFromStart (ENUM e)
+            inline  typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e)
             {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
-                return static_cast<unsigned int> (Int (e) - Int (ENUM::eSTART));
+                return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
             }
 
 
