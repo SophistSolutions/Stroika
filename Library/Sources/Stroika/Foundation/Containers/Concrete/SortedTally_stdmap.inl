@@ -208,7 +208,7 @@ namespace   Stroika {
                 bool  SortedTally_stdmap<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return (fData_.size () == 0);
+                        return (fData_.empty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

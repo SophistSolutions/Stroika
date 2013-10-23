@@ -205,7 +205,7 @@ namespace   Stroika {
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Invariant ();
-                        return (fData_.empty () == 0);
+                        return (fData_.empty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
