@@ -76,14 +76,14 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             inline  typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e)
 #else
-            inline  int    OffsetFromStart (ENUM e)
+            inline  unsigned int    OffsetFromStart (ENUM e)
 #endif
             {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
 #else
-                return static_cast<int> (ToInt (e) - ToInt (ENUM::eSTART));
+                return static_cast<unsigned int> (ToInt (e) - ToInt (ENUM::eSTART));
 #endif
             }
 
