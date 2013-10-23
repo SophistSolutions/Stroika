@@ -48,7 +48,11 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             typename underlying_type<ENUM>::type    ToInt (ENUM e);
+#else
+            int    ToInt (ENUM e);
+#endif
 
 
             /**
@@ -60,8 +64,11 @@ namespace   Stroika {
              *  This function is handy since class enum's cannot be automatically promoted to integers.
              */
             template    <typename   ENUM>
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             ENUM    ToEnum (typename underlying_type<ENUM>::type e);
-
+#else
+            int    ToEnum (typename underlying_type<ENUM>::type e);
+#endif
 
             /**
              *  \brief  offset of given enum from ENUM::eSTART
@@ -72,7 +79,11 @@ namespace   Stroika {
              *  @todo   See if there is some better way for this.
              */
             template    <typename   ENUM>
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
+#else
+            typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
+#endif
 
 
             /**
