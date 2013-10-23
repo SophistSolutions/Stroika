@@ -89,12 +89,6 @@ namespace   Stroika {
                                             eCOUNT      =   eEND - eSTART,
 
 
-            /**
-             *  Temporary backward compat... v2.0a2x -LGP 2013-10-14
-             */
-#define Define_Start_End_Count(FIRST_ITEM,LAST_ITEM)    Stroika_Define_Enum_Bounds(FIRST_ITEM,LAST_ITEM)
-
-
         }
     }
 }
