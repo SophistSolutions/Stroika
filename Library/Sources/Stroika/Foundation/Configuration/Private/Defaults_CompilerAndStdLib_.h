@@ -31,10 +31,10 @@
 //#define __clang_major__ 3
 //#define __clang_minor__ 0
 //#define __clang_patchlevel__ 0
-#if     __clang_major__ < 3 || (__clang_major__ == 3 && (__clang_minor__ < 2))
-#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.2")
+#if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 4))
+#pragma message ("Warning: Stroika does not support versions prior to clang++ 3.4")
 #endif
-#if     __clang_major__ < 3 || (__clang_major__ == 3 && (__clang_minor__ < 2))
+#if     (__clang_major__ > 3) || (__clang_major__ == 3 && (__clang_minor__ >= 5))
 #pragma message ("Info: Stroika untested with this version of clang++")
 #endif
 
@@ -153,9 +153,7 @@
 @DESCRIPTION:   <p></p>
 */
 #ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
-#if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
-#elif   defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #elif   defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER >= _MS_VS_2k13_VER_)
@@ -249,10 +247,7 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
 */
 #ifndef qCompilerAndStdLib_Supports_constexpr
-#if     defined (__clang__)
-// Maybe not totally broken for clang - but broken enough to disable for now...
-#define qCompilerAndStdLib_Supports_constexpr   ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 1)))
-#elif   defined (_MSC_VER)
+#if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_constexpr   (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_constexpr   1
@@ -348,23 +343,6 @@
 #endif
 
 
-
-
-
-
-
-
-/**
-@CONFIGVAR:     qCompilerAndStdLib_Supports_toupper_tolower_overload
-@DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
-*/
-#ifndef qCompilerAndStdLib_Supports_toupper_tolower_overload
-#if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_toupper_tolower_overload       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 3)))
-#else
-#define qCompilerAndStdLib_Supports_toupper_tolower_overload        1
-#endif
-#endif
 
 
 
@@ -494,22 +472,6 @@
 
 
 
-#if 0
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
-@DESCRIPTION:   <p>http://stackoverflow.com/questions/2447458/default-template-arguments-for-function-templates</p>
-*/
-#ifndef qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions
-#define qCompilerAndStdLib_Supports_DefaultParametersForTemplateFunctions 0
-#endif
-#endif
-
-
-
-
-
-
-
 
 
 /*
@@ -526,6 +488,8 @@
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitConversionOperators
 */
@@ -536,8 +500,6 @@
 #define qCompilerAndStdLib_Supports_ExplicitConversionOperators 1
 #endif
 #endif
-
-
 
 
 
@@ -596,6 +558,7 @@
 #define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #endif
 #endif
+
 
 
 
@@ -742,14 +705,13 @@
 @DESCRIPTION:   <p>Defined true if the compiler supports lambda functions as default arguments to other functions</p>
 */
 #ifndef qCompilerAndStdLib_Supports_lambda_default_argument
-#if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_lambda_default_argument     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 1)))
-#elif   defined (__GNUC__)
+#if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument     1
 #endif
 #endif
+
 
 
 
