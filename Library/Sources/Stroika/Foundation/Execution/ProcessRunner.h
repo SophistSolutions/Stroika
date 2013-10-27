@@ -160,7 +160,7 @@ namespace   Stroika {
                  *  Each of these CAN be null, and will if so, that will be interpretted as an empty stream
                  *  (for in/stdin), and for out/error, just means the results will be redirected to /dev/null.
                  */
-                nonvirtual  IRunnablePtr    CreateRunnable (ProgressMontior* progress = nullptr);
+                nonvirtual  IRunnablePtr    CreateRunnable (ProgressMonitor::TaskNotifier progress = nullptr);
 
             public:
                 /**
@@ -171,8 +171,8 @@ namespace   Stroika {
                  *  ProcessRunner, and replaces the stdout, and replaces its stdout stream with one that captures
                  *  results as a string.
                  */
-                nonvirtual  void                Run (ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
-                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, ProgressMontior* progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  void                Run (ProgressMonitor::TaskNotifier progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
+                nonvirtual  Characters::String  Run (const Characters::String& cmdStdInValue, ProgressMonitor::TaskNotifier progress = nullptr, Time::DurationSecondsType timeout = Time::kInfinite);
 
             private:
                 Memory::Optional<SDKString>     fCommandLine_;

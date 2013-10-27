@@ -19,49 +19,122 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
-            inline  ProgressRangeType   ProgressMontior::GetProgress () const
+
+            /*
+             ********************************************************************************
+             ***************************** ProgressMonitor::IRep_ ***************************
+             ********************************************************************************
+             */
+            class   ProgressMonitor::IRep_ {
+            public:
+                IRep_ ()
+                    : fCritSect_ ()
+                    , fCallbacks_ ()
+                    , fCanceled_ ()
+                    , fCurrentProgress_ ()
+                    , fCurrentTaskInfo_ () {
+                }
+
+                mutable recursive_mutex                             fCritSect_;
+                Containers::Sequence<ProgressChangedCallbackType>   fCallbacks_;
+                bool                                                fCanceled_;
+                ProgressRangeType                                   fCurrentProgress_;
+                CurrentTaskInfo                                     fCurrentTaskInfo_;
+            };
+
+
+
+            /*
+             ********************************************************************************
+             ***************************** ProgressMontitor *********************************
+             ********************************************************************************
+             */
+            inline  ProgressMonitor::ProgressRangeType   ProgressMonitor::GetProgress () const
             {
-                return fCurrentProgress_;
+                RequireNotNull (fRep_);
+                Ensure (0.0 <= fRep_->fCurrentProgress_ and fRep_->fCurrentProgress_ <= 1.0);
+                return fRep_->fCurrentProgress_;
             }
-            inline  void    ProgressMontior::SetProgress (ProgressRangeType p)
+            inline  void    ProgressMonitor::Cancel ()
+            {
+                RequireNotNull (fRep_);
+                fRep_->fCanceled_ = true;
+            }
+
+
+            /*
+             ********************************************************************************
+             ********************** ProgressMonitor::TaskNotifier ***************************
+             ********************************************************************************
+             */
+            inline ProgressMonitor::TaskNotifier::TaskNotifier ()
+                : fRep_ ()
+                , fFromProg_ (0.0)
+                , fToProg_ (1.0)
+            {
+            }
+            inline ProgressMonitor::TaskNotifier::TaskNotifier (nullptr_t)
+                : fRep_ ()
+                , fFromProg_ (0.0)
+                , fToProg_ (1.0)
+            {
+            }
+            inline ProgressMonitor::TaskNotifier::TaskNotifier (const TaskNotifier& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
+                : fRep_ (parentTask.fRep_)
+                , fFromProg_ (parentTask.fFromProg_)
+                , fToProg_ (parentTask.fToProg_)
+            {
+            }
+            inline  void    ProgressMonitor::TaskNotifier::SetProgress (ProgressRangeType p)
             {
                 Require (0.0 <= p and p <= 1.0);
-                Require (p >= fCurrentProgress_);
-                if (p > fCurrentProgress_) {
-                    fCurrentProgress_ = p;
+                Require (p >= fRep_->fCurrentProgress_);
+                if (p > fRep_->fCurrentProgress_) {
+                    lock_guard<recursive_mutex> enterCriticalSection (fRep_->fCritSect_);
+                    fRep_->fCurrentProgress_ = p;
                     CallNotifyProgress_ ();
                 }
             }
-            inline  void    ProgressMontior::Cancel ()
+            inline  void    ProgressMonitor::TaskNotifier::ThrowIfCanceled ()
             {
-                fCanceled_ = true;
-            }
-            inline  void    ProgressMontior::ThrowIfCanceled ()
-            {
-                if (fCanceled_) {
+                if (fRep_.get () != nullptr and fRep_->fCanceled_) {
                     DoThrow (UserCanceledException ());
                     //DoThrow<ThreadAbortException> (ThreadAbortException ());
                 }
             }
-            inline  ProgressMontior::CurrentTaskInfo    ProgressMontior::GetCurrentTaskInfo () const
+            inline  void    ProgressMonitor::TaskNotifier::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
+            {
+                if (fRep_.get () != nullptr) {
+                    SetProgress (currentProgress);
+                    ThrowIfCanceled ();
+                }
+            }
+
+#if 0
+            inline  void    ProgressMonitor::Cancel ()
+            {
+                fCanceled_ = true;
+            }
+            inline  ProgressMonitor::CurrentTaskInfo    ProgressMonitor::GetCurrentTaskInfo () const
             {
                 return fCurrentTaskInfo_;
             }
-            inline  void    ProgressMontior::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
+            inline  void    ProgressMonitor::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 fCurrentTaskInfo_ = taskInfo;
             }
-            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
+            inline  void    ProgressMonitor::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
             {
                 SetProgress (currentProgress);
                 ThrowIfCanceled ();
             }
-            inline  void    ProgressMontior::SetCurrentProgressAndThrowIfCanceled (ProgressMontior* objOrNull, ProgressRangeType currentProgress)
+            inline  void    ProgressMonitor::SetCurrentProgressAndThrowIfCanceled (ProgressMonitor* objOrNull, ProgressRangeType currentProgress)
             {
                 if (objOrNull != nullptr) {
                     objOrNull->SetCurrentProgressAndThrowIfCanceled (currentProgress);
                 }
             }
+#endif
 
         }
     }

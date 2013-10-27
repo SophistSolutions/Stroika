@@ -8,53 +8,50 @@
 
 
 
-
-
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
 
 
+/*
+ ********************************************************************************
+ **************************** ProgressMonitor ***********************************
+ ********************************************************************************
+ */
+ProgressMonitor::ProgressMonitor ()
+    : fRep_ (new IRep_ ())
+{
+}
+
+ProgressMonitor::ProgressMonitor (const ProgressChangedCallbackType& progressChangedCallback)
+    : fRep_ (new IRep_ ())
+{
+    AddOnProgressCallback (progressChangedCallback);
+}
+
+ProgressMonitor::~ProgressMonitor ()
+{
+}
+
+void    ProgressMonitor::AddOnProgressCallback (const ProgressChangedCallbackType& progressChangedCallback)
+{
+    RequireNotNull (fRep_);
+    lock_guard<recursive_mutex> enterCriticalSection (fRep_->fCritSect_);
+    fRep_->fCallbacks_.Append (progressChangedCallback);
+}
 
 
 /*
  ********************************************************************************
- **************************** ProgressMontior ***********************************
+ ********************** ProgressMonitor::TaskNotifier ***************************
  ********************************************************************************
  */
-ProgressMontior::ProgressMontior ()
-    : fCallbacks ()
-    , fCritSect_ ()
-    , fCanceled_ (false)
-    , fCurrentProgress_ (0.0)
-    , fCurrentTaskInfo_ ()
+void    ProgressMonitor::TaskNotifier::CallNotifyProgress_ () const
 {
-}
-
-ProgressMontior::ProgressMontior (const shared_ptr<ICallback>& callback)
-    : fCallbacks ()
-    , fCritSect_ ()
-    , fCanceled_ (false)
-    , fCurrentProgress_ (0.0)
-    , fCurrentTaskInfo_ ()
-{
-    AddCallback (callback);
-}
-
-ProgressMontior::~ProgressMontior ()
-{
-}
-
-void    ProgressMontior::AddCallback (const shared_ptr<ICallback>& callback)
-{
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSect_);
-    fCallbacks.push_back (callback);
-}
-
-void    ProgressMontior::CallNotifyProgress_ () const
-{
-    lock_guard<recursive_mutex> enterCriticalSection (fCritSect_);
-    for (vector<shared_ptr<ICallback>>::const_iterator i = fCallbacks.begin (); i != fCallbacks.end (); ++i) {
-        i->get ()->NotifyOfProgress (*this);
+    RequireNotNull (fRep_);
+    lock_guard<recursive_mutex> enterCriticalSection (fRep_->fCritSect_);
+    for (ProgressChangedCallbackType f : fRep_->fCallbacks_) {
+        // @todo - must fix arg to callback or find way to get back owning ProgressMonitor or make temporary one - thats really good enuf...
+        //f (*this);
     }
 }
