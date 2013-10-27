@@ -68,6 +68,30 @@ namespace   Stroika {
 #endif
 
 
+
+            /*
+             *  \brief  PinToSpecialPoint() returns its first argument, or someting NearlyEqual() to it (but better)
+             *
+             *  Sometimes with floating point arithmatic you get points to move slightly. For example, if you
+             *  want a number between 0.0 and 1.0, you might do some arithmatic and get -0.000000001; This might
+             *  cause the valeu to be out of the range 0..1. You might want to assert/assure the value never goes below
+             *  zero or above one, but this is outside that range.
+             *
+             *  This helper allows values near a special value (like the endpoint of that range) to 'pin' to be
+             *  exactly that endpoint.
+             *
+             *  But PinToSpecialPoint() always returns its first argument, or someting NearlyEqual() to it.
+             */
+#if  qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+            template    <typename   T>
+            T   PinToSpecialPoint (T p, T special, T epsilon = (1000 * numeric_limits<float>::epsilon()));
+#else
+            template    <typename   T>
+            T   PinToSpecialPoint (T p, T special, T epsilon = (1000 * numeric_limits<T>::epsilon()));
+#endif
+
+            /**
+             */
             template    <typename   T>
             T   PinInRange (T initialValue, T lowerBound, T upperBound);
 
