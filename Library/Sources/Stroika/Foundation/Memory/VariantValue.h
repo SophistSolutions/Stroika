@@ -25,6 +25,10 @@
  *
  *  TODO:
  *
+ *      @todo   Consider adding crit-section-safe version of  VariantValue.
+ *              AnD OR MKAE VariantValue (KEY IS DOCUMETNATION) - threasdsafe like other container types.
+ *              Might be trivial with careful use of shared_ptr - and maybe safe already?  But if not - maybe worth doing?
+ *              ONE Place we can improve if this is threadsafe is use in ProgressMonitor.h
  *
  *      @todo   Fix VariantValue::Equals () - for case in DoRegressionTests_VariantValue_7_().
  *
