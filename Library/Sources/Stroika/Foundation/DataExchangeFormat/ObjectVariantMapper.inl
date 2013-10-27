@@ -85,7 +85,8 @@ namespace   Stroika {
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
                     T*  actualMember    =   reinterpret_cast<T*> (intoObjOfTypeT);
                     if (s.size () > SZ) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                        DbgTrace (L"Array ('%s') actual size %d out of range", typeid (T[SZ]).name (), static_cast<int> (s.size ()));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Array size out of range"));
                     }
                     size_t idx = 0;
                     for (auto i : s) {
@@ -139,7 +140,8 @@ namespace   Stroika {
                     for (VariantValue encodedPair : s) {
                         Sequence<VariantValue>  p   =   p.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            Execution::DoThrow<BadFormatException> (BadFormatException ());
+                            DbgTrace (L"Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE>).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
                         }
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
@@ -183,10 +185,16 @@ namespace   Stroika {
                     Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
                     if (m.size () != 2) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                        DbgTrace (L"Range ('%s') element needs begin and end", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs begin and end"));
                     }
-                    if (not m.ContainsKey (L"Begin") or not m.ContainsKey (L"End")) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                    if (not m.ContainsKey (L"Begin")) {
+                        DbgTrace (L"Range ('%s') needs begin", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'Begin' element"));
+                    }
+                    if (not m.ContainsKey (L"End")) {
+                        DbgTrace (L"Range ('%s') needs end", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'End' element"));
                     }
                     ElementType from    =   mapper->ToObject<ElementType> (*m.Lookup (L"Begin"));
                     ElementType to      =   mapper->ToObject<ElementType> (*m.Lookup (L"End"));
@@ -223,7 +231,8 @@ namespace   Stroika {
 #endif
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)) {
-                        Execution::DoThrow<BadFormatException> (BadFormatException ());
+                        DbgTrace (L"Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
