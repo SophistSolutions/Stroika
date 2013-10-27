@@ -35,13 +35,7 @@ namespace   Stroika {
                 template    <typename T>
                 inline  typename std::enable_if<std::is_floating_point<T>::value, T>::type  CheckedConverter_Range_Helper_Pinner_ (T t, T lower, T upper)
                 {
-                    if (Math::NearlyEquals (t, lower)) {
-                        return lower;
-                    }
-                    if (Math::NearlyEquals (t, upper)) {
-                        return upper;
-                    }
-                    return t;
+                    return Math::PinToSpecialPoint (PinToSpecialPoint (t, lower), upper);
                 }
             }
 
