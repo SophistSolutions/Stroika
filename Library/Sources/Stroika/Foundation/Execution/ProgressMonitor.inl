@@ -115,8 +115,8 @@ namespace   Stroika {
                 p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
                 // disallow moving progress backwards because it is nearly always a bug, and not terribly useful
                 Require (p >= fRep_->fCurrentProgress_);
-                if (p > fRep_->fCurrentProgress_) {
-                    fRep_->fCurrentProgress_ = p;
+                if (fRep_->fCurrentProgress_.exchange (p) != p) {
+                    // only call if value changed - but always write so atomic update
                     CallNotifyProgress_ ();
                 }
             }
