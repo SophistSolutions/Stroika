@@ -111,9 +111,10 @@ namespace   Stroika {
                 p = fFromProg_ + p * (fToProg_ - fFromProg_);
                 p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
                 Require (0.0 <= p and p <= 1.0);
-                p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());  // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
-                Require (p >= fRep_->fCurrentProgress_);        // disallow moving progress backwards
-                // Note this is done because it is nearly always a bug, and not terribly useful
+                // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
+                p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
+                // disallow moving progress backwards because it is nearly always a bug, and not terribly useful
+                Require (p >= fRep_->fCurrentProgress_);
                 if (p > fRep_->fCurrentProgress_) {
                     fRep_->fCurrentProgress_ = p;
                     CallNotifyProgress_ ();
