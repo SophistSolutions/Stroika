@@ -36,7 +36,6 @@ ProgressMonitor::~ProgressMonitor ()
 void    ProgressMonitor::AddOnProgressCallback (const ProgressChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
-    lock_guard<mutex> enterCriticalSection (fRep_->fCritSect_);
     fRep_->fCallbacks_.Append (progressChangedCallback);
 }
 
@@ -49,9 +48,7 @@ void    ProgressMonitor::AddOnProgressCallback (const ProgressChangedCallbackTyp
 void    ProgressMonitor::TaskNotifier::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
-    lock_guard<mutex> enterCriticalSection (fRep_->fCritSect_);
     for (ProgressChangedCallbackType f : fRep_->fCallbacks_) {
-        // @todo - must fix arg to callback or find way to get back owning ProgressMonitor or make temporary one - thats really good enuf...
-        //f (*this);
+        return f (ProgressMonitor (fRep_));
     }
 }

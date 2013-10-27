@@ -23,6 +23,9 @@
  *      @todo   Need subclass (or builtin ability) to specify lambda to run and then have cancel do more
  *              and stop its thread.
  *
+ *      @todo   If we make (document) VariantValue to be theradsafe, then we can lift critical section
+ *              use here and make it simpler!
+ *
  *      @todo   Consider  having ProgressMonitor be as smartptr type, instead of passing ProgressMonitor* all over
  *              the place. And break into submodules:
  *              Progress/
@@ -31,7 +34,6 @@
  *                  Updater???
  *                  Listener???
  *          <<MOSTLY DONE BUT REVIEW AND CONSIDER NAMES>>>
- *
  *
  *      @todo   ProgressRangeType SB class with oeprator to convert to/from float, but with assert about range
  *              0..1. OR - maybe just auto-pin. That maybe most easily useful. Or at least no assert and just
@@ -49,7 +51,11 @@ namespace   Stroika {
         namespace   Execution {
 
 
-            /*
+            /**
+             *  @todo MAYBE allow copy - but just document its a smart pointer and copy just increments refcount. NOT copy by value semantics.
+             *
+             *  @todo REDO ALL DOCS - ABOUT NULL HANDLING AND ASSERTIONS ETC.
+             *
              * This class is the basic interface used for progress tracking. Progress tracking both measures progress,
              * and supports the notion of canceling. The reason progres and cancelability are tied together is that its
              * only for 'long lived' tasks one might want to measure the progress of, that one might want to allow canceling.
