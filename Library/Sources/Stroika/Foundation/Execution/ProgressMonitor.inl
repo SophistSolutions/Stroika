@@ -13,6 +13,7 @@
 #include    <atomic>
 
 #include    "../Debug/Assertions.h"
+#include    "../Math/Common.h"
 #include    "../Memory/BlockAllocated.h"
 
 #include    "UserCanceledException.h"
@@ -99,10 +100,12 @@ namespace   Stroika {
                 , fFromProg_ (parentTask.fFromProg_ * fromProg)
                 , fToProg_ (parentTask.fToProg_* toProg)
             {
+                // use Math::PinToSpecialPoint
                 // !@todo RANGES ARE WRONG HERE - FIX
             }
             inline  void    ProgressMonitor::TaskNotifier::SetProgress (ProgressRangeType p)
             {
+                p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
                 Require (0.0 <= p and p <= 1.0);
                 Require (p >= fRep_->fCurrentProgress_);
                 if (p > fRep_->fCurrentProgress_) {

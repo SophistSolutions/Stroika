@@ -35,10 +35,6 @@
  *                  Listener???
  *          <<MOSTLY DONE BUT REVIEW AND CONSIDER NAMES>>>
  *
- *      @todo   ProgressRangeType SB class with oeprator to convert to/from float, but with assert about range
- *              0..1. OR - maybe just auto-pin. That maybe most easily useful. Or at least no assert and just
- *              pin if within elspion of 0/1.
- *
  *      @todo   This all needs tons of code review, and careful rethinking/analysis.
  *
  *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
