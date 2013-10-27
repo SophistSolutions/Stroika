@@ -20,6 +20,9 @@
  *
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
+ *      @todo   Need subclass (or builtin ability) to specify lambda to run and then have cancel do more
+ *              and stop its thread.
+ *
  *      @todo   Consider  having ProgressMonitor be as smartptr type, instead of passing ProgressMonitor* all over
  *              the place. And break into submodules:
  *              Progress/
@@ -27,9 +30,12 @@
  *                  Normalizer
  *                  Updater???
  *                  Listener???
+ *          <<MOSTLY DONE BUT REVIEW AND CONSIDER NAMES>>>
+ *
  *
  *      @todo   ProgressRangeType SB class with oeprator to convert to/from float, but with assert about range
- *              0..1
+ *              0..1. OR - maybe just auto-pin. That maybe most easily useful. Or at least no assert and just
+ *              pin if within elspion of 0/1.
  *
  *      @todo   This all needs tons of code review, and careful rethinking/analysis.
  *
@@ -77,11 +83,20 @@ namespace   Stroika {
                  */
                 typedef std::function<void (const ProgressMonitor& progressMonitor)>    ProgressChangedCallbackType;
 
+            private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+            public:
+#endif
+                class IRep_;
+
             public:
                 /**
                  */
                 ProgressMonitor ();
                 ProgressMonitor (const ProgressChangedCallbackType& progressChangedCallback);
+
+            private:
+                ProgressMonitor (const shared_ptr<IRep_>& rep);
 
             public:
                 ~ProgressMonitor ();
@@ -114,16 +129,15 @@ namespace   Stroika {
                 struct  CurrentTaskInfo;
 
             public:
-                // Often in displaying progress, its useful to have a notion of what the system is doing, and thats usually displayed far away
-                // from where the notion of progress stage resides. This API is usually called by the bit of code performing actions (to set the current task)
-                // and by the calling GUI to Get the current task description.
-                //
-                // Note also - for reasons of localization - its often helpful to pass back specific information about the task in progress (like file 1 of 4).
-                // Using the 'fExtraData' field of the
+                /**
+                 * Often in displaying progress, its useful to have a notion of what the system is doing, and thats usually displayed far away
+                 *  from where the notion of progress stage resides. This API is usually called by the bit of code performing actions (to set the current task)
+                 *  and by the calling GUI to Get the current task description.
+                 *
+                 *  Note also - for reasons of localization - its often helpful to pass back specific information about the task in progress (like file 1 of 4).
+                 *  Using the 'fExtraData' field of the
+                 */
                 nonvirtual  CurrentTaskInfo GetCurrentTaskInfo () const;
-
-            private:
-                class IRep_;
 
             private:
                 shared_ptr<IRep_>   fRep_;
@@ -133,14 +147,15 @@ namespace   Stroika {
             };
 
 
-            /*
-             *  Often in displaying progress, its useful to have a notion of what the system is doing, and thats usually displayed far away
-            // from where the notion of progress stage resides. This API is usually called by the bit of code performing actions (to set the current task)
-            // and by the calling GUI to Get the current task description.
-            //
-            // Note also - for reasons of localization - its often helpful to pass back specific information about the task in progress (like file 1 of 4).
-            // Using the 'fExtraData' field of the
-            */
+            /**
+             *  Often in displaying progress, its useful to have a notion of what the system is doing,
+             *  and thats usually displayed far away from where the notion of progress stage resides.
+             *  This API is usually called by the bit of code performing actions (to set the current task)
+             *  and by the calling GUI to Get the current task description.
+             *
+             *  Note also - for reasons of localization - its often helpful to pass back specific information
+             *  about the task in progress (like file 1 of 4). Using the 'fExtraData' field of the
+             */
             struct  ProgressMonitor::CurrentTaskInfo {
                 Characters::String      fName;
                 Memory::VariantValue    fDetails;
@@ -165,27 +180,28 @@ namespace   Stroika {
                 TaskNotifier (const TaskNotifier& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
 
             public:
-                nonvirtual  ProgressMonitor&    GetProgressMonitor () const;
-
-            public:
                 nonvirtual  void                SetProgress (ProgressRangeType p);
 
             public:
-                // Called from the context of a thread which has been given this progress object. This method will check
-                // if this progress object has been canceled, and in if so throw UserCanceledException.
-                //
-                // Note - this function does NOT check if the itself thread has been aborted (as that is usually taken care of automatically or via
-                // CheckForThreadAborting)
+                /**
+                 * Called from the context of a thread which has been given this progress object. This method will check
+                 * if this progress object has been canceled, and in if so throw UserCanceledException.
+                 *
+                 * Note - this function does NOT check if the itself thread has been aborted (as that is usually taken care of automatically or via
+                 * CheckForThreadAborting)
+                 */
                 nonvirtual  void    ThrowIfCanceled ();
 
             public:
-                /*
+                /**
                  * SetCurrentProgressAndThrowIfCanceled () overloads are handy helpers for code performing long-lived tasks to deal with being passed a
                  * null progress object (often) and do that check, and if non-null, then update the progress and check for cancelations.
                  */
                 nonvirtual  void    SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
 
             public:
+                /**
+                 */
                 nonvirtual  void    SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo);
 
             private:
