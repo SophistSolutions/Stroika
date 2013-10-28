@@ -144,10 +144,15 @@ namespace   Stroika {
              **************************** Math::NearlyEquals ********************************
              ********************************************************************************
              */
-            template    <typename   FloatType>
-            inline  FloatType   NearlyEquals (FloatType l, FloatType r, FloatType epsilon)
+            template    <typename   T>
+            inline  T   NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
             {
-                return std::fabs ( l - r ) < epsilon;
+                return std::fabs ( l - r ) <= epsilon;
+            }
+            template    <typename   T>
+            inline  T   NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_integral<T>::value >::type*)
+            {
+                return std::abs ( l - r ) <= epsilon;
             }
 
 

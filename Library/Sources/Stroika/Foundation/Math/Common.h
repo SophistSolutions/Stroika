@@ -61,11 +61,13 @@ namespace   Stroika {
              */
 #if  qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<float>::epsilon()));
+            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<float>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
 #else
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()));
+            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
 #endif
+            template    <typename   T>
+            T   NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
 
 
 
