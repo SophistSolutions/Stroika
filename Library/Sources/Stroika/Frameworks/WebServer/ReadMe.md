@@ -8,3 +8,7 @@ This framework can also be used as an alternative to stuff like cgi, and hosting
 where you build a standalone app that has - in essence - the part of apache you care about -
 builtin - as part of your application.
 
+TODO:
+	>	Add in notion of Rails-like Router. Something with good defaults but less opaque about
+		how mapping done. Maybe use std::function and RegExp to match urls and direct requests
+		to handlers? Or maybe abstract classes bette r than std::function here?

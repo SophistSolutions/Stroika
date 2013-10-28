@@ -35,3 +35,23 @@ TODO/DESIGN NOTES:
 			// blocks reading on input and invokes callback as needed
 			void	ProcessNextCall();
 	};
+
+	o	Leverage existing ObjectMapper code
+	o	Write tool to parse XSD to generate ObjectMapper definitions.
+	o	Do in such a way that it can be edited/revfined/re-used:
+		o	EITHER
+			o	two passes - one from WSDL to generate bare bones config (or optionally fill details mapped config)
+			o	Then you can edit the bare bones and copy in what you want (edited) from teh defailts filled config
+			o	Then you can run a second phase to generate actual C++ mappings code - based on earlier config file.
+
+			Idea is you quickly get basic mapping (like with gsoap). But you can reconfigure just the peices you want
+			to may to your own structures. And then even as the WSDL changes, those mapping choices remain.
+		o OR
+			o	something more like "Emily" for dailog editor. Use subclassing. Generate DEFAULT mapping. BUt have
+				some way after the fact you can 'sub-in' your own replacemnet mapping. Not sure how that would
+				work here.
+
+	o	WSDL reader tool generates BOTH ObjectMapper code and (new TBD) WebServer router input- to appropriate execution
+		functions.
+
+	o	Also need builtin exception to SOAP/HTTP fault mapping
