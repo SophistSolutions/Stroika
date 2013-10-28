@@ -41,7 +41,7 @@ $(StroikaFrameworksLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFrameworksLib)...
 	@rm -f $(StroikaFrameworksLib)
-	@$(AR) cq $(StroikaFrameworksLib) $(ALL_OBJS)
+	@$(AR) cr $(StroikaFrameworksLib) $(ALL_OBJS)
 	@$(RANLIB) $(StroikaFrameworksLib)
 
 
