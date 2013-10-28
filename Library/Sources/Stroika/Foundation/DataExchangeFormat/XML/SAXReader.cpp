@@ -444,7 +444,7 @@ namespace   {
     protected:
         class ISWithProg : public StdIStream_InputSource::StdIStream_InputStream {
         public :
-            ISWithProg (const BinaryInputStream& in, ProgressMonitor::TaskNotifier progressCallback)
+            ISWithProg (const BinaryInputStream& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream (in)
                 , fProgress (progressCallback, 0.0f, 1.0f)
                 , fTotalSize (0.0f) {
@@ -478,12 +478,12 @@ namespace   {
                 return result;
             }
         private:
-            ProgressMonitor::TaskNotifier   fProgress;
-            float                           fTotalSize;
+            ProgressMonitor::Updater    fProgress;
+            float                       fTotalSize;
         };
 
     public :
-        StdIStream_InputSourceWithProgress (BinaryInputStream in, ProgressMonitor::TaskNotifier progressCallback, const XMLCh* const bufId = nullptr):
+        StdIStream_InputSourceWithProgress (BinaryInputStream in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr):
             StdIStream_InputSource (in, bufId),
             fProgressCallback (progressCallback) {
         }
@@ -491,7 +491,7 @@ namespace   {
             return new (getMemoryManager ()) ISWithProg (fSource, fProgressCallback);
         }
     private:
-        ProgressMonitor::TaskNotifier fProgressCallback;
+        ProgressMonitor::Updater fProgressCallback;
     };
 
 }
@@ -584,7 +584,7 @@ namespace   {
     };
 }
 
-void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::TaskNotifier progres)
+void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
 {
     SAX2PrintHandlers_  handler (callback);
     shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
@@ -593,7 +593,7 @@ void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterfac
     parser->setErrorHandler (&sMyErrorReproter_);
     //const XMLCh kBufID[] = L"SAX::Parse";
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
-    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::TaskNotifier (progres, 0.1f, 0.9f), kBufID));
+    parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progres, 0.1f, 0.9f), kBufID));
 }
 
 #if 0

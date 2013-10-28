@@ -248,7 +248,7 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
     fStdErr_ = err;
 }
 
-IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::TaskNotifier progress)
+IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
     SDKString cmdLine;
     if (fCommandLine_.empty ()) {
@@ -520,7 +520,7 @@ DoneWithProcess:
     });
 }
 
-void    ProcessRunner::Run (ProgressMonitor::TaskNotifier progress, Time::DurationSecondsType timeout)
+void    ProcessRunner::Run (ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     if (timeout == Time::kInfinite) {
         CreateRunnable (progress)->Run ();
@@ -533,7 +533,7 @@ void    ProcessRunner::Run (ProgressMonitor::TaskNotifier progress, Time::Durati
     }
 }
 
-Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::TaskNotifier progress, Time::DurationSecondsType timeout)
+Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue, ProgressMonitor::Updater progress, Time::DurationSecondsType timeout)
 {
     Streams::BinaryInputStream  oldStdIn    =   GetStdIn ();
     Streams::BinaryOutputStream oldStdOut   =   GetStdOut ();

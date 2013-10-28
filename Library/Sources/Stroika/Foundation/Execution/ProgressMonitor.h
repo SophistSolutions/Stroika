@@ -26,17 +26,6 @@
  *      @todo   If we make (document) VariantValue to be theradsafe, then we can lift critical section
  *              use here and make it simpler!
  *
- *      @todo   Consider  having ProgressMonitor be as smartptr type, instead of passing ProgressMonitor* all over
- *              the place. And break into submodules:
- *              Progress/
- *                  Monitor
- *                  Normalizer
- *                  Updater???
- *                  Listener???
- *          <<MOSTLY DONE BUT REVIEW AND CONSIDER NAMES>>>
- *
- *      @todo   This all needs tons of code review, and careful rethinking/analysis.
- *
  *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
  */
 
@@ -83,7 +72,7 @@ namespace   Stroika {
                  *  This is for consumers of progress information. Consumers MAY either poll the ProgressMonitor,
                  *  or may register a callback to be notified of progress.
                  */
-                typedef std::function<void (const ProgressMonitor& progressMonitor)>    ProgressChangedCallbackType;
+                typedef std::function<void (const ProgressMonitor& progressMonitor)>    ChangedCallbackType;
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
@@ -95,7 +84,7 @@ namespace   Stroika {
                 /**
                  */
                 ProgressMonitor ();
-                ProgressMonitor (const ProgressChangedCallbackType& progressChangedCallback);
+                ProgressMonitor (const ChangedCallbackType& progressChangedCallback);
 
             private:
                 ProgressMonitor (const shared_ptr<IRep_>& rep);
@@ -108,9 +97,12 @@ namespace   Stroika {
                  *  This doesn't need to be used. You can use ProgressMonitor progress monitor just peridocially calling
                  *  GetProgress(). But you may use AddCallback () to recieve notifications of progress changes.
                  */
-                nonvirtual  void    AddOnProgressCallback (const ProgressChangedCallbackType& progressChangedCallback);
+                nonvirtual  void    AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback);
 
             public:
+                /**
+                 *  Return the progress value (between 0..1). This values starts at zero, and increases monotonicly to 1.0
+                 */
                 nonvirtual  ProgressRangeType   GetProgress () const;
 
             public:
@@ -122,22 +114,25 @@ namespace   Stroika {
                 nonvirtual  void    Cancel ();  // causes this 'progress callback' to be marked for canceling (aborting). If already canceled, it does nothing
 
             public:
-                class   TaskNotifier;
+                class   Updater;
 
             public:
-                nonvirtual  operator TaskNotifier ();
+                nonvirtual  operator Updater ();
 
             public:
                 struct  CurrentTaskInfo;
 
             public:
                 /**
-                 * Often in displaying progress, its useful to have a notion of what the system is doing, and thats usually displayed far away
-                 *  from where the notion of progress stage resides. This API is usually called by the bit of code performing actions (to set the current task)
+                 *  Often in displaying progress, its useful to have a notion of what the system is doing,
+                 *  and thats usually displayed far away from where the notion of progress stage resides.
+                 *  This API is usually called by the bit of code performing actions (to set the current task)
                  *  and by the calling GUI to Get the current task description.
                  *
-                 *  Note also - for reasons of localization - its often helpful to pass back specific information about the task in progress (like file 1 of 4).
-                 *  Using the 'fExtraData' field of the
+                 *  Note also - for reasons of localization - its often helpful to pass back specific
+                 *  information about the task in progress (like file 1 of 4).
+                 *
+                 *  Using the 'fExtraData' field of the ...
                  */
                 nonvirtual  CurrentTaskInfo GetCurrentTaskInfo () const;
 
@@ -145,7 +140,7 @@ namespace   Stroika {
                 shared_ptr<IRep_>   fRep_;
 
             private:
-                friend  class   TaskNotifier;
+                friend  class   Updater;
             };
 
 
@@ -165,23 +160,25 @@ namespace   Stroika {
 
 
             /**
-             *  TaskNotifier& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg
+             *  Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg
              * DRAFT IDEA
              * just proxy objec you pass around for the thing that process that know their progress call to notify of changes
              */
-            class   ProgressMonitor::TaskNotifier {
+            class   ProgressMonitor::Updater {
             public:
                 /**
-                 *  Use of the given TaskNotifier will generate 'setprogress' calls with appropriately scaled
+                 *  Use of the given Updater will generate 'setprogress' calls with appropriately scaled
                  *  progress values.
                  *
                  *  Helper used to continue reporting progress, but breaking the progress into subtasks, and doing the artithmatic of integrating the total into an overall progress total.
                  */
-                TaskNotifier ();
-                TaskNotifier (nullptr_t);
-                TaskNotifier (const TaskNotifier& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
+                Updater ();
+                Updater (nullptr_t);
+                Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg);
 
             public:
+                /**
+                 */
                 nonvirtual  void                SetProgress (ProgressRangeType p);
 
             public:

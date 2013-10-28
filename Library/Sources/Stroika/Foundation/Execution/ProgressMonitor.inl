@@ -40,11 +40,11 @@ namespace   Stroika {
                     , fCurrentTaskInfo_ () {
                 }
 
-                mutable mutex                                       fCurTaskInfo_CritSect_; // needed because Memory::VariantValue is not threadsafe
-                Containers::Sequence<ProgressChangedCallbackType>   fCallbacks_;
-                std::atomic<bool>                                   fCanceled_;
-                std::atomic<ProgressRangeType>                      fCurrentProgress_;
-                CurrentTaskInfo                                     fCurrentTaskInfo_;
+                mutable mutex                               fCurTaskInfo_CritSect_; // needed because Memory::VariantValue is not threadsafe
+                Containers::Sequence<ChangedCallbackType>   fCallbacks_;
+                std::atomic<bool>                           fCanceled_;
+                std::atomic<ProgressRangeType>              fCurrentProgress_;
+                CurrentTaskInfo                             fCurrentTaskInfo_;
             };
 
 
@@ -80,22 +80,22 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********************** ProgressMonitor::TaskNotifier ***************************
+             *************************** ProgressMonitor::Updater ***************************
              ********************************************************************************
              */
-            inline ProgressMonitor::TaskNotifier::TaskNotifier ()
+            inline ProgressMonitor::Updater::Updater ()
                 : fRep_ ()
                 , fFromProg_ (0.0)
                 , fToProg_ (1.0)
             {
             }
-            inline ProgressMonitor::TaskNotifier::TaskNotifier (nullptr_t)
+            inline ProgressMonitor::Updater::Updater (nullptr_t)
                 : fRep_ ()
                 , fFromProg_ (0.0)
                 , fToProg_ (1.0)
             {
             }
-            inline ProgressMonitor::TaskNotifier::TaskNotifier (const TaskNotifier& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
+            inline ProgressMonitor::Updater::Updater (const Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg)
                 : fRep_ (parentTask.fRep_)
                 , fFromProg_ (parentTask.fFromProg_ + fromProg * (parentTask.fToProg_ - parentTask.fFromProg_))
                 , fToProg_ (parentTask.fFromProg_ + toProg * (parentTask.fToProg_ - parentTask.fFromProg_))
@@ -104,7 +104,7 @@ namespace   Stroika {
                 fToProg_ = Math::PinToSpecialPoint (fToProg_, parentTask.fToProg_);
                 Require ((0.0f <= parentTask.fFromProg_) and (parentTask.fFromProg_ <= fFromProg_) and (fFromProg_ < fToProg_) and (fToProg_ <= parentTask.fToProg_) and (parentTask.fToProg_ <= 1.0f));
             }
-            inline  void    ProgressMonitor::TaskNotifier::SetProgress (ProgressRangeType p)
+            inline  void    ProgressMonitor::Updater::SetProgress (ProgressRangeType p)
             {
                 p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
                 Require (0.0 <= p and p <= 1.0);
@@ -120,21 +120,21 @@ namespace   Stroika {
                     CallNotifyProgress_ ();
                 }
             }
-            inline  void    ProgressMonitor::TaskNotifier::ThrowIfCanceled ()
+            inline  void    ProgressMonitor::Updater::ThrowIfCanceled ()
             {
                 if (fRep_.get () != nullptr and fRep_->fCanceled_) {
                     DoThrow (UserCanceledException ());
                     //DoThrow<ThreadAbortException> (ThreadAbortException ());
                 }
             }
-            inline  void    ProgressMonitor::TaskNotifier::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
+            inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)
             {
                 if (fRep_.get () != nullptr) {
                     lock_guard<mutex> enterCriticalSection (fRep_->fCurTaskInfo_CritSect_);
                     fRep_->fCurrentTaskInfo_ = taskInfo;
                 }
             }
-            inline  void    ProgressMonitor::TaskNotifier::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
+            inline  void    ProgressMonitor::Updater::SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress)
             {
                 if (fRep_.get () != nullptr) {
                     SetProgress (currentProgress);

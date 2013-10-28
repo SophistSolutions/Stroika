@@ -23,7 +23,7 @@ ProgressMonitor::ProgressMonitor ()
 {
 }
 
-ProgressMonitor::ProgressMonitor (const ProgressChangedCallbackType& progressChangedCallback)
+ProgressMonitor::ProgressMonitor (const ChangedCallbackType& progressChangedCallback)
     : fRep_ (new IRep_ ())
 {
     AddOnProgressCallback (progressChangedCallback);
@@ -33,7 +33,7 @@ ProgressMonitor::~ProgressMonitor ()
 {
 }
 
-void    ProgressMonitor::AddOnProgressCallback (const ProgressChangedCallbackType& progressChangedCallback)
+void    ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progressChangedCallback)
 {
     RequireNotNull (fRep_);
     fRep_->fCallbacks_.Append (progressChangedCallback);
@@ -42,13 +42,13 @@ void    ProgressMonitor::AddOnProgressCallback (const ProgressChangedCallbackTyp
 
 /*
  ********************************************************************************
- ********************** ProgressMonitor::TaskNotifier ***************************
+ *************************** ProgressMonitor::Updater ***************************
  ********************************************************************************
  */
-void    ProgressMonitor::TaskNotifier::CallNotifyProgress_ () const
+void    ProgressMonitor::Updater::CallNotifyProgress_ () const
 {
     RequireNotNull (fRep_);
-    for (ProgressChangedCallbackType f : fRep_->fCallbacks_) {
+    for (ChangedCallbackType f : fRep_->fCallbacks_) {
         return f (ProgressMonitor (fRep_));
     }
 }
