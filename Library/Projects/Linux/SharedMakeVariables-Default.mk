@@ -152,6 +152,11 @@ ifeq ($(INCLUDE_SYMBOLS), 1)
 endif
 
 
+ifndef AR
+	AR	= ar
+endif
+
+
 ifndef RANLIB
 	RANLIB	= ranlib
 endif
