@@ -454,6 +454,19 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_GCC_48_OptimizerBug
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_GCC_48_OptimizerBug
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 8))
+#else
+#define qCompilerAndStdLib_GCC_48_OptimizerBug     0
+#endif
+#endif
+
+
 
 
 

@@ -381,6 +381,10 @@ int Duration::Compare (const Duration& rhs) const
     return 0;
 }
 
+#if     qCompilerAndStdLib_GCC_48_OptimizerBug
+#pragma GCC push_options
+#pragma GCC optimize ("level=0")
+#endif
 Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
 {
     //Debug::TraceContextBumper   ctx (SDKSTR ("Duration::ParseTime_"));
@@ -442,6 +446,9 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
     }
     return isNeg ? -curVal : curVal;
 }
+#if     qCompilerAndStdLib_GCC_48_OptimizerBug
+#pragma GCC pop_options
+#endif
 
 string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
 {
