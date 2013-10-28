@@ -436,6 +436,26 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+@DESCRIPTION:
+                Note - this compiles with clang 3.4, but fails to generate the
+                correct code.
+*/
+#ifndef qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+#if     defined (__clang__)
+#define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
+#else
+#define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     1
+#endif
+#endif
+
+
+
+
+
+
+
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraits_underlying_type

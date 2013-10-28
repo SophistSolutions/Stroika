@@ -230,10 +230,17 @@ namespace   Stroika {
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
 #endif
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
+#if     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)) {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
                         Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
                     }
+#else
+                    if (not (static_cast<underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eSTART) <= static_cast<underlying_type<ENUM_TYPE>::type> (*actualInto) and static_cast<underlying_type<ENUM_TYPE>::type> (*actualInto) <= static_cast<underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eEND))) {
+                        DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
+                    }
+#endif
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
