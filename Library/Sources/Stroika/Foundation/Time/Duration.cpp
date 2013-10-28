@@ -383,7 +383,7 @@ int Duration::Compare (const Duration& rhs) const
 
 #if     qCompilerAndStdLib_GCC_48_OptimizerBug
 #pragma GCC push_options
-#pragma GCC optimize ("level=0")
+#pragma GCC optimize (0)
 #endif
 Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
 {
