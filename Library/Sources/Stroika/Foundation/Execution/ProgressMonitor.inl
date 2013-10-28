@@ -16,6 +16,7 @@
 #include    "../Math/Common.h"
 #include    "../Memory/BlockAllocated.h"
 
+#include    "Thread.h"
 #include    "UserCanceledException.h"
 
 
@@ -37,7 +38,8 @@ namespace   Stroika {
                     , fCallbacks_ ()
                     , fCanceled_ (false)
                     , fCurrentProgress_ (0.0)
-                    , fCurrentTaskInfo_ () {
+                    , fCurrentTaskInfo_ ()
+                    , fWorkThread_ () {
                 }
 
                 mutable mutex                               fCurTaskInfo_CritSect_; // needed because Memory::VariantValue is not threadsafe
@@ -45,6 +47,7 @@ namespace   Stroika {
                 std::atomic<bool>                           fCanceled_;
                 std::atomic<ProgressRangeType>              fCurrentProgress_;
                 CurrentTaskInfo                             fCurrentTaskInfo_;
+                Thread                                      fWorkThread_;   // optional - ignore if empty
             };
 
 
@@ -64,11 +67,6 @@ namespace   Stroika {
                 Ensure (0.0 <= fRep_->fCurrentProgress_ and fRep_->fCurrentProgress_ <= 1.0);
                 fRep_->fCanceled_ = true;
                 return fRep_->fCurrentProgress_;
-            }
-            inline  void    ProgressMonitor::Cancel ()
-            {
-                RequireNotNull (fRep_);
-                fRep_->fCanceled_ = true;
             }
             inline  ProgressMonitor::CurrentTaskInfo    ProgressMonitor::GetCurrentTaskInfo () const
             {
@@ -123,8 +121,10 @@ namespace   Stroika {
             inline  void    ProgressMonitor::Updater::ThrowIfCanceled ()
             {
                 if (fRep_.get () != nullptr and fRep_->fCanceled_) {
+                    if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
+                        DoThrow (ThreadAbortException ());
+                    }
                     DoThrow (UserCanceledException ());
-                    //DoThrow<ThreadAbortException> (ThreadAbortException ());
                 }
             }
             inline  void    ProgressMonitor::Updater::SetCurrentTaskInfo (const CurrentTaskInfo& taskInfo)

@@ -18,10 +18,7 @@
 /**
  * TODO:
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *
- *      @todo   Need subclass (or builtin ability) to specify lambda to run and then have cancel do more
- *              and stop its thread.
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *      @todo   MAYBE allow copy - but just document its a smart pointer and copy just increments refcount.
  *              NOT copy by value semantics.
@@ -29,11 +26,12 @@
  *      @todo   If we make (document) VariantValue to be theradsafe, then we can lift critical section
  *              use here and make it simpler!
  *
- *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
- *
  *      @todo   Look at stuff I did I HeatthFrame progress code to automatically increase displayed progress values
  *              to monotonically when i have guesses - like for network activities. That should somehow integrate
  *              with this - maybe as an optional 'updater' module/adapter?
+ *
+ *      @todo   Not sure if we need to decompose into more component classes and use subtyping for stuff like
+ *              thread support. It seems it mgiht work like this, but I'm sure it's not yet elegant.
  */
 
 
@@ -41,6 +39,9 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+
+
+            class   Thread;
 
 
             /**
@@ -75,7 +76,9 @@ namespace   Stroika {
              *  ProgressMontitor supports having the underlying long-lived-task happen EITHER in the current thread, or in
              *  another thread (the ProgressMonitor and related code is fully threadsafe).
              *
-             *
+             *  If ProgressMontitor is constructed with an argument Thread (optional) - then attempts to Cancel the ProgressMonitor
+             *  will also send an Abort() command to the associated thread. This can accelerate - depending less on co-operative
+             *  checking - to cancel the long-lived progress-monitored process.
              */
             class   ProgressMonitor final {
             public:
@@ -103,8 +106,11 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  If work thread is specified (optional) - then thread cancelation will work more efficiently.
+                 *  But this is not required.
                  */
                 ProgressMonitor ();
+                ProgressMonitor (Thread workThread);
 
             private:
                 ProgressMonitor (const shared_ptr<IRep_>& rep);
@@ -121,17 +127,23 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Return the progress value (between 0..1). This values starts at zero, and increases monotonicly to 1.0
+                 *  Return the progress value (between 0..1). This values starts at zero, and increases
+                 *  monotonicly to 1.0
                  */
                 nonvirtual  ProgressRangeType   GetProgress () const;
 
             public:
                 /**
-                 *  Cancelability. Anyone can call Cancel () on this progress object. If the progress object is handed to
-                 *  some long-lived task, that task may (at its discretion) - check the progress callback, and cancel its operation
-                 *  by throwing a UserCanceledException.
+                 *  Cancelability. Anyone can call Cancel () on this progress object. If the progress
+                 *  object is handed to some long-lived task, that task may (at its discretion) - check
+                 *  the progress callback, and cancel its operation by throwing a UserCanceledException.
+                 *
+                 *  It is safe to call multiple times (and just may have no additional effect).
+                 *
+                 *  If a work thread is associated with the ProgressMonitor, it will be automatically
+                 *  aborted.
                  */
-                nonvirtual  void    Cancel ();  // causes this 'progress callback' to be marked for canceling (aborting). If already canceled, it does nothing
+                nonvirtual  void    Cancel ();
 
             public:
                 class   Updater;
@@ -152,7 +164,7 @@ namespace   Stroika {
                  *  Note also - for reasons of localization - its often helpful to pass back specific
                  *  information about the task in progress (like file 1 of 4).
                  *
-                 *  Using the 'fExtraData' field of the ...
+                 *  Use the 'fExtraData' field of the CurrentTaskInfo.
                  */
                 nonvirtual  CurrentTaskInfo GetCurrentTaskInfo () const;
 
@@ -171,7 +183,9 @@ namespace   Stroika {
              *  and by the calling GUI to Get the current task description.
              *
              *  Note also - for reasons of localization - its often helpful to pass back specific information
-             *  about the task in progress (like file 1 of 4). Using the 'fExtraData' field of the
+             *  about the task in progress (like file 1 of 4).
+             *
+             *  Use the 'fExtraData' field of the CurrentTaskInfo.
              */
             struct  ProgressMonitor::CurrentTaskInfo {
                 Characters::String      fName;
@@ -180,9 +194,8 @@ namespace   Stroika {
 
 
             /**
-             *  Updater& parentTask, ProgressRangeType fromProg, ProgressRangeType toProg
-             * DRAFT IDEA
-             * just proxy objec you pass around for the thing that process that know their progress call to notify of changes
+             *  The Updater is the API passed to code which knows about its progress through a long-lived task and makes callbacks
+             *  to indicate phase, and percent progress (# 0..1).
              */
             class   ProgressMonitor::Updater {
             public:
@@ -190,7 +203,8 @@ namespace   Stroika {
                  *  Use of the given Updater will generate 'setprogress' calls with appropriately scaled
                  *  progress values.
                  *
-                 *  Helper used to continue reporting progress, but breaking the progress into subtasks, and doing the artithmatic of integrating the total into an overall progress total.
+                 *  Helper used to continue reporting progress, but breaking the progress into subtasks,
+                 *  and doing the artithmatic of integrating the total into an overall progress total.
                  */
                 Updater ();
                 Updater (nullptr_t);
@@ -203,18 +217,19 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Called from the context of a thread which has been given this progress object. This method will check
-                 * if this progress object has been canceled, and in if so throw UserCanceledException.
+                 *  Called from the context of a thread which has been given this progress object. This method will check
+                 *  if this progress object has been canceled, and in if so throw UserCanceledException.
                  *
-                 * Note - this function does NOT check if the itself thread has been aborted (as that is usually taken care of automatically or via
-                 * CheckForThreadAborting)
+                 *  Note - this function does NOT check if the itself thread has been aborted (as that is usually
+                 *  taken care of automatically or via CheckForThreadAborting)
                  */
                 nonvirtual  void    ThrowIfCanceled ();
 
             public:
                 /**
-                 * SetCurrentProgressAndThrowIfCanceled () overloads are handy helpers for code performing long-lived tasks to deal with being passed a
-                 * null progress object (often) and do that check, and if non-null, then update the progress and check for cancelations.
+                 *  SetCurrentProgressAndThrowIfCanceled () overloads are handy helpers for code performing
+                 *  long-lived tasks to deal with being passed a null progress object (often) and do that check,
+                 *  and if non-null, then update the progress and check for cancelations.
                  */
                 nonvirtual  void    SetCurrentProgressAndThrowIfCanceled (ProgressRangeType currentProgress);
 

@@ -23,6 +23,11 @@ ProgressMonitor::ProgressMonitor ()
 {
 }
 
+ProgressMonitor::ProgressMonitor (Thread workThread)
+    : fRep_ (new IRep_ ())
+{
+}
+
 ProgressMonitor::~ProgressMonitor ()
 {
 }
@@ -31,6 +36,15 @@ void    ProgressMonitor::AddOnProgressCallback (const ChangedCallbackType& progr
 {
     RequireNotNull (fRep_);
     fRep_->fCallbacks_.Append (progressChangedCallback);
+}
+
+void    ProgressMonitor::Cancel ()
+{
+    RequireNotNull (fRep_);
+    fRep_->fCanceled_ = true;
+    if (fRep_->fWorkThread_.GetStatus () != Thread::Status::eNull) {
+        fRep_->fWorkThread_.Abort ();
+    }
 }
 
 
