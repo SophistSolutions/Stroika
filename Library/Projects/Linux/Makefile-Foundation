@@ -50,8 +50,7 @@ $(ALL_OBJS):
 $(StroikaFoundationLib):	$(ALL_OBJS)
 	@mkdir -p $(StroikaLibDir)
 	@echo Creating $(StroikaFoundationLib)...
-	@rm -f $(StroikaFoundationLib)
-	@$(AR) cr $(StroikaFoundationLib) $(ALL_OBJS)
+	@$(AR) cru $(StroikaFoundationLib) $(ALL_OBJS)
 	@$(RANLIB) $(StroikaFoundationLib)
 
 
