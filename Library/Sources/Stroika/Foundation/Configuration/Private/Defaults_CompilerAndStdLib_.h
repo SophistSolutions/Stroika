@@ -148,6 +148,26 @@
 
 
 
+
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_Supports_stdatomic_load_exchange
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_Supports_stdatomic_load_exchange
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_Supports_stdatomic_load_exchange   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
+#else
+#define qCompilerAndStdLib_Supports_stdatomic_load_exchange   1
+#endif
+#endif
+
+
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ConstructorDelegation
 @DESCRIPTION:   <p></p>

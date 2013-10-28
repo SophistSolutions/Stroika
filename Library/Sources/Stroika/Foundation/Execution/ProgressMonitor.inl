@@ -45,7 +45,11 @@ namespace   Stroika {
                 mutable mutex                               fCurTaskInfo_CritSect_; // needed because Memory::VariantValue is not threadsafe
                 Containers::Sequence<ChangedCallbackType>   fCallbacks_;
                 std::atomic<bool>                           fCanceled_;
+#if     qCompilerAndStdLib_Supports_stdatomic_load_exchange
                 std::atomic<ProgressRangeType>              fCurrentProgress_;
+#else
+                ProgressRangeType                           fCurrentProgress_;
+#endif
                 CurrentTaskInfo                             fCurrentTaskInfo_;
                 Thread                                      fWorkThread_;   // optional - ignore if empty
             };
@@ -110,10 +114,19 @@ namespace   Stroika {
                 p = Math::PinToSpecialPoint (Math::PinToSpecialPoint (p, 1.0f), 0.0f) ;
                 Require (0.0 <= p and p <= 1.0);
                 // pin-to-special-point to avoid floating point rounding errors triggering bogus assertions/progress changes
+#if     qCompilerAndStdLib_Supports_stdatomic_load_exchange
                 p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_.load ());
+#else
+                p = Math::PinToSpecialPoint (p, fRep_->fCurrentProgress_);
+#endif
                 // disallow moving progress backwards because it is nearly always a bug, and not terribly useful
                 Require (p >= fRep_->fCurrentProgress_);
+#if     qCompilerAndStdLib_Supports_stdatomic_load_exchange
                 if (fRep_->fCurrentProgress_.exchange (p) != p) {
+#else
+                if (fRep_->fCurrentProgress_ != p) {
+                    fRep_->fCurrentProgress_ = p;
+#endif
                     // only call if value changed - but always write so atomic update
                     CallNotifyProgress_ ();
                 }
