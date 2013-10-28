@@ -13,6 +13,25 @@
 
 
 
+/*
+ *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
+ *
+ * TODO:
+ *      @todo   Carefully review all the uses of this code. Right now - I'm thing its somethign to get rid of - and more dangerous
+ *              than useful. Btter to use explicit shared_ptr<mutex> if you really want sharing.  Not totally sure.
+ *              But if truely useful (maybe XMLDB in HF is exmaple) - then document this clearly.
+ *              --LGP 2013-10-28
+ *
+ *
+ * Notes:
+ *
+ *
+ *
+ */
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
