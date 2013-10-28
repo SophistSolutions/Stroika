@@ -23,12 +23,6 @@ ProgressMonitor::ProgressMonitor ()
 {
 }
 
-ProgressMonitor::ProgressMonitor (const ChangedCallbackType& progressChangedCallback)
-    : fRep_ (new IRep_ ())
-{
-    AddOnProgressCallback (progressChangedCallback);
-}
-
 ProgressMonitor::~ProgressMonitor ()
 {
 }

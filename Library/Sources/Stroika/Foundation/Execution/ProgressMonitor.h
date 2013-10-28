@@ -23,10 +23,17 @@
  *      @todo   Need subclass (or builtin ability) to specify lambda to run and then have cancel do more
  *              and stop its thread.
  *
+ *      @todo   MAYBE allow copy - but just document its a smart pointer and copy just increments refcount.
+ *              NOT copy by value semantics.
+ *
  *      @todo   If we make (document) VariantValue to be theradsafe, then we can lift critical section
  *              use here and make it simpler!
  *
  *      @todo   Consider carefully if progress callback SB shared_ptr<> object. Document reason for choice.
+ *
+ *      @todo   Look at stuff I did I HeatthFrame progress code to automatically increase displayed progress values
+ *              to monotonically when i have guesses - like for network activities. That should somehow integrate
+ *              with this - maybe as an optional 'updater' module/adapter?
  */
 
 
@@ -37,26 +44,40 @@ namespace   Stroika {
 
 
             /**
-             *  @todo MAYBE allow copy - but just document its a smart pointer and copy just increments refcount. NOT copy by value semantics.
+             *  ProgressMonitor is the basic interface used for progress tracking. Progress tracking both
+             *  measures progress, and supports the notion of canceling. The reason progres and cancelability
+             *  are tied together is that its only for 'long lived' tasks one might want to measure the progress of,
+             *  that one might want to allow canceling.
              *
-             *  @todo REDO ALL DOCS - ABOUT NULL HANDLING AND ASSERTIONS ETC.
+             *  A progress Monitor owns a list of ChangedCallbackType that can be associated with the ProgressMonitor.
+             *  These callbacks are each called whenever the progress is known to have changed. Note - this callback
+             *  uses std::function<>, and the callback runs on an arbitrary thread, not necessarily the one used
+             *  by the creator of the ProgressMonitor.
              *
-             * This class is the basic interface used for progress tracking. Progress tracking both measures progress,
-             * and supports the notion of canceling. The reason progres and cancelability are tied together is that its
-             * only for 'long lived' tasks one might want to measure the progress of, that one might want to allow canceling.
+             *  A ProgressMonitor also has associated with it an arbitrary number of Updater objects. These are the things
+             *  that one hands to processes (not OS processes, but long lived procedures or threads) whcih they then
+             *  callback to to notify of thier progress.
              *
-             * An instance of ProgressMonitor can be passed to any function which supports progress measurement (by pointer typically,
-             * or reference). That function can then run off and do a long-lived computation (often in another thread), and the user
-             * of this class can monitor the progress (e.g. updating a ui display), and can Cancel it at any point.
+             *  An updater is retrieved from the root ProgressMonitor, and it has 'scope' of 0..1. You can construct
+             *  sub-updaters by passing a base Updater to the Updater constructor along with a subrange (inside 0..1).
+             *  That way - if you have sub-procedures, they can report on thier progress (0..1) and that is mapped to a subrange
+             *  of the overall progress.
              *
-             * Though this CAN all be used from a single threaded application (using some sort of co-operative multitasking) its intended
-             * use is with threads: one working, and the other controlling/monitoring (e.g. ui).
+             *  Note - in order to help debug the progress values, ProgressMonitor strictly enforces some rules. Progress
+             *  starts at zero, and successive values are non-degreasing. This means the progress bar grows monotonically (though
+             *  not necessarily smoothly). In order to avoid common floating point bugs with roudning errors, ProgressMonitor
+             *  employs Math::PinToSpecialPoint ().
              *
-             * The caller (in the control thread) can call GetProgress() repeatedly - to find out whats changed, or can register a callback,
-             * that will be notified on any change. But NOTE - the callback maybe called on a different thread than the ProgressMontitor was
-             * originally created on!
+             *  Users of ProgressMonitor can call "Cancel" on the ProgressMonitor at any point. This records a cancelation
+             *  in the Updater object, so that when it calls Updater::SetCurrentProgressAndThrowIfCanceled () - and
+             *  perhaps in other situations (see thread support below) - the progress will terminate immediately.
+             *
+             *  ProgressMontitor supports having the underlying long-lived-task happen EITHER in the current thread, or in
+             *  another thread (the ProgressMonitor and related code is fully threadsafe).
+             *
+             *
              */
-            class   ProgressMonitor final   {
+            class   ProgressMonitor final {
             public:
                 NO_COPY_CONSTRUCTOR (ProgressMonitor);
                 NO_ASSIGNMENT_OPERATOR (ProgressMonitor);
@@ -84,7 +105,6 @@ namespace   Stroika {
                 /**
                  */
                 ProgressMonitor ();
-                ProgressMonitor (const ChangedCallbackType& progressChangedCallback);
 
             private:
                 ProgressMonitor (const shared_ptr<IRep_>& rep);
