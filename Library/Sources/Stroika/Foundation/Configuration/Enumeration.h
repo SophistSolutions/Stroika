@@ -82,7 +82,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e);
 #else
-            int    OffsetFromStart (ENUM e);
+            unsigned int    OffsetFromStart (ENUM e);
 #endif
 
 
