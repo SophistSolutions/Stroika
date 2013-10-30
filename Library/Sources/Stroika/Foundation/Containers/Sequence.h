@@ -383,6 +383,18 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \req not empty ();
+                 */
+                nonvirtual  T       GetFirst () const;
+
+            public:
+                /**
+                 *  \req not empty ();
+                 */
+                nonvirtual  T       GetLast () const;
+
+            public:
+                /**
                  */
                 nonvirtual  void    push_back (T item);
 

@@ -235,6 +235,19 @@ namespace   Stroika {
                 *into = CONTAINER_OF_T (this->begin (), this->end ());
             }
             template    <typename T, typename TRAITS>
+            inline  T    Sequence<T, TRAITS>::GetFirst () const
+            {
+                Require (not this->IsEmpty ());
+                return GetAt (0);
+            }
+            template    <typename T, typename TRAITS>
+            inline  T    Sequence<T, TRAITS>::GetLast () const
+            {
+                Require (not this->IsEmpty ());
+                // IRep::GetAt() defined to allow special kBadSequenceIndex
+                return _GetRep ().GetAt (kBadSequenceIndex);
+            }
+            template    <typename T, typename TRAITS>
             inline  void    Sequence<T, TRAITS>::push_back (T item)
             {
                 Append (item);
@@ -242,15 +255,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T    Sequence<T, TRAITS>::back () const
             {
-                Require (not this->IsEmpty ());
-                // IRep::GetAt() defined to allow special kBadSequenceIndex
-                return _GetRep ().GetAt (kBadSequenceIndex);
+                return GetLast ();
             }
             template    <typename T, typename TRAITS>
             inline  T    Sequence<T, TRAITS>::front () const
             {
-                Require (not this->IsEmpty ());
-                return GetAt (0);
+                return GetFirst ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Sequence<T, TRAITS>::clear ()
