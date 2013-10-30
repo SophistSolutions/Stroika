@@ -415,6 +415,13 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "ENABLE_GLIBC_ASSERTIONS=1\n");
 	}
 
+	if ($useThirdPartyXerces) {
+		print (OUT "qHasLibrary_Xerces=1\n");
+	}	
+	else {
+		print (OUT "qHasLibrary_Xerces=0\n");
+	}	
+
 	if ($ENABLE_LIBCURL) {
 		print (OUT "qHasFeature_libcurl=1\n");
 	}	

@@ -92,29 +92,40 @@ endif
 
 ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
   ifeq ($(IF_STATIC_LINK_GCCRUNTIME_USE_PRINTPATH_METHOD), 1)
-    STDCPPLIBArgs      :=      $(shell $(Linker) -print-file-name=libstdc++.a)
+    STDCPPLIBArgs		:=      $(shell $(Linker) -print-file-name=libstdc++.a)
   else
-    STDCPPLIBArgs=		-lstdc++
-    StroikaLinkerArgs	+=  -static-libstdc++
+    STDCPPLIBArgs		:=		-lstdc++
   endif
 else
-  STDCPPLIBArgs=		-lstdc++
+  STDCPPLIBArgs			:=		-lstdc++
 endif
 
 
 # -static-libgcc doesnt seem to work, nor does -static-libstdc++??? -- LGP 2011-11-07
 #ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-#	StroikaLinkerArgs	+=  -static-libgcc  -static-libstdc++
+#	STDCPPLIBArgs	+=  -static-libgcc
 #endif
+ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
+	STDCPPLIBArgs	+=  -static-libstdc++
+endif
 
 
 
 ifndef StroikaFoundationSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
-	StroikaFoundationSupportLibs	=	$(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a  -lpthread -lrt $(STDCPPLIBArgs)
+	StroikaFoundationSupportLibs	=
+
+	ifeq ($(qHasLibrary_Xerces), 1)
+		StroikaFoundationSupportLibs	+=  $(RelPathToStroikaDevRoot)ThirdPartyLibs/Xerces/CURRENT/src/.libs/libxerces-c.a
+	endif
+
 	ifeq ($(qHasFeature_libcurl), 1)
 		StroikaFoundationSupportLibs	+=  -lcurl
 	endif
+
+	StroikaFoundationSupportLibs	+=	  $(STDCPPLIBArgs)
+
+	StroikaFoundationSupportLibs	+=	  -lpthread -lrt 
 endif
 ifndef StroikaFrameworksSupportLibs
 	# Intentionally use '=' instead of ':=' so argument variables can get re-evaluated
