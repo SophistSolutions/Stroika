@@ -14,6 +14,7 @@
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
 #include    "../Memory/Common.h"
+#include    "../Memory/Optional.h"
 #include    "../Memory/VariantValue.h"
 #include    "../Traversal/Range.h"
 
@@ -272,14 +273,21 @@ namespace   Stroika {
                 // soon to be private:??? @see MakeCommonSerializer
                 //
                 // this is for builtin C++ array (int a[3]) - not std::array).
-                template <typename T, size_t SZ>
+                template    <typename T, size_t SZ>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
 
             public:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
                 //
-                template <typename T>
+                template    <typename T>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Optional ();
+
+            public:
+                //
+                // soon to be private:??? @see MakeCommonSerializer
+                //
+                template    <typename T>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
 
             public:
@@ -290,7 +298,7 @@ namespace   Stroika {
                 // string).
                 //
                 // For that case - SHOULD use partial specializaiton (not sure how)
-                template <typename KEY_TYPE, typename VALUE_TYPE>
+                template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
 
             public:
@@ -303,14 +311,14 @@ namespace   Stroika {
                 // For that case - SHOULD use partial specializaiton (not sure how)
                 //
                 //  NB: To use this - you must add to your typemapper a mapping from KEY_TYPE to/from String (unless it is String).
-                template <typename KEY_TYPE, typename VALUE_TYPE>
+                template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
             public:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
                 //
-                template <typename RANGE_TYPE>
+                template    <typename RANGE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range ();
 
             public:
@@ -323,7 +331,7 @@ namespace   Stroika {
                 //  Note - this explicitly allows storing a enum with value eEND (since that is often a sentinal
                 //  value).
                 //
-                template <typename ENUM_TYPE>
+                template    <typename ENUM_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Enumeration ();
 
             private:

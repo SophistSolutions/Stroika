@@ -56,6 +56,7 @@ namespace   Stroika {
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
             {
+                RequireNotNull (into);
                 ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename CLASS>
@@ -70,10 +71,11 @@ namespace   Stroika {
             {
                 return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
-            template <typename T, size_t SZ>
+            template    <typename T, size_t SZ>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
                     const T*  actualMember    =   reinterpret_cast<const T*> (fromObjOfTypeT);
                     for (auto i = actualMember; i < actualMember + SZ; ++i) {
@@ -82,6 +84,7 @@ namespace   Stroika {
                     return VariantValue (s);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
                     T*  actualMember    =   reinterpret_cast<T*> (intoObjOfTypeT);
                     if (s.size () > SZ) {
@@ -99,9 +102,36 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Optional ()
+            {
+                using   Memory::Optional;
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
+                    if (actualMember->IsPresent ()) {
+                        return mapper->FromObject<T> (*actualMember);
+                    }
+                    else {
+                        return VariantValue ();
+                    }
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
+                    if (d.empty ()) {
+                        actualInto->clear ();
+                    }
+                    else {
+                        *actualInto = mapper->ToObject<T> (d);
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename T>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Sequence ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
                     const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
@@ -110,6 +140,7 @@ namespace   Stroika {
                     return VariantValue (s);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
                     Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
                     actualInto->clear ();
@@ -123,6 +154,7 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Mapping ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     for (auto i : *actualMember) {
@@ -134,6 +166,7 @@ namespace   Stroika {
                     return VariantValue (s);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
@@ -152,6 +185,7 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
                     Mapping<String, VariantValue> m;
                     for (Common::KeyValuePair<KEY_TYPE, VALUE_TYPE> i : *actualMember) {
@@ -160,6 +194,7 @@ namespace   Stroika {
                     return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     Mapping<String, VariantValue>    m  =   d.As<Mapping<String, VariantValue>> ();
                     Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
                     actualInto->clear ();
@@ -173,6 +208,7 @@ namespace   Stroika {
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range ()
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Mapping<String, VariantValue> m;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
@@ -181,6 +217,7 @@ namespace   Stroika {
                     return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
@@ -216,6 +253,7 @@ namespace   Stroika {
                 typedef long long SerializeAsType;
 #endif
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
                     const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
@@ -224,6 +262,7 @@ namespace   Stroika {
                     return VariantValue (static_cast<SerializeAsType> (*actualMember));
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
                     ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
                     * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
 #if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
