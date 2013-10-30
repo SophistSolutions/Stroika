@@ -99,15 +99,12 @@ ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
 else
   STDCPPLIBArgs			:=		-lstdc++
 endif
-
-
-# -static-libgcc doesnt seem to work, nor does -static-libstdc++??? -- LGP 2011-11-07
-#ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
-#	STDCPPLIBArgs	+=  -static-libgcc
-#endif
 ifeq ($(STATIC_LINK_GCCRUNTIME), 1)
 	STDCPPLIBArgs	+=  -static-libstdc++
 endif
+
+
+
 
 
 
