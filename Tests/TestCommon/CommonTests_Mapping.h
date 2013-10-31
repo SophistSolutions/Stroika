@@ -194,11 +194,11 @@ namespace CommonTests {
                 typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
 
                 {
-                    vector<KeyValuePair<KeyType, ValueType>>      n   =   m.As<vector<KeyValuePair<KeyType, ValueType>>> ();
+                    vector<KeyValuePair<KeyType, ValueType>>      n   =   m.template As<vector<KeyValuePair<KeyType, ValueType>>> ();
                     VerifyTestResult (n.size () == m.size ());
                 }
                 {
-                    vector<pair<KeyType, ValueType>>      n   =   m.As<vector<pair<KeyType, ValueType>>> ();
+                    vector<pair<KeyType, ValueType>>      n   =   m.template As<vector<pair<KeyType, ValueType>>> ();
                     VerifyTestResult (n.size () == m.size ());
                 }
             }
