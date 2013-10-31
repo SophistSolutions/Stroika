@@ -40,7 +40,7 @@ namespace   Stroika {
                 while (true) {
                     Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ();
                     if (not tmp.empty ()) {
-                        return tmp;
+                        return *tmp;
                     }
                     fDataAvailable_.Wait (waitTil - Time::GetTickCount ());
                 }
