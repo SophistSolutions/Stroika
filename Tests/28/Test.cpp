@@ -8,6 +8,7 @@
 #include    <mutex>
 #include    <sstream>
 
+#include    "Stroika/Foundation/Execution/BlockingQueue.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
@@ -21,6 +22,7 @@
 using   namespace   Stroika::Foundation;
 
 
+using   Execution::BlockingQueue;
 using   Execution::Lockable;
 using   Execution::Thread;
 using   Execution::ThreadPool;
@@ -476,6 +478,38 @@ namespace   {
 }
 
 
+namespace {
+    void    RegressionTest10_BlockingQueue_ ()
+    {
+        enum { START = 0, END = 100 };
+        int expectedValue = (START + END) * (END - START + 1) / 2;
+        int counter =   0;
+        BlockingQueue<function<void()>> q;
+
+        Thread  producerThread ([&q, &counter] () {
+            for (int incBy = START; incBy <= END; ++incBy) {
+                q.AddTail ([&counter, incBy] () { counter += incBy; });
+            }
+        });
+        Thread  consumerThread ([&q] () {
+            while (true) {
+                function<void()>    f   =   q.RemoveHead ();
+                f();
+            }
+        });
+        producerThread.Start();
+        consumerThread.Start();
+        Time::DurationSecondsType killAt = 10.0 + Time::GetTickCount ();
+        while (counter != expectedValue and Time::GetTickCount () < killAt) {
+            Execution::Sleep (.5);
+        }
+        Verify (counter == expectedValue);
+        producerThread.AbortAndWaitForDone ();
+        consumerThread.AbortAndWaitForDone ();
+    }
+}
+
+
 
 
 namespace   {
@@ -490,6 +524,7 @@ namespace   {
         RegressionTest7_SimpleThreadPool_ ();
         RegressionTest8_ThreadPool_ ();
         RegressionTest9_ThreadsAbortingEarly_ ();
+        RegressionTest10_BlockingQueue_ ();
     }
 }
 
