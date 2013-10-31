@@ -16,15 +16,15 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************** DefaultDiscreteRangeTraits_Integral ***********************
+             ******************** RangeTraits::DefaultDiscreteRangeTraits_Integral ***********************
              ********************************************************************************
              */
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T DefaultDiscreteRangeTraits_Integral<T>::kMin   =   numeric_limits<T>::lowest ();
+            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kMin   =   numeric_limits<T>::lowest ();
             template    <typename T>
-            const T DefaultDiscreteRangeTraits_Integral<T>::kMax   =   numeric_limits<T>::max ();
+            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kMax   =   numeric_limits<T>::max ();
 #endif
 #endif
 

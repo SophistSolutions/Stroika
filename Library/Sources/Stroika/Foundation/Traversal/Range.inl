@@ -15,27 +15,27 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+             RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
+            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
             template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
 
             /*
              ********************************************************************************
-             *************************** DefaultRangeTraits<T> ******************************
+             *************************** RangeTraits::DefaultRangeTraits<T> ******************************
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::lowest ();
+            const T RangeTraits::DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::lowest ();
             template    <typename T>
-            const T DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
+            const T RangeTraits::DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
 #endif
 
 

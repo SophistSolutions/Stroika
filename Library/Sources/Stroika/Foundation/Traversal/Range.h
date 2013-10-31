@@ -61,63 +61,71 @@ namespace   Stroika {
 
 
             /**
-                *  Openness is used to define whether an end of a range is open or closed. Open means
-                *  not containing the endpoint, and closed means containing the endpoint.
-                */
+             *  Openness is used to define whether an end of a range is open or closed. Open means
+             *  not containing the endpoint, and closed means containing the endpoint.
+             */
             enum    class   Openness { eOpen, eClosed };
 
 
             /**
-             *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
-             *  for a given type T.
              */
-            template    <typename T, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraitsWithoutMinMax {
-                typedef T                   ElementType;
-                typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
-                typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
-
-                static  constexpr   Openness    kBeginOpenness  =   BEGIN_OPEN;
-                static  constexpr   Openness    kEndOpenness    =   END_OPEN;
-            };
+            namespace   RangeTraits {
 
 
-            /**
-             *  Shorthand helper to generate a traits object with an explicit min/max. Due to limitations
-             *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
-             *  14.3.2 Template non-type arguments - about integral types).
-             */
-            template    <typename T, T MIN, T MAX, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                /**
+                 *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
+                 *  for a given type T.
+                 */
+                template    <typename T, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct  ExplicitRangeTraitsWithoutMinMax {
+                    typedef T                   ElementType;
+                    typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
+                    typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
+
+                    static  constexpr   Openness    kBeginOpenness  =   BEGIN_OPEN;
+                    static  constexpr   Openness    kEndOpenness    =   END_OPEN;
+                };
+
+
+                /**
+                 *  Shorthand helper to generate a traits object with an explicit min/max. Due to limitations
+                 *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
+                 *  14.3.2 Template non-type arguments - about integral types).
+                 */
+                template    <typename T, T MIN, T MAX, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin    =   MIN;
-                static  constexpr T kMax    =   MAX;
+                    static  constexpr T kMin    =   MIN;
+                    static  constexpr T kMax    =   MAX;
 #else
-                static  const T kMin;
-                static  const T kMax;
+                    static  const T kMin;
+                    static  const T kMax;
 #endif
-            };
+                };
 
 
-            /**
-             *  DefaultRangeTraits<> is generally used automatically - when you construct a Range<> object without
-             *  specifying traits.
-             *
-             *  This defaults to a half-open (lhs closed, rhs-open) range.
-             */
-            template    <typename T>
-            struct  DefaultRangeTraits : enable_if <
-                    is_arithmetic<T>::value,
-                    ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, int, unsigned int>
-                    >::type {
+                /**
+                 *  DefaultRangeTraits<> is generally used automatically - when you construct a Range<> object without
+                 *  specifying traits.
+                 *
+                 *  This defaults to a half-open (lhs closed, rhs-open) range.
+                 */
+                template    <typename T>
+                struct  DefaultRangeTraits : enable_if <
+                        is_arithmetic<T>::value,
+                        ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, int, unsigned int>
+                        >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                static  constexpr T kMin    =   numeric_limits<T>::lowest ();
-                static  constexpr T kMax    =   numeric_limits<T>::max ();
+                    static  constexpr T kMin    =   numeric_limits<T>::lowest ();
+                    static  constexpr T kMax    =   numeric_limits<T>::max ();
 #else
-                static  const T kMin;
-                static  const T kMax;
+                    static  const T kMin;
+                    static  const T kMax;
 #endif
-            };
+                };
+
+
+            }
 
 
             /**
@@ -141,7 +149,7 @@ namespace   Stroika {
              *      Range<int> (1,1) == Range<int> (3,3) would be true, since the are both empty.
              *
              */
-            template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
+            template    <typename T, typename TRAITS = RangeTraits::DefaultRangeTraits<T>>
             class   Range {
             public:
                 /**
