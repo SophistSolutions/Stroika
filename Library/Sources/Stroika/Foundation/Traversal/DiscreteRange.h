@@ -58,11 +58,11 @@ namespace   Stroika {
                  */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
                 template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits<T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), int, unsigned int> {
+                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), underlying_type<T>, decltype (T() - T()) > {
                 };
 #else
                 template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits<T, 0, 1, int, unsigned int> {
+                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, underlying_type<T>, decltype (T() - T()) > {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                     static  const T kMin    =   numeric_limits<T>::lowest ();
                     static  const T kMax    =   numeric_limits<T>::max ();
@@ -86,6 +86,8 @@ namespace   Stroika {
 
 
             }
+
+
             /**
              *  EXAMPLE USAGE:
              *      vector<int> v = DiscreteRange (1,10).As<vector<int>> ();
