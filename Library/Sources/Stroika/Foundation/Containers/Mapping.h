@@ -255,11 +255,16 @@ namespace   Stroika {
                 /**
                  *  Only supported value(s) for CONTAINER_OF_Key_T are:
                  *      o   std::map<Key,T>
+                 &&& no - think through more...
                  */
+                template    <typename CONTAINER_OF_Key_T>
+                nonvirtual  CONTAINER_OF_Key_T As() const;
+
+            private:
+                template    <typename CONTAINER_OF_Key_T>
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
                 template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T   As () const;
-                template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  void   As (CONTAINER_OF_Key_T* into) const;
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
 
             public:
                 /*

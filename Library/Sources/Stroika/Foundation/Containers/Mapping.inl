@@ -246,27 +246,36 @@ namespace   Stroika {
                 }
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename   CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As () const
+            template    <typename CONTAINER_OF_Key_T>
+            inline  CONTAINER_OF_Key_T Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As() const
             {
-                // for now this is (documented) to only support std::map<KEY_TYPE, VALUE_TYPE> ()
-                // but we should extend to do better - somehow using typetraits?...
-#if 1
+                return As_<CONTAINER_OF_Key_T> ();
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename CONTAINER_OF_Key_T>
+            CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const
+            {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
-                    result.insert (typename CONTAINER_OF_Key_T::value_type (i.fKey, i.fValue));
+                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
+                    result.insert (result.end (), pair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
-#else
-                return CONTAINER_OF_Key_T (this->begin (), this->end ());
-#endif
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename   CONTAINER_OF_Key_T>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As (CONTAINER_OF_Key_T* into) const
+            inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type = 0) const
             {
-                RequireNotNull (into);
-                *into = CONTAINER_OF_Key_T (this->begin (), this->end ());
+#if 1
+                CONTAINER_OF_Key_T  result;
+                for (auto i : *this) {
+                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
+                    result.insert (result.end (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
+                }
+                return result;
+#else
+                return inherited::As<CONTAINER_OF_Key_T> ();
+#endif
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const

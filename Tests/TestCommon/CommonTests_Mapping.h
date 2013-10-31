@@ -179,6 +179,33 @@ namespace CommonTests {
         }
 
 
+
+        namespace Test6_AsSTLVector {
+            template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                USING_MAPPING_CONTAINER m;
+                USING_MAPPING_CONTAINER m2 = m;
+                m.Add (1, 88);
+                m.Add (2, 101);
+                VerifyTestResult (m.size () == 2);
+
+                typedef typename USING_MAPPING_CONTAINER::KeyType KeyType;
+                typedef typename USING_MAPPING_CONTAINER::ValueType ValueType;
+
+                {
+                    vector<KeyValuePair<KeyType, ValueType>>      n   =   m.As<vector<KeyValuePair<KeyType, ValueType>>> ();
+                    VerifyTestResult (n.size () == m.size ());
+                }
+                {
+                    vector<pair<KeyType, ValueType>>      n   =   m.As<vector<pair<KeyType, ValueType>>> ();
+                    VerifyTestResult (n.size () == m.size ());
+                }
+            }
+        }
+
+
+
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
         void    SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_ (TEST_FUNCTION applyToContainer)
         {
@@ -186,6 +213,7 @@ namespace CommonTests {
             Test2_AddRemove::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test_3_Iteration::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
             Test4_Equals::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
+            Test6_AsSTLVector::DoAllTests_<USING_MAPPING_CONTAINER> (applyToContainer);
         }
 
         template <typename USING_MAPPING_CONTAINER, typename TEST_FUNCTION>
