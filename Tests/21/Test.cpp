@@ -205,6 +205,7 @@ namespace  {
         void    DoRegressionTests_ ()
         {
             {
+                // This result identical to that computed by http://www.zorc.breitbandkatze.de/crc.html -- LGP 2013-10-31
                 const   char    kSrc[] = "This is a very good test of a very good test";
                 DoCommonHasherTest_<Hasher<uint32_t, Algorithms::CRC32>> ((const Byte*)kSrc, (const Byte*)kSrc + ::strlen(kSrc), 3692548919);
             }
