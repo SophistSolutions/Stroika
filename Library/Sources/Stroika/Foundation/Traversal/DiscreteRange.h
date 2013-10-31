@@ -17,6 +17,9 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
+ *              should use  underlying_type - but not sure why it didnt work easily.
+ *
  *      @todo   Conflict in names begin/end between Iterator and Range<> are INCONVENIENT and UNSESIRBALE.
  *
  *      @todo   Try to rewrite using Generator<> code... See if that simplifies things...
@@ -58,19 +61,19 @@ namespace   Stroika {
                  */
 #if     qSupportTemplateParamterOfNumericLimitsMinMax
                 template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), underlying_type<T>, decltype (T() - T()) > {
-                };
+                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
+                        };
 #else
                 template    <typename T>
-                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, underlying_type<T>, decltype (T() - T()) > {
+                struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                    static  const T kMin    =   numeric_limits<T>::lowest ();
-                    static  const T kMax    =   numeric_limits<T>::max ();
+                            static  const T kMin    =   numeric_limits<T>::lowest ();
+                            static  const T kMax    =   numeric_limits<T>::max ();
 #else
-                    static  const T kMin;
-                    static  const T kMax;
+                            static  const T kMin;
+                            static  const T kMax;
 #endif
-                };
+                        };
 #endif
 
 
