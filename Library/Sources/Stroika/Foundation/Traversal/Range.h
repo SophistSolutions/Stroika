@@ -33,6 +33,9 @@
  *          -- LGP 2013-10-17
  *
  *  TODO:
+ *          @todo   Should openness be in TRIATS or instance? Having in traits casuse some quirks
+ *                  on definition of intersection …
+ *
  *          @todo   Consider possibly defining some default parameters for ExplicitRangeTraits<> - like
  *                  size/diff types - probably automatically computed from traits info.
  *
@@ -194,7 +197,8 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  end-begin, or distance from begin to end of the range. This is zero iff empty.
+                 *  end-begin, or distance from begin to end of the range. If this is empty (), then size () will be zero
+                 *  but the size CAN be zero without the range being empty (if both ends are closed).
                  */
                 nonvirtual  typename TRAITS::UnsignedDifferenceType    size () const;
 
