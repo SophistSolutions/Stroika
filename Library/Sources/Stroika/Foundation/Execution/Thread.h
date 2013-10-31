@@ -53,6 +53,8 @@
  *
  *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
+ *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
+ *
  *      @todo   Windows thread interuption with CRITICALSECTION/lock_gaurd<>
  *              Currently we use EnterCriticalSeciton alot, But thats not 'alertable' -
  *              which potentially causes problems with thread interuption.

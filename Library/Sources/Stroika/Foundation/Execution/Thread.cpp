@@ -560,7 +560,8 @@ void    Thread::Abort ()
         // then its effectively already stopped.
         return;
     }
-    DbgTrace (L"(thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
+    // not status not protected by critsection, but SB OK for this
+    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_);
 
 
 #if         qUseThreads_WindowsNative
@@ -617,9 +618,11 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
 {
     Time::DurationSecondsType   endTime =   Time::GetTickCount () + timeout;
     // an abort may need to be resent (since there could be a race and we may need to force wakeup again)
+    unsigned int tries = 0;
     while (true) {
         const   Time::DurationSecondsType   kTimeBetweenAborts_     =   1.0f;
         Abort ();
+        tries++;
         Time::DurationSecondsType   timeLeft    =   endTime - Time::GetTickCount ();
         if (timeLeft <= kTimeBetweenAborts_) {
             WaitForDone (timeLeft);     // throws if we should throw
@@ -634,9 +637,14 @@ void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
             catch (const WaitTimedOutException&) {
             }
         }
-        // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
-        // a blocking call which needs interuption.
-        DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interupt.");
+        if (tries <= 1) {
+            // this COULD happen due to a lucky race - OR - the code could just be BUSY for a while (not calling CheckForAborted). But even then - it COULD make
+            // a blocking call which needs interuption.
+            DbgTrace ("This should ALMOST NEVER happen - where we did an abort but it came BEFORE the system call and so needs to be called again to re-interupt.");
+        }
+        else {
+            DbgTrace ("OK - maybe the target thread is ingoring abort exceptions? try/catch/ignore?");
+        }
     }
 }
 
