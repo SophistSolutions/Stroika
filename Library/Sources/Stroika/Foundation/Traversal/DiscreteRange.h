@@ -17,6 +17,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   GetNext() not quite right - using 'int'.
+ *
  *      @todo   DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
  *              should use  underlying_type - but not sure why it didnt work easily.
  *
@@ -36,11 +38,13 @@ namespace   Stroika {
 
 
             namespace   RangeTraits {
+
+
                 /**
                  */
                 template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitDiscreteRangeTraits  :
-                        ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                        ExplicitRGetNextangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                     static T GetNext (T n) {
                         return static_cast<T> (static_cast<int> (n) + 1);
                     }
