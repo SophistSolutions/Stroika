@@ -266,16 +266,12 @@ namespace   Stroika {
             template    <typename   CONTAINER_OF_Key_T>
             inline  CONTAINER_OF_Key_T  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type = 0) const
             {
-#if 1
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
                     // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
                     result.insert (result.end (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
-#else
-                return inherited::As<CONTAINER_OF_Key_T> ();
-#endif
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  bool  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const

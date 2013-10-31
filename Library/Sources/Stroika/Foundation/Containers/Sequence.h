@@ -26,6 +26,8 @@
  *  TODO:
  *
  *
+ *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
+ *
  *      @todo       Review with Sterl the choice (and better document) - that Sequence<> can be used on type T
  *                  without operator==, but when you got to call Contains/IndexOf/Equals() you get a compile
  *                  error. Can always fix with explicit TRIATS.

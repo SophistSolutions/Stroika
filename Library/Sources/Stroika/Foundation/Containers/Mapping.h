@@ -253,9 +253,15 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Only supported value(s) for CONTAINER_OF_Key_T are:
-                 *      o   std::map<Key,T>
-                 &&& no - think through more...
+                 *  This function should work for any container which accepts
+                 *  (ITERATOR_OF<KeyValuePair<Key,Value>>,ITERATOR_OF<KeyValuePair<Key,Value>>) OR
+                 *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
+                 *
+                 *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
+                 *  of CONTAINER_OF_Key_T.
+                 *
+                 *  So - for example, Sequence<KeyValuePair<KeyType,ValueType>>, map<KeyType,ValueType>,
+                 *  vector<pair<KeyType,ValueType>>, etc...
                  */
                 template    <typename CONTAINER_OF_Key_T>
                 nonvirtual  CONTAINER_OF_Key_T As() const;
