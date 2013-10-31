@@ -241,7 +241,7 @@ namespace   Stroika {
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            void    Iterable<T>::As () const
+            CONTAINER_OF_T    Iterable<T>::As () const
             {
                 return CONTAINER_OF_T (this->begin (), this->end ());
             }

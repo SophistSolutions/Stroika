@@ -308,7 +308,7 @@ namespace   Stroika {
                  *  (e.g. Set<T> x; x.As<Sequence<T>> ());
                  */
                 template    <typename CONTAINER_OF_T>
-                nonvirtual  void    As () const;
+                nonvirtual  CONTAINER_OF_T    As () const;
 
             protected:
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
