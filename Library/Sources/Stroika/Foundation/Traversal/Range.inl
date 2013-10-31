@@ -19,9 +19,9 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX , RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
 #endif
 
@@ -82,7 +82,7 @@ namespace   Stroika {
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
-                    return TRAITS::kBeginOpenness == RangeBase::Openness::eClosed or TRAITS::kEndOpenness == RangeBase::Openness::eClosed;
+                    return TRAITS::kBeginOpenness == Openness::eClosed or TRAITS::kEndOpenness == Openness::eClosed;
                 }
                 return false;
             }
@@ -181,12 +181,12 @@ namespace   Stroika {
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline     RangeBase::Openness    Range<T, TRAITS>::GetBeginOpenness ()
+            inline     Openness    Range<T, TRAITS>::GetBeginOpenness ()
             {
                 return TRAITS::kBeginOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline     RangeBase::Openness    Range<T, TRAITS>::GetEndOpenness ()
+            inline     Openness    Range<T, TRAITS>::GetEndOpenness ()
             {
                 return TRAITS::kEndOpenness;
             }

@@ -36,11 +36,11 @@ namespace   Stroika {
              */
             template    <typename T, T MIN, T MAX, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitDiscreteRangeTraits  :
-                    ExplicitRangeTraits_Integral<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                    ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
                 static T GetNext (T n) {
                     return static_cast<T> (static_cast<int> (n) + 1);
                 }
-                typedef ExplicitRangeTraits_Integral<T, MIN, MAX, RangeBase::Openness::eClosed, RangeBase::Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
+                typedef ExplicitRangeTraits_Integral<T, MIN, MAX, Openness::eClosed, Openness::eClosed, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>  RangeTraitsType;
             };
 
 

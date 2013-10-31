@@ -61,28 +61,18 @@ namespace   Stroika {
 
 
             /**
-             *  Common defines for range-types.
-             *
-             *  \em Design Note
-             *      We used base class instead of namespace so 'Openness' name can be injected directly into the used classes.
-             *      There maybe a better way...
-             */
-            class   RangeBase {
-            public:
-                /**
-                 *  Openness is used to define whether an end of a range is open or closed. Open means
-                 *  not containing the endpoint, and closed means containing the endpoint.
-                 */
-                enum    class   Openness { eOpen, eClosed };
-            };
+                *  Openness is used to define whether an end of a range is open or closed. Open means
+                *  not containing the endpoint, and closed means containing the endpoint.
+                */
+            enum    class   Openness { eOpen, eClosed };
 
 
             /**
              *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
              *  for a given type T.
              */
-            template    <typename T, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            struct  ExplicitRangeTraitsWithoutMinMax : public RangeBase {
+            template    <typename T, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            struct  ExplicitRangeTraitsWithoutMinMax {
                 typedef T                   ElementType;
                 typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                 typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
@@ -97,7 +87,7 @@ namespace   Stroika {
              *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
              *  14.3.2 Template non-type arguments - about integral types).
              */
-            template    <typename T, T MIN, T MAX, RangeBase::Openness BEGIN_OPEN, RangeBase::Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            template    <typename T, T MIN, T MAX, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   MIN;
@@ -118,7 +108,7 @@ namespace   Stroika {
             template    <typename T>
             struct  DefaultRangeTraits : enable_if <
                     is_arithmetic<T>::value,
-                    ExplicitRangeTraitsWithoutMinMax<T, RangeBase::Openness::eClosed, RangeBase::Openness::eOpen, int, unsigned int>
+                    ExplicitRangeTraitsWithoutMinMax<T, Openness::eClosed, Openness::eOpen, int, unsigned int>
                     >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                 static  constexpr T kMin    =   numeric_limits<T>::lowest ();
@@ -152,7 +142,7 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = DefaultRangeTraits<T>>
-            class   Range : public RangeBase {
+            class   Range {
             public:
                 /**
                  */
