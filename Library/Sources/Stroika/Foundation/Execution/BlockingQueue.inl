@@ -46,12 +46,12 @@ namespace   Stroika {
                 }
             }
             template    <typename T>
-            Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
+            inline  Memory::Optional<T>     BlockingQueue<T>::RemoveHeadIfPossible (Time::DurationSecondsType timeout)
             {
                 return fQueue_.RemoveHeadIf ();
             }
             template    <typename T>
-            Memory::Optional<T> BlockingQueue<T>::PeekHead () const
+            inline  Memory::Optional<T> BlockingQueue<T>::PeekHead () const
             {
                 return fQueue_.HeadIf ();
             }
