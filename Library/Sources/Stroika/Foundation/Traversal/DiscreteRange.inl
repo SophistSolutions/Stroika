@@ -16,7 +16,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************** RangeTraits::DefaultDiscreteRangeTraits_Integral ***********************
+             ************* RangeTraits::DefaultDiscreteRangeTraits_Integral *****************
              ********************************************************************************
              */
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
@@ -123,7 +123,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
                 : inherited_RangeType (begin, end)
-                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (inherited_RangeType::begin (), inherited_RangeType::end ())))
+                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (this->GetLowerBound (), this->GetUpperBound ())))
             {
             }
             template    <typename T, typename TRAITS>
@@ -135,16 +135,6 @@ namespace   Stroika {
             inline  bool DiscreteRange<T, TRAITS>::empty () const
             {
                 return inherited_RangeType::empty ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Iterator<T> DiscreteRange<T, TRAITS>::begin () const
-            {
-                return Iterable<T>::begin ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Iterator<T> DiscreteRange<T, TRAITS>::end () const
-            {
-                return Iterable<T>::end ();
             }
 
 

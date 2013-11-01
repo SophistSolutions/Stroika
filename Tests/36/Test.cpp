@@ -51,8 +51,8 @@ namespace   {
         {
             typedef RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int > RT;
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
-            VerifyTestResult (x.begin () == -3);
-            VerifyTestResult (x.end () == 100);
+            VerifyTestResult (x.LowerBound () == -3);
+            VerifyTestResult (x.UpperBound () == 100);
         }
     }
 

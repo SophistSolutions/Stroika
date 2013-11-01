@@ -238,8 +238,8 @@ namespace   Stroika {
                     typedef typename RANGE_TYPE::ElementType    ElementType;
                     Mapping<String, VariantValue> m;
                     const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
-                    m.Add (L"Begin", mapper->FromObject<ElementType> (actualMember->begin ()));
-                    m.Add (L"End", mapper->FromObject<ElementType> (actualMember->end ()));
+                    m.Add (L"Begin", mapper->FromObject<ElementType> (actualMember->GetLowerBound ()));
+                    m.Add (L"End", mapper->FromObject<ElementType> (actualMember->GetUpperBound ()));
                     return VariantValue (m);
                 };
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
@@ -248,7 +248,7 @@ namespace   Stroika {
                     Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
                     RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
                     if (m.size () != 2) {
-                        DbgTrace ("Range ('%s') element needs begin and end", typeid (RANGE_TYPE).name ());
+                        DbgTrace ("Range ('%s') element needs Begin and end", typeid (RANGE_TYPE).name ());
                         Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs begin and end"));
                     }
                     if (not m.ContainsKey (L"Begin")) {

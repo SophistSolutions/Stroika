@@ -157,46 +157,46 @@ namespace   Stroika {
                 if (rhs.empty ()) {
                     return *this;
                 }
-                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (begin (), rhs.begin ()), max (end (), rhs.end ()));
-                Ensure (result.begin () <= begin ());
-                Ensure (result.begin () <= end ());
-                Ensure (result.begin () <= rhs.begin ());
-                Ensure (result.begin () <= rhs.end ());
-                Ensure (result.end () >= begin ());
-                Ensure (result.end () >= end ());
-                Ensure (result.end () >= rhs.begin ());
-                Ensure (result.end () >= rhs.end ());
+                Range<T, TRAITS>    result  =   Range<T, TRAITS> (min (GetLowerBound (), rhs.GetLowerBound ()), max (GetUpperBound (), rhs.GetUpperBound ()));
+                Ensure (result.GetLowerBound () <= GetLowerBound ());
+                Ensure (result.GetLowerBound () <= GetUpperBound ());
+                Ensure (result.GetLowerBound () <= rhs.GetLowerBound ());
+                Ensure (result.GetLowerBound () <= rhs.GetUpperBound ());
+                Ensure (result.GetUpperBound () >= GetLowerBound ());
+                Ensure (result.GetUpperBound () >= GetUpperBound ());
+                Ensure (result.GetUpperBound () >= rhs.GetLowerBound ());
+                Ensure (result.GetUpperBound () >= rhs.GetUpperBound ());
                 return result;
             }
             template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::begin () const
+            inline  T    Range<T, TRAITS>::GetLowerBound () const
             {
                 Require (not empty ());
                 return fBegin_;
             }
             template    <typename T, typename TRAITS>
-            inline  T    Range<T, TRAITS>::end () const
+            inline  T    Range<T, TRAITS>::GetUpperBound () const
             {
                 Require (not empty ());
                 return fEnd_;
             }
             template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetBeginOpenness ()
+            inline     Openness    Range<T, TRAITS>::GetTraitsLowerBoundOpenness ()
             {
                 return TRAITS::kBeginOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline     Openness    Range<T, TRAITS>::GetEndOpenness ()
+            inline     Openness    Range<T, TRAITS>::GetTraitsUpperBoundOpenness ()
             {
                 return TRAITS::kEndOpenness;
             }
             template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetBeginMin ()
+            inline     T    Range<T, TRAITS>::GetTraitsLowerBound ()
             {
                 return TRAITS::kMin;
             }
             template    <typename T, typename TRAITS>
-            inline     T    Range<T, TRAITS>::GetEndMax ()
+            inline     T    Range<T, TRAITS>::GetTraitsUpperBound ()
             {
                 return TRAITS::kMax;
             }

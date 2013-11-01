@@ -33,8 +33,8 @@
  *          -- LGP 2013-10-17
  *
  *  TODO:
- *          @todo   Should openness be in TRIATS or instance? Having in traits casuse some quirks
- *                  on definition of intersection …
+ *          @todo   Should openness be in TRAITS or instance? Having in traits casuse some quirks
+ *                  on definition of intersection...
  *
  *          @todo   Consider possibly defining some default parameters for ExplicitRangeTraits<> - like
  *                  size/diff types - probably automatically computed from traits info.
@@ -180,22 +180,22 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  A range is considered empty if it contains no points. If begin < end, then clearly this is
+                 *  A range is considered empty if it contains no points. If GetLowerBound () < GetUpperBound (), then clearly this is
                  *  non-empty. If created with Range/0() - then the range this is empty.
                  *
-                 *  But if begin == end - this is a trickier case. With both ends CLOSED - that means the begin value
+                 *  But if GetLowerBound () == GetUpperBound () - this is a trickier case. With both ends CLOSED - that means the GetLowerBound () value
                  *  is contained in the range, so that is not empty.
                  *
-                 *  if begin == end, and both ends open, then there are no points contained.
+                 *  if GetLowerBound () == GetUpperBound (), and both ends open, then there are no points contained.
                  *
-                 *  But if begin == end, and one one side is open, and the other closed, the one closed point endpoint
+                 *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed, the one closed point endpoint
                  *  is in the range, so the range is non-empty.
                  */
                 nonvirtual  bool    empty () const;
 
             public:
                 /**
-                 *  end-begin, or distance from begin to end of the range. If this is empty (), then size () will be zero
+                 *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range. If this is empty (), then size () will be zero
                  *  but the size CAN be zero without the range being empty (if both ends are closed).
                  */
                 nonvirtual  typename TRAITS::UnsignedDifferenceType    size () const;
@@ -237,33 +237,33 @@ namespace   Stroika {
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  T    begin () const;
+                nonvirtual  T    GetLowerBound () const;
 
             public:
                 /**
                  *  \req not empty ();
                  */
-                nonvirtual  T    end () const;
+                nonvirtual  T    GetUpperBound () const;
 
             public:
                 /**
                  */
-                static  Openness    GetBeginOpenness ();
+                static  Openness    GetTraitsLowerBoundOpenness ();
 
             public:
                 /**
                  */
-                static  Openness    GetEndOpenness ();
+                static  Openness    GetTraitsUpperBoundOpenness ();
 
             public:
                 /**
                  */
-                static  T    GetBeginMin ();
+                static  T    GetTraitsLowerBound ();
 
             public:
                 /**
                  */
-                static  T    GetEndMax ();
+                static  T    GetTraitsUpperBound ();
 
             public:
                 /**

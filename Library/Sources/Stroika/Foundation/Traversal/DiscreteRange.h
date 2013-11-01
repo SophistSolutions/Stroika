@@ -135,10 +135,6 @@ namespace   Stroika {
 
             public:
                 nonvirtual  bool empty () const;
-
-            public:
-                nonvirtual  Iterator<T> begin () const;
-                nonvirtual  Iterator<T> end () const;
             };
 
 
