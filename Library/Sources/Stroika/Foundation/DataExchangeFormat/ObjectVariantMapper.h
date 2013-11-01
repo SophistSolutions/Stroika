@@ -16,6 +16,7 @@
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
 #include    "../Memory/VariantValue.h"
+#include    "../Traversal/DiscreteRange.h"
 #include    "../Traversal/Range.h"
 
 
@@ -257,7 +258,7 @@ namespace   Stroika {
                  *      o   Optional<T>
                  *      o   Sequence<T>
                  *      o   Mapping<Key,Value>
-                 *  ###NYI    o   T[N]		-- so far cannot get to work
+                 *  ###NYI    o   T[N]      -- so far cannot get to work
                  *
                  *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
                  *
@@ -283,6 +284,10 @@ namespace   Stroika {
                 template    <typename T, size_t SZ>
                 static  TypeMappingDetails MakeCommonSerializer_ (T ar[SZ]);
 #endif
+                template    <typename T, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&);
+                template    <typename T, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&);
 
 #if 1
             public:

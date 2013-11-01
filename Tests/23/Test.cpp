@@ -237,34 +237,42 @@ namespace   {
 
         struct SharedContactsConfig_ {
             Range<int>  fIntRange;
+            DiscreteRange<int> fDiscIntRange2;
 
             SharedContactsConfig_ ()
-                : fIntRange (-3, 99) {
+                : fIntRange (-3, 99)
+                , fDiscIntRange2 (4, 19) {
             }
 
             bool operator== (const SharedContactsConfig_& rhs) const {
                 return
                     fIntRange == rhs.fIntRange
+////&&&&
+//                     and fDiscIntRange2 == rhs.fDiscIntRange2
                     ;
             }
         };
 
         ObjectVariantMapper mapper;
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Range<Range<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Range<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<DiscreteRange<int>> ());
 #if     qCompilerAndStdLib_Supports_initializer_lists
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
+//            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         }));
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
+//            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         };
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
         tmp.fIntRange = Range<int> (1, 10);
+        tmp.fDiscIntRange2 = DiscreteRange<int> (38, 39);
         VariantValue v = mapper.FromObject  (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
@@ -551,6 +559,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
         }));
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
@@ -558,6 +567,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
         };
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
 #endif

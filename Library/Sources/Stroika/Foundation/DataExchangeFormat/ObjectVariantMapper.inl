@@ -189,8 +189,24 @@ namespace   Stroika {
                         actualMember[idx++] = T ();
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
             }
+
+
+
+            template    <typename T, typename TRAITS>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&)
+            {
+                return MakeCommonSerializer_Range<Traversal::DiscreteRange<T, TRAITS>> ();
+            }
+            template    <typename T, typename TRAITS>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&)
+            {
+                return MakeCommonSerializer_Range<Traversal::Range<T, TRAITS>> ();
+            }
+
+
+
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
             {
