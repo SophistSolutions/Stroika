@@ -207,7 +207,7 @@ namespace   Stroika {
                 return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
             }
             template    <typename ENUM_TYPE>
-            ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
             {
                 /*
                  *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
