@@ -28,6 +28,9 @@
  *
  *  TODO:
  *
+ *      @todo   Next release - lose the RegisterClass<> name - just use AddClass<>. Or remove Add and call it Register.
+ *              but be consistent.
+ *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
@@ -247,6 +250,14 @@ namespace   Stroika {
                  */
                 template    <typename CLASS>
                 nonvirtual  void    RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
+
+            public:
+                /**
+                 */
+                template    <typename CLASS>
+                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions) {
+                    RegisterClass<CLASS> (fieldDescriptions);
+                }
 
             public:
                 /**
