@@ -254,9 +254,12 @@ namespace   Stroika {
             public:
                 /**
                  *  This creates serializers for many common types.
-                 *      o   Sequence<T> (but this assumes you already have a serializer for T defined)
-                 *      o   Mapping<K,T> (assumes serializer for K,T already defined)
-                 *      o   T[N]
+                 *      o   Optional<T>
+                 *      o   Sequence<T>
+                 *      o   Mapping<Key,Value>
+                 *  ###NYI    o   T[N]		-- so far cannot get to work
+                 *
+                 *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
                  *
                  *  ... EXPERIEMENTAL
                  **
@@ -270,12 +273,18 @@ namespace   Stroika {
 
             private:
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>&);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
+#if 0
+                // haven't gotten to work
+                template    <typename T, size_t SZ>
+                static  TypeMappingDetails MakeCommonSerializer_ (T ar[SZ]);
+#endif
 
+#if 1
             public:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
@@ -283,19 +292,6 @@ namespace   Stroika {
                 // this is for builtin C++ array (int a[3]) - not std::array).
                 template    <typename T, size_t SZ>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
-
-#if 0
-            public:
-            private:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                // by default serialize as an array (cuz serializing as mapping only works if LHS is
-                // string).
-                //
-                // For that case - SHOULD use partial specializaiton (not sure how)
-                template    <typename KEY_TYPE, typename VALUE_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
 #endif
 
             public:
