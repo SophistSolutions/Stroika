@@ -52,8 +52,9 @@ namespace   Stroika {
                     return false;
                 }
                 virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override {
-                    AssertNotImplemented ();
-                    return nullptr;
+                    shared_ptr<MyIteratorRep_>  tmp = shared_ptr<MyIteratorRep_> (new MyIteratorRep_ (fCur, fEnd));
+                    tmp->fAtEnd = fAtEnd;
+                    return tmp;
                 }
             };
 
