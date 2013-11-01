@@ -34,6 +34,12 @@
 
 
 
+#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#include    <climits>
+#endif
+
+
+
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
