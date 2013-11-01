@@ -48,15 +48,15 @@ namespace   Stroika {
             template    <typename   RANGE_TYPE>
             RANGE_TYPE  CheckedConverter_Range (const typename RANGE_TYPE::ElementType& s, const typename RANGE_TYPE::ElementType& e)
             {
-                typename    RANGE_TYPE::ElementType useS    =   Private_::CheckedConverter_Range_Helper_Pinner_ (s, RANGE_TYPE::TraitsType::kMin, RANGE_TYPE::TraitsType::kMax);
-                typename    RANGE_TYPE::ElementType useE    =   Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kMin, RANGE_TYPE::TraitsType::kMax);
-                if (not (RANGE_TYPE::TraitsType::kMin <= useS)) {
+                typename    RANGE_TYPE::ElementType useS    =   Private_::CheckedConverter_Range_Helper_Pinner_ (s, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+                typename    RANGE_TYPE::ElementType useE    =   Private_::CheckedConverter_Range_Helper_Pinner_ (e, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+                if (not (RANGE_TYPE::TraitsType::kLowerBound <= useS)) {
                     Execution::DoThrow (BadFormatException ());
                 }
                 if (not (useS <= useE)) {
                     Execution::DoThrow (BadFormatException ());
                 }
-                if (not (useE <= RANGE_TYPE::TraitsType::kMax)) {
+                if (not (useE <= RANGE_TYPE::TraitsType::kUpperBound)) {
                     Execution::DoThrow (BadFormatException ());
                 }
                 return RANGE_TYPE (useS, useE);
@@ -71,16 +71,15 @@ namespace   Stroika {
             template    <typename   RANGE_TYPE>
             typename RANGE_TYPE::ElementType  CheckedConverter_ValueInRange (typename RANGE_TYPE::ElementType val, const RANGE_TYPE& r)
             {
-                typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kMin, RANGE_TYPE::TraitsType::kMax);
-                if (not (RANGE_TYPE::TraitsType::kMin <= useVal)) {
+                typename    RANGE_TYPE::ElementType useVal    =   Private_::CheckedConverter_Range_Helper_Pinner_ (val, RANGE_TYPE::TraitsType::kLowerBound, RANGE_TYPE::TraitsType::kUpperBound);
+                if (not (RANGE_TYPE::TraitsType::kLowerBound <= useVal)) {
                     Execution::DoThrow (BadFormatException ());
                 }
-                if (not (useVal <= RANGE_TYPE::TraitsType::kMax)) {
+                if (not (useVal <= RANGE_TYPE::TraitsType::kUpperBound)) {
                     Execution::DoThrow (BadFormatException ());
                 }
                 return useVal;
             }
-
 
 
         }

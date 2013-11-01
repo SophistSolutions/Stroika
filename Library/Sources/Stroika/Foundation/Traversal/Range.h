@@ -71,14 +71,14 @@ namespace   Stroika {
                  *  ExplicitRangeTraitsWithoutMinMax<> can be used to specify in line line (type) all the details for the range functionality
                  *  for a given type T.
                  */
-                template    <typename T, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                template    <typename T, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
                 struct  ExplicitRangeTraitsWithoutMinMax {
                     typedef T                   ElementType;
                     typedef SIGNED_DIFF_TYPE    SignedDifferenceType;
                     typedef UNSIGNED_DIFF_TYPE  UnsignedDifferenceType;
 
-                    static  constexpr   Openness    kBeginOpenness  =   BEGIN_OPEN;
-                    static  constexpr   Openness    kEndOpenness    =   END_OPEN;
+                    static  constexpr   Openness    kLowerBoundOpenness     =   LOWER_BOUND_OPEN;
+                    static  constexpr   Openness    kUpperBoundOpenness     =   UPPER_BOUND_OPEN;
                 };
 
 
@@ -87,14 +87,14 @@ namespace   Stroika {
                  *  in c++ (http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3337.pdf -
                  *  14.3.2 Template non-type arguments - about integral types).
                  */
-                template    <typename T, T MIN, T MAX, Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-                struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
+                template    <typename T, T MIN, T MAX, Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+                struct  ExplicitRangeTraits_Integral : public ExplicitRangeTraitsWithoutMinMax<T, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                    static  constexpr T kMin    =   MIN;
-                    static  constexpr T kMax    =   MAX;
+                    static  constexpr T kLowerBound    =   MIN;
+                    static  constexpr T kUpperBound    =   MAX;
 #else
-                    static  const T kMin;
-                    static  const T kMax;
+                    static  const T kLowerBound;
+                    static  const T kUpperBound;
 #endif
                 };
 
@@ -111,11 +111,11 @@ namespace   Stroika {
                 ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T() - T()), decltype (T() - T()) >
                 >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                    static  constexpr T kMin    =   numeric_limits<T>::lowest ();
-                    static  constexpr T kMax    =   numeric_limits<T>::max ();
+                    static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
+                    static  constexpr T kUpperBound    =   numeric_limits<T>::max ();
 #else
-                    static  const T kMin;
-                    static  const T kMax;
+                    static  const T kLowerBound;
+                    static  const T kUpperBound;
 #endif
                 };
 
@@ -158,9 +158,9 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Range/0 creates an empty range.
+                 *  Range () creates an empty range.
                  *
-                 *  Optional values - if omitted - are replaced with the TRAITS::kMin and TRAITS::kMax values.
+                 *  Optional values - if omitted - are replaced with the TRAITS::kLowerBound and TRAITS::kUpperBound values.
                  *
                  *  \req begin <= end (after substitution of optional values)
                  */
@@ -175,23 +175,24 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  A range is considered empty if it contains no points. If GetLowerBound () < GetUpperBound (), then clearly this is
-                 *  non-empty. If created with Range/0() - then the range this is empty.
+                 *  A Range is considered empty if it contains no points. If GetLowerBound () < GetUpperBound (),
+                 *  then clearly this is non-empty. If created with Range/0() - then the range this is empty.
                  *
-                 *  But if GetLowerBound () == GetUpperBound () - this is a trickier case. With both ends CLOSED - that means the GetLowerBound () value
-                 *  is contained in the range, so that is not empty.
+                 *  But if GetLowerBound () == GetUpperBound () - this is a trickier case. With both ends CLOSED -
+                 *  that means the GetLowerBound () value is contained in the range, so that is not empty.
                  *
                  *  if GetLowerBound () == GetUpperBound (), and both ends open, then there are no points contained.
                  *
-                 *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed, the one closed point endpoint
-                 *  is in the range, so the range is non-empty.
+                 *  But if GetLowerBound () == GetUpperBound (), and one one side is open, and the other closed,
+                 *  the one closed point endpoint is in the range, so the range is non-empty.
                  */
                 nonvirtual  bool    empty () const;
 
             public:
                 /**
-                 *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range. If this is empty (), then size () will be zero
-                 *  but the size CAN be zero without the range being empty (if both ends are closed).
+                 *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range.
+                 *  If this is empty (), then size () will be zero but the size CAN be zero without the
+                 *  range being empty (if both ends are closed).
                  */
                 nonvirtual  typename TRAITS::UnsignedDifferenceType    size () const;
 

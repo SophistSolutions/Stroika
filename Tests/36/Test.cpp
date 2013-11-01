@@ -51,8 +51,8 @@ namespace   {
         {
             typedef RangeTraits::ExplicitRangeTraits_Integral < int, -3, 100 , Openness::eClosed, Openness::eClosed, int, unsigned int > RT;
             Range<int, RT> x    =   Range<int, RT>::FullRange ();
-            VerifyTestResult (x.LowerBound () == -3);
-            VerifyTestResult (x.UpperBound () == 100);
+            VerifyTestResult (x.GetLowerBound () == -3);
+            VerifyTestResult (x.GetUpperBound () == 100);
         }
     }
 
@@ -92,14 +92,14 @@ namespace {
         using   Memory::Optional;
 
         {
-            Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kMin;
-            Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kMax;
-            Color min2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kMin;
-            Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kMax;
-            Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMin;
-            Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kMax;
-            Color min4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kMin;
-            Color max4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kMax;
+            Color min1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kLowerBound;
+            Color max1 = RangeTraits::DefaultDiscreteRangeTraits<Color>::kUpperBound;
+            Color min2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kLowerBound;
+            Color max2 = RangeTraits::DefaultDiscreteRangeTraits_Enum<Color>::kUpperBound;
+            Color min3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kLowerBound;
+            Color max3 = RangeTraits::ExplicitDiscreteRangeTraits<Color, Color::eSTART, Color::eLAST, int, unsigned int>::kUpperBound;
+            Color min4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kLowerBound;
+            Color max4 = RangeTraits::ExplicitRangeTraits_Integral<Color, Color::eSTART, Color::eLAST, Openness::eClosed, Openness::eClosed, int, unsigned int>::kUpperBound;
             VerifyTestResult (Color::red == Color::eSTART and Color::green == Color::eLAST);
             VerifyTestResult (min1 == Color::eSTART and max1 == Color::eLAST);
             VerifyTestResult (min2 == Color::eSTART and max2 == Color::eLAST);

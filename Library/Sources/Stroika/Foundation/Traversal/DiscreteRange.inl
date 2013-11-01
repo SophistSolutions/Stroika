@@ -22,9 +22,9 @@ namespace   Stroika {
 #if     !qSupportTemplateParamterOfNumericLimitsMinMax
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kMin   =   numeric_limits<T>::lowest ();
+            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kLowerBound   =   numeric_limits<T>::lowest ();
             template    <typename T>
-            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kMax   =   numeric_limits<T>::max ();
+            const T RangeTraits::DefaultDiscreteRangeTraits_Integral<T>::kUpperBound   =   numeric_limits<T>::max ();
 #endif
 #endif
 
@@ -129,7 +129,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  DiscreteRange<T, TRAITS>    DiscreteRange<T, TRAITS>::FullRange ()
             {
-                return DiscreteRange<T, TRAITS> (TRAITS::kMin, TRAITS::kMax);
+                return DiscreteRange<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const

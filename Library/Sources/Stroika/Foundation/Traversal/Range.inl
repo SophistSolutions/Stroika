@@ -15,27 +15,27 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
+             RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-            template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMin   =   MIN;
-            template    <typename T, T MIN, T MAX , Openness BEGIN_OPEN, Openness END_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
-            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, BEGIN_OPEN, END_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kMax   =   MAX;
+            template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kLowerBound   =   MIN;
+            template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
+            const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kUpperBound   =   MAX;
 #endif
 
 
             /*
              ********************************************************************************
-             *************************** RangeTraits::DefaultRangeTraits<T> ******************************
+             ****************** RangeTraits::DefaultRangeTraits<T> **************************
              ********************************************************************************
              */
 #if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
             template    <typename T>
-            const T RangeTraits::DefaultRangeTraits<T>::kMin   =   numeric_limits<T>::lowest ();
+            const T RangeTraits::DefaultRangeTraits<T>::kLowerBound   =   numeric_limits<T>::lowest ();
             template    <typename T>
-            const T RangeTraits::DefaultRangeTraits<T>::kMax   =   numeric_limits<T>::max ();
+            const T RangeTraits::DefaultRangeTraits<T>::kUpperBound   =   numeric_limits<T>::max ();
 #endif
 
 
@@ -46,11 +46,11 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range ()
-                : fBegin_ (TRAITS::kMax)
-                , fEnd_ (TRAITS::kMin)
+                : fBegin_ (TRAITS::kUpperBound)
+                , fEnd_ (TRAITS::kLowerBound)
             {
-                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
-                Require (TRAITS::kMin != TRAITS::kMax);     // you cannot make an empty range if min=max
+                Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
+                Require (TRAITS::kLowerBound != TRAITS::kUpperBound);     // you cannot make an empty range if min=max
                 Ensure (empty ());
             }
             template    <typename T, typename TRAITS>
@@ -58,31 +58,35 @@ namespace   Stroika {
                 : fBegin_ (begin)
                 , fEnd_ (end)
             {
-                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
-                Require (fBegin_ <= fEnd_);
+                Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
+                Require (TRAITS::kLowerBound <= begin);
+                Require (begin <= end);
+                Require (end <= TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>::Range (const Memory::Optional<T>& begin, const Memory::Optional<T>& end)
-                : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kMin)
-                , fEnd_ (end.IsPresent () ? *end : TRAITS::kMax)
+                : fBegin_ (begin.IsPresent () ? *begin : TRAITS::kLowerBound)
+                , fEnd_ (end.IsPresent () ? *end : TRAITS::kUpperBound)
             {
-                Require  (TRAITS::kMin <= TRAITS::kMax);    // always required for class
+                Require  (TRAITS::kLowerBound <= TRAITS::kUpperBound);    // always required for class
+                Require (TRAITS::kLowerBound <= fBegin_);
                 Require (fBegin_ <= fEnd_);
+                Require (fEnd_ <= TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
             inline  Range<T, TRAITS>    Range<T, TRAITS>::FullRange ()
             {
-                return Range<T, TRAITS> (TRAITS::kMin, TRAITS::kMax);
+                return Range<T, TRAITS> (TRAITS::kLowerBound, TRAITS::kUpperBound);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::empty () const
             {
                 if (fBegin_ > fEnd_) {
-                    // internal hack done in Range<T, TRAITS>::Range/0 () - empty range - otherwise not possible to create this situation
+                    // internal hack done in Range<T, TRAITS>::Range() - empty range - otherwise not possible to create this situation
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
-                    return TRAITS::kBeginOpenness == Openness::eClosed or TRAITS::kEndOpenness == Openness::eClosed;
+                    return TRAITS::kLowerBoundOpenness == Openness::eClosed or TRAITS::kUpperBoundOpenness == Openness::eClosed;
                 }
                 return false;
             }
@@ -103,10 +107,10 @@ namespace   Stroika {
                 if (fBegin_ < r and r < fEnd_) {
                     return true;
                 }
-                if (TRAITS::kBeginOpenness == Openness::eClosed and r == fBegin_) {
+                if (TRAITS::kLowerBoundOpenness == Openness::eClosed and r == fBegin_) {
                     return true;
                 }
-                if (TRAITS::kEndOpenness == Openness::eClosed and r == fEnd_) {
+                if (TRAITS::kUpperBoundOpenness == Openness::eClosed and r == fEnd_) {
                     return true;
                 }
                 return false;
@@ -183,22 +187,22 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline     Openness    Range<T, TRAITS>::GetTraitsLowerBoundOpenness ()
             {
-                return TRAITS::kBeginOpenness;
+                return TRAITS::kLowerBoundOpenness;
             }
             template    <typename T, typename TRAITS>
             inline     Openness    Range<T, TRAITS>::GetTraitsUpperBoundOpenness ()
             {
-                return TRAITS::kEndOpenness;
+                return TRAITS::kUpperBoundOpenness;
             }
             template    <typename T, typename TRAITS>
             inline     T    Range<T, TRAITS>::GetTraitsLowerBound ()
             {
-                return TRAITS::kMin;
+                return TRAITS::kLowerBound;
             }
             template    <typename T, typename TRAITS>
             inline     T    Range<T, TRAITS>::GetTraitsUpperBound ()
             {
-                return TRAITS::kMax;
+                return TRAITS::kUpperBound;
             }
             template    <typename T, typename TRAITS>
             inline  bool    Range<T, TRAITS>::operator== (const Range<T, TRAITS>& rhs) const

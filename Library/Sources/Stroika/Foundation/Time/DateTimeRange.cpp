@@ -15,6 +15,6 @@ using   namespace   Stroika::Foundation::Time;
 using   namespace   Time;
 
 #if 1
-const DateTime Time::Private_::DateTimeRangeTraitsType_::kMin   =   DateTime::kMin;
-const DateTime Time::Private_::DateTimeRangeTraitsType_::kMax   =   DateTime::kMax;;
+const DateTime Time::Private_::DateTimeRangeTraitsType_::kLowerBound   =   DateTime::kMin;
+const DateTime Time::Private_::DateTimeRangeTraitsType_::kUpperBound   =   DateTime::kMax;;
 #endif

@@ -482,8 +482,8 @@ namespace   {
         DurationRange d2    =   DurationRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.LowerBound () == Duration::kMin);
-        VerifyTestResult (d2.UpperBound () == Duration::kMax);
+        VerifyTestResult (d2.GetLowerBound () == Duration::kMin);
+        VerifyTestResult (d2.GetUpperBound () == Duration::kMax);
     }
 }
 
@@ -495,8 +495,8 @@ namespace   {
         DateRange d2    =   DateRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.LowerBound () == Date::kMin);
-        VerifyTestResult (d2.UpperBound () == Date::kMax);
+        VerifyTestResult (d2.GetLowerBound () == Date::kMin);
+        VerifyTestResult (d2.GetUpperBound () == Date::kMax);
     }
 }
 
@@ -508,8 +508,8 @@ namespace   {
         DateTimeRange d2    =   DateTimeRange::FullRange ();
         VerifyTestResult (d1.empty ());
         VerifyTestResult (not d2.empty ());
-        VerifyTestResult (d2.LowerBound () == DateTime::kMin);
-        VerifyTestResult (d2.UpperBound () == DateTime::kMax);
+        VerifyTestResult (d2.GetLowerBound () == DateTime::kMin);
+        VerifyTestResult (d2.GetUpperBound () == DateTime::kMax);
     }
 }
 

@@ -69,11 +69,11 @@ namespace   Stroika {
                 template    <typename T>
                 struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, 0, 1, decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-                            static  const T kMin    =   numeric_limits<T>::lowest ();
-                            static  const T kMax    =   numeric_limits<T>::max ();
+                            static  const T kLowerBound    =   numeric_limits<T>::lowest ();
+                            static  const T kUpperBound    =   numeric_limits<T>::max ();
 #else
-                            static  const T kMin;
-                            static  const T kMax;
+                            static  const T kLowerBound;
+                            static  const T kUpperBound;
 #endif
                         };
 #endif
