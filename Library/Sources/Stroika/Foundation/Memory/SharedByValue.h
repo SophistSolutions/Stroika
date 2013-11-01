@@ -23,6 +23,8 @@
  *          clever way around it. (template specializaiton?). Note - this is exactly what the
  *          msvc vector<T> template does so presumably it IS optimized.
  *
+ *          I THINK I maybe able to fix/workaround this with enable_if(sizeof(C) ==1???).
+ *
  */
 
 
@@ -79,7 +81,9 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  SharedByValue is a utility class to implement Copy-On-Write.
+             *  \brief  SharedByValue is a utility class to implement Copy-On-Write (aka COW)
+             *
+             *  SharedByValue is a utility class to implement Copy-On-Write (aka Copy on Write, or COW).
              *
              *  This utility class should not be used lightly. Its somewhat tricky to use properly. Its meant
              *  to facilitiate implementing the copy-on-write semantics which are often handy in providing
