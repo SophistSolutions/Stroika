@@ -191,22 +191,60 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (T[SZ]), toVariantMapper, fromVariantMapper);
             }
-
-
-
             template    <typename T, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&)
             {
-                return MakeCommonSerializer_Range<Traversal::DiscreteRange<T, TRAITS>> ();
+                return MakeCommonSerializer_Range_<Traversal::DiscreteRange<T, TRAITS>> ();
             }
             template    <typename T, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&)
+            inline  ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&)
             {
-                return MakeCommonSerializer_Range<Traversal::Range<T, TRAITS>> ();
+                return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
             }
-
-
-
+            template <typename RANGE_TYPE>
+            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
+            {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    Mapping<String, VariantValue> m;
+                    const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
+                    m.Add (L"LowerBound", mapper->FromObject<ElementType> (actualMember->GetLowerBound ()));
+                    m.Add (L"UpperBound", mapper->FromObject<ElementType> (actualMember->GetUpperBound ()));
+                    return VariantValue (m);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    typedef typename RANGE_TYPE::ElementType    ElementType;
+                    Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
+                    RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
+                    if (m.size () != 2) {
+                        DbgTrace ("Range ('%s') element needs LowerBound and UpperBound", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs LowerBound and UpperBound"));
+                    }
+                    // temporary backward compat -- LGP 2013-11-01
+                    if (1) {
+                        if (not m.ContainsKey (L"LowerBound") and m.ContainsKey (L"Begin")) {
+                            m.Add (L"LowerBound", m.LookupValue (L"Begin"));
+                        }
+                        if (not m.ContainsKey (L"UpperBound") and m.ContainsKey (L"End")) {
+                            m.Add (L"UpperBound", m.LookupValue (L"End"));
+                        }
+                    }
+                    if (not m.ContainsKey (L"LowerBound")) {
+                        DbgTrace ("Range ('%s') needs LowerBound", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'LowerBound' element"));
+                    }
+                    if (not m.ContainsKey (L"UpperBound")) {
+                        DbgTrace ("Range ('%s') needs UpperBound", typeid (RANGE_TYPE).name ());
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'UpperBound' element"));
+                    }
+                    ElementType from    =   mapper->ToObject<ElementType> (*m.Lookup (L"LowerBound"));
+                    ElementType to      =   mapper->ToObject<ElementType> (*m.Lookup (L"UpperBound"));
+                    * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
+            }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()
             {
@@ -229,41 +267,6 @@ namespace   Stroika {
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
-            }
-            template <typename RANGE_TYPE>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range ()
-            {
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    typedef typename RANGE_TYPE::ElementType    ElementType;
-                    Mapping<String, VariantValue> m;
-                    const RANGE_TYPE*  actualMember    =   reinterpret_cast<const RANGE_TYPE*> (fromObjOfTypeT);
-                    m.Add (L"Begin", mapper->FromObject<ElementType> (actualMember->GetLowerBound ()));
-                    m.Add (L"End", mapper->FromObject<ElementType> (actualMember->GetUpperBound ()));
-                    return VariantValue (m);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    typedef typename RANGE_TYPE::ElementType    ElementType;
-                    Mapping<String, VariantValue>          m  =   d.As<Mapping<String, VariantValue>> ();
-                    RANGE_TYPE*  actualInto  =   reinterpret_cast<RANGE_TYPE*> (intoObjOfTypeT);
-                    if (m.size () != 2) {
-                        DbgTrace ("Range ('%s') element needs Begin and end", typeid (RANGE_TYPE).name ());
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs begin and end"));
-                    }
-                    if (not m.ContainsKey (L"Begin")) {
-                        DbgTrace ("Range ('%s') needs begin", typeid (RANGE_TYPE).name ());
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'Begin' element"));
-                    }
-                    if (not m.ContainsKey (L"End")) {
-                        DbgTrace ("Range ('%s') needs end", typeid (RANGE_TYPE).name ());
-                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Range needs 'End' element"));
-                    }
-                    ElementType from    =   mapper->ToObject<ElementType> (*m.Lookup (L"Begin"));
-                    ElementType to      =   mapper->ToObject<ElementType> (*m.Lookup (L"End"));
-                    * actualInto = CheckedConverter_Range<RANGE_TYPE> (from, to);
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (RANGE_TYPE), toVariantMapper, fromVariantMapper);
             }
             template <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Enumeration ()

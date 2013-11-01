@@ -299,6 +299,11 @@ namespace   Stroika {
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
 #endif
 
+            private:
+                template    <typename RANGE_TYPE>
+                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range_ ();
+
+
             public:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
@@ -312,12 +317,6 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
-            public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                template    <typename RANGE_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Range ();
 
             public:
                 //
