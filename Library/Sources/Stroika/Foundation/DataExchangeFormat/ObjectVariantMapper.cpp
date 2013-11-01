@@ -7,8 +7,11 @@
 #include    "../Containers/Tally.h"
 #include    "../Debug/Trace.h"
 #include    "../Time/Date.h"
+#include    "../Time/DateRange.h"
 #include    "../Time/DateTime.h"
+#include    "../Time/DateTimeRange.h"
 #include    "../Time/Duration.h"
+#include    "../Time/DurationRange.h"
 
 #include    "ObjectVariantMapper.h"
 
@@ -293,6 +296,8 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 
 
 
+
+
 namespace   {
     Set<ObjectVariantMapper::TypeMappingDetails>    mkCommonSerializers_ ()
     {
@@ -320,6 +325,9 @@ namespace   {
         result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ());
         result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> ());
         result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DurationRange> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DateRange> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::DateTimeRange> ());
 
         return result;
     }

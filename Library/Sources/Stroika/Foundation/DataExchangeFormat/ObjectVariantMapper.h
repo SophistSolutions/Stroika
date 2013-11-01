@@ -219,6 +219,7 @@ namespace   Stroika {
                  *      o   Mapping<String, VariantValue>
                  *      o   TimeOfDay
                  *      o   VariantValue
+                 *      o   DurationRange/DateRange/DateTimeRange
                  *
                  *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
                  *
