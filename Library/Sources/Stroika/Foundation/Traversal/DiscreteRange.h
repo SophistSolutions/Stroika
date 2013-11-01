@@ -22,8 +22,6 @@
  *      @todo   DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
  *              should use  underlying_type - but not sure why it didnt work easily.
  *
- *      @todo   Conflict in names begin/end between Iterator and Range<> are INCONVENIENT and UNSESIRBALE.
- *
  *      @todo   Try to rewrite using Generator<> code... See if that simplifies things...
  *
  *      @todo   DefaultDiscreteRangeTraits_Enum and DefaultDiscreteRangeTraits_Integral<> should do better
