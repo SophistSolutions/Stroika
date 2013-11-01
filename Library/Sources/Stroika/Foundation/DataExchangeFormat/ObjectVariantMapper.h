@@ -24,21 +24,27 @@
 /**
  *
  *
- *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
- *          (USED IN HEALTHFRAME - BUT JUST A PROTOTYPE...
- *          PROBBALY MOVE THIS OUT OF FOUNDATION AND INTO A FRAMEWORK???
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *
+ *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
+ *              stuff.
+ *
+ *              OLD RELATED NOTE WHICH IS PARTLY DONE BUT COMPLETE:
+ *                  Add support for array to ResetToDefaultTypeRegistry - like we have for struct - using Sequence<>
+ *                  as the C++ type (maybe others too, vector, more?).
+ *
+ *                  But unclear how todo ArrayOfWhat?? Maybe the CTOR takes to typeids - not sure how well that works?
+ *
+ *
+ *      @todo   Cleanup AddCommonType for if called with builtin type.. find way to amke that owrk. DOnt just ignore
+ *              because of if someone clears types.
  *
  *      @todo   Redo examples (maybe small bits of API) using new Reader/Writer abstract impl
  *              stuff (backends to XML or JSON)
  *
- *      @todo   Just a draft - think through what we really want here...
- *
- *      @todo   Add support for array to ResetToDefaultTypeRegistry - like we have for struct - using Sequence<>
- *              as the C++ type (maybe others too, vector, more?).
- *
- *              But unclear how todo ArrayOfWhat?? Maybe the CTOR takes to typeids - not sure how well that works?
+ *      @todo   Consider moving this out of the Foundation into a framework?
  *
  *      @todo   EFFICIENCY NOTES AND TODO MAYBE IMPROVE?
  *
@@ -189,6 +195,16 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Shortcut for Add (MakeCommonSerializer<T> ());
+                 *
+                 *  Note this this is not needed (and not supported) for the builtin types.
+                 *  @todo - we SHOULD just ignore those - TODO
+                 */
+                template    <typename T>
+                nonvirtual  void    AddCommonType ();
+
+            public:
+                /**
                  *  This clears the registry of type mappers, and resets it to the defaults - a set of builtin types,
                  *  like String, int, etc.
                  *
@@ -255,16 +271,14 @@ namespace   Stroika {
             public:
                 /**
                  *  This creates serializers for many common types.
-                 *      o   Optional<T>
-                 *      o   Sequence<T>
                  *      o   Mapping<Key,Value>
+                 *      o   Optional<T>
+                 *      o   Range<T,TRAITS>
+                 *      o   Sequence<T>
                  *  ###NYI    o   T[N]      -- so far cannot get to work
+                 *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
                  *
                  *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
-                 *
-                 *  ... EXPERIEMENTAL
-                 **
-                 *  CANNOT FIGURE OUT HOW TODO...
                  *
                  *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
                  *  fit what the deserailizer expects.
@@ -288,6 +302,8 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::DiscreteRange<T, TRAITS>&);
                 template    <typename T, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Traversal::Range<T, TRAITS>&);
+                template    <typename ENUM_TYPE>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type* = 0);
 
 #if 1
             public:
@@ -317,19 +333,6 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_MappingWithStringishKey ();
 
-
-            public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                //  Note - ENUM_TYPE must use Stroika_Define_Enum_Bounds(), or otherwise define eSTART, eEND to
-                //  use this template.
-                //
-                //  Note - this explicitly allows storing a enum with value eEND (since that is often a sentinal
-                //  value).
-                //
-                template    <typename ENUM_TYPE>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Enumeration ();
 
             private:
                 nonvirtual  TypeMappingDetails  Lookup_(const type_index& forTypeInfo) const;

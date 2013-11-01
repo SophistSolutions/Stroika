@@ -332,7 +332,7 @@ namespace   {
 
         ObjectVariantMapper mapper;
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Enumeration<Fred> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
 #if     qCompilerAndStdLib_Supports_initializer_lists
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),

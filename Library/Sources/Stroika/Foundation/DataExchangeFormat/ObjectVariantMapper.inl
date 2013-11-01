@@ -48,6 +48,11 @@ namespace   Stroika {
             {
                 fSerializers_ = s;
             }
+            template    <typename T>
+            inline  void    ObjectVariantMapper::AddCommonType ()
+            {
+                Add (MakeCommonSerializer<T> ());
+            }
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
@@ -201,6 +206,50 @@ namespace   Stroika {
             {
                 return MakeCommonSerializer_Range_<Traversal::Range<T, TRAITS>> ();
             }
+            template    <typename ENUM_TYPE>
+            ObjectVariantMapper::TypeMappingDetails  MakeCommonSerializer_ (const ENUM_TYPE&,  typename std::enable_if<std::is_enum<ENUM_TYPE>::value >::type*)
+            {
+                /*
+                 *  Note: we cannot get the enumeration print names - in general. That would be nicer to read, but we dont have
+                 *  the data, and this is simple and efficient.
+                 */
+                Require (std::is_enum<ENUM_TYPE>::value);
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+                typedef typename std::underlying_type<ENUM_TYPE>::type SerializeAsType;
+#else
+                typedef long long SerializeAsType;
+#endif
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+#endif
+                    Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
+                    return VariantValue (static_cast<SerializeAsType> (*actualMember));
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
+                    * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
+#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
+                    Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
+#endif
+                    Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
+#if     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+                    if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND)) {
+                        DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
+                    }
+#else
+                    if (not (static_cast<typename underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eSTART) <= static_cast<typename underlying_type<ENUM_TYPE>::type> (*actualInto) and static_cast<typename underlying_type<ENUM_TYPE>::type> (*actualInto) <= static_cast<typename underlying_type<ENUM_TYPE>::type> (ENUM_TYPE::eEND))) {
+                        DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));
+                        Execution::DoThrow<BadFormatException> (BadFormatException (L"Enumeration value out of range"));
+                    }
+#endif
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
+            }
             template <typename RANGE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Range_ ()
             {
@@ -268,6 +317,7 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
             }
+#if 0
             template <typename ENUM_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Enumeration ()
             {
@@ -312,6 +362,7 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (ENUM_TYPE), toVariantMapper, fromVariantMapper);
             }
+#endif
 
 #if 0
             template    <typename T>
