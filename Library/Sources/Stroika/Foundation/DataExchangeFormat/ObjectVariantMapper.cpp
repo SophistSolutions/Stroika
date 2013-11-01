@@ -100,105 +100,227 @@ namespace {
     ObjectVariantMapper::TypeMappingDetails mkSerializerInfo_ ()
     {
         auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+            RequireNotNull (fromObjOfTypeT);
             return VariantValue (static_cast<UseVariantType> (*reinterpret_cast<const T*> (fromObjOfTypeT)));
         };
         auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-            *reinterpret_cast<T*> (intoObjOfTypeT) = static_cast<T> (d.As<UseVariantType> ());
+            RequireNotNull (intoObjOfTypeT);
+            * reinterpret_cast<T*> (intoObjOfTypeT) = static_cast<T> (d.As<UseVariantType> ());
         };
         return ObjectVariantMapper::TypeMappingDetails (typeid (T), toVariantMapper, fromVariantMapper);
     }
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<bool> ()
+{
+    return mkSerializerInfo_<bool, bool> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<signed char> ()
+{
+    return mkSerializerInfo_<signed char, signed char> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<short int> ()
+{
+    return mkSerializerInfo_<short int, short int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<int> ()
+{
+    return mkSerializerInfo_<int, int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long int> ()
+{
+    return mkSerializerInfo_<long int, long int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long long int> ()
+{
+    return mkSerializerInfo_<long long int, long long int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned char> ()
+{
+    return mkSerializerInfo_<unsigned char, unsigned char> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned short int> ()
+{
+    return mkSerializerInfo_<unsigned short int, unsigned short int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned int> ()
+{
+    return mkSerializerInfo_<unsigned int, unsigned int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ()
+{
+    return mkSerializerInfo_<unsigned long int, unsigned long int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ()
+{
+    return mkSerializerInfo_<unsigned long long int, unsigned long long int> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<float> ()
+{
+    return mkSerializerInfo_<float, float> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<double> ()
+{
+    return mkSerializerInfo_<double, double> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long double> ()
+{
+    return mkSerializerInfo_<long double, long double> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Date> ()
+{
+    return mkSerializerInfo_<Time::Date, Time::Date> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::DateTime> ()
+{
+    return mkSerializerInfo_<Time::DateTime, Time::DateTime> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Characters::String> ()
+{
+    return mkSerializerInfo_<Characters::String, Characters::String> ();
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Memory::VariantValue> ()
+{
+    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        return *(reinterpret_cast<const VariantValue*> (fromObjOfTypeT));
+    };
+    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid (VariantValue), toVariantMapper, fromVariantMapper));
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ()
+{
+    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<wstring> ());
+    };
+    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ().As<wstring> ());
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid (Duration), toVariantMapper, fromVariantMapper));
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ()
+{
+    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        return VariantValue ((reinterpret_cast<const TimeOfDay*> (fromObjOfTypeT))->GetAsSecondsCount ());
+    };
+    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid (TimeOfDay), toVariantMapper, fromVariantMapper));
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ()
+{
+    typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
+    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        Mapping<String, VariantValue> m;
+        const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
+        for (auto i : *actualMember) {
+            // really could do either way - but second more efficient
+            //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
+            m.Add (i.fKey, i.fValue);
+        }
+        return VariantValue (m);
+    };
+    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
+        ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
+        actualInto->clear ();
+        for (auto i : m) {
+            // really could do either way - but second more efficient
+            //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
+            actualInto->Add (i.fKey, i.fValue.As<String> ());
+        }
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
+}
+
+template    <>
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Memory::VariantValue>> ()
+{
+    typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
+    auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+        const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
+        return VariantValue (*actualMember);
+    };
+    auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+        ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
+        * actualInto = d.As<Mapping<String, VariantValue>> ();
+    };
+    return (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
+}
+
+
+
+namespace   {
     Set<ObjectVariantMapper::TypeMappingDetails>    mkCommonSerializers_ ()
     {
         Set<ObjectVariantMapper::TypeMappingDetails>    result;
-        result.Add (mkSerializerInfo_<bool, bool> ());
-        result.Add (mkSerializerInfo_<signed char, signed char> ());
-        result.Add (mkSerializerInfo_<short int, short int> ());
-        result.Add (mkSerializerInfo_<int, int> ());
-        result.Add (mkSerializerInfo_<long int, long int> ());
-        result.Add (mkSerializerInfo_<long long int, long long int> ());
-        result.Add (mkSerializerInfo_<unsigned char, unsigned char> ());
-        result.Add (mkSerializerInfo_<unsigned short, unsigned short> ());
-        result.Add (mkSerializerInfo_<unsigned int, unsigned int> ());
-        result.Add (mkSerializerInfo_<unsigned long int, unsigned long int> ());
-        result.Add (mkSerializerInfo_<unsigned long long int, unsigned long long int> ());
-        result.Add (mkSerializerInfo_<float, float> ());
-        result.Add (mkSerializerInfo_<double, double> ());
-        result.Add (mkSerializerInfo_<long double, long double> ());
-        result.Add (mkSerializerInfo_<Date, Date> ());
-        result.Add (mkSerializerInfo_<DateTime, DateTime> ());
-        result.Add (mkSerializerInfo_<String, String> ());
 
-        {
-            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                return *(reinterpret_cast<const VariantValue*> (fromObjOfTypeT));
-            };
-            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                *reinterpret_cast<VariantValue*> (intoObjOfTypeT) = d;
-            };
-            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (VariantValue), toVariantMapper, fromVariantMapper));
-        }
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<bool> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<signed char> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<short int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<long int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<long long int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned char> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned short> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<float> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<double> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<long double> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Date> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<DateTime> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<String> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<VariantValue> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, String>> ());
+        result.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<String, VariantValue>> ());
 
-        {
-            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                return VariantValue ((reinterpret_cast<const Duration*> (fromObjOfTypeT))->As<wstring> ());
-            };
-            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                *reinterpret_cast<Duration*> (intoObjOfTypeT) = Duration (d.As<String> ().As<wstring> ());
-            };
-            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (Duration), toVariantMapper, fromVariantMapper));
-        }
-
-        {
-            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                return VariantValue ((reinterpret_cast<const TimeOfDay*> (fromObjOfTypeT))->GetAsSecondsCount ());
-            };
-            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                *reinterpret_cast<TimeOfDay*> (intoObjOfTypeT) = TimeOfDay (d.As<uint32_t> ());
-            };
-            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid (TimeOfDay), toVariantMapper, fromVariantMapper));
-        }
-
-        {
-            typedef Mapping<String, String>  ACTUAL_ELEMENT_TYPE;
-            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                Mapping<String, VariantValue> m;
-                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
-                for (auto i : *actualMember) {
-                    // really could do either way - but second more efficient
-                    //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
-                    m.Add (i.fKey, i.fValue);
-                }
-                return VariantValue (m);
-            };
-            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
-                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
-                actualInto->clear ();
-                for (auto i : m) {
-                    // really could do either way - but second more efficient
-                    //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
-                    actualInto->Add (i.fKey, i.fValue.As<String> ());
-                }
-            };
-            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
-        }
-
-        {
-            typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
-            auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
-                return VariantValue (*actualMember);
-            };
-            auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
-                * actualInto = d.As<Mapping<String, VariantValue>> ();
-            };
-            result.Add (ObjectVariantMapper::TypeMappingDetails (typeid(ACTUAL_ELEMENT_TYPE), toVariantMapper, fromVariantMapper));
-        }
-
-        // TODO - ARRAY??? Maybe using Sequence???
-        {
-        }
         return result;
     }
 

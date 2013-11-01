@@ -37,10 +37,6 @@
  *
  *                  But unclear how todo ArrayOfWhat?? Maybe the CTOR takes to typeids - not sure how well that works?
  *
- *
- *      @todo   Cleanup AddCommonType for if called with builtin type.. find way to amke that owrk. DOnt just ignore
- *              because of if someone clears types.
- *
  *      @todo   Redo examples (maybe small bits of API) using new Reader/Writer abstract impl
  *              stuff (backends to XML or JSON)
  *
@@ -197,8 +193,10 @@ namespace   Stroika {
                 /**
                  *  Shortcut for Add (MakeCommonSerializer<T> ());
                  *
-                 *  Note this this is not needed (and not supported) for the builtin types.
-                 *  @todo - we SHOULD just ignore those - TODO
+                 *  So - this is supported for any type for which (@see MakeCommonSerializer) is supported.
+                 *
+                 *  Note this this is not needed (because it's done by default), but is supported,
+                 *  for the builtin types.
                  */
                 template    <typename T>
                 nonvirtual  void    AddCommonType ();
@@ -231,6 +229,7 @@ namespace   Stroika {
                  *  @see SetTypeMappingRegistry
                  *  @see RegisterClass
                  *  @see RegisterTypeMapper
+                 *  @see MakeCommonSerializer
                  */
                 nonvirtual  void    ResetToDefaultTypeRegistry ();
 
@@ -279,6 +278,9 @@ namespace   Stroika {
                  *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
                  *
                  *  This assumes the template parameters for the above objects are also already defined (mostly 'T' above).
+                 *
+                 *  This function also works (but is generally unneeded for) any of the types defined in
+                 *  @see ResetToDefaultTypeRegistry () (int, short, String, etc).
                  *
                  *  Note - all these de-serializers will throw BadDataFormat exceptions if the data somehow doesnt
                  *  fit what the deserailizer expects.
@@ -393,6 +395,52 @@ namespace   Stroika {
              */
 #define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
     DataExchangeFormat::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
+
+
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<bool> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<signed char> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<short int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long long int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned char> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned short int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<unsigned long long int> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<float> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<double> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<long double> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Date> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::DateTime> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Characters::String> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Memory::VariantValue> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ();
+            template    <>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Memory::VariantValue>> ();
 
 
         }
