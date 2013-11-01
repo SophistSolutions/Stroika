@@ -110,6 +110,11 @@ namespace   Stroika {
             private:
                 typedef Range<T, typename TRAITS::RangeTraitsType>  inherited_RangeType;
 
+            public:
+                /**
+                 */
+                typedef typename inherited_RangeType::ElementType   ElementType;
+
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
             public:
