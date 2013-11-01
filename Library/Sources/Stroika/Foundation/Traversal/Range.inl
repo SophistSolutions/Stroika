@@ -91,7 +91,7 @@ namespace   Stroika {
                 return false;
             }
             template    <typename T, typename TRAITS>
-            inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::size () const
+            inline  typename TRAITS::UnsignedDifferenceType    Range<T, TRAITS>::GetDistanceSpanned () const
             {
                 if (empty ()) {
                     return 0;

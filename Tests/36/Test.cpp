@@ -290,6 +290,12 @@ namespace {
             }
         }
     }
+}
+
+
+
+
+namespace {
     void    Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ()
     {
         using   Containers::Sequence;
@@ -302,6 +308,21 @@ namespace {
             Sequence<uint32_t> s = Sequence<uint32_t> (FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck));
             VerifyTestResult (s == Sequence<uint32_t> (begin (kRefCheck_), end (kRefCheck_)));
             VerifyTestResult (NEltsOf (kRefCheck_) == FunctionalApplicationContext<uint32_t> (DiscreteRange<uint32_t> (1, 100)).Filter<uint32_t> (isPrimeCheck).GetLength ());
+        }
+    }
+}
+
+
+namespace {
+    void    Test8_DiscreteRangeTestFromDocs_ ()
+    {
+        // From Docs in DiscreteRange<> class
+        vector<int> v = DiscreteRange<int> (1, 10).As<vector<int>> ();
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+#endif
+        for (auto i : DiscreteRange<int> (1, 10)) {
+            VerifyTestResult (1 <= i and i <= 10);  // rough verification
         }
     }
 }
@@ -320,6 +341,8 @@ namespace   {
         Test5_ReduceTest_ ();
         Test6_FunctionApplicationContext_ ();
         Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
+
+        Test8_DiscreteRangeTestFromDocs_ ();
     }
 }
 

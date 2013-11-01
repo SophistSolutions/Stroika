@@ -17,6 +17,10 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  *  TODO:
+ *      @todo   Understand what you must do DiscreteRange<int> (1,10) instead of just DiscreteRange (1,10),
+ *              and if something reasonable to be done about it - do so (compiler bug or ambiguity due to optional)
+ *              or just that template inference of types doesnt work as well as I thought...
+ *
  *      @todo   GetNext() not quite right - using 'int'.
  *
  *      @todo   DefaultDiscreteRangeTraits_Enum  : ExplicitDiscreteRangeTraits<T, T::eSTART, T::eLAST, int, unsigned int> {
@@ -28,7 +32,6 @@
  *              auto-computing the 'differnce' type
  */
 
-#include <climits>
 
 
 namespace   Stroika {
@@ -119,11 +122,11 @@ namespace   Stroika {
 
             /**
              *  EXAMPLE USAGE:
-             *      vector<int> v = DiscreteRange (1,10).As<vector<int>> ();
+             *      vector<int> v = DiscreteRange<int> (1,10).As<vector<int>> ();
              *      // equiv to vector<int> v = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
              *
              *  OR:
-             *      for (auto i : DiscreteRange (1,10)) {
+             *      for (auto i : DiscreteRange<int> (1,10)) {
              *          ...i = 1..10
              *      }
              */

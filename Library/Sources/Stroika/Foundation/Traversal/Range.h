@@ -191,10 +191,10 @@ namespace   Stroika {
             public:
                 /**
                  *  GetUpperBound ()-GetLowerBound (), or distance from GetLowerBound () to end of the range.
-                 *  If this is empty (), then size () will be zero but the size CAN be zero without the
+                 *  If this is empty (), then GetDistanceSpanned () will be zero but the GetDistanceSpanned CAN be zero without the
                  *  range being empty (if both ends are closed).
                  */
-                nonvirtual  typename TRAITS::UnsignedDifferenceType    size () const;
+                nonvirtual  typename TRAITS::UnsignedDifferenceType    GetDistanceSpanned () const;
 
             public:
                 /**
