@@ -71,6 +71,92 @@ namespace   Stroika {
             {
                 return FromObject  (typeid (CLASS), reinterpret_cast<const Byte*> (&from));
             }
+            template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer ()
+            {
+                T*  n = nullptr;    // arg unused, just for overloading
+                return MakeCommonSerializer_ (n);
+            }
+            template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Memory::Optional<T>*)
+            {
+                using   Memory::Optional;
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
+                    if (actualMember->IsPresent ()) {
+                        return mapper->FromObject<T> (**actualMember);
+                    }
+                    else {
+                        return VariantValue ();
+                    }
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
+                    if (d.empty ()) {
+                        actualInto->clear ();
+                    }
+                    else {
+                        *actualInto = mapper->ToObject<T> (d);
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Sequence<T>*)
+            {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
+                    for (auto i : *actualMember) {
+                        s.Append (mapper->FromObject<T> (i));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Sequence<VariantValue> s  =   d.As<Sequence<VariantValue>> ();
+                    Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (auto i : s) {
+                        actualInto->Append (mapper->ToObject<T> (i));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*)
+            {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
+                    for (auto i : *actualMember) {
+                        Sequence<VariantValue>  encodedPair;
+                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
+                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
+                        s.Append (VariantValue (encodedPair));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
+                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (VariantValue encodedPair : s) {
+                        Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
+                        if (p.size () != 2) {
+                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE>).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
+                        }
+                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
+            }
             template    <typename T, size_t SZ>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Array ()
             {
@@ -100,86 +186,6 @@ namespace   Stroika {
                     }
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Optional ()
-            {
-                using   Memory::Optional;
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    const Optional<T>*  actualMember    =   reinterpret_cast<const Optional<T>*> (fromObjOfTypeT);
-                    if (actualMember->IsPresent ()) {
-                        return mapper->FromObject<T> (*actualMember);
-                    }
-                    else {
-                        return VariantValue ();
-                    }
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Optional<T>*    actualInto  =   reinterpret_cast<Optional<T>*> (intoObjOfTypeT);
-                    if (d.empty ()) {
-                        actualInto->clear ();
-                    }
-                    else {
-                        *actualInto = mapper->ToObject<T> (d);
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Sequence ()
-            {
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    Sequence<VariantValue> s;
-                    const Sequence<T>*  actualMember    =   reinterpret_cast<const Sequence<T>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember) {
-                        s.Append (mapper->FromObject<T> (i));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Sequence<VariantValue> s  =   d.As<Sequence<T>> ();
-                    Sequence<T>*    actualInto  =   reinterpret_cast<Sequence<T>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (auto i : s) {
-                        actualInto->Append (mapper->ToObject<T> (i));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE>
-            ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_Mapping ()
-            {
-                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
-                    RequireNotNull (fromObjOfTypeT);
-                    Sequence<VariantValue> s;
-                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
-                    for (auto i : *actualMember) {
-                        Sequence<VariantValue>  encodedPair;
-                        encodedPair.Append (mapper->FromObject<KEY_TYPE> (i.fKey));
-                        encodedPair.Append (mapper->FromObject<VALUE_TYPE> (i.fValue));
-                        s.Append (VariantValue (encodedPair));
-                    }
-                    return VariantValue (s);
-                };
-                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
-                    RequireNotNull (intoObjOfTypeT);
-                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
-                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
-                    actualInto->clear ();
-                    for (VariantValue encodedPair : s) {
-                        Sequence<VariantValue>  p   =   p.As<Sequence<VariantValue>> ();
-                        if (p.size () != 2) {
-                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE>).name (), static_cast<int> (p.size ()));
-                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
-                        }
-                        actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
-                    }
-                };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             ObjectVariantMapper::TypeMappingDetails ObjectVariantMapper::MakeCommonSerializer_MappingWithStringishKey ()

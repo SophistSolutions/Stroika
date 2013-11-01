@@ -503,6 +503,90 @@ namespace   {
 
 
 
+
+
+
+
+
+namespace   {
+    void    DoRegressionTests_MakeCommonSerializer_8_ ()
+    {
+        using   namespace Traversal;
+        const bool kWrite2FileAsWell_ = true;      // just for debugging
+
+        struct SharedContactsConfig_ {
+            int                     fInt1;
+            Memory::Optional<int>   fInt2;
+            Mapping<int, int>        fMapping1;
+            Sequence<int>           Sequence1;
+
+            SharedContactsConfig_ ()
+                : fInt1 (3)
+                , fInt2 ()
+                , fMapping1 ()
+                , Sequence1 () {
+            }
+
+            bool operator== (const SharedContactsConfig_& rhs) const {
+                return
+                    fInt1 == rhs.fInt1 and
+                    fInt2 == rhs.fInt2 and
+                    fMapping1 == rhs.fMapping1 and
+                    Sequence1 == rhs.Sequence1
+                    ;
+            }
+        };
+
+        ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_Supports_initializer_lists
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, Sequence1, L"Sequence1"),
+        }));
+#else
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, Sequence1, L"Sequence1"),
+        };
+        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+#endif
+
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
+
+        SharedContactsConfig_   tmp;
+        tmp.fInt1 = 4;
+        tmp.fInt2 = 6;
+        tmp.Sequence1.Append (5);
+        tmp.fMapping1.Add (3, 5);
+        VariantValue v = mapper.FromObject  (tmp);
+
+        Streams::BasicBinaryInputOutputStream   tmpStream;
+        JSON::Writer ().Write (v, tmpStream);
+
+        if (kWrite2FileAsWell_) {
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
+            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
+            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+        }
+
+        // THEN deserialized, and mapped back to C++ object form
+        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
+        VerifyTestResult (tmp2 == tmp);
+    }
+}
+
+
+
+
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
@@ -513,6 +597,7 @@ namespace   {
         DoRegressionTests_SimpleEnumTypes_5_ ();
         DoRegressionTests_DurationsDateTime_6_ ();
         DoRegressionTests_VariantValue_7_ ();
+        DoRegressionTests_MakeCommonSerializer_8_ ();
     }
 }
 

@@ -268,6 +268,14 @@ namespace   Stroika {
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer ();
 
+            private:
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>*);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>*);
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*);
+
             public:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
@@ -276,21 +284,9 @@ namespace   Stroika {
                 template    <typename T, size_t SZ>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Array ();
 
+#if 0
             public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                template    <typename T>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Optional ();
-
-            public:
-                //
-                // soon to be private:??? @see MakeCommonSerializer
-                //
-                template    <typename T>
-                static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Sequence ();
-
-            public:
+            private:
                 //
                 // soon to be private:??? @see MakeCommonSerializer
                 //
@@ -300,6 +296,7 @@ namespace   Stroika {
                 // For that case - SHOULD use partial specializaiton (not sure how)
                 template    <typename KEY_TYPE, typename VALUE_TYPE>
                 static  ObjectVariantMapper::TypeMappingDetails MakeCommonSerializer_Mapping ();
+#endif
 
             public:
                 //
