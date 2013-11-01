@@ -247,8 +247,7 @@ namespace   {
             bool operator== (const SharedContactsConfig_& rhs) const {
                 return
                     fIntRange == rhs.fIntRange
-////&&&&
-//                     and fDiscIntRange2 == rhs.fDiscIntRange2
+                    and fDiscIntRange2 == rhs.fDiscIntRange2
                     ;
             }
         };
@@ -260,12 +259,12 @@ namespace   {
 #if     qCompilerAndStdLib_Supports_initializer_lists
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
-//            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         }));
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
-//            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         };
         mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
 #endif
@@ -282,7 +281,7 @@ namespace   {
         JSON::Writer ().Write (v, tmpStream);
 
         if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"y.txt";
+            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
             JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
             SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
         }
