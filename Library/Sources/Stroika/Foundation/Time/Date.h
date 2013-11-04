@@ -1,4 +1,4 @@
-/*
+Ôªø/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
 #ifndef _Stroika_Foundation_Time_Date_h_
@@ -63,11 +63,11 @@
  *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
  *              Same format
- *              That doesnít use std::locale()
+ *              That doesn‚Äôt use std::locale()
  *              En.cppreference.com/w/cpp/io/manip/get_time
- *              istringstream xxx (ì2011-febÖî)
- *              ss.imbue(std::locale() (ìde-DEî));
- *              ss >> std::get_time(&t, ì%FT%T%zî)
+ *              istringstream xxx (‚Äú2011-feb‚Ä¶‚Äù)
+ *              ss.imbue(std::locale() (‚Äúde-DE‚Äù));
+ *              ss >> std::get_time(&t, ‚Äú%FT%T%z‚Äù)
 
  *      @todo   Consider replacing eXML with eISO8601_PF?  Not 100% sure they are the same. Maybe we
  *              should support BOTH here?
@@ -82,7 +82,15 @@
  *              (without the julian calendar restriction).
  *              That maybe a longer term issue.
  *
- *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) ñ
+ *              Consider representing as big struct
+ *              o   Like with STRUCT DATETIME or struct tm
+ *                  o   Int year
+ *                  o   Int month
+ *              o   And maybe store cached string reps for common cases as optimization and
+ *                  store cached second-offset (mutable) for quick compares
+ *              o   Note in docs for future versions the min/max date COULD be expanded
+ *
+ *      @todo   (minor) Consider if DateTime stuff should cache locale () in some methods (static) ‚Äì
  *              so can be re-used?? Performance tweek cuz current stuff doing new locale() does
  *              locking to bump refcount?
  */
