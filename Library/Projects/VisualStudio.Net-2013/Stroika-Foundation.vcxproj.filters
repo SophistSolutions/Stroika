@@ -597,8 +597,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.cpp">
       <Filter>Sources\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
@@ -608,9 +606,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.cpp">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Traversal\Range.cpp">
       <Filter>Sources\Traversal</Filter>
     </ClCompile>
@@ -622,6 +617,21 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.cpp">
       <Filter>Sources\Time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.cpp">
+      <Filter>Sources\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\Version.cpp">
+      <Filter>Sources\Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.cpp">
+      <Filter>Sources\Configuration</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1397,8 +1407,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.h">
       <Filter>Sources\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
@@ -1408,9 +1416,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.h">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
@@ -1422,6 +1427,21 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.h">
       <Filter>Sources\Time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.h">
+      <Filter>Sources\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Version.h">
+      <Filter>Sources\Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.h">
+      <Filter>Sources\Configuration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -2110,8 +2130,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\AnyVariantValue.inl">
       <Filter>Sources\Memory</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_BufferedStringRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
@@ -2121,9 +2139,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Concrete\Private\String_ReadWriteRep.inl">
       <Filter>Sources\Characters\Concrete\Private</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\Generator.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
@@ -2135,6 +2150,21 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Time\DurationRange.inl">
       <Filter>Sources\Time</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKChar.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Characters\SDKString.inl">
+      <Filter>Sources\Characters</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\VersionDefs.inl">
+      <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\Version.inl">
+      <Filter>Sources\Configuration</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Configuration\StroikaVersion.inl">
+      <Filter>Sources\Configuration</Filter>
     </None>
   </ItemGroup>
 </Project>
