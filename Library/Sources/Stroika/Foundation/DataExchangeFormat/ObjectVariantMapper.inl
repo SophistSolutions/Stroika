@@ -60,7 +60,7 @@ namespace   Stroika {
             }
 #if      qCompilerAndStdLib_Supports_initializer_lists
             template    <typename CLASS>
-            void    ObjectVariantMapper::AddClass (const std::initializer_list<T>& fieldDescriptions)
+            void    ObjectVariantMapper::AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions)
             {
                 return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptions));
             }

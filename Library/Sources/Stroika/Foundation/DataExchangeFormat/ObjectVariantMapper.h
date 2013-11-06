@@ -244,7 +244,7 @@ namespace   Stroika {
                 nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
 #if      qCompilerAndStdLib_Supports_initializer_lists
                 template    <typename CLASS>
-                nonvirtual  void    AddClass (const std::initializer_list<T>& fieldDescriptions);
+                nonvirtual  void    AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions);
 #endif
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd);
