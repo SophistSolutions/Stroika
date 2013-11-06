@@ -58,6 +58,18 @@ namespace   Stroika {
             {
                 Add (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
+#if      qCompilerAndStdLib_Supports_initializer_lists
+            template    <typename CLASS>
+            void    ObjectVariantMapper::AddClass (const std::initializer_list<T>& fieldDescriptions)
+            {
+                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptions));
+            }
+#endif
+            template    <typename CLASS>
+            void    ObjectVariantMapper::AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd)
+            {
+                return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd));
+            }
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
             {
