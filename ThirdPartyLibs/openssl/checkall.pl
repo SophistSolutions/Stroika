@@ -47,9 +47,9 @@ if (trim ($x1) <= "44" and trim ($x2) <= "44") {
 	print ("ThirdPartyLibs/openssl -  [SUCCEEDED]\n");
 }
 else {
-	print ("Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
-	print ("2 lines coming next - each should be less than 40/44 to be safe...\n");
-	print "$x1\n";
-	print "$x2\n";
 	print ("ThirdPartyLibs/openssl -  [FAILED]\n");
+	print ("  Test DIFFS (REDO THIS IN PERL WHERE ITS EASIER TO COUNT LINES ETC)\n");
+	print ("  2 lines coming next - each should be less than 40/44 to be safe...\n");
+	print "  $x1\n";
+	print "  $x2\n";
 }
