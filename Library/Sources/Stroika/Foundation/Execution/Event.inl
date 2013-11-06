@@ -70,7 +70,7 @@ namespace   Stroika {
                 Verify (::ResetEvent (fEventHandle));
 #elif       qUseThreads_StdCPlusPlus
                 {
-                    std::lock_guard<std::mutex> lockGaurd (fMutex_);
+                    std::lock_guard<mutex> lockGaurd (fMutex_);
                     fTriggered_ = false;
                 }
 #else
@@ -85,7 +85,7 @@ namespace   Stroika {
                 Verify (::SetEvent (fEventHandle));
 #elif       qUseThreads_StdCPlusPlus
                 {
-                    std::lock_guard<std::mutex> lockGaurd (fMutex_);
+                    std::lock_guard<mutex> lockGaurd (fMutex_);
                     fTriggered_ = true;
                     fConditionVariable_.notify_all ();
                 }

@@ -90,9 +90,9 @@ namespace   Stroika {
 
 #if     qUseThreads_StdCPlusPlus
             private:
-                std::mutex              fMutex_;
-                std::condition_variable fConditionVariable_;
-                bool                    fTriggered_;
+                mutex               fMutex_;
+                condition_variable  fConditionVariable_;
+                bool                fTriggered_;
 #elif   qUseThreads_WindowsNative
             public:
                 operator HANDLE () const;

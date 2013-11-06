@@ -79,7 +79,7 @@ Again:
     }
     Verify (result == WAIT_OBJECT_0);
 #elif       qUseThreads_StdCPlusPlus
-    std::unique_lock<std::mutex> lock (fMutex_);
+    std::unique_lock<mutex>     lock (fMutex_);
     Time::DurationSecondsType   until   =   Time::GetTickCount () + timeout;
     Assert (until >= timeout);  // so no funny overflow issues...
     /*
@@ -106,7 +106,6 @@ Again:
             // And it interferes with the bounding of the 'remaining' count used to avoid overflows
             // DoThrow (WaitTimedOutException ());
         }
-
     }
     fTriggered_ = false ;   // autoreset
 #else
