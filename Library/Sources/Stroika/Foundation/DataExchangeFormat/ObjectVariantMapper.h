@@ -28,9 +28,6 @@
  *
  *  TODO:
  *
- *      @todo   Next release - lose the RegisterClass<> name - just use AddClass<>. Or remove Add and call it Register.
- *              but be consistent.
- *
  *      @todo   Further cleanups of MakeCommonSerializer<> are needed, but this is probably the right way to go. Use more enable_if
  *              stuff.
  *
@@ -139,7 +136,7 @@ namespace   Stroika {
              *  ObjectVariantMapper mapper;
              *
              *  // register each of your mappable (even private) types
-             *  mapper.RegisterClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({
+             *  mapper.AddClass<SharedContactsConfig_> (Sequence<StructureFieldInfo> ({
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
              *          ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
@@ -226,21 +223,16 @@ namespace   Stroika {
                  *
                  *  @todo - IT SOON WILL CONTAIN Sequence<String>, and Sequence<Variant>, as well as vector<> of those types.
                  *
-                 *  Note - to include any of your user-defined types (structs) - you must use RegisterTypeMapper() or
-                 *  RegisterClass ().
+                 *  Note - to include any of your user-defined types (structs) - you must use Add () or
+                 *  AddClass ().
                  *
                  *  @see GetTypeMappingRegistry
                  *  @see SetTypeMappingRegistry
-                 *  @see RegisterClass
-                 *  @see RegisterTypeMapper
+                 *  @see AddClass
+                 *  @see Add
                  *  @see MakeCommonSerializer
                  */
                 nonvirtual  void    ResetToDefaultTypeRegistry ();
-
-            public:
-                /**
-                 */
-                nonvirtual  void    RegisterTypeMapper (const TypeMappingDetails& serializerInfo);
 
             public:
                 struct  StructureFieldInfo;
@@ -249,15 +241,7 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CLASS>
-                nonvirtual  void    RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
-
-            public:
-                /**
-                 */
-                template    <typename CLASS>
-                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions) {
-                    RegisterClass<CLASS> (fieldDescriptions);
-                }
+                nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
 
             public:
                 /**
@@ -370,7 +354,7 @@ namespace   Stroika {
                 );
                 TypeMappingDetails (const type_index& forTypeInfo, size_t n, const Sequence<StructureFieldInfo>& fields);
 
-
+#if 0
                 // @todo
                 //tmphack - so I can use Stroika Set<> code with smarter field extraction etc.., and fix to default CTOR issue
                 // --LGP 2013-06-23
@@ -379,6 +363,7 @@ namespace   Stroika {
                     , fToVariantMapper (nullptr)
                     , fFromVariantMapper (nullptr) {
                 }
+#endif
                 bool operator== (const TypeMappingDetails& rhs) const {
                     return (fForType == rhs.fForType);
                 }

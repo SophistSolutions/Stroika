@@ -108,7 +108,7 @@ namespace   {
 
         // register each of your mappable (even private) types
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
@@ -119,7 +119,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
 #endif
 
         bool newEnabled = true;
@@ -184,7 +184,7 @@ namespace   {
 
         // register each of your mappable (even private) types
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
@@ -197,7 +197,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
@@ -257,7 +257,7 @@ namespace   {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Range<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<DiscreteRange<int>> ());
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         }));
@@ -266,7 +266,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
@@ -334,14 +334,14 @@ namespace   {
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
         }));
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
@@ -403,7 +403,7 @@ namespace   {
 
         ObjectVariantMapper mapper;
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
@@ -416,7 +416,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
@@ -471,14 +471,14 @@ namespace   {
 
         ObjectVariantMapper mapper;
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
         }));
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         SharedContactsConfig_   tmp;
@@ -553,7 +553,7 @@ namespace   {
 
         ObjectVariantMapper mapper;
 #if     qCompilerAndStdLib_Supports_initializer_lists
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
+        mapper.AddClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> ( {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
@@ -568,7 +568,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
         };
-        mapper.RegisterClass<SharedContactsConfig_> (Sequence<ObjectVariantMapper::StructureFieldInfo> (std::begin (kInfo), std::end (kInfo)));
+        mapper.AddClass<SharedContactsConfig_>(Sequence<ObjectVariantMapper::StructureFieldInfo>(std::begin(kInfo), std::end(kInfo)));
 #endif
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());

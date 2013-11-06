@@ -54,9 +54,9 @@ namespace   Stroika {
                 Add (MakeCommonSerializer<T> ());
             }
             template    <typename CLASS>
-            inline  void    ObjectVariantMapper::RegisterClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
+            inline  void    ObjectVariantMapper::AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions)
             {
-                RegisterTypeMapper (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
+                Add (TypeMappingDetails (typeid (CLASS), sizeof (CLASS), fieldDescriptions));
             }
             template    <typename CLASS>
             inline  void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
