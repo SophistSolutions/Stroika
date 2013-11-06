@@ -130,11 +130,9 @@ namespace   Stroika {
                 template<class OTHERT>
                 nonvirtual  void    destroy (OTHERT* p);
 
-#if  qCompilerAndStdLib_Supports_varadic_templates
             public:
                 template    <typename... ARGS>
                 void construct (pointer p, ARGS&&  ... args);
-#endif
 
             public:
                 nonvirtual  size_t  max_size () const noexcept;

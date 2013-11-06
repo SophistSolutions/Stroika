@@ -176,13 +176,8 @@ namespace   Stroika {
                 VariantValue (const Sequence<VariantValue>& val);
 
             private:
-#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                 VariantValue (const string& val) = delete;
                 VariantValue (const char* val) = delete;
-#else
-                VariantValue (const string& val);       // not implemented - declared to avoid confusing automatic type conversions - use wstring/wchar_t*
-                VariantValue (const char* val);         // ""
-#endif
 
             public:
                 nonvirtual  Type    GetType () const;

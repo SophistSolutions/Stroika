@@ -181,11 +181,11 @@ namespace   Stroika {
              */
             struct  BLOB::_IRep {
                 _IRep ();
+                _IRep (const _IRep&) = delete;
                 virtual ~_IRep ();
                 virtual pair<const Byte*, const Byte*>   GetBounds () const =    0;
 
-                NO_COPY_CONSTRUCTOR(_IRep);
-                NO_ASSIGNMENT_OPERATOR(_IRep);
+                nonvirtual  const _IRep& operator= (const _IRep&) = delete;
             };
 
 

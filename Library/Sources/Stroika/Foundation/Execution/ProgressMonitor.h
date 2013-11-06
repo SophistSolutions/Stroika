@@ -82,10 +82,6 @@ namespace   Stroika {
              */
             class   ProgressMonitor final {
             public:
-                NO_COPY_CONSTRUCTOR (ProgressMonitor);
-                NO_ASSIGNMENT_OPERATOR (ProgressMonitor);
-
-            public:
                 /**
                  *
                  */
@@ -110,6 +106,7 @@ namespace   Stroika {
                  *  But this is not required.
                  */
                 ProgressMonitor ();
+                ProgressMonitor (const ProgressMonitor&) = delete;
                 ProgressMonitor (Thread workThread);
 
             private:
@@ -117,6 +114,9 @@ namespace   Stroika {
 
             public:
                 ~ProgressMonitor ();
+
+            public:
+                nonvirtual  const ProgressMonitor& operator= (const ProgressMonitor&) = delete;
 
             public:
                 /**

@@ -176,11 +176,11 @@ namespace   Stroika {
 
             public:
                 LRUCache (size_t maxCacheSize);
+                LRUCache () = delete;
+                LRUCache (const LRUCache&) = delete;
 
             public:
-                NO_DEFAULT_CONSTRUCTOR(LRUCache);
-                NO_COPY_CONSTRUCTOR(LRUCache);
-                NO_ASSIGNMENT_OPERATOR(LRUCache);
+                nonvirtual  const LRUCache& operator= (const LRUCache&) = delete;
 
             public:
                 nonvirtual  size_t  GetMaxCacheSize () const;

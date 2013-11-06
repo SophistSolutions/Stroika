@@ -138,13 +138,13 @@ namespace   Stroika {
                     class   Connection {
                     protected:
                         class   _IRep {
-                        private:
-                            NO_COPY_CONSTRUCTOR (_IRep);
-                            NO_ASSIGNMENT_OPERATOR (_IRep);
-
                         public:
                             _IRep ();
+                            _IRep (const _IRep&) = delete;
                             virtual ~_IRep ();
+
+                        public:
+                            nonvirtual  const _IRep& operator= (const _IRep&) = delete;
 
                         public:
                             virtual URL                 GetURL () const                             =   0;

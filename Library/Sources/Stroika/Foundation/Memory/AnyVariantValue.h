@@ -95,13 +95,8 @@ namespace   Stroika {
                  *  accidentally assign the wrong type and get surprising results.
                  */
                 AnyVariantValue ();
-#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                 AnyVariantValue (const AnyVariantValue& from) = default;
                 AnyVariantValue& operator= (const AnyVariantValue& rhs) = default;
-#else
-                AnyVariantValue (const AnyVariantValue& from);
-                AnyVariantValue& operator= (const AnyVariantValue& rhs);
-#endif
                 template    <typename   T>
                 explicit AnyVariantValue (T val);
 

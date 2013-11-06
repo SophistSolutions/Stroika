@@ -129,15 +129,6 @@ namespace   Stroika {
 }
 
 
-#if     !qCompilerAndStdLib_Supports_isnan
-namespace   std {
-    // Must be in std namespace
-    bool    isnan (float f);
-    bool    isnan (double d);
-}
-#endif
-
-
 
 /*
  ********************************************************************************

@@ -34,12 +34,12 @@ namespace   Stroika {
             // Maybe associated TextStream, and maybe readline method goes here
             struct  HTTPRequest {
             public:
+                HTTPRequest () = delete;
+                HTTPRequest (const HTTPRequest&) = delete;
                 HTTPRequest (const Streams::BinaryInputStream& inStream);
 
-            private:
-                NO_DEFAULT_CONSTRUCTOR (HTTPRequest);
-                NO_COPY_CONSTRUCTOR (HTTPRequest);
-                NO_ASSIGNMENT_OPERATOR (HTTPRequest);
+            public:
+                nonvirtual  const HTTPRequest& operator= (const HTTPRequest&) = delete;
 
             public:
                 Streams::BinaryInputStream              fInputStream;

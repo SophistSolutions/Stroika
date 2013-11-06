@@ -154,11 +154,7 @@ namespace   Stroika {
                 explicit Mapping (const _SharedPtrIRep& rep);
 
             public:
-#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                 nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
-#else
-                nonvirtual  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src);
-#endif
 
             public:
                 /**

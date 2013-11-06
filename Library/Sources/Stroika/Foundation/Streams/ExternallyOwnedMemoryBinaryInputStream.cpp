@@ -21,17 +21,17 @@ using   namespace   Stroika::Foundation::Streams;
 
 class   ExternallyOwnedMemoryBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
-    NO_DEFAULT_CONSTRUCTOR(IRep_);
-    NO_COPY_CONSTRUCTOR(IRep_);
-    NO_ASSIGNMENT_OPERATOR(IRep_);
-
-public:
+    IRep_ () = delete;
+    IRep_ (const IRep_&) = delete;
     IRep_ (const Byte* start, const Byte* end)
         : fCriticalSection_ ()
         , fStart_ (start)
         , fEnd_ (end)
         , fCursor_ (start) {
     }
+
+public:
+    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
 
 protected:
     virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {

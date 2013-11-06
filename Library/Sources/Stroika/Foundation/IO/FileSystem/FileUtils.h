@@ -111,11 +111,11 @@ namespace   Stroika {
                 class   DirectoryContentsIterator {
                 public:
                     DirectoryContentsIterator (const String& pathExpr);        // can include wildcards - see ::FindFirstFile docs
+                    DirectoryContentsIterator (const DirectoryContentsIterator&) = delete;
                     ~DirectoryContentsIterator ();
 
-                private:
-                    NO_COPY_CONSTRUCTOR (DirectoryContentsIterator);
-                    NO_ASSIGNMENT_OPERATOR (DirectoryContentsIterator);
+                public:
+                    nonvirtual  const DirectoryContentsIterator& operator= (const DirectoryContentsIterator&) = delete;
 
                 public:
                     nonvirtual  bool    NotAtEnd () const;

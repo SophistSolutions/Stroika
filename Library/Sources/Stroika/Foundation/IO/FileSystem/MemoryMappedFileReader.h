@@ -39,11 +39,11 @@ namespace   Stroika {
                 class   MemoryMappedFileReader {
                 public:
                     MemoryMappedFileReader (const String& fileName);
+                    MemoryMappedFileReader (const MemoryMappedFileReader&) = delete;
                     ~MemoryMappedFileReader ();
 
-                private:
-                    NO_COPY_CONSTRUCTOR (MemoryMappedFileReader);
-                    NO_ASSIGNMENT_OPERATOR (MemoryMappedFileReader);
+                public:
+                    nonvirtual  const MemoryMappedFileReader& operator= (const MemoryMappedFileReader&) = delete;
 
                 public:
                     /**

@@ -63,9 +63,10 @@ namespace   Stroika {
             class   ThreadPool {
             public:
                 ThreadPool (unsigned int nThreads = 0);
-            private:
-                NO_COPY_CONSTRUCTOR (ThreadPool);
-                NO_ASSIGNMENT_OPERATOR (ThreadPool);
+                ThreadPool (const ThreadPool&) = delete;
+
+            public:
+                nonvirtual  const ThreadPool& operator= (const ThreadPool&) = delete;
 
             public:
                 typedef shared_ptr<IRunnable>    TaskType;

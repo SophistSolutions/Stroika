@@ -46,11 +46,8 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 class   BinaryFileOutputStream::Rep_ : public BinaryOutputStream::_IRep, public Seekable::_IRep {
 public:
-    NO_DEFAULT_CONSTRUCTOR(Rep_);
-    NO_COPY_CONSTRUCTOR(Rep_);
-    NO_ASSIGNMENT_OPERATOR(Rep_);
-
-public:
+    Rep_ () = delete;
+    Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName)
         : fCriticalSection_ ()
         , fFD_ (-1) {
@@ -72,6 +69,7 @@ public:
         ::close (fFD_);
 #endif
     }
+    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
     virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);

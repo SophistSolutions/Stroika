@@ -57,15 +57,15 @@ namespace   Stroika {
              */
             struct  HTTPResponse {
             public:
+                HTTPResponse () = delete;
+                HTTPResponse (const HTTPResponse&) = delete;
                 HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream outStream, const InternetMediaType& ct);
 
                 // Reponse must be completed (OK to Abort ()) before being destroyed
                 ~HTTPResponse ();
 
-            private:
-                NO_DEFAULT_CONSTRUCTOR (HTTPResponse);
-                NO_COPY_CONSTRUCTOR (HTTPResponse);
-                NO_ASSIGNMENT_OPERATOR (HTTPResponse);
+            public:
+                nonvirtual  const HTTPResponse& operator= (const HTTPResponse&) = delete;
 
             public:
                 /*

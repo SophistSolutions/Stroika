@@ -125,11 +125,11 @@ namespace   Stroika {
             public:
                 TraceContextBumper ();
                 TraceContextBumper (const SDKChar* contextName);
+                TraceContextBumper (const TraceContextBumper&) = delete;
                 ~TraceContextBumper ();
 
-            private:
-                NO_COPY_CONSTRUCTOR(TraceContextBumper);
-                NO_ASSIGNMENT_OPERATOR(TraceContextBumper);
+            public:
+                nonvirtual  const TraceContextBumper& operator= (const TraceContextBumper&) = delete;
 
 #if     qDefaultTracingOn
             public:

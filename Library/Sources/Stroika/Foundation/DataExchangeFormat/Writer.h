@@ -40,13 +40,12 @@ namespace   Stroika {
             /**
              */
             class   Writer {
-                NO_DEFAULT_CONSTRUCTOR(Writer); // @todo may want to allow?
-
             protected:
                 class   _IRep;
 
             protected:
                 explicit Writer (shared_ptr<_IRep> rep);
+                Writer () = delete; // @todo may want to allow?
             public:
                 /**
                  *  Note - to use std::ostream - use

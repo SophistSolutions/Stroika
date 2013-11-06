@@ -142,9 +142,10 @@ namespace   Stroika {
             class   BinaryInputOutputStream::_IRep : public virtual BinaryStream::_IRep, public std::enable_shared_from_this<BinaryInputOutputStream::_IRep> {
             public:
                 _IRep ();
-                NO_COPY_CONSTRUCTOR(_IRep);
-                NO_ASSIGNMENT_OPERATOR(_IRep);
+                _IRep (const _IRep&) = delete;
 
+            public:
+                nonvirtual  const _IRep& operator= (const _IRep&) = delete;
 
             public:
                 /**

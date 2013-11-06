@@ -57,13 +57,9 @@ namespace   Stroika {
                     // if its helpful for some containers
                     mutable std::mutex  fMutex_;
 #endif
-#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
                     ContainerRepLockDataSupport_ () = default;
-#else
-                    ContainerRepLockDataSupport_ () {}
-#endif
-                    NO_COPY_CONSTRUCTOR(ContainerRepLockDataSupport_);
-                    NO_ASSIGNMENT_OPERATOR(ContainerRepLockDataSupport_);
+                    ContainerRepLockDataSupport_ (const ContainerRepLockDataSupport_&) = delete;
+                    const ContainerRepLockDataSupport_& operator= (const ContainerRepLockDataSupport_&) = delete;
                 };
 
 

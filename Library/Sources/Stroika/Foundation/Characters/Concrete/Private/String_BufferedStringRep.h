@@ -41,9 +41,11 @@ namespace   Stroika {
                             typedef ReadWriteRep::_Rep  inherited;
 
                         protected:
-                            NO_DEFAULT_CONSTRUCTOR(_Rep);
-                            NO_COPY_CONSTRUCTOR(_Rep);
-                            NO_ASSIGNMENT_OPERATOR(_Rep);
+                            _Rep () = delete;
+                            _Rep (const _Rep&) = delete;
+
+                        public:
+                            nonvirtual  const _Rep& operator= (const _Rep&) = delete;
 
                         public:
                             _Rep (const wchar_t* start, const wchar_t* end);

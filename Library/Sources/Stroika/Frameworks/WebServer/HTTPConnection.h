@@ -35,14 +35,14 @@ namespace   Stroika {
 
             class   HTTPConnection {
             public:
+                HTTPConnection () = delete;
+                HTTPConnection (const HTTPConnection&) = delete;
                 explicit HTTPConnection (Socket s);
             public:
                 ~HTTPConnection ();
 
-            private:
-                NO_DEFAULT_CONSTRUCTOR (HTTPConnection);
-                NO_COPY_CONSTRUCTOR (HTTPConnection);
-                NO_ASSIGNMENT_OPERATOR (HTTPConnection);
+            public:
+                nonvirtual  const HTTPConnection& operator= (const HTTPConnection&) = delete;
 
             public:
                 // Must rethink this organization -but for now - call this once at start of connection to fill in details in

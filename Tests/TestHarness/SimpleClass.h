@@ -24,9 +24,7 @@ namespace   Stroika {
         SimpleClass operator+ (const SimpleClass& rhs) const {
             return SimpleClass (fValue + rhs.fValue);
         }
-#if     qCompilerAndStdLib_Supports_ExplicitConversionOperators
         explicit operator size_t () const { return fValue; }
-#endif
 
         bool    operator== (const SimpleClass& rhs) const;
         bool    operator< (const SimpleClass& rhs) const;
@@ -47,9 +45,7 @@ namespace   Stroika {
         nonvirtual  size_t  GetValue () const;
         static      size_t  GetTotalLiveCount ();
 
-#if     qCompilerAndStdLib_Supports_ExplicitConversionOperators
         explicit operator size_t () const { return fValue; }
-#endif
 
         SimpleClassWithoutComparisonOperators operator+ (const SimpleClassWithoutComparisonOperators& rhs) const {
             return SimpleClassWithoutComparisonOperators (fValue + rhs.fValue);

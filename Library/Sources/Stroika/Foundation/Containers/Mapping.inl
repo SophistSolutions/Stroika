@@ -89,14 +89,6 @@ namespace   Stroika {
             {
                 RequireNotNull (rep);
             }
-#if     !qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::operator= (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& src)
-            {
-                inherited::operator= (src);
-                return *this;
-            }
-#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  const typename  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep () const
             {

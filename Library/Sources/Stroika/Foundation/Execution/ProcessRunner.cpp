@@ -47,12 +47,11 @@ using   Debug::TraceContextBumper;
 #if     qPlatform_Windows
 namespace {
     class   AutoHANDLE_ {
-    private:
-        NO_COPY_CONSTRUCTOR (AutoHANDLE_);
     public:
         AutoHANDLE_ (HANDLE h = INVALID_HANDLE_VALUE):
             fHandle (h) {
         }
+        AutoHANDLE_ (const AutoHANDLE_&) = delete;
         ~AutoHANDLE_ () {
             Close ();
         }

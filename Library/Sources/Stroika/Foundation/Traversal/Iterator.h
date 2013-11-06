@@ -237,9 +237,6 @@ namespace   Stroika {
                  */
                 typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>   SharedByValueRepType;
 
-            private:
-                NO_DEFAULT_CONSTRUCTOR (Iterator);
-
             public:
                 /**
                  *  \brief
@@ -249,6 +246,7 @@ namespace   Stroika {
                  *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
+                Iterator () = delete;
 
             public:
                 /**

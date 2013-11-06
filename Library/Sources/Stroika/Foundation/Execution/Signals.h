@@ -111,8 +111,10 @@ namespace   Stroika {
 
             private:
                 SignalHandlerRegistry ();
-                NO_COPY_CONSTRUCTOR (SignalHandlerRegistry);
-                NO_ASSIGNMENT_OPERATOR (SignalHandlerRegistry);
+                SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
+
+            public:
+                nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
 
             public:
                 /*
@@ -201,11 +203,12 @@ namespace   Stroika {
             class   ScopedBlockCurrentThreadSignal {
             public:
                 ScopedBlockCurrentThreadSignal (SignalIDType signal);
+                ScopedBlockCurrentThreadSignal () = delete;
+                ScopedBlockCurrentThreadSignal (const ScopedBlockCurrentThreadSignal&) = delete;
                 ~ScopedBlockCurrentThreadSignal ();
-            private:
-                NO_DEFAULT_CONSTRUCTOR (ScopedBlockCurrentThreadSignal);
-                NO_COPY_CONSTRUCTOR (ScopedBlockCurrentThreadSignal);
-                NO_ASSIGNMENT_OPERATOR (ScopedBlockCurrentThreadSignal);
+
+            public:
+                nonvirtual  const ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
 
             private:
                 SignalIDType    fSignal_;

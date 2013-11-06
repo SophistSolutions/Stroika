@@ -43,11 +43,8 @@ using   Execution::Platform::Windows::ThrowIfFalseGetLastError;
 
 class   BinaryFileInputStream::Rep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
-    NO_DEFAULT_CONSTRUCTOR(Rep_);
-    NO_COPY_CONSTRUCTOR(Rep_);
-    NO_ASSIGNMENT_OPERATOR(Rep_);
-
-public:
+    Rep_ () = delete;
+    Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName)
         : fCriticalSection_ ()
         , fFD_ (-1) {
@@ -68,6 +65,8 @@ public:
         ::close (fFD_);
 #endif
     }
+    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
+
     virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);

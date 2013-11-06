@@ -113,12 +113,14 @@ namespace   Stroika {
              */
             class ProcessRunner {
             public:
-                NO_DEFAULT_CONSTRUCTOR (ProcessRunner);
-                NO_COPY_CONSTRUCTOR (ProcessRunner);
-                NO_ASSIGNMENT_OPERATOR (ProcessRunner);
+                ProcessRunner () = delete;
+                ProcessRunner (const ProcessRunner&) = delete;
             public:
                 ProcessRunner (const SDKString& commandLine, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
                 ProcessRunner (const SDKString& executable, const Containers::Sequence<SDKString>& args, Streams::BinaryInputStream in = nullptr, Streams::BinaryOutputStream out = nullptr, Streams::BinaryOutputStream error = nullptr);
+
+            public:
+                nonvirtual  const ProcessRunner& operator= (const ProcessRunner&) = delete;
 
             public:
                 /**

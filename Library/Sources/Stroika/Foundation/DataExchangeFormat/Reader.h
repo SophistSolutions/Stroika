@@ -47,7 +47,7 @@ namespace   Stroika {
                 class   _IRep;
 
             protected:
-                NO_DEFAULT_CONSTRUCTOR(Reader); // @todo may want to allow?
+                Reader () = delete; // @todo may want to allow?
 
             protected:
                 explicit Reader (shared_ptr<_IRep> rep);

@@ -36,7 +36,9 @@ namespace   Stroika {
                 public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
-                    NO_ASSIGNMENT_OPERATOR(Rep_);
+
+                public:
+                    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (Rep_);

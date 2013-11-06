@@ -40,12 +40,13 @@ namespace   {
 
 #if     qHasFeature_libcurl
 class   Connection_LibCurl::Rep_ : public _IRep {
-private:
-    NO_COPY_CONSTRUCTOR (Rep_);
-    NO_ASSIGNMENT_OPERATOR (Rep_);
 public:
     Rep_ ();
+    Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
+
+public:
+    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
 
 public:
     virtual DurationSecondsType GetTimeout () const override;

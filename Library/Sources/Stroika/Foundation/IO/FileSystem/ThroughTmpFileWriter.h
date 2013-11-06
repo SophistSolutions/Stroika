@@ -58,11 +58,11 @@ namespace   Stroika {
                 class   ThroughTmpFileWriter {
                 public:
                     ThroughTmpFileWriter (const String& realFileName, const String& tmpSuffix = L".tmp");
+                    ThroughTmpFileWriter (const ThroughTmpFileWriter&) = delete;
                     ~ThroughTmpFileWriter ();
 
-                private:
-                    NO_COPY_CONSTRUCTOR (ThroughTmpFileWriter);
-                    NO_ASSIGNMENT_OPERATOR (ThroughTmpFileWriter);
+                public:
+                    nonvirtual  const ThroughTmpFileWriter& operator= (const ThroughTmpFileWriter&) = delete;
 
                 public:
                     /**

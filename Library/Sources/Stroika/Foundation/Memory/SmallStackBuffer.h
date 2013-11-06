@@ -59,10 +59,8 @@ namespace   Stroika {
             public :
                 explicit SmallStackBuffer (size_t nElements);
                 SmallStackBuffer (const SmallStackBuffer<T, BUF_SIZE>& from);
+                SmallStackBuffer () = delete;
                 ~SmallStackBuffer ();
-
-            public:
-                NO_DEFAULT_CONSTRUCTOR(SmallStackBuffer);
 
             public:
                 nonvirtual  SmallStackBuffer<T, BUF_SIZE>&   operator= (const SmallStackBuffer<T, BUF_SIZE>& rhs);

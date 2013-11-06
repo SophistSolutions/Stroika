@@ -128,10 +128,10 @@ namespace   Stroika {
             class   TimedCache {
             public:
                 TimedCache (bool accessFreshensDate, Time::DurationSecondsType timeoutInSeconds);
+                TimedCache (const TimedCache&) = delete;
 
-            private:
-                NO_COPY_CONSTRUCTOR (TimedCache);
-                NO_ASSIGNMENT_OPERATOR (TimedCache);
+            public:
+                nonvirtual  const TimedCache& operator= (const TimedCache&) = delete;
 
             public:
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);

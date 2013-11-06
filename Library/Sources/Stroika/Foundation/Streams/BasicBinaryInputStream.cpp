@@ -21,11 +21,6 @@ using   namespace   Stroika::Foundation::Streams;
 
 class   BasicBinaryInputStream::IRep_ : public BinaryInputStream::_IRep, public Seekable::_IRep {
 public:
-    NO_DEFAULT_CONSTRUCTOR(IRep_);
-    NO_COPY_CONSTRUCTOR(IRep_);
-    NO_ASSIGNMENT_OPERATOR(IRep_);
-
-public:
     IRep_ (const Byte* start, const Byte* end)
         : fCriticalSection_ ()
         , fData_ (end - start)
@@ -38,6 +33,9 @@ public:
             fCursor_ = fData_.begin ();
         }
     }
+    IRep_ () = delete;
+    IRep_ (const IRep_&) = delete;
+    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
 
     virtual size_t          Read (Byte* intoStart, Byte* intoEnd) override {
         RequireNotNull (intoStart);

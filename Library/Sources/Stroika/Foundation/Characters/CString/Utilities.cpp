@@ -300,23 +300,14 @@ unsigned int Characters::CString::HexString2Int (const wstring& s)
 long long int Characters::CString::Private_::String2Int_ (const string& s)
 {
     using   std::numeric_limits;
-#if     qCompilerAndStdLib_Supports_strtoll
-    long long int    l   =   strtoll (s.c_str (), nullptr, 10);
-#else
-    long long int    l   =   _strtoi64 (s.c_str (), nullptr, 10);
-#endif
     // nothing needed todo to pin the value to min/max
-    return l;
+    return strtoll (s.c_str (), nullptr, 10);
 }
 
 long long int Characters::CString::Private_::String2Int_ (const wstring& s)
 {
     using   std::numeric_limits;
-#if     qCompilerAndStdLib_Supports_strtoll
     unsigned    long long int    l   =   wcstoll (s.c_str (), nullptr, 10);
-#else
-    unsigned    long long int    l   =   _wcstoi64 (s.c_str (), nullptr, 10);
-#endif
     return l;
 }
 
@@ -331,24 +322,15 @@ long long int Characters::CString::Private_::String2Int_ (const wstring& s)
 unsigned long long int Characters::CString::Private_::String2UInt_ (const string& s)
 {
     using   std::numeric_limits;
-#if     qCompilerAndStdLib_Supports_strtoll
-    unsigned    long long int    l   =   strtoull (s.c_str (), nullptr, 10);
-#else
-    unsigned    long long int    l   =   _strtoui64 (s.c_str (), nullptr, 10);
-#endif
     // nothing needed todo to pin the value to min/max
+    unsigned    long long int    l = strtoull (s.c_str (), nullptr, 10);
     return l;
 }
 
 unsigned long long int Characters::CString::Private_::String2UInt_ (const wstring& s)
 {
     using   std::numeric_limits;
-#if     qCompilerAndStdLib_Supports_strtoll
     long long int    l   =   wcstoull (s.c_str (), nullptr, 10);
-#else
-
-    long long int    l   =   _wcstoui64 (s.c_str (), nullptr, 10);
-#endif
     return l;
 }
 

@@ -51,12 +51,13 @@ namespace   Stroika {
              *  This doesn't CURRENTLY (really) support a threadpool (it has one but just puts one thread inside).
              */
             class   ConnectionManager {
-            private:
-                NO_COPY_CONSTRUCTOR (ConnectionManager);
-                NO_ASSIGNMENT_OPERATOR (ConnectionManager);
             public:
                 ConnectionManager ();
+                ConnectionManager (const ConnectionManager&) = delete;
                 ~ConnectionManager ();
+
+            public:
+                nonvirtual  const ConnectionManager& operator= (const ConnectionManager&) = delete;
 
             public:
                 nonvirtual  void    Start ();

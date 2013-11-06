@@ -44,12 +44,12 @@ namespace   Stroika {
                             typedef ReadOnlyRep::_Rep   inherited;
 
                         protected:
-                            NO_DEFAULT_CONSTRUCTOR(_Rep);
-                            NO_COPY_CONSTRUCTOR(_Rep);
-                            NO_ASSIGNMENT_OPERATOR(_Rep);
-
-                        protected:
+                            _Rep () = delete;
+                            _Rep (const _Rep&) = delete;
                             _Rep (wchar_t* start, wchar_t* end);
+
+                        public:
+                            nonvirtual  const _Rep& operator= (const _Rep&) = delete;
 
                         protected:
                             //Presume fStart is really a WRITABLE pointer

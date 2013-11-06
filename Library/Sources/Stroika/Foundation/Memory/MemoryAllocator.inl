@@ -93,14 +93,12 @@ namespace   Stroika {
             {
                 p->~OTHERT();
             }
-#if  qCompilerAndStdLib_Supports_varadic_templates
             template <typename T, typename BASE_ALLOCATOR>
             template    <typename... ARGS>
             inline  void STLAllocator<T, BASE_ALLOCATOR>::construct (pointer p, ARGS&&  ... args)
             {
                 ::new ((void*)p) T (std::forward<ARGS> (args)...);
             }
-#endif
             template <typename T, typename BASE_ALLOCATOR>
             inline  size_t  STLAllocator<T, BASE_ALLOCATOR>::max_size () const noexcept
             {

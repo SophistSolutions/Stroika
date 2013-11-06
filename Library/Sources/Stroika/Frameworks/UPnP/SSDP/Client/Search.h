@@ -43,15 +43,16 @@ namespace   Stroika {
                         class Result;
                     public:
                         Search ();
-                    public:
-                        NO_COPY_CONSTRUCTOR (Search);
-                        NO_ASSIGNMENT_OPERATOR (Search);
+                        Search (const Search&) = delete;
 
                     public:
                         /**
                          *  Its OK to destroy a searcher while running. It will silently stop the running searcher thread.
                          */
                         ~Search ();
+
+                    public:
+                        nonvirtual  const Search& operator= (const Search&) = delete;
 
                     public:
                         /**

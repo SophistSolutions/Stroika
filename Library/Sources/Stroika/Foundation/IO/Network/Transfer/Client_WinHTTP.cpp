@@ -67,15 +67,14 @@ namespace   {
             : fHandle (handle) {
             ThrowIfFalseGetLastError (fHandle != nullptr);
         }
+        AutoWinHINTERNET (const AutoWinHINTERNET&) = delete;
         ~AutoWinHINTERNET () {
             Verify (::WinHttpCloseHandle (fHandle));
         }
         operator HINTERNET () {
             return fHandle;
         }
-    private:
-        NO_COPY_CONSTRUCTOR (AutoWinHINTERNET);
-        NO_ASSIGNMENT_OPERATOR (AutoWinHINTERNET);
+        nonvirtual  const AutoWinHINTERNET& operator= (const AutoWinHINTERNET&) = delete;
     };
 }
 #endif
@@ -88,12 +87,13 @@ namespace   {
 
 #if     qHasFeature_WinHTTP
 class   Connection_WinHTTP::Rep_ : public _IRep {
-private:
-    NO_COPY_CONSTRUCTOR (Rep_);
-    NO_ASSIGNMENT_OPERATOR (Rep_);
 public:
     Rep_ ();
+    Rep_ (const Rep_&) = delete;
     virtual ~Rep_ ();
+
+public:
+    nonvirtual  const Rep_& operator= (const Rep_&) = delete;
 
 public:
     virtual DurationSecondsType GetTimeout () const override;

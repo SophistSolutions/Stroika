@@ -39,11 +39,12 @@ namespace   Stroika {
                     struct  ReadOnlyRep : String {
                         struct  _Rep : String::_IRep {
                         protected:
-                            NO_DEFAULT_CONSTRUCTOR(_Rep);
-                            NO_COPY_CONSTRUCTOR(_Rep);
-                            NO_ASSIGNMENT_OPERATOR(_Rep);
-                        protected:
+                            _Rep () = delete;
+                            _Rep (const _Rep&) = delete;
                             _Rep (const wchar_t* start, const wchar_t* end);
+
+                        public:
+                            nonvirtual  const _Rep& operator= (const _Rep&) = delete;
 
                         protected:
                             // PROTECTED INLINE UTILITY

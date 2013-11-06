@@ -45,16 +45,16 @@ namespace   Stroika {
                         class Result;
                     public:
                         Listener ();
-
-                    public:
-                        NO_COPY_CONSTRUCTOR (Listener);
-                        NO_ASSIGNMENT_OPERATOR (Listener);
+                        Listener (const Listener&) = delete;
 
                     public:
                         /**
                          *  Its OK to destroy a listener while running. It will silently stop the running listner thread.
                          */
                         ~Listener ();
+
+                    public:
+                        nonvirtual  const Listener& operator= (const Listener&) = delete;
 
                     public:
                         /**

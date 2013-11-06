@@ -51,13 +51,13 @@ namespace   Stroika {
              *
              */
             class   IRunnable {
-            private:
-                NO_COPY_CONSTRUCTOR (IRunnable);
-                NO_ASSIGNMENT_OPERATOR (IRunnable);
-
             public:
                 IRunnable ();
+                IRunnable (const IRunnable&) = delete;
                 virtual ~IRunnable ();
+
+            public:
+                nonvirtual  const IRunnable& operator= (const IRunnable&) = delete;
 
             public:
                 /**

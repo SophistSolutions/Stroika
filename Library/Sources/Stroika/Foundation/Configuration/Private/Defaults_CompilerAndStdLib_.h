@@ -49,11 +49,10 @@
 
 #elif     defined (_MSC_VER)
 
-#define _MS_VS_2k12_VER_    1700
 #define _MS_VS_2k13_VER_    1800
 
-#if      _MSC_VER < _MS_VS_2k12_VER_
-#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2012")
+#if      _MSC_VER < _MS_VS_2k13_VER_
+#pragma message ("Warning: Stroika does not support versions prior to Microsoft Visual Studio.net 2013")
 #endif
 #if      _MSC_VER > _MS_VS_2k13_VER_
 #pragma message ("Info: Stroika untested with this version of Microsoft Visual Studio.net")
@@ -175,8 +174,6 @@
 #ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
 #endif
@@ -244,37 +241,6 @@
 #endif
 
 
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_strtoll
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_strtoll
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_strtoll  (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_strtoll  1
-#endif
-#endif
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers  1
-#endif
-#endif
 
 
 
@@ -560,23 +526,6 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_ExplicitConversionOperators
-*/
-#ifndef qCompilerAndStdLib_Supports_ExplicitConversionOperators
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_ExplicitConversionOperators (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_ExplicitConversionOperators 1
-#endif
-#endif
-
-
-
-
-
-
-
 //
 // Workaround bug that the SIGNAL KILL doesn't appear to interupt the GCC implemntation of condition_variable::wait_for ()
 // -- LGP 2012-05-27
@@ -596,7 +545,7 @@
 #ifndef qCompilerAndStdLib_Supports_thread_local_keyword
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_thread_local_keyword (_MSC_VER > _MS_VS_2k13_VER_)
-#else
+#elif     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_thread_local_keyword (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #endif
 #endif
@@ -648,23 +597,6 @@
 
 
 
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_isnan
-@DESCRIPTION:   <p>Defines if the compiler stdC++/c99 library supports the std::isnan() function</p>
-*/
-#ifndef qCompilerAndStdLib_Supports_isnan
-#if     defined (_MSC_VER)
-// msvc has _isnan
-#define qCompilerAndStdLib_Supports_isnan   (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_isnan   1
-#endif
-#endif
-
-
-
-
-
 
 
 /**
@@ -706,26 +638,6 @@
 #define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS       1
 #endif
 #endif
-
-
-
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_varadic_templates
-@DESCRIPTION:   <p>Controls whether or not the compiler / standard library supports varadic templates.</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_varadic_templates)
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_varadic_templates  (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_varadic_templates  1
-#endif
-#endif
-
 
 
 
@@ -1167,8 +1079,9 @@
 
 /*
 * NB: we can lose these macros once all our compilers support the new C++ syntax.
+*       ** OBSOLETE - LOSE THESE DEFINES
+*   !!!DEPRECATED!!!
 */
-#if     qCompilerAndStdLib_Supports_ExplicitlyDeletedSpecialMembers
 #define NO_DEFAULT_CONSTRUCTOR(NAME)\
     NAME () = delete;
 #define NO_COPY_CONSTRUCTOR(NAME)\
@@ -1177,16 +1090,6 @@
     NAME (const NAMEWITHT&) = delete;
 #define NO_ASSIGNMENT_OPERATOR(NAME)\
     const NAME& operator= (const NAME&) = delete;
-#else
-#define NO_DEFAULT_CONSTRUCTOR(NAME)\
-    private:    NAME ();
-#define NO_COPY_CONSTRUCTOR(NAME)\
-    private:    NAME (const NAME&);
-#define NO_COPY_CONSTRUCTOR2(NAME,NAMEWITHT)\
-    private:    NAME (const NAMEWITHT&);
-#define NO_ASSIGNMENT_OPERATOR(NAME)\
-    private:    const NAME& operator= (const NAME&);
-#endif
 
 
 

@@ -44,12 +44,14 @@ namespace   Stroika {
             class   Finally {
             public:
                 explicit Finally (const function<void()>& cleanupCodeBlock);
-                NO_COPY_CONSTRUCTOR(Finally);
-                NO_DEFAULT_CONSTRUCTOR(Finally);
-                NO_ASSIGNMENT_OPERATOR (Finally);
+                Finally () = delete;
+                Finally (const Finally&) = delete;
 
             public:
                 ~Finally();
+
+            public:
+                nonvirtual  const Finally& operator= (const Finally&) = delete;
 
             private:
                 function<void()> fCleanupCodeBlock_;

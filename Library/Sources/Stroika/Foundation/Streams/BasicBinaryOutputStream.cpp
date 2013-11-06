@@ -21,10 +21,6 @@ using   namespace   Stroika::Foundation::Streams;
 
 class   BasicBinaryOutputStream::IRep_ : public BinaryOutputStream::_IRep, public Seekable::_IRep {
 public:
-    NO_COPY_CONSTRUCTOR(IRep_);
-    NO_ASSIGNMENT_OPERATOR(IRep_);
-
-public:
     DECLARE_USE_BLOCK_ALLOCATION(IRep_);
 
 public:
@@ -33,6 +29,8 @@ public:
         , fData_ ()
         , fCursor_ (fData_.begin ()) {
     }
+    IRep_ (const IRep_&) = delete;
+    nonvirtual  const IRep_& operator= (const IRep_&) = delete;
 
     virtual void    Write (const Byte* start, const Byte* end) override {
         Require (start != nullptr or start == end);
