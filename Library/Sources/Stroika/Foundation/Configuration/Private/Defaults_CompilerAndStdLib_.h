@@ -610,6 +610,9 @@
 // SUPPOSEDLY works in _MS_VS_2k13_VER_ -  but in VC.net 2k13RC1, It caused some regression tests to fail (crash in release build).
 // Not 100% sure but smells like compiler bug... Retest with VC.net 2k13 release build
 //  -- LGP 2013-09-30
+//
+// Worse in VC.net 2k13 released (or maybe better) - generates internal compiler error. Anyhow - leave disabled
+//
 #define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_initializer_lists   1
