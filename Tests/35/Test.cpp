@@ -42,9 +42,13 @@ namespace   {
         //
         // CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
         //
-        VerifyTestResult(not DateTime::Parse(L"7/26/1972 12:00:00 AM", Time::DateTime::ParseFormat::eCurrentLocale).empty());
+#if     defined (_MSC_VER)
+        VerifyTestResult (not DateTime::Parse (L"7/26/1972 12:00:00 AM", Time::DateTime::ParseFormat::eCurrentLocale).empty ());
+#endif
     }
 }
+
+
 
 namespace   {
 
