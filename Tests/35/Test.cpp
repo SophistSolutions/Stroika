@@ -32,6 +32,20 @@ using   Stroika::Foundation::Debug::TraceContextBumper;
 
 
 
+
+namespace   {
+    void    Test_0_Test_VarDateFromStrOnFirstTry_()
+    {
+        // TEST MUST BE FIRST - OR VERY NEAR START OF APP!
+        //
+        // Before any calls to VarDateFromStr ()...
+        //
+        // CHECK FOR qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+        //
+        VerifyTestResult(not DateTime::Parse(L"7/26/1972 12:00:00 AM", Time::DateTime::ParseFormat::eCurrentLocale).empty());
+    }
+}
+
 namespace   {
 
     void    Test_1_TestTickCountGrowsMonotonically_ ()
@@ -519,11 +533,11 @@ namespace   {
 }
 
 
-
 namespace   {
 
     void    DoRegressionTests_ ()
     {
+        Test_0_Test_VarDateFromStrOnFirstTry_();
         Test_1_TestTickCountGrowsMonotonically_ ();
         Test_2_TestTimeOfDay_ ();
         Test_3_TestDate_ ();
@@ -539,8 +553,6 @@ namespace   {
         Test_13_DateTimeRange_ ();
     }
 }
-
-
 
 
 int     main (int argc, const char* argv[])

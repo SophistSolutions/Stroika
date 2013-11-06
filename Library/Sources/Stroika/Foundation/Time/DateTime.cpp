@@ -316,6 +316,17 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) {
         return Date ();
     }
+#if     !qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+    {
+        static  bool    sDidOnce_ = false;
+        if (not sDidOnce_) {
+            DATE        d;
+            (void)::memset(&d, 0, sizeof (d));
+            ::VarDateFromStr(CComBSTR(L"7/26/1972 12:00:00 AM"), 1024, 0, &d);
+            sDidOnce_ = true;
+        }
+    }
+#endif
     DATE        d;
     (void)::memset (&d, 0, sizeof (d));
     try {
