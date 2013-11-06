@@ -278,8 +278,8 @@ namespace   {
         }
         {
             //VerifyTestResult(DateTime::Parse(L"2010-01-01", DateTime::ParseFormat::eCurrentLocale).GetDate().GetYear() == Time::Year(2010));
-            DateTime    now = DateTime::Now();
-            Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale))
+            DateTime    now = DateTime::Now ();
+            Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
         }
     }
 
