@@ -19,6 +19,8 @@
  *
  *      @todo   Better Document new Module Dependency code, and verify there is as little wasted overhead
  *              as possible...
+ *
+ *      @todo   Review SharedStaticData<> module - and see if we can use that here or which works better?
  */
 
 
