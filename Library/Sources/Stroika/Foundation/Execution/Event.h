@@ -21,6 +21,8 @@
 
 
 /**
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  * TODO:
  *      @todo   Consider if there is a need for timed mutexes.
  *
