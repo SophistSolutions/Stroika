@@ -178,7 +178,7 @@ AppTempFileManager::AppTempFileManager ()
 
 AppTempFileManager::~AppTempFileManager ()
 {
-    DbgTrace ("AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
+    DbgTrace (L"AppTempFileManager::DTOR: clearing '%s'", fTmpDir.c_str ());
 #if     qPlatform_Windows
     DeleteAllFilesInDirectory (fTmpDir, true);
     Verify (::RemoveDirectoryW (fTmpDir.c_str ()));
@@ -208,7 +208,7 @@ String AppTempFileManager::GetTempFile (const String& fileNameBase)
             HANDLE  f = ::CreateFileW (s.c_str (), FILE_ALL_ACCESS, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
             if (f != nullptr) {
                 ::CloseHandle (f);
-                DbgTrace (SDKSTR ("AppTempFileManager::GetTempFile (): returning '%s'"), s.c_str ());
+                DbgTrace (L"AppTempFileManager::GetTempFile (): returning '%s'", s.c_str ());
                 return s;
             }
         }
@@ -231,7 +231,7 @@ String AppTempFileManager::GetTempDir (const String& fileNameBase)
         s += String::FromAscii (buf);
         if (not Directory (s).Exists ()) {
             CreateDirectory (s, true);
-            DbgTrace ("AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
+            DbgTrace (L"AppTempFileManager::GetTempDir (): returning '%s'", s.c_str ());
             return s;
         }
     }
