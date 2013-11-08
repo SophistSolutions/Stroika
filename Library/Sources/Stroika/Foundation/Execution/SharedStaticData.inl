@@ -56,7 +56,6 @@ namespace   Stroika {
             T*  SharedStaticData<T>::Get ()
             {
                 // no need to lock since no way to destroy value while 'this' object still exists
-                // return value gauranteed lifetime at least as long as 'this' object
                 Ensure (sCountUses_ >= 1);
                 EnsureNotNull (sOnceObj_);
                 return sOnceObj_;
