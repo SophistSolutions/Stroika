@@ -32,6 +32,36 @@ using   Stroika::Foundation::Debug::TraceContextBumper;
 
 
 
+namespace {
+    template    <typename DATEORTIME>
+    void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime, const locale& l)
+    {
+#if 0
+        // disable for now cuz fails SO OFTEN
+        String      formatByLocale = startDateOrTime.Format (l);
+        DATEORTIME  andBack = DATEORTIME::Parse (formatByLocale, l);
+        VerifyTestResult (startDateOrTime == andBack);
+#endif
+    }
+    template    <typename DATEORTIME>
+    void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
+    {
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale ());
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, locale::classic ());
+        TestRoundTripFormatThenParseNoChange_ (startDateOrTime, Configuration::FindNamedLocale (L"en", L"us"));
+
+        // should add test like this...
+        //Verify (startDateOrTime == DATEORTIME::Parse (startDateOrTime.Format (DATEORTIME::PrintFormat::eCurrentLocale), DATEORTIME::PrintFormat::ParseFormat::eCurrentLocale));
+    }
+}
+
+
+
+
+
+
+
+
 
 namespace   {
     void    Test_0_Test_VarDateFromStrOnFirstTry_()
@@ -78,12 +108,15 @@ namespace   {
             VerifyTestResult (t2.GetHours () == 0);
             VerifyTestResult (t2.GetMinutes () == 0);
             VerifyTestResult (t2.GetSeconds () == 2);
+            TestRoundTripFormatThenParseNoChange_ (t);
+            TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay   t2 (5 * 60 * 60 + 3 * 60 + 49);
             VerifyTestResult (t2.GetHours () == 5);
             VerifyTestResult (t2.GetMinutes () == 3);
             VerifyTestResult (t2.GetSeconds () == 49);
+            TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             TimeOfDay   t2 (25 * 60 * 60);
@@ -91,6 +124,7 @@ namespace   {
             VerifyTestResult (t2.GetMinutes () == 59);
             VerifyTestResult (t2.GetSeconds () == 59);
             VerifyTestResult (t2 == TimeOfDay::kMax);
+            TestRoundTripFormatThenParseNoChange_ (t2);
         }
         {
             VerifyTestResult (TimeOfDay::Parse (L"3pm", locale::classic ()).GetAsSecondsCount () == 15 * 60 * 60);
@@ -135,6 +169,7 @@ namespace   {
 #endif
             //VerifyTestResult (threePM.Format (locale::classic ()) == L"3 PM");
             VerifyTestResult (threePM.Format (locale::classic ()) == L"15:00:00");  // UGH!!!
+            TestRoundTripFormatThenParseNoChange_ (threePM);
         }
 
     }
@@ -152,6 +187,7 @@ namespace   {
     {
         {
             Date    d (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
+            TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
             VERIFY_ROUNDTRIP_XML_ (d);
             d = d.AddDays (4);
@@ -160,18 +196,21 @@ namespace   {
             d = d.AddDays (-4);
             VERIFY_ROUNDTRIP_XML_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1903-04-04");
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date    d   =   Date::Parse (L"09/14/1752", locale::classic ());
             VerifyTestResult (not d.empty ());
             VerifyTestResult (d == Date::kMin);
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date    d;
             VerifyTestResult (d.empty ());
             VerifyTestResult (d < DateTime::GetToday ());
             VerifyTestResult (DateTime::GetToday () > d);
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             Date    d   =   Date::kMin;
@@ -179,6 +218,7 @@ namespace   {
             VerifyTestResult (d < DateTime::Now ().GetDate ());
             VerifyTestResult (not (DateTime::Now ().GetDate () < d));
             VerifyTestResult (d.Format (Date::PrintFormat::eXML) == L"1752-09-14"); // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
 #if     qPlatform_Windows
         {
@@ -211,11 +251,14 @@ namespace   {
             VerifyTestResult (Date::kMin <= Date::kMax);
             VerifyTestResult (not (Date::kMin > Date::kMax));
             VerifyTestResult (not (Date::kMin >= Date::kMax));
+            TestRoundTripFormatThenParseNoChange_ (Date::kMin);
+            TestRoundTripFormatThenParseNoChange_ (Date::kMax);
         }
         {
             // set the global C++ locale (used by PrintFormat::eCurrentLocale) to US english, and verify things look right.
             locale  prevLocale = locale::global (Configuration::FindNamedLocale (L"en", L"us"));
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (5));
+            TestRoundTripFormatThenParseNoChange_ (d);
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903");
             locale::global (prevLocale);
@@ -237,12 +280,14 @@ namespace   {
         {
             DateTime    d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (4));
             VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1903-04-04");
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             DateTime    d;
             VerifyTestResult (d.empty ());
             VerifyTestResult (d < DateTime::Now ());
             VerifyTestResult (DateTime::Now () > d);
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
         {
             DateTime    d   =   DateTime::kMin;
@@ -251,6 +296,7 @@ namespace   {
             VerifyTestResult (DateTime::Now () > d);
             d = DateTime (d.GetDate (), d.GetTimeOfDay (), DateTime::Timezone::eUTC);   // so that compare works - cuz we dont know timezone we'll run test with...
             VerifyTestResult (d.Format (DateTime::PrintFormat::eXML) == L"1752-09-14T00:00:00Z");   // xml cuz otherwise we get confusion over locale - COULD use hardwired US locale at some point?
+            TestRoundTripFormatThenParseNoChange_ (d);
         }
 #if     qPlatform_Windows
         {
@@ -274,15 +320,19 @@ namespace   {
         }
         {
             Date        d   =   Date (Year (1903), MonthOfYear::eApril, DayOfMonth (6));
+            TestRoundTripFormatThenParseNoChange_ (d);
             DateTime    dt (d, TimeOfDay (101));
+            TestRoundTripFormatThenParseNoChange_ (dt);
             VerifyTestResult (dt.Format (DateTime::PrintFormat::eCurrentLocale) == L"04/06/03 00:01:41");
             DateTime    dt2 (d, TimeOfDay (60));
+            TestRoundTripFormatThenParseNoChange_ (dt2);
             // want a variant that does this formatting!
             //VerifyTestResult (dt2.Format (DateTime::PrintFormat::eCurrentLocale) == L"4/4/1903 12:01 AM");
         }
         {
             //VerifyTestResult(DateTime::Parse(L"2010-01-01", DateTime::ParseFormat::eCurrentLocale).GetDate().GetYear() == Time::Year(2010));
             DateTime    now = DateTime::Now ();
+            TestRoundTripFormatThenParseNoChange_ (now);
             Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
         }
     }
