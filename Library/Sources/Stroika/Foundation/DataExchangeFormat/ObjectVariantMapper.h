@@ -276,6 +276,7 @@ namespace   Stroika {
                  *      o   Optional<T>
                  *      o   Range<T,TRAITS>
                  *      o   Sequence<T>
+                 *      o   Set<T>
                  *  ###NYI    o   T[N]      -- so far cannot get to work
                  *      o   enum types (with eSTART/eEND @see Stroika_Define_Enum_Bounds for bounds checking)
                  *
@@ -295,6 +296,8 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>&);
+                template    <typename T>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Set<T>&);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
 #if 0

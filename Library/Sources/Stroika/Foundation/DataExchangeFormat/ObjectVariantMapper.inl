@@ -143,6 +143,29 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
             }
+            template    <typename T>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Set<T>&)
+            {
+                auto toVariantMapper = [](const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const Set<T>*  actualMember = reinterpret_cast<const Set<T>*> (fromObjOfTypeT);
+                    for (auto i : *actualMember) {
+                        s.Append (mapper->FromObject<T> (i));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [](const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Sequence<VariantValue> s = d.As<Sequence<VariantValue>> ();
+                    Set<T>*    actualInto = reinterpret_cast<Set<T>*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (auto i : s) {
+                        actualInto->Add (mapper->ToObject<T> (i));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Set<T>), toVariantMapper, fromVariantMapper);
+            }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
