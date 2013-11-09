@@ -527,6 +527,7 @@ namespace   {
             Mapping<int, int>       fMapping1;
             Sequence<int>           fSequence1;
             int                     fBasicArray1[5];
+            Set<int>                fSet1_;
 
             SharedContactsConfig_ ()
                 : fInt1 (3)
@@ -534,7 +535,7 @@ namespace   {
                 , fMapping1 ()
                 , fSequence1 ()
                 //, fBasicArray1 ()
-            {
+                , fSet1_ () {
                 memset(&fBasicArray1, 0, sizeof (fBasicArray1));
             }
 
@@ -546,7 +547,8 @@ namespace   {
                     fInt1 == rhs.fInt1 and
                     fInt2 == rhs.fInt2 and
                     fMapping1 == rhs.fMapping1 and
-                    fSequence1 == rhs.fSequence1
+                    fSequence1 == rhs.fSequence1 and
+                    fSet1_ == rhs.fSet1_
                     ;
             }
         };
@@ -559,6 +561,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
         });
 #else
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
@@ -567,6 +570,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
         };
         mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
 #endif
@@ -574,6 +578,7 @@ namespace   {
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
+        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
 #if 1
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Array<int, 5> ());
 #else
@@ -586,6 +591,7 @@ namespace   {
         tmp.fSequence1.Append (5);
         tmp.fMapping1.Add (3, 5);
         tmp.fBasicArray1[3] = 5;
+        tmp.fSet1_.Add (193);
         VariantValue v = mapper.FromObject  (tmp);
 
         Streams::BasicBinaryInputOutputStream   tmpStream;
