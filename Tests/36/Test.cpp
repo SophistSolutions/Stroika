@@ -64,6 +64,15 @@ namespace   {
             VerifyTestResult (r.Contains (3));
         }
         {
+            DiscreteRange<int> r;
+            VerifyTestResult (r.empty ());
+        }
+        {
+            DiscreteRange<int> r (3, 3);
+            VerifyTestResult (not r.empty ());
+            VerifyTestResult (r.size () == 1);
+        }
+        {
             int nItemsHit = 0;
             int lastItemHit = 0;
             for (auto i : DiscreteRange<int> (3, 5)) {

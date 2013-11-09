@@ -155,7 +155,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  DiscreteRange () with no arguments produces an empty sequence.
                  */
+                explicit DiscreteRange ();
                 explicit DiscreteRange (T begin, T end);
                 explicit DiscreteRange (const Memory::Optional<T>& begin, const Memory::Optional<T>& end);
 
@@ -165,6 +167,10 @@ namespace   Stroika {
                 static  DiscreteRange<T, TRAITS> FullRange ();
 
             public:
+                /**
+                 *  DiscreteRange<>::emty () and Iterable<T>::empty () have different definitions, but they always coincide in
+                 *  value.
+                 */
                 nonvirtual  bool empty () const;
             };
 

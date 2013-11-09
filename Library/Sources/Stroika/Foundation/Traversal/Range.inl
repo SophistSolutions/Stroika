@@ -86,7 +86,7 @@ namespace   Stroika {
                     return true;
                 }
                 else if (fBegin_ == fEnd_) {
-                    return TRAITS::kLowerBoundOpenness == Openness::eClosed or TRAITS::kUpperBoundOpenness == Openness::eClosed;
+                    return TRAITS::kLowerBoundOpenness == Openness::eOpen and TRAITS::kUpperBoundOpenness == Openness::eOpen;
                 }
                 return false;
             }

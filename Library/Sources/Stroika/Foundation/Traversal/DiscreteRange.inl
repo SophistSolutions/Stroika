@@ -25,6 +25,11 @@ namespace   Stroika {
                 T fCur;
                 T fEnd;
                 bool fAtEnd;
+                MyIteratorRep_ ()
+                    : fCur (TRAITS::kLowerBound)
+                    , fEnd (TRAITS::kLowerBound)
+                    , fAtEnd (true) {
+                }
                 MyIteratorRep_ (T start, T end)
                     : fCur (start)
                     , fEnd (end)
@@ -65,26 +70,54 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
-            struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep  {
-                DECLARE_USE_BLOCK_ALLOCATION(MyIteratableRep_);
-                T fStart;
-                T fEnd;
+            struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
+                DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
+                T       fStart;
+                T       fEnd;
+                bool    fForcedEnd;
+                MyIteratableRep_ ()
+                    : fStart (TRAITS::kLowerBound)
+                    , fEnd (TRAITS::kLowerBound)
+                    , fForcedEnd (true) {
+                }
                 MyIteratableRep_ (T start, T end)
                     : fStart (start)
-                    , fEnd (end) {
+                    , fEnd (end)
+                    , fForcedEnd (false) {
                 }
                 virtual typename Iterable<T>::_SharedPtrIRep      Clone () const {
-                    return typename Iterable<T>::_SharedPtrIRep(new MyIteratableRep_ (fStart, fEnd));
+                    if (fForcedEnd) {
+                        return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ());
+                    }
+                    else {
+                        return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (fStart, fEnd));
+                    }
                 }
                 virtual Iterator<T>         MakeIterator () const {
-                    return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
+                    if (fForcedEnd) {
+                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));
+                    }
+                    else {
+                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
+                    }
                 }
                 virtual size_t              GetLength () const {
                     typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
-                    return static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
+                    if (fForcedEnd) {
+                        return static_cast<SignedDifferenceType> (0);
+                    }
+                    else {
+                        return 1 + static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
+                    }
                 }
                 virtual bool                IsEmpty () const {
-                    return fStart == fEnd;
+                    if (fForcedEnd) {
+                        return true;
+                    }
+                    else {
+                        return false;
+                        //return fStart == fEnd;
+                    }
                 }
                 virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const {
                     return this->_Apply (doToElement);
@@ -100,6 +133,12 @@ namespace   Stroika {
              ***************************** DiscreteRange<T> *********************************
              ********************************************************************************
              */
+            template    <typename T, typename TRAITS>
+            DiscreteRange<T, TRAITS>::DiscreteRange ()
+                : inherited_RangeType ()
+                , Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ()))
+            {
+            }
             template    <typename T, typename TRAITS>
             DiscreteRange<T, TRAITS>::DiscreteRange (T begin, T end)
                 : inherited_RangeType (begin, end)
@@ -120,6 +159,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  bool DiscreteRange<T, TRAITS>::empty () const
             {
+                Ensure (inherited_RangeType::empty () == Iterable<T>::empty ());
                 return inherited_RangeType::empty ();
             }
 
