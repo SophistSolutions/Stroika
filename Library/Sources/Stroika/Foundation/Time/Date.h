@@ -250,8 +250,13 @@ namespace   Stroika {
                 };
 
             public:
+                /*
+                 * Note that for the consumedCharsInStringUpTo overload, the consumedCharsInStringUpTo is filled in with the position after the last
+                 * character read (so before the next character to be read).
+                 */
                 static  Date    Parse (const String& rep, ParseFormat pf);
                 static  Date    Parse (const String& rep, const locale& l);
+                static  Date    Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo);
 #if     qPlatform_Windows
                 static  Date    Parse (const String& rep, LCID lcid);
 #endif

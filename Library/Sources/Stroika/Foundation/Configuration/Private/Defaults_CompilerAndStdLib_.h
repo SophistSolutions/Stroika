@@ -130,6 +130,22 @@
 
 
 
+
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
+#if   defined (_MSC_VER)
+#define qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900     (_MSC_VER > _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900     1
+#endif
+#endif
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
 @DESCRIPTION:   <p></p>

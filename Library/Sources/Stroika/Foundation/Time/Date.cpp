@@ -304,17 +304,43 @@ Date    Date::Parse (const String& rep, ParseFormat pf)
 
 Date    Date::Parse (const String& rep, const locale& l)
 {
+    size_t  consumedCharsInStringUpTo = 0;
+    return Date::Parse (rep, l, &consumedCharsInStringUpTo);
+}
+
+namespace {
+    size_t ComputeIdx_ (const istreambuf_iterator<wchar_t>& s, const istreambuf_iterator<wchar_t>& c)
+    {
+        size_t result = 0;
+        for (auto i = s; i != c; ++i, ++result)
+            ;
+        return result;
+    }
+}
+Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsInStringUpTo)
+{
+    RequireNotNull (consumedCharsInStringUpTo);
     if (rep.empty ()) {
         return Date ();
     }
     const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
-    ios::iostate state  =   ios::goodbit;
+    ios::iostate state = ios::goodbit;
     wistringstream iss (rep.As<wstring> ());
     istreambuf_iterator<wchar_t> itbegin (iss);  // beginning of iss
     istreambuf_iterator<wchar_t> itend;          // end-of-stream
     tm when;
     memset (&when, 0, sizeof (when));
-    tmget.get_date (itbegin, itend, iss, state, &when);
+    istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
+#if     !qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
+    if ((state & ios::failbit) and when.tm_year >= 1752 and when.tm_year < 1900) {
+        // ignore fail bit
+        state = ios::goodbit;
+    }
+#endif
+    if (state & ios::failbit) {
+        Execution::DoThrow (FormatException ());
+    }
+    *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
 #if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
     // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
     // -- LGP 2011-10-09
@@ -448,7 +474,7 @@ String Date::Format (const locale& l) const
         return String ();
     }
 #if     qDebug && qCompilerAndStdLib_SupportsLocaleTM_put && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
-	TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
+    TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     // http://new.cplusplus.com/reference/std/locale/time_put/put/
     const time_put<wchar_t>& tmput = use_facet <time_put<wchar_t>> (l);
