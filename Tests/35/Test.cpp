@@ -32,16 +32,17 @@ using   Stroika::Foundation::Debug::TraceContextBumper;
 
 
 
+
+
+
 namespace {
     template    <typename DATEORTIME>
     void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime, const locale& l)
     {
-#if 0
         // disable for now cuz fails SO OFTEN
         String      formatByLocale = startDateOrTime.Format (l);
         DATEORTIME  andBack = DATEORTIME::Parse (formatByLocale, l);
         VerifyTestResult (startDateOrTime == andBack);
-#endif
     }
     template    <typename DATEORTIME>
     void    TestRoundTripFormatThenParseNoChange_ (DATEORTIME startDateOrTime)
@@ -56,7 +57,36 @@ namespace {
 }
 
 
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_    1
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_Date_         0
+#define qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_     0
 
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_ForTimeOfDay_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (TimeOfDay startDateOrTime)
+    {
+    }
+}
+#endif
+
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_Date_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (Date startDateOrTime)
+    {
+    }
+}
+#endif
+
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_
+namespace {
+    template    <>
+    void    TestRoundTripFormatThenParseNoChange_ (DateTime startDateOrTime)
+    {
+    }
+}
+#endif
 
 
 
