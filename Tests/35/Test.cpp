@@ -61,7 +61,7 @@ namespace {
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_Date_         0
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_DateTime_     0
 
-#if     !qSupport_TestRoundTripFormatThenParseNoChange_ForTimeOfDay_
+#if     !qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_
 namespace {
     template    <>
     void    TestRoundTripFormatThenParseNoChange_ (TimeOfDay startDateOrTime)
