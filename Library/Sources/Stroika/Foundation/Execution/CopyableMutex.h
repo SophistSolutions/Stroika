@@ -39,7 +39,7 @@ namespace   Stroika {
 
             /**
              *  Normal std::mutex instances are not copyable. But sometimes its handy to be able to expose a
-             *  mutex to a number of different peices of code, those other peices of code must be told what
+             *  mutex to a number of different pieces of code, those other peices of code must be told what
              *  mutex to share.
              *
              *  In essence - CopyableMutex simple creates a pointer to the mutex and copies that pointer, but then
