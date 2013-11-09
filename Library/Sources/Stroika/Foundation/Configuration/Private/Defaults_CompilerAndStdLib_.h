@@ -112,6 +112,22 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_SupportsLocaleTM_put
+@DESCRIPTION:   <p></p>
+*/
+#ifndef qCompilerAndStdLib_SupportsLocaleTM_put
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_SupportsLocaleTM_put     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#elif   defined (_MSC_VER)
+// MSFT tries to support this but its buggy so disable usage
+#define qCompilerAndStdLib_SupportsLocaleTM_put     (_MSC_VER > _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_SupportsLocaleTM_put     1
+#endif
+#endif
+
+
 
 
 /*
