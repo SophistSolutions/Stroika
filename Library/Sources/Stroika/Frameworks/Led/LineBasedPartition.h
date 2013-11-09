@@ -10,7 +10,7 @@
 @MODULE:    LineBasedPartition
 @DESCRIPTION:
         <p>A LineBasedPartition is a concrete @'Partition' subclass in which the character '\n' is used to break
-    up the text into peices (partition elements). This is the most basic, default, standard kind of Partition.</p>
+    up the text into pieces (partition elements). This is the most basic, default, standard kind of Partition.</p>
  */
 
 

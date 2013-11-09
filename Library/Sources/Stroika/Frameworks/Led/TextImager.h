@@ -173,7 +173,7 @@ namespace   Stroika {
                     perform several operations correctly. E.G. to invalidate part of the screen, it must indirectly
                     call on code to check the @'TextStore', or the @'Partition'.</p>
                         <p>As part of code re-use, during the setup process, and part of the mechanism of providing default
-                    objects for many of these peices, we call SetThisOrThat() methods which invoke various InvalidateThisOrThat()
+                    objects for many of these pieces, we call SetThisOrThat() methods which invoke various InvalidateThisOrThat()
                     methods, which in turn may occasionally try to compute something (like the max# of rows in a line). These
                     sorts of errors are innocuous, but must be handled somehow. We could either write the code to be friendly of
                     such uninitiualized variables/values, or to throw like this. My inclination is that throwing will be a more
