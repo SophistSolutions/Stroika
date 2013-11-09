@@ -34,6 +34,15 @@ using   Debug::TraceContextBumper;
 
 
 
+/*
+*  Subtle implementation note:
+*    http://www.cplusplus.com/reference/ctime/tm/
+*
+*          tm.year is years  since 1900!
+*/
+
+
+
 
 #if     qPlatform_Windows
 namespace   {
