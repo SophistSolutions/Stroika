@@ -74,7 +74,7 @@ sub	DoHelp_
 ### Initial defaults before looking at command-line arguments
 sub	SetInitialDefaults_
 {
-	if ("$^O" eq "linux") {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 		$PROJECTPLATFORMSUBDIR = 'Linux';
 	}
 	if ("$^O" eq "cygwin") {
@@ -119,10 +119,10 @@ sub	SetInitialDefaults_
 		}
 	}
 
-	if ("$^O" eq "linux" && -e '/usr/include/openssl/conf.h') {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/openssl/conf.h') {
 		$ENABLE_OPENSSL = 1;
 	}
-	if ("$^O" eq "linux" && -e '/usr/include/curl/curl.h') {
+	if (("$^O" eq "linux") or ("$^O" eq "darwin") && -e '/usr/include/curl/curl.h') {
 		$ENABLE_LIBCURL = 1;
 	}
 	if ("$^O" eq "cygwin") {
