@@ -4,6 +4,7 @@
 #ifndef _Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_
 #define _Stroika_Foundation_Configuration_Private_Defaults_CompilerAndStdLib_h_ 1
 
+
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
  * Its used by StroikaConfig.h - optionally included there -
@@ -11,8 +12,9 @@
  */
 
 
-
 #if     defined(__cplusplus)
+
+
 
 
 
@@ -25,12 +27,8 @@
  */
 
 #if     defined (__clang__)
-/////////////////////////////////////// DRAFT SUPPORT FOR CLANG++--- ALMOST WORKING - BUT NOT QUITE...
 
 // Must check CLANG first, since CLANG also defines GCC
-//#define __clang_major__ 3
-//#define __clang_minor__ 0
-//#define __clang_patchlevel__ 0
 #if     (__clang_major__ < 3) || (__clang_major__ == 3 && (__clang_minor__ < 4))
 #pragma message ("Warning: Stroika does not support versions prior to clang++ 3.4")
 #endif
@@ -77,10 +75,6 @@
 
 
 
-
-
-
-
 /*
  *******************************************************************
  *******************************************************************
@@ -93,8 +87,6 @@
 
 
 
-
-
 /*
 @CONFIGVAR:     qHas_Syslog
 @DESCRIPTION:   <p>tmphack - goes someplace else... -LGP 2011-09-27 </p>
@@ -102,11 +94,6 @@
 #ifndef qHas_Syslog
 #define qHas_Syslog     qPlatform_POSIX
 #endif
-
-
-
-
-
 
 
 
@@ -131,7 +118,6 @@
 
 
 
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
 @DESCRIPTION:   <p></p>
@@ -143,6 +129,8 @@
 #define qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900     1
 #endif
 #endif
+
+
 
 
 
@@ -178,10 +166,6 @@
 
 
 
-
-
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_stdatomic_load_exchange
 @DESCRIPTION:   <p></p>
@@ -198,7 +182,6 @@
 
 
 
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_ConstructorDelegation
 @DESCRIPTION:   <p></p>
@@ -210,9 +193,6 @@
 #define qCompilerAndStdLib_Supports_ConstructorDelegation   1
 #endif
 #endif
-
-
-
 
 
 
@@ -255,9 +235,6 @@
 
 
 
-
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
 @DESCRIPTION:   <p></p>
@@ -271,7 +248,6 @@
 #endif
 
 #endif
-
 
 
 
@@ -293,8 +269,18 @@
 
 
 
-
-
+/*
+@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
+@DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
+*               numbers produces nan/#IND... Workraround is to just do bogus early use.
+*/
+#ifndef qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
+#if     defined (_MSC_VER)
+#define qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug   0
+#endif
+#endif
 
 
 
@@ -320,10 +306,6 @@
 
 
 
-
-
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_regex
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
@@ -341,6 +323,7 @@
 #endif
 
 #endif
+
 
 
 
@@ -381,23 +364,19 @@
 
 
 
-
-
-
 /**
 @CONFIGVAR:     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
 @DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
 */
 #ifndef qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+
 #if     defined (__clang__)
 #define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
 #else
 #define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors        1
 #endif
+
 #endif
-
-
-
 
 
 
@@ -453,24 +432,6 @@
 
 
 
-
-#if 0
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_TemplateUsingEquals
-@DESCRIPTION:   <p>Unclear if my usage is right, and what compiler purports to support it.
-                Definetely not msvc 2010</p>
-*/
-#ifndef qCompilerAndStdLib_Supports_TemplateUsingEquals
-#define qCompilerAndStdLib_Supports_TemplateUsingEquals 0
-#endif
-#endif
-
-
-
-
-
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
 @DESCRIPTION:
@@ -478,11 +439,13 @@
                 correct code.
 */
 #ifndef qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+
 #if     defined (__clang__)
 #define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
 #else
 #define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     1
 #endif
+
 #endif
 
 
@@ -526,6 +489,7 @@
 @DESCRIPTION:
 */
 #ifndef qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+
 #if     defined (__clang__)
 #define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
 #elif   defined (__GNUC__)
@@ -533,10 +497,8 @@
 #else
 #define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     1
 #endif
+
 #endif
-
-
-
 
 
 
@@ -546,13 +508,14 @@
 @CONFIGVAR:     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
 */
 #ifndef qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
+
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #else
 #define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates    1
 #endif
-#endif
 
+#endif
 
 
 
@@ -570,6 +533,7 @@
 #ifndef qEVENT_GCCTHREADS_LINUX_WAITBUG
 #define qEVENT_GCCTHREADS_LINUX_WAITBUG     (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #endif
+
 
 
 
@@ -604,7 +568,6 @@
 
 
 
-
 #ifndef qCompilerAndStdLib_Supports_TempalteAlias_n2258
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER >= _MS_VS_2k13_VER_)
@@ -612,6 +575,7 @@
 #define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
 #endif
 #endif
+
 
 
 
@@ -625,7 +589,6 @@
 #define qCompilerAndStdLib_thread_local_initializersSupported (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
 #endif
 #endif
-
 
 
 
@@ -653,9 +616,6 @@
 
 
 
-
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
 @DESCRIPTION:   Not sure if this is a gcc compiler bug or not - but seems wierd
@@ -670,11 +630,6 @@
 #define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS       1
 #endif
 #endif
-
-
-
-
-
 
 
 
@@ -696,8 +651,6 @@
 
 
 
-
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
 @DESCRIPTION:   GCC 4.6 issues misleading warnings (errors without -fpermissive) without this
@@ -709,9 +662,6 @@
 #define qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue     1
 #endif
 #endif
-
-
-
 
 
 
@@ -733,7 +683,6 @@
 
 
 
-
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
 @DESCRIPTION:   <p></p>
@@ -745,9 +694,6 @@
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast     qCompilerAndStdLib_Supports_lambda_default_argument
 #endif
 #endif
-
-
-
 
 
 
@@ -858,7 +804,6 @@
 
 
 
-
 #ifndef qCompilerAndStdLib_gcc_useless_no_return_warning
 #if     defined (__GNUC__) && !defined (__clang__)
 // just early 4.6 builds like using on ARM for re-Vision
@@ -873,6 +818,7 @@
 
 
 
+
 #ifndef qCompilerAndStdLib_gcc_useless_varargs_warning
 #if     defined (__GNUC__) && !defined (__clang__)
 // just early 4.6 builds like using on ARM for re-Vision
@@ -883,6 +829,7 @@
 #define qCompilerAndStdLib_gcc_useless_varargs_warning       0
 #endif
 #endif
+
 
 
 
@@ -906,6 +853,7 @@
 
 
 
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
 @DESCRIPTION:   <p></p>
@@ -917,7 +865,6 @@
 #define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       0
 #endif
 #endif
-
 
 
 
@@ -945,6 +892,7 @@
 
 
 
+
 /*
  *******************************************************************
  *******************************************************************
@@ -963,6 +911,9 @@
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
 #endif
+
+
+
 
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(_MSC_VER)
@@ -998,10 +949,13 @@
 
 
 
+
 #if     !qCompilerAndStdLib_Supports_constexpr
 // This works as an adequate workaround pretty often
 #define constexpr   const
 #endif
+
+
 
 
 
@@ -1012,11 +966,16 @@
 #endif
 
 
+
+
+
 // If final is not supported, just stubbing it out but leaving it there for
 // compilers that do support it, and/or documentation purposes
 #if     !qCompilerAndStdLib_Supports_final
 #define final
 #endif
+
+
 
 
 
@@ -1027,7 +986,6 @@
 #define thread_local    __declspec(thread)
 #endif
 #endif
-
 
 
 
@@ -1072,6 +1030,7 @@
 
 
 
+
 /*
  *   Sometimes its handy to mark a line of code as a no-op - so its arguments are not executed (as with
  * trace macros).
@@ -1083,6 +1042,7 @@
 #define _NoOp_(...)
 #endif
 #endif
+
 
 
 
@@ -1101,6 +1061,33 @@
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     enum  { NAME = static_cast<TYPE> (VALUE) };
 #endif
+
+
+
+
+
+#if     qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
+#define FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA()\
+    namespace {\
+        struct _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_ {\
+            double f ()\
+            {\
+                return 1.0;\
+            }\
+            double  MatchWord_ ()\
+            {\
+                double ttt = f ();\
+                return ttt;\
+            }\
+            _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_ ()\
+            {\
+                double x = MatchWord_ ();\
+            }\
+        } _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_data_; \
+    }
+#endif
+
+
 
 
 
