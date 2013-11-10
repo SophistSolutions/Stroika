@@ -13,7 +13,7 @@ if ($BLD_TRG eq '') {
 print ("Building library...\n");
 
 my $useBld = lc ($BLD_TRG);
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	if ($useBld eq "build") {
 		$useBld = "all";
 	}

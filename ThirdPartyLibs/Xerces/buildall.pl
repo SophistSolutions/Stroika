@@ -17,7 +17,7 @@ my $SLINKDIRNAME	=		$BASENAME;
 # DOS delete file issues) - and slink doesnt really work except in cygwin tools
 my $DoCreateSymLink = 0;
 
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	$DoCreateSymLink = 1;
 }
 
@@ -103,7 +103,7 @@ sub BuildVCDotNet
 
 
 
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	if (-e "CURRENT/config.status") {
 		print ("No need to re-Configure Xerces\n");
 	}
@@ -116,7 +116,7 @@ if ("$^O" eq "linux") {
 }
 
 print ("Building Xerces...\n");
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	system ("make --directory CURRENT --no-print-directory -s all");
 }
 else {

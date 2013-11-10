@@ -25,7 +25,7 @@ my $SLINKDIRNAME	=		$BASENAME;
 # DOS delete file issues) - and slink doesnt really work except in cygwin tools
 my $DoCreateSymLink = 0;
 
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	$DoCreateSymLink = 1;
 }
 
@@ -84,7 +84,7 @@ sub	CopyBuilds2Out
 
 
 #REM - only reconfigure if we just did the extract
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	#NB: we disable ICO and CURL because these gave some problem with Gentoo (link error), and
 	#	not worth tracking down further cuz I don't think we need either -- LGP 2011-09-27
 	unless (-e "CURRENT/CONFIG.OUT") {

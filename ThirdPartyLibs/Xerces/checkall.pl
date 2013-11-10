@@ -9,7 +9,7 @@ my $REL32_LIB;
 my $DBG64_LIB;
 my $REL64_LIB;
 
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	#
 	#for now seems to build just one lib...
 	#

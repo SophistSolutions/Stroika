@@ -3,7 +3,7 @@
 require "../ScriptsLib/ConfigurationReader.pl";
 
 print ("Checking Library...\n");
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	system ("cd Projects/Linux; perl checkall.pl");
 }
 else {
