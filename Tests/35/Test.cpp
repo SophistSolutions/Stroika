@@ -58,7 +58,7 @@ namespace {
 
 
 // Skip some locale tests cuz so little works
-#define	qTestLocaleCode_	0
+#define qTestLocaleCode_    0
 
 
 #define qSupport_TestRoundTripFormatThenParseNoChange_For_TimeOfDay_    0
@@ -367,8 +367,8 @@ namespace   {
             //VerifyTestResult(DateTime::Parse(L"2010-01-01", DateTime::ParseFormat::eCurrentLocale).GetDate().GetYear() == Time::Year(2010));
             DateTime    now = DateTime::Now ();
             TestRoundTripFormatThenParseNoChange_ (now);
-#if		qTestLocaleCode_ && (_MSC_VER >= _MS_VS_2k13_VER_)
-			Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
+#if     qTestLocaleCode_ && (_MSC_VER >= _MS_VS_2k13_VER_)
+            Verify (now == DateTime::Parse (now.Format (Time::DateTime::PrintFormat::eCurrentLocale), DateTime::ParseFormat::eCurrentLocale));
 #endif
         }
     }
