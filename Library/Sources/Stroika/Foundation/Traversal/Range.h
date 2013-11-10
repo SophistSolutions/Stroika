@@ -99,6 +99,17 @@ namespace   Stroika {
                 };
 
 
+                namespace Private_ {
+                    template    <typename T>
+                    struct  UnsignedDifferenceType_ : conditional <
+                    ((is_integral<T>::value || is_enum<T>::value)&&  !is_same<T, bool>::value),
+                    typename make_unsigned < decltype (T () - T ()) >::type,
+                    decltype (T () - T ())
+                    >::type {
+                    };
+                }
+
+
                 /**
                  *  DefaultRangeTraits<> is generally used automatically - when you construct a Range<> object without
                  *  specifying traits.
@@ -108,7 +119,7 @@ namespace   Stroika {
                 template    <typename T>
                 struct  DefaultRangeTraits : enable_if <
                         is_arithmetic<T>::value,
-                ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T() - T()), decltype (T() - T()) >
+                ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T () - T ()), Private_::UnsignedDifferenceType_<T> >
                 >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                     static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
