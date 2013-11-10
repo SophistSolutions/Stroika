@@ -19,7 +19,7 @@ my @kConfigurations = (
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
 print("Building Samples/SSDPClient...\n");
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	use Cwd;
 	use Cwd 'abs_path';
 	my $savedDir = abs_path (getcwd ());

@@ -2,7 +2,7 @@
 
 require "../Scripts/checkallHelpers.pl";
 
-if ("$^O" eq "linux") {
+if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	# nothing to check - not supported on Linux
 }
 else {
