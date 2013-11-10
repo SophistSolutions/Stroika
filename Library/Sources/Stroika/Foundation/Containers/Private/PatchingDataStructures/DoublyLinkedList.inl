@@ -95,7 +95,7 @@ namespace   Stroika {
                         }
                     }
                     template      <typename  T, typename TRAITS>
-                    inline  void    DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI)
+                    inline  void    DoublyLinkedList<T, TRAITS>::TwoPhaseIteratorPatcherPass2 (const Memory::SmallStackBuffer<ForwardIterator*>* items2Patch, Link* newI) const
                     {
                         for (size_t i = 0; i < items2Patch->GetSize (); ++i) {
                             (*items2Patch)[i]->TwoPhaseIteratorPatcherPass2 (newI);
