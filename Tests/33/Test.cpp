@@ -130,7 +130,7 @@ namespace   {
                 ~Copyable () {
                     --nCopies;
                 }
-                NO_ASSIGNMENT_OPERATOR(Copyable);
+                const Copyable& operator= (const Copyable&) = delete;
             };
             {
                 AnyVariantValue v;
