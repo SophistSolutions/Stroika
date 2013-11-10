@@ -274,7 +274,7 @@
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
 *               numbers produces nan/#IND... Workraround is to just do bogus early use.
 *
-*				See also qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+*               See also qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 */
 #ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 #if     defined (_MSC_VER)
