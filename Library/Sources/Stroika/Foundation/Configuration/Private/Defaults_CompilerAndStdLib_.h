@@ -1104,28 +1104,6 @@
 
 
 
-
-
-
-
-
-/*
-* NB: we can lose these macros once all our compilers support the new C++ syntax.
-*       ** OBSOLETE - LOSE THESE DEFINES
-*   !!!DEPRECATED!!!
-*/
-#define NO_DEFAULT_CONSTRUCTOR(NAME)\
-    NAME () = delete;
-#define NO_COPY_CONSTRUCTOR(NAME)\
-    NAME (const NAME&) = delete;
-#define NO_COPY_CONSTRUCTOR2(NAME,NAMEWITHT)\
-    NAME (const NAMEWITHT&) = delete;
-#define NO_ASSIGNMENT_OPERATOR(NAME)\
-    const NAME& operator= (const NAME&) = delete;
-
-
-
-
 #endif  /*defined(__cplusplus)*/
 
 
