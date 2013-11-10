@@ -108,7 +108,7 @@ namespace   Stroika {
                 template    <typename T>
                 struct  DefaultRangeTraits : enable_if <
                         is_arithmetic<T>::value,
-                ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T() - T()), typename make_unsigned<decltype (T() - T())>::type >
+                ExplicitRangeTraitsWithoutMinMax < T, Openness::eClosed, Openness::eOpen, decltype (T() - T()), decltype (T() - T()) >
                 >::type {
 #if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
                     static  constexpr T kLowerBound    =   numeric_limits<T>::lowest ();
