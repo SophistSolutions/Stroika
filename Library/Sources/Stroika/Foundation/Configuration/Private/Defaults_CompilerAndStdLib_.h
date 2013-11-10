@@ -218,7 +218,7 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-@DESCRIPTION:   <p></p>
+@DESCRIPTION:   See also qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 */
 #ifndef qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 
@@ -270,15 +270,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
+@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
 *               numbers produces nan/#IND... Workraround is to just do bogus early use.
+*
+*				See also qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 */
-#ifndef qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
+#ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug   0
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug   0
 #endif
 #endif
 
@@ -1066,10 +1068,10 @@
 
 
 
-#if     qCompilerAndStdLib_HasFirstTimeUseFloatingPointBug
-#define FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA()\
+#if     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
+#define FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA()\
     namespace {\
-        struct _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_ {\
+        struct _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_ {\
             double f ()\
             {\
                 return 1.0;\
@@ -1079,11 +1081,11 @@
                 double ttt = f ();\
                 return ttt;\
             }\
-            _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_ ()\
+            _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_ ()\
             {\
                 double x = MatchWord_ ();\
             }\
-        } _FILE_SCOPE_BEFORE_MAIN_MSVC_FLOATING_POINT_BWA_data_; \
+        } _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_data_; \
     }
 #endif
 
