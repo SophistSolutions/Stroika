@@ -2,8 +2,23 @@
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
-all:		TOOLS_CHECKED APPLIED_CONFIGURATIONS
+
+help:
+	@echo "Help for making Stroika"
+	@echo "Targets"
+	@echo "    all:                    -    builds everything"
+	@echo "    check:                  -    checks everything built properly"
+	@echo "    clean:"
+	@echo "    clobber:"
+	@echo "    tests:"
+	@echo "    run-tests:"
+	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuraitons folder"
+	@echo "    default-configuration:  -    creates the default configuration in Configurations folder"
+	@echo "    check-tools:            -    check the tools needed to build stroika are installed."
+
+all:		TOOLS_CHECKED apply-configurations-if-needed
 	./buildall.pl build
+
 
 check:
 	./checkall.pl
@@ -13,13 +28,13 @@ clean:
 
 clobber:
 	./buildall.pl clobber
-	rm -f TOOLS_CHECKED APPLIED_CONFIGURATIONS
+	rm -f TOOLS_CHECKED apply-configurations-if-needed
 
-tests:	TOOLS_CHECKED APPLIED_CONFIGURATIONS
-	./buildall.pl build+
+tests:	TOOLS_CHECKED apply-configurations-if-needed
+	@./buildall.pl build
 
-run-tests:	TOOLS_CHECKED APPLIED_CONFIGURATIONS
-	./buildall.pl build+
+run-tests:	TOOLS_CHECKED apply-configurations-if-needed
+	@./buildall.pl build+
 
 
 # useful internal check to make sure users dont run/build while missing key components that will
@@ -43,13 +58,15 @@ check-tools:	TOOLS_CHECKED
 	@echo "Tools present"
 
 
-APPLIED_CONFIGURATIONS:
-	#todo - must enahnce to support multiple configs
-	# must check here/fail if zero configs and direct user to call make default-configuration
+
+apply-configurations-if-needed:
+	@test -e APPLIED_CONFIGURATIONS || make apply-configurations
+
+apply-configurations:
+	@#todo - must enahnce to support multiple configs
+	@# must check here/fail if zero configs and direct user to call make default-configuration
 	@perl ApplyConfiguration.pl --only-if-unconfigured
 	@touch APPLIED_CONFIGURATIONS
-
-apply-configurations:	APPLIED_CONFIGURATIONS
 
 default-configuration:
 	@perl GenerateConfiguration.pl --default-for-platform
