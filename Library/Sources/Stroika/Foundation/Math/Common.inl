@@ -154,6 +154,20 @@ namespace   Stroika {
             {
                 return std::abs ( l - r ) <= epsilon;
             }
+#if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+            inline  float   NearlyEquals (float l, float r, float epsilon = (100 * numeric_limits<float>::epsilon ()))
+            {
+                return NearlyEquals<float> (l, r, epsilon);
+            }
+            inline  double   NearlyEquals (double l, double r, double epsilon = (100 * numeric_limits<double>::epsilon ()))
+            {
+                return NearlyEquals<double> (l, r, epsilon);
+            }
+            inline  long double   NearlyEquals (long double l, long double r, double epsilon = (100 * numeric_limits<long double>::epsilon ()))
+            {
+                return NearlyEquals<double> (l, r, epsilon);
+            }
+#endif
 
 
             /*
@@ -169,6 +183,20 @@ namespace   Stroika {
                 }
                 return p;
             }
+#if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+            inline float   PinToSpecialPoint (float p, float special, float epsilon = (100 * numeric_limits<float>::epsilon ()))
+            {
+                return PinToSpecialPoint<float> (p, special, epsilon);
+            }
+            inline double   PinToSpecialPoint (double p, double special, double epsilon = (100 * numeric_limits<double>::epsilon ()))
+            {
+                return PinToSpecialPoint<double> (p, special, epsilon);
+            }
+            inline long double   PinToSpecialPoint (long double p, long double special, long double epsilon = (100 * numeric_limits<long double>::epsilon ()))
+            {
+                return PinToSpecialPoint<long double> (p, special, epsilon);
+            }
+#endif
 
 
             /*

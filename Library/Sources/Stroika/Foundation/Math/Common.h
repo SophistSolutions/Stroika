@@ -59,13 +59,8 @@ namespace   Stroika {
             /**
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              */
-#if  qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<float>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
-#else
-            template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
-#endif
+            T   NearlyEquals (T l, T r, T epsilon = (100 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
             template    <typename   T>
             T   NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
 
@@ -84,13 +79,9 @@ namespace   Stroika {
              *
              *  But PinToSpecialPoint() always returns its first argument, or someting NearlyEqual() to it.
              */
-#if  qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
             template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon = (1000 * numeric_limits<float>::epsilon()));
-#else
-            template    <typename   T>
-            T   PinToSpecialPoint (T p, T special, T epsilon = (1000 * numeric_limits<T>::epsilon()));
-#endif
+            T   PinToSpecialPoint (T p, T special, T epsilon = (100 * numeric_limits<T>::epsilon()));
+
 
             /**
              */
