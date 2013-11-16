@@ -45,6 +45,10 @@
  *              One issue with the template stuff is that when it goes wrong, its a horrid mess to understand
  *              the error. But thats probably a temporary issue.
  *
+ *      @todo   Consider storing BOTH numeric and string representations - as a performance hack (both optionally).
+ *              If we are handled a 'chrono' time, and convert to double, there is no reason to go through
+ *              a string representation! (or the other way around).
+ *
  *      @todo   Do better job rounding. Right now we round (?)properly for seconds, but nothing else.
  *
  *      @todo   Add support for long double (and perhaps others?). And consider using long double for

@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/Date.h"
 #include    "Stroika/Foundation/Time/DateRange.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
@@ -579,7 +580,14 @@ namespace   {
         VerifyTestResult (k30Seconds.As<time_t> () == 30);
         VerifyTestResult (k30Seconds.As<std::chrono::duration<double>> () == std::chrono::duration<double> (30.0));
         VerifyTestResult (Duration (std::chrono::duration<double> (4)).As<time_t> () == 4);
-    }
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::milliseconds (50)).As <Time::DurationSecondsType> (), 0.050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::microseconds (50)).As <Time::DurationSecondsType> (), 0.000050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (50)).As <Time::DurationSecondsType> (), 0.000000050));
+        VerifyTestResult (Math::NearlyEquals (Duration (chrono::nanoseconds (1)).As <Time::DurationSecondsType> (), 0.000000001));
+        VerifyTestResult (Duration (5.0).As<std::chrono::milliseconds> () == chrono::milliseconds (5000));
+        VerifyTestResult (Duration (-5.0).As<std::chrono::milliseconds> () == chrono::milliseconds  (-5000));
+		VerifyTestResult (Duration (1.0).As<std::chrono::nanoseconds> () == chrono::nanoseconds (1000 * 1000 * 1000));
+	}
 }
 
 

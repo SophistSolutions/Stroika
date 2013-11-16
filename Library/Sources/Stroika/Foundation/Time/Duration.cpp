@@ -417,6 +417,15 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
         if (firstDigitI == lastDigitI) {
             Execution::DoThrow (FormatException ());
         }
+        /*
+         *  According to http://en.wikipedia.org/wiki/ISO_8601
+         *      "The smallest value used may also have a decimal fraction, as in "P0.5Y" to indicate
+         *      half a year. This decimal fraction may be specified with either a comma or a full stop,
+         *      as in "P0,5Y" or "P0.5Y"."
+         *
+         *  @todo   See todo in header: the first/lasrt digit ragne could use '.' or ',' and I'm not sure atof is as flexible
+         *  test/verify!!!
+         */
         InternalNumericFormatType_  n   =   atof (string (firstDigitI, lastDigitI).c_str ());
         switch (*lastDigitI) {
             case    'Y':
@@ -443,6 +452,33 @@ Duration::InternalNumericFormatType_    Duration::ParseTime_ (const string& s)
     return isNeg ? -curVal : curVal;
 }
 
+namespace {
+    // take 3.1340000 and return 3.13
+    // take 300 and return 300
+    // take 300.0 and return 300
+    //
+    void    TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
+    {
+        char*   pDot = sWithMaybeTrailingZeros;
+        for (; *pDot != '.' and * pDot != '\0'; ++pDot)
+            ;
+        Assert (*pDot == '\0' or * pDot == '.');
+        if (*pDot != '\0') {
+            char*   pPastDot = pDot + 1;
+            char*   pPastLastZero = pPastDot + strlen (pPastDot);
+            Assert (*pPastLastZero == '\0');
+            for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
+                if (*(pPastLastZero - 1) == '0') {
+                    *pPastLastZero = '\0';
+                }
+                else {
+                    break;
+                }
+            }
+        }
+    }
+}
+
 #if     qCompilerAndStdLib_GCC_48_OptimizerBug
 // This code fails with -O2 or greater! Tried to see which particular optimization failed but not obvious...
 #pragma GCC push_options
@@ -459,21 +495,27 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     if (timeLeft >= kSecondsPerYear) {
         unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
         if (nYears != 0) {
-            result += CString::Format ("%dY", nYears);
+            char buf[1024];
+            (void)snprintf (buf, sizeof (buf), "%dY", nYears);
+            result += buf;
             timeLeft -= nYears * kSecondsPerYear;
         }
     }
     if (timeLeft >= kSecondsPerMonth) {
         unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
-            result += CString::Format ("%dM", nMonths);
+            char buf[1024];
+            (void)snprintf (buf, sizeof (buf), "%dM", nMonths);
+            result += buf;
             timeLeft -= nMonths * kSecondsPerMonth;
         }
     }
     if (timeLeft >= kSecondsPerDay) {
         unsigned int    nDays = static_cast<unsigned int> (timeLeft / kSecondsPerDay);
         if (nDays != 0) {
-            result += CString::Format ("%dD", nDays);
+            char buf[1024];
+            (void)snprintf (buf, sizeof (buf), "%dD", nDays);
+            result += buf;
             timeLeft -= nDays * kSecondsPerDay;
         }
     }
@@ -482,19 +524,27 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         if (timeLeft >= kSecondsPerHour) {
             unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
             if (nHours != 0) {
-                result += CString::Format ("%dH", nHours);
+                char buf[1024];
+                (void)snprintf (buf, sizeof (buf), "%dH", nHours);
+                result += buf;
                 timeLeft -= nHours * kSecondsPerHour;
             }
         }
         if (timeLeft >= kSecondsPerMinute) {
             unsigned int    nMinutes = static_cast<unsigned int> (timeLeft / kSecondsPerMinute);
             if (nMinutes != 0) {
-                result += CString::Format ("%dM", nMinutes);
+                char buf[1024];
+                (void)snprintf (buf, sizeof (buf), "%dM", nMinutes);
+                result += buf;
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
         }
         if (timeLeft != 0) {
-            result += CString::Format ("%fS", timeLeft);
+            char buf[10 * 1024];
+            (void)snprintf (buf, sizeof (buf), "%.1000f", timeLeft);
+            TrimTrailingZerosInPlace_ (buf);
+            result += buf;
+            result += "S";
         }
     }
     if (isNeg) {
