@@ -459,6 +459,7 @@ namespace {
     //
     void    TrimTrailingZerosInPlace_ (char* sWithMaybeTrailingZeros)
     {
+        RequireNotNull (sWithMaybeTrailingZeros);
         char*   pDot = sWithMaybeTrailingZeros;
         for (; *pDot != '.' and * pDot != '\0'; ++pDot)
             ;
@@ -468,15 +469,40 @@ namespace {
             char*   pPastLastZero = pPastDot + strlen (pPastDot);
             Assert (*pPastLastZero == '\0');
             for (; (pPastLastZero - 1) > pPastDot; --pPastLastZero) {
+                Assert (sWithMaybeTrailingZeros + 1 <= pPastLastZero);  // so ptr ref always valid
                 if (*(pPastLastZero - 1) == '0') {
-                    *pPastLastZero = '\0';
+                    *(pPastLastZero - 1) = '\0';
                 }
                 else {
                     break;
                 }
             }
+            if (strcmp (pDot, ".0") == 0) {
+                *pDot = '\0';
+            }
         }
     }
+#if     qDebug
+    struct Tester_ {
+        Tester_ () {
+            {
+                char buf[1024] = "3.1340000";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "3.134");
+            }
+            {
+                char buf[1024] = "300";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "300");
+            }
+            {
+                char buf[1024] = "300.0";
+                TrimTrailingZerosInPlace_ (buf);
+                Assert (string (buf) == "300");
+            }
+        }
+    }   s_Tester_;
+#endif
 }
 
 #if     qCompilerAndStdLib_GCC_48_OptimizerBug
