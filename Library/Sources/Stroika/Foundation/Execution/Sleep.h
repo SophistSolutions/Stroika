@@ -13,6 +13,13 @@
 
 namespace   Stroika {
     namespace   Foundation {
+        namespace   Time {
+            class   Duration;
+        }
+    }
+}
+namespace   Stroika {
+    namespace   Foundation {
         namespace   Execution {
 
 
@@ -34,17 +41,18 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *  \note   This calls CheckForThreadAborting ();
+             *
              */
             void    Sleep (Time::DurationSecondsType seconds2Wait);
             void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep);
+            void    Sleep (const Time::Duration& wait);
+            void    Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep);
 
 
         }
     }
 }
-
-
-
 
 
 

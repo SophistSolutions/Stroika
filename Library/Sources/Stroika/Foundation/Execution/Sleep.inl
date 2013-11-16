@@ -25,10 +25,16 @@ namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
 
+
             //redeclare to avoid having to include Thread code
             void    CheckForThreadAborting ();
 
-            // class    Sleep
+
+            /*
+            ********************************************************************************
+            ******************************** Execution::Sleep ******************************
+            ********************************************************************************
+            */
             inline  void    Sleep (Time::DurationSecondsType seconds2Wait, Time::DurationSecondsType* remainingInSleep)
             {
                 Require (seconds2Wait >= 0.0);
@@ -64,6 +70,8 @@ namespace   Stroika {
 #endif
                 CheckForThreadAborting ();
             }
+
+
         }
     }
 }

@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Time/Duration.h"
+
 #include    "Sleep.h"
 
 
@@ -24,4 +26,17 @@ void    Execution::Sleep (Time::DurationSecondsType seconds2Wait)
     while (timeRemaining > 0) {
         Sleep (timeRemaining, &timeRemaining);
     }
+}
+
+void    Execution::Sleep (const Time::Duration& wait)
+{
+    Sleep (wait.As<Time::DurationSecondsType> ());
+}
+
+void    Execution::Sleep (const Time::Duration& wait, Time::Duration* remainingInSleep)
+{
+    RequireNotNull (remainingInSleep);
+    Time::DurationSecondsType   remaining = 0;
+    Sleep (wait.As<Time::DurationSecondsType> (), &remaining);
+    *remainingInSleep = Time::Duration (remaining);
 }
