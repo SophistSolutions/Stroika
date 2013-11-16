@@ -62,7 +62,7 @@ public:
 
         {
 #if     USE_TRACE_IN_THIS_MODULE_
-            Debug::TraceContextBumper (TSTR ("Sending M-SEARCH"));
+            Debug::TraceContextBumper ctx (SDKSTR ("Sending M-SEARCH"));
 #endif
             string  request;
             {
@@ -104,8 +104,8 @@ public:
         String firstLine    =   in.ReadLine ().Trim ();
 
 #if     USE_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper (TSTR ("Read Reply"));
-        DbgTrace ("(firstLine: %s)", firstLine.c_str ());
+        Debug::TraceContextBumper ctx (SDKSTR ("Read Reply"));
+        DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
 
         const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";

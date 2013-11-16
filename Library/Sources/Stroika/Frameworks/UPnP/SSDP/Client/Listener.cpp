@@ -88,8 +88,8 @@ public:
         String firstLine    =   in.ReadLine ().Trim ();
 
 #if     USE_TRACE_IN_THIS_MODULE_
-        Debug::TraceContextBumper (TSTR ("Read SSDP Packet"));
-        DbgTrace ("(firstLine: %s)", firstLine.c_str ());
+        Debug::TraceContextBumper ctx (SDKSTR ("Read SSDP Packet"));
+        DbgTrace (L"(firstLine: %s)", firstLine.c_str ());
 #endif
         const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
