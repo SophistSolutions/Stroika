@@ -83,24 +83,24 @@ namespace   Stroika {
                 , fUseLocale (locale ())
             {
             }
-			inline  Float2StringOptions::Float2StringOptions (const std::locale& l)
-				: fPrecision ()
-				, fFmtFlags ()
-				, fUseLocale (l)
-			{
-			}
-			inline  Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
-				: fPrecision ()
-				, fFmtFlags (fmtFlags)
-				, fUseLocale ()
-			{
-			}
-			inline  Float2StringOptions::Float2StringOptions (unsigned int precision)
-				: fPrecision (precision)
-				, fFmtFlags ()
-				, fUseLocale ()
-			{
-			}
+            inline  Float2StringOptions::Float2StringOptions (const std::locale& l)
+                : fPrecision ()
+                , fFmtFlags ()
+                , fUseLocale (l)
+            {
+            }
+            inline  Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
+                : fPrecision ()
+                , fFmtFlags (fmtFlags)
+                , fUseLocale ()
+            {
+            }
+            inline  Float2StringOptions::Float2StringOptions (unsigned int precision)
+                : fPrecision (precision)
+                , fFmtFlags ()
+                , fUseLocale ()
+            {
+            }
 
 
         }

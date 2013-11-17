@@ -165,13 +165,13 @@ namespace   Stroika {
              */
             struct  Float2StringOptions {
                 enum UseCLocale { eUseCLocale };
-				enum UseCurrentLocale { eUseCurrentLocale };
-				Float2StringOptions ();
+                enum UseCurrentLocale { eUseCurrentLocale };
+                Float2StringOptions ();
                 Float2StringOptions (UseCLocale);   // same as default
                 Float2StringOptions (UseCurrentLocale);
-				Float2StringOptions (const std::locale& l);
-				Float2StringOptions (std::ios_base::fmtflags fmtFlags);
-				Float2StringOptions (unsigned int precision);
+                Float2StringOptions (const std::locale& l);
+                Float2StringOptions (std::ios_base::fmtflags fmtFlags);
+                Float2StringOptions (unsigned int precision);
 
                 Memory::Optional<unsigned int>              fPrecision;
                 Memory::Optional<std::ios_base::fmtflags>   fFmtFlags;
