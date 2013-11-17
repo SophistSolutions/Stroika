@@ -48,11 +48,59 @@ namespace   Stroika {
             DISABLE_COMPILER_MSC_WARNING_END(4018)
 
 
+            /*
+            ********************************************************************************
+            *********************************** String2Int *********************************
+            ********************************************************************************
+            */
             template    <typename T>
             inline  T     String2Int (const String& s)
             {
                 return Private_::String2IntOrUInt_<T> (s);
             }
+
+
+            /*
+            ********************************************************************************
+            ****************************** Float2StringOptions *****************************
+            ********************************************************************************
+            */
+            inline  Float2StringOptions::Float2StringOptions ()
+                : fPrecision ()
+                , fFmtFlags ()
+                , fUseLocale ()
+            {
+            }
+            inline  Float2StringOptions::Float2StringOptions (UseCLocale)
+                : fPrecision ()
+                , fFmtFlags ()
+                , fUseLocale ()
+            {
+            }
+            inline  Float2StringOptions::Float2StringOptions (UseCurrentLocale)
+                : fPrecision ()
+                , fFmtFlags ()
+                , fUseLocale (locale ())
+            {
+            }
+			inline  Float2StringOptions::Float2StringOptions (const std::locale& l)
+				: fPrecision ()
+				, fFmtFlags ()
+				, fUseLocale (l)
+			{
+			}
+			inline  Float2StringOptions::Float2StringOptions (std::ios_base::fmtflags fmtFlags)
+				: fPrecision ()
+				, fFmtFlags (fmtFlags)
+				, fUseLocale ()
+			{
+			}
+			inline  Float2StringOptions::Float2StringOptions (unsigned int precision)
+				: fPrecision (precision)
+				, fFmtFlags ()
+				, fUseLocale ()
+			{
+			}
 
 
         }

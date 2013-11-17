@@ -486,7 +486,7 @@ String  VariantValue::AsString_ () const
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Characters::Float2String (v->fVal);
+				return Characters::Float2String (v->fVal, Characters::Float2StringOptions (numeric_limits<FloatType_>::digits10));
             }
         case    Type::eMap: {
                 auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>>*> (fVal_.get ());

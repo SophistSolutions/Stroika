@@ -6,7 +6,12 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <ios>
+#include    <locale>
+
 #include    "../Configuration/Common.h"
+#include    "../Memory/Optional.h"
+
 #include    "String.h"
 
 
@@ -151,8 +156,30 @@ namespace   Stroika {
 
             /**
              *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
+             *
+             *  Precision (here) is defined to be the number of digits after the decimal point. This prints
+             *  in fixed point format (not scientific notation), and trims any trailing zeros (after the
+             *  decimal point).
+             *
+             *  map nan to empty string, and use limited precision, and strip trialing .0.
              */
-            String Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
+            struct  Float2StringOptions {
+                enum UseCLocale { eUseCLocale };
+				enum UseCurrentLocale { eUseCurrentLocale };
+				Float2StringOptions ();
+                Float2StringOptions (UseCLocale);   // same as default
+                Float2StringOptions (UseCurrentLocale);
+				Float2StringOptions (const std::locale& l);
+				Float2StringOptions (std::ios_base::fmtflags fmtFlags);
+				Float2StringOptions (unsigned int precision);
+
+                Memory::Optional<unsigned int>              fPrecision;
+                Memory::Optional<std::ios_base::fmtflags>   fFmtFlags;
+                Memory::Optional<std::locale>               fUseLocale; // if empty, use C-locale
+            };
+            String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
+            String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());
+            String Float2String (long double f, const Float2StringOptions& options = Float2StringOptions ());
 
 
             /**
@@ -167,8 +194,6 @@ namespace   Stroika {
         }
     }
 }
-
-
 
 
 

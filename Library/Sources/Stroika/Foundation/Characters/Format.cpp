@@ -109,6 +109,7 @@ String Characters::FormatV (const wchar_t* format, va_list argsList)
 DISABLE_COMPILER_MSC_WARNING_END(6262)
 
 
+
 /*
 ********************************************************************************
 ************************************* Format ***********************************
@@ -181,8 +182,6 @@ unsigned long long int Characters::Private_::String2UInt_ (const String& s)
 
 
 
-
-
 /*
  ********************************************************************************
  ********************************* String2Float *********************************
@@ -205,29 +204,63 @@ double  Characters::String2Float (const String& s)
 
 
 
-
-
-
 /*
  ********************************************************************************
  ********************************* Float2String *********************************
  ********************************************************************************
  */
-String Characters::Float2String (double f, unsigned int precision)
-{
-    if (std::isnan (f)) {
-        return wstring ();
+namespace {
+    template    <typename FLOAT_TYPE>
+    inline  String Float2String_ (FLOAT_TYPE f, const Float2StringOptions& options)
+    {
+        if (std::isnan (f)) {
+            return String ();
+        }
+        stringstream s;
+        if (options.fUseLocale.IsPresent ()) {
+            s.imbue (*options.fUseLocale);
+        }
+        else {
+            static  locale  kCLocale_ = locale ("C");
+            s.imbue (kCLocale_);
+        }
+        if (options.fPrecision.IsPresent ()) {
+            s << setprecision (*options.fPrecision);
+        }
+        if (options.fFmtFlags.IsPresent ()) {
+            s << setiosflags (*options.fFmtFlags);
+        }
+        s << f;
+        String tmp = String::FromAscii (s.str ());
+        // strip trailing zeros - except for the last first one after the decimal point
+        size_t pastDot = tmp.find ('.');
+        if (pastDot != String::npos) {
+            pastDot++;
+            for (size_t pPastLastZero = tmp.length (); (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                if (tmp[pPastLastZero - 1] != '0') {
+                    break;
+                }
+            }
+            tmp = tmp.SubString (0, pPastLastZero);
+        }
+        return tmp;
     }
-    stringstream s;
-    s.imbue (locale ("C"));
-    s << setprecision (precision) << f;
-    wstring r = ASCIIStringToWide (s.str ());
-    return r;
+
+}
+String Characters::Float2String (float f, const Float2StringOptions& options)
+{
+    return Float2String_<long double> (f, options);
 }
 
+String Characters::Float2String (double f, const Float2StringOptions& options)
+{
+    return Float2String_<long double> (f, options);
+}
 
-
-
+String Characters::Float2String (long double f, const Float2StringOptions& options)
+{
+    return Float2String_<long double> (f, options);
+}
 
 
 
@@ -247,14 +280,4 @@ String Characters::StripTrailingCharIfAny (const String& s, wchar_t c)
     }
     return s;
 }
-
-
-
-
-
-
-
-
-
-
 
