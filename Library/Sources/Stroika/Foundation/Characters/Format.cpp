@@ -236,7 +236,8 @@ namespace {
         size_t pastDot = tmp.find ('.');
         if (pastDot != String::npos) {
             pastDot++;
-            for (size_t pPastLastZero = tmp.length (); (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+            size_t pPastLastZero = tmp.length ();
+            for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
                 if (tmp[pPastLastZero - 1] != '0') {
                     break;
                 }
