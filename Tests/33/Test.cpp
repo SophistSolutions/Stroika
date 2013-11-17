@@ -47,6 +47,22 @@ namespace   {
     void    Test2_SharedByValue ()
     {
     }
+    template <typename T>
+    void Test3_VariantValue_Helper_MinMax_ ()
+    {
+        {
+            VariantValue v = numeric_limits<T>::min ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
+            VariantValue v = numeric_limits<T>::max ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+    }
     void    Test3_VariantValue ()
     {
         {
@@ -55,6 +71,12 @@ namespace   {
             v = String (L"hi");
             VerifyTestResult (v == L"hi");
         }
+        Test3_VariantValue_Helper_MinMax_<int> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned int> ();
+        Test3_VariantValue_Helper_MinMax_<long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long> ();
+        Test3_VariantValue_Helper_MinMax_<long long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
     }
     void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {
