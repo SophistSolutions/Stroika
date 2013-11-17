@@ -231,16 +231,15 @@ wstring Characters::CString::StripTrailingCharIfAny (const wstring& s, wchar_t c
  ********************************* Float2String *********************************
  ********************************************************************************
  */
-wstring Characters::CString::Float2String (double f, unsigned int precision)
+wstring Characters::CString::Float2String (double f)
 {
     if (std::isnan (f)) {
         return wstring ();
     }
-    stringstream s;
+    wstringstream s;
     s.imbue (locale ("C"));
-    s << setprecision (precision) << f;
-    wstring r = ASCIIStringToWide (s.str ());
-    return r;
+    s << f;
+    return s.str ();
 }
 
 

@@ -205,7 +205,7 @@ namespace   Stroika {
                 /**
                  *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
                  */
-                wstring Float2String (double f, unsigned int precision = 6);        // map nan to empty string, and use limited precision, and strip trialing .0...
+                wstring Float2String (double f);
 
 
                 /*
