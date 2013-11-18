@@ -51,6 +51,12 @@ namespace   {
     void Test3_VariantValue_Helper_MinMax_ ()
     {
         {
+            VariantValue v = numeric_limits<T>::lowest ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
             VariantValue v = numeric_limits<T>::min ();
             VariantValue vs = v.As<String> ();
             VariantValue vrt = vs.As<T> ();
@@ -77,6 +83,9 @@ namespace   {
         Test3_VariantValue_Helper_MinMax_<unsigned long> ();
         Test3_VariantValue_Helper_MinMax_<long long> ();
         Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
+        Test3_VariantValue_Helper_MinMax_<float> ();
+        Test3_VariantValue_Helper_MinMax_<double> ();
+        Test3_VariantValue_Helper_MinMax_<long double> ();
     }
     void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {

@@ -488,7 +488,17 @@ String  VariantValue::AsString_ () const
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return Characters::Float2String (v->fVal, Characters::Float2StringOptions (numeric_limits<FloatType_>::digits10));
+                using   namespace   Characters;
+                //
+                // given a number of digits of precision, its fractional (and rounded down). digits10 + 1 gives you the number
+                // of actual digits after the decimal point. But there is one before the decimal point to give the precision we
+                // use in iostream.
+                //
+                // Acutally - I'm really not sure of any of this. But this seems to work for now...
+                //      -- LGP 2013-11-17
+                //
+                const   Float2StringOptions kFmtOptions_ = Float2StringOptions (Float2StringOptions::Precision (numeric_limits<FloatType_>::digits10 + 2));
+                return Float2String (v->fVal, kFmtOptions_);
             }
         case    Type::eMap: {
                 auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>>*> (fVal_.get ());
