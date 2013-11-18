@@ -232,17 +232,19 @@ namespace {
         }
         s << f;
         String tmp = String::FromAscii (s.str ());
-        // strip trailing zeros - except for the last first one after the decimal point
-        size_t pastDot = tmp.find ('.');
-        if (pastDot != String::npos) {
-            pastDot++;
-            size_t pPastLastZero = tmp.length ();
-            for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
-                if (tmp[pPastLastZero - 1] != '0') {
-                    break;
+        if (options.fTrimTrailingZeros) {
+            // strip trailing zeros - except for the last first one after the decimal point
+            size_t pastDot = tmp.find ('.');
+            if (pastDot != String::npos) {
+                pastDot++;
+                size_t pPastLastZero = tmp.length ();
+                for (; (pPastLastZero - 1) > pastDot; --pPastLastZero) {
+                    if (tmp[pPastLastZero - 1] != '0') {
+                        break;
+                    }
                 }
+                tmp = tmp.SubString (0, pPastLastZero);
             }
-            tmp = tmp.SubString (0, pPastLastZero);
         }
         return tmp;
     }

@@ -155,27 +155,34 @@ namespace   Stroika {
 
 
             /**
-             *  Note - this routine ignores the current locale settings, and always uses the 'C' locale.
+             *  Note - Float2String uses the locale specified by Float2StringOptions, but defaults to
+             *  the "C" locale.
              *
-             *  Precision (here) is defined to be the number of digits after the decimal point. This prints
-             *  in fixed point format (not scientific notation), and trims any trailing zeros (after the
-             *  decimal point).
+             *  Precision (here) is defined to be the number of digits after the decimal point.
              *
-             *  map nan to empty string, and use limited precision, and strip trialing .0.
+             *  This prints and trims any trailing zeros (after the decimal point - fTrimTrailingZeros -
+             *  by deafult.
+             *
+             *  Float2String maps nan to empty string;
              */
             struct  Float2StringOptions {
                 enum UseCLocale { eUseCLocale };
                 enum UseCurrentLocale { eUseCurrentLocale };
+                struct Precision {
+                    Precision (unsigned int p);
+                    unsigned int fPrecision;
+                };
                 Float2StringOptions ();
                 Float2StringOptions (UseCLocale);   // same as default
                 Float2StringOptions (UseCurrentLocale);
                 Float2StringOptions (const std::locale& l);
                 Float2StringOptions (std::ios_base::fmtflags fmtFlags);
-                Float2StringOptions (unsigned int precision);
+                Float2StringOptions (Precision precision);
 
                 Memory::Optional<unsigned int>              fPrecision;
                 Memory::Optional<std::ios_base::fmtflags>   fFmtFlags;
                 Memory::Optional<std::locale>               fUseLocale; // if empty, use C-locale
+                bool                                        fTrimTrailingZeros;
             };
             String Float2String (float f, const Float2StringOptions& options = Float2StringOptions ());
             String Float2String (double f, const Float2StringOptions& options = Float2StringOptions ());

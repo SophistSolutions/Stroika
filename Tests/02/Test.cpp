@@ -875,9 +875,20 @@ namespace   {
     }
 }
 
+namespace   {
+    void Test24_Float2String ()
+    {
+        VerifyTestResult (Float2String (0.0) == L"0");
+        VerifyTestResult (Float2String (3000.5) == L"3000.5");
+        VerifyTestResult (Float2String (3000.500) == L"3000.5");
+        VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (2)) == L"3.1");
+        VerifyTestResult (Float2String (3.1234, Characters::Float2StringOptions::Precision (3)) == L"3.12");
+    }
+}
+
 
 namespace {
-    void    Test32_RemoveAt_ ()
+    void    Test25_RemoveAt_ ()
     {
         String x = L"123";
         x.RemoveAt (1);
@@ -918,6 +929,8 @@ namespace   {
         Test21_StringToIntEtc_ ();
         Test22_StartsWithEndsWithMatch_ ();
         Test23_FormatV_ ();
+        Test24_Float2String ();
+        Test25_RemoveAt_ ();
     }
 }
 
