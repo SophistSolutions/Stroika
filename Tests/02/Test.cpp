@@ -804,13 +804,13 @@ namespace {
             VerifyTestResult (CString::HexString2Int ("     ") == 0);
         }
         {
-            VerifyTestResult (std::isnan<double> (String2Float<double> (String ())));
-            VerifyTestResult (std::isnan<double> (CString::String2Float (string ())));
-            VerifyTestResult (std::isnan<double> (String2Float<double> (wstring ())));
-            VerifyTestResult (std::isnan<double> (CString::String2Float ("")));
-            VerifyTestResult (std::isnan<double> (CString::String2Float (wstring (L""))));
-            VerifyTestResult (std::isnan<double> (String2Float<double> (String ())));
-            VerifyTestResult (std::isnan<double> (CString::String2Float ("     ")));
+            VerifyTestResult (std::isnan (String2Float<double> (String ())));
+            VerifyTestResult (std::isnan (CString::String2Float (string ())));
+            VerifyTestResult (std::isnan (String2Float<double> (wstring ())));
+            VerifyTestResult (std::isnan (CString::String2Float ("")));
+            VerifyTestResult (std::isnan (CString::String2Float (wstring (L""))));
+            VerifyTestResult (std::isnan (String2Float<double> (String ())));
+            VerifyTestResult (std::isnan (CString::String2Float ("     ")));
         }
         {
             VerifyTestResult (Math::NearlyEquals (CString::String2Float ("-44.4"), -44.4));
