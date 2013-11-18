@@ -17,6 +17,8 @@
  *  \file
  *
  *  TODO:
+ *      @todo   Consider losing StringToFloat() or making it look/act like String/Format version.
+ *
  *      @todo   Many of these CString utilities should be removed? Review each one and its use. See if
  *              Stroika-string is just better? Maybe leave - but review.
  *

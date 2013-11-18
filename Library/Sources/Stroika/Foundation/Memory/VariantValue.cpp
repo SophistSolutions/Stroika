@@ -383,7 +383,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
                 auto    v   =   dynamic_cast<const TIRep_<String>*> (fVal_.get ());
                 AssertNotNull (v);
                 // NB. this may return NAN if string not a well-formed number (including empty string case)
-                return Characters::String2Float (v->fVal);
+                return Characters::String2Float<FloatType_> (v->fVal);
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());

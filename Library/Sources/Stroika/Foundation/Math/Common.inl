@@ -23,9 +23,10 @@ namespace   Stroika {
              ************************************ Math::nan *********************************
              ********************************************************************************
              */
-            inline  double  nan ()
+            template    <typename T>
+            inline  T  nan ()
             {
-                return numeric_limits<double>::quiet_NaN ();
+                return numeric_limits<T>::quiet_NaN ();
             }
 
 

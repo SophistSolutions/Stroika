@@ -110,6 +110,8 @@ DISABLE_COMPILER_MSC_WARNING_END(6262)
 
 
 
+
+
 /*
 ********************************************************************************
 ************************************* Format ***********************************
@@ -187,17 +189,40 @@ unsigned long long int Characters::Private_::String2UInt_ (const String& s)
  ********************************* String2Float *********************************
  ********************************************************************************
  */
+namespace {
+    template    <typename RETURN_TYPE, typename FUNCTION>
+    inline  RETURN_TYPE  String2Float_ (const String& s, FUNCTION F)
+    {
+        wchar_t*        e   = nullptr;
+        const wchar_t*  cst = s.c_str ();
+        RETURN_TYPE  d = F (cst, &e);
+        if (d == 0) {
+            if (cst == e) {
+                return Math::nan<RETURN_TYPE> ();
+            }
+        }
+        return d;
+    }
+}
+
+template    <>
+float  Characters::String2Float (const String& s)
+{
+    return String2Float_<float> (s, wcstof);
+}
+
+template    <>
 double  Characters::String2Float (const String& s)
 {
-    wchar_t*    e   =   nullptr;
-    double  d   =   wcstod (s.c_str (), &e);
-    if (d == 0) {
-        if (s.c_str () == e) {
-            return Math::nan ();
-        }
-    }
-    return d;
+    return String2Float_<double> (s, wcstod);
 }
+
+template    <>
+long double  Characters::String2Float (const String& s)
+{
+    return String2Float_<long double> (s, wcstold);
+}
+
 
 
 

@@ -180,7 +180,7 @@ namespace   {
             Execution::DoThrow (BadFormatException (L"JSON: no valid number found"));
         }
         if (containsDot) {
-            return Memory::VariantValue (Characters::String2Float (tmp));
+            return Memory::VariantValue (Characters::String2Float<long double> (tmp));
         }
         else {
             // if no - use unsigned since has wider range (if no -)

@@ -27,7 +27,8 @@ namespace   Stroika {
             using   std::numeric_limits;
 
 
-            double  nan ();
+            template    <typename T>
+            T  nan ();
 
 
             constexpr   double  kE  =   2.71828182845904523536;

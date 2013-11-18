@@ -324,7 +324,7 @@ void    BuiltinReader<float>::HandleChildStart (SAXObjectReader& r, const String
 void    BuiltinReader<float>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
-    (*value_) = static_cast<float> (Characters::String2Float (tmpVal_.As<wstring> ()));
+    (*value_) = static_cast<float> (Characters::String2Float<float> (tmpVal_.As<wstring> ()));
 }
 
 void    BuiltinReader<float>::HandleEndTag (SAXObjectReader& r)
@@ -356,7 +356,7 @@ void    BuiltinReader<double>::HandleChildStart (SAXObjectReader& r, const Strin
 void    BuiltinReader<double>::HandleTextInside (SAXObjectReader& r, const String& text)
 {
     tmpVal_ += text;
-    (*value_) = Characters::String2Float (tmpVal_.As<wstring> ());
+    (*value_) = Characters::String2Float<double> (tmpVal_.As<wstring> ());
 }
 
 void    BuiltinReader<double>::HandleEndTag (SAXObjectReader& r)

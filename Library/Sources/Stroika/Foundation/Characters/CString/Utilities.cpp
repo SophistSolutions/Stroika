@@ -351,7 +351,7 @@ double  Characters::CString::String2Float (const string& s)
     double  d   =   strtod (s.c_str (), &e);
     if (d == 0) {
         if (s.c_str () == e) {
-            return Math::nan ();
+            return Math::nan<double> ();
         }
     }
     return d;
@@ -364,7 +364,7 @@ double  Characters::CString::String2Float (const wchar_t* s)
     double  d   =   wcstod (s, &e);
     if (d == 0) {
         if (s == e) {
-            return Math::nan ();
+            return Math::nan<double> ();
         }
     }
     return d;
@@ -376,7 +376,7 @@ double  Characters::CString::String2Float (const wstring& s)
     double  d   =   wcstod (s.c_str (), &e);
     if (d == 0) {
         if (s.c_str () == e) {
-            return Math::nan ();
+            return Math::nan<double> ();
         }
     }
     return d;

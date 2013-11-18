@@ -142,16 +142,19 @@ namespace   Stroika {
 
 
             /**
-             *  Convert the given decimal-format floating point string to an double.
+             *  Convert the given decimal-format floating point string to an float,
+             *  double, or long double.
+             *
              *  String2Float will return nan () if no valid parse.
              *
-             *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod ()
-             *  except that it returns nan() on invalid data, instead of zero.
+             *  @see strtod(), or @see wcstod (). This is a simple wrapper on strtod() / wcstod () /
+             *  strtold, etc... except that it returns nan() on invalid data, instead of zero.
              *
              *  strtod() /etc are more flexible. This is merely meant to be an often convenient wrapper.
              *  Use strtod etc directly to see if the string parsed properly.
              */
-            double  String2Float (const String& s);
+            template    <typename T>
+            T  String2Float (const String& s);
 
 
             /**
