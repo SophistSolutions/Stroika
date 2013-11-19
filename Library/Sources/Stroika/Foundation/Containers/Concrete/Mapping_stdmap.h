@@ -30,6 +30,7 @@ namespace   Stroika {
                  *  Mapping_stdmap requires its own traits (besides Mapping_DefaultTraits) because of the neeed for a compare function for std::map<>
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+                //struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE> {
                 struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_WELL_ORDER_COMPARER, VALUE_EQUALS_COMPARER> {
                 public:
                     /**
@@ -37,6 +38,11 @@ namespace   Stroika {
                     typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
 
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
+
+                    /// Must fix so something close to this...
+                    //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, typename Common::ComparerWithEquals<KEY_TYPE>, VALUE_EQUALS_COMPARER>  MappingTraitsType;
+                    //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>  MappingTraitsType;
+                    typedef Mapping_stdmap_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_WELL_ORDER_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
                 };
 
 
@@ -47,9 +53,9 @@ namespace   Stroika {
                  *
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_stdmap_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-                class   Mapping_stdmap : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
+                class   Mapping_stdmap : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
+                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>  inherited;
 
                 public:
                     /**
