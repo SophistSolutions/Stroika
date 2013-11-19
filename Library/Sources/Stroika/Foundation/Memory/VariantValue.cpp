@@ -623,7 +623,7 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
         case    VariantValue::Type::eUnsignedInteger:
             return As<UnsignedIntegerType_> () == rhs.As<UnsignedIntegerType_> ();
         case    VariantValue::Type::eFloat:
-            return As<VariantValue::FloatType_> () == rhs.As<VariantValue::FloatType_> ();
+            return Math::NearlyEquals (As<VariantValue::FloatType_> (), rhs.As<VariantValue::FloatType_> ());
         case    VariantValue::Type::eDate:
             return As<Date> () == rhs.As<Date> ();
         case    VariantValue::Type::eDateTime:
