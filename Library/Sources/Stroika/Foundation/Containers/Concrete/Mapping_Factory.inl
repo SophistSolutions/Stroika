@@ -12,6 +12,7 @@
 #define _Stroika_Foundation_Containers_Concrete_Mapping_Factory_inl_
 
 #include    "Mapping_LinkedList.h"
+#include    "Mapping_stdmap.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -51,11 +52,34 @@ namespace   Stroika {
                 Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
                 {
                     /*
+                     *  Use SFINAE to select best default implementation.
+                     */
+                    return DefaultX_<KEY_TYPE> ();
+                }
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename CHECK_KEY>
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if<std::is_integral<CHECK_KEY>::value >::type*)
+                {
+                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> ();
+                }
+#if 0
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename CHECK_KEY>
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if < !std::is_empty<std::less<CHECK_KEY>>::value >::type*)
+                {
+                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                }
+#endif
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename CHECK_KEY>
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if < !std::is_integral<CHECK_KEY>::value >::type*)
+                {
+                    /*
                      *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most
                      *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
                      *  a hash function. And its quite reasonable for small Mapping's - which are often the case.
                      *
-                     *  Use explicit initializer of Mapping_xxx<> to get better performance for large sized
+                     *  Calls may use an explicit initializer of Mapping_xxx<> to get better performance for large sized
                      *  maps.
                      */
                     return Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();

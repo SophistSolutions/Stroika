@@ -7,13 +7,14 @@
 #include    "../../StroikaPreComp.h"
 
 #include    <atomic>
+#include    <type_traits>
 
 
 /**
  *  \file
  *
  *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkMapping_Fasted,
+ *      @todo   Extend this metaphor to have different kinds of factories, like mkMapping_Fastest,
  *              mkMapping_Smallest, mkMappingWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
  *
@@ -60,6 +61,15 @@ namespace   Stroika {
 
                 private:
                     static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                private:
+                    template    <typename CHECK_KEY>
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if<std::is_integral<CHECK_KEY>::value >::type* = 0);
+#if 0
+                    template    <typename CHECK_KEY>
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if < !std::is_empty<std::less<CHECK_KEY>>::value >::type* = 0);
+#endif
+                    template    <typename CHECK_KEY>
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if < !std::is_integral<CHECK_KEY>::value >::type* = 0);
                 };
 
 
