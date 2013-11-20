@@ -37,10 +37,10 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType						KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType						ValueType;
-		typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType	MappingTraitsType;
-		auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
+        typedef typename CONCRETE_CONTAINER::KeyType                        KeyType;
+        typedef typename CONCRETE_CONTAINER::ValueType                      ValueType;
+        typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType  MappingTraitsType;
+        auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
             // only work todo on sorted mappings
         };
         CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
@@ -48,10 +48,10 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType						KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType						ValueType;
-        typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType	MappingTraitsType;
-		auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
+        typedef typename CONCRETE_CONTAINER::KeyType                        KeyType;
+        typedef typename CONCRETE_CONTAINER::ValueType                      ValueType;
+        typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType  MappingTraitsType;
+        auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
             // only work todo on sorted mappings
         };
         CommonTests::MappingTests::SimpleMappingTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
@@ -62,10 +62,10 @@ namespace {
 namespace {
     void    Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
-#if 0
+#if 1
         /// SERIOUS BUG - WITH HOW I DID BASE CLASS FOR Mapping_stdmap<> -.... second line needs to work!!!
         SortedMapping<int, float> xxxyy = Concrete::SortedMapping_stdmap<int, float> ();
-        Mapping<int, float> xxxyy = Concrete::Mapping_stdmap<int, float> ();
+        Mapping<int, float> xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
 #endif
     }
 }
@@ -111,8 +111,9 @@ namespace   {
             typedef Concrete::Mapping_stdmap_DefaultTraits <
             SimpleClassWithoutComparisonOperators,
             SimpleClassWithoutComparisonOperators,
-            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_,
-            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+            MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
+            MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
             >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
             DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<Mapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }

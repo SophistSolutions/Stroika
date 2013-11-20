@@ -54,7 +54,7 @@ namespace   Stroika {
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>                ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
                 public:
