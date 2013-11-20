@@ -61,9 +61,9 @@ namespace   Stroika {
              *  NearlyEquals() can be used as a utility for floating point comparisons.
              */
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
+            bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
             template    <typename   T>
-            T   NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
+            bool    NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
 
 
 

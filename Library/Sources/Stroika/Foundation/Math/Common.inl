@@ -146,25 +146,25 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   T>
-            inline  T   NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
+            inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_floating_point<T>::value >::type*)
             {
                 return std::fabs ( l - r ) <= epsilon;
             }
             template    <typename   T>
-            inline  T   NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_integral<T>::value >::type*)
+            inline  bool    NearlyEquals (T l, T r, T epsilon, typename std::enable_if<std::is_integral<T>::value >::type*)
             {
                 return std::abs ( l - r ) <= epsilon;
             }
 #if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
-            inline  float   NearlyEquals (float l, float r, float epsilon = (100 * numeric_limits<float>::epsilon ()))
+            inline  bool   NearlyEquals (float l, float r, float epsilon = (100 * numeric_limits<float>::epsilon ()))
             {
                 return NearlyEquals<float> (l, r, epsilon);
             }
-            inline  double   NearlyEquals (double l, double r, double epsilon = (100 * numeric_limits<double>::epsilon ()))
+            inline  bool    NearlyEquals (double l, double r, double epsilon = (100 * numeric_limits<double>::epsilon ()))
             {
                 return NearlyEquals<double> (l, r, epsilon);
             }
-            inline  long double   NearlyEquals (long double l, long double r, double epsilon = (100 * numeric_limits<long double>::epsilon ()))
+            inline  bool    NearlyEquals (long double l, long double r, double epsilon = (100 * numeric_limits<long double>::epsilon ()))
             {
                 return NearlyEquals<double> (l, r, epsilon);
             }
