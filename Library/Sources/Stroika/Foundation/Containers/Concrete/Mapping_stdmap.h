@@ -30,20 +30,14 @@ namespace   Stroika {
                  *  Mapping_stdmap requires its own traits (besides Mapping_DefaultTraits) because of the neeed for a compare function for std::map<>
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>, typename KEY_WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<KEY_TYPE>>
-                //struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE> {
                 struct   Mapping_stdmap_DefaultTraits : Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER> {
-                public:
                     /**
                      */
                     typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
 
-                    RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
-
-                public:
-                    /// Must fix so something close to this...
-                    //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, typename Common::ComparerWithEquals<KEY_TYPE>, VALUE_EQUALS_COMPARER>  MappingTraitsType;
-                    //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>  MappingTraitsType;
                     typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
+
+                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
                 };
 
 
@@ -52,6 +46,12 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
+                 *  \note   \em Implementation Details
+                 *          This module is essentially identical to SortedMapping_stdmap, but making it dependent on SortedMapping<> creates
+                 *          problems with circular dependencies - especially give how the default Mapping CTOR calls the factory class
+                 *          which maps back to the _stdmap<> variant.
+                 *
+                 *          There maybe another (better) way, but this works.
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_stdmap_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
                 class   Mapping_stdmap : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
@@ -85,6 +85,16 @@ namespace   Stroika {
                     /**
                      */
                     nonvirtual  Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs);
+
+                private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
+                    class   Rep_;
+
+                private:
+                    nonvirtual  const Rep_&  GetRep_ () const;
+                    nonvirtual  Rep_&        GetRep_ ();
                 };
 
 
