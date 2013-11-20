@@ -39,6 +39,7 @@ namespace   Stroika {
 
                     RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
 
+                public:
                     /// Must fix so something close to this...
                     //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, typename Common::ComparerWithEquals<KEY_TYPE>, VALUE_EQUALS_COMPARER>  MappingTraitsType;
                     //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>  MappingTraitsType;
@@ -47,7 +48,7 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> container pattern.
+                 *  \brief   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> is an std::map-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *

@@ -54,7 +54,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     *  Register a replacement creator/factory for the given Mapping<T,TRAITS>. Note this is a global change.
+                     *  Register a replacement creator/factory for the given Mapping<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
                      */
                     static  void    Register (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
 

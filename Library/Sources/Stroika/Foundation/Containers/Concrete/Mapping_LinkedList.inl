@@ -28,9 +28,9 @@ namespace   Stroika {
                  ********************************************************************************
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
+                class   Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
                 private:
-                    typedef typename    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep  inherited;
+                    typedef typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep  inherited;
 
                 public:
                     Rep_ ();
@@ -57,9 +57,9 @@ namespace   Stroika {
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep overrides
+                    // Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep overrides
                 public:
-                    virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const override;
+                    virtual bool                Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const override;
                     virtual void                RemoveAll () override;
                     virtual Iterable<KEY_TYPE>  Keys () const override;
                     virtual bool                Lookup (KEY_TYPE key, Memory::Optional<VALUE_TYPE>* item) const override;
@@ -68,7 +68,7 @@ namespace   Stroika {
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 public:
-                    typedef typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
+                    typedef typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
 
                 private:
                     typedef Private::PatchingDataStructures::LinkedList<KeyValuePair<KEY_TYPE, VALUE_TYPE>>             DataStructureImplType_;
@@ -149,7 +149,7 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep& rhs) const
+                bool    Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Equals (const typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }

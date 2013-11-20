@@ -29,15 +29,15 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> container pattern.
+                 *  \brief   Mapping_Array<KEY_TYPE, VALUE_TYPE, TRAITS> is an Array-based concrete implementation of the Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-                class   Mapping_Array : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
+                class   Mapping_Array : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  inherited;
+                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>  inherited;
 
                 public:
                     Mapping_Array ();

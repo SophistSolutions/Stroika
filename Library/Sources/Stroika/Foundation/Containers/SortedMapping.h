@@ -39,7 +39,14 @@ namespace   Stroika {
                  */
                 typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
 
-                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
+            public:
+                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
+
+            public:
+                /// Must fix so something close to this...
+                //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, typename Common::ComparerWithEquals<KEY_TYPE>, VALUE_EQUALS_COMPARER>  MappingTraitsType;
+                //typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>  MappingTraitsType;
+                typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_WELL_ORDER_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
             };
 
 
@@ -54,9 +61,9 @@ namespace   Stroika {
              *
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   SortedMapping : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> {
+            class   SortedMapping : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
             private:
-                typedef     Mapping<KEY_TYPE, VALUE_TYPE, TRAITS> inherited;
+                typedef     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> inherited;
 
             protected:
                 class   _IRep;
@@ -93,7 +100,7 @@ namespace   Stroika {
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
+            class   SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
             };
 
 

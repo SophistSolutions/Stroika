@@ -75,6 +75,12 @@ namespace   Stroika {
                  * only defined optionally...(see what can call this - gen list here @todo)
                  */
                 typedef VALUE_EQUALS_COMPARER ValueEqualsCompareFunctionType;
+
+                /**
+                 *  Define typedef for this Mapping traits object (so other traits can generically allow recovery of the
+                 *  underlying Mapping's TRAITS objects.
+                 */
+                typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
             };
 
 
