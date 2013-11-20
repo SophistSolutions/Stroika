@@ -54,25 +54,17 @@ namespace   Stroika {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return DefaultX_<KEY_TYPE> ();
+                    return Default_SFINAE_<KEY_TYPE> ();
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if<std::is_integral<CHECK_KEY>::value >::type*)
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type*)
                 {
                     return Mapping_stdmap<KEY_TYPE, VALUE_TYPE> ();
                 }
-#if 0
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if < !std::is_empty<std::less<CHECK_KEY>>::value >::type*)
-                {
-                    return Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ();
-                }
-#endif
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                template    <typename CHECK_KEY>
-                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::DefaultX_ (typename std::enable_if < !std::is_integral<CHECK_KEY>::value >::type*)
+                inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type*)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Mapping<> for large sizes, its probably the most

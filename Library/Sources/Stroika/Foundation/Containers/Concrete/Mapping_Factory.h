@@ -34,7 +34,7 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-                /**
+				/**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container
                  *
                  *  Note - you can override the underlying factory dynamically by calling Mapping_Factory<T,TRAITS>::Register (), or
@@ -61,15 +61,12 @@ namespace   Stroika {
 
                 private:
                     static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+
                 private:
                     template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if<std::is_integral<CHECK_KEY>::value >::type* = 0);
-#if 0
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type* = 0);
                     template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if < !std::is_empty<std::less<CHECK_KEY>>::value >::type* = 0);
-#endif
-                    template    <typename CHECK_KEY>
-                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  DefaultX_ (typename std::enable_if < !std::is_integral<CHECK_KEY>::value >::type* = 0);
+                    static  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type* = 0);
                 };
 
 
