@@ -29,6 +29,39 @@ namespace   Stroika {
         namespace   Common {
 
 
+            namespace Private_ {
+                namespace Has_Operator_LessThan_Helper_ {
+                    /*
+                     *  This trick is based on code from
+                     *      http://stackoverflow.com/questions/5768511/using-sfinae-to-check-for-global-operator
+                     */
+                    typedef char    no;
+                    typedef char    yes[2];
+                    struct any_t {
+                        template<typename T> any_t (T const&);
+                    };
+                    no operator< (any_t const&, any_t const&);
+                    yes& test (bool);
+                    no test (no);
+                    template<typename T>
+                    struct Has_Operator_LessThan_ {
+                        static T const& s;
+                        static T const& t;
+                        static bool const value = sizeof(test (s < t)) == sizeof(yes);
+                    };
+                }
+            }
+
+
+            /**
+             *  has value member which is true iff 'T' supports the less than operator.
+             */
+            template    <typename T>
+            struct  Has_Operator_LessThan :
+                    Private_::Has_Operator_LessThan_Helper_::Has_Operator_LessThan_<T> {
+            };
+
+
             /**
              *  Utility you can specialize to define how two types are to be compared equality using the defined operator==(T,T).
              */
