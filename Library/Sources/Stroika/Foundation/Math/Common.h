@@ -30,6 +30,8 @@ namespace   Stroika {
             using   std::numeric_limits;
 
 
+            /**
+            */
             template    <typename T>
             T  nan ();
 
@@ -67,7 +69,6 @@ namespace   Stroika {
             bool    NearlyEquals (T l, T r, T epsilon = (10000 * numeric_limits<T>::epsilon()), typename std::enable_if<std::is_floating_point<T>::value >::type* = 0);
             template    <typename   T>
             bool    NearlyEquals (T l, T r, T epsilon = 1, typename std::enable_if<std::is_integral<T>::value >::type* = 0);
-
 
 
             /*
