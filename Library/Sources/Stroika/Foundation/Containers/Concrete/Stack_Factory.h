@@ -14,7 +14,7 @@
  *  \file
  *
  *  TODO:
- *      @todo   Extend this metaphor to have different kinds of factories, like mkStack_Fasted,
+ *      @todo   Extend this metaphor to have different kinds of factories, like mkStack_Fastest,
  *              mkStack_Smallest, mkStackWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
  */
