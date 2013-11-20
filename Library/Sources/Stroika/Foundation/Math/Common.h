@@ -13,8 +13,11 @@
 
 /**
  *  TODO:
- *      @todo   This rounding code doesn't work for floating point numbers. That should either be fixed
- *              or documented better why.
+ *      @todo   This rounding code (RoundUpTo/RoundDownTo) doesn't work for floating point numbers.
+ *              That should either be fixed or documented better why.
+ *
+ *      @todo   Think through (and reconsider) the epsilon parameter (10000 times numeric_limits<>::epsilon())
+ *              to NearlyEquals ().
  */
 
 

@@ -156,15 +156,15 @@ namespace   Stroika {
                 return std::abs ( l - r ) <= epsilon;
             }
 #if     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
-            inline  bool   NearlyEquals (float l, float r, float epsilon = (100 * numeric_limits<float>::epsilon ()))
+            inline  bool   NearlyEquals (float l, float r, float epsilon = (10000 * numeric_limits<float>::epsilon ()))
             {
                 return NearlyEquals<float> (l, r, epsilon);
             }
-            inline  bool    NearlyEquals (double l, double r, double epsilon = (100 * numeric_limits<double>::epsilon ()))
+            inline  bool    NearlyEquals (double l, double r, double epsilon = (10000 * numeric_limits<double>::epsilon ()))
             {
                 return NearlyEquals<double> (l, r, epsilon);
             }
-            inline  bool    NearlyEquals (long double l, long double r, double epsilon = (100 * numeric_limits<long double>::epsilon ()))
+            inline  bool    NearlyEquals (long double l, long double r, double epsilon = (10000 * numeric_limits<long double>::epsilon ()))
             {
                 return NearlyEquals<double> (l, r, epsilon);
             }
