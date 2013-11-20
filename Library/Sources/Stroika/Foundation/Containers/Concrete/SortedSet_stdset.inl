@@ -223,7 +223,7 @@ namespace   Stroika {
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedSet_stdset<T, TRAITS>::SortedSet_stdset (const SortedSet_stdset<T, TRAITS>& s)
-                    : inherited (s)
+                    : inherited (static_cast<const inherited&> (s))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }

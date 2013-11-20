@@ -239,7 +239,7 @@ namespace   Stroika {
                 }
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 inline  Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping_LinkedList (const Mapping_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
-                    : inherited (m)
+                    : inherited (static_cast<const inherited&> (m))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
