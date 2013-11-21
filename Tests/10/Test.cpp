@@ -62,11 +62,8 @@ namespace {
 namespace {
     void    Test2_SimpleBaseClassConversionTraitsConfusion_ ()
     {
-#if 1
-        /// SERIOUS BUG - WITH HOW I DID BASE CLASS FOR Mapping_stdmap<> -.... second line needs to work!!!
         SortedMapping<int, float> xxxyy = Concrete::SortedMapping_stdmap<int, float> ();
         Mapping<int, float> xxxyy1 = Concrete::Mapping_stdmap<int, float> ();
-#endif
     }
 }
 
