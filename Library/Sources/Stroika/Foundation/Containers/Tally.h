@@ -20,6 +20,15 @@
  *
  *  TODO:
  *
+ *      @todo   IMPORTANT - FIX TRAITS support like I did for Mapping/Set<> - Sorted...
+ *              see git commit # 3c5bf0ecd686af850ff77761cf94142a33f48588
+ *
+ *              Key is adding TallyTraitsType to the traits and making generic base class
+ *              for Tally<T> - its traits - same as wtih SortedTraits.
+ *
+ *              Also likewise key for Tally_stdmap<> - cuz now you cannot assign Tally_stdmap<> to
+ *              Tally<T>!!!!
+ *
  *      @todo   Redo code so operator+= () is an cosmetic alias and AddAll() is primary.
  *
  *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
