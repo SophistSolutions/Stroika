@@ -516,8 +516,12 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     //DbgTrace ("(t = %f)", t);
     bool                        isNeg       =   (t < 0);
     InternalNumericFormatType_  timeLeft    =   t < 0 ? -t : t;
-    string  result  =   "P";
+    string  result;
     result.reserve (50);
+    if (isNeg) {
+        result += "-";
+    }
+    result + "P";
     if (timeLeft >= kSecondsPerYear) {
         unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
         if (nYears != 0) {
@@ -567,14 +571,12 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         }
         if (timeLeft != 0) {
             char buf[10 * 1024];
+            buf[0] = '\0';
             (void)snprintf (buf, sizeof (buf), "%.1000f", timeLeft);
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";
         }
-    }
-    if (isNeg) {
-        result = "-" + result;
     }
     return result;
 }
