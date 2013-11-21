@@ -528,11 +528,11 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
         InternalNumericFormatType_    nYears = trunc (timeLeft / kSecondsPerYear);
         Assert (nYears > 0.0);
         if (nYears > 0.0) {
-            char buf[1024];
-            (void)snprintf (buf, sizeof (buf), "%.0LfY", nYears);
+            char buf[10 * 1024];
+            (void)snprintf (buf, sizeof (buf), "%.0LfY", static_cast<long double> (nYears));
             result += buf;
             timeLeft -= nYears * kSecondsPerYear;
-            if (isinf (timeLeft)) {
+            if (std::isinf (timeLeft)) {
                 // some date numbers are so large, we cannot compute a number of days, weeks etc
                 timeLeft = 0.0;
             }
