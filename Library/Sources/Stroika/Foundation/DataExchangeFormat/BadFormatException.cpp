@@ -3,6 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../Characters/Format.h"
 
 #include    "BadFormatException.h"
@@ -57,7 +58,7 @@ namespace   {
         String msg             =   mkMessage_ ();
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" (" + lineInfoExtra + L").";
+            msg += Characters::Concrete::String_Constant (L" (") + lineInfoExtra + L").";
         }
         return msg;
     }
@@ -66,7 +67,7 @@ namespace   {
         String msg             =   mkMessage_ (details);
         String lineInfoExtra   =   mkMessage_OffsetInfo_ (lineNumber, columnNumber, fileOffset);
         if (not lineInfoExtra.empty ()) {
-            msg += L" (" + lineInfoExtra + L").";
+            msg += Characters::Concrete::String_Constant (L" (") + lineInfoExtra + L").";
         }
         return msg;
     }

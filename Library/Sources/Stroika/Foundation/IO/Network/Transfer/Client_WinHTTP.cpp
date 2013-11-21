@@ -409,8 +409,8 @@ RetryWithNoCERTCheck:
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eCertExpired;
         }
 
-        if (not Equals (fURL_.GetHost (), resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
-                not Equals (fURL_.GetHost (), L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
+        if (not fURL_.GetHost ().Equals (resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive) and
+                not fURL_.GetHost ().Equals (L"www." + resultSSLInfo.fSubjectCommonName, CompareOptions::eCaseInsensitive)
            ) {
             resultSSLInfo.fValidationStatus = Response::SSLResultInfo::ValidationStatus::eHostnameMismatch;
         }

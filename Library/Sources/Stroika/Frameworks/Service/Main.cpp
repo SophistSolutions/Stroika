@@ -18,6 +18,7 @@
 #include    "../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
 
+#include    "../../Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../Foundation/Characters/Format.h"
 #include    "../../Foundation/Characters/SDKString.h"
 #include    "../../Foundation/Containers/Common.h"
@@ -902,7 +903,7 @@ void    Main::WindowsService::_Install ()
     Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::WindowsService::_Install"));
 
     const DWORD   kServiceMgrAccessPrivs   =   SC_MANAGER_CREATE_SERVICE;
-    String  cmdLineForRunSvc = L"\"" + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
+    String  cmdLineForRunSvc = Characters::Concrete::String_Constant (L"\"") + Execution::GetEXEPath () + L"\" --" + CommandNames::kRunAsService;
     SC_HANDLE hSCM = ::OpenSCManager (NULL, NULL, kServiceMgrAccessPrivs);
     Execution::Platform::Windows::ThrowIfFalseGetLastError (hSCM != NULL);
     Execution::Finally cleanup ([hSCM] () {

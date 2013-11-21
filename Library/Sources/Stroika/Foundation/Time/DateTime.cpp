@@ -11,6 +11,7 @@
 #include    <atlbase.h>     // For CComBSTR
 #endif
 
+#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
@@ -418,7 +419,7 @@ String DateTime::Format (PrintFormat pf) const
                 String  r       =   fDate_.Format ((pf == PrintFormat::eISO8601) ? Date::PrintFormat::eISO8601 : Date::PrintFormat::eXML);
                 String  timeStr =   fTimeOfDay_.Format ((pf == PrintFormat::eISO8601) ? TimeOfDay::PrintFormat::eISO8601 : TimeOfDay::PrintFormat::eXML);
                 if (not timeStr.empty ()) {
-                    r += L"T" + timeStr;
+                    r += Characters::Concrete::String_Constant (L"T") + timeStr;
                     if (GetTimezone () == Timezone::eUTC) {
                         r += L"Z";
                     }
@@ -480,7 +481,7 @@ String DateTime::Format (LCID lcid) const
         Assert (not r.empty ());
         String tod =   fTimeOfDay_.Format (lcid);
         if (not tod.empty ()) {
-            r += L" " + tod;
+            r += Characters::Concrete::String_Constant (L" ") + tod;
         }
         return r;
     }

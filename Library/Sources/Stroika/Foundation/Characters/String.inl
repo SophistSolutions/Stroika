@@ -305,6 +305,10 @@ namespace   Stroika {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 return _fRep->Compare (reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }
+            inline  bool String::Equals (const String& rhs, CompareOptions co) const
+            {
+                return Compare (rhs, co) == 0;
+            }
             inline  bool String::operator<= (const String& rhs) const
             {
                 return Compare (rhs) <= 0;
@@ -378,7 +382,7 @@ namespace   Stroika {
                 return Compare (rhs) != 0;
             }
 
-
+#if 0
             /*
             ********************************************************************************
             ********************************** Equals **************************************
@@ -388,6 +392,7 @@ namespace   Stroika {
             {
                 return lhs.Compare (rhs, co) == 0;
             }
+#endif
 
 
             /*

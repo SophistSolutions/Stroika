@@ -329,6 +329,9 @@ namespace   Stroika {
                 nonvirtual  String& operator+= (const String& appendage);
 
             public:
+                nonvirtual  String  operator+ (const String& rhs) const;
+
+            public:
                 /**
                  *  Returns the number of characters in the String. Note that this may not be the same as bytes,
                  *  does not include NUL termination, and doesn't in any way respect NUL termination (meaning
@@ -687,6 +690,13 @@ namespace   Stroika {
 
             public:
                 /**
+                * @brief   Return true of the two argument strings are equal. This is equivilent to
+                *              lhs.Compare (rhs, co);
+                */
+                nonvirtual  bool    Equals (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+
+            public:
+                /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
                  */
                 nonvirtual  bool operator< (const String& rhs) const;
@@ -801,22 +811,12 @@ namespace   Stroika {
                  */
                 String (const _SharedRepByValuePtr::shared_ptr_type& rep);
                 String (const _SharedRepByValuePtr::shared_ptr_type&&  rep);
-
-            private:
 #if 0
-                /*
-                 * These are made friends so they can peek at the shared part, as an optimization.
-                 */
-                friend  bool    operator== (const String& lhs, const String& rhs);
-                friend  bool    operator!= (const String& lhs, const String& rhs);
-                friend  bool    operator< (const String& lhs, const String& rhs);
-                friend  bool    operator<= (const String& lhs, const String& rhs);
-                friend  bool    operator> (const String& lhs, const String& rhs);
-                friend  bool    operator>= (const String& lhs, const String& rhs);
-#endif
+            private:
 
                 // constructs a StringRep_Catenate
                 friend  String  operator+ (const String& lhs, const String& rhs);
+#endif
             };
 
 
@@ -905,36 +905,18 @@ namespace   Stroika {
                 nonvirtual  void    CopyTo (wchar_t* bufFrom, wchar_t* bufTo) const;
             };
 
-
-            String  operator+ (const String& lhs, const String& rhs);
-
 #if 0
-            bool    operator== (const String& lhs, const String& rhs);
-            bool    operator== (const wchar_t* lhs, const String& rhs);
-            bool    operator== (const String& lhs, const wchar_t* rhs);
-            bool    operator!= (const String& lhs, const String& rhs);
-            bool    operator!= (const wchar_t* lhs, const String& rhs);
-            bool    operator!= (const String& lhs, const wchar_t* rhs);
-            bool    operator< (const String& lhs, const String& rhs);
-            bool    operator< (const wchar_t* lhs, const String& rhs);
-            bool    operator< (const String& lhs, const wchar_t* rhs);
-            bool    operator<= (const String& lhs, const String& rhs);
-            bool    operator<= (const wchar_t* lhs, const String& rhs);
-            bool    operator<= (const String& lhs, const wchar_t* rhs);
-            bool    operator> (const String& lhs, const String& rhs);
-            bool    operator> (const wchar_t* lhs, const String& rhs);
-            bool    operator> (const String& lhs, const wchar_t* rhs);
-            bool    operator>= (const String& lhs, const String& rhs);
-            bool    operator>= (const wchar_t* lhs, const String& rhs);
-            bool    operator>= (const String& lhs, const wchar_t* rhs);
+            String  operator+ (const String& lhs, const String& rhs);
 #endif
 
 
+#if 0
             /**
              * @brief   Return true of the two argument strings are equal. This is equivilent to
              *              lhs.compare (rhs, co);
              */
             bool Equals (const String& lhs, const String& rhs, CompareOptions co = CompareOptions::eWithCase);
+#endif
 
 
             /**

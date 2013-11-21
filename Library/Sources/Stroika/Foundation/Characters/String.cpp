@@ -275,6 +275,16 @@ String  String::FromAscii (const string& from)
     return ASCIIStringToWide (from);
 }
 
+String  String::operator+ (const String& rhs) const
+{
+    if (rhs.empty ()) {
+        return *this;
+    }
+    Concrete::String_BufferedArray    tmp = Concrete::String_BufferedArray (*this, size () + rhs.size ());
+    tmp += rhs;
+    return tmp;
+}
+
 void    String::SetLength (size_t newLength)
 {
     try {
@@ -933,7 +943,7 @@ const Character*    String_Substring_::MyRep_::Peek () const
 
 
 
-
+#if 0
 /*
  ********************************************************************************
  ********************************** operator+ ***********************************
@@ -945,6 +955,7 @@ String  Stroika::Foundation::Characters::operator+ (const String& lhs, const Str
     tmp.InsertAt (rhs, tmp.GetLength ());
     return tmp;
 }
+#endif
 
 
 

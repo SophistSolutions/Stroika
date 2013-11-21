@@ -11,6 +11,7 @@
 #endif
 
 #include    "../../Characters/CString/Utilities.h"
+#include    "../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../../Characters/Format.h"
 #include    "../../Execution/Exceptions.h"
 #include    "../../Execution/StringException.h"
@@ -286,7 +287,7 @@ URL::URL (const String& w)
                     //Assert (fPort == ::_wtoi (testPort.c_str ()));
                 }
             }
-            Assert (testRelPath == fRelPath_ || testRelPath.find (':') != String::kBadIndex || ((L"/" + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testRelPath == fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((Characters::Concrete::String_Constant (L"/") + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
             Assert (testQuery == fQuery_ or not fFragment_.empty ()); // old code didn't check fragment
         }
     }
@@ -369,7 +370,7 @@ String URL::GetFullURL () const
     }
 
     if (not fHost_.empty ()) {
-        result += L"//" + fHost_;
+        result += Characters::Concrete::String_Constant (L"//") + fHost_;
         if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
@@ -379,11 +380,11 @@ String URL::GetFullURL () const
     result += fRelPath_;
 
     if (not fQuery_.empty ()) {
-        result += L"?" + fQuery_;
+        result += Characters::Concrete::String_Constant (L"?") + fQuery_;
     }
 
     if (not fFragment_.empty ()) {
-        result += L"#" + fFragment_;
+        result += Characters::Concrete::String_Constant (L"#") + fFragment_;
     }
 
     return result;
