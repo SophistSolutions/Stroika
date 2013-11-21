@@ -379,10 +379,14 @@ void    ObjectVariantMapper::ToObject (const type_index& forTypeInfo, const Vari
 
 ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::Lookup_ (const type_index& forTypeInfo) const
 {
-    Debug::TraceContextBumper   ctx (SDKSTR ("ObjectVariantMapper::Lookup_"));
-    DbgTrace ("(forTypeInfo = %s)", forTypeInfo.name ());
     TypeMappingDetails  foo (forTypeInfo, nullptr, nullptr);
     auto i  = fSerializers_.Lookup (foo);
+#if     qDebug
+    if (not i.IsPresent ()) {
+        Debug::TraceContextBumper   ctx (SDKSTR ("ObjectVariantMapper::Lookup_"));
+        DbgTrace ("(forTypeInfo = %s) - UnRegistered Type!", forTypeInfo.name ());
+    }
+#endif
     Require (i.IsPresent ());   // if not present, this is a usage error - only use types which are registered
     return *i;
 }
