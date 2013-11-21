@@ -673,19 +673,19 @@ int DateTime::Compare (const DateTime& rhs) const
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-Duration Time::operator- (const DateTime& lhs, const DateTime& rhs)
+DateTime DateTime::operator+ (const Duration& rhs) const
 {
-    return lhs.Difference (rhs);
+    return Add (rhs);
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-DateTime Time::operator+ (const DateTime& lhs, const Duration& rhs)
+DateTime DateTime::operator- (const Duration& rhs) const
 {
-    return lhs.Add (rhs);
+    return Add (-rhs);
 }
 
 // Define in .cpp file to avoid #include Duration in DateTime.h
-DateTime Time::operator- (const DateTime& lhs, const Duration& rhs)
+Duration DateTime::operator- (const DateTime& rhs) const
 {
-    return lhs.Add (-rhs);
+    return Difference (rhs);
 }

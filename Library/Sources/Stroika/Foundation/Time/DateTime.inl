@@ -61,30 +61,30 @@ namespace   Stroika {
             {
                 return fTimezone_;
             }
-			inline  bool    DateTime::operator< (const DateTime& rhs) const
-			{
-				return Compare (rhs) < 0;
-			}
-			inline  bool    DateTime::operator<= (const DateTime& rhs) const
-			{
-				return Compare (rhs) <= 0;
-			}
-			inline  bool    DateTime::operator> (const DateTime& rhs) const
-			{
-				return Compare (rhs) > 0;
-			}
-			inline  bool    DateTime::operator>= (const DateTime& rhs) const
-			{
-				return Compare (rhs) >= 0;
-			}
-			inline  bool    DateTime::operator== (const DateTime& rhs) const
-			{
-				return Compare (rhs) == 0;
-			}
-			inline  bool    DateTime::operator!= (const DateTime& rhs) const
-			{
-				return Compare (rhs) != 0;
-			}
+            inline  bool    DateTime::operator< (const DateTime& rhs) const
+            {
+                return Compare (rhs) < 0;
+            }
+            inline  bool    DateTime::operator<= (const DateTime& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            inline  bool    DateTime::operator> (const DateTime& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            inline  bool    DateTime::operator>= (const DateTime& rhs) const
+            {
+                return Compare (rhs) >= 0;
+            }
+            inline  bool    DateTime::operator== (const DateTime& rhs) const
+            {
+                return Compare (rhs) == 0;
+            }
+            inline  bool    DateTime::operator!= (const DateTime& rhs) const
+            {
+                return Compare (rhs) != 0;
+            }
 
 
             namespace Private_ {

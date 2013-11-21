@@ -52,7 +52,6 @@
  *              should alway use UTC? If we use localtime and the timezone changes while we are running
  *              (timezone or DST) - we could get funky results.
  *
- *
  *      @todo   (medium) Consider using strftime and strptime with %FT%T%z.
  *              Same format
  *              That doesn’t use std::locale()
@@ -317,8 +316,23 @@ namespace   Stroika {
 
 
             public:
-                // Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
+                /**
+                 *Returns the difference between the two DateTime records. This can then be easily converted to seconds, or days, or whatever
+                 */
                 nonvirtual  Duration    Difference (const DateTime& rhs) const;
+
+            public:
+                /**
+                 *  Syntactic sugar on Add()
+                 */
+                nonvirtual  DateTime operator+ (const Duration& rhs) const;
+
+            public:
+                /**
+                 *  Syntactic sugar on Add() or Difference()
+                 */
+                nonvirtual  DateTime operator- (const Duration& rhs) const;
+                nonvirtual  Duration operator- (const DateTime& rhs) const;
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
@@ -344,7 +358,7 @@ namespace   Stroika {
                 Date        fDate_;
                 TimeOfDay   fTimeOfDay_;
             };
-            /*
+            /**
              *  Returns seconds since midnight 1970 (its independent of timezone). This is UNIX 'Epoch time'.
              */
             template    <>
@@ -361,12 +375,6 @@ namespace   Stroika {
 #endif
             template    <>
             Date    DateTime::As () const;
-
-
-            DateTime operator+ (const DateTime& lhs, const Duration& rhs);
-            DateTime operator- (const DateTime& lhs, const Duration& rhs);
-
-            Duration operator- (const DateTime& lhs, const DateTime& rhs);
 
 
         }
