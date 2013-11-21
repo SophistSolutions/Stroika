@@ -34,7 +34,7 @@ namespace   Stroika {
             namespace   Concrete {
 
 
-				/**
+                /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Mapping<> container
                  *
                  *  Note - you can override the underlying factory dynamically by calling Mapping_Factory<T,TRAITS>::Register (), or
