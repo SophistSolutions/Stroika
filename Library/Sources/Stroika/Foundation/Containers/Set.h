@@ -61,6 +61,12 @@ namespace   Stroika {
                 typedef EQUALS_COMPARER EqualsCompareFunctionType;
 
                 RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+
+                /**
+                 *  Define typedef for this Set traits object (so other traits can generically allow recovery of the
+                 *  underlying Set's TRAITS objects.
+                 */
+                typedef Set_DefaultTraits<T, EQUALS_COMPARER>  SetTraitsType;
             };
 
 
@@ -73,6 +79,13 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
+             *
+             *  \em Concrete Implementations:
+             *      o   @see Concrete::Set_LinkedList<>
+             *      o   @see Concrete::Set_stdset<>
+             *
+             *  \em Factory:
+             *      @see Concrete::Set_Factory<> to see default implementations.
              */
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
             class   Set : public Iterable<T> {

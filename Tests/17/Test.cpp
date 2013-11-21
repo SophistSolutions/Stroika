@@ -55,6 +55,12 @@ namespace   {
     {
         using namespace CommonTests::SetTests;
 
+        struct  MySimpleClassWithoutComparisonOperators_CompareEquals_ {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2) {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
         struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2) {
@@ -64,7 +70,7 @@ namespace   {
                 return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
             }
         };
-        typedef SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_SETTRAITS;
+        typedef SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_SETTRAITS;
 
         RunTests_<SortedSet<size_t>> ();
         RunTests_<SortedSet<SimpleClass>> ();
@@ -83,4 +89,3 @@ int     main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
-

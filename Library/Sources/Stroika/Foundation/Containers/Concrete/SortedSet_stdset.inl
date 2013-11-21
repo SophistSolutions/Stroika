@@ -54,9 +54,9 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // SortedSet<T, TRAITS>::_IRep overrides
+                    // Set<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool                Equals (const typename Set<T, TRAITS>::_IRep& rhs) const override;
+                    virtual bool                Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const override;
                     virtual bool                Contains (T item) const override;
                     virtual Memory::Optional<T> Lookup (T item) const override;
                     virtual void                RemoveAll () override;
@@ -147,7 +147,7 @@ namespace   Stroika {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedSet_stdset<T, TRAITS>::Rep_::Equals (const typename Set<T, TRAITS>::_IRep& rhs) const
+                bool    SortedSet_stdset<T, TRAITS>::Rep_::Equals (const typename Set<T, typename TRAITS::SetTraitsType>::_IRep& rhs) const
                 {
                     return this->_Equals_Reference_Implementation (rhs);
                 }

@@ -36,9 +36,9 @@ namespace   Stroika {
                  *
                  */
                 template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
-                class   Set_LinkedList : public Set<T, TRAITS> {
+                class   Set_LinkedList : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
-                    typedef     Set<T, TRAITS>  inherited;
+                    typedef     Set<T, typename TRAITS::SetTraitsType>  inherited;
 
                 public:
                     Set_LinkedList ();

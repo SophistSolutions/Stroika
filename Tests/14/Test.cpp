@@ -36,10 +36,10 @@ namespace {
     {
         typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto extraChecksFunction = [] (const Set<ElementType, TraitsType>& s) {
+        auto extraChecksFunction = [] (const Set<ElementType, typename TraitsType::SetTraitsType>& s) {
             // only work todo on sorted sets
         };
-        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<ElementType, TraitsType>> (extraChecksFunction);
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, Set<ElementType, typename TraitsType::SetTraitsType>> (extraChecksFunction);
     }
 }
 
@@ -77,6 +77,7 @@ namespace   {
             };
             typedef Concrete::Set_stdset_DefaultTraits <
             SimpleClassWithoutComparisonOperators,
+            MySimpleClassWithoutComparisonOperators_CompareEquals_,
             MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
             >   SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS;
             DoTestForConcreteContainer_<Set_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperatorsSet_stdset_TRAITS>> ();

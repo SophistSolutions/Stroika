@@ -29,13 +29,15 @@ namespace   Stroika {
                 /**
                  *  Set_stdset requires its own traits (besides Set_DefaultTraits) because of the neeed for a compare function for std::set<>
                  */
-                template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-                struct   Set_stdset_DefaultTraits : Set_DefaultTraits <T, WELL_ORDER_COMPARER> {
+                template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+                struct   Set_stdset_DefaultTraits : Set_DefaultTraits <T, EQUALS_COMPARER> {
                     /**
                      */
                     typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
 
-                    RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+                    /**
+                     */
+                    RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
                 };
 
 
@@ -48,9 +50,9 @@ namespace   Stroika {
                  *
                  */
                 template    <typename T, typename TRAITS = Set_stdset_DefaultTraits<T>>
-                class   Set_stdset : public Set<T, TRAITS> {
+                class   Set_stdset : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
-                    typedef     Set<T, TRAITS>  inherited;
+                    typedef     Set<T, typename TRAITS::SetTraitsType>  inherited;
 
                 public:
                     /**
@@ -82,6 +84,16 @@ namespace   Stroika {
                     /**
                      */
                     nonvirtual  Set_stdset<T, TRAITS>& operator= (const Set_stdset<T, TRAITS>& rhs);
+
+                private:
+#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+                public:
+#endif
+                    class   Rep_;
+
+                private:
+                    nonvirtual  const Rep_&  GetRep_ () const;
+                    nonvirtual  Rep_&        GetRep_ ();
                 };
 
 

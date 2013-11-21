@@ -31,13 +31,15 @@ namespace   Stroika {
             /**
              *  \req    DEFAULT IMPLEMENTATION (with no args) - RequireConceptAppliesToTypeMemberOfClass(RequireOperatorLess, T);
              */
-            template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedSet_DefaultTraits : Set_DefaultTraits <T, WELL_ORDER_COMPARER> {
+            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
+            struct   SortedSet_DefaultTraits : Set_DefaultTraits <T, EQUALS_COMPARER> {
                 /**
                  */
                 typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
 
-                RequireConceptAppliesToTypeMemberOfClass(Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
+                /**
+                */
+                RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, WellOrderCompareFunctionType);
             };
 
 
@@ -47,9 +49,9 @@ namespace   Stroika {
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
-            class   SortedSet : public Set<T, TRAITS> {
+            class   SortedSet : public Set<T, typename TRAITS::SetTraitsType> {
             private:
-                typedef     Set<T, TRAITS> inherited;
+                typedef     Set<T, typename TRAITS::SetTraitsType> inherited;
 
             public:
                 /**
@@ -98,7 +100,7 @@ namespace   Stroika {
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T, typename TRAITS>
-            class   SortedSet<T, TRAITS>::_IRep : public Set<T, TRAITS>::_IRep {
+            class   SortedSet<T, TRAITS>::_IRep : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
             };
 
 
