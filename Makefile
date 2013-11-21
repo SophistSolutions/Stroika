@@ -17,7 +17,7 @@ help:
 	@echo "    check-tools:            -    check the tools needed to build stroika are installed."
 
 all:		TOOLS_CHECKED apply-configurations-if-needed
-	./buildall.pl build
+	@./buildall.pl build
 
 
 check:
@@ -60,13 +60,13 @@ check-tools:	TOOLS_CHECKED
 
 
 apply-configurations-if-needed:
-	@test -e APPLIED_CONFIGURATIONS || make apply-configurations
+	@test -e IntermediateFiles/APPLIED_CONFIGURATIONS || make apply-configurations
 
 apply-configurations:
 	@#todo - must enahnce to support multiple configs
 	@# must check here/fail if zero configs and direct user to call make default-configuration
 	@perl ApplyConfiguration.pl --only-if-unconfigured
-	@touch APPLIED_CONFIGURATIONS
+	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 default-configuration:
 	@perl GenerateConfiguration.pl --default-for-platform
