@@ -521,7 +521,7 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     if (isNeg) {
         result += "-";
     }
-    result + "P";
+    result += "P";
     if (timeLeft >= kSecondsPerYear) {
         unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
         if (nYears != 0) {
