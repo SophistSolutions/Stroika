@@ -83,7 +83,7 @@ if ((lc ($BLD_TRG) eq "clobber") or (lc ($BLD_TRG) eq "clean") or (lc ($BLD_TRG)
 }
 
 if ($isBuildingMode) {
-	system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
+	#system ("perl configure.pl --only-if-unconfigured $useExtraConfigDefines");
 }
 
 require "ScriptsLib/BuildUtils.pl";

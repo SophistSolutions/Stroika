@@ -7,6 +7,8 @@
 use constant false => 0;
 use constant true  => 1;
 
+print ("configure.pl script obsolete!!!\n");
+exit (1);
 
 my @genConfigureArgs;
 my @applyConfigureArgs;
