@@ -60,6 +60,12 @@ sub	DoHelp_
 	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
 	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
 	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured*/\n");
+	print("	    --has-xerces                 /* enables openssl for the configuration being configured*/\n");
+	print("	    --no-has-xerces              /* disables openssl for the configuration being configured*/\n");
+	print("	    --has-openssl                /* enables openssl for the configuration being configured*/\n");
+	print("	    --no-has-openssl             /* disables openssl for the configuration being configured*/\n");
+	print("	    --has-winhttp                /* enables winhttp for the configuration being configured*/\n");
+	print("	    --no-has-winhttp             /* disables winhttp for the configuration being configured*/\n");
 	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
 	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured*/\n");
 	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
@@ -244,6 +250,12 @@ sub	ParseCommandLine_Remaining_
 		}
 		elsif ((lc ($var) eq "-no-has-winhttp") or (lc ($var) eq "--no-has-winhttp")) {
 			$ENABLE_WINHTTP = 0;
+		}
+		elsif ((lc ($var) eq "-has-xerces") or (lc ($var) eq "--has-xerces")) {
+			$useThirdPartyXerces = 1;
+		}
+		elsif ((lc ($var) eq "-no-has-xerces") or (lc ($var) eq "--no-has-xerces")) {
+			$useThirdPartyXerces = 0;
 		}
 		elsif ((lc ($var) eq "-enable-trace2file") or (lc ($var) eq "--enable-trace2file")) {
 			$ENABLE_TRACE2FILE = 1;
