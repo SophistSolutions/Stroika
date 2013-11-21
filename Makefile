@@ -16,7 +16,7 @@ help:
 	@echo "    default-configuration:  -    creates the default configuration in Configurations folder"
 	@echo "    check-tools:            -    check the tools needed to build stroika are installed."
 
-all:		TOOLS_CHECKED apply-configurations-if-needed
+all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@./buildall.pl build
 
 
@@ -28,19 +28,19 @@ clean:
 
 clobber:
 	./buildall.pl clobber
-	rm -f TOOLS_CHECKED apply-configurations-if-needed
+	rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 
-tests:	TOOLS_CHECKED apply-configurations-if-needed
+tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@./buildall.pl build
 
-run-tests:	TOOLS_CHECKED apply-configurations-if-needed
+run-tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@./buildall.pl build+
 
 
 # useful internal check to make sure users dont run/build while missing key components that will
 # just fail later
 # but dont check if already checked
-TOOLS_CHECKED:
+IntermediateFiles/TOOLS_CHECKED:
 	@# no point in checking make ;-)
 	@hash wget &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: wget not found" && exit 1); fi
 	@hash perl &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: perl not found" && exit 1); fi
@@ -51,10 +51,10 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@hash dos2unix &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: dos2unix not found" && exit 1); fi
 	@hash unix2dos &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: unix2dos not found" && exit 1); fi
 endif
-	@touch TOOLS_CHECKED
+	@touch IntermediateFiles/TOOLS_CHECKED
 
 # Force TOOLS_CHECKED test
-check-tools:	TOOLS_CHECKED
+check-tools:	IntermediateFiles/TOOLS_CHECKED
 	@echo "Tools present"
 
 
