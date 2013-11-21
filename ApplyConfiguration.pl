@@ -393,6 +393,10 @@ sub WriteStroikaConfigCHeader
 
 sub WriteStroikaConfigMakeHeader
 {
+	mkdir ("$intermediateFiles");
+	mkdir ("$intermediateFiles$currentConfiguration");
+	mkdir ("$intermediateFiles$currentConfiguration/Library");
+	
 	open(OUT,">$configFileMakeName");
 	print (OUT "#\n");
 	print (OUT "#Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved\n");
