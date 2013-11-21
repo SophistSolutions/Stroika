@@ -3,6 +3,8 @@
  */
 #include    "../StroikaPreComp.h"
 
+#include    <cmath>
+
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Assertions.h"
@@ -523,14 +525,20 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
     }
     result += "P";
     if (timeLeft >= kSecondsPerYear) {
-        unsigned int    nYears = static_cast<unsigned int> (timeLeft / kSecondsPerYear);
-        if (nYears != 0) {
+        InternalNumericFormatType_    nYears = trunc (timeLeft / kSecondsPerYear);
+        Assert (nYears > 0.0);
+        if (nYears > 0.0) {
             char buf[1024];
-            (void)snprintf (buf, sizeof (buf), "%dY", nYears);
+            (void)snprintf (buf, sizeof (buf), "%.0LfY", nYears);
             result += buf;
             timeLeft -= nYears * kSecondsPerYear;
+            if (isinf (timeLeft)) {
+                // some date numbers are so large, we cannot compute a number of days, weeks etc
+                timeLeft = 0.0;
+            }
         }
     }
+    Assert (timeLeft < kSecondsPerYear);
     if (timeLeft >= kSecondsPerMonth) {
         unsigned int    nMonths = static_cast<unsigned int> (timeLeft / kSecondsPerMonth);
         if (nMonths != 0) {
@@ -549,7 +557,8 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
             timeLeft -= nDays * kSecondsPerDay;
         }
     }
-    if (timeLeft != 0) {
+    Assert (timeLeft >= 0.0);
+    if (timeLeft > 0) {
         result += "T";
         if (timeLeft >= kSecondsPerHour) {
             unsigned int    nHours = static_cast<unsigned int> (timeLeft / kSecondsPerHour);
@@ -569,10 +578,11 @@ string  Duration::UnParseTime_ (InternalNumericFormatType_ t)
                 timeLeft -= nMinutes * kSecondsPerMinute;
             }
         }
-        if (timeLeft != 0) {
+        Assert (timeLeft >= 0.0);
+        if (timeLeft > 0.0) {
             char buf[10 * 1024];
             buf[0] = '\0';
-            (void)snprintf (buf, sizeof (buf), "%.1000f", timeLeft);
+            (void)snprintf (buf, sizeof (buf), "%.1000f", static_cast<double> (timeLeft));
             TrimTrailingZerosInPlace_ (buf);
             result += buf;
             result += "S";
