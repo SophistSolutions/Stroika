@@ -21,6 +21,8 @@
  *  \file
  *
  * TODO:
+ *      @todo   Redo SAXParse() using factory style - like we have for IO::Networking::Transfer (curl or winhttp)
+ *              then have ability to check for registered impl (and select impl) for SAX backend)
  *
  */
 
@@ -53,7 +55,6 @@ namespace   Stroika {
                 };
 
 
-#if     qHasLibrary_Xerces
                 /**
                  * Parse will throw an exception if it encouters any errors parsing.
                  */
@@ -61,7 +62,6 @@ namespace   Stroika {
 
                 //SCHEMA STUFF NYI - SEE RFLLIB XMLDB
                 //void  SAXParse (istream& in, const Schema& schema, CallbackInterface& callback, Execution::ProgressMontior* progress = nullptr);
-#endif
 
 
             }

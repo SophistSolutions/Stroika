@@ -75,6 +75,7 @@ using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
 
+#if     qHasLibrary_Xerces
 namespace {
     String xercesString2String_ (const XMLCh* t)
     {
@@ -90,6 +91,7 @@ namespace {
         }
     }
 }
+#endif
 
 
 
@@ -305,6 +307,7 @@ namespace   {
  ************************ Private::UsingModuleHelper ****************************
  ********************************************************************************
  */
+#if     qHasLibrary_Xerces
 namespace   {
 #if     qDebug
     atomic<uint32_t>    sStdIStream_InputStream_COUNT_ (0);
@@ -392,6 +395,7 @@ UsingModuleHelper::~UsingModuleHelper ()
 }
 
 UsingModuleHelper   sUsingModuleHelper_;        // not sure how we want to control lifetime of this object!!!
+#endif
 
 
 #if     qHasLibrary_Xerces
@@ -583,9 +587,11 @@ namespace   {
         }
     };
 }
+#endif
 
 void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterface& callback, Execution::ProgressMonitor::Updater progres)
 {
+#if     qHasLibrary_Xerces
     SAX2PrintHandlers_  handler (callback);
     shared_ptr<SAX2XMLReader>    parser  =   shared_ptr<SAX2XMLReader> (XMLReaderFactory::createXMLReader (XMLPlatformUtils::fgMemoryManager));
     SetupCommonParserFeatures_ (*parser, false);
@@ -594,6 +600,9 @@ void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterfac
     //const XMLCh kBufID[] = L"SAX::Parse";
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progres, 0.1f, 0.9f), kBufID));
+#else
+    Execution::DoThrow (Execution::StringException (L"No registered SAXParse implementation"));  // not sure what to throw
+#endif
 }
 
 #if 0
@@ -613,6 +622,5 @@ void    XML::SAXParse (istream& in, const Schema& schema, SAXCallbackInterface& 
         Parse (in, callback, progressCallback);
     }
 }
-#endif
 #endif
 
