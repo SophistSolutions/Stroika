@@ -20,13 +20,15 @@ namespace   Stroika {
              ***************************** Implementation Details ***************************
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   T>
             T   BasicBinaryInputOutputStream::As () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
-            }
 #endif
+            }
 
 
         }

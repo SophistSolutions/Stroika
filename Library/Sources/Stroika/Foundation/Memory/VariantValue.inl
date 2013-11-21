@@ -110,13 +110,15 @@ namespace   Stroika {
             {
                 return AsString_ ();
             }
-#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   RETURNTYPE>
             RETURNTYPE VariantValue::As () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
-            }
 #endif
+            }
             inline  bool    VariantValue::operator== (const VariantValue& rhs) const
             {
                 return Equals (rhs);

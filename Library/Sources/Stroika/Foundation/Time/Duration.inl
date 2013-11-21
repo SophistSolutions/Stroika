@@ -22,13 +22,15 @@ namespace   Stroika {
             ***************************** Implementation Details ***************************
             ********************************************************************************
             */
-#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename T>
             T   Duration::As () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
-            }
 #endif
+            }
             inline  bool Duration::operator<= (const Duration& rhs) const
             {
                 return Compare (rhs) <= 0;

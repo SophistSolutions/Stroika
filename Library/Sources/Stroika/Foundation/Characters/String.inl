@@ -162,38 +162,60 @@ namespace   Stroika {
                 Require (i < GetLength ());
                 return (_fRep->GetAt (i));
             }
-#if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename   T>
             T   String::As () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
+#endif
             }
             template    <typename   T>
             void    String::As (T* into) const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
+#endif
             }
             template    <typename   T>
             T   String::AsUTF8 () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
+#endif
             }
             template    <typename   T>
             void    String::AsUTF8 (T* into) const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
+#endif
             }
             template    <typename   T>
             T   String::AsASCII () const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
+#endif
             }
             template    <typename   T>
             void    String::AsASCII (T* into) const
             {
+#if     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+                RequireNotReached ();
+#else
                 static_assert (false, "Only specifically specialized variants are supported");
-            }
 #endif
+            }
             template    <>
             inline  void    String::As (wstring* into) const
             {
