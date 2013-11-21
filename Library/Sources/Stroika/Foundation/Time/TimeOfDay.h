@@ -219,14 +219,20 @@ namespace   Stroika {
                  */
                 nonvirtual  int Compare (const TimeOfDay& rhs) const;
 
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const TimeOfDay& rhs)
+                 */
+                nonvirtual  bool    operator< (const TimeOfDay& rhs) const;
+                nonvirtual  bool    operator<= (const TimeOfDay& rhs) const;
+                nonvirtual  bool    operator> (const TimeOfDay& rhs) const;
+                nonvirtual  bool    operator>= (const TimeOfDay& rhs) const;
+                nonvirtual  bool    operator== (const TimeOfDay& rhs) const;
+                nonvirtual  bool    operator!= (const TimeOfDay& rhs) const;
+
             private:
                 uint32_t    fTime_;
             };
-
-            bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs);
-            bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs);
-            bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs);
-            bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs);
 
 
             class   TimeOfDay::FormatException : public Execution::StringException {

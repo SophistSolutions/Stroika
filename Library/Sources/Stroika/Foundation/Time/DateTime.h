@@ -328,6 +328,17 @@ namespace   Stroika {
                 // unknown, they will both be treated as the same timezone. Otherwise, they will BOTH be converted to GMT, and compared as GMT.
                 nonvirtual  int Compare (const DateTime& rhs) const;
 
+            public:
+                /**
+                *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const DateTime& rhs)
+                */
+                nonvirtual  bool    operator< (const DateTime& rhs) const;
+                nonvirtual  bool    operator<= (const DateTime& rhs) const;
+                nonvirtual  bool    operator> (const DateTime& rhs) const;
+                nonvirtual  bool    operator>= (const DateTime& rhs) const;
+                nonvirtual  bool    operator== (const DateTime& rhs) const;
+                nonvirtual  bool    operator!= (const DateTime& rhs) const;
+
             private:
                 Timezone    fTimezone_;
                 Date        fDate_;
@@ -351,13 +362,6 @@ namespace   Stroika {
             template    <>
             Date    DateTime::As () const;
 
-
-            bool operator< (const DateTime& lhs, const DateTime& rhs);
-            bool operator<= (const DateTime& lhs, const DateTime& rhs);
-            bool operator> (const DateTime& lhs, const DateTime& rhs);
-            bool operator>= (const DateTime& lhs, const DateTime& rhs);
-            bool operator== (const DateTime& lhs, const DateTime& rhs);
-            bool operator!= (const DateTime& lhs, const DateTime& rhs);
 
             DateTime operator+ (const DateTime& lhs, const Duration& rhs);
             DateTime operator- (const DateTime& lhs, const Duration& rhs);

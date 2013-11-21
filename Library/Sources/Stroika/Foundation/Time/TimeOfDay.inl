@@ -64,21 +64,29 @@ namespace   Stroika {
                     return rhs.empty () ? 1 : (GetAsSecondsCount () - rhs.GetAsSecondsCount ());
                 }
             }
-            inline  bool operator< (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            inline  bool    TimeOfDay::operator< (const TimeOfDay& rhs) const
             {
-                return lhs.Compare (rhs) < 0;
+                return Compare (rhs) < 0;
             }
-            inline  bool operator> (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            inline  bool    TimeOfDay::operator<= (const TimeOfDay& rhs) const
             {
-                return lhs.Compare (rhs) > 0;
+                return Compare (rhs) <= 0;
             }
-            inline  bool operator== (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            inline  bool    TimeOfDay::operator> (const TimeOfDay& rhs) const
             {
-                return lhs.Compare (rhs) == 0;
+                return Compare (rhs) > 0;
             }
-            inline  bool operator!= (const TimeOfDay& lhs, const TimeOfDay& rhs)
+            inline  bool    TimeOfDay::operator>= (const TimeOfDay& rhs) const
             {
-                return lhs.Compare (rhs) != 0;
+                return Compare (rhs) >= 0;
+            }
+            inline  bool    TimeOfDay::operator== (const TimeOfDay& rhs) const
+            {
+                return Compare (rhs) == 0;
+            }
+            inline  bool    TimeOfDay::operator!= (const TimeOfDay& rhs) const
+            {
+                return Compare (rhs) != 0;
             }
 
 

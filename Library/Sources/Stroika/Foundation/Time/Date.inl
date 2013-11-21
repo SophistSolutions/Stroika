@@ -71,27 +71,29 @@ namespace   Stroika {
                     return l < r ? -1 : 1;
                 }
             }
-
-
-            inline  bool operator<= (const Date& lhs, const Date& rhs)
+            inline  bool    Date::operator< (const Date& rhs) const
             {
-                return lhs.Compare (rhs) <= 0;
+                return Compare (rhs) < 0;
             }
-            inline  bool operator< (const Date& lhs, const Date& rhs)
+            inline  bool    Date::operator<= (const Date& rhs) const
             {
-                return lhs.Compare (rhs) < 0;
+                return Compare (rhs) <= 0;
             }
-            inline  bool operator> (const Date& lhs, const Date& rhs)
+            inline  bool    Date::operator> (const Date& rhs) const
             {
-                return lhs.Compare (rhs) > 0;
+                return Compare (rhs) > 0;
             }
-            inline  bool operator== (const Date& lhs, const Date& rhs)
+            inline  bool    Date::operator>= (const Date& rhs) const
             {
-                return lhs.Compare (rhs) == 0;
+                return Compare (rhs) >= 0;
             }
-            inline  bool operator!= (const Date& lhs, const Date& rhs)
+            inline  bool    Date::operator== (const Date& rhs) const
             {
-                return lhs.Compare (rhs) != 0;
+                return Compare (rhs) == 0;
+            }
+            inline  bool    Date::operator!= (const Date& rhs) const
+            {
+                return Compare (rhs) != 0;
             }
 
 

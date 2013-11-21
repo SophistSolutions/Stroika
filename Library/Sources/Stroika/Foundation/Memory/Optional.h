@@ -199,6 +199,9 @@ namespace   Stroika {
                 nonvirtual  int Compare (const Optional<T>& rhs) const;
 
             public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Optional<T, TRAITS>& rhs)
+                 */
                 nonvirtual  bool    operator< (const Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator<= (const Optional<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator> (const Optional<T, TRAITS>& rhs) const;

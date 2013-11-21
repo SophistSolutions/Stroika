@@ -358,6 +358,17 @@ namespace   Stroika {
                 // this comparison function - see the notes about 'empty' in the class description.
                 nonvirtual  int Compare (const Date& rhs) const;
 
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Date& rhs)
+                 */
+                nonvirtual  bool    operator< (const Date& rhs) const;
+                nonvirtual  bool    operator<= (const Date& rhs) const;
+                nonvirtual  bool    operator> (const Date& rhs) const;
+                nonvirtual  bool    operator>= (const Date& rhs) const;
+                nonvirtual  bool    operator== (const Date& rhs) const;
+                nonvirtual  bool    operator!= (const Date& rhs) const;
+
             private:
                 JulianRepType   fJulianDateRep_;
             };
@@ -369,11 +380,6 @@ namespace   Stroika {
             };
 
 
-            bool operator< (const Date& lhs, const Date& rhs);
-            bool operator<= (const Date& lhs, const Date& rhs);
-            bool operator> (const Date& lhs, const Date& rhs);
-            bool operator== (const Date& lhs, const Date& rhs);
-            bool operator!= (const Date& lhs, const Date& rhs);
 
             int DayDifference (const Date& lhs, const Date& rhs);
             int YearDifference (const Date& lhs, const Date& rhs);
