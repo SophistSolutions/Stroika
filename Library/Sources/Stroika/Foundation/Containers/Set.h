@@ -200,13 +200,21 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Alias for Union
                  */
                 nonvirtual  Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**
+                 *  Alias for Difference.
                  */
                 nonvirtual  Set<T, TRAITS>   operator- (const Set<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                *   Alias for Intersection.
+                */
+                nonvirtual  Set<T, TRAITS>   operator^ (const Set<T, TRAITS>& rhs) const;
 
             public:
                 /**

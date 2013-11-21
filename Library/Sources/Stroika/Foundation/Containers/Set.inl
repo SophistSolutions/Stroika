@@ -197,6 +197,11 @@ namespace   Stroika {
                 return Difference (rhs);
             }
             template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator^ (const Set<T, TRAITS>& rhs) const
+            {
+                return Intersection (rhs);
+            }
+            template    <typename T, typename TRAITS>
             inline  bool  Set<T, TRAITS>::operator== (const Set<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
