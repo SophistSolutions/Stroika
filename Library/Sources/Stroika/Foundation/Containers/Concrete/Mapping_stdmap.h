@@ -35,8 +35,6 @@ namespace   Stroika {
                      */
                     typedef KEY_WELL_ORDER_COMPARER KeyWellOrderCompareFunctionType;
 
-                    typedef Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  MappingTraitsType;
-
                     RequireConceptAppliesToTypeMemberOfClass (Concept_WellOrderCompareFunctionType, KeyWellOrderCompareFunctionType);
                 };
 

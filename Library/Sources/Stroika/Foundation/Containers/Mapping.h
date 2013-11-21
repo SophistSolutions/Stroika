@@ -95,6 +95,14 @@ namespace   Stroika {
              *              more readable usage (foo.fKey versus foo.first, and foo.fValue verus foo.second).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+             *
+             *  \em Concrete Implementations:
+             *      o   @see Concrete::Mapping_Array<>
+             *      o   @see Concrete::Mapping_LinkedList<>
+             *      o   @see Concrete::Mapping_stdmap<>
+             *
+             *  \em Factory:
+             *      @see Concrete::Mapping_Factory<> to see default implementations.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
