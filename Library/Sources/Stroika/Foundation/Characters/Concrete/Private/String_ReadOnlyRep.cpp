@@ -57,7 +57,7 @@ inline  int ReadOnlyRep::_Rep::Compare_CS_ (const Character* rhsStart, const Cha
     size_t rLen = (rhsEnd - rhsStart);
     size_t length   =   min (lLen, rLen);
     for (size_t i = 0; i < length; i++) {
-        if (_fStart[i] != rhsStart[i]) {
+        if (_fStart[i] != rhsStart[i].GetCharacterCode ()) {
             return (_fStart[i] - rhsStart[i].GetCharacterCode ());
         }
     }

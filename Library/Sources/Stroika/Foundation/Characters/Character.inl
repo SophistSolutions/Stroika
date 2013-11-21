@@ -11,6 +11,7 @@
  ********************************************************************************
  */
 #include    <cwctype>
+#include    <type_traits>
 
 #include    "../Debug/Assertions.h"
 
@@ -117,37 +118,34 @@ namespace   Stroika {
                     return fCharacterCode_;
                 }
             }
-
-
-            inline  bool    operator== (Character lhs, Character rhs)
+            inline  int Character::Compare (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () == rhs.GetCharacterCode ());
+                typedef make_signed<wchar_t>::type  SIGNED_WCHART_;
+                return static_cast<SIGNED_WCHART_> (GetCharacterCode ()) - static_cast<SIGNED_WCHART_> (rhs.GetCharacterCode ());
             }
-            inline  bool    operator!= (Character lhs, Character rhs)
+            inline  bool    Character::operator< (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () != rhs.GetCharacterCode ());
+                return Compare (rhs) < 0;
             }
-            inline  bool    operator>= (Character lhs, Character rhs)
+            inline  bool    Character::operator<= (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () >= rhs.GetCharacterCode ());
+                return Compare (rhs) <= 0;
             }
-            inline  bool    operator> (Character lhs, Character rhs)
+            inline  bool    Character::operator> (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () > rhs.GetCharacterCode ());
+                return Compare (rhs) > 0;
             }
-            inline  bool    operator<= (Character lhs, Character rhs)
+            inline  bool    Character::operator>= (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () <= rhs.GetCharacterCode ());
+                return Compare (rhs) >= 0;
             }
-            inline  bool    operator< (Character lhs, Character rhs)
+            inline  bool    Character::operator== (Character rhs) const
             {
-                // not sure what do do if characer sets differ?
-                return (lhs.GetCharacterCode () < rhs.GetCharacterCode ());
+                return Compare (rhs) == 0;
+            }
+            inline  bool    Character::operator!= (Character rhs) const
+            {
+                return Compare (rhs) != 0;
             }
 
 

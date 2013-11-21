@@ -128,6 +128,24 @@ namespace   Stroika {
                  */
                 nonvirtual  Character   ToUpperCase () const;
 
+
+            public:
+                /**
+                *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                */
+                nonvirtual  int Compare (Character rhs) const;
+
+            public:
+                /**
+                *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
+                */
+                nonvirtual  bool operator< (Character rhs) const;
+                nonvirtual  bool operator<= (Character rhs) const;
+                nonvirtual  bool operator> (Character rhs) const;
+                nonvirtual  bool operator>= (Character rhs) const;
+                nonvirtual  bool operator== (Character rhs) const;
+                nonvirtual  bool operator!= (Character rhs) const;
+
             private:
                 wchar_t     fCharacterCode_;
             };
@@ -146,14 +164,6 @@ namespace   Stroika {
             {
                 return reinterpret_cast<const wchar_t*> (c);
             }
-
-
-            bool    operator== (Character lhs, Character rhs);
-            bool    operator!= (Character lhs, Character rhs);
-            bool    operator>= (Character lhs, Character rhs);
-            bool    operator> (Character lhs, Character rhs);
-            bool    operator<= (Character lhs, Character rhs);
-            bool    operator< (Character lhs, Character rhs);
 
 
         }

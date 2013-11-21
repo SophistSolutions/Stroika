@@ -180,7 +180,7 @@ namespace   {
         VerifyTestResult (s1 + s1 == s2 + s2);
         VerifyTestResult ((s1 + s1).GetLength () == s1.GetLength () * 2);
         VerifyTestResult (s1[2] == 's');
-        VerifyTestResult ('s' == s1[2]);
+        VerifyTestResult ('s' == s1[2].GetCharacterCode ());
         VerifyTestResult (s1.GetLength () == 12);
 
         String s3;
