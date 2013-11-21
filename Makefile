@@ -10,6 +10,7 @@ help:
 	@echo "    check:                  -    checks everything built properly"
 	@echo "    clean:"
 	@echo "    clobber:"
+	@echo "    libraries:              -	builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
 	@echo "    tests:"
 	@echo "    run-tests:"
 	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuraitons folder"
@@ -29,6 +30,10 @@ clean:
 clobber:
 	./buildall.pl clobber
 	rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
+
+libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
+	#NYI correctly - this also builds tests/demos etc
+	@./buildall.pl build
 
 tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@./buildall.pl build
