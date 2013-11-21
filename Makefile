@@ -11,6 +11,7 @@ help:
 	@echo "    clean:"
 	@echo "    clobber:"
 	@echo "    libraries:              -	builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
+	@echo "    project-files:          -	builds project files for things like visual studio.net etc (NYI)"
 	@echo "    tests:"
 	@echo "    run-tests:"
 	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuraitons folder"
@@ -34,6 +35,9 @@ clobber:
 libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	#NYI correctly - this also builds tests/demos etc
 	@./buildall.pl build
+
+project-files:
+	@echo NYI
 
 tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 	@./buildall.pl build
