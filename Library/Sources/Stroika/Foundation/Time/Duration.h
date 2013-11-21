@@ -188,6 +188,14 @@ namespace   Stroika {
                 // this comparison function - see the notes about 'empty' in the class description.
                 nonvirtual  int Compare (const Duration& rhs) const;
 
+            public:
+                nonvirtual  bool operator< (const Duration& rhs) const;
+                nonvirtual  bool operator<= (const Duration& rhs) const;
+                nonvirtual  bool operator> (const Duration& rhs) const;
+                nonvirtual  bool operator>= (const Duration& rhs) const;
+                nonvirtual  bool operator== (const Duration& rhs) const;
+                nonvirtual  bool operator!= (const Duration& rhs) const;
+
             private:
 #if     !qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
             public:
@@ -224,12 +232,6 @@ namespace   Stroika {
             chrono::microseconds  Duration::As () const;
             template    <>
             chrono::nanoseconds  Duration::As () const;
-
-            bool operator< (const Duration& lhs, const Duration& rhs);
-            bool operator<= (const Duration& lhs, const Duration& rhs);
-            bool operator> (const Duration& lhs, const Duration& rhs);
-            bool operator== (const Duration& lhs, const Duration& rhs);
-            bool operator!= (const Duration& lhs, const Duration& rhs);
 
 
             class   Duration::FormatException : public Execution::StringException {

@@ -10,12 +10,18 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include "../Execution/Exceptions.h"
+#include    "../Execution/Exceptions.h"
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
 
+
+            /*
+            ********************************************************************************
+            ***************************** Implementation Details ***************************
+            ********************************************************************************
+            */
 #if     !qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
             template    <typename T>
             T   Duration::As () const
@@ -23,26 +29,29 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
             }
 #endif
-
-            inline  bool operator<= (const Duration& lhs, const Duration& rhs)
+            inline  bool Duration::operator<= (const Duration& rhs) const
             {
-                return lhs.Compare (rhs) <= 0;
+                return Compare (rhs) <= 0;
             }
-            inline  bool operator< (const Duration& lhs, const Duration& rhs)
+            inline  bool Duration::operator< (const Duration& rhs) const
             {
-                return lhs.Compare (rhs) < 0;
+                return Compare (rhs) < 0;
             }
-            inline  bool operator> (const Duration& lhs, const Duration& rhs)
+            inline  bool Duration::operator> (const Duration& rhs) const
             {
-                return lhs.Compare (rhs) > 0;
+                return Compare (rhs) > 0;
             }
-            inline  bool operator== (const Duration& lhs, const Duration& rhs)
+            inline  bool Duration::operator>= (const Duration& rhs) const
             {
-                return lhs.Compare (rhs) == 0;
+                return Compare (rhs) >= 0;
             }
-            inline  bool operator!= (const Duration& lhs, const Duration& rhs)
+            inline  bool Duration::operator== (const Duration& rhs) const
             {
-                return lhs.Compare (rhs) != 0;
+                return Compare (rhs) == 0;
+            }
+            inline  bool Duration::operator!= (const Duration& rhs) const
+            {
+                return Compare (rhs) != 0;
             }
 
 
