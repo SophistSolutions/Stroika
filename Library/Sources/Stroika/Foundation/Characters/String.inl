@@ -286,111 +286,96 @@ namespace   Stroika {
                 pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
                 return _fRep->Compare (d.first, d.second, co);
             }
+            inline  int String::Compare (const Character* rhs, CompareOptions co) const
+            {
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                return _fRep->Compare (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (reinterpret_cast<const wchar_t*> (rhs)), co);
+            }
             inline  int String::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
             {
                 return _fRep->Compare (rhsStart, rhsEnd, co);
+            }
+            inline  int String::Compare (const wchar_t* rhs, CompareOptions co) const
+            {
+                static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
+                return _fRep->Compare (reinterpret_cast<const Character*> (rhs), reinterpret_cast<const Character*> (rhs) + ::wcslen (rhs), co);
             }
             inline  int String::Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co) const
             {
                 static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
                 return _fRep->Compare (reinterpret_cast<const Character*> (rhsStart), reinterpret_cast<const Character*> (rhsEnd), co);
             }
-
-
-            /*
-            ********************************************************************************
-            ******************************* Operators **************************************
-            ********************************************************************************
-            */
-            inline  bool    operator== (const String& lhs, const String& rhs)
+            inline  bool String::operator<= (const String& rhs) const
             {
-                if (lhs._fRep == rhs._fRep) {
-                    return (true);
-                }
-                pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) == 0;
+                return Compare (rhs) <= 0;
             }
-            inline  bool    operator== (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator< (const String& rhs) const
             {
-                RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) == 0;
+                return Compare (rhs) < 0;
             }
-            inline  bool    operator== (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator> (const String& rhs) const
             {
-                RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) == 0;
+                return Compare (rhs) > 0;
             }
-            inline  bool    operator< (const String& lhs, const String& rhs)
+            inline  bool String::operator>= (const String& rhs) const
             {
-                if (lhs._fRep == rhs._fRep) {
-                    return (false);
-                }
-                pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) < 0;
+                return Compare (rhs) >= 0;
             }
-            inline  bool    operator< (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator== (const String& rhs) const
             {
-                RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) >= 0;
+                return Compare (rhs) == 0;
             }
-            inline  bool    operator< (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator!= (const String& rhs) const
             {
-                RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) < 0;
+                return Compare (rhs) != 0;
             }
-            inline  bool    operator<= (const String& lhs, const String& rhs)
+            inline  bool String::operator<= (const Character* rhs) const
             {
-                if (lhs._fRep == rhs._fRep) {
-                    return (false);
-                }
-                pair<const Character*, const Character*> d   =   rhs._fRep->GetData ();
-                return lhs.Compare (d.first, d.second, CompareOptions::eWithCase) <= 0;
+                return Compare (rhs) <= 0;
             }
-            inline  bool    operator<= (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator< (const Character* rhs) const
             {
-                RequireNotNull (lhs);
-                return rhs.Compare (lhs, lhs + ::wcslen (lhs), CompareOptions::eWithCase) > 0;
+                return Compare (rhs) < 0;
             }
-            inline  bool    operator<= (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator> (const Character* rhs) const
             {
-                RequireNotNull (rhs);
-                return lhs.Compare (rhs, rhs + ::wcslen (rhs), CompareOptions::eWithCase) <= 0;
+                return Compare (rhs) > 0;
             }
-            inline  bool    operator!= (const String& lhs, const String& rhs)
+            inline  bool String::operator>= (const Character* rhs) const
             {
-                return (bool (not (lhs == rhs)));
+                return Compare (rhs) >= 0;
             }
-            inline  bool    operator!= (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator== (const Character* rhs) const
             {
-                return (bool (not (lhs == rhs)));
+                return Compare (rhs) == 0;
             }
-            inline  bool    operator!= (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator!= (const Character* rhs) const
             {
-                return (bool (not (lhs == rhs)));
+                return Compare (rhs) != 0;
             }
-            inline  bool    operator> (const String& lhs, const String& rhs)
+            inline  bool String::operator<= (const wchar_t* rhs) const
             {
-                return (bool (not (lhs <= rhs)));
+                return Compare (rhs) <= 0;
             }
-            inline  bool    operator> (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator< (const wchar_t* rhs) const
             {
-                return (bool (not (lhs <= rhs)));
+                return Compare (rhs) < 0;
             }
-            inline  bool    operator> (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator> (const wchar_t* rhs) const
             {
-                return (bool (not (lhs <= rhs)));
+                return Compare (rhs) > 0;
             }
-            inline  bool    operator>= (const String& lhs, const String& rhs)
+            inline  bool String::operator>= (const wchar_t* rhs) const
             {
-                return (bool (not (lhs < rhs)));
+                return Compare (rhs) >= 0;
             }
-            inline  bool    operator>= (const wchar_t* lhs, const String& rhs)
+            inline  bool String::operator== (const wchar_t* rhs) const
             {
-                return (bool (not (lhs < rhs)));
+                return Compare (rhs) == 0;
             }
-            inline  bool    operator>= (const String& lhs, const wchar_t* rhs)
+            inline  bool String::operator!= (const wchar_t* rhs) const
             {
-                return (bool (not (lhs < rhs)));
+                return Compare (rhs) != 0;
             }
 
 

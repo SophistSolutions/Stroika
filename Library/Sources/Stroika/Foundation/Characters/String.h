@@ -680,12 +680,34 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
                 nonvirtual  int Compare (const String& rhs, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  int Compare (const Character* rhs, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  int Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
+                nonvirtual  int Compare (const wchar_t* rhs, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  int Compare (const wchar_t* rhsStart, const wchar_t* rhsEnd, CompareOptions co = CompareOptions::eWithCase) const;
 
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
+                 */
+                nonvirtual  bool operator< (const String& rhs) const;
+                nonvirtual  bool operator<= (const String& rhs) const;
+                nonvirtual  bool operator> (const String& rhs) const;
+                nonvirtual  bool operator>= (const String& rhs) const;
+                nonvirtual  bool operator== (const String& rhs) const;
+                nonvirtual  bool operator!= (const String& rhs) const;
+                nonvirtual  bool operator< (const Character* rhs) const;
+                nonvirtual  bool operator<= (const Character* rhs) const;
+                nonvirtual  bool operator> (const Character* rhs) const;
+                nonvirtual  bool operator>= (const Character* rhs) const;
+                nonvirtual  bool operator== (const Character* rhs) const;
+                nonvirtual  bool operator!= (const Character* rhs) const;
+                nonvirtual  bool operator< (const wchar_t* rhs) const;
+                nonvirtual  bool operator<= (const wchar_t* rhs) const;
+                nonvirtual  bool operator> (const wchar_t* rhs) const;
+                nonvirtual  bool operator>= (const wchar_t* rhs) const;
+                nonvirtual  bool operator== (const wchar_t* rhs) const;
+                nonvirtual  bool operator!= (const wchar_t* rhs) const;
 
-                // StdC++ wstring aliases [there maybe a namespace trick in new c++ to do this without
-                // inlines - like new '=' guy???
             public:
                 /**
                  *  std::basic_string alias for npos = kBadIndex
@@ -696,16 +718,19 @@ namespace   Stroika {
                 DEFINE_CONSTEXPR_CONSTANT (size_t, npos, kBadIndex);
 #endif
 
+            public:
                 /**
                  *  std::basic_string alias: size = GetLength
                  */
                 nonvirtual  size_t          size () const;
 
+            public:
                 /**
                  *  std::basic_string alias: length = GetLength
                  */
                 nonvirtual  size_t          length () const;
 
+            public:
                 // As with STL, the return value of the data () function should NOT be assumed to be
                 // NUL-terminated
                 //
@@ -714,6 +739,7 @@ namespace   Stroika {
                 // be modified)
                 nonvirtual  const wchar_t*  data () const;
 
+            public:
                 /**
                  *  This will always return a value which is NUL-terminated. Note that Stroika generally
                  *  does NOT keep strings in NUL-terminated form, so this could be a costly function,
@@ -727,17 +753,23 @@ namespace   Stroika {
                  */
                 nonvirtual  const wchar_t*  c_str () const;
 
+            public:
                 // need more overloads
                 nonvirtual  size_t find (wchar_t c, size_t startAt = 0) const;
+
+            public:
                 // need more overloads
                 nonvirtual  size_t rfind (wchar_t c) const;
 
+            public:
                 // mimic (much of - need more overloads) STL variant
                 nonvirtual  void erase (size_t from = 0, size_t count = kBadIndex);
 
+            public:
                 nonvirtual  void    push_back (wchar_t c);
                 nonvirtual  void    push_back (Character c);
 
+            public:
                 /**
                  *  Compatable with STL::basic_string::subtr() - which interprets second argument as count. Not the same
                  *  as Stroika::String::SubString (where the second argument is a 'to')
@@ -771,6 +803,7 @@ namespace   Stroika {
                 String (const _SharedRepByValuePtr::shared_ptr_type&&  rep);
 
             private:
+#if 0
                 /*
                  * These are made friends so they can peek at the shared part, as an optimization.
                  */
@@ -780,6 +813,7 @@ namespace   Stroika {
                 friend  bool    operator<= (const String& lhs, const String& rhs);
                 friend  bool    operator> (const String& lhs, const String& rhs);
                 friend  bool    operator>= (const String& lhs, const String& rhs);
+#endif
 
                 // constructs a StringRep_Catenate
                 friend  String  operator+ (const String& lhs, const String& rhs);
@@ -874,6 +908,7 @@ namespace   Stroika {
 
             String  operator+ (const String& lhs, const String& rhs);
 
+#if 0
             bool    operator== (const String& lhs, const String& rhs);
             bool    operator== (const wchar_t* lhs, const String& rhs);
             bool    operator== (const String& lhs, const wchar_t* rhs);
@@ -892,6 +927,7 @@ namespace   Stroika {
             bool    operator>= (const String& lhs, const String& rhs);
             bool    operator>= (const wchar_t* lhs, const String& rhs);
             bool    operator>= (const String& lhs, const wchar_t* rhs);
+#endif
 
 
             /**

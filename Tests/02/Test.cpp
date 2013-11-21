@@ -253,11 +253,11 @@ namespace   {
         t1 += 'd';
         t1 += L" Flintstone";
         VerifyTestResult (t1 == L"Fred Flintstone");
-        VerifyTestResult (L"Fred Flintstone" == t1);
+        VerifyTestResult (String (L"Fred Flintstone") == t1);
         VerifyTestResult (String (L"Fred Flintstone") == t1);
         VerifyTestResult (t1 == String (L"Fred Flintstone"));
         VerifyTestResult (t2 != L"Fred Flintstone");
-        VerifyTestResult (L"Fred Flintstone" != t2);
+        VerifyTestResult (String (L"Fred Flintstone") != t2);
         VerifyTestResult (String (L"Fred Flintstone") != t2);
         VerifyTestResult (t2 != String (L"Fred Flintstone"));
 
