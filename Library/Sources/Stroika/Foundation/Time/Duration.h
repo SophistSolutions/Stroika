@@ -184,11 +184,16 @@ namespace   Stroika {
                 class   FormatException;
 
             public:
-                // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
-                // this comparison function - see the notes about 'empty' in the class description.
+                /**
+                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
+                 * this comparison function - see the notes about 'empty' in the class description.
+                 */
                 nonvirtual  int Compare (const Duration& rhs) const;
 
             public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const Duration& rhs)
+                 */
                 nonvirtual  bool operator< (const Duration& rhs) const;
                 nonvirtual  bool operator<= (const Duration& rhs) const;
                 nonvirtual  bool operator> (const Duration& rhs) const;
