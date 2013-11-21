@@ -51,6 +51,7 @@ ifneq (,$(findstring CYGWIN,$(shell uname)))
 	@hash dos2unix &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: dos2unix not found" && exit 1); fi
 	@hash unix2dos &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: unix2dos not found" && exit 1); fi
 endif
+	-@mkdir IntermediateFiles > /dev/null
 	@touch IntermediateFiles/TOOLS_CHECKED
 
 # Force TOOLS_CHECKED test
