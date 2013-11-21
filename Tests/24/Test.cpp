@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
+#include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
 #include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
 #include    "Stroika/Foundation/Time/Realtime.h"
@@ -254,8 +255,19 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Test_1_SAXParser_ ();
-        Test_2_SAXObjectReader_ ();
+        try {
+            Test_1_SAXParser_ ();
+            Test_2_SAXObjectReader_ ();
+        }
+        catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasLibrary_Xerces
+            // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+			// This is more like the absence of a feature beacuse of the missing component.
+#else
+            Execution::DoReThrow ();
+#endif
+        }
+
     }
 }
 

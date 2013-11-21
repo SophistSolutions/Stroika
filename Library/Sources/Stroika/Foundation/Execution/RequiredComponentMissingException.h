@@ -25,6 +25,9 @@ namespace   Stroika {
                 static  const   wchar_t kJava[];
                 static  const   wchar_t kPDFViewer[];
                 static  const   wchar_t kPDFOCXViewer[];
+                static  const   wchar_t kSAXFactory[];
+                static  const   wchar_t kIONetworkClientFactory[];
+                static  const   wchar_t kOpenSSL[];
             public:
                 RequiredComponentMissingException (const wstring& component);
 

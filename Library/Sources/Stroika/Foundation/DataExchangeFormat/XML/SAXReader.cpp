@@ -601,7 +601,7 @@ void    XML::SAXParse (const Streams::BinaryInputStream& in, SAXCallbackInterfac
     const XMLCh kBufID[] = {'S', 'A', 'X', ':', 'P', 'a', 'r', 's', 'e' , '\0' };
     parser->parse (StdIStream_InputSourceWithProgress (in, ProgressMonitor::Updater (progres, 0.1f, 0.9f), kBufID));
 #else
-    Execution::DoThrow (Execution::StringException (L"No registered SAXParse implementation"));  // not sure what to throw
+    Execution::DoThrow (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kSAXFactory));
 #endif
 }
 

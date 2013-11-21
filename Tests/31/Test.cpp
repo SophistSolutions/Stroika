@@ -6,6 +6,7 @@
 
 #include    <iostream>
 
+#include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
 #include    "Stroika/Foundation/IO/Network/Transfer/Client.h"
 #if     qHasFeature_libcurl
 #include    "Stroika/Foundation/IO/Network/Transfer/Client_libcurl.h"
@@ -113,7 +114,17 @@ namespace   {
     {
         TestURLParsing_ ();
 
-        DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
+        try {
+            DoRegressionTests_ForConnectionFactory_ (&CreateConnection);
+        }
+        catch (const Execution::RequiredComponentMissingException&) {
+#if     !qHasFeature_libcurl && !qHasFeature_WinHTTP
+			// OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
+			// This is more like the absence of a feature beacuse of the missing component.
+#else
+            Execution::DoReThrow ();
+#endif
+        }
 
 #if     qHasFeature_libcurl
 #if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported

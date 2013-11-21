@@ -5,6 +5,7 @@
 
 #include    "../../../Characters/Format.h"
 #include    "../../../Execution/Exceptions.h"
+#include    "../../../Execution/RequiredComponentMissingException.h"
 #include    "../HTTP/Headers.h"
 #include    "../HTTP/Methods.h"
 
@@ -196,5 +197,5 @@ Connection  Transfer::CreateConnection ()
 #if     qHasFeature_WinHTTP
     return Connection_WinHTTP ();
 #endif
-    Execution::DoThrow (Execution::StringException (L"No registered transfer connection implementation"));  // not sure what to throw
+    Execution::DoThrow (Execution::RequiredComponentMissingException (Execution::RequiredComponentMissingException::kIONetworkClientFactory));
 }
