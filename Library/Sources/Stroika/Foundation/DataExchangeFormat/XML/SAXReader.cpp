@@ -7,6 +7,7 @@
 
 #include    "../../Debug/Trace.h"
 #include    "../../Execution/ProgressMonitor.h"
+#include    "../../Execution/RequiredComponentMissingException.h"
 #include    "../../Memory/Common.h"
 #include    "../../Memory/MemoryAllocator.h"
 #include    "../../Memory/SmallStackBuffer.h"

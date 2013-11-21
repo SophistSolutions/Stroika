@@ -262,7 +262,7 @@ namespace   {
         catch (const Execution::RequiredComponentMissingException&) {
 #if     !qHasLibrary_Xerces
             // OK to ignore. We don't wnat to call this failing a test, because there is nothing to fix.
-			// This is more like the absence of a feature beacuse of the missing component.
+            // This is more like the absence of a feature beacuse of the missing component.
 #else
             Execution::DoReThrow ();
 #endif
