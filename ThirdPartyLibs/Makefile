@@ -4,11 +4,15 @@ include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
 
 all:
 	@(cd doxygen; perl buildall.pl Build)
-	make --directory openssl --no-print-directory all
-        ifeq ($(qHasLibrary_Xerces), 1)
+ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
+	@make --directory openssl --no-print-directory all
+endif
+ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@make --directory Xerces --no-print-directory all
-        endif
+endif
+ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 	@make --directory zlib --no-print-directory all
+endif
 
 clean:
 	@(cd doxygen; perl buildall.pl clean)

@@ -433,6 +433,29 @@ sub WriteStroikaConfigMakeHeader
 		print (OUT "qHasFeature_libcurl=0\n");
 	}	
 
+	print (OUT "#Third Party Product Libs to Build:\n");
+	# VERY ROUGH DRAFT - NEED UPSTREAM BETTER INFO ABOUT WHAT TO BUILD
+	if ($useThirdPartyXerces) {
+		print (OUT "qBuildThirdPartyProducts_Xerces=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_Xerces=0\n");
+	}	
+	if ($ENABLE_LIBCURL) {
+		print (OUT "qBuildThirdPartyProducts_libcurl=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_libcurl=0\n");
+	}	
+	print (OUT "qBuildThirdPartyProducts_zlib=1\n");
+	if ($ENABLE_OPENSSL) {
+		print (OUT "qBuildThirdPartyProducts_OpenSSL=1\n");
+	}	
+	else {
+		print (OUT "qBuildThirdPartyProducts_OpenSSL=0\n");
+	}	
+
+
 	print (OUT "#Defaults overrides:\n");
 
 	print (OUT "\n");
