@@ -74,14 +74,14 @@ namespace   {
         Assert (0 <= value_in and value_in < NEltsOf (kDecoding));
         return kDecoding[(int)value_in];
     }
-    size_t base64_decode_block_ (const char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
+    size_t base64_decode_block_ (const signed char* code_in, size_t length_in, Byte* plaintext_out, base64_decodestate_* state)
     {
         RequireNotNull (code_in);
         RequireNotNull (plaintext_out);
 
-        const char* codechar    =   code_in;
-        Byte*       plainchar   =   plaintext_out;
-        char        fragment    =   '\0';
+        const signed char*  codechar    =   code_in;
+        Byte*               plainchar   =   plaintext_out;
+        signed char         fragment    =   '\0';
 
         *plainchar = state->plainchar;
 
@@ -94,7 +94,7 @@ namespace   {
                             state->plainchar = *plainchar;
                             return plainchar - plaintext_out;
                         }
-                        fragment = (char)base64_decode_value_ (*codechar++);
+                        fragment = (signed char)base64_decode_value_ (*codechar++);
                     }
                     while (fragment < 0);
                     *plainchar    = (fragment & 0x03f) << 2;
@@ -105,7 +105,7 @@ namespace   {
                             state->plainchar = *plainchar;
                             return plainchar - plaintext_out;
                         }
-                        fragment = (char)base64_decode_value_ (*codechar++);
+                        fragment = (signed char)base64_decode_value_ (*codechar++);
                     }
                     while (fragment < 0);
                     *plainchar++ |= (fragment & 0x030) >> 4;
@@ -117,7 +117,7 @@ namespace   {
                             state->plainchar = *plainchar;
                             return plainchar - plaintext_out;
                         }
-                        fragment = (char)base64_decode_value_ (*codechar++);
+                        fragment = (signed char)base64_decode_value_ (*codechar++);
                     }
                     while (fragment < 0);
                     *plainchar++ |= (fragment & 0x03c) >> 2;
@@ -129,7 +129,7 @@ namespace   {
                             state->plainchar = *plainchar;
                             return plainchar - plaintext_out;
                         }
-                        fragment = (char)base64_decode_value_ (*codechar++);
+                        fragment = (signed char)base64_decode_value_ (*codechar++);
                     }
                     while (fragment < 0);
                     *plainchar++   |= (fragment & 0x03f);
@@ -150,7 +150,7 @@ Memory::BLOB    Cryptography::DecodeBase64 (const string& s)
     size_t dataSize1 = s.length ();
     SmallStackBuffer<Byte>  buf1 (dataSize1);   // MUCH more than big enuf
     base64_decodestate_ state;
-    size_t r = base64_decode_block_ (Containers::Start (s), s.length (), buf1.begin (), &state);
+    size_t r = base64_decode_block_ (reinterpret_cast<const signed char*> (Containers::Start (s)), s.length (), buf1.begin (), &state);
     Assert (r <= dataSize1);
     return Memory::BLOB (buf1.begin (), buf1.begin () + r);
 }
@@ -181,7 +181,7 @@ namespace   {
     };
     struct base64_encodestate {
         base64_encodestep   step;
-        char                result;
+        signed char         result;
         int                 stepcount;
         LineBreak           fLineBreak;
 
@@ -193,9 +193,9 @@ namespace   {
         }
     };
 
-    char base64_encode_value_ (char value_in)
+    signed char base64_encode_value_ (signed char value_in)
     {
-        const char  BASE64_CHARS_[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        const signed char  BASE64_CHARS_[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
         Assert  (NEltsOf (BASE64_CHARS_) == (2 * 26 + 10 + 2 + 1));
         if (value_in > 63) {
             return '=';
@@ -203,16 +203,16 @@ namespace   {
         return BASE64_CHARS_[(int)value_in];
     }
 
-    size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state)
+    size_t base64_encode_block_ (const Byte* plaintext_in, size_t length_in, signed char* code_out, base64_encodestate* state)
     {
         const int CHARS_PER_LINE = 76;
 
         const Byte*         plainchar       =   plaintext_in;
         const Byte* const   plaintextend    =   plaintext_in + length_in;
-        char*               codechar        =   code_out;
-        char                result          =   state->result;
+        signed char*        codechar        =   code_out;
+        signed char         result          =   state->result;
 
-        char fragment   =   '\0';
+        signed char fragment   =   '\0';
         switch (state->step) {
                 while (1) {
                 case step_A:
@@ -264,9 +264,9 @@ namespace   {
         }
         return codechar - code_out;
     }
-    inline  size_t  base64_encode_blockend_ (char* code_out, base64_encodestate* state)
+    inline  size_t  base64_encode_blockend_ (signed char* code_out, base64_encodestate* state)
     {
-        char* codechar = code_out;
+        signed char* codechar = code_out;
         switch (state->step) {
             case step_B:
                 *codechar++ = base64_encode_value_ (state->result);
@@ -299,7 +299,7 @@ string  Cryptography::EncodeBase64 (const Streams::BinaryInputStream& from, Line
     size_t srcLen = end - start;
     size_t bufSize = 4 * srcLen;
     Assert (bufSize >= srcLen);  // no overflow!
-    SmallStackBuffer<char>  data (bufSize);
+    SmallStackBuffer<signed char>  data (bufSize);
     size_t mostBytesCopied =     base64_encode_block_ (start, srcLen, data.begin (), &state);
     size_t extraBytes = base64_encode_blockend_ (data.begin () + mostBytesCopied, &state);
     size_t totalBytes = mostBytesCopied + extraBytes;
