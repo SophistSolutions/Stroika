@@ -1,14 +1,26 @@
+include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
+
 .PHONY:	all clean clobber check
 
 all:
-	@./buildall.pl build
+	@(cd doxygen; perl buildall.pl Build)
+	make --directory openssl --no-print-directory all
+        ifeq ($(qHasLibrary_Xerces), 1)
+	@make --directory Xerces --no-print-directory all
+        endif
+	@make --directory zlib --no-print-directory all
 
 clean:
-	@./buildall.pl clean
+	@(cd doxygen; perl buildall.pl clean)
+	make --directory openssl --no-print-directory clean
+	@make --directory Xerces --no-print-directory clean
+	@make --directory zlib --no-print-directory clean
 
 check:
 	@./checkall.pl
 
 clobber:
-	@./buildall.pl clobber
-
+	@(cd doxygen; perl buildall.pl clobber)
+	make --directory openssl --no-print-directory clobber
+	@make --directory Xerces --no-print-directory clobber
+	@make --directory zlib --no-print-directory clobber
