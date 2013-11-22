@@ -91,6 +91,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
+    <ProjectReference Include="Stroika-Frameworks-UPnP.vcxproj">
+      <Project>{3add4c32-1d77-47a2-9f23-83908a2446f6}</Project>
+    </ProjectReference>
     <ProjectReference Include="Stroika-Frameworks-WebServer.vcxproj">
       <Project>{bb1903e4-c75b-430b-9e6f-8caea64bf194}</Project>
       <Private>true</Private>
@@ -98,6 +101,9 @@
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
+    </ProjectReference>
+    <ProjectReference Include="Stroika-Frameworks-WebService.vcxproj">
+      <Project>{9454f6d7-68b9-4c91-92d1-99958ec9ea42}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
