@@ -178,6 +178,9 @@ sub	ParseCommandLine_Platform_
 			$platform = $var;
 			SetDefaultForPlatform_ ();
 		}
+		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
+			SetDefaultForPlatform_ ();
+		}
 	}
 }
 
@@ -273,9 +276,6 @@ sub	ParseCommandLine_Remaining_
 			$i++;
 			$var = $ARGV[$i];
 			$COPTIMIZE_FLAGS = $var;
-		}
-		elsif ((lc ($var) eq "-default-for-platform") or (lc ($var) eq "--default-for-platform")) {
-			SetDefaultForPlatform_ ();
 		}
 		elsif ((lc ($var) eq "-help") or (lc ($var) eq "--help") or (lc ($var) eq "-?")) {
 			DoHelp_ ();
