@@ -1,4 +1,4 @@
-include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
+-include ../IntermediateFiles/DefaultConfiguration/Library/Configuration.mk
 
 .PHONY:	all clean clobber check
 
