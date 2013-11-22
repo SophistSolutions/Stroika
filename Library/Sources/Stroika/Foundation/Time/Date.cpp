@@ -19,6 +19,7 @@
 #endif
 #include    "../Memory/SmallStackBuffer.h"
 #include    "../Linguistics/Words.h"
+#include    "Duration.h"
 #include    "DateTime.h"
 
 #include    "Date.h"
@@ -636,6 +637,21 @@ void    Date::mdy (MonthOfYear* month, DayOfMonth* day, Year* year) const
     Ensure (1 <= d and d <= 31);
     *day = static_cast<DayOfMonth> (d);
     *year = static_cast<Year> (y);
+}
+
+Duration    Date::Difference (const Date& rhs) const
+{
+    if (fJulianDateRep_ >= rhs.fJulianDateRep_) {
+        return Duration (Characters::Format (L"P%dD", fJulianDateRep_ - rhs.fJulianDateRep_));
+    }
+    else {
+        return Duration (Characters::Format (L"-P%dD", rhs.fJulianDateRep_ - fJulianDateRep_));
+    }
+}
+
+Duration Date::operator- (const Date& rhs) const
+{
+    return Difference (rhs);
 }
 
 

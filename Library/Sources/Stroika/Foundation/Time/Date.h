@@ -105,6 +105,9 @@ namespace   Stroika {
             using   Characters::String;
 
 
+            class   Duration;
+
+
             /**
              */
             enum    class   DayOfWeek : uint8_t {
@@ -352,6 +355,18 @@ namespace   Stroika {
                  * returns number of days since this point - relative to NOW. Never less than zero
                  */
                 nonvirtual  JulianRepType   DaysSince () const;
+
+            public:
+                /**
+                 * Returns the difference between the two Date records as a Duration.
+                 */
+                nonvirtual  Duration    Difference (const Date& rhs) const;
+
+            public:
+                /**
+                *  Syntactic sugar on Difference()
+                */
+                nonvirtual  Duration operator- (const Date& rhs) const;
 
             public:
                 // Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs. Note - for the purpose of
