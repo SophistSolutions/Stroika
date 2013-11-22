@@ -111,7 +111,7 @@ sub	ReadConfiguration_
 	}
 
 	foreach $mdef (GetConfigurationParameter("ExtraMakeDefines")) {
-		$useExtraMakeDefines[@useExtraMakeDefines] = $mdef;
+		push (@useExtraMakeDefines, $mdef);
 	}
 
 
@@ -127,9 +127,9 @@ ReadConfiguration_();
 
 
 
-if ($forceRecreate) {
-	print "Forcing recreate...\n";
-}
+#if ($forceRecreate) {
+#	print "Forcing recreate...\n";
+#}
 
 mkdir ($intermediateFiles);
 
@@ -456,10 +456,9 @@ sub WriteStroikaConfigMakeHeader
 	}	
 
 
-	print (OUT "#Defaults overrides:\n");
 
-	print (OUT "\n");
-	print (OUT "#Configure Command Line Arguments (-make-define)\n");
+	print (OUT "\n\n");
+	print (OUT "#Configured Command Line Arguments (-make-define)\n");
 	foreach $var (@useExtraMakeDefines)
 	{
 		print (OUT "$var\n");

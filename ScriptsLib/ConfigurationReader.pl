@@ -11,6 +11,9 @@ my $masterXMLConfigFile	=	"$configurationFiles/DefaultConfiguration.xml";
 
 require (GetThisScriptDir () + "StringUtils.pl");
 
+my @useExtraCDefines;
+my @useExtraMakeDefines;
+
 my $fileErr = "";
 
 # Declare the subroutines
@@ -52,8 +55,6 @@ sub	ReadConfigFile_ {
 
 	my $myDirName	=	GetThisScriptDir ();
 
-	my @useExtraCDefines;
-	my @useExtraMakeDefines;
 
 	open (FILE, "$masterXMLConfigFile") or $fileErr = "Unable to open $masterXMLConfigFile";
 	if ($fileErr ne '') {
@@ -124,11 +125,11 @@ sub	ReadConfigFile_ {
 		}
 		my $pps = ReadValue_($line, "<MakeDefine>");
 		if (defined $pps) {
-			$useExtraMakeDefines[@useExtraMakeDefines] = $var;
+			push (@useExtraMakeDefines, $pps);
 		}
 	}
-	$configuration {'ExtraCDefines'} = $useExtraCDefines;
-	$configuration {'ExtraMakeDefines'} = $useExtraMakeDefines;
+	$configuration {'ExtraCDefines'} = \@useExtraCDefines;
+	$configuration {'ExtraMakeDefines'} = \@useExtraMakeDefines;
 }
 
 
@@ -162,6 +163,16 @@ sub	GetConfigurationParameter {
 		exit (1);
 	}
 	my $paramName = shift;
+	
+	# crazy hack cuz storing arrays into a hash screws them up in perl. What a terrible
+	# language  choice!
+	if ($paramName eq "ExtraCDefines") {
+		return @useExtraCDefines;
+	}
+	if ($paramName eq "ExtraMakeDefines") {
+		return @useExtraMakeDefines;
+	}
+	
 	return $configuration{$paramName};
 }
 

@@ -55,20 +55,20 @@ sub	DoHelp_
 	print("	    --default-for-platform       /* May create multiple targets (recursive call to configure) - but generates all the default settings for this platform */\n");
 	print("	    --platform {PLATFORM}        /* specifies the directory under Builds/Intermediate Files to create */\n");
 	print("	    --target {TARGET}            /* specifies the directory under Platform to create (no other semantics - just a name) */\n");
-	print("	    --enable-assertions          /* enables assertions for the configuration being configured*/\n");
-	print("	    --disable-assertions         /* disables assertions for the configuration being configured*/\n");
+	print("	    --enable-assertions          /* enables assertions for the configuration being configured */\n");
+	print("	    --disable-assertions         /* disables assertions for the configuration being configured */\n");
 	print("	    --default-assertions         /* default assertions (based on NDEBUG flag) for the configuration being configured - so */\n");
-	print("	    --has-libcurl                /* enables libcurl for the configuration being configured*/\n");
-	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured*/\n");
-	print("	    --has-xerces                 /* enables openssl for the configuration being configured*/\n");
-	print("	    --no-has-xerces              /* disables openssl for the configuration being configured*/\n");
-	print("	    --has-openssl                /* enables openssl for the configuration being configured*/\n");
-	print("	    --no-has-openssl             /* disables openssl for the configuration being configured*/\n");
-	print("	    --has-winhttp                /* enables winhttp for the configuration being configured*/\n");
-	print("	    --no-has-winhttp             /* disables winhttp for the configuration being configured*/\n");
-	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured*/\n");
-	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured*/\n");
-	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY*/\n");
+	print("	    --has-libcurl                /* enables libcurl for the configuration being configured */\n");
+	print("	    --no-has-libcurl             /* disables libcurl for the configuration being configured */\n");
+	print("	    --has-xerces                 /* enables openssl for the configuration being configured */\n");
+	print("	    --no-has-xerces              /* disables openssl for the configuration being configured */\n");
+	print("	    --has-openssl                /* enables openssl for the configuration being configured */\n");
+	print("	    --no-has-openssl             /* disables openssl for the configuration being configured */\n");
+	print("	    --has-winhttp                /* enables winhttp for the configuration being configured */\n");
+	print("	    --no-has-winhttp             /* disables winhttp for the configuration being configured */\n");
+	print("	    --enable-trace2file          /* enables trace2file for the configuration being configured */\n");
+	print("	    --disable-trace2file         /* disables trace2file for the configuration being configured */\n");
+	print("	    --cpp-optimize-flag  {FLAG}  /* Sets $COPTIMIZE_FLAGS (empty str means none, -O2 is typical for optimize) - UNIX ONLY */\n");
 	print("	    --c-define {ARG}             /* Define C++ / CPP define for the given target */\n");
 	print("	    --make-define {ARG}          /* Define makefile define for the given target */\n");
 	print("	    --compiler-driver {ARG}      /* default is g++ */\n");
@@ -373,7 +373,7 @@ sub	WriteConfigFile_
 	print (OUT "    </ExtraCDefines>\n");
 	
 	print (OUT "    <ExtraMakeDefines>\n");
-		foreach $var (@$useExtraMakeDefines)
+		foreach $var (@useExtraMakeDefines)
 		{
 			print (OUT "       <MakeDefine>$var</MakeDefine>\n");
 		}
@@ -387,9 +387,9 @@ sub	WriteConfigFile_
 
 mkdir ($configurationFiles);
 
-if ($forceWriteConfig) {
-	print("Forcing recreate of \"$masterXMLConfigFile\"...\n");
-}
+#if ($forceWriteConfig) {
+#	#print("Forcing recreate of \"$masterXMLConfigFile\"...\n");
+#}
 
 if (not (-e $masterXMLConfigFile) or $forceWriteConfig) {
 	print("Writing \"$masterXMLConfigFile\"...\n");
