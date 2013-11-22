@@ -50,22 +50,24 @@ run-tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 # just fail later
 # but dont check if already checked
 IntermediateFiles/TOOLS_CHECKED:
-	@# no point in checking make ;-)
-	@hash wget &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: wget not found" && exit 1); fi
-	@hash perl &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: perl not found" && exit 1); fi
-	@hash tar &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: tar not found" && exit 1); fi
-	@hash curl &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: curl not found" && exit 1); fi
-	@hash patch &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: patch not found" && exit 1); fi
-ifneq (,$(findstring CYGWIN,$(shell uname)))
-	@hash dos2unix &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: dos2unix not found" && exit 1); fi
-	@hash unix2dos &> /dev/null || if [ $$? -eq 1 ]; then (echo >&2 "ToolCheck: unix2dos not found" && exit 1); fi
-endif
+	@$(MAKE) check-tools --no-print-directory
 	-@mkdir IntermediateFiles > /dev/null
 	@touch IntermediateFiles/TOOLS_CHECKED
 
 # Force TOOLS_CHECKED test
-check-tools:	IntermediateFiles/TOOLS_CHECKED
-	@echo "Tools present"
+check-tools:
+	@# no point in checking make ;-)
+	@echo "Checking for installed tools..."
+	@echo -n "  " && sh -c "type wget"
+	@echo -n "  " && sh -c "type perl"
+	@echo -n "  " && sh -c "type tar"
+	@# NOT SURE NEEDED ANYMORE...#sh -c "type curl"
+	@echo -n "  " && sh -c "type patch"
+ifneq (,$(findstring CYGWIN,$(shell uname)))
+	@echo -n "  " && sh -c "type dos2unix"
+	@echo -n "  " && sh -c "type unix2dos"
+endif
+	@echo "All Required Tools Present"
 
 
 
