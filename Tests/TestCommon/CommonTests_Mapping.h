@@ -166,14 +166,10 @@ namespace CommonTests {
                 {
                     map<KeyType, ValueType>      n   =   m.template As<map<KeyType, ValueType>> ();
                     VerifyTestResult (n.size () == 2);
-#if 0
-                    /// THIS fails for Mapping_stdmap - because of the kludgy way I put that together.
-                    // TFIX
                     USING_MAPPING_CONTAINER     tmp =   USING_MAPPING_CONTAINER (n);
                     VerifyTestResult (*tmp.Lookup (1) == 88);
                     map<KeyType, ValueType>      nn  =   tmp.As<map<KeyType, ValueType>> ();
                     VerifyTestResult (nn == n);
-#endif
                 }
             }
         }
