@@ -1,6 +1,6 @@
 ﻿/*
- * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
- */
+* Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
+*/
 //  TEST    Foundation::DataExchangeFormat::ObjectVariantMapper
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
@@ -44,7 +44,7 @@ namespace   {
         template    <typename T>
         void    RoundTripTest_ (T v)
         {
-            Memory::VariantValue mv =   v;
+            Memory::VariantValue mv = v;
             VerifyTestResult (mv.As<T> () == v);
         }
         template    <typename T>
@@ -109,11 +109,20 @@ namespace   {
         ObjectVariantMapper mapper;
 
         // register each of your mappable (even private) types
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
         });
+#endif
 
         bool newEnabled = true;
         SharedContactsConfig_   tmp;
@@ -121,7 +130,7 @@ namespace   {
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
         tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
 
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -178,12 +187,22 @@ namespace   {
         ObjectVariantMapper mapper;
 
         // register each of your mappable (even private) types
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
         });
+#endif
 
         SharedContactsConfig_   tmp;
         tmp.fInt1 = 2;
@@ -191,7 +210,7 @@ namespace   {
         tmp.fInt3 = numeric_limits<decltype (tmp.fInt3)>::max ();
         tmp.fInt4 = numeric_limits<decltype (tmp.fInt4)>::min ();
 
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -243,15 +262,23 @@ namespace   {
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Range<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<DiscreteRange<int>> ());
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         });
+#endif
 
         SharedContactsConfig_   tmp;
         tmp.fIntRange = Range<int> (1, 10);
         tmp.fDiscIntRange2 = DiscreteRange<int> (38, 39);
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -314,13 +341,20 @@ namespace   {
         ObjectVariantMapper mapper;
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
         });
+#endif
 
         SharedContactsConfig_   tmp;
         tmp.fEnum1 = Fred::b;
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -378,19 +412,29 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
         });
+#endif
 
         SharedContactsConfig_   tmp;
         tmp.fDate1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
         tmp.fDateTime1 = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
         tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
         tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1.GetAsSecondsCount () + 60);
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -438,13 +482,20 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
         });
+#endif
 
         SharedContactsConfig_   tmp;
         tmp.fVV1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         // at this point - we should have VariantValue object with "Enabled" field.
         // This can then be serialized using
@@ -460,8 +511,8 @@ namespace   {
 
         // THEN deserialized, and mapped back to C++ object form
         SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-//  @todo - FIX COMPARE OF VARIANTS !!!!
-//        VerifyTestResult (tmp2 == tmp);
+        //  @todo - FIX COMPARE OF VARIANTS !!!!
+        //        VerifyTestResult (tmp2 == tmp);
     }
 }
 
@@ -498,7 +549,7 @@ namespace   {
                 //, fBasicArray1 ()
                 , fSet1_ ()
             {
-                memset(&fBasicArray1, 0, sizeof (fBasicArray1));
+                memset (&fBasicArray1, 0, sizeof (fBasicArray1));
             }
 
             bool operator== (const SharedContactsConfig_& rhs) const
@@ -517,6 +568,17 @@ namespace   {
         };
 
         ObjectVariantMapper mapper;
+#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
+        };
+        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
+#else
         mapper.AddClass<SharedContactsConfig_> ({
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
@@ -525,6 +587,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
         });
+#endif
 
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
         mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
@@ -543,7 +606,7 @@ namespace   {
         tmp.fMapping1.Add (3, 5);
         tmp.fBasicArray1[3] = 5;
         tmp.fSet1_.Add (193);
-        VariantValue v = mapper.FromObject  (tmp);
+        VariantValue v = mapper.FromObject (tmp);
 
         Streams::BasicBinaryInputOutputStream   tmpStream;
         JSON::Writer ().Write (v, tmpStream);

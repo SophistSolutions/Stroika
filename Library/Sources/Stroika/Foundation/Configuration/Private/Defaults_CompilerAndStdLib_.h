@@ -457,6 +457,20 @@
 
 
 
+#ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+#if     defined (_MSC_VER)
+// @todo - investigate this better
+//
+#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   0
+#endif
+#endif
+
+
+
+
+
 // Dangerous with newer compilers - defaulting this to on.
 // Hard to detect if it doesn't work...
 #ifndef qCompilerAndStdLib_thread_local_initializersSupported

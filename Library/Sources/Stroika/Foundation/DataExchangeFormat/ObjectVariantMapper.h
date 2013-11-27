@@ -242,8 +242,10 @@ namespace   Stroika {
                  */
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const Sequence<StructureFieldInfo>& fieldDescriptions);
+#if     !qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const std::initializer_list<StructureFieldInfo>& fieldDescriptions);
+#endif
                 template    <typename CLASS>
                 nonvirtual  void    AddClass (const StructureFieldInfo* fieldDescriptionsStart, const StructureFieldInfo* fieldDescriptionsEnd);
 
