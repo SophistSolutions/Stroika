@@ -275,6 +275,14 @@
 *               numbers produces nan/#IND... Workraround is to just do bogus early use.
 *
 *               See also qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+*
+*               MSFT analyzed this. Its
+*                   https://connect.microsoft.com/VisualStudio/feedback/details/808199/visual-c-2013-floating-point-broken-on-first-use
+*
+*                   There's a bug in a CRT function (dtoui3) which is used to convert from double to unsigned,
+*                   it "leaks" a x87 stack register and ends up causing a stack overflow. That's how the fld1
+*                   instruction used by foo ends up producing an IND.
+*
 */
 #ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 #if     defined (_MSC_VER)
