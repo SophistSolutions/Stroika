@@ -557,13 +557,7 @@ map<wstring, VariantValue>   VariantValue::As () const
 template    <>
 Mapping<String, VariantValue>   VariantValue::As () const
 {
-#if     qBROKEN_MAPPING_CTOR_OF_STDMAP
-    Mapping<String, VariantValue>   tmp;
-    tmp.AddAll (As<map<wstring, VariantValue>> ());
-    return tmp;
-#else
     return Mapping<String, VariantValue> (As <map<wstring, VariantValue>> ());
-#endif
 }
 
 template    <>

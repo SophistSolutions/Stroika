@@ -25,6 +25,9 @@
  *
  *  TODO:
  *
+ *      @todo    lose VariantValue (const map<wstring, VariantValue>& val); and CTOR (vector<>) and make sure uses sequence/mapping
+ *              internally.
+ *
  *      @todo   Consider adding crit-section-safe version of  VariantValue.
  *              AnD OR MKAE VariantValue (KEY IS DOCUMETNATION) - threasdsafe like other container types.
  *              Might be trivial with careful use of shared_ptr - and maybe safe already?  But if not - maybe worth doing?
