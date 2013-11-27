@@ -51,24 +51,6 @@ namespace   Stroika {
                 AddAll_pair (m);
             }
 #endif
-#if     !qBROKEN_MAPPING_CTOR_OF_STDMAP
-#if 1
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const map<KEY_TYPE, VALUE_TYPE>& m)
-                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
-            {
-                AddAll_pair (m);
-            }
-#else
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename PR, typename ALLOC>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const map<KEY_TYPE, VALUE_TYPE, PR, ALLOC>& m)
-                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
-            {
-                AddAll_pair (m);
-            }
-#endif
-#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)

@@ -44,12 +44,6 @@
 
 
 
-
-#define qBROKEN_MAPPING_CTOR_OF_STDMAP  1
-#if !qBROKEN_MAPPING_CTOR_OF_STDMAP
-#include    <map>
-#endif
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
@@ -150,14 +144,6 @@ namespace   Stroika {
 #if      qCompilerAndStdLib_Supports_initializer_lists
                 Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
                 Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
-#endif
-#if     !qBROKEN_MAPPING_CTOR_OF_STDMAP
-#if 1
-                Mapping (const map<KEY_TYPE, VALUE_TYPE>& m);
-#else
-                template    <typename PR, typename ALLOC>
-                Mapping (const map<KEY_TYPE, VALUE_TYPE, PR, ALLOC>& m);
-#endif
 #endif
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
