@@ -238,6 +238,8 @@ namespace   Stroika {
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
                 nonvirtual  void    Add (KeyType key, ValueType newElt);
+                nonvirtual  void    Add (pair<KeyType, ValueType> p);
+                nonvirtual  void    Add (KeyValuePair<KeyType, ValueType> p);
 
             public:
                 /**
@@ -247,6 +249,7 @@ namespace   Stroika {
                 template    <typename COPY_FROM_ITERATOR_KEYVALUE>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
+#if 0
             public:
                 /**
                  */
@@ -254,6 +257,7 @@ namespace   Stroika {
                 nonvirtual  void    AddAll_pair (const CONTAINER_OF_PAIR_KEY_T& items);
                 template    <typename COPY_FROM_ITERATOR_PAIR_KEY_T>
                 nonvirtual  void    AddAll_pair (COPY_FROM_ITERATOR_PAIR_KEY_T start, COPY_FROM_ITERATOR_PAIR_KEY_T end);
+#endif
 
             public:
                 /**

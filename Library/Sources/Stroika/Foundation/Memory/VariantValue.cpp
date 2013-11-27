@@ -559,7 +559,7 @@ Mapping<String, VariantValue>   VariantValue::As () const
 {
 #if     qBROKEN_MAPPING_CTOR_OF_STDMAP
     Mapping<String, VariantValue>   tmp;
-    tmp.AddAll_pair (As<map<wstring, VariantValue>> ());
+    tmp.AddAll (As<map<wstring, VariantValue>> ());
     return tmp;
 #else
     return Mapping<String, VariantValue> (As <map<wstring, VariantValue>> ());
