@@ -457,18 +457,6 @@
 
 
 
-#ifndef qCompilerAndStdLib_Supports_TempalteAlias_n2258
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (_MSC_VER >= _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_TempalteAlias_n2258 (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#endif
-#endif
-
-
-
-
-
 // Dangerous with newer compilers - defaulting this to on.
 // Hard to detect if it doesn't work...
 #ifndef qCompilerAndStdLib_thread_local_initializersSupported
@@ -549,30 +537,6 @@
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast    (_MSC_VER > _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast     qCompilerAndStdLib_Supports_lambda_default_argument
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-@DESCRIPTION:   <p>https://connect.microsoft.com/VisualStudio/feedback/details/572138
-    From the C++0x FCD (N3092 5.1.2/6):
-        "The closure type for a lambda-expression with no lambda-capture has a public non-virtual non-explicit const conversion
-        function to pointer to function having the same parameter and return types as the closure type�s function call operator.
-        The value returned by this conversion function shall be the address of a function that, when invoked, has the same effect
-        as invoking the closure type�s function call operator."
-    Not implemented in VS.net 2010
-    Often results in compiler error "No user-defined-conversion operator available that can perform this conversion, or the operator cannot be called"
-</p>
-*/
-#ifndef qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)) || (__GNUC__ == 4 && __GNUC_MINOR__ == 6 && __GNUC_PATCHLEVEL__ >= 3))
-#else
-#define qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported   1
 #endif
 #endif
 

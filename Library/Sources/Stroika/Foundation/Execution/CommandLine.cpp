@@ -86,14 +86,7 @@ Sequence<String>  Execution::ParseCommandLine (int argc, const wchar_t* argv[])
 namespace   {
     String  Simplify2Compare_ (const String& actualArg)
     {
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         return actualArg.StripAll ([](Characters::Character c) -> bool { return c == '-' or c == '/'; }).ToLowerCase ();
-#else
-        struct  FOO {
-            static  bool    Simplify2Compare_LAMBDA_ (Characters::Character c)      {   return c == '-' or c == '/';    }
-        };
-        return actualArg.StripAll (FOO::Simplify2Compare_LAMBDA_).ToLowerCase ();
-#endif
     }
 }
 

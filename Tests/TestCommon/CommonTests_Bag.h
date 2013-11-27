@@ -460,17 +460,10 @@ namespace CommonTests {
                     static size_t   count;
                     static T        sum =   0;
                     count = 0;
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
                     b.ApplyStatic ([] (const T & i) {
                         count++;
                         sum = sum + i;
                     });
-#else
-                    b.Apply ([] (const T & i) {
-                        count++;
-                        sum = sum + i;
-                    });
-#endif
                     VerifyTestResult (count == LAST - FIRST);
                     VerifyTestResult (EqualsCompareFunctionType::Equals (sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
                     applyToContainer (b);

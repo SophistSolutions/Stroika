@@ -523,7 +523,7 @@ namespace   {
 
 
 namespace   {
-#if     !qCompilerAndStdLib_Supports_lambda_default_argument || !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
+#if     !qCompilerAndStdLib_Supports_lambda_default_argument
     static  bool    Test11_TRIM_ISALPHA (Character c)               {       return c.IsAlphabetic ();       }
 #endif
     void    Test11_Trim_ ()
@@ -533,11 +533,7 @@ namespace   {
         VerifyTestResult (kT1.LTrim () == kT1.Trim ());
         VerifyTestResult (kT1.Trim () == L"abc");
 
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         VerifyTestResult (kT1.Trim ([] (Character c) -> bool { return c.IsAlphabetic (); }) == L"  ");
-#else
-        VerifyTestResult (kT1.Trim (Test11_TRIM_ISALPHA) == L"  ");
-#endif
     }
 }
 
@@ -612,24 +608,13 @@ namespace   {
 
 
 namespace   {
-#if     !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-    static  bool    Test15_STRIPALLTEST_ (Character c)              {       return c.IsWhitespace ();       }
-#endif
     void    Test15_StripAll_ ()
     {
         String w = L"Le wis";
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Lewis");
-#else
-        VerifyTestResult (w.StripAll (Test15_STRIPALLTEST_) == L"Lewis");
-#endif
 
         w = L"This is a very good test    ";
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         VerifyTestResult (w.StripAll ([](Character c) -> bool { return c.IsWhitespace (); }) == L"Thisisaverygoodtest");
-#else
-        VerifyTestResult (w.StripAll (Test15_STRIPALLTEST_) == L"Thisisaverygoodtest");
-#endif
     }
 }
 

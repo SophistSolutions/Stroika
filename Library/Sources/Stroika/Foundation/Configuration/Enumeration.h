@@ -63,7 +63,7 @@ namespace   Stroika {
             ENUM    ToEnum (typename underlying_type<ENUM>::type e);
 
 
-			/**
+            /**
              *  \brief  offset of given enum from ENUM::eSTART
              *
              *      \req    ENUM uses  Stroika_Define_Enum_Bounds() to define eSTART, eEND

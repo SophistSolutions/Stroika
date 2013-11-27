@@ -96,20 +96,6 @@ namespace   {
         Test_2_SimpleFetch_SSL_Google_C_ ((factory) ());
     }
 
-#if     !qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
-#if     qHasFeature_WinHTTP
-    Connection  mk_WinHTTP_ ()
-    {
-        return Connection_WinHTTP ();
-    }
-#endif
-#if     qHasFeature_libcurl
-    Connection  mk_LIBCURL_ ()
-    {
-        return Connection_LibCurl ();
-    }
-#endif
-#endif
     void    DoRegressionTests_ ()
     {
         TestURLParsing_ ();
@@ -127,18 +113,10 @@ namespace   {
         }
 
 #if     qHasFeature_libcurl
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_LibCurl (); });
-#else
-        DoRegressionTests_ForConnectionFactory_ (&mk_LIBCURL_);
-#endif
 #endif
 #if     qHasFeature_WinHTTP
-#if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
         DoRegressionTests_ForConnectionFactory_ ([]() -> Connection { return Connection_WinHTTP (); });
-#else
-        DoRegressionTests_ForConnectionFactory_ (&mk_WinHTTP_);
-#endif
 #endif
     }
 }
