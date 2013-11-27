@@ -565,23 +565,40 @@ namespace {
 
 namespace {
 
+#if     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+    struct  StructureFieldInfo_ {
+        size_t      fOffset;
+        type_index  fTypeInfo;
+        Characters::String      fSerializedFieldName;
+
+        StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const Characters::String& serializedFieldName = Characters::String ())
+            : fOffset (fieldOffset)
+            , fTypeInfo (typeInfo)
+            , fSerializedFieldName (serializedFieldName)
+        {
+        }
+    };
+#endif
+
     void    SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
     {
         using   Characters::String;
-        struct  StructureFieldInfo {
+#if     !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+        struct  StructureFieldInfo_ {
             size_t      fOffset;
             type_index  fTypeInfo;
             String      fSerializedFieldName;
 
-            StructureFieldInfo (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ())
+            StructureFieldInfo_ (size_t fieldOffset = 0, type_index typeInfo = typeid(void), const String& serializedFieldName = String ())
                 : fOffset (fieldOffset)
                 , fTypeInfo (typeInfo)
                 , fSerializedFieldName (serializedFieldName)
             {
             }
         };
-        Sequence<StructureFieldInfo>    t = { StructureFieldInfo (0, typeid(int), L"fred") };
-        Sequence<StructureFieldInfo>    tt = t;
+#endif
+        Sequence<StructureFieldInfo_>    t = { StructureFieldInfo_ (0, typeid(int), L"fred") };
+        Sequence<StructureFieldInfo_>    tt = t;
     }
 
 }

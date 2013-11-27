@@ -526,6 +526,24 @@
 
 
 
+
+/*
+@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+@DESCRIPTION:
+*/
+#if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf)
+
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
+#else
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf       0
+#endif
+
+#endif
+
+
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_lambda_default_argument
 @DESCRIPTION:   <p>Defined true if the compiler supports lambda functions as default arguments to other functions</p>
