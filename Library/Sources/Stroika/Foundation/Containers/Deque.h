@@ -84,9 +84,7 @@ namespace   Stroika {
                  */
                 Deque ();
                 Deque (const Deque<T, TRAITS>& src);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 Deque (const std::initializer_list<T>& d);
-#endif
                 template <typename CONTAINER_OF_T>
                 explicit Deque (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>

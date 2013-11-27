@@ -30,14 +30,12 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (s))
             {
             }
-#if     qCompilerAndStdLib_Supports_initializer_lists
             template    <typename T, typename TRAITS>
             inline  Sequence<T, TRAITS>::Sequence (const std::initializer_list<T>& s)
                 : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
             {
                 AppendAll (s);
             }
-#endif
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Sequence<T, TRAITS>::Sequence (const CONTAINER_OF_T& s)

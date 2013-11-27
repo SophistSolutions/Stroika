@@ -23,11 +23,13 @@ namespace   Stroika {
             inline  SortedTally<T, TRAITS>::SortedTally ()
                 : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  SortedTally<T, TRAITS>::SortedTally (const SortedTally<T, TRAITS>& src)
                 : inherited (static_cast<const inherited&> (src))
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T, typename TRAITS>
             inline  SortedTally<T, TRAITS>::SortedTally (const _SharedPtrIRep& rep)
@@ -36,7 +38,6 @@ namespace   Stroika {
                 RequireNotNull (rep);
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-#if      qCompilerAndStdLib_Supports_initializer_lists
             template    <typename T, typename TRAITS>
             SortedTally<T, TRAITS>::SortedTally (const std::initializer_list<T>& s)
                 : inherited (static_cast<const inherited&> (Concrete::SortedTally_Factory<T, TRAITS>::mk ()))
@@ -51,7 +52,6 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 this->AddAll (begin (s), end (s));
             }
-#endif
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  SortedTally<T, TRAITS>::SortedTally (const CONTAINER_OF_T& src)

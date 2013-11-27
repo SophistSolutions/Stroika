@@ -128,9 +128,7 @@ namespace   Stroika {
                  */
                 Queue ();
                 Queue (const Queue<T, TRAITS>& src);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 Queue (const std::initializer_list<T>& q);
-#endif
                 template <typename CONTAINER_OF_T>
                 explicit Queue (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>

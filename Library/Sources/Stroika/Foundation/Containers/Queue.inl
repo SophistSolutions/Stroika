@@ -33,7 +33,6 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-#if      qCompilerAndStdLib_Supports_initializer_lists
             template    <typename T, typename TRAITS>
             inline  Queue<T, TRAITS>::Queue (const std::initializer_list<T>& q)
                 : inherited (static_cast<const inherited&> (Concrete::Queue_Factory<T, TRAITS>::mk ()))
@@ -41,7 +40,6 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAllToTail (q);
             }
-#endif
             template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Queue<T, TRAITS>::Queue (const CONTAINER_OF_T& src)

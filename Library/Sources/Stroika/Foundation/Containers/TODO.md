@@ -31,10 +31,6 @@ TODO (Foundation::Containers)
 					}
 				};
 
-
-	(o)		Use qCompilerAndStdLib_Supports_initializer_lists std::initializer_lists everywhere appropriate
-			(started as test)
-
 	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
 			and perhaps others.
 	

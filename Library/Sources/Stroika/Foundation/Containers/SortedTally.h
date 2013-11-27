@@ -60,10 +60,8 @@ namespace   Stroika {
             public:
                 SortedTally ();
                 SortedTally (const SortedTally<T, TRAITS>& src);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 SortedTally (const std::initializer_list<T>& s);
                 SortedTally (const std::initializer_list<TallyEntry<T>>& s);
-#endif
                 template <typename CONTAINER_OF_T>
                 explicit SortedTally (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>

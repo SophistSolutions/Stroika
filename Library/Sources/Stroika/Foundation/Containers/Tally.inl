@@ -157,7 +157,6 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-#if      qCompilerAndStdLib_Supports_initializer_lists
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const std::initializer_list<T>& s)
                 : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
@@ -172,7 +171,6 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (begin (s), end (s));
             }
-#endif
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const T* start, const T* end)
                 : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())

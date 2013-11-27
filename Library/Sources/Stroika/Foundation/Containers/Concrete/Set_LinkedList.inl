@@ -236,7 +236,6 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (src);
                 }
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 template    <typename T, typename TRAITS>
                 inline  Set_LinkedList<T, TRAITS>::Set_LinkedList (const std::initializer_list<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
@@ -244,7 +243,6 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (src);
                 }
-#endif
                 template    <typename T, typename TRAITS>
                 template    <typename COPY_FROM_ITERATOR_OF_T>
                 inline Set_LinkedList<T, TRAITS>::Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)

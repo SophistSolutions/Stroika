@@ -209,14 +209,7 @@ namespace {
         using Containers::Sequence;
 
         {
-#if     qCompilerAndStdLib_Supports_initializer_lists
-            Containers::Sequence<int> s =   { 1, 2, 3};
-#else
-            Containers::Sequence<int> s;
-            s.Append (1);
-            s.Append (2);
-            s.Append (3);
-#endif
+            Containers::Sequence<int> s =   { 1, 2, 3 };
             {
                 shared_ptr<int> countSoFar = shared_ptr<int> (new int (0));
                 int answer =
@@ -268,14 +261,7 @@ namespace {
 
         {
             using   Characters::String;
-#if     qCompilerAndStdLib_Supports_initializer_lists
             Sequence<String> s = { L"alpha", L"beta", L"gamma" };
-#else
-            Containers::Sequence<String> s;
-            s.Append (L"alpha");
-            s.Append ( L"beta");
-            s.Append (L"gamma");
-#endif
             {
                 int countSoFar = 0; // ONLY OK - cuz FunctionalApplicationContext <> and resulting iterators go
                 // out of scope before this does
@@ -327,9 +313,7 @@ namespace {
     {
         // From Docs in DiscreteRange<> class
         vector<int> v = DiscreteRange<int> (1, 10).As<vector<int>> ();
-#if     qCompilerAndStdLib_Supports_initializer_lists
         VerifyTestResult (v == vector<int> ({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
-#endif
         for (auto i : DiscreteRange<int> (1, 10)) {
             VerifyTestResult (1 <= i and i <= 10);  // rough verification
         }

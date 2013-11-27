@@ -45,9 +45,7 @@ namespace   Stroika {
                     Set_LinkedList (const Set_LinkedList<T, TRAITS>& src);
                     template    <typename CONTAINER_OF_T>
                     explicit Set_LinkedList (const CONTAINER_OF_T& src);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                     Set_LinkedList (const std::initializer_list<T>& src);
-#endif
                     template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 

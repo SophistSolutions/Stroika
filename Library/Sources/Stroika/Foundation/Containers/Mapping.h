@@ -141,10 +141,8 @@ namespace   Stroika {
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
                 Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
-#endif
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>

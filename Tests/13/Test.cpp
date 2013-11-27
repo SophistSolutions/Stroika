@@ -546,7 +546,6 @@ namespace {
         typedef typename CONCRETE_SEQUENCE_T::ElementType T;
         VerifyTestResult (s.empty ());
 
-#if      qCompilerAndStdLib_Supports_initializer_lists
         // fix - once we have on all subclasses - do be basic test for aech
         {
             Sequence<int> x1 = { };
@@ -555,7 +554,6 @@ namespace {
             VerifyTestResult (x2.size () == 3);
             VerifyTestResult (x2[0] == 1);
         }
-#endif
 
     }
 

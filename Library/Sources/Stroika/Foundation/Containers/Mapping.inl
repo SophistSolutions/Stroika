@@ -35,7 +35,6 @@ namespace   Stroika {
                 : inherited (static_cast<const inherited&> (m))
             {
             }
-#if     qCompilerAndStdLib_Supports_initializer_lists
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m)
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
@@ -50,7 +49,6 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (m);
             }
-#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)

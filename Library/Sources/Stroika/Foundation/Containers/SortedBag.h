@@ -87,9 +87,7 @@ namespace   Stroika {
                  */
                 SortedBag ();
                 SortedBag (const SortedBag<T, TRAITS>& sb);
-#if      qCompilerAndStdLib_Supports_initializer_lists
                 SortedBag (const std::initializer_list<T>& sb);
-#endif
                 template <typename CONTAINER_OF_T>
                 explicit SortedBag (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
