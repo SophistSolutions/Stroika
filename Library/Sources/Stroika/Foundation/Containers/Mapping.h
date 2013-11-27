@@ -22,10 +22,6 @@
  *
  *  TODO:
  *
- *
- *      @todo   Get rid of AddAll_pair() by using std::enable_if<> - I think I can chekc if its pair or KeyValuePair
- *              that way. That will simplify alot!
- *
  *      @todo   Support more backends
  *              Especially HashTable, RedBlackTree, and stlhashmap
  *              And of course change default here
