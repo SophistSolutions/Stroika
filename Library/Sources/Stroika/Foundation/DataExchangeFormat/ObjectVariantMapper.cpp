@@ -76,7 +76,8 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
     fToVariantMapper = [fields] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fToVariantMapper");
         Mapping<String, VariantValue> m;
-        for (auto i : fields) {
+        for (auto i : fields)
+        {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             const Byte* fieldObj = fromObjOfTypeT + i.fOffset;
             m.Add (i.fSerializedFieldName, mapper->FromObject (i.fTypeInfo, fromObjOfTypeT + i.fOffset));
@@ -86,7 +87,8 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
     fFromVariantMapper = [fields] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
         //Debug::TraceContextBumper ctx (L"ObjectVariantMapper::TypeMappingDetails::{}::fFromVariantMapper");
         Mapping<String, VariantValue> m = d.As<Mapping<String, VariantValue>> ();
-        for (auto i : fields) {
+        for (auto i : fields)
+        {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
             if (not o.empty ()) {
@@ -263,7 +265,8 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
     auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         Mapping<String, VariantValue> m;
         const ACTUAL_ELEMENT_TYPE*  actualMember    =   reinterpret_cast<const ACTUAL_ELEMENT_TYPE*> (fromObjOfTypeT);
-        for (auto i : *actualMember) {
+        for (auto i : *actualMember)
+        {
             // really could do either way - but second more efficient
             //m.Add (i.first, mapper->Serialize (typeid (String), reinterpret_cast<const Byte*> (&i.second)));
             m.Add (i.fKey, i.fValue);
@@ -274,7 +277,8 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
         Mapping<String, VariantValue> m  =   d.As<Mapping<String, VariantValue>> ();
         ACTUAL_ELEMENT_TYPE*    actualInto  =   reinterpret_cast<ACTUAL_ELEMENT_TYPE*> (intoObjOfTypeT);
         actualInto->clear ();
-        for (auto i : m) {
+        for (auto i : m)
+        {
             // really could do either way - but second more efficient
             //actualInto->Add (i.first, mapper->ToObject<String> (i.second));
             actualInto->Add (i.fKey, i.fValue.As<String> ());

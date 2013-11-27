@@ -33,15 +33,19 @@ BinaryInputOutputStream::operator BinaryInputStream () const
         DECLARE_USE_BLOCK_ALLOCATION (InStr_IRep_);
         BinaryInputOutputStream::_SharedIRep    fMaster_;
         InStr_IRep_ (const BinaryInputOutputStream::_SharedIRep& masterRep)
-            : fMaster_ (masterRep) {
+            : fMaster_ (masterRep)
+        {
         }
-        virtual size_t    Read (Byte* intoStart, Byte* intoEnd) override {
+        virtual size_t    Read (Byte* intoStart, Byte* intoEnd) override
+        {
             return fMaster_->Read (intoStart, intoEnd);
         }
-        virtual SeekOffsetType  GetOffset () const override {
+        virtual SeekOffsetType  GetOffset () const override
+        {
             return fMaster_->ReadGetOffset ();
         }
-        virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
+        virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+        {
             return fMaster_->ReadSeek (whence, offset);
         }
     };
@@ -54,18 +58,23 @@ BinaryInputOutputStream::operator BinaryOutputStream () const
         DECLARE_USE_BLOCK_ALLOCATION (OutStr_IRep_);
         BinaryInputOutputStream::_SharedIRep    fMaster_;
         OutStr_IRep_ (const BinaryInputOutputStream::_SharedIRep& masterRep)
-            : fMaster_ (masterRep) {
+            : fMaster_ (masterRep)
+        {
         }
-        virtual void    Write (const Byte* start, const Byte* end) override {
+        virtual void    Write (const Byte* start, const Byte* end) override
+        {
             fMaster_->Write (start, end);
         }
-        virtual void     Flush () override {
+        virtual void     Flush () override
+        {
             fMaster_->Flush ();
         }
-        virtual SeekOffsetType  GetOffset () const override {
+        virtual SeekOffsetType  GetOffset () const override
+        {
             return fMaster_->WriteGetOffset ();
         }
-        virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
+        virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+        {
             return fMaster_->WriteSeek (whence, offset);
         }
     };

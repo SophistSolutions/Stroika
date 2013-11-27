@@ -126,7 +126,8 @@ struct  MyOLEStream_input : OLESTREAM {
     const byte* start;
     const byte* end;
     const byte* cur;
-    static  DWORD   __stdcall   MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb) {
+    static  DWORD   __stdcall   MyOLE1STREAMGetter (LPOLESTREAM lpoleStr, void* data, DWORD nb)
+    {
         MyOLEStream_input*  myStream    =   (MyOLEStream_input*)lpoleStr;
         DWORD           bytesLeft       =   myStream->end - myStream->cur;
         DWORD           bytesToRead     =   min (bytesLeft, nb);
@@ -137,7 +138,8 @@ struct  MyOLEStream_input : OLESTREAM {
     MyOLEStream_input (const void* data, size_t nBytes):
         start ((BYTE*)data),
         end ((BYTE*)data + nBytes),
-        cur ((BYTE*)data) {
+        cur ((BYTE*)data)
+    {
         lpstbl = &theVTbl;
         theVTbl.Get = MyOLE1STREAMGetter;
         theVTbl.Put = NULL;
@@ -509,13 +511,15 @@ Led_SDK_String  Led_MFC_ControlItem::GetObjClassName () const
 struct  MyOLEStream_output : OLESTREAM {
     OLESTREAMVTBL                       theVTbl;
     vector<char>    fData;
-    static  DWORD   __stdcall   MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb) {
+    static  DWORD   __stdcall   MyOLE1STREAMPutter (LPOLESTREAM lpoleStr, const void* data, DWORD nb)
+    {
         MyOLEStream_output* myStream    =   (MyOLEStream_output*)lpoleStr;
         typedef const char* ci;
         myStream->fData.insert (myStream->fData.end (), ci (data), ci (data) + nb);
         return nb;
     }
-    MyOLEStream_output () {
+    MyOLEStream_output ()
+    {
         lpstbl = &theVTbl;
         theVTbl.Get = NULL;
         theVTbl.Put = MyOLE1STREAMPutter;

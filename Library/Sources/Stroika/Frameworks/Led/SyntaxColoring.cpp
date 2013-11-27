@@ -677,7 +677,8 @@ void    WindowedSyntaxColoringMarkerOwner::AboutToUpdateText (const UpdateInfo& 
 
 void    WindowedSyntaxColoringMarkerOwner::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
     inherited::DidUpdateText (updateInfo);
-    if (fDeletedLines) {
+    if (fDeletedLines)
+    {
         fDeletedLines = false;
         RecheckAll ();
     }

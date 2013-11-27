@@ -705,7 +705,8 @@ string  RTFIO::GetAtomName (ControlWordAtom atom)
 
 #if     !qUseMapForControlWordMap
 struct RTFIO::StringNControlWordAtom_Comparator : binary_function<RTFIO::StringNControlWordAtom, const char*, bool> {
-    bool operator () (const RTFIO::StringNControlWordAtom& x, const char* y) const {
+    bool operator () (const RTFIO::StringNControlWordAtom& x, const char* y) const
+    {
         return x.first < y;
     }
 };
@@ -1694,12 +1695,12 @@ void    StyledTextIOReader_RTF::ReadGroup (ReaderContext& readerContext)
                     char    nextChar    =   PeekNextChar ();
 
                     switch (nextChar) {
-                            // Though the RTF specs (1.4 - 1.7) clearly indicate that
-                            // only lower case letters can begin a control word, spec version 1.7
-                            // notes a dozen or so exceptions to this rule. WE should never WRITE any such
-                            // control words, but for backward compatabilities sake - we must still
-                            // be able to read them.
-                            // SPR#
+                        // Though the RTF specs (1.4 - 1.7) clearly indicate that
+                        // only lower case letters can begin a control word, spec version 1.7
+                        // notes a dozen or so exceptions to this rule. WE should never WRITE any such
+                        // control words, but for backward compatabilities sake - we must still
+                        // be able to read them.
+                        // SPR#
                         case    'A':
                         case    'B':
                         case    'C':
@@ -5002,7 +5003,8 @@ bool    StyledTextIOWriter_RTF::PossiblyWritePICTEmbedding (WriterContext& /*wri
 #if     qGCC_OptBugWithLocalClassesScopedInFunction
 struct  VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
 public:
-    virtual     void    write (const void* buffer, size_t bytes) override {
+    virtual     void    write (const void* buffer, size_t bytes) override
+    {
         typedef const char* ci;
         fData.insert (fData.end (), ci (buffer), ci (buffer) + bytes);
     }
@@ -5017,7 +5019,8 @@ void    StyledTextIOWriter_RTF::WritePrivatLedEmbedding (WriterContext& /*writer
 #if     !qGCC_OptBugWithLocalClassesScopedInFunction
     struct  VectorSinkStream : SimpleEmbeddedObjectStyleMarker::SinkStream {
     public:
-        virtual     void    write (const void* buffer, size_t bytes) override {
+        virtual     void    write (const void* buffer, size_t bytes) override
+        {
             typedef const char* ci;
             fData.insert (fData.end (), ci (buffer), ci (buffer) + bytes);
         }

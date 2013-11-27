@@ -1537,11 +1537,13 @@ namespace   Stroika {
             public:
                 CallbackDelegator (DEL& del):
                     inherited (),
-                    fDelegate (del) {
+                    fDelegate (del)
+                {
                 }
 
             public:
-                virtual    MisspellingInfo*    GetNextMisspelling () override {
+                virtual    MisspellingInfo*    GetNextMisspelling () override
+                {
                     // This is the line that confuses MSVC60 - qTemplatesWithMixOfNestedClassesWithCommonNamesGetsConfusedBug
                     typename DEL::MisspellingInfo*  delResult   =   fDelegate.GetNextMisspelling ();
                     if (delResult != NULL) {

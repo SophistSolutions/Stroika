@@ -165,7 +165,8 @@ namespace   Stroika {
                 </pre></code>
             */
             struct  TextLayoutBlock::LessThanVirtualStart : public binary_function <TextLayoutBlock::ScriptRunElt, TextLayoutBlock::ScriptRunElt, bool> {
-                bool    operator () (const ScriptRunElt& lhs, const ScriptRunElt& rhs) {
+                bool    operator () (const ScriptRunElt& lhs, const ScriptRunElt& rhs)
+                {
                     int diff    =   int (lhs.fVirtualStart) - int (rhs.fVirtualStart);
                     return (diff < 0);
                 }

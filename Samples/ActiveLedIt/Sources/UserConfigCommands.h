@@ -50,12 +50,14 @@ struct  BuiltinCmdSpec {
     BuiltinCmdSpec (WORD cmdNum, const char* cmdName):
         fCmdNum (cmdNum),
         fCmdName (cmdName),
-        fInternalCmdName (cmdName) {
+        fInternalCmdName (cmdName)
+    {
     }
     BuiltinCmdSpec (WORD cmdNum, const char* cmdName, const char* internalCmdName):
         fCmdNum (cmdNum),
         fCmdName (cmdName),
-        fInternalCmdName (internalCmdName) {
+        fInternalCmdName (internalCmdName)
+    {
     }
 
     WORD        fCmdNum;

@@ -213,7 +213,8 @@ struct  UniscribeDLL {
         fScriptStringGetLogicalWidths (nullptr),
         fScriptString_pcOutChars (nullptr),
         fScriptString_pSize (nullptr),
-        fScriptStringCPtoX (nullptr) {
+        fScriptStringCPtoX (nullptr)
+    {
         if (fDLL != nullptr) {
             fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))
                              (::GetProcAddress (fDLL, "ScriptItemize"));
@@ -229,7 +230,7 @@ struct  UniscribeDLL {
                                 (::GetProcAddress (fDLL, "ScriptStringFree"));
             fScriptStringGetLogicalWidths = (HRESULT (WINAPI*) (SCRIPT_STRING_ANALYSIS, int*))
                                             (::GetProcAddress (fDLL, "ScriptStringGetLogicalWidths"));
-            fScriptString_pcOutChars = (const int * (WINAPI*) (SCRIPT_STRING_ANALYSIS))
+            fScriptString_pcOutChars = (const int* (WINAPI*) (SCRIPT_STRING_ANALYSIS))
                                        (::GetProcAddress (fDLL, "ScriptString_pcOutChars"));
             fScriptString_pSize = (const SIZE * (WINAPI*) (SCRIPT_STRING_ANALYSIS))
                                   (::GetProcAddress (fDLL, "ScriptString_pSize"));
@@ -237,80 +238,92 @@ struct  UniscribeDLL {
                                  (::GetProcAddress (fDLL, "ScriptStringCPtoX"));
         }
     }
-    ~UniscribeDLL () {
+    ~UniscribeDLL ()
+    {
         if (fDLL != nullptr) {
             Verify (::FreeLibrary (fDLL));
         }
     }
 
-    nonvirtual  bool    IsAvail () const {
+    nonvirtual  bool    IsAvail () const
+    {
         return fDLL != nullptr;
     }
 
-    HRESULT WINAPI  ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems) {
+    HRESULT WINAPI  ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
+    {
         if (fScriptItemize == nullptr) {
             return E_FAIL;
         }
         return (*fScriptItemize) (pwcInChars, cInChars, cMaxItems, psControl, psState, pItems, pcItems);
     }
 
-    HRESULT WINAPI  ScriptShape (HDC hdc, SCRIPT_CACHE* psc, const WCHAR* pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS* psa, WORD* pwOutGlyphs, WORD* pwLogClust, SCRIPT_VISATTR* psva, int* pcGlyphs) {
+    HRESULT WINAPI  ScriptShape (HDC hdc, SCRIPT_CACHE* psc, const WCHAR* pwcChars, int cChars, int cMaxGlyphs, SCRIPT_ANALYSIS* psa, WORD* pwOutGlyphs, WORD* pwLogClust, SCRIPT_VISATTR* psva, int* pcGlyphs)
+    {
         if (fScriptShape == nullptr) {
             return E_FAIL;
         }
         return (*fScriptShape) (hdc, psc, pwcChars, cChars, cMaxGlyphs, psa, pwOutGlyphs, pwLogClust, psva, pcGlyphs);
     }
 
-    HRESULT WINAPI  ScriptPlace (HDC hdc, SCRIPT_CACHE* psc, const WORD* pwGlyphs, int cGlyphs, const SCRIPT_VISATTR* psva, SCRIPT_ANALYSIS* psa, int* piAdvance, GOFFSET* pGoffset, ABC* pABC) {
+    HRESULT WINAPI  ScriptPlace (HDC hdc, SCRIPT_CACHE* psc, const WORD* pwGlyphs, int cGlyphs, const SCRIPT_VISATTR* psva, SCRIPT_ANALYSIS* psa, int* piAdvance, GOFFSET* pGoffset, ABC* pABC)
+    {
         if (fScriptPlace == nullptr) {
             return E_FAIL;
         }
         return (*fScriptPlace) (hdc, psc, pwGlyphs, cGlyphs, psva, psa, piAdvance, pGoffset, pABC);
     }
 
-    HRESULT WINAPI  ScriptStringAnalyse (HDC hdc, const void* pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth, SCRIPT_CONTROL* psControl, SCRIPT_STATE* psState, const int* piDx, SCRIPT_TABDEF* pTabdef, const BYTE* pbInClass, SCRIPT_STRING_ANALYSIS* pssa) {
+    HRESULT WINAPI  ScriptStringAnalyse (HDC hdc, const void* pString, int cString, int cGlyphs, int iCharset, DWORD dwFlags, int iReqWidth, SCRIPT_CONTROL* psControl, SCRIPT_STATE* psState, const int* piDx, SCRIPT_TABDEF* pTabdef, const BYTE* pbInClass, SCRIPT_STRING_ANALYSIS* pssa)
+    {
         if (fScriptStringAnalyse == nullptr) {
             return E_FAIL;
         }
         return (*fScriptStringAnalyse) (hdc, pString, cString, cGlyphs, iCharset, dwFlags, iReqWidth, psControl, psState, piDx, pTabdef, pbInClass, pssa);
     }
 
-    HRESULT WINAPI  ScriptStringOut (SCRIPT_STRING_ANALYSIS ssa, int iX, int iY, UINT uOptions, const RECT* prc, int iMinSel, int iMaxSel, BOOL fDisabled) {
+    HRESULT WINAPI  ScriptStringOut (SCRIPT_STRING_ANALYSIS ssa, int iX, int iY, UINT uOptions, const RECT* prc, int iMinSel, int iMaxSel, BOOL fDisabled)
+    {
         if (fScriptStringOut == nullptr) {
             return E_FAIL;
         }
         return (*fScriptStringOut) (ssa, iX, iY, uOptions, prc, iMinSel, iMaxSel, fDisabled);
     }
 
-    HRESULT WINAPI  ScriptStringFree (SCRIPT_STRING_ANALYSIS* pssa) {
+    HRESULT WINAPI  ScriptStringFree (SCRIPT_STRING_ANALYSIS* pssa)
+    {
         if (fScriptStringFree == nullptr) {
             return E_FAIL;
         }
         return (*fScriptStringFree) (pssa);
     }
 
-    HRESULT WINAPI  ScriptStringGetLogicalWidths (SCRIPT_STRING_ANALYSIS ssa, int* piDx) {
+    HRESULT WINAPI  ScriptStringGetLogicalWidths (SCRIPT_STRING_ANALYSIS ssa, int* piDx)
+    {
         if (fScriptStringGetLogicalWidths == nullptr) {
             return E_FAIL;
         }
         return (*fScriptStringGetLogicalWidths) (ssa, piDx);
     }
 
-    const int*  WINAPI  ScriptString_pcOutChars (SCRIPT_STRING_ANALYSIS ssa) {
+    const int*  WINAPI  ScriptString_pcOutChars (SCRIPT_STRING_ANALYSIS ssa)
+    {
         if (fScriptString_pcOutChars == nullptr) {
             return nullptr;
         }
         return (*fScriptString_pcOutChars) (ssa);
     }
 
-    const SIZE* WINAPI  ScriptString_pSize (SCRIPT_STRING_ANALYSIS ssa) {
+    const SIZE* WINAPI  ScriptString_pSize (SCRIPT_STRING_ANALYSIS ssa)
+    {
         if (fScriptString_pSize == nullptr) {
             return nullptr;
         }
         return (*fScriptString_pSize) (ssa);
     }
 
-    HRESULT WINAPI  ScriptStringCPtoX (SCRIPT_STRING_ANALYSIS ssa, int icp, BOOL fTrailing, int* pX) {
+    HRESULT WINAPI  ScriptStringCPtoX (SCRIPT_STRING_ANALYSIS ssa, int icp, BOOL fTrailing, int* pX)
+    {
         if (fScriptStringCPtoX == nullptr) {
             return E_FAIL;
         }
@@ -2823,7 +2836,8 @@ Led_GDIGlobals* Led_GDIGlobals::sThe    =   nullptr;
 // Somewhat silly hack so Led_GDIGlobals gets destroyed at end of application execution. Helpful for quitting memleak detectors.
 class   Led_GDIGlobals::_Global_DESTRUCTOR_ {
 public:
-    ~_Global_DESTRUCTOR_ () {
+    ~_Global_DESTRUCTOR_ ()
+    {
         delete (Led_GDIGlobals::sThe);
         Led_GDIGlobals::sThe = nullptr;
     }
@@ -3119,7 +3133,8 @@ Led_IME*    Led_IME::sThe   =   nullptr;
 // Somewhat silly hack so Led_IME gets destroyed at end of application execution. Helpful for quitting memleak detectors.
 class   Led_IME::_Global_DESTRUCTOR_ {
 public:
-    ~_Global_DESTRUCTOR_ () {
+    ~_Global_DESTRUCTOR_ ()
+    {
         delete (Led_IME::sThe);
         Led_IME::sThe = nullptr;
     }

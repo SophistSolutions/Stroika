@@ -124,10 +124,12 @@ namespace   Stroika {
                                                        ):
                             FlavorPackageInternalizer (ts),
                             inherited (ts, styleDatabase, paragraphDatabase, hiddenTextDatabase),
-                            fDocument (doc) {
+                            fDocument (doc)
+                        {
                         }
                     public:
-                        virtual    bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override {
+                        virtual    bool    InternalizeBestFlavor (ReaderFlavorPackage& flavorPackage, size_t from, size_t to) override
+                        {
                             Led_MFC_ControlItem::DocContextDefiner tmp (fDocument);
                             return inherited::InternalizeBestFlavor (flavorPackage, from, to);
                         }

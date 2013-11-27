@@ -97,10 +97,12 @@ namespace   Stroika {
                      *  Code to automatically install and remove our idle manager.
                      */
                     struct  IdleMangerSetter {
-                        IdleMangerSetter () {
+                        IdleMangerSetter ()
+                        {
                             IdleManager::SetIdleManagerOSImpl (&fIdleManagerOSImpl);
                         }
-                        ~IdleMangerSetter () {
+                        ~IdleMangerSetter ()
+                        {
                             IdleManager::SetIdleManagerOSImpl (NULL);
                         }
                         IdleManagerOSImpl_Win32 fIdleManagerOSImpl;

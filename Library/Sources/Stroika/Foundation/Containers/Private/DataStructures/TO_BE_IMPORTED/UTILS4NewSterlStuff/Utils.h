@@ -18,11 +18,13 @@ extern  std::mt19937&   GetRandomNumberEngine ();
 
 
 struct  Timer {
-    Timer () {
+    Timer ()
+    {
         fStartTime = GetCurrentTimeInMilliseconds ();
     }
 
-    ~Timer () {
+    ~Timer ()
+    {
         double netTicks = GetElapsedTime ();
 
         char buf[128];
@@ -30,11 +32,13 @@ struct  Timer {
         std::cout << buf << std::flush;
     }
 
-    double  GetElapsedTime () {
+    double  GetElapsedTime ()
+    {
         return GetCurrentTimeInMilliseconds () - fStartTime;
     }
 
-    static  double  GetCurrentTimeInMilliseconds () {
+    static  double  GetCurrentTimeInMilliseconds ()
+    {
         timeb t;
         ftime (&t);
         return t.time * 1000.0 + t.millitm;

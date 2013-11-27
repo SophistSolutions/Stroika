@@ -184,15 +184,18 @@ class   DataExchangeFormat::JSON::Writer::Rep_ : public DataExchangeFormat::Writ
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
-    virtual _SharedPtrIRep  Clone () const override {
+    virtual _SharedPtrIRep  Clone () const override
+    {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
+    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override
+    {
         TextOutputStreamBinaryAdapter textOut (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (v, textOut, 0);
         textOut.Write (L"\n");      // a single elt not LF terminated, but the entire doc SB.
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
+    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override
+    {
         PrettyPrint_ (v, out, 0);
     }
 };

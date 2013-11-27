@@ -61,7 +61,8 @@ namespace   {
 
         base64_decodestate_ ()
             : step (step_a)
-            , plainchar ('\0') {
+            , plainchar ('\0')
+        {
         }
     };
     int base64_decode_value_ (signed char value_in)
@@ -189,7 +190,8 @@ namespace   {
             : step (step_A)
             , result (0)
             , stepcount (0)
-            , fLineBreak (lb) {
+            , fLineBreak (lb)
+        {
         }
     };
 

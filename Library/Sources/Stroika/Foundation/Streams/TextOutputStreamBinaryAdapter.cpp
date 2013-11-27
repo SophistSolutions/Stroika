@@ -25,7 +25,8 @@ class   TextOutputStreamBinaryAdapter::UnSeekable_UTF8_IRep_ : public TextOutput
 public:
     UnSeekable_UTF8_IRep_ (const BinaryOutputStream& src, bool useBOM)
         : _fCriticalSection ()
-        , _fSource (src) {
+        , _fSource (src)
+    {
         const   Byte    kBOM[]  =    { 0xEF, 0xBB, 0xBF};   //  see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             _fSource.Write (std::begin (kBOM), std::end (kBOM));
@@ -33,7 +34,8 @@ public:
     }
 
 protected:
-    virtual void    Write (const Character* start, const Character* end)  override {
+    virtual void    Write (const Character* start, const Character* end)  override
+    {
 #if    qCompilerAndStdLib_Supports_string_conversions
         codecvt_utf8<wchar_t>   converter;
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
@@ -77,7 +79,8 @@ protected:
 class   TextOutputStreamBinaryAdapter::UnSeekable_WCharT_IRep_ : public TextOutputStream::_IRep {
 public:
     UnSeekable_WCharT_IRep_ (const BinaryOutputStream& src, bool useBOM)
-        : _fSource (src) {
+        : _fSource (src)
+    {
         const   Character   kBOM    =    L'\xFEFF'; //  same whether 16 or 32 bit encoding -- see http://en.wikipedia.org/wiki/Byte_order_mark
         if (useBOM) {
             Write (&kBOM, &kBOM + 1);
@@ -85,7 +88,8 @@ public:
     }
 
 protected:
-    virtual void    Write (const Character* start, const Character* end)  override {
+    virtual void    Write (const Character* start, const Character* end)  override
+    {
         _fSource.Write (reinterpret_cast<const Byte*> (start), reinterpret_cast<const Byte*> (end));
     }
 
@@ -98,23 +102,27 @@ class   TextOutputStreamBinaryAdapter::Seekable_UTF8_IRep_ : public UnSeekable_U
 public:
     Seekable_UTF8_IRep_ (const BinaryOutputStream& src, bool useBOM)
         : UnSeekable_UTF8_IRep_ (src, useBOM)
-        , fOffset_ (0) {
+        , fOffset_ (0)
+    {
     }
 
 protected:
 #if 0
-    virtual void    Write (const Character* start, const Character* end)  override {
+    virtual void    Write (const Character* start, const Character* end)  override
+    {
         SeekOffsetType  offset  =   fOffset_;
         // Take into account seek offset...
     }
 #endif
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         AssertNotImplemented ();
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         AssertNotImplemented ();
         return 0;
     }
@@ -128,23 +136,27 @@ class   TextOutputStreamBinaryAdapter::Seekable_WCharT_IRep_ : public UnSeekable
 public:
     Seekable_WCharT_IRep_ (const BinaryOutputStream& src, bool useBOM)
         : UnSeekable_WCharT_IRep_ (src, useBOM)
-        , fOffset_ (0) {
+        , fOffset_ (0)
+    {
     }
 
 protected:
 #if 0
-    virtual void    Write (const Character* start, const Character* end)  override {
+    virtual void    Write (const Character* start, const Character* end)  override
+    {
         SeekOffsetType  offset  =   fOffset_;
         // Take into account seek offset...
     }
 #endif
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         AssertNotImplemented ();
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         AssertNotImplemented ();
         return 0;
     }

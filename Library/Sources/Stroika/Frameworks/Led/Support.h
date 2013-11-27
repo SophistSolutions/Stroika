@@ -831,50 +831,50 @@ public:\
 
 #if     qPlatform_Windows
             class   VariantArrayPacker {
-        public:
-            VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts);
-            ~VariantArrayPacker ();
+            public:
+                VariantArrayPacker (VARIANT* v, VARTYPE vt, size_t nElts);
+                ~VariantArrayPacker ();
 
-        public:
-            nonvirtual  void*   PokeAtData () const;
+            public:
+                nonvirtual  void*   PokeAtData () const;
 
-        private:
-            VARIANT*    fSafeArrayVariant;
-            void*       fPtr;
-        };
+            private:
+                VARIANT*    fSafeArrayVariant;
+                void*       fPtr;
+            };
 
-        class   VariantArrayUnpacker {
-        public:
-            VariantArrayUnpacker (const VARIANT& v);
-            ~VariantArrayUnpacker ();
+            class   VariantArrayUnpacker {
+            public:
+                VariantArrayUnpacker (const VARIANT& v);
+                ~VariantArrayUnpacker ();
 
-        public:
-            nonvirtual  const void* PeekAtData () const;
-            nonvirtual  VARTYPE     GetArrayElementType () const;
-            nonvirtual  size_t      GetLength () const;
+            public:
+                nonvirtual  const void* PeekAtData () const;
+                nonvirtual  VARTYPE     GetArrayElementType () const;
+                nonvirtual  size_t      GetLength () const;
 
-        private:
-            SAFEARRAY*  fSafeArray;
-            const void* fPtr;
-        };
+            private:
+                SAFEARRAY*  fSafeArray;
+                const void* fPtr;
+            };
 #endif
 
 
 
 #if     qPlatform_Windows
-        VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd);
-        VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v);
-        VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v);
+            VARIANT CreateSafeArrayOfBSTR (const wchar_t* const* strsStart, const wchar_t* const* strsEnd);
+            VARIANT CreateSafeArrayOfBSTR (const vector<const wchar_t*>& v);
+            VARIANT CreateSafeArrayOfBSTR (const vector<wstring>& v);
 
-        vector<wstring> UnpackVectorOfStringsFromVariantArray (const VARIANT& v);
+            vector<wstring> UnpackVectorOfStringsFromVariantArray (const VARIANT& v);
 #endif
 
 
 
 
 #if     qPlatform_Windows
-        void    DumpSupportedInterfaces (IUnknown* obj, const char* objectName = nullptr, const char* levelPrefix = nullptr);
-        void    DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName = nullptr, const char* levelPrefix = nullptr);
+            void    DumpSupportedInterfaces (IUnknown* obj, const char* objectName = nullptr, const char* levelPrefix = nullptr);
+            void    DumpObjectsInIterator (IEnumUnknown* iter, const char* iteratorName = nullptr, const char* levelPrefix = nullptr);
 #endif
 
 
@@ -882,117 +882,117 @@ public:\
 
 
 
-        /*
-        @CLASS:         Led_URLD
-        @DESCRIPTION:   <p><code>Led_URLD</code> is an abstraction of the Netscape Web Browser URL object.
-            At least thats where the name comes from. And some of its more quirky attributes.
-            This object has two attributes, a URL and a title.
-            It has accessors to convert it into and from the Netscape URLD object format (URLD on mac
-            and "Netscape Bookmark" on windows; same thing).
-            It also can easily be used for dealing with URLs with ActiveX/Microsoft URL representations.</p>
-                <p>See also, @'Led_URLManager'</p>
-        */
-        struct  Led_URLD {
-            Led_URLD (const char* url, const char* title);
-            Led_URLD (const void* urlData, size_t nBytes);
+            /*
+            @CLASS:         Led_URLD
+            @DESCRIPTION:   <p><code>Led_URLD</code> is an abstraction of the Netscape Web Browser URL object.
+                At least thats where the name comes from. And some of its more quirky attributes.
+                This object has two attributes, a URL and a title.
+                It has accessors to convert it into and from the Netscape URLD object format (URLD on mac
+                and "Netscape Bookmark" on windows; same thing).
+                It also can easily be used for dealing with URLs with ActiveX/Microsoft URL representations.</p>
+                    <p>See also, @'Led_URLManager'</p>
+            */
+            struct  Led_URLD {
+                Led_URLD (const char* url, const char* title);
+                Led_URLD (const void* urlData, size_t nBytes);
 
-            nonvirtual  size_t  GetURLDLength () const;     // return byte count of URLD itself (includes NUL-byte at end)
-            nonvirtual  size_t  GetURLLength () const;      // return byte count of URL itself
-            nonvirtual  size_t  GetTitleLength () const;    // return byte count of title
+                nonvirtual  size_t  GetURLDLength () const;     // return byte count of URLD itself (includes NUL-byte at end)
+                nonvirtual  size_t  GetURLLength () const;      // return byte count of URL itself
+                nonvirtual  size_t  GetTitleLength () const;    // return byte count of title
 
-            nonvirtual  char*   PeekAtURLD () const;
-            nonvirtual  char*   PeekAtURL () const;         // NB: doesn't return NUL-term string! - check GetURLLength
-            nonvirtual  char*   PeekAtTitle () const;       // NB: doesn't return NUL-term string! - check GetTitleLength
+                nonvirtual  char*   PeekAtURLD () const;
+                nonvirtual  char*   PeekAtURL () const;         // NB: doesn't return NUL-term string! - check GetURLLength
+                nonvirtual  char*   PeekAtTitle () const;       // NB: doesn't return NUL-term string! - check GetTitleLength
 
-            nonvirtual  string  GetTitle () const;
-            nonvirtual  string  GetURL () const;
+                nonvirtual  string  GetTitle () const;
+                nonvirtual  string  GetURL () const;
 
-            vector<char>    fData;
-        };
+                vector<char>    fData;
+            };
 
 
-        /*
-        @CLASS:         Led_URLManager
-        @DESCRIPTION:   <p><code>Led_URLManager</code> is a utility class to deal with opening URLs.
-            Depending on the OS you are running Led with, it can be configured to use
-            <em>DDE</em>, <em>ActiveX</em>, <em>ShellExec</em>, <em>AppleEvents</em>, or
-            <em>Internet Config (IC)</em>.
-            By default, it uses all that make sense for the given operating system in some reasonable
-            order (prefering more robust approaches, and those that work more frequently and those that
-            report better errors).</p>
-                <p>This class also provides a utility - <code>FileSpecToURL</code> - to make a URL object
-            from a full path name.</p>
-                <p>See also, @'Led_URLD'</p>
-        */
-        class   Led_URLManager {
-        public:
-            Led_URLManager ();
+            /*
+            @CLASS:         Led_URLManager
+            @DESCRIPTION:   <p><code>Led_URLManager</code> is a utility class to deal with opening URLs.
+                Depending on the OS you are running Led with, it can be configured to use
+                <em>DDE</em>, <em>ActiveX</em>, <em>ShellExec</em>, <em>AppleEvents</em>, or
+                <em>Internet Config (IC)</em>.
+                By default, it uses all that make sense for the given operating system in some reasonable
+                order (prefering more robust approaches, and those that work more frequently and those that
+                report better errors).</p>
+                    <p>This class also provides a utility - <code>FileSpecToURL</code> - to make a URL object
+                from a full path name.</p>
+                    <p>See also, @'Led_URLD'</p>
+            */
+            class   Led_URLManager {
+            public:
+                Led_URLManager ();
 
-            static  Led_URLManager& Get (); // by default builds one, but you can specify your
-            // own. NB: deletes old value, so if you specify
-            // your own, be sure to allocate it with new so it
-            // can be deleted...
-            static  void            Set (Led_URLManager* newURLMgr);
-        private:
-            static  Led_URLManager* sThe;
+                static  Led_URLManager& Get (); // by default builds one, but you can specify your
+                // own. NB: deletes old value, so if you specify
+                // your own, be sure to allocate it with new so it
+                // can be deleted...
+                static  void            Set (Led_URLManager* newURLMgr);
+            private:
+                static  Led_URLManager* sThe;
 
-        public:
-            virtual void    Open (const string& url);   // throws on detected errors
+            public:
+                virtual void    Open (const string& url);   // throws on detected errors
 #if     qPlatform_MacOS
-            virtual string  FileSpecToURL (const FSSpec& fsp);
+                virtual string  FileSpecToURL (const FSSpec& fsp);
 #elif   qPlatform_Windows
-            virtual string  FileSpecToURL (const string& path);
+                virtual string  FileSpecToURL (const string& path);
 #endif
 
-        protected:
+            protected:
 #if     qUseInternetConfig
-            nonvirtual  void    Open_IC (const string& url);
+                nonvirtual  void    Open_IC (const string& url);
 #endif
 #if     qPlatform_MacOS
-            nonvirtual  void    Open_SpyglassAppleEvent (const string& url);
+                nonvirtual  void    Open_SpyglassAppleEvent (const string& url);
 #endif
 #if     qUseActiveXToOpenURLs
-            nonvirtual  void    Open_ActiveX (const string& url);
+                nonvirtual  void    Open_ActiveX (const string& url);
 #endif
 #if     qUseSpyglassDDESDIToOpenURLs
-            nonvirtual  void    Open_SpyglassDDE (const string& url);
+                nonvirtual  void    Open_SpyglassDDE (const string& url);
 #endif
 #if     qUseSystemNetscapeOpenURLs
-            nonvirtual  void    Open_SystemNetscape (const string& url);
+                nonvirtual  void    Open_SystemNetscape (const string& url);
 #endif
 
 
 #if     qPlatform_MacOS
-        private:
-            static  pascal  OSErr   FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath);
+            private:
+                static  pascal  OSErr   FSpGetFullPath (const FSSpec* spec, short* fullPathLength, Handle* fullPath);
 #endif
 
 
 #if     qPlatform_MacOS
-        public:
-            static  ProcessSerialNumber FindBrowser ();
+            public:
+                static  ProcessSerialNumber FindBrowser ();
 #endif
 
 #if     qUseSpyglassDDESDIToOpenURLs
-        public:
-            static  void    InitDDEHandler ();  // to be able to open URLs with DDE this must be called, but
-            // it takes over all DDE processing, disabling your app from doing
-            // any other DDE.
+            public:
+                static  void    InitDDEHandler ();  // to be able to open URLs with DDE this must be called, but
+                // it takes over all DDE processing, disabling your app from doing
+                // any other DDE.
 
-            // Use this for more low level extensions of the DDE support...
-            static  DWORD   sDDEMLInstance; //  The DDEML instance identifier.
-            static  HDDEDATA CALLBACK   SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
-            static  const char*         SkipToNextArgument (const char* pFormat);
-            static  HSZ                 ClientArguments (const char* pFormat, ...);
-            static  char*               ExtractArgument (HSZ hszArgs, int iArg);
-            static  void                ServerReturned (HDDEDATA hArgs, const char* pFormat, ...);
+                // Use this for more low level extensions of the DDE support...
+                static  DWORD   sDDEMLInstance; //  The DDEML instance identifier.
+                static  HDDEDATA CALLBACK   SimpleDdeCallBack (UINT /*type*/, UINT /*fmt*/, HCONV /*hconv*/, HSZ /*hsz1*/, HSZ /*hsz2*/, HDDEDATA /*hData*/, DWORD /*dwData1*/, DWORD /*dwData2*/);
+                static  const char*         SkipToNextArgument (const char* pFormat);
+                static  HSZ                 ClientArguments (const char* pFormat, ...);
+                static  char*               ExtractArgument (HSZ hszArgs, int iArg);
+                static  void                ServerReturned (HDDEDATA hArgs, const char* pFormat, ...);
 #endif
-        };
+            };
 
 
 
 
-        string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string ());
+            string  MakeSophistsAppNameVersionURL (const string& relURL, const string& appName, const string& extraArgs = string ());
 
 
 
@@ -1000,46 +1000,47 @@ public:\
 
 
 
-        /*
-        @CONFIGVAR:     qLedCheckCompilerFlagsConsistency
-        @DESCRIPTION:   <p>Some development environments make it easy to accidentally provide an inconsistent set of compilation flags
-                    across compilation units (e.g. MSVC/MS Visual Studio.Net is like this). This is a <em>bad</em> thing.</p>
-                        <p>Led enables certain features - like debug checking - based on certain compilation flags (e.g. @'qDebug').
-                    Some virtual methods are added to certain classes (e.g. Invariant check methods). And some other features maybe
-                    conditionally defined based on other flags.</p>
-                        <p>This mechanism attempts to detect if these flags are set inconsistently. This is only set on
-                    by default for DEBUG builds - but - unfortunately - this can just as easily affect release builds (even
-                    when the DEBUG builds work fine. For this reason - if you are seeing strange behavior when you compile for
-                    a RELEASE build - you may want to externally specify this flag to test.
-                        </p>
-         */
+            /*
+            @CONFIGVAR:     qLedCheckCompilerFlagsConsistency
+            @DESCRIPTION:   <p>Some development environments make it easy to accidentally provide an inconsistent set of compilation flags
+                        across compilation units (e.g. MSVC/MS Visual Studio.Net is like this). This is a <em>bad</em> thing.</p>
+                            <p>Led enables certain features - like debug checking - based on certain compilation flags (e.g. @'qDebug').
+                        Some virtual methods are added to certain classes (e.g. Invariant check methods). And some other features maybe
+                        conditionally defined based on other flags.</p>
+                            <p>This mechanism attempts to detect if these flags are set inconsistently. This is only set on
+                        by default for DEBUG builds - but - unfortunately - this can just as easily affect release builds (even
+                        when the DEBUG builds work fine. For this reason - if you are seeing strange behavior when you compile for
+                        a RELEASE build - you may want to externally specify this flag to test.
+                            </p>
+             */
 #ifndef qLedCheckCompilerFlagsConsistency
 #define qLedCheckCompilerFlagsConsistency   qDebug
 #endif
 
 #if     qLedCheckCompilerFlagsConsistency
-        namespace LedCheckCompilerFlags {
+            namespace LedCheckCompilerFlags {
 #define LedCheckCompilerFlags_(a)   _CHECK_##a
-            extern  int LedCheckCompilerFlags_(qDebug);
-            extern  int LedCheckCompilerFlags_(qSingleByteCharacters);
-            extern  int LedCheckCompilerFlags_(qMultiByteCharacters);
-            extern  int LedCheckCompilerFlags_(qWideCharacters);
-            extern  int LedCheckCompilerFlags_(qProvideIMESupport);
+                extern  int LedCheckCompilerFlags_(qDebug);
+                extern  int LedCheckCompilerFlags_(qSingleByteCharacters);
+                extern  int LedCheckCompilerFlags_(qMultiByteCharacters);
+                extern  int LedCheckCompilerFlags_(qWideCharacters);
+                extern  int LedCheckCompilerFlags_(qProvideIMESupport);
 
-            struct  FlagsChecker {
-                FlagsChecker () {
-                    /*
-                     *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
-                     */
-                    if (LedCheckCompilerFlags_(qDebug) != qDebug)                                   {           abort ();       }
-                    if (LedCheckCompilerFlags_(qSingleByteCharacters) != qSingleByteCharacters)     {           abort ();       }
-                    if (LedCheckCompilerFlags_(qMultiByteCharacters) != qMultiByteCharacters)       {           abort ();       }
-                    if (LedCheckCompilerFlags_(qWideCharacters) != qWideCharacters)                 {           abort ();       }
-                    if (LedCheckCompilerFlags_(qProvideIMESupport) != qProvideIMESupport)           {           abort ();       }
-                }
-            };
-            static  struct  FlagsChecker    sFlagsChecker;
-        }
+                struct  FlagsChecker {
+                    FlagsChecker ()
+                    {
+                        /*
+                         *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
+                         */
+                        if (LedCheckCompilerFlags_(qDebug) != qDebug)                                   {           abort ();       }
+                        if (LedCheckCompilerFlags_(qSingleByteCharacters) != qSingleByteCharacters)     {           abort ();       }
+                        if (LedCheckCompilerFlags_(qMultiByteCharacters) != qMultiByteCharacters)       {           abort ();       }
+                        if (LedCheckCompilerFlags_(qWideCharacters) != qWideCharacters)                 {           abort ();       }
+                        if (LedCheckCompilerFlags_(qProvideIMESupport) != qProvideIMESupport)           {           abort ();       }
+                    }
+                };
+                static  struct  FlagsChecker    sFlagsChecker;
+            }
 #endif
 
 
@@ -1052,98 +1053,98 @@ public:\
 
 
 
-        /*
-         ********************************************************************************
-         ***************************** Implementation Details ***************************
-         ********************************************************************************
-         */
+            /*
+             ********************************************************************************
+             ***************************** Implementation Details ***************************
+             ********************************************************************************
+             */
 
 #if     !qHasIsAscii && defined (isascii)
-        //#warning  "You probably should define qHasIsAscii for your compiler."
+            //#warning  "You probably should define qHasIsAscii for your compiler."
 #endif
 
 
 #if     qBasicString_C_STR_BROKEN_forWCHAR_T
+        }
     }
-}
 }
 // Sadly this is NEEDED for GCC 3.? on RH 7.3 but is NOT needed for GCC 3.2 or later on RH8. Not sure how to
 // tell from compile time flags which is which?
 template <>
 inline  const wchar_t*  basic_string<wchar_t>::c_str () const
 {
-terminate ();
-return data ();
+    terminate ();
+    return data ();
 }
 namespace   Stroika {
-namespace   Frameworks {
-    namespace   Led {
+    namespace   Frameworks {
+        namespace   Led {
 #endif
 
 
 #if     qPlatform_MacOS
+        }
     }
-}
 }
 #include    <Sound.h>
 namespace   Stroika {
-namespace   Frameworks {
-    namespace   Led {
+    namespace   Frameworks {
+        namespace   Led {
 #endif
 
 
 
-        inline  size_t  Led_tStrlen (const Led_tChar* s)
-        {
-            RequireNotNull (s);
+            inline  size_t  Led_tStrlen (const Led_tChar* s)
+            {
+                RequireNotNull (s);
 #if     qSingleByteCharacters
-            return ::strlen (s);
+                return ::strlen (s);
 #elif   qMultiByteCharacters
-            return ::_mbstrlen (s);
+                return ::_mbstrlen (s);
 #elif   qWideCharacters
-            return ::wcslen (s);
+                return ::wcslen (s);
 #endif
-        }
+            }
 
 
-        inline  int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r)
-        {
-            RequireNotNull (l);
-            RequireNotNull (r);
+            inline  int Led_tStrCmp (const Led_tChar* l, const Led_tChar* r)
+            {
+                RequireNotNull (l);
+                RequireNotNull (r);
 #if     qSingleByteCharacters
-            return ::strcmp (l, r);
+                return ::strcmp (l, r);
 #elif   qMultiByteCharacters
-            return ::_mbscmp (l, r);
+                return ::_mbscmp (l, r);
 #elif   qWideCharacters
-            return ::wcscmp (l, r);
+                return ::wcscmp (l, r);
 #endif
-        }
+            }
 
 
-        inline  int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
-        {
-            RequireNotNull (l);
-            RequireNotNull (r);
+            inline  int Led_tStrnCmp (const Led_tChar* l, const Led_tChar* r, size_t n)
+            {
+                RequireNotNull (l);
+                RequireNotNull (r);
 #if     qSingleByteCharacters
-            return ::strncmp (l, r, n);
+                return ::strncmp (l, r, n);
 #elif   qMultiByteCharacters
-            return ::_mbsncmp (l, r, n);
+                return ::_mbsncmp (l, r, n);
 #elif   qWideCharacters
-            return ::wcsncmp (l, r, n);
+                return ::wcsncmp (l, r, n);
 #endif
-        }
+            }
 
 
 
-        inline  const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
-        {
-            RequireNotNull (s);
+            inline  const Led_tChar* Led_tStrChr (const Led_tChar* s, Led_tChar c)
+            {
+                RequireNotNull (s);
 #if     qWideCharacters
-            return ::wcschr (s, c);
+                return ::wcschr (s, c);
 #else
-            return ::strchr (s, c);
+                return ::strchr (s, c);
 #endif
-        }
+            }
 
 
 
@@ -1153,12 +1154,12 @@ namespace   Frameworks {
 // in case Led is used with some other library which may be included alog with Led
 // and that other library works around the absence of isascii - just as we did...
 #if     !qHasIsAscii && !defined (isascii)
-        // I know this used to be part of the UNIX ctype - unsure why it does not appear to
-        // be in the ANSI ctype??? - LGP 950211
-        inline  bool    isascii (unsigned char c)
-        {
-            return (c <= 0x7f);
-        }
+            // I know this used to be part of the UNIX ctype - unsure why it does not appear to
+            // be in the ANSI ctype??? - LGP 950211
+            inline  bool    isascii (unsigned char c)
+            {
+                return (c <= 0x7f);
+            }
 #endif
 
 
@@ -1167,277 +1168,277 @@ namespace   Frameworks {
 
 
 #if     qSDK_UNICODE
-        inline  Led_SDK_String  Led_Wide2SDKString (const wstring& s)
-        {
-            return s;
-        }
-        inline  wstring Led_SDKString2Wide (const Led_SDK_String& s)
-        {
-            return s;
-        }
+            inline  Led_SDK_String  Led_Wide2SDKString (const wstring& s)
+            {
+                return s;
+            }
+            inline  wstring Led_SDKString2Wide (const Led_SDK_String& s)
+            {
+                return s;
+            }
 #else
-        inline  Led_SDK_String  Led_ANSI2SDKString (const string& s)
-        {
-            return s;
-        }
-        inline  string  Led_SDKString2ANSI (const Led_SDK_String& s)
-        {
-            return s;
-        }
+            inline  Led_SDK_String  Led_ANSI2SDKString (const string& s)
+            {
+                return s;
+            }
+            inline  string  Led_SDKString2ANSI (const Led_SDK_String& s)
+            {
+                return s;
+            }
 #endif
 
 #if         qWideCharacters
-        inline  Led_tString Led_WideString2tString (const wstring& s)
-        {
-            return s;
-        }
-        inline  wstring Led_tString2WideString (const Led_tString& s)
-        {
-            return s;
-        }
+            inline  Led_tString Led_WideString2tString (const wstring& s)
+            {
+                return s;
+            }
+            inline  wstring Led_tString2WideString (const Led_tString& s)
+            {
+                return s;
+            }
 #endif
 
 #if     !qWideCharacters
-        inline  Led_tString Led_ANSIString2tString (const string& s)
-        {
-            return s;
-        }
-        inline  string  Led_tString2ANSIString (const Led_tString& s)
-        {
-            return s;
-        }
+            inline  Led_tString Led_ANSIString2tString (const string& s)
+            {
+                return s;
+            }
+            inline  string  Led_tString2ANSIString (const Led_tString& s)
+            {
+                return s;
+            }
 #endif
 
 
 #if     qWideCharacters == qSDK_UNICODE
-        inline  Led_SDK_String  Led_tString2SDKString (const Led_tString& s)
-        {
-            return s;
-        }
-        inline  Led_tString Led_SDKString2tString (const Led_SDK_String& s)
-        {
-            return s;
-        }
+            inline  Led_SDK_String  Led_tString2SDKString (const Led_tString& s)
+            {
+                return s;
+            }
+            inline  Led_tString Led_SDKString2tString (const Led_SDK_String& s)
+            {
+                return s;
+            }
 #endif
 
 
 #if     qPlatform_Windows
 //  class   Win32ErrorException
-        inline  Win32ErrorException::Win32ErrorException (DWORD error):
-            fError (error)
-        {
-        }
-        inline  Win32ErrorException::operator DWORD () const
-        {
-            return fError;
-        }
+            inline  Win32ErrorException::Win32ErrorException (DWORD error):
+                fError (error)
+            {
+            }
+            inline  Win32ErrorException::operator DWORD () const
+            {
+                return fError;
+            }
 
 
 //  class   HRESULTErrorException
-        inline  HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
-            fHResult (hresult)
-        {
-        }
-        inline  HRESULTErrorException::operator HRESULT () const
-        {
-            return fHResult;
-        }
+            inline  HRESULTErrorException::HRESULTErrorException (HRESULT hresult):
+                fHResult (hresult)
+            {
+            }
+            inline  HRESULTErrorException::operator HRESULT () const
+            {
+                return fHResult;
+            }
 #endif
 
 #if     qPlatform_Windows
-        /*
-        @METHOD:        Led_ThrowIfFalseGetLastError
-        @DESCRIPTION:   <p></p>
-        */
-        inline  void    Led_ThrowIfFalseGetLastError (bool test)
-        {
-            if (not test) {
-                throw (Win32ErrorException (::GetLastError ()));
-            }
-        }
-        /*
-        @METHOD:        Led_ThrowIfNotERROR_SUCCESS
-        @DESCRIPTION:   <p></p>
-        */
-        inline  void    Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
-        {
-            if (win32ErrCode != ERROR_SUCCESS) {
-                throw Win32ErrorException (win32ErrCode);
-            }
-        }
-#endif
-
-
-
-
-#if     qPlatform_Windows
-        inline  void    Led_ThrowIfErrorHRESULT (HRESULT hr)
-        {
-            if (not SUCCEEDED (hr)) {
-                throw HRESULTErrorException (hr);
-            }
-        }
-#endif
-
-
-#if     qPlatform_MacOS
-        /*
-        @METHOD:        Led_ThrowIfOSErr
-        @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
-        */
-        inline  void    Led_ThrowIfOSErr (OSErr err)
-        {
-            if (err != noErr) {
-                throw err;
-            }
-        }
-        /*
-        @METHOD:        Led_ThrowIfOSStatus
-        @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
-        */
-        inline  void    Led_ThrowIfOSStatus (OSStatus err)
-        {
-            if (err != noErr) {
-                throw err;
-            }
-        }
-#endif
-        inline  void    Led_ThrowIfNull (void* p)
-        {
-            if (p == nullptr) {
-                Led_ThrowOutOfMemoryException ();
-            }
-        }
-
-
-
-
-
-        inline  unsigned short  Led_ByteSwapFromMac (unsigned short src)
-        {
-#if     qPlatform_MacOS
-            return src;
-#elif   qPlatform_Windows
-            return ((src & 0xff) << 8) + (src >> 8);
-#endif
-        }
-        inline  short   Led_ByteSwapFromMac (short src)
-        {
-            return short (Led_ByteSwapFromMac ((unsigned short)src));
-        }
-
-
-
-        inline  unsigned short  Led_ByteSwapFromWindows (unsigned short src)
-        {
-#if     qPlatform_MacOS
-            return ((src & 0xff) << 8) + (src >> 8);
-#elif   qPlatform_Windows
-            return src;
-#endif
-        }
-        inline  short   Led_ByteSwapFromWindows (short src)
-        {
-            return short (Led_ByteSwapFromWindows ((unsigned short)src));
-        }
-        inline  unsigned long   Led_ByteSwapFromWindows (unsigned long src)
-        {
-#if     qPlatform_MacOS
-            return (Led_ByteSwapFromWindows ((unsigned short)(src & 0xffff)) << 16) + Led_ByteSwapFromWindows ((unsigned short)(src >> 16));
-#elif   qPlatform_Windows
-            return src;
-#endif
-        }
-        inline  long    Led_ByteSwapFromWindows (long src)
-        {
-            return long (Led_ByteSwapFromWindows ((unsigned long)src));
-        }
-
-
-
-
-        inline  void    Led_USHORTToBuf (unsigned short u, unsigned short* realBuf)
-        {
-            unsigned char* buf  =   (unsigned char*)realBuf;
-            buf[0] = (unsigned char)(u >> 8);
-            buf[1] = (unsigned char)u;
-        }
-        inline  unsigned short  Led_BufToUSHORT (const unsigned short* realBuf)
-        {
-            const unsigned char* buf    =   (const unsigned char*)realBuf;
-            return (unsigned short)((((unsigned short)buf[0]) << 8) + (unsigned short)buf[1]);
-        }
-        inline  void    Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf)
-        {
-            unsigned short* buf =   (unsigned short*)realBuf;
-            Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
-            Led_USHORTToBuf((unsigned short)(ul), buf + 1);
-        }
-        inline  unsigned long   Led_BufToULONG (const unsigned long* buf)
-        {
-            unsigned short* bufAsShortArray =   (unsigned short*)buf;
-            return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
-        }
-        inline  void    Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf)
-        {
-            unsigned short* buf =   (unsigned short*)realBuf;
-            Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
-            Led_USHORTToBuf((unsigned short)(ul), buf + 1);
-        }
-        inline  unsigned int    Led_BufToULONG (const uint32_t* buf)
-        {
-            unsigned short* bufAsShortArray =   (unsigned short*)buf;
-            return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
-        }
-
-
-
-
-
-
-
-
-#if     qPlatform_MacOS
-        // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
-        // fall back on application-heap-zone if no tmp memory
-        inline  Handle  Led_DoNewHandle (size_t n)
-        {
-#if     qUseMacTmpMemForAllocs
-            OSErr err;  // ingored...
-            Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
-            if (h == nullptr) {
-                h = ::NewHandle (n);
-            }
-#else
-            Handle  h = ::NewHandle (n);
-#endif
-            Led_ThrowIfNull (h);
-            return h;
-        }
-        inline  void    Led_CheckSomeLocalHeapRAMAvailable (size_t n)
-        {
-            Handle  h   =   ::NewHandle (n);
-            Led_ThrowIfNull (h);
-            ::DisposeHandle (h);
-        }
-#endif
-
-
-
-
-
-
-
-        template    <typename ARRAY_CONTAINER, class    T>
-        size_t  IndexOf (const ARRAY_CONTAINER& array, T item)
-        {
-            for (auto i = array.begin (); i != array.end (); ++i) {
-                if (*i == item) {
-                    return (i - array.begin ());
+            /*
+            @METHOD:        Led_ThrowIfFalseGetLastError
+            @DESCRIPTION:   <p></p>
+            */
+            inline  void    Led_ThrowIfFalseGetLastError (bool test)
+            {
+                if (not test) {
+                    throw (Win32ErrorException (::GetLastError ()));
                 }
             }
-            return kBadIndex;
-        }
+            /*
+            @METHOD:        Led_ThrowIfNotERROR_SUCCESS
+            @DESCRIPTION:   <p></p>
+            */
+            inline  void    Led_ThrowIfNotERROR_SUCCESS (DWORD win32ErrCode)
+            {
+                if (win32ErrCode != ERROR_SUCCESS) {
+                    throw Win32ErrorException (win32ErrCode);
+                }
+            }
+#endif
+
+
+
+
+#if     qPlatform_Windows
+            inline  void    Led_ThrowIfErrorHRESULT (HRESULT hr)
+            {
+                if (not SUCCEEDED (hr)) {
+                    throw HRESULTErrorException (hr);
+                }
+            }
+#endif
+
+
+#if     qPlatform_MacOS
+            /*
+            @METHOD:        Led_ThrowIfOSErr
+            @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
+            */
+            inline  void    Led_ThrowIfOSErr (OSErr err)
+            {
+                if (err != noErr) {
+                    throw err;
+                }
+            }
+            /*
+            @METHOD:        Led_ThrowIfOSStatus
+            @DESCRIPTION:   <p>If the argument err is not noErr, then throw that error.</p>
+            */
+            inline  void    Led_ThrowIfOSStatus (OSStatus err)
+            {
+                if (err != noErr) {
+                    throw err;
+                }
+            }
+#endif
+            inline  void    Led_ThrowIfNull (void* p)
+            {
+                if (p == nullptr) {
+                    Led_ThrowOutOfMemoryException ();
+                }
+            }
+
+
+
+
+
+            inline  unsigned short  Led_ByteSwapFromMac (unsigned short src)
+            {
+#if     qPlatform_MacOS
+                return src;
+#elif   qPlatform_Windows
+                return ((src & 0xff) << 8) + (src >> 8);
+#endif
+            }
+            inline  short   Led_ByteSwapFromMac (short src)
+            {
+                return short (Led_ByteSwapFromMac ((unsigned short)src));
+            }
+
+
+
+            inline  unsigned short  Led_ByteSwapFromWindows (unsigned short src)
+            {
+#if     qPlatform_MacOS
+                return ((src & 0xff) << 8) + (src >> 8);
+#elif   qPlatform_Windows
+                return src;
+#endif
+            }
+            inline  short   Led_ByteSwapFromWindows (short src)
+            {
+                return short (Led_ByteSwapFromWindows ((unsigned short)src));
+            }
+            inline  unsigned long   Led_ByteSwapFromWindows (unsigned long src)
+            {
+#if     qPlatform_MacOS
+                return (Led_ByteSwapFromWindows ((unsigned short)(src & 0xffff)) << 16) + Led_ByteSwapFromWindows ((unsigned short)(src >> 16));
+#elif   qPlatform_Windows
+                return src;
+#endif
+            }
+            inline  long    Led_ByteSwapFromWindows (long src)
+            {
+                return long (Led_ByteSwapFromWindows ((unsigned long)src));
+            }
+
+
+
+
+            inline  void    Led_USHORTToBuf (unsigned short u, unsigned short* realBuf)
+            {
+                unsigned char* buf  =   (unsigned char*)realBuf;
+                buf[0] = (unsigned char)(u >> 8);
+                buf[1] = (unsigned char)u;
+            }
+            inline  unsigned short  Led_BufToUSHORT (const unsigned short* realBuf)
+            {
+                const unsigned char* buf    =   (const unsigned char*)realBuf;
+                return (unsigned short)((((unsigned short)buf[0]) << 8) + (unsigned short)buf[1]);
+            }
+            inline  void    Led_ULONGToBuf (unsigned long ul, unsigned long* realBuf)
+            {
+                unsigned short* buf =   (unsigned short*)realBuf;
+                Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
+                Led_USHORTToBuf((unsigned short)(ul), buf + 1);
+            }
+            inline  unsigned long   Led_BufToULONG (const unsigned long* buf)
+            {
+                unsigned short* bufAsShortArray =   (unsigned short*)buf;
+                return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
+            }
+            inline  void    Led_ULONGToBuf (unsigned int ul, unsigned int* realBuf)
+            {
+                unsigned short* buf =   (unsigned short*)realBuf;
+                Led_USHORTToBuf((unsigned short)(ul >> 16), buf);
+                Led_USHORTToBuf((unsigned short)(ul), buf + 1);
+            }
+            inline  unsigned int    Led_BufToULONG (const uint32_t* buf)
+            {
+                unsigned short* bufAsShortArray =   (unsigned short*)buf;
+                return (((unsigned long)Led_BufToUSHORT(bufAsShortArray)) << 16) + Led_BufToUSHORT(bufAsShortArray + 1);
+            }
+
+
+
+
+
+
+
+
+#if     qPlatform_MacOS
+            // throw if cannot do allocation. Use tmp memory if qUseMacTmpMemForAllocs.
+            // fall back on application-heap-zone if no tmp memory
+            inline  Handle  Led_DoNewHandle (size_t n)
+            {
+#if     qUseMacTmpMemForAllocs
+                OSErr err;  // ingored...
+                Handle  h   =   ::TempNewHandle (n, &err);  // try temp mem, and use our local mem if no temp mem left
+                if (h == nullptr) {
+                    h = ::NewHandle (n);
+                }
+#else
+                Handle  h = ::NewHandle (n);
+#endif
+                Led_ThrowIfNull (h);
+                return h;
+            }
+            inline  void    Led_CheckSomeLocalHeapRAMAvailable (size_t n)
+            {
+                Handle  h   =   ::NewHandle (n);
+                Led_ThrowIfNull (h);
+                ::DisposeHandle (h);
+            }
+#endif
+
+
+
+
+
+
+
+            template    <typename ARRAY_CONTAINER, class    T>
+            size_t  IndexOf (const ARRAY_CONTAINER& array, T item)
+            {
+                for (auto i = array.begin (); i != array.end (); ++i) {
+                    if (*i == item) {
+                        return (i - array.begin ());
+                    }
+                }
+                return kBadIndex;
+            }
 
 
 
@@ -1447,33 +1448,33 @@ namespace   Frameworks {
 
 
 #if     qPlatform_MacOS || qPlatform_Windows
-        inline  Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h):
-            fHandle (h)
-        {
-            RequireNotNull (h);
+            inline  Led_StackBasedHandleLocker::Led_StackBasedHandleLocker (GenericHandle h):
+                fHandle (h)
+            {
+                RequireNotNull (h);
 #if     qPlatform_MacOS
-            fOldState = ::HGetState (h);
-            ::HLock (h);
+                fOldState = ::HGetState (h);
+                ::HLock (h);
 #elif   qPlatform_Windows
-            fPointer = ::GlobalLock (h);
+                fPointer = ::GlobalLock (h);
 #endif
-        }
-        inline  Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker ()
-        {
+            }
+            inline  Led_StackBasedHandleLocker::~Led_StackBasedHandleLocker ()
+            {
 #if     qPlatform_MacOS
-            ::HSetState (fHandle, fOldState);
+                ::HSetState (fHandle, fOldState);
 #elif   qPlatform_Windows
-            ::GlobalUnlock (fHandle);
+                ::GlobalUnlock (fHandle);
 #endif
-        }
-        inline  void*   Led_StackBasedHandleLocker::GetPointer () const
-        {
+            }
+            inline  void*   Led_StackBasedHandleLocker::GetPointer () const
+            {
 #if     qPlatform_MacOS
-            return *fHandle;
+                return *fHandle;
 #elif   qPlatform_Windows
-            return fPointer;
+                return fPointer;
 #endif
-        }
+            }
 #endif
 
 
@@ -1488,288 +1489,288 @@ namespace   Frameworks {
 
 
 #if     qMultiByteCharacters
-        inline  bool    Led_IsLeadByte (unsigned char c)
-        {
+            inline  bool    Led_IsLeadByte (unsigned char c)
+            {
 #error  "That Multibyte character set not supported"
-        }
-        inline  bool    Led_IsValidSingleByte (unsigned char /*c*/)
-        {
-            // This isn't really right, but close enough for now. Alec Wysocker seems to think
-            // so anyhow... LGP 950306
-            return true;
-        }
-        inline  bool    Led_IsValidSecondByte (unsigned char c)
-        {
-#error  "That Multibyte character set not supported"
-        }
-#endif
-        inline  Led_tChar*      Led_NextChar (Led_tChar* fromHere)
-        {
-            AssertNotNull (fromHere);
-#if     qSingleByteCharacters || qWideCharacters
-            return (fromHere + 1);      // address arithmatic does the magic for wide characters
-#elif   qMultiByteCharacters
-            return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
-#endif
-        }
-        inline  const Led_tChar*    Led_NextChar (const Led_tChar* fromHere)
-        {
-            AssertNotNull (fromHere);
-#if     qSingleByteCharacters || qWideCharacters
-            return (fromHere + 1);      // address arithmatic does the magic for wide characters
-#elif   qMultiByteCharacters
-            return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
-#endif
-        }
-        /*
-
-        FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
-            Bytes can be:
-
-            (1)     Ascii (0-0x7f)
-            (2)     FirstByte of DoubleByte Char
-                    (c >= 0x81 and c <= 0x9f) or (c >= 0xe0 and c <= 0xfc)
-            (3)     SecondByte of DoubleByte Char
-                    (c >= 0x40 and c <= 0x7e) or (c >= 0x80 and c <= 0xfc)
-
-        (NB: This clasification counts on the fact that we filter out all bad SJIS)
-
-            note that class of ASCII bytes and the class of FirstBytes does not overlap, but the class of SecondBytes DOES overlap with both others.
-
-            Our task in scanning backward is to be able to UNIQUELY tell by looking at a byte - WITHOUT KNOWING ITS CONTEXT BEFOREHAND - if it is an ASCII byte, FirstByte, or a SecondByte.
-
-            This analysis makes our job a little easier. Most bytes just by looking at them - can be immediately clasified.
-
-            0x00-0x3f ==> ASCII
-            0x40-0x7e ==> ASCII or SecondByte
-            0x7f      ==> ASCII
-            0x80      ==> SecondByte
-            0x81-0x9f ==> FirstByte or SecondByte
-            0xa0-0xdf ==> SecondByte
-            0xe0-0xfc ==> FirstByte or SecondByte
-
-            *   This Algoritm assumes that mbyte character sets have at most two bytes per character. This
-            *   is true for SJIS - but I'm not posative it is always true - LGP 950216.
-
-         */
-        inline  const Led_tChar*    Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere)
-        {
-            AssertNotNull (startOfString);
-            AssertNotNull (fromHere);
-            Assert (startOfString < fromHere);  // Must be room for previous character to exist!
-#if     qSingleByteCharacters || qWideCharacters
-            Led_Arg_Unused (startOfString);
-            return (fromHere - 1);      // address arithmatic does the magic for wide characters
-#elif   qMultiByteCharacters
-            /*
-             *  If the previous byte is a lead-byte, then the real character boundsary
-             *  is really TWO back.
-             *
-             *  Proof by contradiction:
-             *      Assume prev character is back one byte. Then the chracter it is part of
-             *  contains the first byte of the character we started with. This obviously
-             *  cannot happen. QED.
-             *
-             *      This is actually a worth-while test since lots of second bytes look quite
-             *  a lot like lead-bytes - so this happens a lot.
-             */
-            if (Led_IsLeadByte (*(fromHere - 1))) {
-                Assert (fromHere - startOfString >= 2);     // else split character...
-                return (fromHere - 2);
             }
-            if (fromHere == startOfString + 1) {
-                return (startOfString); // if there is only one byte to go back, it must be an ASCII byte
-            }
-            // we go back by BYTES til we find a syncronization point
-            const Led_tChar* cur = fromHere - 2;
-            for (; cur > startOfString; cur--) {
-                if (not Led_IsLeadByte (*cur)) {
-                    // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
-                    // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
-                    // a valid mbyte char boundary.
-                    cur++;
-                    break;
-                }
-            }
-            Assert (cur < fromHere);
-            // Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
-            // to to find the previous character...
-            for (; cur < fromHere; ) {
-                const Led_tChar*    next = Led_NextChar (cur);
-                if (next == fromHere) {
-                    return (cur);
-                }
-                Assert (next < fromHere);   // if we've gone past - then fromHere must have split a mbyte char!
-                cur = next;
-            }
-            Assert (false);
-            return (0);     // previous character must exist!!!
-#endif
-        }
-        inline  Led_tChar*          Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere)
-        {
-            // We could duplicate all the code above - but its simpler to just cast and invoke
-            // the above impemenation...
-            return ((Led_tChar*)Led_PreviousChar ((const Led_tChar*)startOfString, (const Led_tChar*)fromHere));
-        }
-
-
-
-        inline  bool    ValidateTextForCharsetConformance (
-#if     qMultiByteCharacters
-            const Led_tChar* text, size_t length
-#else
-            const Led_tChar*, size_t
-#endif
-        )
-        {
-#if     qMultiByteCharacters
-            return (Led_IsValidMultiByteString (text, length));
-#else
-            return true;        // probably should do SOME validation here for other character sets - at least
-            // for plain ascii!!! - LGP 950212
-#endif
-        }
-
-        inline  unsigned    Led_DigitCharToNumber (char digitChar)
-        {
-            // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
-
-            // require input is valid decimal digit
-            Require (digitChar >= '0');
-            Require (digitChar <= '9');
-            return (digitChar - '0');
-        }
-        inline  char        Led_NumberToDigitChar (unsigned digitValue)
-        {
-            // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
-
-            // require input is valid decimal digit value
-            Require (digitValue <= 9);
-            return (digitValue + '0');
-        }
-
-
-
-
-
-#if     qMultiByteCharacters
-        inline  const Led_tChar*    Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd)
-        {
-            if (guessedEnd == start) {
-                return guessedEnd;
-            }
-
-            // we go back by BYTES til we find a syncronization point
-            const Led_tChar* cur = guessedEnd - 1;
-            for (; cur > start; cur--) {
-                if (not Led_IsLeadByte (*cur)) {
-                    // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
-                    // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
-                    // a valid mbyte char boundary.
-                    cur++;
-                    break;
-                }
-            }
-            const Led_tChar* closestStart = cur;
-            for (;;) {
-                cur = Led_NextChar(cur);
-                if (cur > guessedEnd) {
-                    break;
-                }
-                closestStart = cur;
-            }
-            Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
-            return closestStart;
-        }
-        inline  Led_tChar*          Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd)
-        {
-            // We could duplicate all the code above - but its simpler to just cast and invoke
-            // the above impemenation...
-            return ((Led_tChar*)Led_FindPrevOrEqualCharBoundary ((const Led_tChar*)start, (const Led_tChar*)guessedEnd));
-        }
-#endif
-
-
-
-
-
-
-
-
-
-        inline  bool    Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
-        {
-#if     qPlatform_MacOS
-#if     TARGET_CARBON
-            ScrapRef            scrap   =   nullptr;
-            Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
-            ScrapFlavorFlags    flags   =   0;
-            return (::GetScrapFlavorFlags (scrap, clipType, &flags) == noErr);
-#else
-            long    scrapOffset =   0;
-            long    result      =   ::GetScrap (nullptr, clipType, &scrapOffset);
-            return (result > 0);
-#endif
-#elif   qPlatform_Windows
-            return (!!::IsClipboardFormatAvailable (clipType));
-#elif   qXWindows
-            // Wild guess - no good answer yet - LGP 2003-05-06
-            return true;
-#endif
-        }
-        inline  bool    Led_ClipboardObjectAcquire::FormatAvailable_TEXT ()
-        {
-            if (FormatAvailable (kTEXTClipFormat)) {
+            inline  bool    Led_IsValidSingleByte (unsigned char /*c*/)
+            {
+                // This isn't really right, but close enough for now. Alec Wysocker seems to think
+                // so anyhow... LGP 950306
                 return true;
             }
-            return false;
-        }
-        inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()
-        {
-            // For windows me must unlock, but not delete
-#if     qPlatform_Windows
-            if (fLockedData != nullptr) {
-                ::GlobalUnlock (fLockedData);
+            inline  bool    Led_IsValidSecondByte (unsigned char c)
+            {
+#error  "That Multibyte character set not supported"
             }
 #endif
+            inline  Led_tChar*      Led_NextChar (Led_tChar* fromHere)
+            {
+                AssertNotNull (fromHere);
+#if     qSingleByteCharacters || qWideCharacters
+                return (fromHere + 1);      // address arithmatic does the magic for wide characters
+#elif   qMultiByteCharacters
+                return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
+#endif
+            }
+            inline  const Led_tChar*    Led_NextChar (const Led_tChar* fromHere)
+            {
+                AssertNotNull (fromHere);
+#if     qSingleByteCharacters || qWideCharacters
+                return (fromHere + 1);      // address arithmatic does the magic for wide characters
+#elif   qMultiByteCharacters
+                return (Led_IsLeadByte (*fromHere) ? (fromHere + 2) : (fromHere + 1));
+#endif
+            }
+            /*
 
-            // For mac me must delete - could unlock too - but no need
-#if     qPlatform_MacOS
-            if (fOSClipHandle != nullptr) {
-                ::DisposeHandle (fOSClipHandle);
-            }
+            FIXUP COMMENT - FROM EMAIL - AND ABOUT PREV_CHAR IMPLEMENTATION...
+                Bytes can be:
+
+                (1)     Ascii (0-0x7f)
+                (2)     FirstByte of DoubleByte Char
+                        (c >= 0x81 and c <= 0x9f) or (c >= 0xe0 and c <= 0xfc)
+                (3)     SecondByte of DoubleByte Char
+                        (c >= 0x40 and c <= 0x7e) or (c >= 0x80 and c <= 0xfc)
+
+            (NB: This clasification counts on the fact that we filter out all bad SJIS)
+
+                note that class of ASCII bytes and the class of FirstBytes does not overlap, but the class of SecondBytes DOES overlap with both others.
+
+                Our task in scanning backward is to be able to UNIQUELY tell by looking at a byte - WITHOUT KNOWING ITS CONTEXT BEFOREHAND - if it is an ASCII byte, FirstByte, or a SecondByte.
+
+                This analysis makes our job a little easier. Most bytes just by looking at them - can be immediately clasified.
+
+                0x00-0x3f ==> ASCII
+                0x40-0x7e ==> ASCII or SecondByte
+                0x7f      ==> ASCII
+                0x80      ==> SecondByte
+                0x81-0x9f ==> FirstByte or SecondByte
+                0xa0-0xdf ==> SecondByte
+                0xe0-0xfc ==> FirstByte or SecondByte
+
+                *   This Algoritm assumes that mbyte character sets have at most two bytes per character. This
+                *   is true for SJIS - but I'm not posative it is always true - LGP 950216.
+
+             */
+            inline  const Led_tChar*    Led_PreviousChar (const Led_tChar* startOfString, const Led_tChar* fromHere)
+            {
+                AssertNotNull (startOfString);
+                AssertNotNull (fromHere);
+                Assert (startOfString < fromHere);  // Must be room for previous character to exist!
+#if     qSingleByteCharacters || qWideCharacters
+                Led_Arg_Unused (startOfString);
+                return (fromHere - 1);      // address arithmatic does the magic for wide characters
+#elif   qMultiByteCharacters
+                /*
+                 *  If the previous byte is a lead-byte, then the real character boundsary
+                 *  is really TWO back.
+                 *
+                 *  Proof by contradiction:
+                 *      Assume prev character is back one byte. Then the chracter it is part of
+                 *  contains the first byte of the character we started with. This obviously
+                 *  cannot happen. QED.
+                 *
+                 *      This is actually a worth-while test since lots of second bytes look quite
+                 *  a lot like lead-bytes - so this happens a lot.
+                 */
+                if (Led_IsLeadByte (*(fromHere - 1))) {
+                    Assert (fromHere - startOfString >= 2);     // else split character...
+                    return (fromHere - 2);
+                }
+                if (fromHere == startOfString + 1) {
+                    return (startOfString); // if there is only one byte to go back, it must be an ASCII byte
+                }
+                // we go back by BYTES til we find a syncronization point
+                const Led_tChar* cur = fromHere - 2;
+                for (; cur > startOfString; cur--) {
+                    if (not Led_IsLeadByte (*cur)) {
+                        // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
+                        // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
+                        // a valid mbyte char boundary.
+                        cur++;
+                        break;
+                    }
+                }
+                Assert (cur < fromHere);
+                // Now we are pointing AT LEAST one mbyte char back from 'fromHere' so scan forward as we used
+                // to to find the previous character...
+                for (; cur < fromHere; ) {
+                    const Led_tChar*    next = Led_NextChar (cur);
+                    if (next == fromHere) {
+                        return (cur);
+                    }
+                    Assert (next < fromHere);   // if we've gone past - then fromHere must have split a mbyte char!
+                    cur = next;
+                }
+                Assert (false);
+                return (0);     // previous character must exist!!!
 #endif
-        }
-        inline  bool    Led_ClipboardObjectAcquire::GoodClip () const
-        {
-#if     qPlatform_MacOS || qPlatform_Windows
-            return (fOSClipHandle != nullptr and fLockedData != nullptr);
+            }
+            inline  Led_tChar*          Led_PreviousChar (Led_tChar* startOfString, Led_tChar* fromHere)
+            {
+                // We could duplicate all the code above - but its simpler to just cast and invoke
+                // the above impemenation...
+                return ((Led_tChar*)Led_PreviousChar ((const Led_tChar*)startOfString, (const Led_tChar*)fromHere));
+            }
+
+
+
+            inline  bool    ValidateTextForCharsetConformance (
+#if     qMultiByteCharacters
+                const Led_tChar* text, size_t length
 #else
-            return false;   // X-TMP-HACK-LGP991213
+                const Led_tChar*, size_t
 #endif
-        }
-        inline  void*   Led_ClipboardObjectAcquire::GetData () const
-        {
-            Assert (GoodClip ());
-            return (fLockedData);
-        }
-        inline  size_t  Led_ClipboardObjectAcquire::GetDataLength () const
-        {
-            Assert (GoodClip ());
+            )
+            {
+#if     qMultiByteCharacters
+                return (Led_IsValidMultiByteString (text, length));
+#else
+                return true;        // probably should do SOME validation here for other character sets - at least
+                // for plain ascii!!! - LGP 950212
+#endif
+            }
+
+            inline  unsigned    Led_DigitCharToNumber (char digitChar)
+            {
+                // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
+
+                // require input is valid decimal digit
+                Require (digitChar >= '0');
+                Require (digitChar <= '9');
+                return (digitChar - '0');
+            }
+            inline  char        Led_NumberToDigitChar (unsigned digitValue)
+            {
+                // assume '0'..'9' are consecutive - true for ascii at least - LGP 961015
+
+                // require input is valid decimal digit value
+                Require (digitValue <= 9);
+                return (digitValue + '0');
+            }
+
+
+
+
+
+#if     qMultiByteCharacters
+            inline  const Led_tChar*    Led_FindPrevOrEqualCharBoundary (const Led_tChar* start, const Led_tChar* guessedEnd)
+            {
+                if (guessedEnd == start) {
+                    return guessedEnd;
+                }
+
+                // we go back by BYTES til we find a syncronization point
+                const Led_tChar* cur = guessedEnd - 1;
+                for (; cur > start; cur--) {
+                    if (not Led_IsLeadByte (*cur)) {
+                        // Then we are in case 1, 2, 3, 4 or 6 (not 5 or 7). So ew know we are looking
+                        // at an ASCII byte, or a secondbyte. Therefore - the NEXT byte from here must be
+                        // a valid mbyte char boundary.
+                        cur++;
+                        break;
+                    }
+                }
+                const Led_tChar* closestStart = cur;
+                for (;;) {
+                    cur = Led_NextChar(cur);
+                    if (cur > guessedEnd) {
+                        break;
+                    }
+                    closestStart = cur;
+                }
+                Assert ((closestStart == guessedEnd) or (closestStart == guessedEnd - 1));
+                return closestStart;
+            }
+            inline  Led_tChar*          Led_FindPrevOrEqualCharBoundary (Led_tChar* start, Led_tChar* guessedEnd)
+            {
+                // We could duplicate all the code above - but its simpler to just cast and invoke
+                // the above impemenation...
+                return ((Led_tChar*)Led_FindPrevOrEqualCharBoundary ((const Led_tChar*)start, (const Led_tChar*)guessedEnd));
+            }
+#endif
+
+
+
+
+
+
+
+
+
+            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable (Led_ClipFormat clipType)
+            {
 #if     qPlatform_MacOS
-            return (::GetHandleSize (fOSClipHandle));
-#elif   qPlatform_Windows
-            return (::GlobalSize (fOSClipHandle));
+#if     TARGET_CARBON
+                ScrapRef            scrap   =   nullptr;
+                Led_ThrowIfOSStatus (::GetCurrentScrap (&scrap));
+                ScrapFlavorFlags    flags   =   0;
+                return (::GetScrapFlavorFlags (scrap, clipType, &flags) == noErr);
+#else
+                long    scrapOffset =   0;
+                long    result      =   ::GetScrap (nullptr, clipType, &scrapOffset);
+                return (result > 0);
 #endif
+#elif   qPlatform_Windows
+                return (!!::IsClipboardFormatAvailable (clipType));
+#elif   qXWindows
+                // Wild guess - no good answer yet - LGP 2003-05-06
+                return true;
+#endif
+            }
+            inline  bool    Led_ClipboardObjectAcquire::FormatAvailable_TEXT ()
+            {
+                if (FormatAvailable (kTEXTClipFormat)) {
+                    return true;
+                }
+                return false;
+            }
+            inline  Led_ClipboardObjectAcquire::~Led_ClipboardObjectAcquire ()
+            {
+                // For windows me must unlock, but not delete
+#if     qPlatform_Windows
+                if (fLockedData != nullptr) {
+                    ::GlobalUnlock (fLockedData);
+                }
+#endif
+
+                // For mac me must delete - could unlock too - but no need
+#if     qPlatform_MacOS
+                if (fOSClipHandle != nullptr) {
+                    ::DisposeHandle (fOSClipHandle);
+                }
+#endif
+            }
+            inline  bool    Led_ClipboardObjectAcquire::GoodClip () const
+            {
+#if     qPlatform_MacOS || qPlatform_Windows
+                return (fOSClipHandle != nullptr and fLockedData != nullptr);
+#else
+                return false;   // X-TMP-HACK-LGP991213
+#endif
+            }
+            inline  void*   Led_ClipboardObjectAcquire::GetData () const
+            {
+                Assert (GoodClip ());
+                return (fLockedData);
+            }
+            inline  size_t  Led_ClipboardObjectAcquire::GetDataLength () const
+            {
+                Assert (GoodClip ());
+#if     qPlatform_MacOS
+                return (::GetHandleSize (fOSClipHandle));
+#elif   qPlatform_Windows
+                return (::GlobalSize (fOSClipHandle));
+#endif
+            }
+
+
+
+
+
         }
-
-
-
-
-
     }
-}
 }
 
 

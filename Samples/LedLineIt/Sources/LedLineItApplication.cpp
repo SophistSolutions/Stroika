@@ -67,11 +67,13 @@ public:
     SimpleLedTemplate (const char* daStr):
         CMultiDocTemplate (IDR_MAINFRAME, RUNTIME_CLASS(LedLineItDocument), RUNTIME_CLASS(LedLineItDocFrame),
                            RUNTIME_CLASS(LedLineItView)
-                          ) {
+                          )
+    {
         m_strDocStrings = daStr;
     }
 
-    virtual    void    LoadTemplate () override {
+    virtual    void    LoadTemplate () override
+    {
         CMultiDocTemplate::LoadTemplate ();
 
         // Now go and fixup the font menu...
@@ -88,7 +90,8 @@ public:
     }
 
 public:
-    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible) {
+    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible)
+    {
         /*
          *  Based on CDocManager::OpenDocumentFile () from MFC (Version?? from MSVC.Net 2k3 - 2003-11-28)
          *  but fixed to better handle exceptions. -- LGP 2003-11-28
@@ -187,11 +190,13 @@ private:
     typedef CDocManager inherited;
 public:
     LedLineItDocManager ():
-        inherited () {
+        inherited ()
+    {
     }
 
 public:
-    virtual    void    OnFileOpen () override {
+    virtual    void    OnFileOpen () override
+    {
         ::CString fileName;
         int codePage    =   0;
         if (LedLineItDocument::DoPromptOpenFileName (&fileName, &codePage)) {
@@ -200,12 +205,14 @@ public:
     }
 
 public:
-    virtual    BOOL DoPromptFileName(::CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) override {
+    virtual    BOOL DoPromptFileName(::CString& /*fileName*/, UINT /*nIDSTitle*/, DWORD /*lFlags*/, BOOL /*bOpenFileDialog*/, CDocTemplate* /*pTemplate*/) override
+    {
         Assert (false); // shouldn't be called - cuz we now override OnFileOpen () to avoid it...
         return false;
     }
 public:
-    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName, CodePage codePage) {
+    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName, CodePage codePage)
+    {
         Assert (LedLineItDocument::sHiddenDocOpenArg == kIGNORECodePage);
         try {
             // If there is already an open, untitledDoc - and we open a new document - silently close the unused
@@ -249,7 +256,8 @@ public:
             throw;
         }
     }
-    virtual    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName) override {
+    virtual    CDocument*  OpenDocumentFile (LPCTSTR lpszFileName) override
+    {
         return OpenDocumentFile (lpszFileName, kAutomaticallyGuessCodePage);
     }
 
@@ -403,11 +411,13 @@ BOOL LedLineItApplication::InitInstance ()
             typedef Win32UIFileAssociationRegistrationHelper    inherited;
         public:
             MyRegistrationHelper ():
-                inherited (::AfxGetResourceHandle ()) {
+                inherited (::AfxGetResourceHandle ())
+            {
             }
 
         public:
-            virtual    bool    CheckUserSaysOKToUpdate () const override {
+            virtual    bool    CheckUserSaysOKToUpdate () const override
+            {
                 Options o;
                 if (o.GetCheckFileAssocsAtStartup ()) {
                     Led_StdDialogHelper_UpdateWin32FileAssocsDialog     dlg(::AfxGetResourceHandle (), ::GetActiveWindow ());
@@ -508,7 +518,8 @@ void    LedLineItApplication::HandleBadAllocException () noexcept {
         CDialog errorDialog (kBadAllocExceptionOnCmdDialogID);
         errorDialog.DoModal ();
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -522,7 +533,8 @@ void    LedLineItApplication::HandleBadUserInputException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -532,7 +544,8 @@ void    LedLineItApplication::HandleUnknownException () noexcept {
         CDialog errorDialog (kUnknownExceptionOnCmdDialogID);
         errorDialog.DoModal ();
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -561,10 +574,12 @@ void    LedLineItApplication::OnAppAbout ()
         typedef Led_StdDialogHelper_AboutBox    inherited;
     public:
         MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
-            inherited (hInstance, parentWnd) {
+            inherited (hInstance, parentWnd)
+        {
         }
     public:
-        virtual    BOOL    OnInitDialog () override {
+        virtual    BOOL    OnInitDialog () override
+        {
             BOOL    result  =   inherited::OnInitDialog ();
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
@@ -628,7 +643,8 @@ void    LedLineItApplication::OnAppAbout ()
             return (result);
         }
     public:
-        virtual    void    OnClickInInfoField () override {
+        virtual    void    OnClickInInfoField () override
+        {
             try {
                 Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
             }
@@ -638,7 +654,8 @@ void    LedLineItApplication::OnAppAbout ()
             inherited::OnClickInInfoField ();
         }
 
-        virtual    void    OnClickInLedWebPageField () override {
+        virtual    void    OnClickInLedWebPageField () override
+        {
             try {
                 Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedLineIt/", kAppName));
             }

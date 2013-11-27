@@ -27,11 +27,13 @@ public:
         : fCriticalSection_ ()
         , fSource_ (src)
         , fTmpHackTextRemaining_ ()
-        , fOffset_ (0) {
+        , fOffset_ (0)
+    {
     }
 
 protected:
-    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override {
+    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override
+    {
         Require ((intoStart == intoEnd) or (intoStart != nullptr));
         Require ((intoStart == intoEnd) or (intoEnd != nullptr));
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
@@ -67,12 +69,14 @@ protected:
 #endif
     }
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         return fOffset_;
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {

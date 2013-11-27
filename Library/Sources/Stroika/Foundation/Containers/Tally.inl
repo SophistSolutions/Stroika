@@ -38,9 +38,11 @@ namespace   Stroika {
             public:
                 _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
                     : inherited ()
-                    , fDelegateTo_ (delegateTo) {
+                    , fDelegateTo_ (delegateTo)
+                {
                 }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override {
+                virtual void    More (Memory::Optional<T>* result, bool advance) override
+                {
                     bool done = fDelegateTo_.Done ();
                     if (not done and advance) {
                         fDelegateTo_++;
@@ -53,10 +55,12 @@ namespace   Stroika {
                         *result = fDelegateTo_->fItem;
                     }
                 }
-                virtual typename Iterator<T>::SharedIRepPtr Clone () const override {
+                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                {
                     return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
                 }
-                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                {
                     AssertNotImplemented ();
                     return false;
                 }

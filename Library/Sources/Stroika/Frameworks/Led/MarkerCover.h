@@ -686,7 +686,8 @@ namespace   Stroika {
             */
             void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
                 fNeedExtraUpdateCheck = false;
-                if (updateInfo.fTextModified) {
+                if (updateInfo.fTextModified)
+                {
                     NoteCoverRangeDirtied (updateInfo.fReplaceFrom, updateInfo.GetResultingRHS ());
                 }
                 inherited::DidUpdateText (updateInfo);
@@ -707,7 +708,8 @@ namespace   Stroika {
             void    MarkerCover<MARKER, MARKERINFO, INCREMENTALMARKERINFO>::CullZerod (const MarkerVector& rangeAndSurroundingsMarkers) noexcept {
                 // all effected text is diff if we did a replace or not - if no, then from-to,
                 // else from to from+textInserted (cuz from-to deleted)
-                for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
+                for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i)
+                {
                     MARKER* m   =   *i;
                     if (m->GetLength () == 0) {
                         fMarkersToBeDeleted.SafeAccumulateMarkerForDeletion (m);
@@ -720,7 +722,8 @@ namespace   Stroika {
                 MarkerVector        markers =   CollectAllNonEmptyInRange_OrSurroundings (around, around);
                 Assert (markers.size () != 0);
 
-                if (markers.size () > 1) {
+                if (markers.size () > 1)
+                {
                     Assert (markers.size () == 2);  // since two character range, can be at most two style markers!
                     MARKER* m1 = markers[0];
                     MARKER* m2 = markers[1];
@@ -744,7 +747,8 @@ namespace   Stroika {
                  *
                  *  Walk the list - and if any adjacent pairs are identical, merge one out.
                  */
-                if (rangeAndSurroundingsMarkers.size () >= 2) {
+                if (rangeAndSurroundingsMarkers.size () >= 2)
+                {
                     typename    MarkerVector::const_iterator    i           = rangeAndSurroundingsMarkers.begin ();
                     typename    MarkerVector::const_iterator    end         = rangeAndSurroundingsMarkers.end ();
                     MARKER*                                     prevMarker  =   *i;

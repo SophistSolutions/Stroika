@@ -161,7 +161,8 @@ namespace   Stroika {
                 virtual     void    InteractiveReplace (const Led_tChar* withWhat, size_t withWhatCharCount, UpdateMode updateMode = eDefaultUpdate) override;
                 virtual     void    SetSelection (size_t start, size_t end) override;
 #if     qUsingMemberNameToOverloadInWithUsingBug
-                void    SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode) {
+                void    SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode)
+                {
                     TextInteractor::SetSelection (start, end, updateMode);
                 }
 #else

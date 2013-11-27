@@ -17,7 +17,8 @@ namespace   Stroika {
                     extern  int LedCheckCompilerFlags_(qMFCRequiresCWndLeftmostBaseClass);
 
                     struct  FlagsChecker {
-                        FlagsChecker () {
+                        FlagsChecker ()
+                        {
                             /*
                              *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
                              */

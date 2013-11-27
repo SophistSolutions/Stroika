@@ -39,21 +39,26 @@ public:
         : fCritSection_ ()
         , fFoundCallbacks_ ()
         , fSocket_ (Socket::SocketKind::DGRAM)
-        , fThread_ () {
+        , fThread_ ()
+    {
     }
-    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
+    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds)
+    {
         lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
     }
-    void    Start (const String& serviceType) {
+    void    Start (const String& serviceType)
+    {
         fThread_ = Execution::Thread ([this, serviceType] () { DoRun_ (serviceType); });
         fThread_.SetThreadName (L"SSDP Searcher");
         fThread_.Start ();
     }
-    void    Stop () {
+    void    Stop ()
+    {
         fThread_.AbortAndWaitForDone ();
     }
-    void    DoRun_ (const String& serviceType) {
+    void    DoRun_ (const String& serviceType)
+    {
 
         fSocket_.SetMulticastLoopMode (true);       // probably should make this configurable
 
@@ -100,7 +105,8 @@ public:
             }
         }
     }
-    void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
+    void    ReadPacketAndNotifyCallbacks_ (Streams::TextInputStream in)
+    {
         String firstLine    =   in.ReadLine ().Trim ();
 
 #if     USE_TRACE_IN_THIS_MODULE_

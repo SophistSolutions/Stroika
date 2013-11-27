@@ -58,16 +58,19 @@ namespace {
         FlavorSavorTextRep (TextInteractor* interactor, size_t regionStart, size_t regionEnd, size_t selStart, size_t selEnd):
             inherited (selStart, selEnd),
             fSavedText (),
-            fTextLength (regionEnd - regionStart) {
+            fTextLength (regionEnd - regionStart)
+        {
 #if     !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
 #endif
             interactor->GetExternalizer ()->ExternalizeBestFlavor (fSavedText, regionStart, regionEnd);
         }
-        virtual     size_t  GetLength () const override {
+        virtual     size_t  GetLength () const override
+        {
             return fTextLength;
         }
-        virtual     void    InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override {
+        virtual     void    InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
+        {
 #if     !qFailToLookupFunctionNameWhenCompilingFunctionLocalClassMethodCompilerBug
             RequireNotNull (interactor);
 #endif
@@ -114,14 +117,16 @@ namespace {
         MyCallback (TextInteractor& ti):
             inherited (),
             fTI (ti),
-            fIgnoredWords () {
+            fIgnoredWords ()
+        {
         }
 
     public:
 #if     qSilenceAnnoyingCompilerWarnings && _MSC_VER
 #pragma warning(suppress: 6262)
 #endif
-        virtual     MisspellingInfo*    GetNextMisspelling () override {
+        virtual     MisspellingInfo*    GetNextMisspelling () override
+        {
             SpellCheckEngine*   sce =   fTI.GetSpellCheckEngine ();
             if (sce != nullptr) {
                 Led_tChar   charBuf[10 * 1024];     // buffer size doesn't matter much - but just has to be larger than the largest undef word we ever want to find...
@@ -185,11 +190,13 @@ SecondTry: {
             }
             return nullptr;
         }
-        virtual     void    DoIgnore () override {
+        virtual     void    DoIgnore () override
+        {
             fTI.SetSelection (fTI.GetSelectionEnd (), fTI.GetSelectionEnd ());
             fTI.ScrollToSelection ();
         }
-        virtual     void    DoIgnoreAll () override {
+        virtual     void    DoIgnoreAll () override
+        {
             {
                 size_t                          origSelStart    =   fTI.GetSelectionStart ();
                 size_t                          origSelEnd      =   fTI.GetSelectionEnd ();
@@ -200,7 +207,8 @@ SecondTry: {
             }
             DoIgnore ();
         }
-        virtual     void    DoChange (const Led_tString& changeTo) override {
+        virtual     void    DoChange (const Led_tString& changeTo) override
+        {
             size_t                      origSelStart    =   fTI.GetSelectionStart ();
             size_t                      origSelEnd      =   fTI.GetSelectionEnd ();
             TextInteractor::SearchParameters    sp;
@@ -212,7 +220,8 @@ SecondTry: {
             fTI.SetSelection (origSelStart, origSelStart);  // cuz OnDoReplaceCommand () looks from selectionEND
             fTI.OnDoReplaceCommand (sp, changeTo);
         }
-        virtual     void    DoChangeAll (const Led_tString& changeTo) override {
+        virtual     void    DoChangeAll (const Led_tString& changeTo) override
+        {
             size_t                              origSelStart    =   fTI.GetSelectionStart ();
             size_t                              origSelEnd      =   fTI.GetSelectionEnd ();
             TextInteractor::SearchParameters    sp;
@@ -223,7 +232,8 @@ SecondTry: {
             }
             fTI.OnDoReplaceAllCommand (sp, changeTo);
         }
-        virtual     bool    AddToDictionaryEnabled () const override {
+        virtual     bool    AddToDictionaryEnabled () const override
+        {
             SpellCheckEngine*   sce =   fTI.GetSpellCheckEngine ();
             if (sce != nullptr) {
                 SpellCheckEngine::UDInterface*  udi =       sce->GetUDInterface ();
@@ -233,7 +243,8 @@ SecondTry: {
             }
             return false;
         }
-        virtual     void    AddToDictionary (const Led_tString& newWord) override {
+        virtual     void    AddToDictionary (const Led_tString& newWord) override
+        {
             SpellCheckEngine*   sce =   fTI.GetSpellCheckEngine ();
             if (sce != nullptr) {
                 SpellCheckEngine::UDInterface*  udi =       sce->GetUDInterface ();
@@ -245,15 +256,18 @@ SecondTry: {
             fTI.SetSelection (fTI.GetSelectionEnd (), fTI.GetSelectionEnd ());
             fTI.ScrollToSelection ();
         }
-        virtual     void    LookupOnWeb (const Led_tString& word) override {
+        virtual     void    LookupOnWeb (const Led_tString& word) override
+        {
             const char  kURLBase[]  =   "http://dictionary.reference.com/search?q=";
             Led_URLManager::Get ().Open (kURLBase + Led_tString2ANSIString (word));
         }
-        virtual     bool    OptionsDialogEnabled () const override {
+        virtual     bool    OptionsDialogEnabled () const override
+        {
             // cuz no implementation of OptionsDialog () callback...
             return false;
         }
-        virtual     void    OptionsDialog () override {
+        virtual     void    OptionsDialog () override
+        {
             // NYI. When enabled - change result of OptionsDialogEnabled ()
         }
     private:
@@ -1954,7 +1968,8 @@ void    TextInteractor::AboutToUpdateText (const MarkerOwner::UpdateInfo& update
 
 void    TextInteractor::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
     TextImager::DidUpdateText (updateInfo);
-    if (fDoingUpdateModeReplaceOn != this) {
+    if (fDoingUpdateModeReplaceOn != this)
+    {
         try {
             PostReplace (fTmpPreReplaceInfo);
         }

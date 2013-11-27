@@ -69,7 +69,8 @@ using   Memory::SmallStackBuffer;
 class   LedItDocumentWindow : public LWindow {
 public:
     LedItDocumentWindow (ResIDT inWINDid, UInt32 inAttributes, LCommander* inSuper):
-        LWindow (inWINDid, inAttributes, inSuper) {
+        LWindow (inWINDid, inAttributes, inSuper)
+    {
         sWindowList.push_back (this);
         ::AppendMenu (::GetMenuHandle (kWindowsMenuID), "\pREPLACEME");
         LMenu*  windowMenu  =   LMenuBar::GetCurrentMenuBar()->FetchMenu (kWindowsMenuID);
@@ -80,7 +81,8 @@ public:
         }
     }
 
-    ~LedItDocumentWindow () {
+    ~LedItDocumentWindow ()
+    {
         LWindow*    w   =   this;
         sWindowList.erase (std::find (sWindowList.begin (), sWindowList.end (), w));
         LMenu*  windowMenu  =   LMenuBar::GetCurrentMenuBar()->FetchMenu (kWindowsMenuID);
@@ -93,7 +95,8 @@ public:
     }
 
     // make zoom produce a roughly page-size window
-    virtual    void    CalcStandardBoundsForScreen (const Rect& inScreenBounds, Rect& outStdBounds) const override {
+    virtual    void    CalcStandardBoundsForScreen (const Rect& inScreenBounds, Rect& outStdBounds) const override
+    {
         LWindow::CalcStandardBoundsForScreen (inScreenBounds, outStdBounds);
         short   winWidth        =   ::GetRectWidth (outStdBounds);
         short   desiredWidth    =   8.5 * 72; // 8.5 inches by 72dpi
@@ -188,10 +191,12 @@ inline  OSType  MapFormatToOSType (FileFormat fileFormat)
  */
 class   Led_BusyCursor {
 public:
-    Led_BusyCursor () {
+    Led_BusyCursor ()
+    {
         ::SetCursor (*::GetCursor (watchCursor));
     }
-    ~Led_BusyCursor () {
+    ~Led_BusyCursor ()
+    {
         ::InitCursor ();
     }
 };
@@ -316,7 +321,8 @@ LedItDocument::~LedItDocument ()
 }
 
 void    LedItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
-    if (updateInfo.fRealContentUpdate) {
+    if (updateInfo.fRealContentUpdate)
+    {
 #if     qPlatform_MacOS
         mIsModified = true;
         SetUpdateCommandStatus (true);

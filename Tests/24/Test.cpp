@@ -111,22 +111,27 @@ namespace   {
 
         class   MyCallback : public SAXCallbackInterface {
         public:
-            virtual void    StartDocument () override {
+            virtual void    StartDocument () override
+            {
                 fEltDepthCount = 0;
             }
-            virtual void    EndDocument () override {
+            virtual void    EndDocument () override
+            {
                 Assert (fEltDepthCount == 0);
             }
-            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
+            virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+            {
                 fEltDepthCount++;
                 fEltStack.push_back (uri + L"/" + localName + L"/" + qname);
             }
-            virtual void    EndElement (const String& uri, const String& localName, const String& qname) override {
+            virtual void    EndElement (const String& uri, const String& localName, const String& qname) override
+            {
                 Assert (fEltStack.back () == uri + L"/" + localName + L"/" + qname);
                 fEltStack.pop_back ();
                 fEltDepthCount--;
             }
-            virtual void    CharactersInsideElement (const String& text) override {
+            virtual void    CharactersInsideElement (const String& text) override
+            {
             }
             unsigned int    fEltDepthCount;
             vector<String>  fEltStack;
@@ -156,9 +161,11 @@ namespace   {
 #else
         PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_)
 #endif
-            : ComplexObjectReader<Person_> (v) {
+            : ComplexObjectReader<Person_> (v)
+        {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        {
             RequireNotNull (fValuePtr);
             if (localName == L"FirstName") {
                 _PushNewObjPtr (r, new BuiltinReader<String> (&fValuePtr->firstName));
@@ -184,9 +191,11 @@ namespace   {
 #else
         AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_):
 #endif
-            ComplexObjectReader<Appointment_> (v, attrs) {
+            ComplexObjectReader<Appointment_> (v, attrs)
+        {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        {
             if (localName == L"When") {
                 _PushNewObjPtr (r, new BuiltinReader<Time::DateTime> (&fValuePtr->when));
             }

@@ -21,11 +21,13 @@ void    GetDistributedIndex (const std::vector<T>& v, std::vector<size_t>* indic
 class   NormalDistribution {
 public:
     NormalDistribution (double range) :
-        fDistribution (range / 2, range / 6) {
+        fDistribution (range / 2, range / 6)
+    {
     }
 
     template<class Engine>
-    double operator()(Engine& eng) {
+    double operator()(Engine& eng)
+    {
         return fDistribution(eng);
     }
 
@@ -36,22 +38,26 @@ private:
 class ZipfDistribution {
 public:
     ZipfDistribution (size_t range) :
-        fDistribution (range, 1, range, CalcDistribution) {
+        fDistribution (range, 1, range, CalcDistribution)
+    {
     }
 
-    ~ZipfDistribution () {
+    ~ZipfDistribution ()
+    {
     }
 
 
     template<class Engine>
-    size_t operator()(Engine& eng) {
+    size_t operator()(Engine& eng)
+    {
         return fDistribution(eng);
     }
 
 private:
     std::discrete_distribution<size_t> fDistribution;
 
-    static  double  CalcDistribution (double k) {
+    static  double  CalcDistribution (double k)
+    {
         // our input is a not discrete, but somewhere "in the middle" of our range, which doesn't make sense for indexes
         k = (size_t) k;
         double result = std::pow (k, -1);   // in full Mandelbrot generality this is std::pow (k+shift, -exp), but for classic Zipf shift = 0 and exp = 1

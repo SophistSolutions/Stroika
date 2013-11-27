@@ -342,7 +342,8 @@ namespace   Stroika {
                 private:
                     COMPARE_ITEM    fValidFor;
 
-                    static  bool    Equal (const CacheElt& lhs, const COMPARE_ITEM& rhs) {
+                    static  bool    Equal (const CacheElt& lhs, const COMPARE_ITEM& rhs)
+                    {
                         return lhs.fValidFor.fPM == rhs.fPM and lhs.fValidFor.fRowStartingAt == rhs.fRowStartingAt;
                     }
 
@@ -354,14 +355,17 @@ namespace   Stroika {
                     friend  class   PartitioningTextImager::MeasureTextCache;
                 };
                 struct  CacheEltLRUCacheTraits : Foundation::Cache::LRUCacheSupport::DefaultTraits<CacheElt, CacheElt::COMPARE_ITEM> {
-                    static  KeyType ExtractKey (const ElementType& e) {
+                    static  KeyType ExtractKey (const ElementType& e)
+                    {
                         return e.fValidFor;
                     }
-                    static  void    Clear (ElementType* element) {
+                    static  void    Clear (ElementType* element)
+                    {
                         RequireNotNull (element);
                         element->fValidFor.fPM = nullptr;
                     }
-                    static  bool    Equal (const KeyType& lhs, const KeyType& rhs) {
+                    static  bool    Equal (const KeyType& lhs, const KeyType& rhs)
+                    {
                         return lhs.fPM == rhs.fPM and lhs.fRowStartingAt == rhs.fRowStartingAt;
                     }
                 };

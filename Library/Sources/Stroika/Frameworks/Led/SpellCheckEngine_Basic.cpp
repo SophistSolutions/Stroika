@@ -78,9 +78,11 @@ namespace   {
 
     struct  DictLookup_Compare : public binary_function <SpellCheckEngine_Basic::InfoBlock, Led_tString, bool> {
         DictLookup_Compare (const Led_tChar* base):
-            fBase (base) {
+            fBase (base)
+        {
         }
-        bool operator()(const SpellCheckEngine_Basic::InfoBlock& _Left, const Led_tString& _Right) const {
+        bool operator()(const SpellCheckEngine_Basic::InfoBlock& _Left, const Led_tString& _Right) const
+        {
             // Speed tweeked compare... don't construct string object to safe time and possible heap fragmentation
 #if     qBasicString_Missing_CompareOverload_T
             bool    answer  =   _Right.compare (fBase + _Left.fIndex, 0, _Left.fWordLen) > 0;

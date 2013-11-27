@@ -486,7 +486,8 @@ namespace {
     }
 #if     qDebug
     struct Tester_ {
-        Tester_ () {
+        Tester_ ()
+        {
             {
                 char buf[1024] = "3.1340000";
                 TrimTrailingZerosInPlace_ (buf);

@@ -60,18 +60,21 @@ public:
 public:
     ParagraphInfoChangeTextRep (WordProcessor* interactor, size_t from, size_t to):
         inherited (from, to),
-        fSavedInfo () {
+        fSavedInfo ()
+    {
         fSavedInfo = interactor->GetParagraphDatabase ()->GetParagraphInfo (from, to - from);
         Assert (GetLength () == to - from);
     }
-    virtual     size_t  GetLength () const override {
+    virtual     size_t  GetLength () const override
+    {
         size_t  len =   0;
         for (auto i = fSavedInfo.begin (); i != fSavedInfo.end (); ++i) {
             len += (*i).second;
         }
         return len;
     }
-    virtual     void    InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override {
+    virtual     void    InsertSelf (TextInteractor* interactor, size_t at, size_t nBytesToOverwrite) override
+    {
         RequireNotNull (dynamic_cast<WordProcessor*> (interactor));
         WordProcessor*  wp  =   dynamic_cast<WordProcessor*> (interactor);
         RequireNotNull (wp);
@@ -117,33 +120,38 @@ void    InteractiveWPHelper1 (WordProcessor* wp, T1 arg1)
     wp->BreakInGroupedCommands ();
 }
 struct  DoIt_SetJustification {
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Led_Justification justification) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Led_Justification justification)
+    {
         wp->SetJustification (selStart, selEnd, justification);
     }
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fJustificationCommandName; }
 };
 struct  DoIt_SetStandardTabStopList {
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, WordProcessor::StandardTabStopList tabStops) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, WordProcessor::StandardTabStopList tabStops)
+    {
         wp->SetStandardTabStopList (selStart, selEnd, tabStops);
     }
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fStandardTabStopListCommandName; }
 };
 struct  DoIt_SetMargins {
     struct  Margins { Led_TWIPS fLHS; Led_TWIPS fRHS; Margins (Led_TWIPS l, Led_TWIPS r): fLHS (l), fRHS(r) {} };
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Margins margins) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Margins margins)
+    {
         wp->SetMargins (selStart, selEnd, margins.fLHS, margins.fRHS);
     }
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fMarginsCommandName; }
 };
 struct  DoIt_SetFirstIndent {
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Led_TWIPS firstIndent) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, Led_TWIPS firstIndent)
+    {
         wp->SetFirstIndent (selStart, selEnd, firstIndent);
     }
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fFirstIndentCommandName; }
 };
 struct  DoIt_SetMarginsAndFirstIndent {
     struct  MarginsAndFirstIndent { Led_TWIPS fLHS; Led_TWIPS fRHS; Led_TWIPS fFirstIndent; MarginsAndFirstIndent (Led_TWIPS l, Led_TWIPS r, Led_TWIPS firstIndent): fLHS (l), fRHS(r), fFirstIndent (firstIndent) {} };
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, MarginsAndFirstIndent marginsEtc) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, MarginsAndFirstIndent marginsEtc)
+    {
         wp->SetMargins (selStart, selEnd, marginsEtc.fLHS, marginsEtc.fRHS);
         wp->SetFirstIndent (selStart, selEnd, marginsEtc.fFirstIndent);
     }
@@ -151,7 +159,8 @@ struct  DoIt_SetMarginsAndFirstIndent {
 };
 struct  DoIt_SetParagraphSpacing {
     struct  AllSpacingArgs { Led_TWIPS fSpaceBefore; Led_TWIPS fSpaceAfter; Led_LineSpacing fLineSpacing; bool fSBValid, fSAValid, fSLValid; AllSpacingArgs (Led_TWIPS sb, bool sbValid, Led_TWIPS sa, bool saValid, Led_LineSpacing sl, bool slValid): fSpaceBefore (sb), fSBValid (sbValid), fSpaceAfter (sa), fSAValid (saValid), fLineSpacing (sl), fSLValid (slValid) {} };
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, AllSpacingArgs spacingArgs) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, AllSpacingArgs spacingArgs)
+    {
         if (spacingArgs.fSBValid) {
             wp->SetSpaceBefore (selStart, selEnd, spacingArgs.fSpaceBefore);
         }
@@ -165,13 +174,15 @@ struct  DoIt_SetParagraphSpacing {
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fParagraphSpacingCommandName; }
 };
 struct  DoIt_SetListStyle {
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, ListStyle listStyle) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, ListStyle listStyle)
+    {
         wp->SetListStyle (selStart, selEnd, listStyle, true);
     }
     static  Led_SDK_String  GetName (WordProcessor* wp) { return wp->GetCommandNames ().fSetListStyleCommandName; }
 };
 struct  DoIt_IndentUnIndentList {
-    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, bool indent) {
+    static  void    DoIt (WordProcessor* wp, size_t selStart, size_t selEnd, bool indent)
+    {
         unsigned char   indentLevel =   wp->GetListIndentLevel (selStart);
         if (indent) {
             if (indentLevel < 8) {
@@ -366,7 +377,8 @@ void    ParagraphDatabaseRep::ConstrainSetInfoArgs (size_t* charAfterPos, size_t
             respect the contraint that they start and end on paragraph boundaries.</p>
 */
 void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (size_t from, size_t to) noexcept {
-    if (fPartition.get () != nullptr) {
+    if (fPartition.get () != nullptr)
+    {
         MarkerVector    markers =   CollectAllInRange_OrSurroundings (from, to);
         sort (markers.begin (), markers.end (), LessThan<ParagraphInfoMarker> ());
         CheckMarkerBounaryConstraints (markers);
@@ -378,7 +390,8 @@ void    ParagraphDatabaseRep::CheckMarkerBounaryConstraints (const MarkerVector&
      *  For each paragraph style run, check if its edges fall on paragraph (as specified by the partition) boundaries.
      *  If not - then adjust the style runs so they do.
      */
-    if (fPartition.get () != nullptr) {
+    if (fPartition.get () != nullptr)
+    {
         for (auto i = rangeAndSurroundingsMarkers.begin (); i != rangeAndSurroundingsMarkers.end (); ++i) {
             ParagraphInfoMarker*    m           =   *i;
             AssertNotNull (m);
@@ -896,17 +909,20 @@ bool    CheckForCommonParaValue (EXTRACTOR /*INGORED_BUT_HERE_FOR_OVERLOADING*/,
     }
 }
 struct  JustificationExtractor {
-    Led_Justification operator () (const WordProcessor::ParagraphInfo& from) {
+    Led_Justification operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetJustification ();
     }
 };
 struct  TabStopExtractor {
-    TextImager::StandardTabStopList operator () (const WordProcessor::ParagraphInfo& from) {
+    TextImager::StandardTabStopList operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetTabStopList ();
     }
 };
 struct  FirstIndentExtractor {
-    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from) {
+    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetFirstIndent ();
     }
 };
@@ -920,32 +936,38 @@ struct  MarginsRec {
     inline  bool operator!= (const MarginsRec& rhs)     {   return fLHS != rhs.fLHS or fRHS != rhs.fRHS; }
 };
 struct  MarginsRecExtractor {
-    MarginsRec operator () (const WordProcessor::ParagraphInfo& from) {
+    MarginsRec operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return MarginsRec (from.GetLeftMargin (), from.GetRightMargin ());
     }
 };
 struct  SpaceBeforeExtractor {
-    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from) {
+    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetSpaceBefore ();
     }
 };
 struct  SpaceAfterExtractor {
-    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from) {
+    Led_TWIPS operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetSpaceAfter ();
     }
 };
 struct  LineSpacingExtractor {
-    Led_LineSpacing operator () (const WordProcessor::ParagraphInfo& from) {
+    Led_LineSpacing operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetLineSpacing ();
     }
 };
 struct  ListStyleExtractor {
-    ListStyle operator () (const WordProcessor::ParagraphInfo& from) {
+    ListStyle operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetListStyle ();
     }
 };
 struct  ListIndentLevelExtractor {
-    unsigned char operator () (const WordProcessor::ParagraphInfo& from) {
+    unsigned char operator () (const WordProcessor::ParagraphInfo& from)
+    {
         return from.GetListIndentLevel ();
     }
 };
@@ -2327,7 +2349,7 @@ bool    WordProcessor::OnPerformCommand (CommandNumber commandNumber)
 bool    WordProcessor::PassAlongCommandToIntraCellModeTableCell (CommandNumber commandNumber)
 {
     switch (commandNumber) {
-            // TextInteractor commands
+        // TextInteractor commands
         case    kCut_CmdID:
             return true;
         case    kCopy_CmdID:
@@ -2361,7 +2383,7 @@ bool    WordProcessor::PassAlongCommandToIntraCellModeTableCell (CommandNumber c
             }
             break;
 
-            // WordProcessor commands
+        // WordProcessor commands
         case    kParagraphSpacingCommand_CmdID:
             return true;
         case    kParagraphIndentsCommand_CmdID:
@@ -2395,11 +2417,11 @@ bool    WordProcessor::PassAlongCommandToIntraCellModeTableCell (CommandNumber c
 bool    WordProcessor::PassAlongCommandToEachSelectedTableCell (CommandNumber commandNumber)
 {
     switch (commandNumber) {
-            // TextInteractor commands
+        // TextInteractor commands
         case    kClear_CmdID:
             return true;
 
-            // WordProcessor commands
+        // WordProcessor commands
         case    kHideSelection_CmdID:
             return true;
         case    kUnHideSelection_CmdID:
@@ -4908,7 +4930,8 @@ void    WordProcessorTextIOSinkStream::Flush ()
 #if     qDebug
         {
             size_t  curInsert   =   whereToInsert;
-            for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i) {
+            for (auto i = fSavedParaInfo.begin (); i != fSavedParaInfo.end (); ++i)
+            {
                 curInsert += (*i).second;
             }
             Assert (curInsert == GetInsertionStart ());
@@ -5416,7 +5439,8 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
 // must go one forward/back to make sure we get new chars inserted BEFORE a table or just after one
 //  vector<Table*>  tables  =   GetTablesInRange (from, to);
     vector<Table*>  tables  =   GetTablesInRange (ts.FindPreviousCharacter (from), ts.FindNextCharacter (to));
-    for (auto i = tables.begin (); i != tables.end (); ++i) {
+    for (auto i = tables.begin (); i != tables.end (); ++i)
+    {
         Table*  t   =   *i;
         if (t->GetLength () != 0) {
             size_t  tableEnd    =   t->GetEnd ();
@@ -5460,11 +5484,13 @@ void    WordProcessor::WPPartition::DoHandleUpdateForTableRangeCheck (size_t fro
     PartitionMarker*    pm  =   GetPartitionMarkerContainingPosition (from);
     // See if after insertion of that text this PM needs to be coalesed with the next
     bool    coalesce    =   NeedToCoalesce (pm);
-    if (coalesce) {
+    if (coalesce)
+    {
         Coalece (pm);       // 'pm' is DELETED BY THIS SO DO NOTHING to it AFTERWARDS!!!
     }
     pm  =   pm->GetPrevious ();
-    if (pm != nullptr) {
+    if (pm != nullptr)
+    {
         coalesce    =   NeedToCoalesce (pm);
         if (coalesce) {
             Coalece (pm);       // 'pm' is DELETED BY THIS SO DO NOTHING to it AFTERWARDS!!!
@@ -5483,7 +5509,8 @@ bool    WordProcessor::WPPartition::NeedToCoalesce (PartitionMarker* pm) noexcep
     RequireNotNull (pm);
 
     bool    coalesce    =   inherited::NeedToCoalesce (pm);
-    if (coalesce) {
+    if (coalesce)
+    {
         /*
          *  If default implementation said to coalese - it could have been for good reasons, or bad. One good reason would be
          *  an empty marker. Another would be if this marker didn't end with a table (and some other conditions were met).
@@ -5634,11 +5661,13 @@ public:
         inherited (beforeRegion, afterRegion, at, cmdName),
         fTableAt (tableAt),
         fTableRow (tRow),
-        fTableColumn (tCol) {
+        fTableColumn (tCol)
+    {
     }
 
 public:
-    virtual     void    Do (TextInteractor& interactor) override {
+    virtual     void    Do (TextInteractor& interactor) override
+    {
         WordProcessor&  owningWP    =   dynamic_cast<WordProcessor&> (interactor);
         Table*          aT          =   owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
@@ -5646,7 +5675,8 @@ public:
         Table::TemporarilyAllocateCellWithTablet    wp (*aT, fTableRow, fTableColumn);
         inherited::Do (*wp);
     }
-    virtual     void    UnDo (TextInteractor& interactor) override {
+    virtual     void    UnDo (TextInteractor& interactor) override
+    {
         WordProcessor&  owningWP    =   dynamic_cast<WordProcessor&> (interactor);
         Table*          aT          =   owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
@@ -5654,7 +5684,8 @@ public:
         Table::TemporarilyAllocateCellWithTablet    wp (*aT, fTableRow, fTableColumn);
         inherited::UnDo (*wp);
     }
-    virtual     void    ReDo (TextInteractor& interactor) override {
+    virtual     void    ReDo (TextInteractor& interactor) override
+    {
         WordProcessor&  owningWP    =   dynamic_cast<WordProcessor&> (interactor);
         Table*          aT          =   owningWP.GetTableAt (fTableAt);
         AssertNotNull (aT);
@@ -7738,10 +7769,12 @@ void    WordProcessor::Table::CellRep::AboutToUpdateText (const UpdateInfo& upda
 void    WordProcessor::Table::CellRep::DidUpdateText (const TextInteractor::UpdateInfo& updateInfo) noexcept {
     inherited::DidUpdateText (updateInfo);
 
-    if (not fForTable.fSuppressCellUpdatePropagationContext) {
+    if (not fForTable.fSuppressCellUpdatePropagationContext)
+    {
         fForTable.InvalidateLayout ();
     }
-    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate) {
+    if (fForTable.fAllowUpdateInfoPropagationContext and updateInfo.fRealContentUpdate)
+    {
         AssertNotNull (fForTable.fCellUpdatePropationUpdater);
         delete fForTable.fCellUpdatePropationUpdater;       // NB: This calls the DidUpdate calls for the table itself and its owners...
         fForTable.fCellUpdatePropationUpdater = nullptr;

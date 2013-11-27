@@ -165,7 +165,8 @@ namespace   Stroika {
                 bool    fConstructed;
                 Byte    fTBuf[sizeof (T)];
 
-                operator T& () {
+                operator T& ()
+                {
                     // for now - OK - I think - to avoid critical section - cuz these get used
                     // before we've had a chance to make threads...
                     if (not fConstructed) {
@@ -202,10 +203,12 @@ namespace   Stroika {
              */
             template    <typename BASETYPE, const BASETYPE& (*ValueGetter) ()>
             struct ConstantViaGetter {
-                inline  operator const BASETYPE () const {
+                inline  operator const BASETYPE () const
+                {
                     return (ValueGetter) ();
                 }
-                inline  const BASETYPE* operator-> () const {
+                inline  const BASETYPE* operator-> () const
+                {
                     return &(ValueGetter) ();
                 }
             };

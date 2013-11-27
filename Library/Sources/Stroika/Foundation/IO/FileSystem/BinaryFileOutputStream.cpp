@@ -50,7 +50,8 @@ public:
     Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName)
         : fCriticalSection_ ()
-        , fFD_ (-1) {
+        , fFD_ (-1)
+    {
 #if     qPlatform_Windows
         errno_t e = ::_wsopen_s (&fFD_, fileName.c_str (), _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
         if (e != 0) {
@@ -62,7 +63,8 @@ public:
         Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_WRONLY | O_CREAT | O_TRUNC, kCreateMode_));
 #endif
     }
-    ~Rep_ () {
+    ~Rep_ ()
+    {
 #if     qPlatform_Windows
         ::_close (fFD_);
 #else
@@ -70,7 +72,8 @@ public:
 #endif
     }
     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
-    virtual void    Write (const Byte* start, const Byte* end) override {
+    virtual void    Write (const Byte* start, const Byte* end) override
+    {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
 
@@ -89,10 +92,12 @@ public:
             }
         }
     }
-    virtual void     Flush () override {
+    virtual void     Flush () override
+    {
         // nothing todo - write 'writes thru'
     }
-    virtual Streams::SeekOffsetType  GetOffset () const override {
+    virtual Streams::SeekOffsetType  GetOffset () const override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
@@ -100,7 +105,8 @@ public:
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
 #endif
     }
-    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override {
+    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+    {
         using namespace Streams;
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {

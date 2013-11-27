@@ -48,7 +48,8 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override {
+                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override
+                    {
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else
@@ -90,7 +91,8 @@ namespace   Stroika {
                         explicit IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                             : inherited ()
                             , fLockSupport (*sharedLock)
-                            , fIterator (data) {
+                            , fIterator (data)
+                        {
                             RequireNotNull (sharedLock);
                             RequireNotNull (data);
                             fIterator.More (static_cast<pair<KEY_TYPE, VALUE_TYPE>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
@@ -101,13 +103,15 @@ namespace   Stroika {
 
                         // Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep
                     public:
-                        virtual typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr Clone () const override {
+                        virtual typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr Clone () const override
+                        {
                             CONTAINER_LOCK_HELPER_START (fLockSupport) {
                                 return typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*this));
                             }
                             CONTAINER_LOCK_HELPER_END ();
                         }
-                        virtual void                                More (Memory::Optional<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* result, bool advance) override {
+                        virtual void                                More (Memory::Optional<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* result, bool advance) override
+                        {
                             RequireNotNull (result);
                             CONTAINER_LOCK_HELPER_START (fLockSupport) {
                                 if (result == nullptr) {
@@ -126,7 +130,8 @@ namespace   Stroika {
                             }
                             CONTAINER_LOCK_HELPER_END ();
                         }
-                        virtual bool                                StrongEquals (const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override {
+                        virtual bool                                StrongEquals (const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override
+                        {
                             AssertNotImplemented ();
                             return false;
                         }

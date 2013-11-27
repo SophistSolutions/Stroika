@@ -35,18 +35,22 @@ public:
     IRep_ (Socket sd)
         : BinaryInputStream::_IRep ()
         , BinaryOutputStream::_IRep ()
-        , fSD_ (sd) {
+        , fSD_ (sd)
+    {
     }
 
-    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t      Read (Byte* intoStart, Byte* intoEnd) override
+    {
         return fSD_.Read (intoStart, intoEnd);
     }
 
-    virtual void     Write (const Byte* start, const Byte* end) override {
+    virtual void     Write (const Byte* start, const Byte* end) override
+    {
         fSD_.Write (start, end);
     }
 
-    virtual void     Flush () override {
+    virtual void     Flush () override
+    {
         // socket has no flush API, so write must do the trick...
     }
 

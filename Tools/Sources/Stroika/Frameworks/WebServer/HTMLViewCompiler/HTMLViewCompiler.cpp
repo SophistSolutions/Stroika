@@ -34,14 +34,17 @@ public:
     CompilerApp ():
         fInputFile (),
         fOutputFile (),
-        fFormGeneratorName (SDKSTR ("Form_Generator")) {
+        fFormGeneratorName (SDKSTR ("Form_Generator"))
+    {
     }
 
-    ~CompilerApp () {
+    ~CompilerApp ()
+    {
     }
 
 public:
-    nonvirtual  void    Run (int argc, const SDKChar* argv[]) {
+    nonvirtual  void    Run (int argc, const SDKChar* argv[])
+    {
         if (ParseArgs_ (argc, argv)) {
             fstream in;
             in.open (fInputFile.c_str (), ios_base::in);
@@ -60,7 +63,8 @@ public:
     }
 
 private:
-    nonvirtual  void    Usage_ () {
+    nonvirtual  void    Usage_ ()
+    {
         cerr << "Usage: HTMLViewCompiler [options]? InputHTMLFile OutputCFile\n";
         cerr << "\twhere [options]can be:\n";
         cerr << "\t\t-help to print out this message\n";
@@ -68,7 +72,8 @@ private:
     }
 
 private:
-    nonvirtual  bool    ParseArgs_ (int argc, const SDKChar* argv[]) {
+    nonvirtual  bool    ParseArgs_ (int argc, const SDKChar* argv[])
+    {
         int fileCount   =   0;
         bool    gettingName = false;
         for (int i = 1; i < argc; ++i) {
@@ -130,7 +135,8 @@ private:
     }
 
 private:
-    nonvirtual  void    ProcessFile_ (istream& in, ostream& out) {
+    nonvirtual  void    ProcessFile_ (istream& in, ostream& out)
+    {
         wstring orig    =   Streams::iostream::ReadTextStream (in);
 
         out << "/*Auto-Generated C++ file from the Source HTML file '" << SDKString2NarrowSDK (fInputFile) << "'*/" << endl;
@@ -209,7 +215,8 @@ private:
     }
 
 private:
-    nonvirtual  void    WriteCCodeString_ (ostream& out, const wstring& s) {
+    nonvirtual  void    WriteCCodeString_ (ostream& out, const wstring& s)
+    {
         out << "L\"";
         for (wstring::const_iterator i = s.begin (); i != s.end (); ++i) {
             if (*i == '\\') {
@@ -239,7 +246,8 @@ private:
         out << "\"";
     }
 private:
-    wstring::const_iterator FindNextInterestingThing_ (wstring::const_iterator start, wstring::const_iterator end) const {
+    wstring::const_iterator FindNextInterestingThing_ (wstring::const_iterator start, wstring::const_iterator end) const
+    {
         const   wstring kOPEN       =   kOpenCodeTag;
         const   size_t  kOPEN_LEN   =   kOPEN.length ();
         Assert (kOPEN_LEN != 0);

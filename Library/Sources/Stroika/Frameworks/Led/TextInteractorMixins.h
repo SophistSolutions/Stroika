@@ -63,13 +63,16 @@ namespace   Stroika {
                  */
             public:
 #if     qUsingDirectiveSometimesCausesInternalCompilerErrorBug
-                nonvirtual  void    SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate) {
+                nonvirtual  void    SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate)
+                {
                     TextInteractor::SetWindowRect (windowRect, updateMode);
                 }
-                nonvirtual  void    ScrollByIfRoom (ptrdiff_t downByRows, UpdateMode updateMode = eDefaultUpdate) {
+                nonvirtual  void    ScrollByIfRoom (ptrdiff_t downByRows, UpdateMode updateMode = eDefaultUpdate)
+                {
                     TextInteractor::ScrollByIfRoom (downByRows, updateMode);
                 }
-                nonvirtual  void    ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate) {
+                nonvirtual  void    ScrollSoShowing (size_t markerPos, size_t andTryToShowMarkerPos = 0, UpdateMode updateMode = eDefaultUpdate)
+                {
                     TextInteractor::ScrollSoShowing (markerPos, andTryToShowMarkerPos, updateMode);
                 }
 #else
@@ -105,14 +108,16 @@ namespace   Stroika {
 
             public:
 #if     qUsingDirectiveSometimesCausesInternalCompilerErrorBug
-                nonvirtual  void    SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate) {
+                nonvirtual  void    SetWindowRect (const Led_Rect& windowRect, TextInteractor::UpdateMode updateMode = TextInteractor::eDefaultUpdate)
+                {
                     TextInteractor::SetWindowRect (windowRect, updateMode);
                 }
 #else
                 using   INTERACTOR1::SetWindowRect; // Should both be the same - but arbitrarily pick one
 #endif
 
-                nonvirtual  void    Invariant () {
+                nonvirtual  void    Invariant ()
+                {
                     INTERACTOR1::Invariant ();
                     INTERACTOR2::Invariant ();
                 }

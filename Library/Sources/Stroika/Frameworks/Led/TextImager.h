@@ -899,18 +899,22 @@ namespace   Stroika {
             class   TextImager::Tablet_Acquirer {
             public:
                 Tablet_Acquirer (const TextImager* textImager):
-                    fTextImager (textImager) {
+                    fTextImager (textImager)
+                {
                     AssertNotNull (fTextImager);
                     fTablet = fTextImager->AcquireTablet ();
                 }
-                operator    Led_Tablet  () {
+                operator    Led_Tablet  ()
+                {
                     AssertNotNull (fTablet);
                     return (fTablet);
                 }
-                Led_Tablet  operator-> () {
+                Led_Tablet  operator-> ()
+                {
                     return fTablet;
                 }
-                ~Tablet_Acquirer () {
+                ~Tablet_Acquirer ()
+                {
                     AssertNotNull (fTextImager);
                     AssertNotNull (fTablet);
                     fTextImager->ReleaseTablet (fTablet);

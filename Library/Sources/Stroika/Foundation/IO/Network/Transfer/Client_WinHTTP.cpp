@@ -64,14 +64,17 @@ namespace   {
     struct  AutoWinHINTERNET {
         HINTERNET   fHandle;
         explicit AutoWinHINTERNET (HINTERNET handle)
-            : fHandle (handle) {
+            : fHandle (handle)
+        {
             ThrowIfFalseGetLastError (fHandle != nullptr);
         }
         AutoWinHINTERNET (const AutoWinHINTERNET&) = delete;
-        ~AutoWinHINTERNET () {
+        ~AutoWinHINTERNET ()
+        {
             Verify (::WinHttpCloseHandle (fHandle));
         }
-        operator HINTERNET () {
+        operator HINTERNET ()
+        {
             return fHandle;
         }
         nonvirtual  const AutoWinHINTERNET& operator= (const AutoWinHINTERNET&) = delete;

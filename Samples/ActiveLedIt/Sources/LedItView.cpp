@@ -38,7 +38,8 @@ namespace {
         typedef OptionsFileHelper   inherited;
     public:
         MyPrefs ():
-            inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\ActiveLedIt!\\Settings"))) {
+            inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\ActiveLedIt!\\Settings")))
+        {
         }
     };
     MyPrefs gMyPrefsFile;
@@ -49,7 +50,8 @@ namespace {
 
 class   My_CMDNUM_MAPPING : public MFC_CommandNumberMapping {
 public:
-    My_CMDNUM_MAPPING () {
+    My_CMDNUM_MAPPING ()
+    {
         AddAssociation (kFindAgainCmd,                  LedItView::kFindAgain_CmdID);
         AddAssociation (kEnterFindStringCmd,            LedItView::kEnterFindString_CmdID);
         AddAssociation (kReplaceCmd,                    LedItView::kReplace_CmdID);
@@ -175,11 +177,13 @@ public:
     typedef TextInteractor::DialogSupport::CommandNumber    CommandNumber;
 
 public:
-    ActiveLedIt_DialogSupport () {
+    ActiveLedIt_DialogSupport ()
+    {
         TextInteractor::SetDialogSupport (this);
         WordProcessor::SetDialogSupport (this);
     }
-    ~ActiveLedIt_DialogSupport () {
+    ~ActiveLedIt_DialogSupport ()
+    {
         WordProcessor::SetDialogSupport (NULL);
         TextInteractor::SetDialogSupport (NULL);
     }
@@ -187,7 +191,8 @@ public:
     //  TextInteractor::DialogSupport
 #if     qSupportStdFindDlg
 public:
-    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override {
+    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    {
         Led_StdDialogHelper_FindDialog  findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         findDialog.fFindText = *findText;
@@ -207,7 +212,8 @@ public:
 #endif
 #if     qSupportStdReplaceDlg
 public:
-    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override {
+    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    {
         Led_StdDialogHelper_ReplaceDialog   replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         replaceDialog.fFindText = *findText;
@@ -243,7 +249,8 @@ public:
 #endif
 #if     qSupportStdSpellCheckDlg
 public:
-    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override {
+    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
+    {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
@@ -259,13 +266,15 @@ public:
 
     //  WordProcessor::DialogSupport
 public:
-    virtual    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) override {
+    virtual    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) override
+    {
         Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
         Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
         return ::CmdNumToFontName (MFC_CommandNumberMapping::Get ().ReverseLookup (cmdNum)).c_str ();
     }
 #if     qSupportOtherFontSizeDlg
-    virtual        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) override {
+    virtual        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
@@ -282,7 +291,8 @@ public:
     }
 #endif
 #if     qSupportParagraphSpacingDlg
-    virtual        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid)  override {
+    virtual        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid)  override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog  dlg;
@@ -312,7 +322,8 @@ public:
     }
 #endif
 #if     qSupportParagraphIndentsDlg
-    virtual        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override {
+    virtual        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog  dlg;
@@ -340,14 +351,16 @@ public:
         }
     }
 #endif
-    virtual    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override {
+    virtual    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURN_NO_TIME_CHECK (::GetActiveWindow ());
         // unknown embedding...
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog  infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
         (void)infoDialog.DoModal ();
     }
-    virtual        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
+    virtual        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fEmbeddingTypeName = embeddingTypeName;
@@ -362,7 +375,8 @@ public:
             return false;
         }
     }
-    virtual        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
+    virtual        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    {
         CHECK_DEMO_AND_ALERT_AND_RETURNX_NO_TIME_CHECK (::GetActiveWindow (), false);
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog  infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
         infoDialog.fTitleText = *urlTitle;
@@ -377,7 +391,8 @@ public:
         }
     }
 #if     qSupportAddNewTableDlg
-    bool    AddNewTableDialog (size_t* nRows, size_t* nCols) {
+    bool    AddNewTableDialog (size_t* nRows, size_t* nCols)
+    {
         RequireNotNull (nRows);
         RequireNotNull (nCols);
         Led_StdDialogHelper_AddNewTableDialog   infoDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
@@ -394,7 +409,8 @@ public:
     }
 #endif
 #if     qSupportEditTablePropertiesDlg
-    virtual    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override {
+    virtual    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override
+    {
         RequireNotNull (tableProperties);
 
         typedef Led_StdDialogHelper_EditTablePropertiesDialog   DLGTYPE;
@@ -460,17 +476,21 @@ void    DemoModeAlerter::ShowAlert (HWND parentWnd)
         typedef Led_StdDialogHelper inherited;
     public:
         DemoExpiresDLG (HINSTANCE hInstance, HWND parentWnd):
-            inherited (hInstance, MAKEINTRESOURCE (kDemoExpired_DialogID), parentWnd) {
+            inherited (hInstance, MAKEINTRESOURCE (kDemoExpired_DialogID), parentWnd)
+        {
         }
-        virtual    void    OnOK () override {
+        virtual    void    OnOK () override
+        {
             inherited::OnOK ();
             Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/DemoExpired.asp", kAppName, string (kURLDemoFlag) + kDemoExpiredExtraArgs));
             //Led_URLManager::Get ().Open (kLedItDemoExpiredURL);
         }
-        virtual    void    OnCancel () override {
+        virtual    void    OnCancel () override
+        {
             // Ignore - force the bugger to hit a button!!!
         }
-        virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override {
+        virtual    BOOL    DialogProc (UINT message, WPARAM wParam, LPARAM lParam) override
+        {
             if (message == WM_COMMAND and wParam == kDemoExpired_Dialog_CancelFieldID) {
                 // OK - he did some work todo this - now let him cancel
                 inherited::OnCancel ();
@@ -1113,17 +1133,20 @@ void    LedItView::DoPrintHelper (bool showPrintDlg)
     class CPrintingDialog : public CDialog {
     public:
         enum { IDD = AFX_IDD_PRINTDLG };
-        CPrintingDialog (CWnd* pParent) {
+        CPrintingDialog (CWnd* pParent)
+        {
             Create (CPrintingDialog::IDD, pParent);      // modeless !
             _afxWinState->m_bUserAbort = FALSE;
         }
         virtual ~CPrintingDialog() { }
-        virtual BOOL OnInitDialog() {
+        virtual BOOL OnInitDialog()
+        {
             SetWindowText(AfxGetAppName());
             CenterWindow();
             return CDialog::OnInitDialog();
         }
-        virtual void OnCancel () {
+        virtual void OnCancel ()
+        {
             _afxWinState->m_bUserAbort = TRUE;  // flag that user aborted print
             CDialog::OnCancel();
         }

@@ -265,14 +265,17 @@ void    Win32UIFileAssociationRegistrationHelper::DoIt () noexcept {
      */
     try {
         bool    doRegister  =   true;
-        if (RegisteredToSomeoneElse () and not CheckUserSaysOKToUpdate ()) {
+        if (RegisteredToSomeoneElse () and not CheckUserSaysOKToUpdate ())
+        {
             doRegister = false;
         }
-        if (doRegister) {
+        if (doRegister)
+        {
             ApplyChangesSilently ();
         }
     }
-    catch (...) {
+    catch (...)
+    {
     }
 }
 

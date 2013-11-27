@@ -357,7 +357,8 @@ namespace   Stroika {
             */
             template    <typename   MARKER>
             struct  LessThan : public binary_function <MARKER*, MARKER*, bool> {
-                bool    operator () (const MARKER* lhs, const MARKER* rhs) {
+                bool    operator () (const MARKER* lhs, const MARKER* rhs)
+                {
                     RequireNotNull (lhs);
                     RequireNotNull (rhs);
                     int diff    =   int (lhs->GetStart ()) - int (rhs->GetStart ());
@@ -683,7 +684,8 @@ namespace   Stroika {
                 See @'MarkerMortuary<MARKER>::AccumulateMarkerForDeletion' for more information.</p>
             */
             void    MarkerMortuary<MARKER>::FinalizeMarkerDeletions () noexcept {
-                if (fMarkersToBeDeleted.size () != 0) {
+                if (fMarkersToBeDeleted.size () != 0)
+                {
                     MarkerOwner*    owner       =   static_cast<Marker*> (fMarkersToBeDeleted[0])->GetOwner ();
                     AssertNotNull (owner);
                     TextStore&      textStore   =   owner->GetTextStore ();

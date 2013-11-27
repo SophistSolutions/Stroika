@@ -138,7 +138,8 @@ namespace   Stroika {
                 return fRep_->GetID ();
             }
             inline  Thread::NativeHandleType    Thread::GetNativeHandle () noexcept {
-                if (fRep_.get () == nullptr) {
+                if (fRep_.get () == nullptr)
+                {
                     return Thread::NativeHandleType (nullptr);
                 }
                 return fRep_->GetNativeHandle ();

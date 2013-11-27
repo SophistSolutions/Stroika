@@ -68,9 +68,11 @@ namespace {
 template    <typename T>
 struct  VariantValue::TIRep_ : VariantValue::IRep_ {
     TIRep_ (T v)
-        : fVal (v) {
+        : fVal (v)
+    {
     }
-    virtual Type    GetType () const override {
+    virtual Type    GetType () const override
+    {
         return TN_<T>::kTYPEENUM;
     }
     T     fVal;

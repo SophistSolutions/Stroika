@@ -402,7 +402,8 @@ struct  FontSelectionInfo {
         fIsGoodBackupCharset (false),
         fIsFavoriteForCharset (false),
         fIsVariablePitch (false),
-        fStartsWithAt (false) {
+        fStartsWithAt (false)
+    {
         memset (&fBestFont, 0, sizeof(fBestFont));
     }
     BYTE    fDesiredCharset;
@@ -414,7 +415,8 @@ struct  FontSelectionInfo {
     bool    fIsFavoriteForCharset;
     bool    fIsVariablePitch;
     bool    fStartsWithAt;
-    inline  int Score () const {
+    inline  int Score () const
+    {
         int score   =   0;
         if (fUsesBestCharset) {
             score += 10;            // underweight - because (at least with Win2K) - the fCharset field almost always set to zero - so cannot be used reliably

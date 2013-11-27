@@ -55,13 +55,15 @@ namespace   Stroika {
 
             template <typename T>
             struct RequireOperatorEquals {
-                static void check () {
+                static void check ()
+                {
                     if (false) {
                         if (*static_cast<const T*> (nullptr) == *static_cast<const T*> (nullptr)) {
                         }
                     }
                 }
-                RequireOperatorEquals () {
+                RequireOperatorEquals ()
+                {
                     check ();
                 }
             };
@@ -69,13 +71,15 @@ namespace   Stroika {
 
             template <typename T>
             struct RequireOperatorNotEquals {
-                static void check () {
+                static void check ()
+                {
                     if (false) {
                         if (*static_cast<const T*> (nullptr) != *static_cast<const T*> (nullptr)) {
                         }
                     }
                 }
-                RequireOperatorNotEquals () {
+                RequireOperatorNotEquals ()
+                {
                     check ();
                 }
             };
@@ -83,13 +87,15 @@ namespace   Stroika {
 
             template <typename T>
             struct RequireOperatorLess {
-                static void check () {
+                static void check ()
+                {
                     if (false) {
                         if (*static_cast<const T*> (nullptr) < *static_cast<const T*> (nullptr)) {
                         }
                     }
                 }
-                RequireOperatorLess () {
+                RequireOperatorLess ()
+                {
                     check ();
                 }
             };
@@ -97,14 +103,16 @@ namespace   Stroika {
 
             template <typename TRAITS>
             struct Concept_EqualsCompareFunctionType {
-                static void check () {
+                static void check ()
+                {
                     typedef typename TRAITS::ElementType        T;
                     if (false) {
                         if (TRAITS::Equals (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr))) {
                         }
                     }
                 }
-                Concept_EqualsCompareFunctionType () {
+                Concept_EqualsCompareFunctionType ()
+                {
                     check ();
                 }
             };
@@ -112,13 +120,15 @@ namespace   Stroika {
 
             template <typename TRAITS>
             struct Concept_WellOrderCompareFunctionType {
-                static void check () {
+                static void check ()
+                {
                     typedef typename TRAITS::ElementType        T;
                     if (false) {
                         int i = TRAITS::Compare (*static_cast<const T*> (nullptr), *static_cast<const T*> (nullptr));
                     }
                 }
-                Concept_WellOrderCompareFunctionType () {
+                Concept_WellOrderCompareFunctionType ()
+                {
                     check ();
                 }
             };

@@ -80,7 +80,8 @@ public:
     Rep (const wstring& dsn):
         fConnectionHandle (nullptr),
         fODBCEnvironmentHandle (nullptr),
-        fNestedTransactionCount (0) {
+        fNestedTransactionCount (0)
+    {
         try {
             ThrowIfSQLError (SQLAllocHandle (SQL_HANDLE_ENV, SQL_NULL_HANDLE, &fODBCEnvironmentHandle), L"Error AllocHandle");
             ThrowIfSQLError (SQLSetEnvAttr (fODBCEnvironmentHandle, SQL_ATTR_ODBC_VERSION, reinterpret_cast<void*>(SQL_OV_ODBC3), 0), L"Error SetEnv");
@@ -140,7 +141,8 @@ public:
             }
         }
     }
-    virtual ~Rep () {
+    virtual ~Rep ()
+    {
         if (fConnectionHandle != nullptr) {
             SQLFreeHandle (SQL_HANDLE_DBC, fConnectionHandle);
         }

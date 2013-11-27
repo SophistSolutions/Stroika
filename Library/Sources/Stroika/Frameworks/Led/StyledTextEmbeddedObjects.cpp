@@ -47,7 +47,8 @@ using   namespace   Stroika::Frameworks::Led;
 // to shutup MFC leak detector. That has SOME value, since it makes it easier to see REAL
 // leaks.
 static  struct  FooBarBlatzRegistryCleanupHack {
-    ~FooBarBlatzRegistryCleanupHack () {
+    ~FooBarBlatzRegistryCleanupHack ()
+    {
         delete EmbeddedObjectCreatorRegistry::sThe;
         EmbeddedObjectCreatorRegistry::sThe = nullptr;
     }
@@ -165,11 +166,13 @@ void    SimpleEmbeddedObjectStyleMarker::DidUpdateText (const MarkerOwner::Updat
     RequireNotNull (GetOwner ());
     RequireNotNull (GetOwner ()->PeekAtTextStore ());
     size_t  newLength   =   GetLength ();
-    if (newLength == 0) {
+    if (newLength == 0)
+    {
         GetOwner ()->PeekAtTextStore ()->RemoveMarker (this);
         delete this;
     }
-    else if (newLength == 1) {
+    else if (newLength == 1)
+    {
         inherited::DidUpdateText (updateInfo);
     }
     else {
@@ -1708,10 +1711,12 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
     // So we simply staticly link, and only call QTInitialize() as needed. And then call
     // QTTerminate at exit (via static DTOR hack), as needed.
     struct  QTIniter {
-        QTIniter () {
+        QTIniter ()
+        {
             fGood = (::QTInitialize (nullptr) == 0);
         }
-        ~QTIniter () {
+        ~QTIniter ()
+        {
             if (fGood) {
                 ::QTTerminate ();
             }
@@ -1723,10 +1728,12 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
     Led_Brush   eraseBrush (backColor.GetOSRep ());
     Led_Win_Obj_Selector    brush (dc, eraseBrush);
     bool    displaySuccessful   =   false;
-    if (sIniter.fGood) {
+    if (sIniter.fGood)
+    {
         displaySuccessful = (::DrawPicture (dc->m_hDC, (PicHandle)pictureHandle, &rr, nullptr) == noErr);
     }
-    if (not displaySuccessful) {
+    if (not displaySuccessful)
+    {
         // fill in with some other picture...
         // treat all excpetions the same. In principle, could draw different picst for memory and
         // unsupported format exceptions...
@@ -1739,7 +1746,8 @@ static  void    MacPictureDrawSegment (StandardMacPictureStyleMarker::PictureHan
         ::StretchDIBits (dc->m_hDC, innerBoundsRect.left, innerBoundsRect.top, innerBoundsRect.GetWidth (), innerBoundsRect.GetHeight (), 0, 0, dibImageSize.h, dibImageSize.v, lpBits, dib, DIB_RGB_COLORS, SRCCOPY);
     }
 #endif
-    if (pixelsDrawn != nullptr) {
+    if (pixelsDrawn != nullptr)
+    {
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 }
@@ -1773,7 +1781,8 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
     Assert (embedBottom <= drawInto.GetBottom ());
     Led_Rect    innerBoundsRect = Led_Rect (Led_Point (embedTop, drawInto.GetLeft () + margin.h), dibImageSize);
 
-    if (pixelsDrawn != nullptr) {
+    if (pixelsDrawn != nullptr)
+    {
         *pixelsDrawn = ourBoundsRect.GetWidth ();
     }
 
@@ -1807,7 +1816,8 @@ static  void    DIBDrawSegment (const Led_DIB* dib,
         delete[] (char*)pmPtr->baseAddr;
         ::DisposePixMap (pm);
     }
-    catch (...) {
+    catch (...)
+    {
         // treat all excpetions the same. In principle, could draw different picst for memory and
         // unsupported format exceptions...
         AssertNotNull (StandardDIBStyleMarker::sUnsupportedFormatPict);

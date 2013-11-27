@@ -152,13 +152,16 @@ namespace   {
         {
             static int nCopies = 0;
             struct Copyable {
-                Copyable () {
+                Copyable ()
+                {
                     ++nCopies;
                 }
-                Copyable (const Copyable&) {
+                Copyable (const Copyable&)
+                {
                     ++nCopies;
                 }
-                ~Copyable () {
+                ~Copyable ()
+                {
                     --nCopies;
                 }
                 const Copyable& operator= (const Copyable&) = delete;

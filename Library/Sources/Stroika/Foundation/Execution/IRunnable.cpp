@@ -18,9 +18,11 @@ namespace {
     struct   SimpleRunnable1_ : IRunnable {
         SimpleRunnable1_ (void (*fun2CallOnce) ())
             : IRunnable ()
-            , fCall_ (fun2CallOnce) {
+            , fCall_ (fun2CallOnce)
+        {
         }
-        virtual void    Run () override {
+        virtual void    Run () override
+        {
             fCall_ ();
         }
         void (*fCall_) ();
@@ -30,9 +32,11 @@ namespace {
         SimpleRunnable2_ (void (*fun2CallOnce) (void* arg), void* arg)
             : IRunnable ()
             , fCall_ (fun2CallOnce)
-            , fArg_ (arg) {
+            , fArg_ (arg)
+        {
         }
-        virtual void    Run () override {
+        virtual void    Run () override
+        {
             fCall_ (fArg_);
         }
         void    (*fCall_) (void* arg);
@@ -42,9 +46,11 @@ namespace {
     struct   SimpleRunnable3_ : IRunnable {
         SimpleRunnable3_ (const std::function<void()>& fun2CallOnce)
             : IRunnable ()
-            , fCall_ (fun2CallOnce) {
+            , fCall_ (fun2CallOnce)
+        {
         }
-        virtual void    Run () override {
+        virtual void    Run () override
+        {
             fCall_ ();
         }
         std::function<void()>   fCall_;

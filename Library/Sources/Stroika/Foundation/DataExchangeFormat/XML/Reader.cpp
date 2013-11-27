@@ -21,17 +21,21 @@ public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
     Rep_ (const SerializationConfiguration& config)
-        : fSerializationConfiguration_ (config) {
+        : fSerializationConfiguration_ (config)
+    {
     }
 public:
-    virtual _SharedPtrIRep  Clone () const override {
+    virtual _SharedPtrIRep  Clone () const override
+    {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
     }
-    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
+    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override
+    {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
-    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
+    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override
+    {
 
         // TODO - USE SAXREADER HERE!!!
 #if     qHasLibrary_Xerces
@@ -42,10 +46,12 @@ public:
         return Memory::VariantValue ();
 #endif
     }
-    nonvirtual  SerializationConfiguration GetConfiguration () const {
+    nonvirtual  SerializationConfiguration GetConfiguration () const
+    {
         return fSerializationConfiguration_;
     }
-    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config) {
+    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config)
+    {
         fSerializationConfiguration_ = config;
     }
 

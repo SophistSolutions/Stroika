@@ -29,7 +29,8 @@ namespace {
         typedef OptionsFileHelper   inherited;
     public:
         MyPrefs ():
-            inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\LedLineIt!\\Settings"))) {
+            inherited (OpenWithCreateAlongPath (HKEY_CURRENT_USER, _T("Software\\Sophist Solutions, Inc.\\LedLineIt!\\Settings")))
+        {
         }
     };
     MyPrefs gMyPrefsFile;

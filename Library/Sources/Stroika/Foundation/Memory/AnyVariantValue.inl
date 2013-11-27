@@ -28,7 +28,8 @@ namespace   Stroika {
                 TIRep_ (const T& from):
                     fValue (from)
                 {}
-                virtual const type_info&    GetType () const override {
+                virtual const type_info&    GetType () const override
+                {
                     return typeid (T);
                 }
             };

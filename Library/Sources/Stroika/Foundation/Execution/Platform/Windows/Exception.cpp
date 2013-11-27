@@ -206,12 +206,12 @@ void    Execution::Platform::Windows::ThrowIfShellExecError (HINSTANCE r)
                 Platform::Windows::Exception::DoThrow (ERROR_DDE_FAIL);         //  The DDE transaction could not be completed because the request timed out.
             case    SE_ERR_DLLNOTFOUND:
                 Platform::Windows::Exception::DoThrow (ERROR_DLL_NOT_FOUND);        //  The specified dynamic-link library (DLL) was not found.
-                //case  SE_ERR_FNF:             throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));        //  The specified file was not found.
+            //case  SE_ERR_FNF:             throw (Platform::Windows::Exception (ERROR_FILE_NOT_FOUND));        //  The specified file was not found.
             case    SE_ERR_NOASSOC:
                 Platform::Windows::Exception::DoThrow (ERROR_NO_ASSOCIATION);   //  There is no application associated with the given file name extension. This error will also be returned if you attempt to print a file that is not printable.
             case    SE_ERR_OOM:
                 Platform::Windows::Exception::DoThrow (ERROR_NOT_ENOUGH_MEMORY);    //  There was not enough memory to complete the operation.
-                //case  SE_ERR_PNF:             throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));        //  The specified path was not found.
+            //case  SE_ERR_PNF:             throw (Platform::Windows::Exception (ERROR_PATH_NOT_FOUND));        //  The specified path was not found.
             case    SE_ERR_SHARE:
                 Platform::Windows::Exception::DoThrow (ERROR_INVALID_SHARENAME);    //
             default: {

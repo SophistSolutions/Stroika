@@ -28,11 +28,13 @@ public:
         : fCriticalSection_ ()
         , fData_ ()
         , fReadCursor_ (fData_.begin ())
-        , fWriteCursor_ (fData_.begin ()) {
+        , fWriteCursor_ (fData_.begin ())
+    {
     }
     IRep_ (const IRep_&) = delete;
     nonvirtual  const IRep_& operator= (const IRep_&) = delete;
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -48,7 +50,8 @@ public:
         return nCopied; // this can be zero on EOF
     }
 
-    virtual void    Write (const Byte* start, const Byte* end) override {
+    virtual void    Write (const Byte* start, const Byte* end) override
+    {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
@@ -71,16 +74,19 @@ public:
         }
     }
 
-    virtual void     Flush () override {
+    virtual void     Flush () override
+    {
         // nothing todo - write 'writes thru'
     }
 
-    virtual SeekOffsetType      ReadGetOffset () const override {
+    virtual SeekOffsetType      ReadGetOffset () const override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fReadCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType      ReadSeek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -122,12 +128,14 @@ public:
         return fReadCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      WriteGetOffset () const override {
+    virtual SeekOffsetType      WriteGetOffset () const override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fWriteCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType      WriteSeek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -169,17 +177,20 @@ public:
         return fWriteCursor_ - fData_.begin ();
     }
 
-    Memory::BLOB   AsBLOB () const {
+    Memory::BLOB   AsBLOB () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return Memory::BLOB (fData_);
     }
 
-    vector<Byte>   AsVector () const {
+    vector<Byte>   AsVector () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fData_;
     }
 
-    string   AsString () const {
+    string   AsString () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }

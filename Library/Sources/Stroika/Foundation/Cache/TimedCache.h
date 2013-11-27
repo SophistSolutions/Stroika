@@ -162,7 +162,8 @@ namespace   Stroika {
                 struct  MyResult_ {
                     MyResult_ (const RESULT& r)
                         : fResult (r)
-                        , fLastAccessedAt (Time::GetTickCount ()) {
+                        , fLastAccessedAt (Time::GetTickCount ())
+                    {
                     }
                     RESULT  fResult;
                     Time::DurationSecondsType   fLastAccessedAt;

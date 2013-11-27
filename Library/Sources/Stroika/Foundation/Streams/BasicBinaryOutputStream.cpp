@@ -27,12 +27,14 @@ public:
     IRep_ ()
         : fCriticalSection_ ()
         , fData_ ()
-        , fCursor_ (fData_.begin ()) {
+        , fCursor_ (fData_.begin ())
+    {
     }
     IRep_ (const IRep_&) = delete;
     nonvirtual  const IRep_& operator= (const IRep_&) = delete;
 
-    virtual void    Write (const Byte* start, const Byte* end) override {
+    virtual void    Write (const Byte* start, const Byte* end) override
+    {
         Require (start != nullptr or start == end);
         Require (end != nullptr or start == end);
         if (start != end) {
@@ -52,16 +54,19 @@ public:
         }
     }
 
-    virtual void     Flush () override {
+    virtual void     Flush () override
+    {
         // nothing todo - write 'writes thru'
     }
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);    // needed only if fetch of pointer not atomic
         return fCursor_ - fData_.begin ();
     }
 
-    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType    Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {
@@ -103,17 +108,20 @@ public:
         return fCursor_ - fData_.begin ();
     }
 
-    Memory::BLOB   AsBLOB () const {
+    Memory::BLOB   AsBLOB () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return Memory::BLOB (fData_);
     }
 
-    vector<Byte>   AsVector () const {
+    vector<Byte>   AsVector () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fData_;
     }
 
-    string   AsString () const {
+    string   AsString () const
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return string (reinterpret_cast<const char*> (Containers::Start (fData_)), reinterpret_cast<const char*> (Containers::End (fData_)));
     }

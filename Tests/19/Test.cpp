@@ -155,7 +155,8 @@ namespace   {
         typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
         struct  COMPARE_SimpleClassWithoutComparisonOperators {
             typedef SimpleClassWithoutComparisonOperators ElementType;
-            static  bool    Equals (ElementType v1, ElementType v2) {
+            static  bool    Equals (ElementType v1, ElementType v2)
+            {
                 return v1.GetValue () == v2.GetValue ();
             }
         };

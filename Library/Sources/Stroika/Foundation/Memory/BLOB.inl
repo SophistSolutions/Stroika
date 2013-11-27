@@ -51,7 +51,8 @@ namespace   Stroika {
             struct  BLOB::ZeroRep_ : public _IRep {
                 virtual pair<const Byte*, const Byte*>   GetBounds () const override;
 
-                inline ZeroRep_ () {
+                inline ZeroRep_ ()
+                {
                 }
                 DECLARE_USE_BLOCK_ALLOCATION (ZeroRep_);
             };

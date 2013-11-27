@@ -318,7 +318,8 @@ namespace   Stroika {
             public:
                 //tmphack to test - LGP 2013-06-06 - so can say "Iterator i = x; if (i) {...
                 // - handy for stuff like ApplyUntilTrue ()...
-                nonvirtual  operator bool () const {
+                nonvirtual  operator bool () const
+                {
                     return not Done ();
                 }
 

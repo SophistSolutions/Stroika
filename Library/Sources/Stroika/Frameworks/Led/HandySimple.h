@@ -92,19 +92,22 @@ namespace   Stroika {
                 struct  MyTrivImager : public TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR> {
                     typedef TrivialImager_Interactor<TEXTSTORE, WORDPROCESSOR>  inherited;
                     MyTrivImager (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText):
-                        inherited (t, bounds, initialText) {
+                        inherited (t, bounds, initialText)
+                    {
                         /*
                          * Good performance hack (shutting off ImageUsingOffscreenBitmaps), plus critical for
                          *  how we do the EraseBackground () below.
                          */
                         SetImageUsingOffscreenBitmaps (false);
                     }
-                    virtual    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override {
+                    virtual    void    EraseBackground (Led_Tablet tablet, const Led_Rect& subsetToDraw, bool printing) override
+                    {
                         // Do no erasing - just draw the text...
                         // Note - its CRITICAL that we shutoff offscreen bitmaps for this imager so that we don't get garbage bits
                         // from that offscreen bitmap being copied back to the original tablet.
                     }
-                    virtual    void    GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override {
+                    virtual    void    GetLayoutMargins (typename WORDPROCESSOR::RowReference row, Led_Coordinate* lhs, Led_Coordinate* rhs) const override
+                    {
                         // Make the layout right margin of each line (paragraph) equal to the windowrect. Ie, wrap to the
                         // edge of the window.
                         Led_Coordinate  l   =   0;

@@ -37,17 +37,20 @@ public:
     {
         fBuffer_.reserve (kDefaultBufSize);
     }
-    ~IRep_ () {
+    ~IRep_ ()
+    {
         IgnoreExceptionsForCall (Flush ());
         Ensure (fBuffer_.size () == 0); // advisory - not quite right - could happen if a flush exception was eaten (@todo clean this up)
     }
 
 public:
-    nonvirtual  size_t  GetBufferSize () const {
+    nonvirtual  size_t  GetBufferSize () const
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         return (fBuffer_.capacity ());
     }
-    nonvirtual  void    SetBufferSize (size_t bufSize) {
+    nonvirtual  void    SetBufferSize (size_t bufSize)
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         bufSize = max (bufSize, kMinBufSize_);
         if (bufSize < fBuffer_.size ()) {
@@ -58,7 +61,8 @@ public:
 
 public:
     // Throws away all data about to be written (buffered). Once this is called, its illegal to call Flush or another write
-    nonvirtual  void    Abort () {
+    nonvirtual  void    Abort ()
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
 #if     qDebug
         fAborted_ = true;   // for debug sake track this
@@ -67,7 +71,8 @@ public:
     }
 
     //
-    nonvirtual  void    Flush () {
+    nonvirtual  void    Flush ()
+    {
         Require (not fAborted_ or fBuffer_.empty ());
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         if (not fBuffer_.empty ()) {
@@ -80,7 +85,8 @@ public:
 
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
-    virtual void            Write (const Byte* start, const Byte* end) override {
+    virtual void            Write (const Byte* start, const Byte* end) override
+    {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Require (not fAborted_);
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);

@@ -20,11 +20,13 @@ class   TextInputStreamFromIStreamAdapter::IRep_ : public TextInputStream::_IRep
 public:
     IRep_ (wistream& originalStream)
         : fCriticalSection_ ()
-        , fOriginalStream_ (originalStream) {
+        , fOriginalStream_ (originalStream)
+    {
     }
 
 protected:
-    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override {
+    virtual size_t    _Read (Character* intoStart, Character* intoEnd) override
+    {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -44,13 +46,15 @@ protected:
         return n;
     }
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         // instead of tellg () - avoids issue with EOF where fail bit set???
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fOriginalStream_.rdbuf ()->pubseekoff (0, ios_base::cur, ios_base::in);
     }
 
-    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart:

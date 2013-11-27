@@ -101,7 +101,8 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
      */
     Assert (fTotalTcharsUsed >= after);
     size_t  bytesToMove =   fTotalTcharsUsed - after;
-    if (bytesToMove != 0) {
+    if (bytesToMove != 0)
+    {
         (void)memmove (&fData[after + howMany], &fData[after], bytesToMove * sizeof (Led_tChar));
     }
     (void)::memcpy (&fData[after], what, howMany * sizeof (Led_tChar));
@@ -110,7 +111,8 @@ inline  void    ChunkedArrayTextStore::TextChunk::InsertAfter (const Led_tChar* 
 inline  void    ChunkedArrayTextStore::TextChunk::DeleteAfter (size_t howMany, size_t after) noexcept {
     Require (after + howMany <= fTotalTcharsUsed);
     size_t  bytesToMove =   fTotalTcharsUsed - ( after + howMany );
-    if (bytesToMove != 0) {
+    if (bytesToMove != 0)
+    {
         (void)::memmove (&fData [after], &fData [after + howMany], bytesToMove * sizeof (Led_tChar));
     }
     fTotalTcharsUsed -= howMany;
@@ -154,7 +156,8 @@ public:
         fNextSubMarker (NULL),
         fStart (0),
         fLength (0),
-        fOwner (NULL) {
+        fOwner (NULL)
+    {
     }
 
 public:
@@ -426,10 +429,12 @@ struct  ChunkedArrayTextStore::CollectLookupCacheElt  {
         size_t  fTo;
     };
 
-    nonvirtual  void    Clear () {
+    nonvirtual  void    Clear ()
+    {
         fFrom = static_cast<size_t> (-1);
     }
-    static  bool    Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs) {
+    static  bool    Equal (const CollectLookupCacheElt& lhs, const COMPARE_ITEM& rhs)
+    {
         return lhs.fFrom == rhs.fFrom and lhs.fTo == rhs.fTo;
     }
 };
@@ -465,7 +470,8 @@ public:
         SetMarkerStart_ (&fRootMarker, 0);
         SetMarkerLength_ (&fRootMarker, len);
     }
-    ~ChunkedArrayMarkerOwnerHook () {
+    ~ChunkedArrayMarkerOwnerHook ()
+    {
 #if     qKeepChunkedArrayStatistics
         Require (fTotalMarkersPresent == 0);    // ALL MARKERS MUST BE REMOVED BEFORE EDITOR DESTROYED!!!!
         // If this assertion ever triggers, then it may well be a Led client
@@ -520,13 +526,16 @@ public:
     typedef ChunkedArrayTextStore::CollectLookupCacheElt        CollectLookupCacheElt;
     typedef Foundation::Cache::LRUCache<CollectLookupCacheElt, Cache::LRUCacheDefaultTraits<CollectLookupCacheElt, CollectLookupCacheElt::COMPARE_ITEM> >  CACHE_TYPE;
 public:
-    nonvirtual  void    ClearCache () {
+    nonvirtual  void    ClearCache ()
+    {
         fCache.ClearCache ();
     }
-    nonvirtual  CollectLookupCacheElt*  LookupElement (const CollectLookupCacheElt::COMPARE_ITEM& item) {
+    nonvirtual  CollectLookupCacheElt*  LookupElement (const CollectLookupCacheElt::COMPARE_ITEM& item)
+    {
         return fCache.LookupElement (item);
     }
-    nonvirtual  CollectLookupCacheElt*  AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item) {
+    nonvirtual  CollectLookupCacheElt*  AddNew (const CollectLookupCacheElt::COMPARE_ITEM& item)
+    {
         return fCache.AddNew (item);
     }
 private:
@@ -534,12 +543,14 @@ private:
 #endif
 
 public:
-    inline  bool    AllHackMarkers (const Marker* m) {
+    inline  bool    AllHackMarkers (const Marker* m)
+    {
         AssertNotNull (m);
         return (OurStuff (m)->fIsHackMarker and (OurStuff (m)->fFirstSubMarker == NULL or AllSubMarkersAreHackMarkerTrees (m)));
     }
 public:
-    nonvirtual  bool    AllSubMarkersAreHackMarkerTrees (const Marker* m) {
+    nonvirtual  bool    AllSubMarkersAreHackMarkerTrees (const Marker* m)
+    {
         AssertNotNull (m);
         Assert (OurStuff (m)->fIsHackMarker);
 
@@ -583,7 +594,8 @@ AfterCallPoint:
     }
 
 public:
-    nonvirtual  void    FreeHackTree (Marker* m) {
+    nonvirtual  void    FreeHackTree (Marker* m)
+    {
         AssertNotNull (m);
         Assert (OurStuff (m)->fIsHackMarker);
 
@@ -610,7 +622,8 @@ public:
         Assert (false); // if we get here then we weren't in our parents linked list of children !!! BAD!!!
     }
 
-    nonvirtual  void    FreeHackTree1 (Marker* m) {
+    nonvirtual  void    FreeHackTree1 (Marker* m)
+    {
 #if     qDebug
         Assert (OurStuff (m)->fIsHackMarker);
 #endif
@@ -1517,7 +1530,8 @@ void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, siz
     size_t  len =   end - start;
 
     // changing the start, or end may force a re-ordering...
-    if (GetMarkerStart_ (marker) != start or GetMarkerLength_ (marker) != len) {
+    if (GetMarkerStart_ (marker) != start or GetMarkerLength_ (marker) != len)
+    {
         /*
          *  If this marker is still contained in its parent - no need to remove it.
          *  Furthermore - if all its children remain in it - no need to move them up.
@@ -1530,7 +1544,8 @@ void    ChunkedArrayTextStore::SetMarkerRange (Marker* marker, size_t start, siz
 #if     qDebug
             // before we re-adjust anything. - make sure all is well...
             {
-                for (Marker* mi = OurStuff (marker)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker) {
+                for (Marker* mi = OurStuff (marker)->fFirstSubMarker; mi != NULL; mi = OurStuff (mi)->fNextSubMarker)
+                {
                     Assert (QUICK_Contains (*mi, *marker));
                 }
             }

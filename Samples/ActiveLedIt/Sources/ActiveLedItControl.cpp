@@ -563,7 +563,8 @@ ActiveLedItControl::~ActiveLedItControl ()
 }
 
 void    ActiveLedItControl::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
-    if (updateInfo.fRealContentUpdate) {
+    if (updateInfo.fRealContentUpdate)
+    {
         SetModifiedFlag ();
         fDataDirty = true;
         FireOLEEvent (DISPID_Change);
@@ -1535,10 +1536,12 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
         typedef Led_StdDialogHelper_AboutBox    inherited;
     public:
         MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
-            inherited (hInstance, parentWnd) {
+            inherited (hInstance, parentWnd)
+        {
         }
     public:
-        virtual    BOOL    OnInitDialog () override {
+        virtual    BOOL    OnInitDialog () override
+        {
             BOOL    result  =   inherited::OnInitDialog ();
 
             // Cuz of fact that dlog sizes specified in dlog units, and that doesn't work well for bitmaps
@@ -1622,7 +1625,8 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
             return (result);
         }
     public:
-        virtual    void    OnClickInInfoField () override {
+        virtual    void    OnClickInInfoField () override
+        {
             try {
                 Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
             }
@@ -1632,7 +1636,8 @@ void    ActiveLedItControl::OnAboutBoxCommand ()
             inherited::OnClickInInfoField ();
         }
 
-        virtual    void    OnClickInLedWebPageField () override {
+        virtual    void    OnClickInLedWebPageField () override
+        {
             try {
                 Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/ActiveLedIt/", kAppName, kURLDemoFlag));
             }
@@ -3308,15 +3313,19 @@ BOOL    ActiveLedItControl::OLE_CommandEnabled (const VARIANT& command)
         struct  MyCmdUI : CCmdUI {
             MyCmdUI ():
                 CCmdUI (),
-                fEnabled (false) {
+                fEnabled (false)
+            {
             }
-            virtual    void    Enable (BOOL bOn) override {
+            virtual    void    Enable (BOOL bOn) override
+            {
                 fEnabled = !!bOn;
                 m_bEnableChanged = TRUE;
             }
-            virtual    void    SetCheck (int /*nCheck*/) override {
+            virtual    void    SetCheck (int /*nCheck*/) override
+            {
             }
-            virtual    void    SetText (LPCTSTR /*lpszText*/) override {
+            virtual    void    SetText (LPCTSTR /*lpszText*/) override
+            {
             }
 
             bool    fEnabled;
@@ -3337,15 +3346,19 @@ BOOL    ActiveLedItControl::OLE_CommandChecked (const VARIANT& command)
         struct  MyCmdUI : CCmdUI {
             MyCmdUI ():
                 CCmdUI (),
-                fChecked (false) {
+                fChecked (false)
+            {
             }
-            virtual    void    Enable (BOOL bOn) override {
+            virtual    void    Enable (BOOL bOn) override
+            {
                 m_bEnableChanged = TRUE;
             }
-            virtual    void    SetCheck (int nCheck) override {
+            virtual    void    SetCheck (int nCheck) override
+            {
                 fChecked = nCheck != 0;
             }
-            virtual    void    SetText (LPCTSTR /*lpszText*/) override {
+            virtual    void    SetText (LPCTSTR /*lpszText*/) override
+            {
             }
 
             bool    fChecked;

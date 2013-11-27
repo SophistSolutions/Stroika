@@ -21,10 +21,12 @@ public:
     IRep_ (const BinaryInputStream& realIn)
         : BinaryInputStream::_IRep ()
         , fCriticalSection_ ()
-        , fRealIn_ (realIn) {
+        , fRealIn_ (realIn)
+    {
     }
 
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
         return fRealIn_.Read (intoStart, intoEnd);
     }

@@ -1120,7 +1120,8 @@ void    Main::WindowsService::ServiceMain_ (DWORD dwArgc, LPTSTR* lpszArgv) noex
     // When the Run function returns, the service has stopped.
     // about like this - FIX - KEEP SOMETHING SIMIALR
     auto appRep = fAppRep_;
-    fRunThread_ = Execution::Thread ([appRep] () {
+    fRunThread_ = Execution::Thread ([appRep] ()
+    {
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
@@ -1145,14 +1146,16 @@ void    Main::WindowsService::OnStopRequest_ () noexcept {
      *  WARNING - this maybe a race about setting status!!! - what if we get stop request when already stopped.
      *  THIS CODE NEEDS THREAD LOCKS!!!
      */
-    if (fServiceStatus_.dwCurrentState == SERVICE_RUNNING) {
+    if (fServiceStatus_.dwCurrentState == SERVICE_RUNNING)
+    {
         SetServiceStatus_ (SERVICE_STOP_PENDING);
         fRunThread_.Abort ();
     }
 }
 
 void    Main::WindowsService::Handler_ (DWORD dwOpcode) noexcept {
-    switch (dwOpcode) {
+    switch (dwOpcode)
+    {
         case SERVICE_CONTROL_STOP:
             OnStopRequest_  ();
             break;

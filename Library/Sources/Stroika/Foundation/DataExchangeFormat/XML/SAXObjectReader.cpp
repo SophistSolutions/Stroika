@@ -40,16 +40,20 @@ wstring SAXObjectReader::TraceLeader_ () const
 class   SAXObjectReader::MyCallback_ : public SAXCallbackInterface {
 public:
     MyCallback_ (SAXObjectReader& r)
-        : fSAXObjectReader_ (r) {
+        : fSAXObjectReader_ (r)
+    {
     }
 private:
     SAXObjectReader&    fSAXObjectReader_;
 public:
-    virtual void    StartDocument () override {
+    virtual void    StartDocument () override
+    {
     }
-    virtual void    EndDocument () override {
+    virtual void    EndDocument () override
+    {
     }
-    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
+    virtual void    StartElement (const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+    {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
@@ -58,7 +62,8 @@ public:
 #endif
         fSAXObjectReader_.GetTop ()->HandleChildStart (fSAXObjectReader_, uri, localName, qname, attrs);
     }
-    virtual void    EndElement (const String& uri, const String& localName, const String& qname) override {
+    virtual void    EndElement (const String& uri, const String& localName, const String& qname) override
+    {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
@@ -67,7 +72,8 @@ public:
 #endif
         fSAXObjectReader_.GetTop ()->HandleEndTag (fSAXObjectReader_);
     }
-    virtual void    CharactersInsideElement (const String& text) override {
+    virtual void    CharactersInsideElement (const String& text) override
+    {
         AssertNotNull (fSAXObjectReader_.GetTop ());
 #if     qDefaultTracingOn
         if (fSAXObjectReader_.fTraceThisReader) {
@@ -88,15 +94,18 @@ namespace   {
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (true)
             , fDocEltURI ()
-            , fDocEltName () {
+            , fDocEltName ()
+        {
         }
         DocumentReader_ (const shared_ptr<ObjectBase>& docEltBuilder, const String& checkURI, const String& checkDocEltName)
             : fDocEltBuilder (docEltBuilder)
             , fAnyDocElt (false)
             , fDocEltURI (checkURI)
-            , fDocEltName (checkDocEltName) {
+            , fDocEltName (checkDocEltName)
+        {
         }
-        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override {
+        virtual void    HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override
+        {
             if (not fAnyDocElt) {
                 if (localName != fDocEltName or uri != fDocEltURI) {
                     ThrowUnRecognizedStartElt (uri, localName);
@@ -104,12 +113,14 @@ namespace   {
             }
             r.Push (fDocEltBuilder);
         }
-        virtual void    HandleTextInside (SAXObjectReader& r, const String& text)  override {
+        virtual void    HandleTextInside (SAXObjectReader& r, const String& text)  override
+        {
             // OK so long as text is whitespace - or comment. Probably should check/assert, but KISS..., and count on validation to
             // assure input is valid
             Assert (text.IsWhitespace ());
         }
-        virtual void    HandleEndTag (SAXObjectReader& r) override {
+        virtual void    HandleEndTag (SAXObjectReader& r) override
+        {
             r.Pop ();
         }
     };

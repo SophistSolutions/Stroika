@@ -60,12 +60,12 @@ struct  TreapTraits : TreeTraits::Traits<KEYVALUE, COMP, POLICY> {
 };
 
 template < typename KEY,
-         typename VALUE,
-         typename TRAITS = TreapTraits <
-         KeyValue<KEY, VALUE>,
-         TreeTraits::DefaultComp<KEY>,
-         TreeTraits::eInvalidRemoveThrowException,
-         kDefaultOptimizeFinds > >
+           typename VALUE,
+           typename TRAITS = TreapTraits <
+               KeyValue<KEY, VALUE>,
+               TreeTraits::DefaultComp<KEY>,
+               TreeTraits::eInvalidRemoveThrowException,
+               kDefaultOptimizeFinds > >
 class Treap {
 public:
     typedef  KEY    KeyType;

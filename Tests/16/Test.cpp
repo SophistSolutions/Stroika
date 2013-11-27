@@ -78,16 +78,19 @@ namespace   {
     {
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
-            static  bool    Equals (ElementType v1, ElementType v2) {
+            static  bool    Equals (ElementType v1, ElementType v2)
+            {
                 return v1.GetValue () == v2.GetValue ();
             }
-            static  int    Compare (ElementType v1, ElementType v2) {
+            static  int    Compare (ElementType v1, ElementType v2)
+            {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
         struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
-            static  int    Compare (ElementType v1, ElementType v2) {
+            static  int    Compare (ElementType v1, ElementType v2)
+            {
                 return v1.GetValue () - v2.GetValue ();
             }
         };

@@ -197,17 +197,20 @@ namespace   Stroika {
             {
                 class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:
-                    virtual void    More (Memory::Optional<T>* result, bool advance) override {
+                    virtual void    More (Memory::Optional<T>* result, bool advance) override
+                    {
                         RequireNotNull (result);
                         result->clear ();
                     }
-                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                    {
                         RequireNotNull (rhs);
                         Memory::Optional<T> tmp;
                         const_cast<typename Iterator<T>::IRep*> (rhs)->More (&tmp, false);
                         return tmp.empty ();
                     }
-                    virtual shared_ptr<IRep>    Clone () const override {
+                    virtual shared_ptr<IRep>    Clone () const override
+                    {
                         // May never be called since we never really call More() - except in special case of
                         // checking for at end. But it would be legal, and possible to call, so must fix at
                         // some point.

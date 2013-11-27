@@ -246,7 +246,8 @@ namespace   Stroika {
                         nonvirtual  bool    Done () const;
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                        nonvirtual  bool    More (nullptr_t, bool advance)
+                        {
                             return More (static_cast<T*> (nullptr), advance);
                         }
                         nonvirtual  T       Current () const;

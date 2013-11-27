@@ -49,32 +49,39 @@ namespace {
     class   AutoHANDLE_ {
     public:
         AutoHANDLE_ (HANDLE h = INVALID_HANDLE_VALUE):
-            fHandle (h) {
+            fHandle (h)
+        {
         }
         AutoHANDLE_ (const AutoHANDLE_&) = delete;
-        ~AutoHANDLE_ () {
+        ~AutoHANDLE_ ()
+        {
             Close ();
         }
-        const AutoHANDLE_& operator= (const AutoHANDLE_& rhs) {
+        const AutoHANDLE_& operator= (const AutoHANDLE_& rhs)
+        {
             if (this != &rhs) {
                 Close ();
                 fHandle = rhs.fHandle;
             }
             return *this;
         }
-        operator HANDLE () const {
+        operator HANDLE () const
+        {
             return fHandle;
         }
-        HANDLE* operator& () {
+        HANDLE* operator& ()
+        {
             return &fHandle;
         }
-        void    Close () {
+        void    Close ()
+        {
             if (fHandle != INVALID_HANDLE_VALUE) {
                 Verify (::CloseHandle (fHandle));
                 fHandle = INVALID_HANDLE_VALUE;
             }
         }
-        void    ReplaceHandleAsNonInheritable () {
+        void    ReplaceHandleAsNonInheritable ()
+        {
             HANDLE  result  =   INVALID_HANDLE_VALUE;
             Verify (::DuplicateHandle (::GetCurrentProcess (), fHandle, ::GetCurrentProcess (), &result , 0, FALSE, DUPLICATE_SAME_ACCESS));
             Verify (::CloseHandle (fHandle));

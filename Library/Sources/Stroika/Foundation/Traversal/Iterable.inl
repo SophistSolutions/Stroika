@@ -171,10 +171,12 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (void (*doToElement) (const T& item))
-                        : fToDoItem (doToElement) {
+                        : fToDoItem (doToElement)
+                    {
                     }
                     void (*fToDoItem) (const T& item);
-                    static void DoToItem (const void* cookie, const T& item) {
+                    static void DoToItem (const void* cookie, const T& item)
+                    {
                         (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
                     }
                 };
@@ -191,10 +193,12 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (const std::function<void(const T& item)>& doToElement)
-                        : fDoToItem (doToElement) {
+                        : fDoToItem (doToElement)
+                    {
                     }
                     const std::function<void(const T& item)>& fDoToItem;
-                    static void DoToItem (const void* cookie, const T& item) {
+                    static void DoToItem (const void* cookie, const T& item)
+                    {
                         (reinterpret_cast<const CheapLambda_*> (cookie)->fDoToItem) (item);
                     }
                 };
@@ -210,10 +214,12 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))
-                        : fToDoItem (doToElement) {
+                        : fToDoItem (doToElement)
+                    {
                     }
                     bool (*fToDoItem) (const T& item);
-                    static bool DoToItem (const void* cookie, const T& item) {
+                    static bool DoToItem (const void* cookie, const T& item)
+                    {
                         return (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
                     }
                 };
@@ -229,10 +235,12 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 struct CheapLambda_ {
                     CheapLambda_ (bool (*doToElement) (const T& item))
-                        : fToDoItem (doToElement) {
+                        : fToDoItem (doToElement)
+                    {
                     }
                     bool (*fToDoItem) (const T& item);
-                    static bool DoToItem (const void* cookie, const T& item) {
+                    static bool DoToItem (const void* cookie, const T& item)
+                    {
                         return (reinterpret_cast<const CheapLambda_*> (cookie)->fToDoItem) (item);
                     }
                 };

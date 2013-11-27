@@ -820,7 +820,7 @@ LRESULT LedComboBoxWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
         case    WM_SIZE: {
                 return OnSize_Msg (wParam, lParam);
             }
-            // Forward these to the text widget only
+        // Forward these to the text widget only
         case    EM_GETSEL:
         case    EM_SETSEL:
         case    WM_GETDLGCODE:
@@ -829,7 +829,7 @@ LRESULT LedComboBoxWidget::WndProc (UINT message, WPARAM wParam, LPARAM lParam)
         case    WM_GETTEXTLENGTH: {
                 return ::SendMessage (fTextWidget.GetHWND (), message, wParam, lParam);
             }
-            // Forward these to all widgets
+        // Forward these to all widgets
         case    WM_ENABLE: {
                 LRESULT lr  =   inherited::WndProc (message, wParam, lParam);
                 (void)fPopupButton.SendMessage (message, wParam, lParam);

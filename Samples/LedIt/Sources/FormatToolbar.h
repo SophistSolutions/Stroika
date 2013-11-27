@@ -40,7 +40,8 @@ public:
     public:
         static int m_nFontHeight;
         int         m_nLimitText;
-        nonvirtual  BOOL HasFocus() {
+        nonvirtual  BOOL HasFocus()
+        {
             HWND hWnd = ::GetFocus();
             return (hWnd == m_hWnd || ::IsChild(m_hWnd, hWnd));
         }

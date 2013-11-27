@@ -47,7 +47,8 @@ public:
 
 public:
     MyLedWindow ():
-        inherited () {
+        inherited ()
+    {
         SetScrollBarType (h, eScrollBarAsNeeded);
         SetScrollBarType (v, eScrollBarAlways);
     }

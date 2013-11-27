@@ -42,8 +42,8 @@ namespace   Stroika {
 
                                      */
                     template < typename KEY,
-                             typename VALUE,
-                             typename TRAITS >
+                               typename VALUE,
+                               typename TRAITS >
                     class   SkipList {
                     public:
                         typedef KEY KeyType;

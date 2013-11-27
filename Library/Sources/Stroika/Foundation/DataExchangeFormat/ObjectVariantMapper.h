@@ -370,13 +370,16 @@ namespace   Stroika {
                 TypeMappingDetails ()
                     : fForType (typeid(void))
                     , fToVariantMapper (nullptr)
-                    , fFromVariantMapper (nullptr) {
+                    , fFromVariantMapper (nullptr)
+                {
                 }
 #endif
-                bool operator== (const TypeMappingDetails& rhs) const {
+                bool operator== (const TypeMappingDetails& rhs) const
+                {
                     return (fForType == rhs.fForType);
                 }
-                bool operator< (const TypeMappingDetails& rhs) const {
+                bool operator< (const TypeMappingDetails& rhs) const
+                {
                     return (fForType < rhs.fForType);
                 }
             };

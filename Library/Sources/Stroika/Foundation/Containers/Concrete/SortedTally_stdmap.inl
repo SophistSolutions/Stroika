@@ -49,7 +49,8 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override {
+                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override
+                    {
                         return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else
@@ -104,14 +105,16 @@ namespace   Stroika {
 
                 public:
                     IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
-                        : inherited (sharedLock, data) {
+                        : inherited (sharedLock, data)
+                    {
                     }
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override {
+                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override
+                    {
                         CONTAINER_LOCK_HELPER_START (fLockSupport) {
                             pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
                             if (fIterator.More (&tmp, advance)) {
@@ -134,7 +137,8 @@ namespace   Stroika {
                     IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                         : inherited ()
                         , fLockSupport_ (*sharedLock)
-                        , fIterator (data) {
+                        , fIterator (data)
+                    {
                         fIterator.More (static_cast<pair<T, size_t>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                     }
 
@@ -142,13 +146,15 @@ namespace   Stroika {
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
 
                 public:
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override {
+                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override
+                    {
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             return typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*this));
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override {
+                    virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override
+                    {
                         RequireNotNull (result);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                             Memory::Optional<pair<T, size_t>> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
@@ -162,7 +168,8 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override {
+                    virtual bool    StrongEquals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override
+                    {
                         AssertNotImplemented ();
                         return false;
                     }

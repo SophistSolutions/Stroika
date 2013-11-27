@@ -47,7 +47,8 @@ public:
     Rep_ (const Rep_&) = delete;
     Rep_ (const String& fileName)
         : fCriticalSection_ ()
-        , fFD_ (-1) {
+        , fFD_ (-1)
+    {
 #if     qPlatform_Windows
         errno_t e = _wsopen_s (&fFD_, fileName.c_str (), (O_RDONLY | O_BINARY), _SH_DENYNO, 0);
         if (e != 0) {
@@ -58,7 +59,8 @@ public:
         Execution::ThrowErrNoIfNegative (fFD_ = open (fileName.AsNarrowSDKString ().c_str (), O_RDONLY));
 #endif
     }
-    ~Rep_ () {
+    ~Rep_ ()
+    {
 #if     qPlatform_Windows
         ::_close (fFD_);
 #else
@@ -67,7 +69,8 @@ public:
     }
     nonvirtual  const Rep_& operator= (const Rep_&) = delete;
 
-    virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t   Read (Byte* intoStart, Byte* intoEnd) override
+    {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -79,7 +82,8 @@ public:
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif
     }
-    virtual Streams::SeekOffsetType  GetOffset () const override {
+    virtual Streams::SeekOffsetType  GetOffset () const override
+    {
         lock_guard<mutex>  critSec (fCriticalSection_);
 #if     qPlatform_Windows
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (_lseeki64 (fFD_, 0, SEEK_CUR)));
@@ -87,7 +91,8 @@ public:
         return static_cast<Streams::SeekOffsetType> (Execution::ThrowErrNoIfNegative (lseek64 (fFD_, 0, SEEK_CUR)));
 #endif
     }
-    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override {
+    virtual Streams::SeekOffsetType    Seek (Streams::Whence whence, Streams::SignedSeekOffsetType offset) override
+    {
         using namespace Streams;
         lock_guard<mutex>  critSec (fCriticalSection_);
         switch (whence) {

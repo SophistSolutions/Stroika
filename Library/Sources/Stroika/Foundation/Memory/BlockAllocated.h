@@ -250,18 +250,22 @@ namespace   Stroika {
                 BlockAllocated (const BlockAllocated<T>& t) : fValue_ (t) {}
                 BlockAllocated (const T& t) : fValue_ (t) {}
                 BlockAllocated (T&&  t) : fValue_ (std::move (t)) {}
-                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t) {
+                nonvirtual const BlockAllocated<T>& operator= (const BlockAllocated<T>& t)
+                {
                     fValue_ = t.fValue_;
                     return *this;
                 }
-                nonvirtual const BlockAllocated<T>& operator= (const T& t) {
+                nonvirtual const BlockAllocated<T>& operator= (const T& t)
+                {
                     fValue_ = t;
                     return *this;
                 }
-                nonvirtual  operator T () const {
+                nonvirtual  operator T () const
+                {
                     return fValue_;
                 }
-                nonvirtual  T* get () {
+                nonvirtual  T* get ()
+                {
                     return &fValue_;
                 }
 

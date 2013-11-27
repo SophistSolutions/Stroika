@@ -392,7 +392,8 @@ namespace   Stroika {
 
                 public:
                     template    <int    MESSAGE_NUMBER>
-                    afx_msg LRESULT OnMFCSDKMessageDispatcher (WPARAM wParam, LPARAM lParam) {
+                    afx_msg LRESULT OnMFCSDKMessageDispatcher (WPARAM wParam, LPARAM lParam)
+                    {
                         LRESULT result  =   0;
                         Verify (HandleMessage (MESSAGE_NUMBER, wParam, lParam, &result));
                         return result;
@@ -445,7 +446,8 @@ namespace   Stroika {
                         CommandNames ():
                             fDragCommandName (Led_SDK_TCHAROF ("Drag")),
                             fDropCommandName (Led_SDK_TCHAROF ("Drop")),
-                            fDragNDropCommandName (Led_SDK_TCHAROF ("Drag and Drop")) {
+                            fDragNDropCommandName (Led_SDK_TCHAROF ("Drag and Drop"))
+                        {
                         }
 
                         Led_SDK_String  fDragCommandName;
@@ -505,7 +507,8 @@ namespace   Stroika {
                             fOurDragEnd (0),
                             fWeRecievedDrop (false),
                             fLedMFCView (ledMFCView),
-                            fOrigSelection (ledMFCView->GetTextStore (), ledMFCView->GetSelectionStart (), ledMFCView->GetSelectionEnd ()) {
+                            fOrigSelection (ledMFCView->GetTextStore (), ledMFCView->GetSelectionStart (), ledMFCView->GetSelectionEnd ())
+                        {
                         }
                     public:
                         bool                                    fOurDrag;
@@ -590,7 +593,8 @@ namespace   Stroika {
                             fOldWindowRect (oldWindowRect),
                             fSavedScrollPos (savedScrollPos),
                             fSavedForceAllRowsFlag (savedForceAlLRowsFlag),
-                            fWindowStarts () {
+                            fWindowStarts ()
+                        {
                         }
                         Led_MFC_TabletFromCDC                       fTmpTablet;
                         typename BASECLASS::TemporarilyUseTablet    fOldUpdateTablet;
@@ -662,19 +666,23 @@ namespace   Stroika {
                     virtual ~Led_MFC_COleControlHelper () {}
 
                 public:
-                    nonvirtual  void    Refresh (UpdateMode updateMode = TextInteractor::eDefaultUpdate) const {
+                    nonvirtual  void    Refresh (UpdateMode updateMode = TextInteractor::eDefaultUpdate) const
+                    {
                         const TextInteractor*   ti  =   this;
                         ti->Refresh (updateMode);
                     }
-                    nonvirtual  void    Refresh (const Led_Rect& area, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const {
+                    nonvirtual  void    Refresh (const Led_Rect& area, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const
+                    {
                         const TextInteractor*   ti  =   this;
                         ti->Refresh (area, updateMode);
                     }
-                    nonvirtual  void    Refresh (size_t from, size_t to, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const {
+                    nonvirtual  void    Refresh (size_t from, size_t to, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const
+                    {
                         const TextInteractor*   ti  =   this;
                         ti->Refresh (from, to, updateMode);
                     }
-                    nonvirtual  void    Refresh (const Marker* range, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const {
+                    nonvirtual  void    Refresh (const Marker* range, UpdateMode updateMode = TextInteractor::eDefaultUpdate) const
+                    {
                         const TextInteractor*   ti  =   this;
                         ti->Refresh (range, updateMode);
                     }

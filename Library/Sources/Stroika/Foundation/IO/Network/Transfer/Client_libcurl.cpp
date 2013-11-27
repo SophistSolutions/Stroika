@@ -26,7 +26,8 @@ using   namespace   Stroika::Foundation::IO::Network::Transfer;
 #if     qHasFeature_libcurl
 namespace   {
     struct  ModuleInit_ {
-        ModuleInit_ () {
+        ModuleInit_ ()
+        {
             ::curl_global_init (CURL_GLOBAL_ALL);
         }
     };

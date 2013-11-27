@@ -28,18 +28,22 @@ namespace {
     struct InOutStrmCommon_ {
         InOutStrmCommon_ (const OpenSSLCryptoParams& cryptoParams)
             : fCTX_ ()
-            , fFinalCalled_ (false) {
+            , fFinalCalled_ (false)
+        {
             ::EVP_CIPHER_CTX_init (&fCTX_);
             cryptoParams.fInitializer (&fCTX_);
         }
-        ~InOutStrmCommon_ () {
+        ~InOutStrmCommon_ ()
+        {
             ::EVP_CIPHER_CTX_cleanup (&fCTX_);
         }
-        static  constexpr   size_t _GetMinOutBufSize (size_t n) {
+        static  constexpr   size_t _GetMinOutBufSize (size_t n)
+        {
             return n + EVP_MAX_BLOCK_LENGTH;
         }
         // return nBytes in outBuf, throws on error
-        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd) {
+        size_t _runOnce (const Byte* data2ProcessStart, const Byte* data2ProcessEnd, Byte* outBufStart, Byte* outBufEnd)
+        {
             Require ((outBufEnd - outBufStart) >= _GetMinOutBufSize (data2ProcessEnd - data2ProcessStart));  // always need out buf big enuf for inbuf
             int outLen = 0;
             if(not ::EVP_CipherUpdate (&fCTX_, outBufStart, &outLen, data2ProcessStart, data2ProcessEnd - data2ProcessStart)) {
@@ -53,7 +57,8 @@ namespace {
         }
         // return nBytes in outBuf, throws on error
         // Can call multiple times - it keeps track itself if finalized.
-        size_t _cipherFinal (Byte* outBufStart, Byte* outBufEnd) {
+        size_t _cipherFinal (Byte* outBufStart, Byte* outBufEnd)
+        {
             Require ((outBufEnd - outBufStart) >= _GetMinOutBufSize (0));
             if (fFinalCalled_) {
                 return 0;   // not an error - just zero more bytes
@@ -90,10 +95,12 @@ public:
         , fOutBuf_ (_GetMinOutBufSize (kInBufSize_))
         , fOutBufStart_ (nullptr)
         , fOutBufEnd_ (nullptr)
-        , fRealIn_ (realIn) {
+        , fRealIn_ (realIn)
+    {
     }
 
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    {
         {
             /*
              *  Keep track if unread bytes in fOutBuf_ - bounded by fOutBufStart_ and fOutBufEnd_.
@@ -148,10 +155,12 @@ public:
         : BinaryOutputStream::_IRep ()
         , InOutStrmCommon_ (cryptoParams)
         , fCriticalSection_ ()
-        , fRealOut_ (realOut) {
+        , fRealOut_ (realOut)
+    {
     }
 
-    virtual ~IRep_ () {
+    virtual ~IRep_ ()
+    {
         // no need for critical section because at most one thread can be running DTOR at a time, and no other methods can be running
         try {
             Flush ();
@@ -163,7 +172,8 @@ public:
 
     // pointer must refer to valid memory at least bufSize long, and cannot be nullptr. BufSize must always be >= 1.
     // Writes always succeed fully or throw.
-    virtual void    Write (const Byte* start, const Byte* end) override {
+    virtual void    Write (const Byte* start, const Byte* end) override
+    {
         Require (start < end);  // for BinaryOutputStream - this funciton requires non-empty write
         Memory::SmallStackBuffer < Byte, 1000 + EVP_MAX_BLOCK_LENGTH >  outBuf (_GetMinOutBufSize (end - start));
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
@@ -172,7 +182,8 @@ public:
         fRealOut_.Write (outBuf.begin (), outBuf.begin () + nBytesEncypted);
     }
 
-    virtual void    Flush () override {
+    virtual void    Flush () override
+    {
         Byte    outBuf[EVP_MAX_BLOCK_LENGTH];
         size_t nBytesInOutBuf = _cipherFinal (begin (outBuf), end (outBuf));
         Assert (nBytesInOutBuf < sizeof (outBuf));

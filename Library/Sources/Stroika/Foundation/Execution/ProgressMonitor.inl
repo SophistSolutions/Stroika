@@ -39,7 +39,8 @@ namespace   Stroika {
                     , fCanceled_ (false)
                     , fCurrentProgress_ (0.0)
                     , fCurrentTaskInfo_ ()
-                    , fWorkThread_ () {
+                    , fWorkThread_ ()
+                {
                 }
 
                 mutable mutex                               fCurTaskInfo_CritSect_; // needed because Memory::VariantValue is not threadsafe

@@ -28,7 +28,7 @@ Accessor    Manager::CheckedReadResource (const Name& name) const
         return fRep_->ReadResource (name);
     }
     catch (...) {
-        AssertNotReached();
+        AssertNotReached ();
         return Accessor (nullptr, nullptr);
     }
 }

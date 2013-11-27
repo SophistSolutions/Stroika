@@ -27,14 +27,16 @@ public:
         : fCriticalSection_ ()
         , fStart_ (start)
         , fEnd_ (end)
-        , fCursor_ (start) {
+        , fCursor_ (start)
+    {
     }
 
 public:
     nonvirtual  const IRep_& operator= (const IRep_&) = delete;
 
 protected:
-    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+    virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+    {
         RequireNotNull (intoStart);
         RequireNotNull (intoEnd);
         Require (intoStart < intoEnd);
@@ -48,12 +50,14 @@ protected:
         return nCopied; // this can be zero on EOF
     }
 
-    virtual SeekOffsetType  GetOffset () const override {
+    virtual SeekOffsetType  GetOffset () const override
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);    // This crit section only needed if fetch of fCursor_ is not gauranteed atomic
         return fCursor_ - fStart_;
     }
 
-    virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override {
+    virtual SeekOffsetType            Seek (Whence whence, SignedSeekOffsetType offset) override
+    {
         lock_guard<recursive_mutex>  critSec (fCriticalSection_);
         switch (whence) {
             case    Whence::eFromStart: {

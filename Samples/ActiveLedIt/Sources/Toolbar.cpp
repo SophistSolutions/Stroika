@@ -88,7 +88,8 @@ namespace   {
 namespace {
     // Used as an implemenation detail for CComEnumOnSTL<> invocation
     struct STL_ATL_COPY_VARIANT_IDISPATCH   {
-        static HRESULT copy (VARIANT* p1, const ATL::CComPtr<IDispatch>* p2) {
+        static HRESULT copy (VARIANT* p1, const ATL::CComPtr<IDispatch>* p2)
+        {
             if (p2 != NULL and * p2 != NULL) {
                 p1->vt = VT_DISPATCH;
                 p1->pdispVal = *p2;
@@ -101,10 +102,12 @@ namespace {
                 return E_FAIL;
             }
         }
-        static void init (VARIANT* p) {
+        static void init (VARIANT* p)
+        {
             p->vt = VT_EMPTY;
         }
-        static void destroy (VARIANT* p) {
+        static void destroy (VARIANT* p)
+        {
             ::VariantClear (p);
         }
     };

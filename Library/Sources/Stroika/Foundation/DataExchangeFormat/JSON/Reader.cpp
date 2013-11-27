@@ -420,13 +420,16 @@ class   DataExchangeFormat::JSON::Reader::Rep_ : public DataExchangeFormat::Read
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
-    virtual _SharedPtrIRep  Clone () const override {
+    virtual _SharedPtrIRep  Clone () const override
+    {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
-    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override {
+    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override
+    {
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
-    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override {
+    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override
+    {
         wstring     tmp =   in.ReadAll ().As<wstring> ();
         wstring::const_iterator i = tmp.begin ();
         return Reader_value_ (&i, tmp.end ());

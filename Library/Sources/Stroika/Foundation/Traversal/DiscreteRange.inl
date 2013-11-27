@@ -28,14 +28,17 @@ namespace   Stroika {
                 MyIteratorRep_ ()
                     : fCur (TRAITS::kLowerBound)
                     , fEnd (TRAITS::kLowerBound)
-                    , fAtEnd (true) {
+                    , fAtEnd (true)
+                {
                 }
                 MyIteratorRep_ (T start, T end)
                     : fCur (start)
                     , fEnd (end)
-                    , fAtEnd (false) {
+                    , fAtEnd (false)
+                {
                 }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override {
+                virtual void    More (Memory::Optional<T>* result, bool advance) override
+                {
                     RequireNotNull (result);
                     result->clear ();
                     if (advance) {
@@ -51,12 +54,14 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
-                virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                {
                     RequireNotNull (rhs);
                     AssertNotImplemented ();
                     return false;
                 }
-                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override {
+                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override
+                {
                     shared_ptr<MyIteratorRep_>  tmp = shared_ptr<MyIteratorRep_> (new MyIteratorRep_ (fCur, fEnd));
                     tmp->fAtEnd = fAtEnd;
                     return tmp;
@@ -78,14 +83,17 @@ namespace   Stroika {
                 MyIteratableRep_ ()
                     : fStart (TRAITS::kLowerBound)
                     , fEnd (TRAITS::kLowerBound)
-                    , fForcedEnd (true) {
+                    , fForcedEnd (true)
+                {
                 }
                 MyIteratableRep_ (T start, T end)
                     : fStart (start)
                     , fEnd (end)
-                    , fForcedEnd (false) {
+                    , fForcedEnd (false)
+                {
                 }
-                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const {
+                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const
+                {
                     if (fForcedEnd) {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ());
                     }
@@ -93,7 +101,8 @@ namespace   Stroika {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (fStart, fEnd));
                     }
                 }
-                virtual Iterator<T>         MakeIterator () const {
+                virtual Iterator<T>         MakeIterator () const
+                {
                     if (fForcedEnd) {
                         return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));
                     }
@@ -101,7 +110,8 @@ namespace   Stroika {
                         return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ (fStart, fEnd)));
                     }
                 }
-                virtual size_t              GetLength () const {
+                virtual size_t              GetLength () const
+                {
                     typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
                     if (fForcedEnd) {
                         return static_cast<SignedDifferenceType> (0);
@@ -110,7 +120,8 @@ namespace   Stroika {
                         return 1 + static_cast<SignedDifferenceType> (fEnd) - static_cast<SignedDifferenceType> (fStart);
                     }
                 }
-                virtual bool                IsEmpty () const {
+                virtual bool                IsEmpty () const
+                {
                     if (fForcedEnd) {
                         return true;
                     }
@@ -119,10 +130,12 @@ namespace   Stroika {
                         //return fStart == fEnd;
                     }
                 }
-                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const {
+                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
+                {
                     return this->_Apply (doToElement);
                 }
-                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const {
+                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
+                {
                     return this->_ApplyUntilTrue (doToElement);
                 }
             };

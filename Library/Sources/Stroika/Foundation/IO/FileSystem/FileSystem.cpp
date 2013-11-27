@@ -75,11 +75,13 @@ String IO::FileSystem::FileSystem::ResolveShortcut (const String& path2FileOrSho
     {
         SHFILEINFO   info;
         memset (&info, 0, sizeof (info));
-        if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0) {
+        if (::SHGetFileInfo (path2FileOrShortcut.AsSDKString ().c_str (), 0, &info, sizeof (info), SHGFI_ATTRIBUTES) == 0)
+        {
             return path2FileOrShortcut;
         }
         // not a shortcut?
-        if (!(info.dwAttributes & SFGAO_LINK)) {
+        if (!(info.dwAttributes & SFGAO_LINK))
+        {
             return path2FileOrShortcut;
         }
     }

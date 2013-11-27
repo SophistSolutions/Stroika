@@ -233,7 +233,8 @@ namespace   Stroika {
             public:
                 virtual     void    SetSelection (size_t start, size_t end) override;
 #if     qUsingMemberNameToOverloadInTemplateClassBug
-                void    SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode) {
+                void    SetSelection (size_t start, size_t end, TextInteractor::UpdateMode updateMode)
+                {
                     TextInteractor::SetSelection (start, end, updateMode);
                 }
 #else

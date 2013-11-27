@@ -24,11 +24,13 @@ public:
         : fCurTaskUpdateCritSection_ ()
         , fThreadPool_ (threadPool)
         , fCurTask_ ()
-        , fNextTask_ () {
+        , fNextTask_ ()
+    {
     }
 
 public:
-    ThreadPool::TaskType    GetCurrentTask () const {
+    ThreadPool::TaskType    GetCurrentTask () const
+    {
         lock_guard<recursive_mutex> critSect (fCurTaskUpdateCritSection_);
         // THIS CODE IS TOO SUBTLE - BUT BECAUSE OF HOW THIS IS CALLED - fNextTask_ will NEVER be in the middle of being updated during this code - so this test is OK
         // Caller is never in the middle of doing a WaitForNextTask - and because we have this lock - we aren't updateing fCurTask_ or fNextTask_ either
@@ -37,7 +39,8 @@ public:
     }
 
 public:
-    virtual void    Run () override {
+    virtual void    Run () override
+    {
         // For NOW - allow ThreadAbort to just kill this thread. In the future - we may want to implement some sort of restartability
 
         // Keep grabbing new tasks, and running them

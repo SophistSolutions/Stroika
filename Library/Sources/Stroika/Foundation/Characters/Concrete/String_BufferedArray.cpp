@@ -37,12 +37,15 @@ namespace   {
         typedef Concrete::Private::BufferedStringRep::_Rep  inherited;
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited (start, end) {
+            : inherited (start, end)
+        {
         }
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
-            : inherited (start, end, reserve) {
+            : inherited (start, end, reserve)
+        {
         }
-        virtual shared_ptr<_IRep>   Clone () const override {
+        virtual shared_ptr<_IRep>   Clone () const override
+        {
             return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:

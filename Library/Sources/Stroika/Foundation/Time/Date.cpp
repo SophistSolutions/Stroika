@@ -185,7 +185,8 @@ namespace {
     }
 
     struct BuggyCasesTeReportToMSFT_ {
-        BuggyCasesTeReportToMSFT_ () {
+        BuggyCasesTeReportToMSFT_ ()
+        {
             TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (105, 5, 1, locale::classic ());
         }
     } _force_test_;

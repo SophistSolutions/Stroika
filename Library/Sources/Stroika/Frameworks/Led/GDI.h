@@ -188,29 +188,36 @@ namespace   Stroika {
             class   Led_FontObject {
             public:
                 Led_FontObject ():
-                    m_hObject (nullptr) {
+                    m_hObject (nullptr)
+                {
                 }
-                ~Led_FontObject() {
+                ~Led_FontObject()
+                {
                     (void)DeleteObject ();
                 }
-                nonvirtual  operator HFONT() const {
+                nonvirtual  operator HFONT() const
+                {
                     return m_hObject;
                 }
-                nonvirtual  int GetObject (int nCount, LPVOID lpObject) const {
+                nonvirtual  int GetObject (int nCount, LPVOID lpObject) const
+                {
                     Assert (m_hObject != nullptr);
                     return ::GetObject(m_hObject, nCount, lpObject);
                 }
-                nonvirtual  BOOL DeleteObject () {
+                nonvirtual  BOOL DeleteObject ()
+                {
                     if (m_hObject == nullptr)
                         return FALSE;
                     HFONT   h   =   m_hObject;
                     m_hObject = nullptr;
                     return ::DeleteObject (h);
                 }
-                nonvirtual  BOOL    CreateFontIndirect (const LOGFONT* lpLogFont) {
+                nonvirtual  BOOL    CreateFontIndirect (const LOGFONT* lpLogFont)
+                {
                     return Attach (::CreateFontIndirect(lpLogFont));
                 }
-                nonvirtual  BOOL Attach (HFONT hObject) {
+                nonvirtual  BOOL Attach (HFONT hObject)
+                {
                     Assert (m_hObject == nullptr);      // only attach once, detach on destroy
                     if (hObject == nullptr)
                         return FALSE;
@@ -227,24 +234,29 @@ namespace   Stroika {
             class   Led_Brush {
             public:
                 Led_Brush (COLORREF crColor):
-                    m_hObject (nullptr) {
+                    m_hObject (nullptr)
+                {
                     if (!Attach(::CreateSolidBrush(crColor)))
                         Led_ThrowOutOfMemoryException ();
                 }
-                ~Led_Brush () {
+                ~Led_Brush ()
+                {
                     (void)DeleteObject ();
                 }
-                nonvirtual  operator HBRUSH() const {
+                nonvirtual  operator HBRUSH() const
+                {
                     return m_hObject;
                 }
-                nonvirtual  BOOL Attach (HBRUSH hObject) {
+                nonvirtual  BOOL Attach (HBRUSH hObject)
+                {
                     Assert (m_hObject == nullptr);      // only attach once, detach on destroy
                     if (hObject == nullptr)
                         return FALSE;
                     m_hObject = hObject;
                     return TRUE;
                 }
-                nonvirtual  BOOL DeleteObject () {
+                nonvirtual  BOOL DeleteObject ()
+                {
                     if (m_hObject == nullptr)
                         return FALSE;
                     HBRUSH  h   =   m_hObject;
@@ -277,7 +289,8 @@ namespace   Stroika {
                 template    <typename   OTHER_POINT_BASE_TYPE>
                 explicit Point_Base (OTHER_POINT_BASE_TYPE o):
                     v (COORD_TYPE (o.v)),
-                    h (COORD_TYPE (o.h)) {
+                    h (COORD_TYPE (o.h))
+                {
                 }
 #endif
 
@@ -470,37 +483,45 @@ namespace   Stroika {
 #if     qPlatform_MacOS
                 Led_Region (RgnHandle rgn):
                     fRgn (rgn),
-                    fOwned (false) {
+                    fOwned (false)
+                {
                 }
-                RgnHandle   GetOSRep () const {
+                RgnHandle   GetOSRep () const
+                {
                     return fRgn;
                 }
-                RgnHandle   GetOSRep () {
+                RgnHandle   GetOSRep ()
+                {
                     return fRgn;
                 }
 
             private:
                 bool    fOwned;
 #elif   qPlatform_Windows
-                operator HRGN() const {
+                operator HRGN() const
+                {
                     return fRgn;
                 }
-                int CombineRgn(Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode) {
+                int CombineRgn(Led_Region* pRgn1, Led_Region* pRgn2, int nCombineMode)
+                {
                     Require (pRgn1 != nullptr);
                     Require (pRgn2 != nullptr);
                     Require (fRgn != nullptr);
                     return ::CombineRgn (fRgn, pRgn1->fRgn, pRgn2->fRgn, nCombineMode);
                 }
-                BOOL    PtInRegion (int x, int y) const {
+                BOOL    PtInRegion (int x, int y) const
+                {
                     Require (fRgn != nullptr);
                     return ::PtInRegion (fRgn, x, y);
                 }
-                BOOL PtInRegion(POINT point) const {
+                BOOL PtInRegion(POINT point) const
+                {
                     Require (fRgn != nullptr);
                     return ::PtInRegion (fRgn, point.x, point.y);
                 }
             private:
-                BOOL DeleteObject () {
+                BOOL DeleteObject ()
+                {
                     if (fRgn == nullptr)
                         return FALSE;
                     HRGN    r   =   fRgn;
@@ -615,24 +636,29 @@ namespace   Stroika {
 #if     qPlatform_Windows
             public:
                 Led_Pen (int nPenStyle, int nWidth, COLORREF crColor):
-                    m_hObject (nullptr) {
+                    m_hObject (nullptr)
+                {
                     if (!Attach (::CreatePen (nPenStyle, nWidth, crColor)))
                         Led_ThrowOutOfMemoryException ();
                 }
-                ~Led_Pen () {
+                ~Led_Pen ()
+                {
                     (void)DeleteObject ();
                 }
-                nonvirtual  operator HPEN () const {
+                nonvirtual  operator HPEN () const
+                {
                     return m_hObject;
                 }
-                nonvirtual  BOOL Attach (HPEN hObject) {
+                nonvirtual  BOOL Attach (HPEN hObject)
+                {
                     Assert (m_hObject == nullptr);      // only attach once, detach on destroy
                     if (hObject == nullptr)
                         return FALSE;
                     m_hObject = hObject;
                     return TRUE;
                 }
-                nonvirtual  BOOL DeleteObject () {
+                nonvirtual  BOOL DeleteObject ()
+                {
                     if (m_hObject == nullptr)
                         return FALSE;
                     HPEN    h   =   m_hObject;
@@ -653,7 +679,8 @@ namespace   Stroika {
                 Led_Pen (short penStyle = srcCopy, const Pattern* penPat = &kBlackPattern, const Led_Color& color = Led_Color::kBlack):
                     fPenStyle (penStyle),
                     fPenPat (*penPat),
-                    fPenColor (color) {
+                    fPenColor (color)
+                {
                 }
             public:
                 short       fPenStyle;
@@ -756,21 +783,25 @@ namespace   Stroika {
             public:
                 Led_LineSpacing ():
                     fRule (eSingleSpace),
-                    fArg (0) {
+                    fArg (0)
+                {
                 }
                 Led_LineSpacing (Rule rule):
                     fRule (rule),
-                    fArg (0) {
+                    fArg (0)
+                {
                     Require (rule == eSingleSpace or rule == eOnePointFiveSpace or rule == eDoubleSpace);
                 }
                 Led_LineSpacing (Rule rule, Led_TWIPS twips):
                     fRule (rule),
-                    fArg (twips) {
+                    fArg (twips)
+                {
                     Require (rule == eAtLeastTWIPSSpacing or rule == eExactTWIPSSpacing);
                 }
                 Led_LineSpacing (Rule rule, unsigned lineCount):
                     fRule (rule),
-                    fArg (lineCount) {
+                    fArg (lineCount)
+                {
                     Require (rule == eExactLinesSpacing);
                     switch (lineCount) {
                         case    20:
@@ -1551,14 +1582,16 @@ namespace   Stroika {
             class   Led_WindowDC : public Led_Tablet_ {
             public:
                 Led_WindowDC (HWND hWnd):
-                    m_hWnd (hWnd) {
+                    m_hWnd (hWnd)
+                {
                     Require (m_hWnd == nullptr or ::IsWindow (m_hWnd));
                     if (!Attach (::GetWindowDC (m_hWnd))) {
                         Led_ThrowOutOfMemoryException ();
                     }
                 }
 
-                ~Led_WindowDC () {
+                ~Led_WindowDC ()
+                {
                     AssertNotNull (m_hDC);
                     ::ReleaseDC (m_hWnd, Detach ());
                 }
@@ -3459,7 +3492,8 @@ namespace   Stroika {
 namespace std {
     template<>
     struct less<Stroika::Frameworks::Led::Led_Color> : public binary_function<Stroika::Frameworks::Led::Led_Color, Stroika::Frameworks::Led::Led_Color, bool> {
-        bool operator()(const Stroika::Frameworks::Led::Led_Color& _Left, const Stroika::Frameworks::Led::Led_Color& _Right) const {
+        bool operator()(const Stroika::Frameworks::Led::Led_Color& _Left, const Stroika::Frameworks::Led::Led_Color& _Right) const
+        {
             if (_Left.GetRed () < _Right.GetRed ()) {
                 return true;
             }

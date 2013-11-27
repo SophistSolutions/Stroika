@@ -116,9 +116,11 @@ namespace   {
 namespace   {
     struct  CMD_NAME_GRABBER {
         CMD_NAME_GRABBER (IDispatch* p):
-            fDisp (p) {
+            fDisp (p)
+        {
         }
-        operator wstring () {
+        operator wstring ()
+        {
             CComQIPtr<IALCommand>   c   =   fDisp;
             CComBSTR                name;
             Led_ThrowIfErrorHRESULT (c->get_InternalName (&name));
@@ -129,9 +131,11 @@ namespace   {
 
     struct  ACCEL_NAME_GRABBER {
         ACCEL_NAME_GRABBER (IDispatch* p):
-            fDisp (p) {
+            fDisp (p)
+        {
         }
-        operator wstring () {
+        operator wstring ()
+        {
             CComQIPtr<IALAcceleratorElement>    c   =   fDisp;
             CComBSTR                            name;
             Led_ThrowIfErrorHRESULT (c->get_CommandInternalName (&name));
@@ -146,7 +150,8 @@ namespace   {
 namespace {
     // Used as an implemenation detail for CComEnumOnSTL<> invocation
     struct STL_ATL_COPY_VARIANT_IDISPATCH   {
-        static HRESULT copy (VARIANT* p1, const ATL::CComPtr<IDispatch>* p2) {
+        static HRESULT copy (VARIANT* p1, const ATL::CComPtr<IDispatch>* p2)
+        {
             if (p2 != NULL and * p2 != NULL) {
                 p1->vt = VT_DISPATCH;
                 p1->pdispVal = *p2;
@@ -159,10 +164,12 @@ namespace {
                 return E_FAIL;
             }
         }
-        static void init (VARIANT* p) {
+        static void init (VARIANT* p)
+        {
             p->vt = VT_EMPTY;
         }
-        static void destroy (VARIANT* p) {
+        static void destroy (VARIANT* p)
+        {
             ::VariantClear (p);
         }
     };

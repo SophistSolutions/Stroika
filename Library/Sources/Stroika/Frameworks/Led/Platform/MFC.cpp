@@ -49,10 +49,12 @@ using   namespace   Stroika::Frameworks::Led::Platform;
 #if     qLedAssertsDefaultToMFCAsserts && qDebug
 static  class   OneTimeLedMFCAssertionFunctionSetter {
 public:
-    static  void    MFCAssertionHandler (const char* fileName, int lineNum) {
+    static  void    MFCAssertionHandler (const char* fileName, int lineNum)
+    {
         ::AfxAssertFailedLine (fileName, lineNum);
     }
-    OneTimeLedMFCAssertionFunctionSetter () {
+    OneTimeLedMFCAssertionFunctionSetter ()
+    {
         Led_SetAssertionHandler (MFCAssertionHandler);
     }
 }   sOneTimeLedMFCAssertionFunctionSetter;
@@ -92,7 +94,8 @@ namespace   Stroika {
 static  struct  MFC_MODULE_INIT {
     static  void    DoThrowAfxThrowMemoryException () { AfxThrowMemoryException (); }
     static  void    DoThrowAfxThrowArchiveException () { AfxThrowArchiveException (CArchiveException::badIndex);/* best guess/message/exception I could think of*/ }
-    MFC_MODULE_INIT () {
+    MFC_MODULE_INIT ()
+    {
         Led_Set_OutOfMemoryException_Handler (&DoThrowAfxThrowMemoryException);
         Led_Set_BadFormatDataException_Handler (&DoThrowAfxThrowArchiveException);
     }

@@ -1143,7 +1143,8 @@ namespace   Stroika {
                 typedef TrivialImager<TEXTSTORE, IMAGER> inherited;
             public:
                 TrivialImager_Interactor (Led_Tablet t): inherited (t) {}
-                TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF("")): inherited (t) {
+                TrivialImager_Interactor (Led_Tablet t, Led_Rect bounds, const Led_tString& initialText = LED_TCHAR_OF("")): inherited (t)
+                {
                     // Kooky I cannot just call base class CTOR that does all this - but then it invokes calls to RefreshWindowRect_ etc, before
                     // THIS CTOR is done, so they call pure-virtual version!
                     SnagAttributesFromTablet ();

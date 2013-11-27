@@ -118,7 +118,8 @@ private:
     CTabRulerItem m_pTabItems[MAX_TAB_STOPS];
     CSize m_sizePaper;
     CRect m_rectMargin;
-    int PrintWidth() {
+    int PrintWidth()
+    {
         return m_sizePaper.cx - m_rectMargin.left -
                m_rectMargin.right;
     }

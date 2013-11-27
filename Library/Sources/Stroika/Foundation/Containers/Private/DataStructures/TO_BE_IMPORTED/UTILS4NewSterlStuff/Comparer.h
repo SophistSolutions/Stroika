@@ -15,7 +15,8 @@
 
 template <typename T>
 struct Comparer {
-    static  int Compare (T v1, T v2) {
+    static  int Compare (T v1, T v2)
+    {
         if (v1 == v2) {
             return 0;
         }
@@ -28,7 +29,8 @@ struct Comparer {
  */
 template <typename T>
 struct Comparer<T*> {
-    static  int Compare (T* v1, T* v2) {
+    static  int Compare (T* v1, T* v2)
+    {
         RequireNotNull (v1);
         RequireNotNull (v2);
         return Comparer<T>::Compare (*v1, *v2);
@@ -39,7 +41,8 @@ struct Comparer<T*> {
 template <>
 struct Comparer<short> {
     typedef short   VType;
-    static  int Compare (VType v1, VType v2) {
+    static  int Compare (VType v1, VType v2)
+    {
         return (v1 - v2);
     }
 };
@@ -47,7 +50,8 @@ struct Comparer<short> {
 template <>
 struct Comparer<int> {
     typedef int VType;
-    static  int Compare (VType v1, VType v2) {
+    static  int Compare (VType v1, VType v2)
+    {
         return (v1 - v2);
     }
 };
@@ -56,7 +60,8 @@ struct Comparer<int> {
 template <>
 struct Comparer<long> {
     typedef long    VType;
-    static  VType   Compare (VType v1, VType v2) {
+    static  VType   Compare (VType v1, VType v2)
+    {
         return (v1 - v2);
     }
 };
@@ -67,14 +72,16 @@ struct Comparer<long> {
 // strings
 template <>
 struct Comparer<char*> {
-    static  int Compare (char* v1, char* v2) {
+    static  int Compare (char* v1, char* v2)
+    {
         return (strcmp (v1, v2));
     }
 };
 
 template <>
 struct Comparer<std::string> {
-    static  int Compare (const std::string& v1, const std::string& v2) {
+    static  int Compare (const std::string& v1, const std::string& v2)
+    {
         return v1.compare (v2);
     }
 };

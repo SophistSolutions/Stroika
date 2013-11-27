@@ -65,7 +65,8 @@ class   My_CMDNUM_MAPPING : public
 #endif
 {
 public:
-    My_CMDNUM_MAPPING () {
+    My_CMDNUM_MAPPING ()
+    {
         AddAssociation (kCmdUndo,                       LedItView::kUndo_CmdID);
         AddAssociation (kCmdRedo,                       LedItView::kRedo_CmdID);
         AddAssociation (kCmdSelectAll,                  LedItView::kSelectAll_CmdID);
@@ -212,11 +213,13 @@ public:
     typedef TextInteractor::DialogSupport::CommandNumber    CommandNumber;
 
 public:
-    LedIt_DialogSupport () {
+    LedIt_DialogSupport ()
+    {
         TextInteractor::SetDialogSupport (this);
         WordProcessor::SetDialogSupport (this);
     }
-    ~LedIt_DialogSupport () {
+    ~LedIt_DialogSupport ()
+    {
         WordProcessor::SetDialogSupport (NULL);
         TextInteractor::SetDialogSupport (NULL);
     }
@@ -224,7 +227,8 @@ public:
     //  TextInteractor::DialogSupport
 #if     qSupportStdFindDlg
 public:
-    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override {
+    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_FindDialog  findDialog;
 #elif   qPlatform_Windows
@@ -250,7 +254,8 @@ public:
 #endif
 #if     qSupportStdReplaceDlg
 public:
-    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override {
+    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ReplaceDialog   replaceDialog;
 #elif   qPlatform_Windows
@@ -292,7 +297,8 @@ public:
 #endif
 #if     qSupportStdSpellCheckDlg
 public:
-    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override {
+    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
+    {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
@@ -308,7 +314,8 @@ public:
 
     //  WordProcessor::DialogSupport
 public:
-    virtual    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) override {
+    virtual    FontNameSpecifier   CmdNumToFontName (CommandNumber cmdNum) override
+    {
         Require (cmdNum >= WordProcessor::kFontMenuFirst_CmdID);
         Require (cmdNum <= WordProcessor::kFontMenuLast_CmdID);
 #if     qPlatform_MacOS
@@ -336,7 +343,8 @@ public:
 #endif
     }
 #if     qSupportOtherFontSizeDlg
-    virtual        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) override {
+    virtual        Led_Distance        PickOtherFontHeight (Led_Distance origHeight) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_OtherFontSizeDialog dlg;
 #elif   qPlatform_Windows
@@ -352,7 +360,8 @@ public:
     }
 #endif
 #if     qSupportParagraphSpacingDlg
-    virtual        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override {
+    virtual        bool                PickNewParagraphLineSpacing (Led_TWIPS* spaceBefore, bool* spaceBeforeValid, Led_TWIPS* spaceAfter, bool* spaceAfterValid, Led_LineSpacing* lineSpacing, bool* lineSpacingValid) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphSpacingDialog  dlg;
 #elif   qPlatform_Windows
@@ -381,7 +390,8 @@ public:
     }
 #endif
 #if     qSupportParagraphIndentsDlg
-    virtual        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override {
+    virtual        bool                PickNewParagraphMarginsAndFirstIndent (Led_TWIPS* leftMargin, bool* leftMarginValid, Led_TWIPS* rightMargin, bool* rightMarginValid, Led_TWIPS* firstIndent, bool* firstIndentValid) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_ParagraphIndentsDialog  dlg;
 #elif   qPlatform_Windows
@@ -409,7 +419,8 @@ public:
     }
 #endif
 #if     qXWindows
-    virtual        bool                PickOtherFontColor (Led_Color* color) override {
+    virtual        bool                PickOtherFontColor (Led_Color* color) override
+    {
         StdColorPickBox dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *color);
         dlg.DoModal ();
         if (dlg.GetWasOK ()) {
@@ -420,7 +431,8 @@ public:
     }
 #endif
 #if     qXWindows
-    virtual        bool                ChooseFont (Led_IncrementalFontSpecification* font) override {
+    virtual        bool                ChooseFont (Led_IncrementalFontSpecification* font) override
+    {
         StdFontPickBox  dlg (GTK_WINDOW (LedItApplication::Get ().GetAppWindow ()), *font);
         dlg.DoModal ();
         if (dlg.GetWasOK ()) {
@@ -431,7 +443,8 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    virtual    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override {
+    virtual    void                ShowSimpleEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName) override
+    {
         // unknown embedding...
 #if     qPlatform_MacOS
         Led_StdDialogHelper_UnknownEmbeddingInfoDialog  infoDialog;
@@ -445,7 +458,8 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    virtual        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
+    virtual        bool    ShowURLEmbeddingInfoDialog (const Led_SDK_String& embeddingTypeName, Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_URLXEmbeddingInfoDialog infoDialog;
 #elif   qPlatform_Windows
@@ -469,7 +483,8 @@ public:
     }
 #endif
 #if     qPlatform_MacOS || qPlatform_Windows
-    virtual        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override {
+    virtual        bool    ShowAddURLEmbeddingInfoDialog (Led_SDK_String* urlTitle, Led_SDK_String* urlValue) override
+    {
 #if     qPlatform_MacOS
         Led_StdDialogHelper_AddURLXEmbeddingInfoDialog  infoDialog;
 #elif   qPlatform_Windows
@@ -492,7 +507,8 @@ public:
     }
 #endif
 #if     qSupportAddNewTableDlg
-    bool    AddNewTableDialog (size_t* nRows, size_t* nCols) {
+    bool    AddNewTableDialog (size_t* nRows, size_t* nCols)
+    {
         RequireNotNull (nRows);
         RequireNotNull (nCols);
 #if     qPlatform_MacOS
@@ -513,7 +529,8 @@ public:
     }
 #endif
 #if     qSupportEditTablePropertiesDlg
-    virtual    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override {
+    virtual    bool    EditTablePropertiesDialog (TableSelectionPropertiesInfo* tableProperties) override
+    {
         RequireNotNull (tableProperties);
 
         typedef Led_StdDialogHelper_EditTablePropertiesDialog   DLGTYPE;
@@ -847,7 +864,8 @@ void    LedItView::OnInsertObject ()
 
         dlg.m_io.dwFlags |= IOF_SELECTCREATENEW;
         // Initialize the item from the dialog data.
-        if (!dlg.CreateItem (pItem)) {
+        if (!dlg.CreateItem (pItem))
+        {
             Led_ThrowBadFormatDataException ();
         }
         ASSERT_VALID(pItem);
@@ -863,7 +881,8 @@ void    LedItView::OnInsertObject ()
 
         // If item created from class list (not from file) then launch
         //  the server to edit the item.
-        if (dlg.GetSelectionType () == COleInsertDialog::createNewItem) {
+        if (dlg.GetSelectionType () == COleInsertDialog::createNewItem)
+        {
             pItem->DoVerb (OLEIVERB_SHOW, this);
         }
 

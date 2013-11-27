@@ -220,9 +220,11 @@ public:
 
 public:
     DemoPrefs ():
-        OptionsFileHelper (OpenTheKey ()) {
+        OptionsFileHelper (OpenTheKey ())
+    {
     }
-    HKEY    OpenTheKey () {
+    HKEY    OpenTheKey ()
+    {
         CRegKey softwarePrefs;
         softwarePrefs.Open (HKEY_CURRENT_USER, _T ("Software"));
         if (softwarePrefs == NULL) {
@@ -240,7 +242,8 @@ public:
         }
         return commonPrefsKey.Detach ();
     }
-    static  inline  unsigned    GetDemoDaysLeftHelper (unsigned demoExpiresAt) {
+    static  inline  unsigned    GetDemoDaysLeftHelper (unsigned demoExpiresAt)
+    {
         time_t      curTime     =   time (NULL);
         if (static_cast<time_t> (demoExpiresAt) < curTime) {
             return 0;
@@ -253,7 +256,8 @@ public:
         }
         return dayCount;
     }
-    UINT    GetDemoDaysLeft () {
+    UINT    GetDemoDaysLeft ()
+    {
         int     demoVersion     =   0;
         int     demoExpiresAt   =   0;
         if (LookupPref ("DemoExpiresAt", &demoExpiresAt) and LookupPref ("DemoVersionNumber", &demoVersion)) {

@@ -199,7 +199,8 @@ namespace {
     static  void    WriteCodePageTable (CodePage codePage);
 
     struct  DoRunIt {
-        DoRunIt () {
+        DoRunIt ()
+        {
             //WriteCodePageTable (kCodePage_ANSI);
             //WriteCodePageTable (kCodePage_MAC);
             //WriteCodePageTable (kCodePage_PC);
@@ -309,7 +310,8 @@ namespace {
     }
 
     struct  DoRunIt {
-        DoRunIt () {
+        DoRunIt ()
+        {
             WriteMemoizedIsXXXProc (iswalpha, "iswalpha", "CharacterProperties::IsAlpha_M");
             //WriteMemoizedIsXXXProc (iswalnum, "iswalnum", "CharacterProperties::Ialnum_M");
             //WriteMemoizedIsXXXProc (iswpunct, "iswpunct", "CharacterProperties::IsPunct_M");
@@ -324,7 +326,8 @@ namespace {
 #if     qTestMyISWXXXFunctions
     class   MyIsWXXXTesterFunctions {
     public:
-        MyIsWXXXTesterFunctions () {
+        MyIsWXXXTesterFunctions ()
+        {
             for (wchar_t c = 0; c < 0xffff; ++c) {
                 Assert (CharacterProperties::IsAlpha_M (c) == !!iswalpha (c));
                 Assert (CharacterProperties::IsAlnum_M (c) == !!iswalnum (c));

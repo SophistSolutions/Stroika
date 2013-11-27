@@ -102,7 +102,8 @@ namespace   Stroika {
                  *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                  */
                 static  int Compare (T v1, T v2);
-                static  bool    Equals (T v1, T v2) {
+                static  bool    Equals (T v1, T v2)
+                {
                     return not (v1 < v2 or v2 < v1);
                 }
             };
@@ -120,9 +121,11 @@ namespace   Stroika {
                 std::function<bool(T, T)> fEq;
 
                 ComparerWithEquals_XXX (std::function<bool(T, T)> e)
-                    : fEq (e) {
+                    : fEq (e)
+                {
                 }
-                bool    Equals (T v1, T v2) {
+                bool    Equals (T v1, T v2)
+                {
                     return fEq (v1, v2);
                 }
             };

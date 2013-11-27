@@ -158,7 +158,8 @@ namespace   {
 #endif
         {
         }
-        ~MyXercesMemMgr_ () {
+        ~MyXercesMemMgr_ ()
+        {
         }
 
 
@@ -172,7 +173,8 @@ namespace   {
 
     public:
 #if     qXMLDBTrackAllocs
-        void    DUMPCurMemStats () {
+        void    DUMPCurMemStats ()
+        {
             TraceContextBumper ctx (SDKSTR ("MyXercesMemMgr_::DUMPCurMemStats"));
             lock_guard<recursive_mutex> enterCriticalSection (fLastSnapshot_CritSection);
             fAllocator.DUMPCurMemStats (fLastSnapshot);
@@ -182,10 +184,12 @@ namespace   {
 #endif
 
     public:
-        virtual     MemoryManager* getExceptionMemoryManager () override {
+        virtual     MemoryManager* getExceptionMemoryManager () override
+        {
             return this;
         }
-        virtual     void*   allocate (XMLSize_t size) override {
+        virtual     void*   allocate (XMLSize_t size) override
+        {
             try {
 #if     qXMLDBTrackAllocs
                 return fAllocator.Allocate (size);
@@ -197,7 +201,8 @@ namespace   {
                 Execution::DoThrow (OutOfMemoryException ());   // quirk cuz this is the class Xerces expects and catches internally (why not bad_alloc?) - sigh...
             }
         }
-        virtual     void    deallocate (void* p) override {
+        virtual     void    deallocate (void* p) override
+        {
             if (p != nullptr) {
 #if     qXMLDBTrackAllocs
                 return fAllocator.Deallocate (p);
@@ -243,22 +248,27 @@ public:
         , const XMLCh* const        publicId
         , const XMLFileLoc          lineNum
         , const XMLFileLoc          colNum
-    ) override {
+    ) override
+    {
         Execution::DoThrow (ValidationFailed (xercesString2String_ (errorText), static_cast<unsigned int> (lineNum), static_cast<unsigned int> (colNum), 0));
     }
-    virtual  void resetErrors () override {
+    virtual  void resetErrors () override
+    {
     }
 
     // ErrorHandler
 public:
-    virtual  void warning (const SAXParseException& exc) override {
+    virtual  void warning (const SAXParseException& exc) override
+    {
         // ignore
     }
-    virtual  void error (const SAXParseException& exc) override {
+    virtual  void error (const SAXParseException& exc) override
+    {
         AssertNotImplemented ();
         //Execution::DoThrow (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
-    virtual  void fatalError (const SAXParseException& exc) override {
+    virtual  void fatalError (const SAXParseException& exc) override
+    {
         AssertNotImplemented ();
         //Execution::DoThrow (ValidationFailed (exc.getMessage (), static_cast<unsigned int> (exc.getLineNumber ()), static_cast<unsigned int> (exc.getColumnNumber ()), 0));
     }
@@ -338,13 +348,15 @@ namespace   {
         struct  UsingLibInterHelper_XERCES {
             MyXercesMemMgr_* fUseXercesMemoryManager;
             UsingLibInterHelper_XERCES ():
-                fUseXercesMemoryManager (nullptr) {
+                fUseXercesMemoryManager (nullptr)
+            {
 #if     qUseMyXMLDBMemManager
                 fUseXercesMemoryManager = DEBUG_NEW MyXercesMemMgr_ ();
 #endif
                 XMLPlatformUtils::Initialize (XMLUni::fgXercescDefaultLocale, 0, 0, fUseXercesMemoryManager);
             }
-            ~UsingLibInterHelper_XERCES () {
+            ~UsingLibInterHelper_XERCES ()
+            {
                 TraceContextBumper ctx (SDKSTR ("~UsingLibInterHelper_XERCES"));
                 XMLPlatformUtils::Terminate ();
                 Assert (sStdIStream_InputStream_COUNT_ == 0);
@@ -407,24 +419,29 @@ namespace   {
         class StdIStream_InputStream : public XERCES_CPP_NAMESPACE_QUALIFIER BinInputStream {
         public :
             StdIStream_InputStream (BinaryInputStream in)
-                : fSource (in) {
+                : fSource (in)
+            {
 #if     qDebug
                 sStdIStream_InputStream_COUNT_++;
 #endif
             }
-            ~StdIStream_InputStream () {
+            ~StdIStream_InputStream ()
+            {
 #if     qDebug
                 sStdIStream_InputStream_COUNT_--;
 #endif
             }
         public:
-            virtual  XMLFilePos curPos () const override {
+            virtual  XMLFilePos curPos () const override
+            {
                 return fSource.GetOffset ();
             }
-            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override {
+            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+            {
                 return fSource.Read (toFill, toFill + maxToRead);
             }
-            virtual     const XMLCh* getContentType () const override {
+            virtual     const XMLCh* getContentType () const override
+            {
                 return nullptr;
             }
         protected:
@@ -434,9 +451,11 @@ namespace   {
     public :
         StdIStream_InputSource (BinaryInputStream in, const XMLCh* const bufId = nullptr)
             : InputSource (bufId)
-            , fSource (in) {
+            , fSource (in)
+        {
         }
-        virtual     BinInputStream* makeStream () const override {
+        virtual     BinInputStream* makeStream () const override
+        {
             return new (getMemoryManager ()) StdIStream_InputStream (fSource);
         }
     protected:
@@ -452,7 +471,8 @@ namespace   {
             ISWithProg (const BinaryInputStream& in, ProgressMonitor::Updater progressCallback)
                 : StdIStream_InputStream (in)
                 , fProgress (progressCallback, 0.0f, 1.0f)
-                , fTotalSize (0.0f) {
+                , fTotalSize (0.0f)
+            {
                 // @todo - redo for if non-seekable streams - just set flag saying not seeakble and do right thing with progress. ....
                 /// for now we raise exceptions
                 SeekOffsetType   start   =   in.GetOffset ();
@@ -463,7 +483,8 @@ namespace   {
                 fTotalSize = static_cast<float> (totalSize);
             }
         public :
-            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override {
+            virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
+            {
                 float   curOffset           =   0.0;
                 bool    doProgressBefore    =   (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize > 0.0f and doProgressBefore) {
@@ -490,9 +511,11 @@ namespace   {
     public :
         StdIStream_InputSourceWithProgress (BinaryInputStream in, ProgressMonitor::Updater progressCallback, const XMLCh* const bufId = nullptr):
             StdIStream_InputSource (in, bufId),
-            fProgressCallback (progressCallback) {
+            fProgressCallback (progressCallback)
+        {
         }
-        virtual     BinInputStream* makeStream () const override {
+        virtual     BinInputStream* makeStream () const override
+        {
             return new (getMemoryManager ()) ISWithProg (fSource, fProgressCallback);
         }
     private:
@@ -545,25 +568,29 @@ void    SAXCallbackInterface::CharactersInsideElement (const String& text)
 #if     qHasLibrary_Xerces
 namespace   {
     class SAX2PrintHandlers_
-            : public DefaultHandler {
+        : public DefaultHandler {
     private:
         SAXCallbackInterface&   fCallback;
 
     public:
         SAX2PrintHandlers_ (SAXCallbackInterface& callback)
-            : fCallback (callback) {
+            : fCallback (callback)
+        {
         }
 
     public:
-        virtual     void startDocument () override {
+        virtual     void startDocument () override
+        {
             fCallback.StartDocument ();
         }
-        virtual     void    endDocument () override {
+        virtual     void    endDocument () override
+        {
             fCallback.EndDocument ();
         }
 
     public:
-        virtual     void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override {
+        virtual     void startElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname, const Attributes& attributes) override
+        {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
@@ -575,13 +602,15 @@ namespace   {
             }
             fCallback.StartElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname), attrs);
         }
-        virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override {
+        virtual     void    endElement (const XMLCh* const uri, const XMLCh* const localName, const XMLCh* const qname) override
+        {
             Require (uri != nullptr);
             Require (localName != nullptr);
             Require (qname != nullptr);
             fCallback.EndElement (xercesString2String_ (uri), xercesString2String_ (localName), xercesString2String_ (qname));
         }
-        virtual     void    characters (const XMLCh* const chars, const XMLSize_t length) override {
+        virtual     void    characters (const XMLCh* const chars, const XMLSize_t length) override
+        {
             Require (chars != nullptr);
             Require (length != 0);
             fCallback.CharactersInsideElement (wstring (chars, chars + length));

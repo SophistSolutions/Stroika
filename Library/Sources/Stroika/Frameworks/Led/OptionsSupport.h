@@ -50,7 +50,8 @@ namespace   Stroika {
                 template    <typename T>
                 nonvirtual  T   GetPref (const Led_SDK_Char* prefName, T defaultValue);
                 template    <typename T>
-                nonvirtual  T   GetPref (const Led_SDK_Char* prefName) {
+                nonvirtual  T   GetPref (const Led_SDK_Char* prefName)
+                {
                     T   defValue;
                     return GetPref (prefName, defValue);
                 }

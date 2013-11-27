@@ -38,12 +38,15 @@ namespace   {
         typedef Concrete::Private::BufferedStringRep::_Rep  inherited;
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited (start, end) {
+            : inherited (start, end)
+        {
         }
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
-            : inherited (start, end, reserve) {
+            : inherited (start, end, reserve)
+        {
         }
-        virtual shared_ptr<_IRep>   Clone () const override {
+        virtual shared_ptr<_IRep>   Clone () const override
+        {
             return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
@@ -73,9 +76,11 @@ private:
     typedef Concrete::Private::ReadWriteRep::_Rep   inherited;
 public:
     MyRep_ (wchar_t* start, wchar_t* end)
-        : inherited (start, end) {
+        : inherited (start, end)
+    {
     }
-    virtual shared_ptr<_IRep>   Clone () const override {
+    virtual shared_ptr<_IRep>   Clone () const override
+    {
         /*
          * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
          * one can use it, and the other must make a copy.

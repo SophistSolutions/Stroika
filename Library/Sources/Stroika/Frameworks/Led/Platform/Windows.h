@@ -611,7 +611,8 @@ namespace   Stroika {
                     extern  bool    LedCheckCompilerFlags_(qHookIMEEndCompositionMessageToWorkAroundWin2KIMEForNonUNICODEBug);
 
                     struct  FlagsChecker {
-                        FlagsChecker () {
+                        FlagsChecker ()
+                        {
                             /*
                              *  See the docs on @'qLedCheckCompilerFlagsConsistency' if this ever fails.
                              */
@@ -732,7 +733,8 @@ namespace   Stroika {
                         char        ccc =   nChar;
                         wchar_t     outC    =   0;
                         int xx  =   ::MultiByteToWideChar (useCodePage, 0, &ccc, 1, &outC, 1);
-                        if (xx == 1) {
+                        if (xx == 1)
+                        {
                             nChar = outC;
                         }
                     }
@@ -1971,7 +1973,8 @@ namespace   Stroika {
                     its actually IMPORTANT todo in case the change in text invalidates the fDragAnchor.</p>
                 */
                 inline  void    Led_Win32_Helper<BASE_INTERACTOR>::DidUpdateText_ (const UpdateInfo& updateInfo) noexcept {
-                    if (updateInfo.fTextModified) {
+                    if (updateInfo.fTextModified)
+                    {
                         SetCurClickCount (0, Time::GetTickCount ());
                     }
                     fDragAnchor = min (fDragAnchor, GetEnd ());     // SPR#0637 reported we could sometimes get crash while mousing/typing. This SHOULD prevent fDragAnchor ever

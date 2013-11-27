@@ -251,7 +251,8 @@ namespace   Stroika {
                     };
                 private:
                     struct ControlWordAtomName_less : public binary_function<ControlWordAtomName, ControlWordAtomName, bool> {
-                        bool operator()(const ControlWordAtomName& _Left, const ControlWordAtomName& _Right) const {
+                        bool operator()(const ControlWordAtomName& _Left, const ControlWordAtomName& _Right) const
+                        {
                             return ::strcmp (_Left, _Right) < 0;
                         }
                     };
@@ -261,7 +262,8 @@ namespace   Stroika {
                     typedef pair<string, ControlWordAtom>   StringNControlWordAtom;
                 public:
 #if     qFriendDeclarationsDontWorkWithNestedClassesBug
-                    friend  bool    operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs) {
+                    friend  bool    operator< (const RTFIO::StringNControlWordAtom& lhs, const RTFIO::StringNControlWordAtom& rhs)
+                    {
                         return lhs.first < rhs.first;
                     }
 #else

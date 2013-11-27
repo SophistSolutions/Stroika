@@ -28,7 +28,8 @@ public:
         fStart (0),
         fLength (0),
         fOwner (nullptr),
-        fIsPreRemoved (false) {
+        fIsPreRemoved (false)
+    {
     }
 
 public:
@@ -334,7 +335,8 @@ void    SimpleTextStore::SetMarkerRange (Marker* marker, size_t start, size_t en
     AssertNotNull (marker);
 
     // changing the start may force a re-ordering...
-    if (marker->GetStart () == start) {
+    if (marker->GetStart () == start)
+    {
         OurStuff (marker)->fLength = end - start;
     }
     else {

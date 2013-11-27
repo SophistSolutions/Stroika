@@ -39,7 +39,8 @@ using   Memory::SmallStackBuffer;
 
 class   My_CMDNUM_MAPPING : public MFC_CommandNumberMapping {
 public:
-    My_CMDNUM_MAPPING () {
+    My_CMDNUM_MAPPING ()
+    {
         AddAssociation (ID_EDIT_UNDO,                   LedLineItView::kUndo_CmdID);
         AddAssociation (ID_EDIT_REDO,                   LedLineItView::kRedo_CmdID);
         AddAssociation (ID_EDIT_SELECT_ALL,             LedLineItView::kSelectAll_CmdID);
@@ -62,15 +63,18 @@ My_CMDNUM_MAPPING   sMy_CMDNUM_MAPPING;
 
 struct  LedLineIt_DialogSupport : TextInteractor::DialogSupport {
 public:
-    LedLineIt_DialogSupport () {
+    LedLineIt_DialogSupport ()
+    {
         TextInteractor::SetDialogSupport (this);
     }
-    ~LedLineIt_DialogSupport () {
+    ~LedLineIt_DialogSupport ()
+    {
         TextInteractor::SetDialogSupport (NULL);
     }
 #if     qSupportStdFindDlg
 public:
-    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override {
+    virtual    void    DisplayFindDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative, bool* pressedOK) override
+    {
         Led_StdDialogHelper_FindDialog  findDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         findDialog.fFindText = *findText;
@@ -90,7 +94,8 @@ public:
 #endif
 #if     qSupportStdReplaceDlg
 public:
-    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override {
+    virtual    ReplaceButtonPressed    DisplayReplaceDialog (Led_tString* findText, const vector<Led_tString>& recentFindSuggestions, Led_tString* replaceText, bool* wrapSearch, bool* wholeWordSearch, bool* caseSensative) override
+    {
         Led_StdDialogHelper_ReplaceDialog   replaceDialog (::AfxGetResourceHandle (), ::GetActiveWindow ());
 
         replaceDialog.fFindText = *findText;
@@ -127,7 +132,8 @@ public:
 #endif
 #if     qSupportStdSpellCheckDlg
 public:
-    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override {
+    virtual    void    DisplaySpellCheckDialog (SpellCheckDialogCallback& callback) override
+    {
         Led_StdDialogHelper_SpellCheckDialog::CallbackDelegator<SpellCheckDialogCallback>   delegator (callback);
 #if     qPlatform_MacOS
         Led_StdDialogHelper_SpellCheckDialog    spellCheckDialog (delegator);
@@ -240,14 +246,17 @@ public:
     GotoLineDialog (size_t origLine) :
         CDialog (kGotoLine_DialogID),
         fOrigLine (origLine),
-        fResultLine (0) {
+        fResultLine (0)
+    {
     }
-    virtual    BOOL OnInitDialog () override {
+    virtual    BOOL OnInitDialog () override
+    {
         BOOL    result  =   CDialog::OnInitDialog();
         SetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, fOrigLine);
         return (result);
     }
-    virtual    void    OnOK () override {
+    virtual    void    OnOK () override
+    {
         BOOL    trans   =   false;
         fResultLine = GetDlgItemInt (kGotoLine_Dialog_LineNumberEditFieldID, &trans);
         if (not trans) {
@@ -271,7 +280,8 @@ END_MESSAGE_MAP()
 #if     qSupportGenRandomCombosCommand
 namespace {
     struct  AtStartup {
-        AtStartup () {
+        AtStartup ()
+        {
             ::srand ((unsigned)::time (NULL));
         }
     }   X_AtStartup;

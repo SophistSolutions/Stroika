@@ -111,13 +111,16 @@ namespace   {
 
 namespace {
     struct   AppRep_ : Main::IApplicationRep {
-        AppRep_ () {
+        AppRep_ ()
+        {
         }
-        virtual ~AppRep_ () {
+        virtual ~AppRep_ ()
+        {
         }
 
     public:
-        virtual void  MainLoop (std::function<void()> startedCB) override {
+        virtual void  MainLoop (std::function<void()> startedCB) override
+        {
 
             Execution::Finally cleanup ([this] () {
                 /*
@@ -160,7 +163,8 @@ namespace {
         }
 
     public:
-        virtual Main::ServiceDescription  GetServiceDescription () const override {
+        virtual Main::ServiceDescription  GetServiceDescription () const override
+        {
             Main::ServiceDescription    t;
             t.fPrettyName = L"Test Service";
             t.fRegistrationName = L"Test-Service";

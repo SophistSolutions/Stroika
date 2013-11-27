@@ -37,7 +37,8 @@ public:
     public:
         StatusBar ():
             CStatusBar (),
-            fGotoEdit () {
+            fGotoEdit ()
+        {
         }
     protected:
         afx_msg     void    OnLButtonDown (UINT nFlags, CPoint oPoint);

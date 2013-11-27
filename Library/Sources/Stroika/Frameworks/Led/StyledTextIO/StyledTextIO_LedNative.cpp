@@ -169,12 +169,14 @@ struct  PortableStyleRunData_Version5 {
     uint32_t        fLength;
     char            fFontName[256];     // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
-    static  unsigned char   NameLenFromRecordLen (unsigned char len) {
+    static  unsigned char   NameLenFromRecordLen (unsigned char len)
+    {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version5, fFontName);
         Assert (len > xtra);
         return len - xtra;
     }
-    static  unsigned char   RecordLenFromNameLen (unsigned char len) {
+    static  unsigned char   RecordLenFromNameLen (unsigned char len)
+    {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version5, fFontName);
         return (unsigned char) min (xtra + size_t (len), size_t (256));
     }
@@ -288,12 +290,14 @@ struct  PortableStyleRunData_Version6 {
     uint32_t        fLength;
     char            fFontName[256];     // to file, we really only write as many bytes as needed (no NUL char TERM - infer size from fThisRecordLength)
 
-    static  unsigned char   NameLenFromRecordLen (unsigned char len) {
+    static  unsigned char   NameLenFromRecordLen (unsigned char len)
+    {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version6, fFontName);
         Assert (len > xtra);
         return len - xtra;
     }
-    static  unsigned char   RecordLenFromNameLen (unsigned char len) {
+    static  unsigned char   RecordLenFromNameLen (unsigned char len)
+    {
         size_t  xtra    =   offsetof (PortableStyleRunData_Version6, fFontName);
         return (unsigned char) min (xtra + size_t (len), size_t (256));
     }

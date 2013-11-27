@@ -377,7 +377,8 @@ void    Treap<KEY, VALUE, TRAITS>::Optimize ()
 
     std::function<Node*(int startIndex, int endIndex)>  Balance = [&Balance, &nodeList, &bucketSize, &maxHeight] (int startIndex, int endIndex) -> Node * {
         Require (startIndex <= endIndex);
-        if (startIndex == endIndex) {
+        if (startIndex == endIndex)
+        {
             Node* n = nodeList[startIndex];
             n->fLeft = nullptr;
             n->fRight = nullptr;
@@ -393,7 +394,8 @@ void    Treap<KEY, VALUE, TRAITS>::Optimize ()
         AssertNotNull (n);
 
         size_t  maxPriority = 0;
-        if (curIdx == startIndex) {
+        if (curIdx == startIndex)
+        {
             n->fLeft = nullptr;
         }
         else {
@@ -405,7 +407,8 @@ void    Treap<KEY, VALUE, TRAITS>::Optimize ()
             Assert (n->fLeft->fLeft == nullptr or n->fLeft->fPriority >  n->fLeft->fLeft->fPriority);
             Assert (n->fLeft->fRight == nullptr or n->fLeft->fPriority > n->fLeft->fRight->fPriority);
         }
-        if (curIdx == endIndex) {
+        if (curIdx == endIndex)
+        {
             n->fRight = nullptr;
         }
         else {

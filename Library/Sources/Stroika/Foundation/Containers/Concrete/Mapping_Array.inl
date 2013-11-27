@@ -44,7 +44,8 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
-                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override {
+                    virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override
+                    {
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else

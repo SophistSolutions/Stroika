@@ -796,7 +796,8 @@ namespace   Stroika {
 
             protected:
                 struct  _Rep_Cloner {
-                    inline  static  _SharedPtrIRep   Copy (const _IRep& t) {
+                    inline  static  _SharedPtrIRep   Copy (const _IRep& t)
+                    {
                         return String::_Clone (t);
                     }
                 };

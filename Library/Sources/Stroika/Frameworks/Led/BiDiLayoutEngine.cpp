@@ -183,7 +183,8 @@ namespace {
     }
 
     struct  DoRunIt {
-        DoRunIt () {
+        DoRunIt ()
+        {
             WriteMemoizedUniscribeDirProc (GetInitialUNISCRIBEDir, "GetInitialUNISCRIBEDir", "myGetInitialUNISCRIBEDir");
         }
     }   gRunIt;
@@ -195,7 +196,8 @@ namespace {
 #if     qTestMyWriteMemoizedUniscribeDirFunction
 class   MyIWriteMemoizedUniscribeDirFunction {
 public:
-    MyIWriteMemoizedUniscribeDirFunction () {
+    MyIWriteMemoizedUniscribeDirFunction ()
+    {
         for (wchar_t c = 0; c < 0xffff; ++c) {
             Assert (GetInitialUNISCRIBEDir (c) == myGetInitialUNISCRIBEDir (c));
         }
@@ -218,7 +220,8 @@ namespace {
         UniscribeDLL ():
             fDLL (::LoadLibrary (_T ("Usp10.dll"))),
             fScriptItemize (nullptr),
-            fScriptLayout (nullptr) {
+            fScriptLayout (nullptr)
+        {
             if (fDLL != nullptr) {
                 fScriptItemize = (HRESULT (WINAPI*) (const WCHAR*, int, int, const SCRIPT_CONTROL*, const SCRIPT_STATE*, SCRIPT_ITEM*, int*))
                                  (::GetProcAddress (fDLL, "ScriptItemize"));
@@ -227,24 +230,28 @@ namespace {
             }
         }
 
-        ~UniscribeDLL () {
+        ~UniscribeDLL ()
+        {
             if (fDLL != nullptr) {
                 Verify (::FreeLibrary (fDLL));
             }
         }
 
-        nonvirtual  bool    IsAvail () const {
+        nonvirtual  bool    IsAvail () const
+        {
             return fDLL != nullptr;
         }
 
-        HRESULT WINAPI  ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems) {
+        HRESULT WINAPI  ScriptItemize (const WCHAR* pwcInChars, int cInChars, int cMaxItems, const SCRIPT_CONTROL* psControl, const SCRIPT_STATE* psState, SCRIPT_ITEM* pItems, int* pcItems)
+        {
             if (fScriptItemize == nullptr) {
                 return E_FAIL;
             }
             return (*fScriptItemize) (pwcInChars, cInChars, cMaxItems, psControl, psState, pItems, pcItems);
         }
 
-        HRESULT WINAPI  ScriptLayout (int cRuns, const BYTE* pbLevel, int* piVisualToLogical, int* piLogicalToVisual) {
+        HRESULT WINAPI  ScriptLayout (int cRuns, const BYTE* pbLevel, int* piVisualToLogical, int* piLogicalToVisual)
+        {
             if (fScriptLayout == nullptr) {
                 return E_FAIL;
             }

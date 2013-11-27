@@ -41,12 +41,15 @@ namespace   {
         typedef Concrete::Private::BufferedStringRep::_Rep  inherited;
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
-            : inherited (start, end) {
+            : inherited (start, end)
+        {
         }
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end, size_t reserve)
-            : inherited (start, end, reserve) {
+            : inherited (start, end, reserve)
+        {
         }
-        virtual shared_ptr<_IRep>   Clone () const override {
+        virtual shared_ptr<_IRep>   Clone () const override
+        {
             return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
@@ -63,17 +66,20 @@ private:
     typedef Concrete::Private::ReadOnlyRep::_Rep    inherited;
 public:
     MyRep_ (const wchar_t* start, const wchar_t* end)
-        : inherited (start, end) {
+        : inherited (start, end)
+    {
         Require (start + ::wcslen (start) == end);
     }
-    virtual shared_ptr<_IRep>   Clone () const override {
+    virtual shared_ptr<_IRep>   Clone () const override
+    {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
         return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
-    virtual const wchar_t*  c_str_peek () const  noexcept override {
+    virtual const wchar_t*  c_str_peek () const  noexcept override
+    {
         // This class ALWAYS constructed with String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly and ALWAYS with NUL-terminated string
         Assert (_fStart + ::wcslen (_fStart) == _fEnd);
         return _fStart;

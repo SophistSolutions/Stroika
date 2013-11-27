@@ -51,11 +51,11 @@ typedef enum SplayType {
 
 
 template < typename KEY,
-         typename VALUE,
-         typename TRAITS = TreeTraits::Traits <
-         KeyValue<KEY, VALUE>,
-         TreeTraits::DefaultComp<KEY> >
-         >
+           typename VALUE,
+           typename TRAITS = TreeTraits::Traits <
+               KeyValue<KEY, VALUE>,
+               TreeTraits::DefaultComp<KEY> >
+           >
 class SplayTree {
 public:
     typedef KEY KeyType;

@@ -250,7 +250,8 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                        nonvirtual  bool    More (nullptr_t, bool advance)
+                        {
                             return More (static_cast<T*> (nullptr), advance);
                         }
                     };
@@ -272,7 +273,8 @@ namespace   Stroika {
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
                         nonvirtual  void    More (Memory::Optional<T>* result, bool advance);
-                        nonvirtual  bool    More (nullptr_t, bool advance) {
+                        nonvirtual  bool    More (nullptr_t, bool advance)
+                        {
                             return More (static_cast<T*> (nullptr), advance);
                         }
                     };

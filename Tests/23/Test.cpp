@@ -93,10 +93,12 @@ namespace   {
             SharedContactsConfig_ ()
                 : fEnabled (false)
                 , fLastSynchronizedAt ()
-                , fThisPHRsIDToSharedContactID () {
+                , fThisPHRsIDToSharedContactID ()
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return fEnabled == rhs.fEnabled and
                        fLastSynchronizedAt == rhs.fLastSynchronizedAt and
                        fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID
@@ -167,10 +169,12 @@ namespace   {
                 : fInt1 (0)
                 , fInt2 (0)
                 , fInt3 (0)
-                , fInt4 (0) {
+                , fInt4 (0)
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return
                     fInt1 == rhs.fInt1 and
                     fInt2 == rhs.fInt2 and
@@ -241,10 +245,12 @@ namespace   {
 
             SharedContactsConfig_ ()
                 : fIntRange (-3, 99)
-                , fDiscIntRange2 (4, 19) {
+                , fDiscIntRange2 (4, 19)
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return
                     fIntRange == rhs.fIntRange
                     and fDiscIntRange2 == rhs.fDiscIntRange2
@@ -320,10 +326,12 @@ namespace   {
             Fred fEnum1;
 
             SharedContactsConfig_ ()
-                : fEnum1 (Fred::a) {
+                : fEnum1 (Fred::a)
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return
                     fEnum1 == rhs.fEnum1
                     ;
@@ -388,10 +396,12 @@ namespace   {
                 : fDuration1 (chrono::milliseconds (200))
                 , fDateTime1 ()
                 , fDate1 ()
-                , fTimeOfDay1 () {
+                , fTimeOfDay1 ()
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return
                     fDuration1 == rhs.fDuration1
                     and fDateTime1 == rhs.fDateTime1
@@ -459,10 +469,12 @@ namespace   {
             VariantValue fVV1;
 
             SharedContactsConfig_ ()
-                : fVV1 () {
+                : fVV1 ()
+            {
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 return
                     fVV1 == rhs.fVV1
                     ;
@@ -535,11 +547,13 @@ namespace   {
                 , fMapping1 ()
                 , fSequence1 ()
                 //, fBasicArray1 ()
-                , fSet1_ () {
+                , fSet1_ ()
+            {
                 memset(&fBasicArray1, 0, sizeof (fBasicArray1));
             }
 
-            bool operator== (const SharedContactsConfig_& rhs) const {
+            bool operator== (const SharedContactsConfig_& rhs) const
+            {
                 if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
                     return false;
                 }

@@ -52,9 +52,11 @@ namespace   Stroika {
                     : fFun_ (f)
                     , fCallContext_ (new CURRENT_CONTEXT ())
                     , fCur_ ()
-                    , fAtEnd_ (false) {
+                    , fAtEnd_ (false)
+                {
                 }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override {
+                virtual void    More (Memory::Optional<T>* result, bool advance) override
+                {
                     RequireNotNull (result);
                     result->clear ();
                     if (advance) {
@@ -71,12 +73,14 @@ namespace   Stroika {
                         *result = fCur_;
                     }
                 }
-                virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override {
+                virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                {
                     RequireNotNull (rhs);
                     AssertNotImplemented ();
                     return false;
                 }
-                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override {
+                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override
+                {
                     AssertNotImplemented ();
                     return nullptr;
                 }
@@ -90,15 +94,19 @@ namespace   Stroika {
                 FUN fFun_;
 
                 MyIteratableRep_ (FUN f)
-                    : fFun_ (f) {
+                    : fFun_ (f)
+                {
                 }
-                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const {
+                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const
+                {
                     return typename Iterable<T>::_SharedPtrIRep(new GenItWrapper_<T, CURRENT_CONTEXT> (fFun_));
                 }
-                virtual Iterator<T>         MakeIterator () const {
+                virtual Iterator<T>         MakeIterator () const
+                {
                     return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::GenItWrapper_<T, CURRENT_CONTEXT> (fFun_)));
                 }
-                virtual size_t              GetLength () const {
+                virtual size_t              GetLength () const
+                {
                     typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
                     ///
                     /// not a good idea, but the best we can do is iterate
@@ -108,16 +116,19 @@ namespace   Stroika {
                     }
                     return n;
                 }
-                virtual bool                IsEmpty () const {
+                virtual bool                IsEmpty () const
+                {
                     for (auto i = begin (); i != end (); ++i) {
                         return false;
                     }
                     return true;
                 }
-                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const {
+                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
+                {
                     return this->_Apply (doToElement);
                 }
-                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const {
+                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
+                {
                     return this->_ApplyUntilTrue (doToElement);
                 }
             };

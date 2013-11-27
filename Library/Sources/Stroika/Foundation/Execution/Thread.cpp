@@ -266,12 +266,14 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             bool    doRun   =   false;
             {
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
-                if (incRefCnt->fStatus_ == Status::eNotYetRunning) {
+                if (incRefCnt->fStatus_ == Status::eNotYetRunning)
+                {
                     incRefCnt->fStatus_ = Status::eRunning;
                     doRun = true;
                 }
             }
-            if (doRun) {
+            if (doRun)
+            {
                 incRefCnt->Run_ ();
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
@@ -283,7 +285,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             incRefCnt->fThreadDone_.Set ();
 #endif
         }
-        catch (const ThreadAbortException&) {
+        catch (const ThreadAbortException&)
+        {
 #if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
@@ -297,7 +300,8 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             incRefCnt->fThreadDone_.Set ();
 #endif
         }
-        catch (...) {
+        catch (...)
+        {
 #if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
@@ -312,13 +316,15 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #endif
         }
     }
-    catch (const ThreadAbortException&) {
+    catch (const ThreadAbortException&)
+    {
         DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught ThreadAbortException - see sigsetmask stuff above - somehow still not working");
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
 // TI THINK ISSUE IS
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
-    catch (...) {
+    catch (...)
+    {
         DbgTrace ("SERIOUS ERORR in Thread::Rep_::ThreadMain_ () - uncaught exception");
 
 //SB ASSERT BUT DISABLE SO I CAN DEBUG OTHER STUFF FIRST
@@ -359,7 +365,8 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 #if     qPlatform_POSIX
         {
             lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
-            if (not sHandlerInstalled_) {
+            if (not sHandlerInstalled_)
+            {
                 SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
                 sHandlerInstalled_ = true;
             }

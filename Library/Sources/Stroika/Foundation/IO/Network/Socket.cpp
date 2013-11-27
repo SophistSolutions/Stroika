@@ -84,14 +84,17 @@ namespace   {
             DECLARE_USE_BLOCK_ALLOCATION(Rep_);
         public:
             Rep_ (Socket::PlatformNativeHandle sd)
-                : fSD_ (sd) {
+                : fSD_ (sd)
+            {
             }
-            ~Rep_ () {
+            ~Rep_ ()
+            {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
                     Close ();
                 }
             }
-            virtual void    Close () override {
+            virtual void    Close () override
+            {
                 if (fSD_ != kINVALID_NATIVE_HANDLE_) {
 #if     qPlatform_Windows
                     ::closesocket (fSD_);
@@ -103,7 +106,8 @@ namespace   {
                     fSD_ = kINVALID_NATIVE_HANDLE_;
                 }
             }
-            virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override {
+            virtual size_t  Read (Byte* intoStart, Byte* intoEnd) override
+            {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
                 AssertNotImplemented ();
@@ -115,7 +119,8 @@ namespace   {
                 AssertNotImplemented ();
 #endif
             }
-            virtual void    Write (const Byte* start, const Byte* end) override {
+            virtual void    Write (const Byte* start, const Byte* end) override
+            {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
                 AssertNotImplemented ();
@@ -126,7 +131,8 @@ namespace   {
                 AssertNotImplemented ();
 #endif
             }
-            virtual void  SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override {
+            virtual void  SendTo (const Byte* start, const Byte* end, const SocketAddress& sockAddr) override
+            {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr sa = sockAddr.As<sockaddr> ();
 #if     qPlatform_Windows
@@ -138,7 +144,8 @@ namespace   {
                 AssertNotImplemented ();
 #endif
             }
-            virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override {
+            virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override
+            {
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr    sa;
                 socklen_t   salen   =   sizeof(sa);
@@ -151,10 +158,12 @@ namespace   {
                 AssertNotImplemented ();
 #endif
             }
-            virtual void    Listen (unsigned int backlog) override {
+            virtual void    Listen (unsigned int backlog) override
+            {
                 Execution::Handle_ErrNoResultInteruption ([this, &backlog] () -> int { return ::listen (fSD_, backlog); });
             }
-            virtual Socket  Accept () override {
+            virtual Socket  Accept () override
+            {
                 // HACK - not right.... - Need to find a way to get interupted when abort is called
 #if     qPlatform_POSIX && 0
                 fd_set  fs;
@@ -188,7 +197,8 @@ AGAIN:
                 return Socket::Attach (Execution::ThrowErrNoIfNegative (r));
 #endif
             }
-            virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
+            virtual void    JoinMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+            {
                 ip_mreq m;
                 memset (&m, 0, sizeof (m));
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
@@ -196,7 +206,8 @@ AGAIN:
                 m.imr_interface = onInterface.As<in_addr> ();
                 Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_ADD_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
             }
-            virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override {
+            virtual void    LeaveMulticastGroup (const InternetAddress& iaddr, const InternetAddress& onInterface) override
+            {
                 ip_mreq m;
                 memset (&m, 0, sizeof (m));
                 Assert (iaddr.GetAddressFamily () == InternetAddress::AddressFamily::V4);   // simple change to support IPV6 but NYI
@@ -204,27 +215,32 @@ AGAIN:
                 m.imr_interface = onInterface.As<in_addr> ();
                 Execution::ThrowErrNoIfNegative (::setsockopt (fSD_, IPPROTO_IP, IP_DROP_MEMBERSHIP, reinterpret_cast<const char*> (&m), sizeof (m)));
             }
-            virtual uint8_t     GetMulticastTTL ()  const override {
+            virtual uint8_t     GetMulticastTTL ()  const override
+            {
                 char ttl    =   0;
                 socklen_t size    =   sizeof (ttl);
                 Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &ttl, &size));
                 return ttl;
             }
-            virtual void        SetMulticastTTL (uint8_t ttl)  override {
+            virtual void        SetMulticastTTL (uint8_t ttl)  override
+            {
                 char useTTL =   ttl;
                 Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &useTTL, sizeof (useTTL)));
             }
-            virtual bool        GetMulticastLoopMode ()  const override {
+            virtual bool        GetMulticastLoopMode ()  const override
+            {
                 char loop   =   0;
                 socklen_t size    =   sizeof (loop);
                 Execution::ThrowErrNoIfNegative (::getsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, &size));
                 return !!loop;
             }
-            virtual void        SetMulticastLoopMode (bool loopMode)  override {
+            virtual void        SetMulticastLoopMode (bool loopMode)  override
+            {
                 char loop   =   loopMode;
                 Execution::ThrowErrNoIfNegative (::setsockopt(fSD_, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof (loop)));
             }
-            virtual Socket::PlatformNativeHandle    GetNativeSocket () const override {
+            virtual Socket::PlatformNativeHandle    GetNativeSocket () const override
+            {
                 return fSD_;
             }
         };

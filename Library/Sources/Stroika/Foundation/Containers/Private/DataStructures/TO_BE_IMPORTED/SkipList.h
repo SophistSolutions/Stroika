@@ -50,11 +50,11 @@
 
 
 template < typename KEY,
-         typename VALUE,
-         typename TRAITS = TreeTraits::Traits <
-         KeyValue<KEY, VALUE>,
-         TreeTraits::DefaultComp<KEY> >
-         >
+           typename VALUE,
+           typename TRAITS = TreeTraits::Traits <
+               KeyValue<KEY, VALUE>,
+               TreeTraits::DefaultComp<KEY> >
+           >
 class SkipList {
 public:
     typedef KEY KeyType;

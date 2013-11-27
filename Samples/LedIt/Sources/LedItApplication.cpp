@@ -180,7 +180,8 @@ public:
 public:
     virtual    void    LoadTemplate () override;
 public:
-    virtual    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible) override {
+    virtual    CDocument* OpenDocumentFile (LPCTSTR lpszPathName, BOOL bMakeVisible) override
+    {
         // Based on MFC CSingleDocTemplate::OpenDocumentFile () from MSVC.Net 2k3 (2003-11-29)
         // But changed to cope with exceptions being thrown during OpenDoc (SPR#1572)
         CDocument* pDocument = NULL;
@@ -362,17 +363,20 @@ private:
 #if     qPlatform_Windows
 public:
     MyAboutBox (HINSTANCE hInstance, HWND parentWnd):
-        inherited (hInstance, parentWnd) {
+        inherited (hInstance, parentWnd)
+    {
     }
 #elif   qXWindows
 public:
     MyAboutBox (GtkWindow* modalParentWindow) :
-        inherited (modalParentWindow) {
+        inherited (modalParentWindow)
+    {
     }
 #endif
 
 public:
-    virtual    void    PreDoModalHook () override {
+    virtual    void    PreDoModalHook () override
+    {
         inherited::PreDoModalHook ();
 #if     _UNICODE
 #define kUNICODE_NAME_ADORNER   L" [UNICODE]"
@@ -474,7 +478,8 @@ public:
 
 #endif
     }
-    virtual    void    OnClickInInfoField () override {
+    virtual    void    OnClickInInfoField () override
+    {
         try {
             Led_URLManager::Get ().Open ("mailto:info-led@sophists.com");
         }
@@ -484,7 +489,8 @@ public:
         inherited::OnClickInInfoField ();
     }
 
-    virtual    void    OnClickInLedWebPageField () override {
+    virtual    void    OnClickInLedWebPageField () override
+    {
         try {
             Led_URLManager::Get ().Open (MakeSophistsAppNameVersionURL ("/Led/LedIt/", kAppName));
         }
@@ -506,10 +512,12 @@ public:
     LedItFilePickBox (GtkWindow* modalParentWindow, const Led_SDK_String& title, bool saveDialog, const Led_SDK_String& fileName, FileFormat fileFormat):
         inherited (modalParentWindow, title, saveDialog, fileName),
         fFileFormat (fileFormat),
-        fFileTypeChoice (NULL) {
+        fFileTypeChoice (NULL)
+    {
     }
 protected:
-    virtual    void    PreDoModalHook () override {
+    virtual    void    PreDoModalHook () override
+    {
         inherited::PreDoModalHook ();
 
         {
@@ -576,7 +584,8 @@ protected:
             }
         }
     }
-    virtual    void    OnOK () override {
+    virtual    void    OnOK () override
+    {
         inherited::OnOK ();
         // what a long ugly line of code
         GtkWidget* activeItem = gtk_menu_get_active (GTK_MENU (gtk_option_menu_get_menu (fFileTypeChoice)));
@@ -584,7 +593,8 @@ protected:
         fFileFormat = (FileFormat) (reinterpret_cast<int> (gtk_object_get_user_data (GTK_OBJECT (activeItem))));
     }
 public:
-    nonvirtual  FileFormat  GetFileFormat () const {
+    nonvirtual  FileFormat  GetFileFormat () const
+    {
         return fFileFormat;
     }
 private:
@@ -1372,11 +1382,13 @@ BOOL    LedItApplication::InitInstance ()
             typedef Win32UIFileAssociationRegistrationHelper    inherited;
         public:
             MyRegistrationHelper ():
-                inherited (::AfxGetResourceHandle ()) {
+                inherited (::AfxGetResourceHandle ())
+            {
             }
 
         public:
-            virtual    bool    CheckUserSaysOKToUpdate () const override {
+            virtual    bool    CheckUserSaysOKToUpdate () const override
+            {
                 Options o;
                 if (o.GetCheckFileAssocsAtStartup ()) {
                     Led_StdDialogHelper_UpdateWin32FileAssocsDialog     dlg(::AfxGetResourceHandle (), ::GetActiveWindow ());
@@ -1619,7 +1631,8 @@ void    LedItApplication::HandleBadAllocException () noexcept {
         TArray<LDocument*>&         docList =   LDocument::GetDocumentList ();
         TArrayIterator<LDocument*>  iterator (docList);
         LDocument*  theDoc  =   NULL;
-        while (iterator.Next (theDoc)) {
+        while (iterator.Next (theDoc))
+        {
             AssertMember (theDoc, LedItDocument);
             LedItDocument*  d   =   dynamic_cast<LedItDocument*> (theDoc);
             d->PurgeUnneededMemory ();
@@ -1630,7 +1643,8 @@ void    LedItApplication::HandleBadAllocException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -1646,7 +1660,8 @@ void    LedItApplication::HandleBadUserInputException () noexcept {
         HandleUnknownException ();
 #endif
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -1660,7 +1675,8 @@ void    LedItApplication::HandleUnknownException () noexcept {
         errorDialog.DoModal ();
 #endif
     }
-    catch (...) {
+    catch (...)
+    {
         Led_BeepNotify ();
     }
 }
@@ -1918,7 +1934,7 @@ void    LedItApplication::AppCmdOnInitMenu (GtkMenuItem* menuItem, gpointer call
                 case    kOpenDocumentCmd:
                     gtk_widget_set_sensitive (GTK_WIDGET (m), true);
                     break;
-                    //NO - MUST FIX!!!          case    kSaveDocumentCmd:               THIS->OnSaveDocumentCommand (); break;
+                //NO - MUST FIX!!!          case    kSaveDocumentCmd:               THIS->OnSaveDocumentCommand (); break;
                 case    kSaveAsDocumentCmd:
                     gtk_widget_set_sensitive (GTK_WIDGET (m), true);
                     break;

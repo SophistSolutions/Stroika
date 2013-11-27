@@ -150,13 +150,16 @@ public:
 public:
     Rep_ (const SerializationConfiguration& config)
         : fSerializationConfiguration_ (config)
-        , fDocumentElementName_ (config.GetDocumentElementName ().Value ()) {
+        , fDocumentElementName_ (config.GetDocumentElementName ().Value ())
+    {
     }
 
-    virtual _SharedPtrIRep  Clone () const override {
+    virtual _SharedPtrIRep  Clone () const override
+    {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override {
+    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override
+    {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == Memory::VariantValue::Type::eMap);
             PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
@@ -167,7 +170,8 @@ public:
             PrettyPrint_ (v2, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
         }
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override {
+    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override
+    {
         if (fDocumentElementName_.empty ()) {
             Require (v.GetType () == Memory::VariantValue::Type::eMap);
             PrettyPrint_ (v, out, 0);
@@ -178,10 +182,12 @@ public:
             PrettyPrint_ (v2, out, 0);
         }
     }
-    nonvirtual  SerializationConfiguration GetConfiguration () const {
+    nonvirtual  SerializationConfiguration GetConfiguration () const
+    {
         return fSerializationConfiguration_;
     }
-    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config) {
+    nonvirtual  void    SetConfiguration (const SerializationConfiguration& config)
+    {
         fSerializationConfiguration_ = config;
         fDocumentElementName_ = config.GetDocumentElementName ().Value ();
     }

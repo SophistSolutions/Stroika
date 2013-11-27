@@ -879,7 +879,8 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
         const   size_t  kBigThresh1 =   1024;
         const   size_t  kBigThresh2 =   10 * 1024;
         const   size_t  kBigThresh3 =   20 * 1024;
-        if (bufLen > kBigThresh1) {
+        if (bufLen > kBigThresh1)
+        {
             cacheSize = 3;
             if (bufLen > kBigThresh2) {
                 cacheSize = 10;
@@ -895,7 +896,8 @@ void    PartitioningTextImager::MeasureTextCache::EarlyDidUpdateText (const Upda
      * iterate over all markers in the range updated, and for each one - see if they intersect with
      * any of the cache elements.
      */
-    for (PartitionMarker* pm = fPartition->GetPartitionMarkerContainingPosition (FindPreviousCharacter (updateInfo.fReplaceFrom)); pm != nullptr; pm = pm->GetNext ()) {
+    for (PartitionMarker* pm = fPartition->GetPartitionMarkerContainingPosition (FindPreviousCharacter (updateInfo.fReplaceFrom)); pm != nullptr; pm = pm->GetNext ())
+    {
         if (pm->GetStart () > updateInfo.GetResultingRHS ()) {
             break;
         }

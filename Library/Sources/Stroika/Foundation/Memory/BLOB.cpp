@@ -90,15 +90,18 @@ namespace {
     // @todo - add seekability to this helper!!!
     struct BLOBBINSTREAM_ : BinaryInputStream {
         BLOBBINSTREAM_ (const Memory::BLOB& b)
-            : BinaryInputStream (_SharedIRep (DEBUG_NEW REP (b))) {
+            : BinaryInputStream (_SharedIRep (DEBUG_NEW REP (b)))
+        {
         }
         struct REP : BinaryInputStream::_IRep, public Seekable::_IRep  {
             REP (const Memory::BLOB& b)
                 : fCur (b.begin ())
                 , fStart (b.begin ())
-                , fEnd (b.end ()) {
+                , fEnd (b.end ())
+            {
             }
-            virtual size_t  Read (Byte* intoStart, Byte* intoEnd)  override {
+            virtual size_t  Read (Byte* intoStart, Byte* intoEnd)  override
+            {
                 RequireNotNull (intoStart);
                 RequireNotNull (intoEnd);
                 Require (intoStart < intoEnd);
@@ -109,10 +112,12 @@ namespace {
                 fCur += bytesToRead;
                 return bytesToRead;
             }
-            virtual SeekOffsetType  GetOffset () const override {
+            virtual SeekOffsetType  GetOffset () const override
+            {
                 return fCur - fStart;
             }
-            virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override {
+            virtual SeekOffsetType  Seek (Whence whence, SignedSeekOffsetType offset) override
+            {
                 switch (whence) {
                     case    Whence::eFromStart: {
                             if (offset < 0) {

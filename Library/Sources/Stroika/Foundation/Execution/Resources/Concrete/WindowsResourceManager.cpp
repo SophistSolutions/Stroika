@@ -26,9 +26,11 @@ private:
     HMODULE fModule_;
 public:
     IRep_ (HMODULE hModule)
-        : fModule_ (hModule) {
+        : fModule_ (hModule)
+    {
     }
-    virtual Accessor    ReadResource (const Name& name) const override {
+    virtual Accessor    ReadResource (const Name& name) const override
+    {
         HRSRC   hres    =   ::FindResource (fModule_, name.GetName ().AsSDKString ().c_str (), name.GetType ());
         if (hres != nullptr) {
             HGLOBAL lglbl   =   ::LoadResource (fModule_, hres);

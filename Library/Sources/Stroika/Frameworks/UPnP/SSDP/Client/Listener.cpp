@@ -45,25 +45,30 @@ public:
         : fCritSection_ ()
         , fFoundCallbacks_ ()
         , fSocket_ (Socket::SocketKind::DGRAM)
-        , fThread_ () {
+        , fThread_ ()
+    {
         Socket::BindFlags   bindFlags   =   Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
         fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
-    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds) {
+    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds)
+    {
         lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
     }
-    void    Start () {
+    void    Start ()
+    {
         fThread_ = Execution::Thread ([this] () { DoRun_ (); });
         fThread_.SetThreadName (L"SSDP Listener");
         fThread_.Start ();
     }
-    void    Stop () {
+    void    Stop ()
+    {
         fThread_.AbortAndWaitForDone ();
     }
-    void    DoRun_ () {
+    void    DoRun_ ()
+    {
         // only stopped by thread abort
         while (1) {
             try {
@@ -84,7 +89,8 @@ public:
             }
         }
     }
-    void    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStream in) {
+    void    ParsePacketAndNotifyCallbacks_ (Streams::TextInputStream in)
+    {
         String firstLine    =   in.ReadLine ().Trim ();
 
 #if     USE_TRACE_IN_THIS_MODULE_

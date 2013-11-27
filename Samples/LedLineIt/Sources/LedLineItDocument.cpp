@@ -78,12 +78,14 @@ public:
     FileDialogWithCodePage (bool asOpenDialog, const vector<CodePage>& codePages, CodePage initialCodePage) :
         CFileDialog (asOpenDialog),
         fCodePages (codePages),
-        fCodePage (initialCodePage) {
+        fCodePage (initialCodePage)
+    {
         m_ofn.Flags |= OFN_ENABLETEMPLATE | OFN_EXPLORER;
         m_ofn.lpTemplateName = m_lpszTemplateName = MAKEINTRESOURCE (kFileDialogAddOnID);
     }
 
-    virtual    BOOL OnInitDialog () override {
+    virtual    BOOL OnInitDialog () override
+    {
         inherited::OnInitDialog ();
         fCodePageComboBox.SubclassWindow (::GetDlgItem (GetSafeHwnd (), kFileDialog_EncodingComboBox));
         for (vector<CodePage>::const_iterator i = fCodePages.begin (); i != fCodePages.end (); ++i) {
@@ -98,7 +100,8 @@ public:
     CodePage    fCodePage;
 
 protected:
-    afx_msg void    OnCodePageSelChange () {
+    afx_msg void    OnCodePageSelChange ()
+    {
         int curSel  =   fCodePageComboBox.GetCurSel ();
         if (curSel != CB_ERR) {
             Assert (curSel < static_cast<int> (fCodePages.size ()));
@@ -126,16 +129,19 @@ namespace   {
         LineTooLongOnReadDialog (const Led_SDK_String& message, size_t breakCount) :
             CDialog (kLineTooLongOnRead_DialogID),
             fMessage (message),
-            fBreakCount (breakCount) {
+            fBreakCount (breakCount)
+        {
         }
-        virtual    BOOL OnInitDialog () override {
+        virtual    BOOL OnInitDialog () override
+        {
             BOOL    result  =   CDialog::OnInitDialog();
             Led_CenterWindowInParent (m_hWnd);
             SetDlgItemText (kLineTooLongOnRead_Dialog_MessageFieldID, fMessage.c_str ());
             SetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, fBreakCount);
             return (result);
         }
-        virtual    void    OnOK () override {
+        virtual    void    OnOK () override
+        {
             size_t  origBreakCount  =   fBreakCount;
             BOOL    trans   =   false;
             fBreakCount = GetDlgItemInt (kLineTooLongOnRead_Dialog_BreakNumFieldID, &trans);
@@ -219,7 +225,8 @@ LedLineItDocument::~LedLineItDocument ()
 }
 
 void    LedLineItDocument::DidUpdateText (const UpdateInfo& updateInfo) noexcept {
-    if (updateInfo.fRealContentUpdate) {
+    if (updateInfo.fRealContentUpdate)
+    {
         SetModifiedFlag ();
     }
 }
@@ -351,14 +358,16 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
         MyFlavorPackageInternalizer (TextStore& ts):
             inherited (ts),
             fBreakLongLines (false),
-            fBreakWidths (kMaxLineSize) {
+            fBreakWidths (kMaxLineSize)
+        {
         }
     public:
         virtual    void    InternalizeFlavor_FILEGuessFormatsFromStartOfData (
             Led_ClipFormat* suggestedClipFormat,
             CodePage* suggestedCodePage,
             const Byte* fileStart, const Byte* fileEnd
-        ) override {
+        ) override
+        {
             size_t  curLineSize =   0;
             size_t  maxLineSize =   0;
             for (const Byte* p = fileStart; p != fileEnd; ++p) {
@@ -389,7 +398,8 @@ BOOL    LedLineItDocument::OnOpenDocument (LPCTSTR lpszPathName)
             CodePage* suggestedCodePage,
             size_t from, size_t to,
             const void* rawBytes, size_t nRawBytes
-        ) override {
+        ) override
+        {
             Led_ClipFormat  cf  =   (suggestedClipFormat == NULL or * suggestedClipFormat == kBadClipFormat) ? kTEXTClipFormat : *suggestedClipFormat;
             Require (cf == kTEXTClipFormat);
 

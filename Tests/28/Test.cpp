@@ -37,7 +37,8 @@ namespace   {
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest1_"));
         struct  FRED {
-            static  void    DoIt (void* ignored) {
+            static  void    DoIt (void* ignored)
+            {
                 for (int i = 1; i < 10; i++) {
                     Execution::Sleep (.001);
                 }
@@ -64,7 +65,8 @@ namespace   {
 
         // Make 2 concurrent threads, which share a critical section object to take turns updating a variable
         struct  FRED {
-            static  void    DoIt (void* ignored) {
+            static  void    DoIt (void* ignored)
+            {
                 int*    argP    =   reinterpret_cast<int*> (ignored);
                 for (int i = 0; i < 10; i++) {
                     lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
@@ -101,7 +103,8 @@ namespace   {
             Debug::TraceContextBumper traceCtx (SDKSTR ("pingpong threads with event.wait(NOTIMEOUTS)"));
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     int*    argP    =   reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T1_.Wait ();
@@ -116,7 +119,8 @@ namespace   {
                 }
             };
             struct  FRED2 {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     int*    argP    =   reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T2_.Wait ();
@@ -150,7 +154,8 @@ namespace   {
             Debug::TraceContextBumper traceCtx (SDKSTR ("pingpong threads with event.wait(WITHTIMEOUT)"));
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     int*    argP    =   reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T1_.Wait (5.0);
@@ -165,7 +170,8 @@ namespace   {
                 }
             };
             struct  FRED2 {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     int*    argP    =   reinterpret_cast<int*> (ignored);
                     for (int i = 0; i < 10; i++) {
                         sRegTest3Event_T2_.Wait (5.0);
@@ -214,7 +220,8 @@ namespace   {
             Debug::TraceContextBumper traceCtx (SDKSTR ("Deadlock block on waitable event and abort thread (thread cancelation)"));
             // Make 2 concurrent threads, which share 2 events to synchonize taking turns updating a variable
             struct  FRED1 {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     sRegTest3Event_T1_.Wait (60.0);     // just has to be much more than the waits below
                 }
             };
@@ -295,7 +302,8 @@ namespace   {
         {
             // Make 2 concurrent threads, which update a lockable variable
             struct  FRED {
-                static  void    DoIt (void* ignored) {
+                static  void    DoIt (void* ignored)
+                {
                     Lockable<int>*  argP    =   reinterpret_cast<Lockable<int>*> (ignored);
                     for (int i = 0; i < 10; i++) {
                         lock_guard<recursive_mutex> critSect (*argP);
@@ -324,7 +332,8 @@ namespace   {
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest5_Aborting_"));
         struct  FRED {
-            static  void    DoIt () {
+            static  void    DoIt ()
+            {
                 while (true) {
                     Execution::CheckForThreadAborting ();
                 }
@@ -355,7 +364,8 @@ namespace   {
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest6_ThreadWaiting_"));
         struct  FRED {
-            static  void    DoIt () {
+            static  void    DoIt ()
+            {
                 Execution::Sleep (0.01);
             }
         };
@@ -400,7 +410,8 @@ namespace   {
             ThreadPool  p;
             p.SetPoolSize (1);
             struct  FRED {
-                static  void    DoIt (void* arg) {
+                static  void    DoIt (void* arg)
+                {
                     int*    p   =   reinterpret_cast<int*> (arg);
                     (*p)++;
                 }
@@ -423,7 +434,8 @@ namespace   {
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest8_ThreadPool_"));
         // Make 2 concurrent tasks, which share a critical section object to take turns updating a variable
         struct  FRED {
-            static  void    DoIt (void* ignored) {
+            static  void    DoIt (void* ignored)
+            {
                 int*    argP    =   reinterpret_cast<int*> (ignored);
                 for (int i = 0; i < 10; i++) {
                     lock_guard<recursive_mutex> critSect (sharedCriticalSection_);
@@ -459,10 +471,12 @@ namespace   {
         // I was seeing SOME rare thread bug - trying to abort a thread which was itself trying to create a new thread - and was
         // between the create of thread and Abort
         struct  FRED {
-            static  void    DoItInnerThread () {
+            static  void    DoItInnerThread ()
+            {
                 Execution::Sleep (.01);
             }
-            static  void    DoOuterThread () {
+            static  void    DoOuterThread ()
+            {
                 while (true) {
                     Thread t (DoItInnerThread);
                     Execution::Sleep (.02);
