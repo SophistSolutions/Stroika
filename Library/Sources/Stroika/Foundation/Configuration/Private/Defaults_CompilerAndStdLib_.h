@@ -528,15 +528,15 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
 @DESCRIPTION:
 */
-#if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf)
+#if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ == 8)))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #else
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf       0
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug       0
 #endif
 
 #endif

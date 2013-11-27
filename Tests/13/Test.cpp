@@ -565,7 +565,7 @@ namespace {
 
 namespace {
 
-#if     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+#if     qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
     struct  StructureFieldInfo_ {
         size_t      fOffset;
         type_index  fTypeInfo;
@@ -583,7 +583,7 @@ namespace {
     void    SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ()
     {
         using   Characters::String;
-#if     !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBuf
+#if     !qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug
         struct  StructureFieldInfo_ {
             size_t      fOffset;
             type_index  fTypeInfo;
