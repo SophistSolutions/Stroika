@@ -172,9 +172,23 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Keys () returns an Iterable object with just the key part of the Mapping.
+                 *
                  *  Note this method may not return a collection which is sorted. Note also, the
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
-                 *  maybe smart enough to use lazy copying)
+                 *  maybe smart enough to use lazy copying).
+                 *
+                 *  \em Design Note:
+                 *      The analagous method in C#.net - Dictionary<TKey, TValue>.KeyCollection
+                 *      (http://msdn.microsoft.com/en-us/library/yt2fy5zk(v=vs.110).aspx) returns a live reference
+                 *      to the underlying keys. We could have (fairly easily) done that, but I didn't see the point.
+                 *
+                 *      In .net, the typical model is that you have a pointer to an object, and pass around that
+                 *      pointer (so by reference semantics) - so this returning a live reference makes more sense there.
+                 *
+                 *      Since Stroika containers are logically copy-by-value (even though lazy-copied), it made more
+                 *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
+                 *      keys a logical copy at the point 'keys' is called.
                  */
                 nonvirtual  Iterable<KeyType>   Keys () const;
 
