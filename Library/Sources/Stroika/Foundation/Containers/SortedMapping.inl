@@ -25,27 +25,42 @@ namespace   Stroika {
             {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
-#if 0
-            template    <typename Key, typename T>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
-                : inherited (m)
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
+                : inherited (static_cast<const inherited&> (m))
             {
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename Key, typename T>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m)
+                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (m);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m)
+                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (m);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ())
+            inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const CONTAINER_OF_PAIR_KEY_T& cp)
+                : inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
             {
-                AddAll (cp);
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (cp);
             }
-            template    <typename Key, typename T>
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS> ())
-            {
-                AddAll (start, end);
+            SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+				: inherited (static_cast<const inherited&> (Concrete::SortedMapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()))
+			{
+                AssertMember (&inherited::_GetRep (), _IRep);
+                this->AddAll (start, end);
             }
-#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::SortedMapping (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
