@@ -138,6 +138,10 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  This constructor creates a concrete mapping object, either empty, or initialized with any argument
+                 *  values.
+                 *
+                 *  The underlying data structure of the Mapping is defined by @see Concrete::Mapping_Factory<>
                  */
                 Mapping ();
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
@@ -233,16 +237,6 @@ namespace   Stroika {
                 template    <typename COPY_FROM_ITERATOR_KEYVALUE>
                 nonvirtual  void    AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end);
 
-#if 0
-            public:
-                /**
-                 */
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    AddAll_pair (const CONTAINER_OF_PAIR_KEY_T& items);
-                template    <typename COPY_FROM_ITERATOR_PAIR_KEY_T>
-                nonvirtual  void    AddAll_pair (COPY_FROM_ITERATOR_PAIR_KEY_T start, COPY_FROM_ITERATOR_PAIR_KEY_T end);
-#endif
-
             public:
                 /**
                  *  NOTE- calling Remove(Key) when the key is not found is perfectly legal.
@@ -276,7 +270,7 @@ namespace   Stroika {
                  *  vector<pair<KeyType,ValueType>>, etc...
                  */
                 template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T As() const;
+                nonvirtual  CONTAINER_OF_Key_T As () const;
 
             private:
                 template    <typename CONTAINER_OF_Key_T>
@@ -285,7 +279,7 @@ namespace   Stroika {
                 nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
 
             public:
-                /*
+                /**
                  *  Two Mappings are considered equal if they contain the same elements (keys) and each key is associated
                  *  with the same value. There is no need for the items to appear in the same order for the two Mappings to
                  *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
