@@ -29,6 +29,7 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping ()
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
@@ -54,6 +55,7 @@ namespace   Stroika {
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (cp);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
@@ -61,6 +63,7 @@ namespace   Stroika {
             Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
+                AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
