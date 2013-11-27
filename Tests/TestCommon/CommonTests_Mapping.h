@@ -168,7 +168,7 @@ namespace CommonTests {
                     VerifyTestResult (n.size () == 2);
                     USING_MAPPING_CONTAINER     tmp =   USING_MAPPING_CONTAINER (n);
                     VerifyTestResult (*tmp.Lookup (1) == 88);
-                    map<KeyType, ValueType>      nn  =   tmp.As<map<KeyType, ValueType>> ();
+                    map<KeyType, ValueType>      nn  =   tmp.template As<map<KeyType, ValueType>> ();
                     VerifyTestResult (nn == n);
                 }
             }
