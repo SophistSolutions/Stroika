@@ -48,7 +48,7 @@ namespace   Stroika {
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll_pair (m);
+                AddAll (m);
             }
 #endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
