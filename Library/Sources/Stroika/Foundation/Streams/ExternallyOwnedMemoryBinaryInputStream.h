@@ -25,7 +25,7 @@
  *
  *      @todo   Re-implemnt using atomics to avoid critical section (cheaper).
  *
- *      @todo   qCompilerAndStdLib_Supports_ConstructorDelegation - do like BasicBinaryInputStream constructors
+ *      @todo   USE CONSTRUCTOR DELegation! : like BasicBinaryInputStream constructors
  *              and replace vector<Byte> ctor
  */
 

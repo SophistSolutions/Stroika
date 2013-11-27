@@ -38,8 +38,8 @@
 
 #elif   defined (__GNUC__)
 
-#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 6))
-#pragma message ("Warning: Stroika does not support versions prior to GCC 4.6")
+#if     __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ < 7))
+#pragma message ("Warning: Stroika does not support versions prior to GCC 4.7")
 #endif
 #if     __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ > 8))
 #pragma message ("Info: Stroika untested with this version of GCC")
@@ -151,72 +151,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_StdFindOverloadBug
-@DESCRIPTION:   <p>Strange overloading bug - for reasons that elude me - gcc 4.6.3 doesnt find an obvious std::find() use, but if I say find() it works fine???</p>
-*/
-#if     !defined (qCompilerAndStdLib_StdFindOverloadBug)
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_StdFindOverloadBug       ( __GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6)))
-#else
-#define qCompilerAndStdLib_StdFindOverloadBug       0
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_stdatomic_load_exchange
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_stdatomic_load_exchange
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_stdatomic_load_exchange   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_stdatomic_load_exchange   1
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_ConstructorDelegation
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_ConstructorDelegation
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_ConstructorDelegation   1
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_final
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_final
-
-#if     defined (__GNUC__)  && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_final   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_final   1
-#endif
-
-#endif
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
 @DESCRIPTION:   See also qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
 */
@@ -227,24 +161,6 @@
 #define qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry  (_MSC_VER != _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry   1
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
-
-#if     defined (__GNUC__)  && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename   1
 #endif
 
 #endif
@@ -479,22 +395,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
-@DESCRIPTION:
-*/
-#ifndef qCompilerAndStdLib_Supports_TypeTraits_underlying_type
-#if     !defined (__clang__) && defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_TypeTraits_underlying_type     1
-#endif
-#endif
-
-
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
 @DESCRIPTION:
 */
@@ -506,23 +406,6 @@
 #define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     1
-#endif
-
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
-*/
-#ifndef qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
-
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates    1
 #endif
 
 #endif
@@ -634,38 +517,6 @@
 #define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
 #else
 #define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS       1
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_override
-@DESCRIPTION:   <p>Controls whether or not the compiler the override function annotion (added in C++11).</p>
-*/
-#if     !defined (qCompilerAndStdLib_Supports_override)
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_override     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_override    1
-#endif
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
-@DESCRIPTION:   GCC 4.6 issues misleading warnings (errors without -fpermissive) without this
-*/
-#ifndef qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
-#if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 7)))
-#else
-#define qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue     1
 #endif
 #endif
 
@@ -959,26 +810,6 @@
 #if     !qCompilerAndStdLib_Supports_constexpr
 // This works as an adequate workaround pretty often
 #define constexpr   const
-#endif
-
-
-
-
-
-// If override is not supported, just stubbing it out but leaving it there for
-// compilers that do support it, and/or documentation purposes
-#if     !qCompilerAndStdLib_Supports_override
-#define override
-#endif
-
-
-
-
-
-// If final is not supported, just stubbing it out but leaving it there for
-// compilers that do support it, and/or documentation purposes
-#if     !qCompilerAndStdLib_Supports_final
-#define final
 #endif
 
 

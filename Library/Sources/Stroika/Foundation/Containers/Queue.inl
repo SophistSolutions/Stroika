@@ -124,12 +124,7 @@ namespace   Stroika {
             inline void Queue<T, TRAITS>::AddAllToTail (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-#if     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
                     _GetRep ().AddTail (&*i, (&*i) + 1);
-#else
-                    T   tmp =   *i;
-                    _GetRep ().AddTail (&tmp, &tmp + 1);
-#endif
                 }
             }
             template    <typename T, typename TRAITS>

@@ -29,18 +29,6 @@ using   Concrete::Bag_LinkedList;
 using   Concrete::Bag_stdforward_list;
 
 
-#if     !qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
-namespace CommonTests {
-    namespace BagTests {
-        namespace   Test5_Apply_ {
-            size_t   count;
-            int      hack_sum;
-        }
-    }
-}
-#endif
-
-
 namespace {
     template    <typename CONCRETE_CONTAINER>
     void     RunTests_ ()

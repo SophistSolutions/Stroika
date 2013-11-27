@@ -441,11 +441,6 @@ namespace CommonTests {
 
         namespace   Test5_Apply_ {
 
-#if     !qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
-            extern size_t   count;
-            extern int      hack_sum;
-#endif
-
             template <typename USING_BAG_CONTAINER, typename TEST_FUNCTION>
             void    DoIt_ (TEST_FUNCTION applyToContainer)
             {
@@ -462,38 +457,22 @@ namespace CommonTests {
                 }
 
                 {
-#if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
                     static size_t   count;
                     static T        sum =   0;
-#else
-                    hack_sum = 0;
-#endif
                     count = 0;
 #if     qCompilerAndStdLib_lamba_closureCvtToFunctionPtrSupported
                     b.ApplyStatic ([] (const T & i) {
                         count++;
-#if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
                         sum = sum + i;
-#else
-                        hack_sum = hack_sum + static_cast<int> (i);
-#endif
                     });
 #else
                     b.Apply ([] (const T & i) {
                         count++;
-#if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
                         sum = sum + i;
-#else
-                        hack_sum = hack_sum + static_cast<int> (i);
-#endif
                     });
 #endif
                     VerifyTestResult (count == LAST - FIRST);
-#if     qCompilerAndStdLib_Supports_StaticVariablesInFunctionTemplates
                     VerifyTestResult (EqualsCompareFunctionType::Equals (sum, T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
-#else
-                    VerifyTestResult (EqualsCompareFunctionType::Equals (T (hack_sum), T (((FIRST + (LAST - 1))) * (LAST - FIRST) / 2)));
-#endif
                     applyToContainer (b);
                 }
             }

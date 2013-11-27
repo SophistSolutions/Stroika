@@ -258,17 +258,11 @@ namespace   Stroika {
                  *  the data, and this is simple and efficient.
                  */
                 Require (std::is_enum<ENUM_TYPE>::value);
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 typedef typename std::underlying_type<ENUM_TYPE>::type SerializeAsType;
-#else
-                typedef long long SerializeAsType;
-#endif
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     const ENUM_TYPE*  actualMember    =   reinterpret_cast<const ENUM_TYPE*> (fromObjOfTypeT);
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
-#endif
                     Assert (static_cast<ENUM_TYPE> (static_cast<SerializeAsType> (*actualMember)) == *actualMember);    // no round-trip loss
                     return VariantValue (static_cast<SerializeAsType> (*actualMember));
                 };
@@ -276,9 +270,7 @@ namespace   Stroika {
                     RequireNotNull (intoObjOfTypeT);
                     ENUM_TYPE*  actualInto  =   reinterpret_cast<ENUM_TYPE*> (intoObjOfTypeT);
                     * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
-#endif
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
 #if     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND))

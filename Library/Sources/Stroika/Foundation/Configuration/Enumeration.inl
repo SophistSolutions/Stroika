@@ -35,18 +35,10 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ENUM>
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             inline  typename underlying_type<ENUM>::type    ToInt (ENUM e)
-#else
-            inline  int    ToInt (ENUM e)
-#endif
             {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 return static_cast<typename underlying_type<ENUM>::type> (e);
-#else
-                return static_cast<int> (e);
-#endif
             }
 
 
@@ -56,11 +48,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ENUM>
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             inline   ENUM   ToEnum (typename underlying_type<ENUM>::type e)
-#else
-            inline   ENUM   ToEnum (int e)
-#endif
             {
                 Require (ENUM::eSTART <= static_cast<ENUM> (e) and static_cast<ENUM> (e) <= ENUM::eEND);
                 return static_cast<ENUM> (e);
@@ -73,18 +61,10 @@ namespace   Stroika {
              ********************************************************************************
              */
             template    <typename   ENUM>
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
             inline  typename make_unsigned<typename underlying_type<ENUM>::type>::type    OffsetFromStart (ENUM e)
-#else
-            inline  unsigned int    OffsetFromStart (ENUM e)
-#endif
             {
                 Require (ENUM::eSTART <= e and e <= ENUM::eEND);
-#if     qCompilerAndStdLib_Supports_TypeTraits_underlying_type
                 return static_cast<typename make_unsigned<typename underlying_type<ENUM>::type>::type> (ToInt (e) - ToInt (ENUM::eSTART));
-#else
-                return static_cast<unsigned int> (ToInt (e) - ToInt (ENUM::eSTART));
-#endif
             }
 
 

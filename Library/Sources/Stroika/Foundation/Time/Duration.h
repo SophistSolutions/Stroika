@@ -202,17 +202,12 @@ namespace   Stroika {
                 nonvirtual  bool operator!= (const Duration& rhs) const;
 
             private:
-#if     !qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
-            public:
-#endif
                 typedef double  InternalNumericFormatType_;
                 static  InternalNumericFormatType_  ParseTime_ (const string& s);
                 static  string                      UnParseTime_ (InternalNumericFormatType_ t);
 
-#if     qCompilerAndStdLib_Supports_friendOfTemplateArgumentTypename
             private:
                 friend  Stroika::Foundation::Time::Private_::Duration_ModuleData_;
-#endif
 
             private:
                 string  fDurationRep_;

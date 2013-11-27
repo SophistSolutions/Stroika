@@ -189,12 +189,7 @@ namespace   Stroika {
             inline void Sequence<T, TRAITS>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-#if     qCompilerAndStdLib_Supports_DereferenceIteratorOrPtrStillLValue
                     _GetRep ().Insert (kBadSequenceIndex, &*i, (&*i) + 1);
-#else
-                    T   tmp =   *i;
-                    _GetRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
-#endif
                 }
             }
             template    <typename T, typename TRAITS>
