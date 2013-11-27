@@ -125,7 +125,7 @@ namespace CommonTests {
 
                 VerifyTestResult (s2 == s1.Union (s2));
                 VerifyTestResult (s2 == s1 + s2);
-#if      qCompilerAndStdLib_Supports_initializer_lists
+#if      qCompilerAndStdLib_Supports_initializer_lists && !qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
                 VerifyTestResult (s1 == USING_SET_CONTAINER ({1, 2}));
                 VerifyTestResult (s2 == USING_SET_CONTAINER ({1, 2}));
 #endif
@@ -133,19 +133,19 @@ namespace CommonTests {
                 VerifyTestResult (s1.Difference (s2).empty ());
                 VerifyTestResult ((s1 - s2).empty ());
                 s2.Add (3);
-#if      qCompilerAndStdLib_Supports_initializer_lists
+#if      qCompilerAndStdLib_Supports_initializer_lists && !qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
                 VerifyTestResult (s1 == USING_SET_CONTAINER ({1, 2}));
                 VerifyTestResult (s2 == USING_SET_CONTAINER ({1, 2, 3}));
 #endif
                 VerifyTestResult ((s1 - s2).empty ());
                 VerifyTestResult ((s2 - s1).length () == 1);
-#if      qCompilerAndStdLib_Supports_initializer_lists
+#if      qCompilerAndStdLib_Supports_initializer_lists && !qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
                 VerifyTestResult ((s1 - s2) == USING_SET_CONTAINER ({}));
                 VerifyTestResult ((s2 - s1) == USING_SET_CONTAINER ({3}));
 #endif
 
                 Verify (s1.Intersects (s2));
-#if      qCompilerAndStdLib_Supports_initializer_lists
+#if      qCompilerAndStdLib_Supports_initializer_lists && !qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
                 VerifyTestResult (s1.Intersection (s2) == USING_SET_CONTAINER ({1, 2}));
 #endif
                 Verify (s1.Intersection (s2).length () == 2);

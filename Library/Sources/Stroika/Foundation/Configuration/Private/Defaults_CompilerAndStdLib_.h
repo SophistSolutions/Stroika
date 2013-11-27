@@ -568,9 +568,23 @@
 //
 // Worse in VC.net 2k13 released (or maybe better) - generates internal compiler error. Anyhow - leave disabled
 //
-#define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_Supports_initializer_lists   (_MSC_VER >= _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_Supports_initializer_lists   1
+#endif
+#endif
+
+
+
+
+
+#ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
+#if     defined (_MSC_VER)
+// @todo - investigate this better
+//
+#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
 #endif
 #endif
 
