@@ -40,7 +40,7 @@ namespace   Stroika {
 
             public:
                 KeyValuePair ();
-                KeyValuePair (const typename pair<KeyType, ValueType>& value);
+                KeyValuePair (const pair<KeyType, ValueType>& value);
                 KeyValuePair (const KeyType& key, const ValueType& value);
 
             public:
@@ -51,14 +51,14 @@ namespace   Stroika {
                 /**
                  * @brief   Return true iff this object (both the key and value) are operator== to the rhs value.
                  */
-                nonvirtual  bool    Equals (const typename KeyValuePair<KeyType, ValueType>& rhs) const;
+                nonvirtual  bool    Equals (const KeyValuePair<KeyType, ValueType>& rhs) const;
 
             public:
                 /**
                  *  Basic operator overloads with the obivous meaning, and simply indirect to @Equals (const typename KeyValuePair<KeyType,ValueType>& rhs)
                  */
-                nonvirtual  bool operator== (const typename KeyValuePair<KeyType, ValueType>& rhs) const;
-                nonvirtual  bool operator!= (const typename KeyValuePair<KeyType, ValueType>& rhs) const;
+                nonvirtual  bool operator== (const KeyValuePair<KeyType, ValueType>& rhs) const;
+                nonvirtual  bool operator!= (const KeyValuePair<KeyType, ValueType>& rhs) const;
             };
 
 

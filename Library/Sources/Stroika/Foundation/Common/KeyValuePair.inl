@@ -29,7 +29,7 @@ namespace   Stroika {
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const typename pair<KeyType, ValueType>& value)
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KeyType, ValueType>& value)
                 : fKey (value.first)
                 , fValue (value.second)
             {
@@ -41,17 +41,17 @@ namespace   Stroika {
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::Equals (const typename KeyValuePair<KeyType, ValueType>& rhs) const
+            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::Equals (const KeyValuePair<KeyType, ValueType>& rhs) const
             {
                 return fKey == rhs.fKey and fValue == rhs.fValue;
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const typename KeyValuePair<KeyType, ValueType>& rhs) const
+            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator== (const KeyValuePair<KeyType, ValueType>& rhs) const
             {
                 return Equals (rhs);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator!= (const typename KeyValuePair<KeyType, ValueType>& rhs) const
+            inline  bool    KeyValuePair<KEY_TYPE, VALUE_TYPE>::operator!= (const KeyValuePair<KeyType, ValueType>& rhs) const
             {
                 return not Equals (rhs);
             }
