@@ -30,16 +30,6 @@ namespace   Stroika {
                 template    <typename T, typename FROMCONTAINER>
                 set<T>& operator-= (set<T>& lhs, const FROMCONTAINER& rhs);
 
-                template    <typename T>
-                set<T>  mkS ();
-                template    <typename T>
-                set<T>  mkS (const T& t1);
-                template    <typename T>
-                set<T>  mkS (const T& t1, const T& t2);
-                template    <typename T>
-                set<T>  mkS (const T& t1, const T& t2, const T& t3);
-                template    <typename T>
-                set<T>  mkS (const T& t1, const T& t2, const T& t3, const T& t4);
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  mkSfromC (const FROMCONTAINER& rhs);
 

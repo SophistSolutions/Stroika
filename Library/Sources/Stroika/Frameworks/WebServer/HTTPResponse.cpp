@@ -32,10 +32,10 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 
 namespace   {
-    const   set<String> kDisallowedOtherHeaders_    =   Containers::STL::mkS<String> (
-                IO::Network::HTTP::HeaderName::kContentLength,
-                IO::Network::HTTP::HeaderName::kContentType
-            );
+    const   set<String> kDisallowedOtherHeaders_    =   set<String> ({
+        IO::Network::HTTP::HeaderName::kContentLength,
+        IO::Network::HTTP::HeaderName::kContentType
+    });
 }
 
 

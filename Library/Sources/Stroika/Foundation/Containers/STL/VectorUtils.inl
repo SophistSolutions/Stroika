@@ -14,61 +14,6 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
-                template    <typename T>
-                inline  vector<T>   mkV ()
-                {
-                    vector<T>   v;
-                    return v;
-                }
-                template    <typename T>
-                inline  vector<T>   mkV (const T& t1)
-                {
-                    vector<T>   v;
-                    v.push_back (t1);
-                    return v;
-                }
-                template    <typename T>
-                inline  vector<T>   mkV (const T& t1, const T& t2)
-                {
-                    vector<T>   v;
-                    v.reserve (2);
-                    v.push_back (t1);
-                    v.push_back (t2);
-                    return v;
-                }
-                template    <typename T>
-                inline  vector<T>   mkV (const T& t1, const T& t2, const T& t3)
-                {
-                    vector<T>   v;
-                    v.reserve (3);
-                    v.push_back (t1);
-                    v.push_back (t2);
-                    v.push_back (t3);
-                    return v;
-                }
-                template    <typename T>
-                inline  vector<T>   mkV (const T& t1, const T& t2, const T& t3, const T& t4)
-                {
-                    vector<T>   v;
-                    v.reserve (4);
-                    v.push_back (t1);
-                    v.push_back (t2);
-                    v.push_back (t3);
-                    v.push_back (t4);
-                    return v;
-                }
-                template    <typename T>
-                inline  vector<T>   mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5)
-                {
-                    vector<T>   v;
-                    v.reserve (5);
-                    v.push_back (t1);
-                    v.push_back (t2);
-                    v.push_back (t3);
-                    v.push_back (t4);
-                    v.push_back (t5);
-                    return v;
-                }
 
                 template    <typename T, typename ContainerOfT>
                 vector<T>   mkVC (const ContainerOfT& ts)
@@ -130,6 +75,7 @@ namespace   Stroika {
                     }
                     return result;
                 }
+
 
             }
         }

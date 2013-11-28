@@ -21,18 +21,6 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
-                template    <typename T>
-                vector<T>   mkV ();
-                template    <typename T>
-                vector<T>   mkV (const T& t1);
-                template    <typename T>
-                vector<T>   mkV (const T& t1, const T& t2);
-                template    <typename T>
-                vector<T>   mkV (const T& t1, const T& t2, const T& t3);
-                template    <typename T>
-                vector<T>   mkV (const T& t1, const T& t2, const T& t3, const T& t4);
-                template    <typename T>
-                vector<T>   mkV (const T& t1, const T& t2, const T& t3, const T& t4, const T& t5);
 
                 template    <typename T, typename ContainerOfT>
                 vector<T>   mkVC (const ContainerOfT& ts);
@@ -52,6 +40,7 @@ namespace   Stroika {
 
                 template    <typename T>
                 vector<T>   Intersection (const vector<T>& s1, const vector<T>& s2);
+
 
             }
         }

@@ -726,7 +726,7 @@ void    Thread::WaitForDoneWhilePumpingMessages (Time::DurationSecondsType timeo
         if (time2Wait <= 0) {
             DoThrow (WaitTimedOutException ());
         }
-        Platform::Windows::WaitAndPumpMessages (nullptr, Containers::STL::mkV<HANDLE> (thread), time2Wait);
+        Platform::Windows::WaitAndPumpMessages (nullptr, { thread }, time2Wait);
     }
 }
 #endif

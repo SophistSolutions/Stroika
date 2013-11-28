@@ -14,6 +14,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
+
                 template    <typename T>
                 set<T>  Difference (const set<T>& lhs, const set<T>& rhs)
                 {
@@ -64,46 +65,6 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
-                inline  set<T>  mkS ()
-                {
-                    set<T>  v;
-                    return v;
-                }
-                template    <typename T>
-                inline  set<T>  mkS (const T& t1)
-                {
-                    set<T>  s;
-                    s.insert (t1);
-                    return s;
-                }
-                template    <typename T>
-                inline  set<T>  mkS (const T& t1, const T& t2)
-                {
-                    set<T>  s;
-                    s.insert (t1);
-                    s.insert (t2);
-                    return s;
-                }
-                template    <typename T>
-                inline  set<T>  mkS (const T& t1, const T& t2, const T& t3)
-                {
-                    set<T>  s;
-                    s.insert (t1);
-                    s.insert (t2);
-                    s.insert (t3);
-                    return s;
-                }
-                template    <typename T>
-                inline  set<T>  mkS (const T& t1, const T& t2, const T& t3, const T& t4)
-                {
-                    set<T>  s;
-                    s.insert (t1);
-                    s.insert (t2);
-                    s.insert (t3);
-                    s.insert (t4);
-                    return s;
-                }
                 template    <typename T, typename FROMCONTAINER>
                 inline  set<T>  mkSfromC (const FROMCONTAINER& rhs)
                 {
