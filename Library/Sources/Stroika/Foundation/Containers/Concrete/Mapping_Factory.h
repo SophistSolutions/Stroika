@@ -18,6 +18,8 @@
  *              mkMapping_Smallest, mkMappingWithHash_Fastest etc...
  *              Possibly extend to policy objects, and have properties for this stuff?
  *
+ *      @todo   Rethink use of TRAITS as argument to factory. Probably can only do the SFINAE stuff
+ *              when TRAITS EQUALS the default.
  */
 
 
