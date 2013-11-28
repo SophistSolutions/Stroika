@@ -21,6 +21,7 @@
 #endif
 
 #include    "../../Characters/Format.h"
+#include    "../../Containers/Set.h"
 #include    "../../Execution/ErrNoException.h"
 #include    "../../Execution/Exceptions.h"
 #if     qPlatform_Windows
@@ -498,7 +499,7 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
         return vector<String> ();
     }
 
-    set<String>    resultSet;
+    Containers::Set<String>    resultSet;
 #if     qPlatform_Windows
     String usePath =   AssureDirectoryPathSlashTerminated (path);
     WIN32_FIND_DATA fd;
@@ -512,8 +513,7 @@ vector<String> FileSystem::FindFilesOneDirUnder (const String& path, const Strin
                 const   String kDOT    =   L".";
                 const   String kDOTDOT =   L"..";
                 if ((fileName != kDOT) and (fileName != kDOTDOT)) {
-                    vector<String> subdirFiles =   FindFiles (usePath + fileName, fileNameToMatch);
-                    resultSet = resultSet + set<String> (subdirFiles.begin (), subdirFiles.end ());
+                    resultSet += Containers::Set<String> (FindFiles (usePath + fileName, fileNameToMatch));
                 }
             }
         }
