@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include	<utility>
+#include    <utility>
 
 #include    "../Configuration/Common.h"
 
@@ -14,6 +14,11 @@
 
 /**
  * TODO:
+ *      @todo   Consider haivng KeyValuePair have an operator explict pair<Key,Value>() converter.
+ *
+ *      @todo   Consider adding Compare () method (enableif exists compare fucntions - operator<).
+ *              And then implment operaotr<, etc using Comapre(). Leave independent Comapare and Equals
+ *              so equals can be used forhtis whne types dont have operator <
  */
 
 
@@ -25,7 +30,7 @@ namespace   Stroika {
 
             /**
              *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements
-			 *	(when used for mappings, or other key/value pairs).
+             *  (when used for mappings, or other key/value pairs).
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             struct  KeyValuePair {
@@ -35,8 +40,8 @@ namespace   Stroika {
 
             public:
                 KeyValuePair ();
-				KeyValuePair (const typename pair<KeyType,ValueType>& value);
-				KeyValuePair (const KeyType& key, const ValueType& value);
+                KeyValuePair (const typename pair<KeyType, ValueType>& value);
+                KeyValuePair (const KeyType& key, const ValueType& value);
 
             public:
                 KeyType     fKey;
