@@ -12,6 +12,7 @@
 #define _Stroika_Foundation_Containers_Concrete_Set_Factory_inl_
 
 #include    "Set_LinkedList.h"
+#include    "Set_stdset.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -50,6 +51,30 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_ ()
                 {
+                    /*
+                     *  Use SFINAE to select best default implementation.
+                     */
+                    return Default_SFINAE_<T> ();
+                }
+                template    <typename T, typename TRAITS>
+                template    <typename CHECK_T>
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_T>::value>::type*)
+                {
+                    return Set_stdset<T> ();
+                }
+                template    <typename T, typename TRAITS>
+                template    <typename CHECK_T>
+                inline  Set<T, TRAITS>  Set_Factory<T, TRAITS>::Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_T>::value >::type*)
+                {
+                    /*
+                     *  Note - though this is not an efficient implementation of Set<> for large sizes,
+                     *  its probably the most efficeint representation which adds no requirements to KEY_TYPE,
+                     *  such as operator< (or a traits less) or a hash function. And its quite reasonable for
+                     *  small Sets's - which are often the case.
+                     *
+                     *  Calls may use an explicit initializer of Set_xxx<> to get better performance for large sized
+                     *  sets.
+                     */
                     return Set_LinkedList<T, TRAITS> ();
                 }
 
