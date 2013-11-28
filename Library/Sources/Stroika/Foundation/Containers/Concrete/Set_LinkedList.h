@@ -43,9 +43,9 @@ namespace   Stroika {
                 public:
                     Set_LinkedList ();
                     Set_LinkedList (const Set_LinkedList<T, TRAITS>& src);
+                    Set_LinkedList (const std::initializer_list<T>& src);
                     template    <typename CONTAINER_OF_T>
                     explicit Set_LinkedList (const CONTAINER_OF_T& src);
-                    Set_LinkedList (const std::initializer_list<T>& src);
                     template    <typename COPY_FROM_ITERATOR_OF_T>
                     explicit Set_LinkedList (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
