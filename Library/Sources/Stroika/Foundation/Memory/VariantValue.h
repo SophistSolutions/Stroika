@@ -25,8 +25,8 @@
  *
  *  TODO:
  *
- *      @todo    lose VariantValue (const map<wstring, VariantValue>& val); and CTOR (vector<>) and make sure uses sequence/mapping
- *              internally.
+ *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
+ *              cases automatically, like vector<wstring> CTOR.
  *
  *      @todo   Consider adding crit-section-safe version of  VariantValue.
  *              AnD OR MKAE VariantValue (KEY IS DOCUMETNATION) - threasdsafe like other container types.
@@ -37,25 +37,8 @@
  *
  *              Key is compare of string versus int, etc.
  *
- *      @todo   Fix compare of signed and unsigned int (equals) - when comparing different types (signed/unsigned)
- *              if the unsigned number is in range of valid signed numbers then can compare either way, but dont make
- *              max_uint == -some neg #.
- *
- *      @todo   Complete the conversion to Stroika types (e.g. String) - (so internally we use Stroika types) - but
- *              continue to make it easy to use this with vector/map/wstring. Started - but incomplete.
- *
- *      @todo   fixup int type serialization (bigger int types - probably need to extend VariantValue class -
- *              and maybe should for unsigned?
- *
- *              See ObjectVariantMapper code (for mapping to int types)
- *
- *              <<NOTE - PARTLY DONE - DID RIGHT CTOR overloads and right As<T> () templates for each of the 5 signed and unsigned types (read spec).
- *              <<but still todo is alt storage for each>>
- *
- *              TO FIX - ADD ADDITIONAL 'types'
- *                  //
- *                  // but be careful cuz many places with  VariantValue::Type enums
-    <<review - partly done>>>
+ *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
+ *              warrent a careful review
  *
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *
@@ -175,7 +158,6 @@ namespace   Stroika {
                 VariantValue (const String& val);
                 VariantValue (const map<wstring, VariantValue>& val);
                 VariantValue (const Mapping<String, VariantValue>& val);
-                VariantValue (const vector<VariantValue>& val);
                 VariantValue (const Sequence<VariantValue>& val);
 
             private:

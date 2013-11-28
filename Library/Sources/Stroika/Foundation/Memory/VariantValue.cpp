@@ -55,11 +55,11 @@ namespace {
         static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eString;
     };
     template    <>
-    struct TN_<vector<VariantValue>> {
+    struct TN_<Sequence<VariantValue>> {
         static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eArray;
     };
     template    <>
-    struct TN_<map<wstring, VariantValue>> {
+    struct TN_<Mapping<String, VariantValue>> {
         static  constexpr VariantValue::Type    kTYPEENUM   =   VariantValue::Type::eMap;
     };
 }
@@ -190,32 +190,29 @@ VariantValue::VariantValue (const String& val)
 {
 }
 
-VariantValue::VariantValue (const map<wstring, VariantValue>& val)
-    : fVal_ (DEBUG_NEW TIRep_<map<wstring, VariantValue>> (val))
-{
-}
 namespace {
-    map<wstring, VariantValue> cvt_(const Mapping<String, VariantValue>& val)
+    Mapping<String, VariantValue> cvt_ (const map<wstring, VariantValue>& val)
     {
-        map<wstring, VariantValue>   tmp;
+        Mapping<String, VariantValue>   tmp;
         for (auto i : val) {
-            tmp.insert (map<wstring, VariantValue>::value_type (i.fKey.As<wstring> (), i.fValue));
+            tmp.Add (i.first, i.second);
         }
         return tmp;
     }
 }
-VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
-    : fVal_ (DEBUG_NEW TIRep_<map<wstring, VariantValue>> (cvt_ (val)))
+
+VariantValue::VariantValue (const map<wstring, VariantValue>& val)
+    : fVal_ (DEBUG_NEW TIRep_<Mapping<String, VariantValue>> (cvt_ (val)))
 {
 }
 
-VariantValue::VariantValue (const vector<VariantValue>& val)
-    : fVal_ (DEBUG_NEW TIRep_<vector<VariantValue>> (val))
+VariantValue::VariantValue (const Mapping<String, VariantValue>& val)
+    : fVal_ (DEBUG_NEW TIRep_<Mapping<String, VariantValue>> (val))
 {
 }
 
 VariantValue::VariantValue (const Sequence<VariantValue>& val)
-    : fVal_ (DEBUG_NEW TIRep_<vector<VariantValue>> (val.As<vector<VariantValue>> ()))
+    : fVal_ (DEBUG_NEW TIRep_<Sequence<VariantValue>> (val))
 {
 }
 
@@ -251,12 +248,12 @@ bool    VariantValue::empty () const
                 return v->fVal.empty ();
             }
         case    Type::eMap: {
-                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
         case    Type::eArray: {
-                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal.empty ();
             }
@@ -303,7 +300,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return static_cast<int> (v->fVal);
+                return static_cast<VariantValue::IntegerType_> (round (v->fVal));
             }
         case    Type::eInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
@@ -335,7 +332,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return static_cast<int> (v->fVal);
+                return static_cast<VariantValue::UnsignedIntegerType_> (round (v->fVal));
             }
         case    Type::eInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
@@ -369,12 +366,12 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
         case    Type::eInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<IntegerType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return static_cast<float> (v->fVal);
+                return static_cast<FloatType_> (v->fVal);
             }
         case    Type::eUnsignedInteger: {
                 auto    v   =   dynamic_cast<const TIRep_<UnsignedIntegerType_>*> (fVal_.get ());
                 AssertNotNull (v);
-                return static_cast<float> (v->fVal);
+                return static_cast<FloatType_> (v->fVal);
             }
         case    Type::eFloat: {
                 auto    v   =   dynamic_cast<const TIRep_<FloatType_>*> (fVal_.get ());
@@ -503,7 +500,7 @@ String  VariantValue::AsString_ () const
                 return Float2String (v->fVal, kFmtOptions_);
             }
         case    Type::eMap: {
-                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"map[";
@@ -511,13 +508,13 @@ String  VariantValue::AsString_ () const
                     if (i != v->fVal.begin ()) {
                         tmp << L", ";
                     }
-                    tmp << i->first << L" -> " << i->second.As<wstring> ();
+                    tmp << i->fKey.As<wstring> () << L" -> " << i->fValue.As<wstring> ();
                 }
                 tmp << L"]";
                 return tmp.str ();
             }
         case    Type::eArray: {
-                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 wstringstream tmp;
                 tmp << L"[";
@@ -544,9 +541,13 @@ map<wstring, VariantValue>   VariantValue::As () const
     }
     switch (fVal_->GetType ()) {
         case    Type::eMap: {
-                auto    v   =   dynamic_cast<const TIRep_<map<wstring, VariantValue>>*> (fVal_.get ());
+                auto    v   =   dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
-                return v->fVal;
+                map<wstring, VariantValue>  tmp;
+                for (auto i : v->fVal) {
+                    tmp.insert (map<wstring, VariantValue>::value_type (i.fKey.As<wstring> (), i.fValue));
+                }
+                return tmp;
             }
         default: {
                 Execution::DoThrow (DataExchangeFormat::BadFormatException ());
@@ -557,18 +558,12 @@ map<wstring, VariantValue>   VariantValue::As () const
 template    <>
 Mapping<String, VariantValue>   VariantValue::As () const
 {
-    return Mapping<String, VariantValue> (As <map<wstring, VariantValue>> ());
-}
-
-template    <>
-vector<VariantValue> VariantValue::As () const
-{
     if (fVal_.get () == nullptr) {
-        return vector<VariantValue> ();
+        return Mapping<String, VariantValue> ();
     }
     switch (fVal_->GetType ()) {
-        case    Type::eArray: {
-                auto    v   =   dynamic_cast<const TIRep_<vector<VariantValue>>*> (fVal_.get ());
+        case    Type::eMap: {
+                auto    v = dynamic_cast<const TIRep_<Mapping<String, VariantValue>>*> (fVal_.get ());
                 AssertNotNull (v);
                 return v->fVal;
             }
@@ -579,9 +574,27 @@ vector<VariantValue> VariantValue::As () const
 }
 
 template    <>
+vector<VariantValue> VariantValue::As () const
+{
+    return As<Sequence<VariantValue>> ().As<vector<VariantValue>> ();
+}
+
+template    <>
 Sequence<VariantValue> VariantValue::As () const
 {
-    return Sequence<VariantValue> (As<vector<VariantValue>> ());
+    if (fVal_.get () == nullptr) {
+        return Sequence<VariantValue> ();
+    }
+    switch (fVal_->GetType ()) {
+        case    Type::eArray: {
+                auto    v = dynamic_cast<const TIRep_<Sequence<VariantValue>>*> (fVal_.get ());
+                AssertNotNull (v);
+                return v->fVal;
+            }
+        default: {
+                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+            }
+    }
 }
 
 bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) const
@@ -628,8 +641,8 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
             return As<String> () == rhs.As<String> ();
         case    VariantValue::Type::eArray: {
                 // same iff all elts same
-                vector<VariantValue>    lhsV    =   As<vector<VariantValue>> ();
-                vector<VariantValue>    rhsV    =   rhs.As<vector<VariantValue>> ();
+                Sequence<VariantValue>    lhsV = As<Sequence<VariantValue>> ();
+                Sequence<VariantValue>    rhsV = rhs.As<Sequence<VariantValue>> ();
                 if (lhsV.size () != rhsV.size ()) {
                     return false;
                 }
@@ -642,13 +655,13 @@ bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) 
             }
         case    VariantValue::Type::eMap: {
                 // same iff all elts same
-                map<wstring, VariantValue>   lhsM    =   As<map<wstring, VariantValue>> ();
-                map<wstring, VariantValue>   rhsM    =   rhs.As<map<wstring, VariantValue>> ();
+                Mapping<String, VariantValue>   lhsM = As<Mapping<String, VariantValue>> ();
+                Mapping<String, VariantValue>   rhsM = rhs.As<Mapping<String, VariantValue>> ();
                 if (lhsM.size () != rhsM.size ()) {
                     return false;
                 }
-                map<wstring, VariantValue>::const_iterator li = lhsM.begin ();
-                map<wstring, VariantValue>::const_iterator ri = rhsM.begin ();
+                auto li = lhsM.begin ();
+                auto ri = rhsM.begin ();
                 for (; li != lhsM.end (); ++li, ++ri) {
                     if (*li != *ri) {
                         return false;
