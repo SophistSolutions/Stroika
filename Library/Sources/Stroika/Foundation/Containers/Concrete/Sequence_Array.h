@@ -44,6 +44,8 @@ namespace   Stroika {
                 public:
                     Sequence_Array ();
                     Sequence_Array (const Sequence_Array<T, TRAITS>& s);
+                    Sequence_Array (const initializer_list<T>& s);
+                    Sequence_Array (const vector<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_Array (const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR_OF_T>

@@ -44,6 +44,8 @@ namespace   Stroika {
                 public:
                     Sequence_DoublyLinkedList ();
                     Sequence_DoublyLinkedList (const Sequence_DoublyLinkedList<T, TRAITS>& s);
+                    Sequence_DoublyLinkedList (const initializer_list<T>& s);
+                    Sequence_DoublyLinkedList (const vector<T>& s);
                     template <typename CONTAINER_OF_T>
                     explicit Sequence_DoublyLinkedList (const CONTAINER_OF_T& s);
                     template <typename COPY_FROM_ITERATOR_OF_T>

@@ -235,6 +235,18 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
+                inline  Sequence_Array<T, TRAITS>::Sequence_Array (const initializer_list<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    this->AppendAll (s);
+                }
+                template    <typename T, typename TRAITS>
+                inline  Sequence_Array<T, TRAITS>::Sequence_Array (const vector<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    this->AppendAll (s);
+                }
+                template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_Array<T, TRAITS>::Sequence_Array (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))

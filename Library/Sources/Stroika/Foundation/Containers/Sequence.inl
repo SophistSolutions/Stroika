@@ -31,7 +31,13 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename TRAITS>
-            inline  Sequence<T, TRAITS>::Sequence (const std::initializer_list<T>& s)
+            inline  Sequence<T, TRAITS>::Sequence (const initializer_list<T>& s)
+                : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
+            {
+                AppendAll (s);
+            }
+            template    <typename T, typename TRAITS>
+            inline  Sequence<T, TRAITS>::Sequence (const vector<T>& s)
                 : inherited (Concrete::Sequence_Factory<T, TRAITS>::mk ())
             {
                 AppendAll (s);

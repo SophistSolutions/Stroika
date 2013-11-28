@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    <limits>
+#include    <vector>
 
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
@@ -212,7 +213,8 @@ namespace   Stroika {
                  */
                 Sequence ();
                 Sequence (const Sequence<T, TRAITS>& s);
-                Sequence (const std::initializer_list<T>& s);
+                Sequence (const initializer_list<T>& s);
+                Sequence (const vector<T>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Sequence (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>

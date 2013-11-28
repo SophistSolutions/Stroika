@@ -263,6 +263,18 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
+                inline  Sequence_DoublyLinkedList<T, TRAITS>::Sequence_DoublyLinkedList (const initializer_list<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    this->AppendAll (s);
+                }
+                template    <typename T, typename TRAITS>
+                inline  Sequence_DoublyLinkedList<T, TRAITS>::Sequence_DoublyLinkedList (const vector<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    this->AppendAll (s);
+                }
+                template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 inline  Sequence_DoublyLinkedList<T, TRAITS>::Sequence_DoublyLinkedList (const CONTAINER_OF_T& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
