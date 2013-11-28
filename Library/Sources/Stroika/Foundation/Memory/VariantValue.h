@@ -26,7 +26,8 @@
  *  TODO:
  *
  *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
- *              cases automatically, like vector<wstring> CTOR.
+ *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
+ *              maps 'convertible' key and convertabile 'value' types.
  *
  *      @todo   Consider adding crit-section-safe version of  VariantValue.
  *              AnD OR MKAE VariantValue (KEY IS DOCUMETNATION) - threasdsafe like other container types.
