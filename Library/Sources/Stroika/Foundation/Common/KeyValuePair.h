@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <memory>
+#include	<utility>
 
 #include    "../Configuration/Common.h"
 
@@ -24,8 +24,8 @@ namespace   Stroika {
 
 
             /**
-             *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements (when used for mappings, or other
-             *  key/value pairs).
+             *  Essentially the same as pair<KEY_TYPE,VALUE_TYPE> but with more clearly named data elements
+			 *	(when used for mappings, or other key/value pairs).
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             struct  KeyValuePair {
@@ -35,7 +35,8 @@ namespace   Stroika {
 
             public:
                 KeyValuePair ();
-                KeyValuePair (const KeyType& key, const ValueType& value);
+				KeyValuePair (const typename pair<KeyType,ValueType>& value);
+				KeyValuePair (const KeyType& key, const ValueType& value);
 
             public:
                 KeyType     fKey;
