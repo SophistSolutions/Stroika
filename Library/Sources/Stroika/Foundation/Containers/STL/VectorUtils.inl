@@ -48,6 +48,7 @@ namespace   Stroika {
                     }
                 }
 
+#if 0
                 template    <typename T>
                 inline  vector<T>   operator+ (const vector<T>& l, const vector<T>& r)
                 {
@@ -62,6 +63,7 @@ namespace   Stroika {
                     Append2Vector (&l, r);
                     return l;
                 }
+#endif
 
                 template    <typename T>
                 vector<T>   Intersection (const vector<T>& s1, const vector<T>& s2)

@@ -31,12 +31,13 @@ namespace   Stroika {
                 template    <typename T, typename ContainerOfT>
                 void    Append2Vector (vector<T>* v, const ContainerOfT& v2);
 
-
+#if 0
                 template    <typename T>
                 vector<T>   operator+ (const vector<T>& l, const vector<T>& r);
 
                 template    <typename T>
                 vector<T>&  operator+= (vector<T>& l, const vector<T>& r);
+#endif
 
                 template    <typename T>
                 vector<T>   Intersection (const vector<T>& s1, const vector<T>& s2);

@@ -20,7 +20,7 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
-
+#if 0
                 template    <typename T>
                 set<T>  operator- (const set<T>& lhs, const set<T>& rhs);
                 template    <typename T>
@@ -29,6 +29,7 @@ namespace   Stroika {
                 set<T>& operator+= (set<T>& lhs, const FROMCONTAINER& rhs);
                 template    <typename T, typename FROMCONTAINER>
                 set<T>& operator-= (set<T>& lhs, const FROMCONTAINER& rhs);
+#endif
 
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  mkSfromC (const FROMCONTAINER& rhs);

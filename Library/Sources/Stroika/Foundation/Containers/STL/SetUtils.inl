@@ -26,6 +26,7 @@ namespace   Stroika {
                     }
                     return result;
                 }
+#if 0
                 template    <typename T>
                 inline  set<T>  operator- (const set<T>& lhs, const set<T>& rhs)
                 {
@@ -63,6 +64,7 @@ namespace   Stroika {
                     }
                     return lhs;
                 }
+#endif
 
 
                 template    <typename T, typename FROMCONTAINER>
