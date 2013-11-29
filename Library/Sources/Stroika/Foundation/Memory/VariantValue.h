@@ -159,6 +159,7 @@ namespace   Stroika {
                 VariantValue (const String& val);
                 VariantValue (const map<wstring, VariantValue>& val);
                 VariantValue (const Mapping<String, VariantValue>& val);
+                VariantValue (const vector<VariantValue>& val);
                 VariantValue (const Sequence<VariantValue>& val);
 
             private:

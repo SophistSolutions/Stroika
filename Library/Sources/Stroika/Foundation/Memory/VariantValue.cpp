@@ -90,11 +90,6 @@ struct  VariantValue::TIRep_ : VariantValue::IRep_ {
  ******************************** VariantValue **********************************
  ********************************************************************************
  */
-VariantValue::VariantValue ()
-    : fVal_ ()
-{
-}
-
 VariantValue::VariantValue (bool val)
     : fVal_ (DEBUG_NEW TIRep_<bool> (val))
 {

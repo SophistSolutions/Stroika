@@ -28,6 +28,14 @@ namespace   Stroika {
              ********************************** VariantValue ********************************
              ********************************************************************************
              */
+            inline  VariantValue::VariantValue ()
+                : fVal_ ()
+            {
+            }
+            inline  VariantValue::VariantValue (const vector<VariantValue>& val)
+                : VariantValue (Sequence<VariantValue> (val))
+            {
+            }
             inline  VariantValue::Type  VariantValue::GetType () const
             {
                 if (fVal_.get () == nullptr) {
