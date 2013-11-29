@@ -25,6 +25,14 @@
  *
  *  TODO:
  *
+ *      @todo   Consider moving this class to DataExcahngeFormat module. This especially makes sense given
+ *              what it depnds on and what depends on it.
+ *
+ *              But then be extra clear this class is fully threadsafe (maybe already so).
+ *
+ *      @todo   Either document why we used  shared_ptr or use SharedByValue. I thinkt he reason
+ *              is that we never modify? So no need for SharedbyValue.
+ *
  *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.
@@ -44,8 +52,6 @@
  *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *
  *      @todo   Add r-value reference -- && -- overloads for CTORs (and more) - as performance hack
- *
- *      @todo   Consider moving this class to DataExcahngeFormat module.
  *
  *      @todo   If we add ATOM class support (like HF/RFLLib Enumeration) - consider adding it here?
  *              Though probably not.
