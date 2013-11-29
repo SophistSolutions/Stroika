@@ -87,9 +87,10 @@ namespace   Stroika {
                 return Private::Contains_<T, EqualsCompareFunctionType> (*this, item);
             }
             template    <typename T, typename TRAITS>
+            template    <typename ELEMENT_COMPARER>
             inline  int    Sequence<T, TRAITS>::Compare (const Iterable<T>& rhs) const
             {
-                return Private::Compare_ (*this, rhs);
+                return Private::Compare_<T, ELEMENT_COMPARER> (*this, rhs);
             }
             template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const

@@ -243,6 +243,7 @@ namespace   Stroika {
                  *      @todo - FIXUP USING LOGIC WE DID FOR ABOVE
                  *          \req xxxxRequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
+                template    <typename ELEMENT_COMPARER = Common::ComparerWithWellOrder<T>>
                 nonvirtual  int     Compare (const Iterable<T>& rhs) const;
 
             public:

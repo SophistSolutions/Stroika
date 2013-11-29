@@ -605,6 +605,27 @@ namespace {
 
 
 
+namespace {
+    template <typename CONCRETE_SEQUENCE_T>
+    void    SimpleSequenceTest_15_CompareForTypesWithCompare_ ()
+    {
+        CONCRETE_SEQUENCE_T tmp;
+        tmp.Append (1);
+        tmp.Append (2);
+
+        CONCRETE_SEQUENCE_T tmp2 = tmp;
+        VerifyTestResult (not (tmp < tmp2));
+        VerifyTestResult (not (tmp > tmp2));
+        VerifyTestResult (tmp <= tmp2);
+        VerifyTestResult (tmp >= tmp2);
+        VerifyTestResult (tmp == tmp2);
+        tmp.Append (3);
+        VerifyTestResult (tmp > tmp2);
+        tmp2.Append (4);
+        VerifyTestResult (tmp < tmp2);
+    }
+}
+
 
 namespace   {
 
@@ -679,6 +700,11 @@ namespace   {
         SimpleSequenceTest_All_For_Type_<Sequence_stdvector<SimpleClassWithoutComparisonOperators, Sequence_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleSequenceTest_14_Sequence_stdinitializer_complexType_ ();
+
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence<size_t>> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_Array<size_t>> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_DoublyLinkedList<size_t>> ();
+        SimpleSequenceTest_15_CompareForTypesWithCompare_<Sequence_LinkedList<size_t>> ();
     }
 
 }
