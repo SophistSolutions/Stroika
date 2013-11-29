@@ -20,6 +20,10 @@
  *  \version    <a href="code_status.html#Beta">Beta</a>
  *
  * TODO:
+ *      @todo   Add CTOR overload Adopt_NO_DELETE (for being passed in readonly memory).
+ *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
+ *              Or around a static array.
+ *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
  *              might cause some difficultties. So you have Memory::BLOB when you Know i tmust be in ram
