@@ -15,7 +15,6 @@ Objs	=	\
 	$(ObjDir)Common.o\
 	$(ObjDir)LeakChecker.o\
 	$(ObjDir)MemoryAllocator.o\
-	$(ObjDir)VariantValue.o\
 
 
 all:	$(Objs)

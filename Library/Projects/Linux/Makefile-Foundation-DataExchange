@@ -3,7 +3,7 @@ include	../../SharedBuildRules.mk
 include	../../SharedMakeVariables.mk
 
 RelPathToStroikaDevRoot		=	../../../../../
-SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchangeFormat/
+SrcDir                          =       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Foundation/DataExchange/
 
 vpath %cpp $(SrcDir)
 
@@ -13,6 +13,7 @@ Objs	=	\
 	$(ObjDir)InternetMediaType.o\
 	$(ObjDir)ObjectVariantMapper.o\
 	$(ObjDir)Reader.o\
+	$(ObjDir)VariantValue.o\
 	$(ObjDir)Writer.o\
 
 SubDirs	=	\
