@@ -28,11 +28,6 @@
  *      @todo   Consider moving this class to DataExcahngeFormat module. This especially makes sense given
  *              what it depnds on and what depends on it.
  *
- *              But then be extra clear this class is fully threadsafe (maybe already so).
- *
- *      @todo   Either document why we used  shared_ptr or use SharedByValue. I thinkt he reason
- *              is that we never modify? So no need for SharedbyValue.
- *
  *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.
@@ -42,14 +37,20 @@
  *              Might be trivial with careful use of shared_ptr - and maybe safe already?  But if not - maybe worth doing?
  *              ONE Place we can improve if this is threadsafe is use in ProgressMonitor.h
  *
+ *              o   But then be extra clear this class is fully threadsafe (maybe already so).
+ *
+ *              o   Either document why we used  shared_ptr or use SharedByValue. I thinkt he reason
+ *                  is that we never modify? So no need for SharedbyValue.
+ *
+ *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
+ *              (mostly done but review)
+ *
  *      @todo   Fix VariantValue::Equals () - for case in DoRegressionTests_VariantValue_7_().
  *
  *              Key is compare of string versus int, etc.
  *
  *      @todo   Re-review the signed/unsigned compare etc code. I think its all correct, but its tricky enough to
  *              warrent a careful review
- *
- *      @todo   Need Comapare (ICompare....) support - maybe operator< and/or maybe compare (V) -> int
  *
  *      @todo   Add r-value reference -- && -- overloads for CTORs (and more) - as performance hack
  *
@@ -195,7 +196,7 @@ namespace   Stroika {
                  *      Supported types (RETURNTYPE) include:
                  *          o   bool
                  *          o   signed char, signed short, int, long int, long long int (any of the 5 signed int types)
-                 *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsignedlong long int (any of the 5 unsigned int types)
+                 *          o   unsigned char, unsigned short, unsigned int, unsigned long int, unsigned long long int (any of the 5 unsigned int types)
                  *          o   float, double, long double
                  *          o   Date
                  *          o   DateTime
@@ -220,6 +221,7 @@ namespace   Stroika {
                 *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
                 *   This coerces types.
                 *   @todo - thinkout bettter and document what it means for differnt types
+                *           FOR NOW - just key off first type and convert RHS to same type as LHS, where possible
                 */
                 nonvirtual  int      Compare (const VariantValue& rhs) const;
 
