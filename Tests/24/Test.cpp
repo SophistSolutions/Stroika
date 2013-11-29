@@ -8,8 +8,8 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Common.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/SAXReader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/SAXObjectReader.h"
+#include    "Stroika/Foundation/DataExchange/XML/SAXReader.h"
+#include    "Stroika/Foundation/DataExchange/XML/SAXObjectReader.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Execution/RequiredComponentMissingException.h"
@@ -22,8 +22,8 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
+using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::XML;
 
 using   Stroika::Foundation::Debug::TraceContextBumper;
 using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;

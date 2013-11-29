@@ -1,7 +1,7 @@
 ﻿/*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::DataExchangeFormat::Reader/Writers(JSON/XML)
+//  TEST    Foundation::DataExchange::Reader/Writers(JSON/XML)
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
@@ -10,13 +10,12 @@
 #include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
 #include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
-#include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/Reader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/XML/Writer.h"
+#include    "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/XML/Reader.h"
+#include    "Stroika/Foundation/DataExchange/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
@@ -27,8 +26,14 @@
 
 using   namespace   Stroika::Foundation;
 
+using   Characters::String;
+using   DataExchange::VariantValue;
 using   Memory::Byte;
-using   Memory::VariantValue;
+
+
+
+///// @todo ADD SEPEARET MODULE TO TEST VARIANTVALUE!!!
+
 
 
 /*
@@ -51,7 +56,7 @@ namespace   {
             void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
                 Streams::BasicBinaryOutputStream    out;
-                DataExchangeFormat::JSON::Writer ().Write (v, out);
+                DataExchange::JSON::Writer ().Write (v, out);
                 string x = out.As<string> ();
                 for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
                     if (x[i] != expected[i]) {
@@ -105,7 +110,7 @@ namespace   {
             {
                 stringstream    tmp;
                 tmp << v;
-                VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
+                VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
                 VerifyTestResult (v1 == expected);
             }
 
@@ -150,7 +155,7 @@ namespace   {
                     const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
                     stringstream    tmp;
                     tmp << kExample;
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
                     VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
                 }
 
@@ -164,10 +169,10 @@ namespace   {
                 stringstream    tmp;
                 tmp << s;
                 try {
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tmp);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
                     VerifyTestResult (false);   // should get exception
                 }
-                catch (const DataExchangeFormat::BadFormatException&) {
+                catch (const DataExchange::BadFormatException&) {
                     // GOOD
                 }
                 catch (...) {
@@ -193,13 +198,13 @@ namespace   {
                 string  encodedRep;
                 {
                     Streams::BasicBinaryOutputStream    out;
-                    DataExchangeFormat::JSON::Writer ().Write (v, out);
+                    DataExchange::JSON::Writer ().Write (v, out);
                     encodedRep = out.As<string> ();
                 }
                 {
                     stringstream    tmp;
                     tmp << encodedRep;
-                    VariantValue    vOut    =   DataExchangeFormat::JSON::Reader ().Read (tmp);
+                    VariantValue    vOut = DataExchange::JSON::Reader ().Read (tmp);
                     VerifyTestResult (vOut == v);
                 }
             }
@@ -262,9 +267,9 @@ namespace   {
                         "    }"
                         "}"
                         ;
-                    Memory::VariantValue v = DataExchangeFormat::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
                     map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
-                    VerifyTestResult (mv[L"Automated Backups"].GetType () == Memory::VariantValue::Type::eMap);
+                    VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
                     map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
                     outputMap[L"MaxFiles"] = 123456789;
                     mv[L"Output"] = outputMap;
@@ -273,14 +278,14 @@ namespace   {
                     string  jsonExampleWithUpdatedMaxFilesReference;
                     {
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
                     }
                     {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (locale ("C"));
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -288,7 +293,7 @@ namespace   {
                         // Verify change of locale has no effect on results
                         locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
                         Streams::BasicBinaryOutputStream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
                         locale::global (prevLocale);
                     }
@@ -303,17 +308,17 @@ namespace   {
             {
                 auto f = [] () {
                     map<wstring, VariantValue>  mv;
-                    mv[L"MaxFiles"] = Memory::VariantValue (405);
-                    Memory::VariantValue    v   =    Memory::VariantValue (mv);
+                    mv[L"MaxFiles"] = VariantValue (405);
+                    VariantValue    v   =    VariantValue (mv);
 
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
                     VerifyTestResult (v1 == v);
                 };
                 f ();
@@ -334,11 +339,11 @@ namespace   {
                     string  encoded;
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (v, tmpStrm);
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
                         encoded = tmpStrm.str ();
                     }
                     stringstream    tnmStrStrm (encoded);
-                    VariantValue    v1  =   DataExchangeFormat::JSON::Reader ().Read (tnmStrStrm);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
                     // JSON reader comes back with strings - because date/datetime are not native types
                     if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
                         v1 = VariantValue (v1.As<Time::Date> ());
@@ -354,19 +359,19 @@ namespace   {
                     }
                 };
                 auto    doAll = [f] () {
-                    f (Memory::VariantValue (405));
-                    f (Memory::VariantValue (4405));
-                    f (Memory::VariantValue (44905));
-                    f (Memory::VariantValue (405.1));
-                    f (Memory::VariantValue (4405.2));
-                    f (Memory::VariantValue (44905.3));
-                    f (Memory::VariantValue (L"'"));
-                    f (Memory::VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
-                    f (Memory::VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+                    f (VariantValue (405));
+                    f (VariantValue (4405));
+                    f (VariantValue (44905));
+                    f (VariantValue (405.1));
+                    f (VariantValue (4405.2));
+                    f (VariantValue (44905.3));
+                    f (VariantValue (L"'"));
+                    f (VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
+                    f (VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
 
                     {
                         stringstream    tmpStrm;
-                        DataExchangeFormat::JSON::Writer ().Write (Memory::VariantValue (44905.3), tmpStrm);
+                        DataExchange::JSON::Writer ().Write (VariantValue (44905.3), tmpStrm);
                         string tmp = tmpStrm.str ();
                         VerifyTestResult (tmp.find (",") == string::npos);
                     }
@@ -385,10 +390,10 @@ namespace   {
             void    DoIt ()
             {
                 try {
-                    VariantValue    vOut    =   DataExchangeFormat::JSON::Reader ().Read (Streams::BasicBinaryInputStream (nullptr, nullptr));
+                    VariantValue    vOut    =   DataExchange::JSON::Reader ().Read (Streams::BasicBinaryInputStream (nullptr, nullptr));
                     VerifyTestResult (false);
                 }
-                catch (const DataExchangeFormat::BadFormatException&) {
+                catch (const DataExchange::BadFormatException&) {
                     // Good - this should fail
                 }
             }
@@ -427,18 +432,18 @@ namespace   {
             void    DoIt ()
             {
                 {
-                    DataExchangeFormat::XML::Writer w;
-                    Memory::VariantValue    v   =   Memory::VariantValue (44905.3);
+                    DataExchange::XML::Writer w;
+                    VariantValue    v   =   VariantValue (44905.3);
                     Streams::BasicBinaryOutputStream    out;
                     w.Write (v, out);
                     string x = out.As<string> ();
                     int breakhere = 1;
                 }
                 {
-                    DataExchangeFormat::XML::Writer w;
+                    DataExchange::XML::Writer w;
                     map<wstring, VariantValue>  mv;
-                    mv[L"MaxFiles"] = Memory::VariantValue (405);
-                    Memory::VariantValue    v   =    Memory::VariantValue (mv);
+                    mv[L"MaxFiles"] = VariantValue (405);
+                    VariantValue    v   =    VariantValue (mv);
                     Streams::BasicBinaryOutputStream    out;
                     w.Write (v, out);
                     string x = out.As<string> ();
@@ -483,12 +488,62 @@ namespace   {
 
 
 
+namespace {
+    /// @TODO MOVE ELSEWHERE
+    template <typename T>
+    void Test3_VariantValue_Helper_MinMax_ ()
+    {
+        {
+            VariantValue v = numeric_limits<T>::lowest ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
+            VariantValue v = numeric_limits<T>::min ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
+            VariantValue v = numeric_limits<T>::max ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+    }
+    void    Test3_VariantValue ()
+    {
+        using Characters::String;
+        {
+            VariantValue v;
+            VerifyTestResult (v.empty ());
+            v = String (L"hi");
+            VerifyTestResult (v == L"hi");
+        }
+        Test3_VariantValue_Helper_MinMax_<int> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned int> ();
+        Test3_VariantValue_Helper_MinMax_<long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long> ();
+        Test3_VariantValue_Helper_MinMax_<long long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
+        Test3_VariantValue_Helper_MinMax_<float> ();
+        Test3_VariantValue_Helper_MinMax_<double> ();
+        Test3_VariantValue_Helper_MinMax_<long double> ();
+    }
+
+}
+
+
+
 namespace   {
     void    DoRegressionTests_ ()
     {
         JSON_ONLY_::DoAll_();
         XML_ONLY_::DoAll_();
         GENERIC_SERIALIZE_DESERIALIZE_::DoAll_();
+
+        Test3_VariantValue ();
     }
 }
 

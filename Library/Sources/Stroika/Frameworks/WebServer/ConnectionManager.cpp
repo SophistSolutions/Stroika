@@ -8,7 +8,7 @@
 
 #include    "../../Foundation/Characters/Tokenize.h"
 #include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchangeFormat/BadFormatException.h"
+#include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Execution/Sleep.h"

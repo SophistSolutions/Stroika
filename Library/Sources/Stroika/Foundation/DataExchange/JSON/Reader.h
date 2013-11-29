@@ -1,17 +1,17 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_JSON_Reader_h_
-#define _Stroika_Foundation_DataExchangeFormat_JSON_Reader_h_   1
+#ifndef _Stroika_Foundation_DataExchange_JSON_Reader_h_
+#define _Stroika_Foundation_DataExchange_JSON_Reader_h_   1
 
 #include    "../../StroikaPreComp.h"
 
 #include    "../../Configuration/Common.h"
-#include    "../../Memory/VariantValue.h"
 #include    "../../Streams/BinaryInputStream.h"
 #include    "../../Streams/TextInputStream.h"
 
 #include    "../Reader.h"
+#include    "../VariantValue.h"
 
 
 /**
@@ -29,16 +29,16 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   JSON {
 
 
                 /**
                  *  @todo add example usage (and docs)
                  */
-                class Reader : public DataExchangeFormat::Reader {
+                class Reader : public DataExchange::Reader {
                 private:
-                    typedef DataExchangeFormat::Reader  inherited;
+                    typedef DataExchange::Reader  inherited;
 
                 private:
                     class   Rep_;
@@ -61,4 +61,4 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_JSON_Reader_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_JSON_Reader_h_*/

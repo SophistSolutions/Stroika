@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_h_
-#define _Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_h_    1
+#ifndef _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_
+#define _Stroika_Foundation_DataExchange_ObjectVariantMapper_h_    1
 
 #include    "../StroikaPreComp.h"
 
@@ -15,9 +15,10 @@
 #include    "../Containers/Set.h"
 #include    "../Memory/Common.h"
 #include    "../Memory/Optional.h"
-#include    "../Memory/VariantValue.h"
 #include    "../Traversal/DiscreteRange.h"
 #include    "../Traversal/Range.h"
+
+#include    "VariantValue.h"
 
 
 
@@ -53,7 +54,7 @@
  *      @todo   Current serializer/deserializer API needlessly requires that objects have default CTOR.
  *
  *              template    <typename CLASS>
- *                  inline  CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
+ *                  inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
  *                  {
  *                      CLASS tmp;
  *                      ToObject (v, &tmp);
@@ -78,7 +79,7 @@
  *              The cast to Byte* loses some type safety (we may want to store the class size htrough template magic)
  *              in the struct type info record, so it can be validated against the offsets in the typeinfo.
  *
- *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to Memory::VariantValue
+ *      @todo   [Long-Term] [Performance] The gist of this design / API is to map C++ objects from/to VariantValue
  *              objects (logically - these are RAM-based representations of an XML or JSON tree - for example).
  *
  *              We could restructure the API so that it was more SAX-like: instead of taking a VariantValue, it took
@@ -99,7 +100,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             using   Characters::String;
@@ -107,7 +108,6 @@ namespace   Stroika {
             using   Containers::Sequence;
             using   Containers::Set;
             using   Memory::Byte;
-            using   Memory::VariantValue;
 
 
             /**
@@ -150,10 +150,10 @@ namespace   Stroika {
              *  // This can then be serialized using
              *
              *  Streams::BasicBinaryInputOutputStream   tmpStream;
-             *  DataExchangeFormat::JSON::PrettyPrint (v, tmpStream);
+             *  DataExchange::JSON::PrettyPrint (v, tmpStream);
              *
              *  // THEN deserialized, and mapped back to C++ object form
-             *  tmp = mapper.ToObject<SharedContactsConfig_> (DataExchangeFormat::JSON::Reader   (tmpStream));
+             *  tmp = mapper.ToObject<SharedContactsConfig_> (DataExchange::JSON::Reader   (tmpStream));
              *  if (tmp.fEnabled) {
              *  ...
              *  }
@@ -256,9 +256,9 @@ namespace   Stroika {
                  */
                 nonvirtual  void    ToObject (const type_index& forTypeInfo, const VariantValue& d, Byte* into) const;
                 template    <typename CLASS>
-                nonvirtual  void    ToObject (const Memory::VariantValue& v, CLASS* into) const;
+                nonvirtual  void    ToObject (const VariantValue& v, CLASS* into) const;
                 template    <typename CLASS>
-                nonvirtual  CLASS   ToObject (const Memory::VariantValue& v) const;
+                nonvirtual  CLASS   ToObject (const VariantValue& v) const;
 
             public:
                 /**
@@ -410,7 +410,7 @@ namespace   Stroika {
              *      the approach/question (could  we use pointer to member?).
              */
 #define     ObjectVariantMapper_StructureFieldInfo_Construction_Helper(CLASS,MEMBER,NAME)\
-    DataExchangeFormat::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
+    DataExchange::ObjectVariantMapper::StructureFieldInfo (offsetof (CLASS, MEMBER), typeid (decltype (CLASS::MEMBER)), NAME)
 
 
             template    <>
@@ -448,7 +448,7 @@ namespace   Stroika {
             template    <>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Characters::String> ();
             template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Memory::VariantValue> ();
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<VariantValue> ();
             template    <>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::Duration> ();
             template    <>
@@ -456,7 +456,7 @@ namespace   Stroika {
             template    <>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ();
             template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Memory::VariantValue>> ();
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ();
 
 
         }
@@ -472,4 +472,4 @@ namespace   Stroika {
  */
 #include    "ObjectVariantMapper.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_h_*/

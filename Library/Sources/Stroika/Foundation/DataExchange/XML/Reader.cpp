@@ -12,11 +12,11 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
+using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::XML;
 
 
-class   DataExchangeFormat::XML::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
+class   DataExchange::XML::Reader::Rep_ : public DataExchange::Reader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
@@ -29,21 +29,21 @@ public:
     {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
     }
-    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {
         // not sure about this - we may want to led xerces read raw binary bytes!!
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
-    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::TextInputStream& in) override
     {
 
         // TODO - USE SAXREADER HERE!!!
 #if     qHasLibrary_Xerces
         AssertNotImplemented ();
-        return Memory::VariantValue ();
+        return VariantValue ();
 #else
         AssertNotImplemented ();
-        return Memory::VariantValue ();
+        return VariantValue ();
 #endif
     }
     nonvirtual  SerializationConfiguration GetConfiguration () const
@@ -64,32 +64,32 @@ private:
 
 /*
  ********************************************************************************
- ******************** DataExchangeFormat::XML::Reader ***************************
+ ************************** DataExchange::XML::Reader ***************************
  ********************************************************************************
  */
-DataExchangeFormat::XML::Reader::Reader (const SerializationConfiguration& config)
+DataExchange::XML::Reader::Reader (const SerializationConfiguration& config)
     : inherited (shared_ptr<_IRep> (new Rep_ (config)))
 {
 }
 
-DataExchangeFormat::XML::Reader::Rep_&   DataExchangeFormat::XML::Reader::GetRep_ ()
+DataExchange::XML::Reader::Rep_&   DataExchange::XML::Reader::GetRep_ ()
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<Rep_&> (inherited::_GetRep ());
 }
 
-const DataExchangeFormat::XML::Reader::Rep_&   DataExchangeFormat::XML::Reader::GetRep_ () const
+const DataExchange::XML::Reader::Rep_&   DataExchange::XML::Reader::GetRep_ () const
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
 }
 
-SerializationConfiguration DataExchangeFormat::XML::Reader::GetConfiguration () const
+SerializationConfiguration DataExchange::XML::Reader::GetConfiguration () const
 {
     return GetRep_ ().GetConfiguration ();
 }
 
-void    DataExchangeFormat::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
+void    DataExchange::XML::Reader::SetConfiguration (const SerializationConfiguration& config)
 {
     GetRep_ ().SetConfiguration (config);
 }

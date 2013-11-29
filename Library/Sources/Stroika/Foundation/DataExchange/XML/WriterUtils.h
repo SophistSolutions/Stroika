@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_WriterUtils_h_
-#define _Stroika_Foundation_DataExchangeFormat_XML_WriterUtils_h_    1
+#ifndef _Stroika_Foundation_DataExchange_XML_WriterUtils_h_
+#define _Stroika_Foundation_DataExchange_XML_WriterUtils_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -24,14 +24,14 @@
 *
 *       @todo   Harmonize the WriteQuoted/Format4XML routines - probably just switching to the later.
 *               Maybe add optional params for some types (control enums).
-*               Support dates, and Memory::VariantValue, and Memory::Optional, etc...
+*               Support dates, and VariantValue, and Memory::Optional, etc...
 */
 
 
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
 
@@ -107,4 +107,4 @@ namespace   Stroika {
  */
 #include    "WriterUtils.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_WriterUtils_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_WriterUtils_h_*/

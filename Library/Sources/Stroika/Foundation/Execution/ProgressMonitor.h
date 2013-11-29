@@ -11,7 +11,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Containers/Sequence.h"
-#include    "../Memory/VariantValue.h"
+#include    "../DataExchange/VariantValue.h"
 
 
 
@@ -188,8 +188,8 @@ namespace   Stroika {
              *  Use the 'fExtraData' field of the CurrentTaskInfo.
              */
             struct  ProgressMonitor::CurrentTaskInfo {
-                Characters::String      fName;
-                Memory::VariantValue    fDetails;
+                Characters::String          fName;
+                DataExchange::VariantValue  fDetails;
             };
 
 

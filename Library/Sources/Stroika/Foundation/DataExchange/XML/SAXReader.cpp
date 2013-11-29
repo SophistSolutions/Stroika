@@ -70,8 +70,8 @@
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Debug;
 using   namespace   Stroika::Foundation::Execution;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
+using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::XML;
 using   namespace   Stroika::Foundation::Memory;
 using   namespace   Stroika::Foundation::Streams;
 
@@ -95,9 +95,6 @@ namespace {
 #endif
 
 
-
-
-using   Memory::VariantValue;
 
 
 

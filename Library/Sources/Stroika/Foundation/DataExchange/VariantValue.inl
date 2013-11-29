@@ -10,11 +10,11 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "BlockAllocated.h"
+#include    "../Memory/BlockAllocated.h"
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Memory {
+        namespace   DataExchange {
 
 
             struct  VariantValue::IRep_ {

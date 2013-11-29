@@ -11,8 +11,8 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
+using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::XML;
 
 
 

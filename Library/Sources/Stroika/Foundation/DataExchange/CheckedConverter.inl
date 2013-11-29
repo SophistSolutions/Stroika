@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_CheckedConverter_inl_
-#define _Stroika_Foundation_DataExchangeFormat_CheckedConverter_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_CheckedConverter_inl_
+#define _Stroika_Foundation_DataExchange_CheckedConverter_inl_  1
 
 
 /*
@@ -18,12 +18,12 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /*
              ********************************************************************************
-             *********************** DataExchangeFormat::Private_ ***************************
+             ***************************** DataExchange::Private_ ***************************
              ********************************************************************************
              */
             namespace Private_ {
@@ -42,7 +42,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************** DataExchangeFormat::CheckedConverter_Range **********************
+             ******************** DataExchange::CheckedConverter_Range **********************
              ********************************************************************************
              */
             template    <typename   RANGE_TYPE>
@@ -65,7 +65,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ********* DataExchangeFormat::CheckedConverter_ValueInRange ********************
+             *************** DataExchange::CheckedConverter_ValueInRange ********************
              ********************************************************************************
              */
             template    <typename   RANGE_TYPE>
@@ -86,4 +86,4 @@ namespace   Stroika {
 
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_CheckedConverter_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_CheckedConverter_inl_*/

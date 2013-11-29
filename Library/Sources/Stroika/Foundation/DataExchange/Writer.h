@@ -1,16 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_Writer_h_
-#define _Stroika_Foundation_DataExchangeFormat_Writer_h_    1
+#ifndef _Stroika_Foundation_DataExchange_Writer_h_
+#define _Stroika_Foundation_DataExchange_Writer_h_    1
 
 #include    "../StroikaPreComp.h"
 
 #include    <ostream>
 
-#include    "../Memory/VariantValue.h"
 #include    "../Streams/BinaryOutputStream.h"
 #include    "../Streams/TextOutputStream.h"
+
+#include    "VariantValue.h"
+
 
 /**
  *  \file
@@ -34,7 +36,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /**
@@ -51,10 +53,10 @@ namespace   Stroika {
                  *  Note - to use std::ostream - use
                  *      Read (BinaryOutputStreamFromOStreamAdapter (some_ostream));
                  */
-                nonvirtual  void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out);
-                nonvirtual  void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out);
-                nonvirtual  void    Write (const Memory::VariantValue& v, ostream& out);
-                nonvirtual  void    Write (const Memory::VariantValue& v, wostream& out);
+                nonvirtual  void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out);
+                nonvirtual  void    Write (const VariantValue& v, const Streams::TextOutputStream& out);
+                nonvirtual  void    Write (const VariantValue& v, ostream& out);
+                nonvirtual  void    Write (const VariantValue& v, wostream& out);
 
             protected:
                 nonvirtual  _IRep&          _GetRep ();
@@ -77,8 +79,8 @@ namespace   Stroika {
             class   Writer::_IRep {
             public:
                 virtual _SharedPtrIRep  Clone () const                                                                  =   0;
-                virtual void            Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)   =   0;
-                virtual void            Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out)     =   0;
+                virtual void            Write (const VariantValue& v, const Streams::BinaryOutputStream& out) = 0;
+                virtual void            Write (const VariantValue& v, const Streams::TextOutputStream& out) = 0;
             };
 
 
@@ -95,4 +97,4 @@ namespace   Stroika {
  */
 #include    "Writer.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_Writer_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_Writer_h_*/

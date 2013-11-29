@@ -1,23 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_Namespace_h_
-#define _Stroika_Foundation_DataExchangeFormat_XML_Namespace_h_ 1
+#ifndef _Stroika_Foundation_DataExchange_XML_Namespace_h_
+#define _Stroika_Foundation_DataExchange_XML_Namespace_h_ 1
 
 #include    "../../StroikaPreComp.h"
 
 #include    <istream>
 
 #include    "../../Configuration/Common.h"
-#include    "../../Memory/VariantValue.h"
 
+#include    "../VariantValue.h"
 #include    "Common.h"
 
 
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
 
@@ -71,4 +71,4 @@ namespace   Stroika {
  */
 #include    "Namespace.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Namespace_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_Namespace_h_*/

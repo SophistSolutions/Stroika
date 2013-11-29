@@ -11,7 +11,7 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 
@@ -61,7 +61,7 @@ namespace   {
         return c;
     }
 
-    Memory::VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end);
+    VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end);
 
 
     // throw if bad hex digit
@@ -80,7 +80,7 @@ namespace   {
     }
 
     // 'in' is positioned to the start of string, and we read, leaving in possitioned just after end of string
-    Memory::VariantValue    Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_String_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (i != nullptr);
         Require (*i < end);
@@ -96,7 +96,7 @@ namespace   {
             }
             c = NextChar_ (i, end);
             if (c == '\"') {
-                return Memory::VariantValue (result);
+                return VariantValue (result);
             }
             else if (c == '\\') {
                 // quoted character read...
@@ -148,7 +148,7 @@ namespace   {
 
 
     // 'in' is positioned to the start of number, and we read, leaving in possitioned just after end of number
-    Memory::VariantValue    Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_Number_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (i != nullptr);
         Require (*i < end);
@@ -180,22 +180,22 @@ namespace   {
             Execution::DoThrow (BadFormatException (L"JSON: no valid number found"));
         }
         if (containsDot) {
-            return Memory::VariantValue (Characters::String2Float<long double> (tmp));
+            return VariantValue (Characters::String2Float<long double> (tmp));
         }
         else {
             // if no - use unsigned since has wider range (if no -)
             return Characters::String (tmp).LTrim ().StartsWith (L"-") ?
-                   Memory::VariantValue (Characters::String2Int<long long int> (tmp)) :
-                   Memory::VariantValue (Characters::String2Int<unsigned long long int> (tmp))
+                   VariantValue (Characters::String2Int<long long int> (tmp)) :
+                   VariantValue (Characters::String2Int<unsigned long long int> (tmp))
                    ;
         }
     }
 
-    Memory::VariantValue    Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_Object_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (i != nullptr);
         Require (*i < end);
-        map<wstring, Memory::VariantValue>   result;
+        map<wstring, VariantValue>   result;
 
         if (NextChar_ (i, end) != '{') {
             Execution::DoThrow (BadFormatException (L"JSON: Expected '{'"));
@@ -212,7 +212,7 @@ namespace   {
             if (**i == '}') {
                 if (lf == eName or lf == eComma) {
                     NextChar_ (i, end);     // skip char
-                    return Memory::VariantValue (result);
+                    return VariantValue (result);
                 }
                 else {
                     Execution::DoThrow (BadFormatException (L"JSON: Unexpected '}' reading object"));
@@ -245,8 +245,8 @@ namespace   {
                     lf = eColon;
                 }
                 else if (lf == eValue) {
-                    Memory::VariantValue    v    = Reader_value_ (i, end);
-                    result.insert (map<wstring, Memory::VariantValue>::value_type (curName, v));
+                    VariantValue    v = Reader_value_ (i, end);
+                    result.insert (map<wstring, VariantValue>::value_type (curName, v));
                     curName.clear ();
                     lf = eComma;
                 }
@@ -257,11 +257,11 @@ namespace   {
         }
     }
 
-    Memory::VariantValue    Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_Array_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (i != nullptr);
         Require (*i < end);
-        vector<Memory::VariantValue>    result;
+        vector<VariantValue>    result;
 
         if (NextChar_ (i, end) != '[') {
             Execution::DoThrow (BadFormatException (L"JSON: Expected '['"));
@@ -277,7 +277,7 @@ namespace   {
                     // allow ending ',' - harmless - could  be more aggressive - but if so - careful of zero-sized array special case
                 }
                 NextChar_ (i, end);     // skip char
-                return Memory::VariantValue (result);
+                return VariantValue (result);
             }
             else if (**i == ',') {
                 if (lookingForElt) {
@@ -305,7 +305,7 @@ namespace   {
         }
     }
 
-    Memory::VariantValue    Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_SpecialToken_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         Require (i != nullptr);
         Require (*i < end);
@@ -318,7 +318,7 @@ namespace   {
                             * ((*i) + 4) == 'e'
                        ) {
                         (*i) += 5;
-                        return Memory::VariantValue (false);
+                        return VariantValue (false);
                     }
                 }
                 break;
@@ -329,7 +329,7 @@ namespace   {
                             * ((*i) + 3) == 'e'
                        ) {
                         (*i) += 4;
-                        return Memory::VariantValue (true);
+                        return VariantValue (true);
                     }
                 }
                 break;
@@ -340,7 +340,7 @@ namespace   {
                             * ((*i) + 3) == 'l'
                        ) {
                         (*i) += 4;
-                        return Memory::VariantValue ();
+                        return VariantValue ();
                     }
                 }
                 break;
@@ -348,7 +348,7 @@ namespace   {
         Execution::DoThrow (BadFormatException (L"JSON: Unrecognized token"));
     }
 
-    Memory::VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end)
+    VariantValue    Reader_value_ (wstring::const_iterator* i, wstring::const_iterator end)
     {
         // Skip initial whitespace, and look for any value:
         //      string
@@ -413,10 +413,10 @@ namespace   {
 
 /*
  ********************************************************************************
- ******************* DataExchangeFormat::JSON::Reader ***************************
+ ************************* DataExchange::JSON::Reader ***************************
  ********************************************************************************
  */
-class   DataExchangeFormat::JSON::Reader::Rep_ : public DataExchangeFormat::Reader::_IRep {
+class   DataExchange::JSON::Reader::Rep_ : public DataExchange::Reader::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
@@ -424,18 +424,18 @@ public:
     {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
-    virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) override
+    virtual VariantValue    Read (const Streams::BinaryInputStream& in) override
     {
         return Read (Streams::TextInputStreamBinaryAdapter (in));
     }
-    virtual Memory::VariantValue    Read (const Streams::TextInputStream& in) override
+    virtual VariantValue    Read (const Streams::TextInputStream& in) override
     {
         wstring     tmp =   in.ReadAll ().As<wstring> ();
         wstring::const_iterator i = tmp.begin ();
         return Reader_value_ (&i, tmp.end ());
     }
 };
-DataExchangeFormat::JSON::Reader::Reader ()
+DataExchange::JSON::Reader::Reader ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
 }

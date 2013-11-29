@@ -11,7 +11,7 @@
 #include    <cstdlib>
 
 #include    "../Containers/Common.h"
-#include    "../DataExchangeFormat/BadFormatException.h"
+#include    "../DataExchange/BadFormatException.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
 #include    "../Memory/BLOB.h"              // ONLY FOR QUICKHACK IMPL OF ENCODE...

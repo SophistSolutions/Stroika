@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_Writer_inl_
-#define _Stroika_Foundation_DataExchangeFormat_XML_Writer_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_XML_Writer_inl_
+#define _Stroika_Foundation_DataExchange_XML_Writer_inl_  1
 
 
 /*
@@ -12,7 +12,7 @@
  */
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
 
@@ -27,4 +27,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Writer_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_Writer_inl_*/

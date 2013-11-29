@@ -12,7 +12,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/DataExchangeFormat/InternetMediaType.h"
+#include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/URL.h"
 #include    "../../Foundation/Streams/BinaryInputStream.h"
 #include    "../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
@@ -29,7 +29,7 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
-            using   DataExchangeFormat::InternetMediaType;
+            using   DataExchange::InternetMediaType;
 
             // Maybe associated TextStream, and maybe readline method goes here
             struct  HTTPRequest {

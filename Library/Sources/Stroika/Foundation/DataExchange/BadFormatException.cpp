@@ -24,7 +24,7 @@ using   namespace   Stroika::Foundation::Characters;
 
 /*
  ********************************************************************************
- ****************** DataExchangeFormat::BadFormatException **********************
+ ****************** DataExchange::BadFormatException **********************
  ********************************************************************************
  */
 namespace   {
@@ -72,7 +72,7 @@ namespace   {
         return msg;
     }
 }
-DataExchangeFormat::BadFormatException::BadFormatException ()
+DataExchange::BadFormatException::BadFormatException ()
     : inherited (mkMessage_ ())
     , fLineNumber_ ()
     , fColumnNumber_ ()
@@ -81,7 +81,7 @@ DataExchangeFormat::BadFormatException::BadFormatException ()
 {
 }
 
-DataExchangeFormat::BadFormatException::BadFormatException (const String& details)
+DataExchange::BadFormatException::BadFormatException (const String& details)
     : inherited (mkMessage_ (details))
     , fLineNumber_ ()
     , fColumnNumber_ ()
@@ -90,7 +90,7 @@ DataExchangeFormat::BadFormatException::BadFormatException (const String& detail
 {
 }
 
-DataExchangeFormat::BadFormatException::BadFormatException (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
+DataExchange::BadFormatException::BadFormatException (const String& details, Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     : inherited (mkMessage_ (details, lineNumber, columnNumber, fileOffset))
     , fLineNumber_ (lineNumber)
     , fColumnNumber_ (columnNumber)
@@ -108,7 +108,7 @@ DataExchangeFormat::BadFormatException::BadFormatException (const String& detail
 
 
 template    <>
-void    _NoReturn_  Execution::DoThrow (const DataExchangeFormat::BadFormatException& e2Throw)
+void    _NoReturn_  Execution::DoThrow (const DataExchange::BadFormatException& e2Throw)
 {
 #if     qDefaultTracingOn
     Memory::Optional<unsigned int>  lineNum;
@@ -117,7 +117,7 @@ void    _NoReturn_  Execution::DoThrow (const DataExchangeFormat::BadFormatExcep
     e2Throw.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
     int useLineNum  =   lineNum.empty () ? -1 : *lineNum;
     int useColNum   =   colNumber.empty () ? -1 : *colNumber;
-    DbgTrace (L"Throwing exception: DataExchangeFormat::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), useLineNum, useColNum);
+    DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), useLineNum, useColNum);
 #endif
     throw e2Throw;
 }

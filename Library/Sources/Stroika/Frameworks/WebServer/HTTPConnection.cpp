@@ -8,7 +8,7 @@
 
 #include    "../../Foundation/Characters/Tokenize.h"
 #include    "../../Foundation/Containers/Common.h"
-#include    "../../Foundation/DataExchangeFormat/BadFormatException.h"
+#include    "../../Foundation/DataExchange/BadFormatException.h"
 #include    "../../Foundation/Debug/Assertions.h"
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
@@ -36,7 +36,7 @@ HTTPConnection::HTTPConnection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
     , fRequest_ (fSocketStream_)
-    , fResponse_ (s, fSocketStream_, DataExchangeFormat::PredefinedInternetMediaType::OctetStream_CT ())
+    , fResponse_ (s, fSocketStream_, DataExchange::PredefinedInternetMediaType::OctetStream_CT ())
 {
 }
 

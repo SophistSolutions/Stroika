@@ -9,7 +9,7 @@
 
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
+//#include    "Stroika/Foundation/DataExchange/VariantValue.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"

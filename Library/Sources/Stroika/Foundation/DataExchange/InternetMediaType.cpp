@@ -12,7 +12,7 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Execution;
 
 
@@ -24,7 +24,7 @@ using   namespace   Stroika::Foundation::Execution;
  *************************** MimeTypes::Private::INIT ***************************
  ********************************************************************************
  */
-DataExchangeFormat::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
+DataExchange::Private_::InternetMediaType_ModuleData_::InternetMediaType_ModuleData_ ()
     : kOctetStream_CT                       (Concrete::String_Constant (L"application/octet-stream"))
 
     , kImage_CT                             (Concrete::String_Constant (L"image"))
@@ -51,7 +51,7 @@ DataExchangeFormat::Private_::InternetMediaType_ModuleData_::InternetMediaType_M
 {
 }
 
-DataExchangeFormat::Private_::InternetMediaType_ModuleData_::~InternetMediaType_ModuleData_ ()
+DataExchange::Private_::InternetMediaType_ModuleData_::~InternetMediaType_ModuleData_ ()
 {
 }
 
@@ -99,7 +99,7 @@ bool    InternetMediaType::IsImageFormat () const
  ******************************** IsSubTypeOf ***********************************
  ********************************************************************************
  */
-bool    DataExchangeFormat::IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+bool    DataExchange::IsSubTypeOf (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
 {
     /*
      * TODO:
@@ -119,7 +119,7 @@ bool    DataExchangeFormat::IsSubTypeOf (const InternetMediaType& moreSpecificTy
  *************************** IsSubTypeOfOrEqualTo *******************************
  ********************************************************************************
  */
-bool    DataExchangeFormat::IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
+bool    DataExchange::IsSubTypeOfOrEqualTo (const InternetMediaType& moreSpecificType, const InternetMediaType& moreGeneralType)
 {
     return moreSpecificType == moreGeneralType or IsSubTypeOf (moreSpecificType, moreGeneralType);
 }

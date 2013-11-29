@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Configuration_Private_Defaults_DataExchangeFormat_XML_Common_h_
-#define _Stroika_Foundation_Configuration_Private_Defaults_DataExchangeFormat_XML_Common_h_ 1
+#ifndef _Stroika_Foundation_Configuration_Private_Defaults_DataExchange_XML_Common_h_
+#define _Stroika_Foundation_Configuration_Private_Defaults_DataExchange_XML_Common_h_ 1
 
 /*
  * This file is a private Stroika implementation detail, and shouldn't be included directly.
@@ -16,4 +16,4 @@
 #endif
 
 
-#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_DataExchangeFormat_XML_Common_h_*/
+#endif  /*_Stroika_Foundation_Configuration_Private_Defaults_DataExchange_XML_Common_h_*/

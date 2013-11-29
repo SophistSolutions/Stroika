@@ -19,9 +19,9 @@
 [19]	Foundation::Containers::Stack
 [20]	Foundation::Containers::Tally
 [21]	Foundation::Cryptography
-[22]	Foundation::DataExchangeFormat::Reader/Writers(JSON/XML)
-[23]	Foundation::DataExchangeFormat::ObjectVariantMapper
-[24]	Foundation::DataExchangeFormat::XML::SaxParser
+[22]	Foundation::DataExchange::Reader/Writers(JSON/XML)
+[23]	Foundation::DataExchange::ObjectVariantMapper
+[24]	Foundation::DataExchange::XML::SaxParser
 [25]	Foundation::Execution::Exceptions
 [26]	Foundation::Execution::ProcessRunner
 [27]	Foundation::Execution::Signals

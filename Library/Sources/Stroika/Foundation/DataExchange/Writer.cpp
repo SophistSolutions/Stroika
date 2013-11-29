@@ -11,7 +11,7 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 using   Streams::iostream::BinaryOutputStreamFromOStreamAdapter;
@@ -21,15 +21,15 @@ using   Streams::iostream::TextOutputStreamFromOStreamAdapter;
 
 /*
  ********************************************************************************
- ************************ DataExchangeFormat::Writer ****************************
+ ****************************** DataExchange::Writer ****************************
  ********************************************************************************
  */
-void    Writer::Write (const Memory::VariantValue& v, ostream& out)
+void    Writer::Write (const VariantValue& v, ostream& out)
 {
     Write (v, BinaryOutputStreamFromOStreamAdapter (out));
 }
 
-void    Writer::Write (const Memory::VariantValue& v, wostream& out)
+void    Writer::Write (const VariantValue& v, wostream& out)
 {
     AssertNotImplemented ();    // just because we never implemented
     Write (v, TextOutputStreamFromOStreamAdapter (out));

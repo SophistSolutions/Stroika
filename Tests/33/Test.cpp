@@ -11,7 +11,6 @@
 #include    "Stroika/Foundation/Memory/AnyVariantValue.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/Memory/SharedByValue.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
 
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
@@ -46,46 +45,6 @@ namespace   {
     }
     void    Test2_SharedByValue ()
     {
-    }
-    template <typename T>
-    void Test3_VariantValue_Helper_MinMax_ ()
-    {
-        {
-            VariantValue v = numeric_limits<T>::lowest ();
-            VariantValue vs = v.As<String> ();
-            VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
-        }
-        {
-            VariantValue v = numeric_limits<T>::min ();
-            VariantValue vs = v.As<String> ();
-            VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
-        }
-        {
-            VariantValue v = numeric_limits<T>::max ();
-            VariantValue vs = v.As<String> ();
-            VariantValue vrt = vs.As<T> ();
-            VerifyTestResult (v == vrt);
-        }
-    }
-    void    Test3_VariantValue ()
-    {
-        {
-            VariantValue v;
-            VerifyTestResult (v.empty ());
-            v = String (L"hi");
-            VerifyTestResult (v == L"hi");
-        }
-        Test3_VariantValue_Helper_MinMax_<int> ();
-        Test3_VariantValue_Helper_MinMax_<unsigned int> ();
-        Test3_VariantValue_Helper_MinMax_<long> ();
-        Test3_VariantValue_Helper_MinMax_<unsigned long> ();
-        Test3_VariantValue_Helper_MinMax_<long long> ();
-        Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
-        Test3_VariantValue_Helper_MinMax_<float> ();
-        Test3_VariantValue_Helper_MinMax_<double> ();
-        Test3_VariantValue_Helper_MinMax_<long double> ();
     }
     void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {
@@ -187,7 +146,6 @@ namespace   {
     {
         Test1_Optional ();
         Test2_SharedByValue ();
-        Test3_VariantValue ();
         Test_4_Optional_Of_Mapping_Copy_Problem_ ();
         Test_5_AnyVariantValue_ ();
     }

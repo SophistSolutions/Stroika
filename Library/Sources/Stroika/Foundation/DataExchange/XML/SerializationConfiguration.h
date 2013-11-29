@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_SerializationConfiguration_h_
-#define _Stroika_Foundation_DataExchangeFormat_XML_SerializationConfiguration_h_    1
+#ifndef _Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_
+#define _Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -28,7 +28,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
 
@@ -45,7 +45,7 @@ namespace   Stroika {
                 public:
                     // NOTE - defaults to "Document"
                     // if empty - then Write requiers
-                    //              Require (v.GetType () == Memory::VariantValue::Type::eMap);
+                    //              Require (v.GetType () == VariantValue::Type::eMap);
                     //
                     // If provided - must be a valid xml element name (ncname?)
                     nonvirtual  Optional<String>    GetDocumentElementName () const;
@@ -83,4 +83,4 @@ namespace   Stroika {
  */
 #include    "SerializationConfiguration.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SerializationConfiguration_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_SerializationConfiguration_h_*/

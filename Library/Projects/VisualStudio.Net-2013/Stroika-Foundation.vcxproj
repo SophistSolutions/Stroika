@@ -208,112 +208,113 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchangeFormat-JSON-Reader.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Reader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchange-JSON-Reader.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)DataExchangeFormat-JSON-Writer.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)DataExchange-JSON-Writer.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Reader.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchangeFormat-Reader.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchange-Reader.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Writer.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchangeFormat-Writer.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchange-Writer.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Reader.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchangeFormat-XML-Reader.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/DataExchange-XML-Reader.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.cpp">
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
@@ -333,28 +334,28 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">..\..\..\ThirdPartyLibs\Xerces\CURRENT\src;</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)DataExchangeFormat-XML-Writer.obj</ObjectFileName>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)DataExchange-XML-Writer.obj</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.cpp" />
@@ -564,7 +565,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\LeakChecker.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\MemoryAllocator.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.cpp" />
@@ -656,7 +656,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Configuration_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Cryptography_SSL_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Database_ODBCClient_.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_DataExchangeFormat_XML_Common_.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_DataExchange_XML_Common_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Assertions_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Debug_Trace_.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Module_.h" />
@@ -745,21 +745,22 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\ServerContext.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\SSL\SSLSocket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Database\ODBCClient.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Reader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\JSON\Writer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Reader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Writer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Reader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\JSON\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Common.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Reader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Debugger.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Fatal.h" />
@@ -869,7 +870,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\Platform\Windows\Handle.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryOutputStream.h" />
@@ -1026,19 +1026,20 @@
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\OpenSSLCryptoStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Database\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\BadFormatException.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\InternetMediaType.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Reader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ObjectVariantMapper.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\ToDo.md" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\Writer.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Namespace.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXObjectReader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SAXReader.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\SerializationConfiguration.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\Writer.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\DataExchangeFormat\XML\WriterUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\BadFormatException.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\InternetMediaType.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Reader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ObjectVariantMapper.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\ToDo.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\Writer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Namespace.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXObjectReader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SAXReader.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\SerializationConfiguration.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
@@ -1119,7 +1120,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Memory\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SharedByValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl" />
-    <None Include="..\..\Sources\Stroika\Foundation\Memory\VariantValue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputOutputStream.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Streams\BasicBinaryInputStream.inl" />

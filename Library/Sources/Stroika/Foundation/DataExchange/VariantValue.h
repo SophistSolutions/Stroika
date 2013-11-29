@@ -25,9 +25,6 @@
  *
  *  TODO:
  *
- *      @todo   Consider moving this class to DataExcahngeFormat module. This especially makes sense given
- *              what it depnds on and what depends on it.
- *
  *      @todo   Add SINFAE CTOR template, so we can lose explicit map<> CTOR, and handle other
  *              cases automatically, like vector<wstring> CTOR. And/or fix KeyValuePair<> ctor so
  *              maps 'convertible' key and convertabile 'value' types.
@@ -62,7 +59,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   Memory {
+        namespace   DataExchange {
 
 
             using   Characters::String;
@@ -191,7 +188,7 @@ namespace   Stroika {
                  *  There is no generic As<T> implementation.
                  *
                  *  If the caller attempts a conversion that isn't supported, or doesn't make sense
-                 *  then DataExchangeFormat::BadFormatException will be thrown.
+                 *  then DataExchange::BadFormatException will be thrown.
                  *
                  *      Supported types (RETURNTYPE) include:
                  *          o   bool

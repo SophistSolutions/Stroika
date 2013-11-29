@@ -1,17 +1,18 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_Reader_h_
-#define _Stroika_Foundation_DataExchangeFormat_Reader_h_    1
+#ifndef _Stroika_Foundation_DataExchange_Reader_h_
+#define _Stroika_Foundation_DataExchange_Reader_h_    1
 
 #include    "../StroikaPreComp.h"
 
 #include    <istream>
 
 #include    "../Memory/SharedByValue.h"
-#include    "../Memory/VariantValue.h"
 #include    "../Streams/BinaryInputStream.h"
 #include    "../Streams/TextInputStream.h"
+
+#include    "VariantValue.h"
 
 
 /**
@@ -37,7 +38,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /**
@@ -55,10 +56,10 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Memory::VariantValue    Read (const Streams::BinaryInputStream& in);
-                nonvirtual  Memory::VariantValue    Read (const Streams::TextInputStream& in);
-                nonvirtual  Memory::VariantValue    Read (istream& in);
-                nonvirtual  Memory::VariantValue    Read (wistream& in);
+                nonvirtual  VariantValue    Read (const Streams::BinaryInputStream& in);
+                nonvirtual  VariantValue    Read (const Streams::TextInputStream& in);
+                nonvirtual  VariantValue    Read (istream& in);
+                nonvirtual  VariantValue    Read (wistream& in);
 
             protected:
                 nonvirtual  _IRep&          _GetRep ();
@@ -80,9 +81,9 @@ namespace   Stroika {
 
             class   Reader::_IRep {
             public:
-                virtual _SharedPtrIRep          Clone () const                              =   0;
-                virtual Memory::VariantValue    Read (const Streams::BinaryInputStream& in) =   0;
-                virtual Memory::VariantValue    Read (const Streams::TextInputStream& in)   =   0;
+                virtual _SharedPtrIRep  Clone () const                              =   0;
+                virtual VariantValue    Read (const Streams::BinaryInputStream& in) = 0;
+                virtual VariantValue    Read (const Streams::TextInputStream& in) = 0;
             };
 
 
@@ -99,4 +100,4 @@ namespace   Stroika {
  */
 #include    "Reader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_Reader_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_Reader_h_*/

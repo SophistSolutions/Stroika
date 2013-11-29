@@ -12,7 +12,7 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 using   Streams::iostream::BinaryInputStreamFromIStreamAdapter;
@@ -22,15 +22,15 @@ using   Streams::iostream::TextInputStreamFromIStreamAdapter;
 
 /*
  ********************************************************************************
- ************************ DataExchangeFormat::Reader ****************************
+ ****************************** DataExchange::Reader ****************************
  ********************************************************************************
  */
-Memory::VariantValue    Reader::Read (istream& in)
+VariantValue    Reader::Read (istream& in)
 {
     return Read (BinaryInputStreamFromIStreamAdapter (in));
 }
 
-Memory::VariantValue    Reader::Read (wistream& in)
+VariantValue    Reader::Read (wistream& in)
 {
     return Read (TextInputStreamFromIStreamAdapter (in));
 }

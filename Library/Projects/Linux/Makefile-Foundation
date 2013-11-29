@@ -16,7 +16,7 @@ SubDirs=				\
 	Containers			\
 	Cryptography		\
 	Database			\
-	DataExchangeFormat	\
+	DataExchange	\
 	Debug				\
 	Execution			\
 	IO					\

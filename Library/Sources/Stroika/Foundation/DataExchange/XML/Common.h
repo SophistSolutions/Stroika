@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_Common_h_
-#define _Stroika_Foundation_DataExchangeFormat_XML_Common_h_    1
+#ifndef _Stroika_Foundation_DataExchange_XML_Common_h_
+#define _Stroika_Foundation_DataExchange_XML_Common_h_    1
 
 #include    "../../StroikaPreComp.h"
 
@@ -26,12 +26,12 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
             }
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_Common_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_Common_h_*/
 

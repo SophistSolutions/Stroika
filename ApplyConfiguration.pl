@@ -199,9 +199,9 @@ sub MakeUnixDirs {
 		mkDirWithLinks3("Foundation/Cryptography/Hash/Algorithms", "Makefile-Foundation-Cryptography-Hash-Algorithms");
 		mkDirWithLinks2("Foundation/Cryptography/SSL", "Makefile-Foundation-Cryptography-SSL");
 		mkDirWithLinks("Foundation/Database", "Makefile-Foundation-Database");
-		mkDirWithLinks("Foundation/DataExchangeFormat", "Makefile-Foundation-DataExchangeFormat");
-		mkDirWithLinks2("Foundation/DataExchangeFormat/JSON", "Makefile-Foundation-DataExchangeFormat-JSON");
-		mkDirWithLinks2("Foundation/DataExchangeFormat/XML", "Makefile-Foundation-DataExchangeFormat-XML");
+		mkDirWithLinks("Foundation/DataExchange", "Makefile-Foundation-DataExchange");
+		mkDirWithLinks2("Foundation/DataExchange/JSON", "Makefile-Foundation-DataExchange-JSON");
+		mkDirWithLinks2("Foundation/DataExchange/XML", "Makefile-Foundation-DataExchange-XML");
 		mkDirWithLinks("Foundation/Debug", "Makefile-Foundation-Debug");
 		mkDirWithLinks("Foundation/Execution", "Makefile-Foundation-Execution");
 		mkdir "$intermediateFiles$currentConfiguration/Library/Foundation/Execution/Platform";

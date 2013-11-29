@@ -10,7 +10,7 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 using   namespace   Stroika::Foundation::Streams;
 
 
@@ -25,7 +25,7 @@ using   namespace   Stroika::Foundation::Streams;
 
 /*
  ********************************************************************************
- *************** DataExchangeFormat::JSON::PrettyPrint **************************
+ ********************* DataExchange::JSON::PrettyPrint **************************
  ********************************************************************************
  */
 namespace   {
@@ -37,7 +37,7 @@ namespace   {
     }
 }
 namespace   {
-    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel);
+    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel);
     void    PrettyPrint_Null_ (const TextOutputStream& out)
     {
         out.Write (L"null");
@@ -102,7 +102,7 @@ namespace   {
         }
         out.Write (L"\"");
     }
-    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const vector<VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         out.Write (L"[\n");
         for (auto i = v.begin (); i != v.end (); ++i) {
@@ -116,7 +116,7 @@ namespace   {
         Indent_ (out, indentLevel);
         out.Write (L"]");
     }
-    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const map<wstring, VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         out.Write (L"{\n");
         for (auto i = v.begin (); i != v.end ();) {
@@ -133,38 +133,38 @@ namespace   {
         Indent_ (out, indentLevel);
         out.Write (L"}");
     }
-    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
         switch (v.GetType ()) {
-            case    Memory::VariantValue::Type::eNull:
+            case    VariantValue::Type::eNull:
                 PrettyPrint_Null_ (out);
                 break;
-            case    Memory::VariantValue::Type::eBoolean:
+            case    VariantValue::Type::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
-            case    Memory::VariantValue::Type::eDate:
+            case    VariantValue::Type::eDate:
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
-            case    Memory::VariantValue::Type::eDateTime:
+            case    VariantValue::Type::eDateTime:
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
-            case    Memory::VariantValue::Type::eInteger:
+            case    VariantValue::Type::eInteger:
                 PrettyPrint_ (v.As<long long int> (), out);
                 break;
-            case    Memory::VariantValue::Type::eUnsignedInteger:
+            case    VariantValue::Type::eUnsignedInteger:
                 PrettyPrint_ (v.As<unsigned long long int> (), out);
                 break;
-            case    Memory::VariantValue::Type::eFloat:
+            case    VariantValue::Type::eFloat:
                 PrettyPrint_ (v.As<long double> (), out);
                 break;
-            case    Memory::VariantValue::Type::eString:
+            case    VariantValue::Type::eString:
                 PrettyPrint_ (v.As<wstring> (), out);
                 break;
-            case    Memory::VariantValue::Type::eMap:
-                PrettyPrint_ (v.As<map<wstring, Memory::VariantValue>> (), out, indentLevel);
+            case    VariantValue::Type::eMap:
+                PrettyPrint_ (v.As<map<wstring, VariantValue>> (), out, indentLevel);
                 break;
-            case    Memory::VariantValue::Type::eArray:
-                PrettyPrint_ (v.As<vector<Memory::VariantValue>> (), out, indentLevel);
+            case    VariantValue::Type::eArray:
+                PrettyPrint_ (v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:
                 RequireNotReached ();       // only certain types allowed
@@ -177,10 +177,10 @@ namespace   {
 
 /*
  ********************************************************************************
- ******************** DataExchangeFormat::JSON::Writer **************************
+ ************************** DataExchange::JSON::Writer **************************
  ********************************************************************************
  */
-class   DataExchangeFormat::JSON::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
+class   DataExchange::JSON::Writer::Rep_ : public DataExchange::Writer::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
@@ -188,20 +188,20 @@ public:
     {
         return _SharedPtrIRep (new Rep_ ());    // no instance data
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {
         TextOutputStreamBinaryAdapter textOut (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
         PrettyPrint_ (v, textOut, 0);
         textOut.Write (L"\n");      // a single elt not LF terminated, but the entire doc SB.
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override
     {
         PrettyPrint_ (v, out, 0);
     }
 };
 
 
-DataExchangeFormat::JSON::Writer::Writer ()
+DataExchange::JSON::Writer::Writer ()
     : inherited (shared_ptr<_IRep> (new Rep_ ()))
 {
 }

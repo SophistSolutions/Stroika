@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_Reader_inl_
-#define _Stroika_Foundation_DataExchangeFormat_Reader_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_Reader_inl_
+#define _Stroika_Foundation_DataExchange_Reader_inl_  1
 
 
 /*
@@ -12,12 +12,12 @@
  */
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /*
              ********************************************************************************
-             ************ DataExchangeFormat::Reader::_Rep_Cloner ***************************
+             ************ DataExchange::Reader::_Rep_Cloner ***************************
              ********************************************************************************
              */
             inline   Reader::_SharedPtrIRep   Reader::_Rep_Cloner::Copy (const _IRep& t)
@@ -28,18 +28,18 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* DataExchangeFormat::Reader ***************************
+             ************************* DataExchange::Reader ***************************
              ********************************************************************************
              */
             inline  Reader::Reader (shared_ptr<_IRep> rep)
                 : fRep_ (rep)
             {
             }
-            inline  Memory::VariantValue    Reader::Read (const Streams::BinaryInputStream& in)
+            inline  VariantValue    Reader::Read (const Streams::BinaryInputStream& in)
             {
                 return fRep_->Read (in);
             }
-            inline  Memory::VariantValue    Reader::Read (const Streams::TextInputStream& in)
+            inline  VariantValue    Reader::Read (const Streams::TextInputStream& in)
             {
                 return fRep_->Read (in);
             }
@@ -59,4 +59,4 @@ namespace   Stroika {
 
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_Reader_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_Reader_inl_*/

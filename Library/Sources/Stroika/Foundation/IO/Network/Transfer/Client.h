@@ -11,7 +11,7 @@
 #include    "../../../Characters/String.h"
 #include    "../../../Configuration/Common.h"
 #include    "../../../Containers/Mapping.h"
-#include    "../../../DataExchangeFormat/InternetMediaType.h"
+#include    "../../../DataExchange/InternetMediaType.h"
 #include    "../../../Memory/Optional.h"
 #include    "../URL.h"
 #include    "../HTTP/Status.h"
@@ -64,7 +64,7 @@ namespace   Stroika {
 
                     using   Characters::String;
                     using   Containers::Mapping;
-                    using   DataExchangeFormat::InternetMediaType;
+                    using   DataExchange::InternetMediaType;
                     using   Memory::Byte;
                     using   Time::DurationSecondsType;
 

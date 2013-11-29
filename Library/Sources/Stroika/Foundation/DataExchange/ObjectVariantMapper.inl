@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_inl_
-#define _Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_
+#define _Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_  1
 
 
 /*
@@ -18,7 +18,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /*
@@ -70,13 +70,13 @@ namespace   Stroika {
                 return AddClass<CLASS> (Sequence<StructureFieldInfo> (fieldDescriptionsStart, fieldDescriptionsEnd));
             }
             template    <typename CLASS>
-            inline  void    ObjectVariantMapper::ToObject (const Memory::VariantValue& v, CLASS* into) const
+            inline  void    ObjectVariantMapper::ToObject (const VariantValue& v, CLASS* into) const
             {
                 RequireNotNull (into);
                 ToObject  (typeid (CLASS), v, reinterpret_cast<Byte*> (into));
             }
             template    <typename CLASS>
-            inline  CLASS    ObjectVariantMapper::ToObject (const Memory::VariantValue& v) const
+            inline  CLASS    ObjectVariantMapper::ToObject (const VariantValue& v) const
             {
                 CLASS tmp;
                 ToObject (v, &tmp);
@@ -380,4 +380,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_ObjectVariantMapper_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_ObjectVariantMapper_inl_*/

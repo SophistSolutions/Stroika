@@ -5,15 +5,15 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Configuration/Locale.h"
-#include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchangeFormat/ObjectVariantMapper.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
-#include    "Stroika/Foundation/DataExchangeFormat/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/BadFormatException.h"
+#include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
+#include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-#include    "Stroika/Foundation/Memory/VariantValue.h"
+//#include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
@@ -26,10 +26,9 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 using   Memory::Byte;
-using   Memory::VariantValue;
 using   Time::Date;
 using   Time::DateTime;
 using   Time::Duration;
@@ -44,7 +43,7 @@ namespace   {
         template    <typename T>
         void    RoundTripTest_ (T v)
         {
-            Memory::VariantValue mv = v;
+            VariantValue mv = v;
             VerifyTestResult (mv.As<T> () == v);
         }
         template    <typename T>

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_Writer_inl_
-#define _Stroika_Foundation_DataExchangeFormat_Writer_inl_  1
+#ifndef _Stroika_Foundation_DataExchange_Writer_inl_
+#define _Stroika_Foundation_DataExchange_Writer_inl_  1
 
 
 /*
@@ -12,12 +12,12 @@
  */
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /*
              ********************************************************************************
-             ************ DataExchangeFormat::Writer::_Rep_Cloner ***************************
+             ************ DataExchange::Writer::_Rep_Cloner ***************************
              ********************************************************************************
              */
             inline   Writer::_SharedPtrIRep   Writer::_Rep_Cloner::Copy (const _IRep& t)
@@ -28,18 +28,18 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* DataExchangeFormat::Writer ***************************
+             ************************* DataExchange::Writer ***************************
              ********************************************************************************
              */
             inline  Writer::Writer (shared_ptr<_IRep> rep)
                 : fRep_ (rep)
             {
             }
-            inline  void    Writer::Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out)
+            inline  void    Writer::Write (const VariantValue& v, const Streams::BinaryOutputStream& out)
             {
                 fRep_->Write (v, out);
             }
-            inline  void    Writer::Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out)
+            inline  void    Writer::Write (const VariantValue& v, const Streams::TextOutputStream& out)
             {
                 fRep_->Write (v, out);
             }
@@ -58,4 +58,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_Writer_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_Writer_inl_*/

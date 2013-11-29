@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_XML_SAXObjectReader_h_
-#define _Stroika_Foundation_DataExchangeFormat_XML_SAXObjectReader_h_   1
+#ifndef _Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_
+#define _Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_   1
 
 #include    "../../StroikaPreComp.h"
 
@@ -33,11 +33,11 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   XML {
 
 #if     !qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                const   Mapping<String, Memory::VariantValue>   kEmptyMapString2VariantVal_;
+                const   Mapping<String, VariantValue>   kEmptyMapString2VariantVal_;
 #endif
 
 
@@ -105,9 +105,9 @@ namespace   Stroika {
                 class   BuiltinReader : public SAXObjectReader::ObjectBase {
                 public:
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-                    BuiltinReader (T* intoVal, const Mapping<String, Memory::VariantValue>& attrs = Mapping<String, Memory::VariantValue> ());
+                    BuiltinReader (T* intoVal, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    BuiltinReader (T* intoVal, const Mapping<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    BuiltinReader (T* intoVal, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
 
                 private:
@@ -221,7 +221,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
                     ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ());
 #else
-                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, Memory::VariantValue>& attrs = kEmptyMapString2VariantVal_);
+                    ListOfObjectReader (vector<typename TRAITS::ElementType>* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_);
 #endif
 
                     virtual void HandleChildStart (SAXObjectReader& r, const String& uri, const String& localName, const String& qname, const Mapping<String, VariantValue>& attrs) override;
@@ -246,4 +246,4 @@ namespace   Stroika {
  */
 #include    "SAXObjectReader.inl"
 
-#endif  /*_Stroika_Foundation_DataExchangeFormat_XML_SAXObjectReader_h_*/
+#endif  /*_Stroika_Foundation_DataExchange_XML_SAXObjectReader_h_*/

@@ -13,7 +13,7 @@
 #include    "../../Foundation/Characters/CodePage.h"
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/DataExchangeFormat/InternetMediaType.h"
+#include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/Socket.h"
 #include    "../../Foundation/IO/Network/HTTP/Status.h"
 #include    "../../Foundation/Streams/BinaryOutputStream.h"
@@ -48,7 +48,7 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation::IO::Network::HTTP;
 
             using   Characters::String;
-            using   DataExchangeFormat::InternetMediaType;
+            using   DataExchange::InternetMediaType;
             using   Memory::Byte;
 
 

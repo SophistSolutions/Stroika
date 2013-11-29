@@ -6,14 +6,14 @@
 #include    <sstream>
 
 #include    "../Characters/Format.h"
-#include    "../DataExchangeFormat/BadFormatException.h"
+#include    "../DataExchange/BadFormatException.h"
 #include    "../Math/Common.h"
 
 #include    "VariantValue.h"
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Memory;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 namespace {
@@ -281,7 +281,7 @@ bool    VariantValue::As () const
                 return As<UnsignedIntegerType_> () != 0;
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -313,7 +313,7 @@ VariantValue::IntegerType_ VariantValue::AsInteger_ () const
                 return Characters::String2Int<IntegerType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -347,7 +347,7 @@ VariantValue::UnsignedIntegerType_ VariantValue::AsUnsignedInteger_ () const
                 return Characters::String2Int<UnsignedIntegerType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -380,7 +380,7 @@ VariantValue::FloatType_ VariantValue::AsFloatType_ () const
                 return Characters::String2Float<FloatType_> (v->fVal);
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -408,7 +408,7 @@ Date VariantValue::As() const
                 return Date::Parse (v->fVal, Date::ParseFormat::eISO8601);
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -436,7 +436,7 @@ DateTime VariantValue::As () const
                 return DateTime::Parse (v->fVal, DateTime::ParseFormat::eISO8601);
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -523,7 +523,7 @@ String  VariantValue::AsString_ () const
                 return tmp.str ();
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -545,7 +545,7 @@ map<wstring, VariantValue>   VariantValue::As () const
                 return tmp;
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -563,7 +563,7 @@ Mapping<String, VariantValue>   VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }
@@ -587,7 +587,7 @@ Sequence<VariantValue> VariantValue::As () const
                 return v->fVal;
             }
         default: {
-                Execution::DoThrow (DataExchangeFormat::BadFormatException ());
+                Execution::DoThrow (DataExchange::BadFormatException ());
             }
     }
 }

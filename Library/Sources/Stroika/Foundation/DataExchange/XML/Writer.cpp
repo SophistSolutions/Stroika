@@ -14,8 +14,8 @@
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
-using   namespace   Stroika::Foundation::DataExchangeFormat::XML;
+using   namespace   Stroika::Foundation::DataExchange;
+using   namespace   Stroika::Foundation::DataExchange::XML;
 using   namespace   Stroika::Foundation::Streams;
 
 
@@ -31,7 +31,7 @@ namespace   {
     }
 }
 namespace   {
-    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel);
+    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel);
     void    PrettyPrint_ (bool v, const TextOutputStream& out)
     {
         if (v) {
@@ -74,7 +74,7 @@ namespace   {
         // then can clean this up
         out.Write (String::FromAscii (QuoteForXML (v)));
     }
-    void    PrettyPrint_ (const vector<Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const vector<VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         for (auto i = v.begin (); i != v.end (); ++i) {
             PrettyPrint_ (*i, out, indentLevel + 1);
@@ -82,7 +82,7 @@ namespace   {
         }
         Indent_ (out, indentLevel);
     }
-    void    PrettyPrint_ (const map<wstring, Memory::VariantValue>& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const map<wstring, VariantValue>& v, const TextOutputStream& out, int indentLevel)
     {
         //@@@@TODO - must validate first legit xml elt args
         out.Write (L"\n");
@@ -99,37 +99,37 @@ namespace   {
             out.Write (L"\n");
         }
     }
-    void    PrettyPrint_ (const Memory::VariantValue& v, const TextOutputStream& out, int indentLevel)
+    void    PrettyPrint_ (const VariantValue& v, const TextOutputStream& out, int indentLevel)
     {
         switch (v.GetType ()) {
-            case    Memory::VariantValue::Type::eNull:
+            case    VariantValue::Type::eNull:
                 break;
-            case    Memory::VariantValue::Type::eBoolean:
+            case    VariantValue::Type::eBoolean:
                 PrettyPrint_ (v.As<bool> (), out);
                 break;
-            case    Memory::VariantValue::Type::eDate:
+            case    VariantValue::Type::eDate:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case    Memory::VariantValue::Type::eDateTime:
+            case    VariantValue::Type::eDateTime:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case    Memory::VariantValue::Type::eInteger:
+            case    VariantValue::Type::eInteger:
                 PrettyPrint_ (v.As<long long int> (), out);
                 break;
-            case    Memory::VariantValue::Type::eUnsignedInteger:
+            case    VariantValue::Type::eUnsignedInteger:
                 PrettyPrint_ (v.As<unsigned long long int> (), out);
                 break;
-            case    Memory::VariantValue::Type::eFloat:
+            case    VariantValue::Type::eFloat:
                 PrettyPrint_ (v.As<long double> (), out);
                 break;
-            case    Memory::VariantValue::Type::eString:
+            case    VariantValue::Type::eString:
                 PrettyPrint_ (v.As<String> (), out);
                 break;
-            case    Memory::VariantValue::Type::eMap:
-                PrettyPrint_ (v.As<map<wstring, Memory::VariantValue>> (), out, indentLevel);
+            case    VariantValue::Type::eMap:
+                PrettyPrint_ (v.As<map<wstring, VariantValue>> (), out, indentLevel);
                 break;
-            case    Memory::VariantValue::Type::eArray:
-                PrettyPrint_ (v.As<vector<Memory::VariantValue>> (), out, indentLevel);
+            case    VariantValue::Type::eArray:
+                PrettyPrint_ (v.As<vector<VariantValue>> (), out, indentLevel);
                 break;
             default:
                 RequireNotReached ();       // only certain types allowed
@@ -141,10 +141,10 @@ namespace   {
 
 /*
  ********************************************************************************
- ******************** DataExchangeFormat::XML::Writer ***************************
+ ******************** DataExchange::XML::Writer ***************************
  ********************************************************************************
  */
-class   DataExchangeFormat::XML::Writer::Rep_ : public DataExchangeFormat::Writer::_IRep {
+class   DataExchange::XML::Writer::Rep_ : public DataExchange::Writer::_IRep {
 public:
     DECLARE_USE_BLOCK_ALLOCATION (Rep_);
 public:
@@ -158,26 +158,26 @@ public:
     {
         return _SharedPtrIRep (new Rep_ (fSerializationConfiguration_));
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::BinaryOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::BinaryOutputStream& out) override
     {
         if (fDocumentElementName_.empty ()) {
-            Require (v.GetType () == Memory::VariantValue::Type::eMap);
+            Require (v.GetType () == VariantValue::Type::eMap);
             PrettyPrint_ (v, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
         }
         else {
-            Containers::Mapping<String, Memory::VariantValue> v2;
+            Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
             PrettyPrint_ (v2, TextOutputStreamBinaryAdapter (out, TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM), 0);
         }
     }
-    virtual void    Write (const Memory::VariantValue& v, const Streams::TextOutputStream& out) override
+    virtual void    Write (const VariantValue& v, const Streams::TextOutputStream& out) override
     {
         if (fDocumentElementName_.empty ()) {
-            Require (v.GetType () == Memory::VariantValue::Type::eMap);
+            Require (v.GetType () == VariantValue::Type::eMap);
             PrettyPrint_ (v, out, 0);
         }
         else {
-            Containers::Mapping<String, Memory::VariantValue> v2;
+            Containers::Mapping<String, VariantValue> v2;
             v2.Add (fDocumentElementName_, v);
             PrettyPrint_ (v2, out, 0);
         }
@@ -198,29 +198,29 @@ private:
 };
 
 
-DataExchangeFormat::XML::Writer::Writer (const SerializationConfiguration& config)
+DataExchange::XML::Writer::Writer (const SerializationConfiguration& config)
     : inherited (shared_ptr<_IRep> (new Rep_ (config)))
 {
 }
 
-DataExchangeFormat::XML::Writer::Rep_&   DataExchangeFormat::XML::Writer::GetRep_ ()
+DataExchange::XML::Writer::Rep_&   DataExchange::XML::Writer::GetRep_ ()
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<Rep_&> (inherited::_GetRep ());
 }
 
-const DataExchangeFormat::XML::Writer::Rep_&   DataExchangeFormat::XML::Writer::GetRep_ () const
+const DataExchange::XML::Writer::Rep_&   DataExchange::XML::Writer::GetRep_ () const
 {
     EnsureMember (&inherited::_GetRep (), Rep_);
     return reinterpret_cast<const Rep_&> (inherited::_GetRep ());
 }
 
-SerializationConfiguration DataExchangeFormat::XML::Writer::GetConfiguration () const
+SerializationConfiguration DataExchange::XML::Writer::GetConfiguration () const
 {
     return GetRep_ ().GetConfiguration ();
 }
 
-void    DataExchangeFormat::XML::Writer::SetConfiguration (const SerializationConfiguration& config)
+void    DataExchange::XML::Writer::SetConfiguration (const SerializationConfiguration& config)
 {
     GetRep_ ().SetConfiguration (config);
 }

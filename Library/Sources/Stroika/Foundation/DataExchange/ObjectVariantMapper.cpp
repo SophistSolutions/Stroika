@@ -17,7 +17,7 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 using   Time::Date;
 using   Time::DateTime;
@@ -28,7 +28,7 @@ using   Time::TimeOfDay;
 
 /*
  ********************************************************************************
- ******* DataExchangeFormat::ObjectVariantMapper::TypeMappingDetails ************
+ ******* DataExchange::ObjectVariantMapper::TypeMappingDetails ************
  ********************************************************************************
  */
 ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (
@@ -101,7 +101,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
 
 /*
  ********************************************************************************
- ****************** DataExchangeFormat::ObjectVariantMapper *********************
+ ****************** DataExchange::ObjectVariantMapper *********************
  ********************************************************************************
  */
 namespace {
@@ -223,7 +223,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 }
 
 template    <>
-ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Memory::VariantValue> ()
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<VariantValue> ()
 {
     auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
         return *(reinterpret_cast<const VariantValue*> (fromObjOfTypeT));
@@ -288,7 +288,7 @@ ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializ
 }
 
 template    <>
-ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Memory::VariantValue>> ()
+ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ()
 {
     typedef Mapping<String, VariantValue>    ACTUAL_ELEMENT_TYPE;
     auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {

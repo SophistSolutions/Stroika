@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_DataExchangeFormat_InternetMediaType_inl_
-#define _Stroika_Foundation_DataExchangeFormat_InternetMediaType_inl_   1
+#ifndef _Stroika_Foundation_DataExchange_InternetMediaType_inl_
+#define _Stroika_Foundation_DataExchange_InternetMediaType_inl_   1
 
 
 /*
@@ -14,7 +14,7 @@
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
 
 
             /*
@@ -86,7 +86,7 @@ namespace   Stroika {
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   Private_ {
                 struct  InternetMediaType_ModuleData_ {
                     InternetMediaType_ModuleData_ ();
@@ -120,12 +120,12 @@ namespace   Stroika {
 }
 
 namespace   {
-    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchangeFormat::Private_::InternetMediaType_ModuleData_>    _Stroika_Foundation_DataExchangeFormat_InternetMediaType_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
+    Stroika::Foundation::Execution::ModuleInitializer<Stroika::Foundation::DataExchange::Private_::InternetMediaType_ModuleData_>    _Stroika_Foundation_DataExchange_InternetMediaType_ModuleData_;   // this object constructed for the CTOR/DTOR per-module side-effects
 }
 
 namespace   Stroika {
     namespace   Foundation {
-        namespace   DataExchangeFormat {
+        namespace   DataExchange {
             namespace   PredefinedInternetMediaType {
 
                 inline  const   InternetMediaType&  OctetStream_CT ()                       {   return Execution::ModuleInitializer<Private_::InternetMediaType_ModuleData_>::Actual ().kOctetStream_CT;  }
@@ -157,4 +157,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Foundation_DataExchangeFormat_InternetMediaType_inl_*/
+#endif  /*_Stroika_Foundation_DataExchange_InternetMediaType_inl_*/
