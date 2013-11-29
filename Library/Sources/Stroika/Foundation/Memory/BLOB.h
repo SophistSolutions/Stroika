@@ -24,6 +24,8 @@
  *              That way - you can wrap a BLOB object around a resource read in (and permantntly locked).
  *              Or around a static array.
  *
+ *      @todo   FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
+ *
  *      @todo   Closely consider Streams::TODO.md item about a new Streams::BLOB class. This may replace
  *              several of the BELOW TODO items more elegantly (wthout th eSeekOffsetType change would
  *              might cause some difficultties. So you have Memory::BLOB when you Know i tmust be in ram
@@ -77,7 +79,9 @@ namespace   Stroika {
 
             /**
              *  A BLOB is a read-only binary region of memory. Once a BLOB is constructed, the data inside cannot
-             *  change.
+             *  change (except by assignement - being assigned over).
+             *
+             *  @todo - FIX AND DOCUMENTED FIXED - thresafeaty on assignment!
              */
             class   BLOB {
             public:
@@ -133,14 +137,9 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Returns the number of bytes in the BLOB.
                  */
                 nonvirtual  size_t      GetSize () const;
-                /**
-                 */
-                nonvirtual  size_t      size () const;
-                /**
-                 */
-                nonvirtual  size_t      length () const;
 
             public:
                 /**
@@ -148,18 +147,36 @@ namespace   Stroika {
                  *  returns < 0 if the first byte where the two regions differ is less than the first byte
                  *  of the RHS (where they differ).
                  */
+                nonvirtual  int      Compare (const BLOB& rhs) const;
+
+            public:
+                /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const BLOB& rhs)
+                 */
+                nonvirtual  bool operator< (const BLOB& rhs) const;
+                nonvirtual  bool operator<= (const BLOB& rhs) const;
+                nonvirtual  bool operator> (const BLOB& rhs) const;
+                nonvirtual  bool operator>= (const BLOB& rhs) const;
+                nonvirtual  bool operator== (const BLOB& rhs) const;
+                nonvirtual  bool operator!= (const BLOB& rhs) const;
+
+            public:
+                /**
+                 *  Trivial alias for @see Compare()
+                 */
                 nonvirtual  int      compare (const BLOB& rhs) const;
 
             public:
                 /**
+                 *  Trivial alias for @see GetSize()
                  */
-                bool    operator< (const BLOB& rhs) const;
+                nonvirtual  size_t      size () const;
+
+            public:
                 /**
+                 *  Trivial alias for @see GetSize()
                  */
-                bool    operator> (const BLOB& rhs) const;
-                /**
-                 */
-                bool    operator== (const BLOB& rhs) const;
+                nonvirtual  size_t      length () const;
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes

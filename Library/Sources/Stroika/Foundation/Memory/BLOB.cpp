@@ -65,7 +65,7 @@ pair<const Byte*, const Byte*>   Memory::BLOB::AdoptRep_::GetBounds () const
 
 
 
-int  Memory::BLOB::compare (const BLOB& rhs) const
+int  Memory::BLOB::Compare (const BLOB& rhs) const
 {
     pair<const Byte*, const Byte*>   l =   fRep_->GetBounds ();
     pair<const Byte*, const Byte*>   r =   rhs.fRep_->GetBounds ();

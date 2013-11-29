@@ -132,27 +132,41 @@ namespace   Stroika {
                 pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
                 return tmp.second - tmp.first;
             }
-            inline  size_t  BLOB::length () const
+            inline  bool    BLOB::operator< (const BLOB& rhs) const
             {
-                pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
-                return tmp.second - tmp.first;
+                return compare (rhs) < 0;
             }
-            inline  size_t  BLOB::size () const
+            inline  bool    BLOB::operator<= (const BLOB& rhs) const
             {
-                pair<const Byte*, const Byte*>   tmp =   fRep_->GetBounds ();
-                return tmp.second - tmp.first;
-            }
-            inline  bool    BLOB::operator== (const BLOB& rhs) const
-            {
-                return compare (rhs) == 0;
+                return compare (rhs) <= 0;
             }
             inline  bool    BLOB::operator> (const BLOB& rhs) const
             {
                 return compare (rhs) > 0;
             }
-            inline  bool    BLOB::operator< (const BLOB& rhs) const
+            inline  bool    BLOB::operator>= (const BLOB& rhs) const
             {
-                return compare (rhs) < 0;
+                return compare (rhs) >= 0;
+            }
+            inline  bool    BLOB::operator== (const BLOB& rhs) const
+            {
+                return compare (rhs) == 0;
+            }
+            inline  bool    BLOB::operator!= (const BLOB& rhs) const
+            {
+                return compare (rhs) != 0;
+            }
+            inline  int  BLOB::compare (const BLOB& rhs) const
+            {
+                return Compare (rhs);
+            }
+            inline  size_t  BLOB::length () const
+            {
+                return GetSize ();
+            }
+            inline  size_t  BLOB::size () const
+            {
+                return GetSize ();
             }
 
 
