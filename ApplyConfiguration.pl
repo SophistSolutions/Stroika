@@ -375,7 +375,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "#include	\"Private/Defaults_CompilerAndStdLib_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Cryptography_SSL_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
-	print (OUT "#include	\"Private/Defaults_DataExchangeFormat_XML_Common_.h\"\n");
+	print (OUT "#include	\"Private/Defaults_DataExchange_XML_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Trace_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Execution_Module_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Execution_Threads_.h\"\n");
