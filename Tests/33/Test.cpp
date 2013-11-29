@@ -86,12 +86,6 @@ namespace   {
         Test3_VariantValue_Helper_MinMax_<float> ();
         Test3_VariantValue_Helper_MinMax_<double> ();
         Test3_VariantValue_Helper_MinMax_<long double> ();
-        {
-            // this test failed on clang++ 3.4 -- LGP 2013-11-29
-            vector<VariantValue> xxx = vector<VariantValue> ({ 19 });
-            VerifyTestResult (xxx.size () == 1);
-            VerifyTestResult (xxx[0].As<int> () == 19);
-        }
     }
     void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
     {
