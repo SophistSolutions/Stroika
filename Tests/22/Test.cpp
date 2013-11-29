@@ -8,6 +8,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/DataExchangeFormat/BadFormatException.h"
 #include    "Stroika/Foundation/DataExchangeFormat/JSON/Reader.h"
@@ -91,7 +92,7 @@ namespace   {
                     map<wstring, VariantValue>   v;
                     v[L"Arg1"] = 32;
                     v[L"Arg2"] = L"Cookies";
-                    v[L"Arg3"] = vector<VariantValue> ({ 19 });
+                    v[L"Arg3"] = Containers::Sequence<VariantValue> ({ 19 });
                     VariantValue    v1 =    v;
                     CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}\n");
                 }
@@ -140,7 +141,7 @@ namespace   {
                     map<wstring, VariantValue>   v;
                     v[L"Arg1"] = 32;
                     v[L"Arg2"] = L"Cookies";
-                    v[L"Arg3"] = vector<VariantValue> ({ 19 });
+                    v[L"Arg3"] = Containers::Sequence<VariantValue> ({ 19 });
                     VariantValue    v1 =    v;
                     CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
                 }
