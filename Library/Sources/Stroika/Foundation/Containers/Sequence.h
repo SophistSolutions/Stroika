@@ -253,6 +253,18 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to
+                 *  @Compare (const Sequence<T, TRAITS>& rhs) and uses  Equals() for ==/!=
+                 */
+                nonvirtual  bool operator< (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator<= (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator> (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator>= (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator== (const Sequence<T, TRAITS>& rhs) const;
+                nonvirtual  bool operator!= (const Sequence<T, TRAITS>& rhs) const;
+
+            public:
+                /**
                  *  \ens size () == 0
                  */
                 nonvirtual  void    RemoveAll ();
@@ -423,10 +435,6 @@ namespace   Stroika {
             public:
                 nonvirtual  Sequence<T, TRAITS>&    operator-= (T item);
                 nonvirtual  Sequence<T, TRAITS>&    operator-= (const Sequence<T, TRAITS>& items);
-
-            public:
-                nonvirtual  bool operator== (const Sequence<T, TRAITS>& rhs) const;
-                nonvirtual  bool operator!= (const Sequence<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;

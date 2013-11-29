@@ -279,6 +279,26 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator< (const Sequence<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) < 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator<= (const Sequence<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator> (const Sequence<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool Sequence<T, TRAITS>::operator>= (const Sequence<T, TRAITS>& rhs) const
+            {
+                return Compare (rhs) >= 0;
+            }
+            template    <typename T, typename TRAITS>
             inline  bool Sequence<T, TRAITS>::operator== (const Sequence<T, TRAITS>& rhs) const
             {
                 return Equals (rhs);
