@@ -127,6 +127,22 @@ namespace   Stroika {
                 static_assert (false, "Only specifically specialized variants are supported");
 #endif
             }
+            inline  bool VariantValue::operator< (const VariantValue& rhs) const
+            {
+                return Compare (rhs) < 0;
+            }
+            inline  bool VariantValue::operator<= (const VariantValue& rhs) const
+            {
+                return Compare (rhs) <= 0;
+            }
+            inline  bool VariantValue::operator> (const VariantValue& rhs) const
+            {
+                return Compare (rhs) > 0;
+            }
+            inline  bool VariantValue::operator>= (const VariantValue& rhs) const
+            {
+                return Compare (rhs) >= 0;
+            }
             inline  bool    VariantValue::operator== (const VariantValue& rhs) const
             {
                 return Equals (rhs);

@@ -592,6 +592,74 @@ Sequence<VariantValue> VariantValue::As () const
     }
 }
 
+int      VariantValue::Compare (const VariantValue& rhs) const
+{
+    VariantValue::Type  lt = GetType ();
+    VariantValue::Type  rt = rhs.GetType ();
+    switch (lt) {
+        case    VariantValue::Type::eNull:
+            return rt == VariantValue::Type::eNull ? 0 : 1;
+        case    VariantValue::Type::eBoolean:
+            return Common::ComparerWithWellOrder<bool>::Compare (As<bool> (), rhs.As<bool> ());
+        case    VariantValue::Type::eInteger:
+            return Common::ComparerWithWellOrder<IntegerType_>::Compare (As<IntegerType_> (), rhs.As<IntegerType_> ());
+        case    VariantValue::Type::eUnsignedInteger:
+            return Common::ComparerWithWellOrder<UnsignedIntegerType_>::Compare (As<UnsignedIntegerType_> (), rhs.As<UnsignedIntegerType_> ());
+        case    VariantValue::Type::eFloat: {
+                // explicit test so we can do NearlyEquals()
+                FloatType_  l = As<FloatType_> ();
+                FloatType_  r = rhs.As<FloatType_> ();
+                if (Math::NearlyEquals (l, r)) {
+                    return 0;
+                }
+                else if (l < r) {
+                    return -1;
+                }
+                else {
+                    return 1;
+                }
+            }
+        case    VariantValue::Type::eDate:
+            return Common::ComparerWithWellOrder<Date>::Compare (As<Date> (), rhs.As<Date> ());
+        case    VariantValue::Type::eDateTime:
+            return Common::ComparerWithWellOrder<DateTime>::Compare (As<DateTime> (), rhs.As<DateTime> ());
+        case    VariantValue::Type::eString:
+            return Common::ComparerWithWellOrder<String>::Compare (As<String> (), rhs.As<String> ());
+        case    VariantValue::Type::eArray:
+            return Common::ComparerWithWellOrder<Sequence<VariantValue>>::Compare (As<Sequence<VariantValue>> (), rhs.As<Sequence<VariantValue>> ());
+        case    VariantValue::Type::eMap: {
+                // Cannot do cuz Keys() NYI
+                // @todo - fix!!!
+#if 0
+                return Common::ComparerWithWellOrder<Sequence<VariantValue>>::Compare (As<Mapping<String, VariantValue>> ().Keys (), rhs.As<Mapping<String, VariantValue>>.Keys () ());
+#endif
+                // same iff all elts same
+                Mapping<String, VariantValue>   lhsM = As<Mapping<String, VariantValue>> ();
+                Mapping<String, VariantValue>   rhsM = rhs.As<Mapping<String, VariantValue>> ();
+                auto li = lhsM.begin ();
+                auto ri = rhsM.begin ();
+                for (; li != lhsM.end (); ++li, ++ri) {
+                    if (ri == rhsM.end ()) {
+                        return -1;
+                    }
+                    if (*li != *ri) {
+                        return false;
+                    }
+                }
+                Ensure (li == lhsM.end ());
+                if (ri == rhsM.end ()) {
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
+            }
+        default:
+            AssertNotReached ();
+            return false;
+    }
+}
+
 bool    VariantValue::Equals (const VariantValue& rhs, bool exactTypeMatchOnly) const
 {
     VariantValue::Type  lt  =   GetType ();

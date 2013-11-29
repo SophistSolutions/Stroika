@@ -217,6 +217,14 @@ namespace   Stroika {
 
             public:
                 /**
+                *  Return < 0 if *this < rhs, return 0 if equal, and return > 0 if *this > rhs.
+                *   This coerces types.
+                *   @todo - thinkout bettter and document what it means for differnt types
+                */
+                nonvirtual  int      Compare (const VariantValue& rhs) const;
+
+            public:
+                /**
                  *  If exactTypeMatchOnly is true, no type coersion takes place, but by default types
                  *  are automatically coereced, if reasonable, so that they can be compared for equality.
                  *
@@ -228,13 +236,15 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const VariantValue& rhs)
+                 *  Except for ==/!= which indirect to Equals()
                  */
-                nonvirtual  bool    operator== (const VariantValue& rhs) const;
-
-            public:
-                /**
-                 */
-                nonvirtual  bool    operator!= (const VariantValue& rhs) const;
+                nonvirtual  bool operator< (const VariantValue& rhs) const;
+                nonvirtual  bool operator<= (const VariantValue& rhs) const;
+                nonvirtual  bool operator> (const VariantValue& rhs) const;
+                nonvirtual  bool operator>= (const VariantValue& rhs) const;
+                nonvirtual  bool operator== (const VariantValue& rhs) const;
+                nonvirtual  bool operator!= (const VariantValue& rhs) const;
 
             private:
 #if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
