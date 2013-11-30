@@ -11,19 +11,19 @@
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
-using   namespace   Stroika::Foundation::DataExchangeFormat;
+using   namespace   Stroika::Foundation::DataExchange;
 
 
 
 template    <>
-Characters::String  DataExchangeFormat::CheckedConverter<Characters::String, UTF8, string> (const string& from, const UTF8& extraData)
+Characters::String  DataExchange::CheckedConverter<Characters::String, UTF8, string> (const string& from, const UTF8& extraData)
 {
     // @todo no chekcing done yet...
     return String::FromUTF8 (from);
 }
 
 template    <>
-string  DataExchangeFormat::CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData)
+string  DataExchange::CheckedConverter<string, ASCII, Characters::String> (const Characters::String& from, const ASCII& extraData)
 {
     // @todo no chekcing done yet...
     return from.AsASCII ();

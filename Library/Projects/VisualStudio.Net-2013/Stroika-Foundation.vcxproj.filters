@@ -636,6 +636,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.cpp">
       <Filter>Sources\DataExchange</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.cpp">
+      <Filter>Sources\DataExchange</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1449,6 +1452,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h">
+      <Filter>Sources\DataExchange</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2173,6 +2179,9 @@
       <Filter>Sources\Execution</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\VariantValue.inl">
+      <Filter>Sources\DataExchange</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.inl">
       <Filter>Sources\DataExchange</Filter>
     </None>
   </ItemGroup>
