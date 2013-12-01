@@ -68,6 +68,9 @@
  *
  *      @todo   Add FromISOLatin1()
  *
+ *      @todo   Performance optimize FromUTF8, and AsUtf8() functions to not go through intermediate string
+ *              objects!
+ *
  *      @todo   Redo SetLength() API, so caller must specify fill-character.
  *              Or maybe better yet - replace with two APIs
  *                  GrowToLength(n, fillChar)
