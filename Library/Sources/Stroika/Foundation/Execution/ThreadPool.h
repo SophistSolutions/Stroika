@@ -147,7 +147,7 @@ namespace   Stroika {
                 nonvirtual  Thread      mkThread_ ();
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 class   MyRunnable_;

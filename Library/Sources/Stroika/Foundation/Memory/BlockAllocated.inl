@@ -46,7 +46,7 @@ namespace   Stroika {
             namespace   Private {
 
 
-#if qCompilerAndStdLib_Supports_constexpr && 0
+#if !qCompilerAndStdLib_constexpr_Buggy && 0
                 // not quite right - too much of a PITA to support both constexpr and non- just wait til all our compilers support constexpr and then fix!
                 constexpr inline    size_t  BlockAllocation_Private_AdjustSizeForPool_ (size_t n)
                 {

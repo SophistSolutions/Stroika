@@ -24,7 +24,7 @@ namespace   Stroika {
 
             /**
              */
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
             template    <typename T>
             constexpr const T*  GetEOL ();
             template    <>

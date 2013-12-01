@@ -53,7 +53,7 @@ namespace   Stroika {
                     nonvirtual  SortedTally_stdmap<T, TRAITS>& operator= (const SortedTally_stdmap<T, TRAITS>& src);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class Rep_;

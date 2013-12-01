@@ -53,7 +53,7 @@ namespace   Stroika {
                     nonvirtual  Queue_DoublyLinkedList<T, TRAITS>& operator= (const Queue_DoublyLinkedList<T, TRAITS>& rhs);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   Rep_;

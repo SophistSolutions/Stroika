@@ -18,7 +18,7 @@ namespace   Stroika {
              RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#if     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
             template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
             const T RangeTraits::ExplicitRangeTraits_Integral<T, MIN, MAX, LOWER_BOUND_OPEN, UPPER_BOUND_OPEN, SIGNED_DIFF_TYPE, UNSIGNED_DIFF_TYPE>::kLowerBound   =   MIN;
             template    <typename T, T MIN, T MAX , Openness LOWER_BOUND_OPEN, Openness UPPER_BOUND_OPEN, typename SIGNED_DIFF_TYPE, typename UNSIGNED_DIFF_TYPE>
@@ -31,7 +31,7 @@ namespace   Stroika {
              ****************** RangeTraits::DefaultRangeTraits<T> **************************
              ********************************************************************************
              */
-#if     !qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#if     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
             template    <typename T>
             const T RangeTraits::DefaultRangeTraits<T>::kLowerBound   =   numeric_limits<T>::lowest ();
             template    <typename T>

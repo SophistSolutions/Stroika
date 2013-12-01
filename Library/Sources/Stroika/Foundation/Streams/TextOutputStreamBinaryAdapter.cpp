@@ -3,7 +3,7 @@
  */
 #include    "../StroikaPreComp.h"
 
-#if     qCompilerAndStdLib_Supports_string_conversions
+#if     !qCompilerAndStdLib_string_conversions_Buggy
 #include    <codecvt>
 #endif
 
@@ -36,7 +36,7 @@ public:
 protected:
     virtual void    Write (const Character* start, const Character* end)  override
     {
-#if    qCompilerAndStdLib_Supports_string_conversions
+#if    !qCompilerAndStdLib_string_conversions_Buggy
         codecvt_utf8<wchar_t>   converter;
         const wchar_t*  sc  =   CVT_CHARACTER_2_wchar_t (start);
         const wchar_t*  ec  =   CVT_CHARACTER_2_wchar_t (end);

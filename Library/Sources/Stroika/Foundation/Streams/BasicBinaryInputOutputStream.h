@@ -50,7 +50,7 @@ namespace   Stroika {
              */
             class   BasicBinaryInputOutputStream : public BinaryInputOutputStream {
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 class   IRep_;

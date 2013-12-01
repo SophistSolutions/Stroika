@@ -246,7 +246,7 @@ namespace   Stroika {
                 nonvirtual  bool operator!= (const VariantValue& rhs) const;
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 struct  IRep_;
@@ -255,7 +255,7 @@ namespace   Stroika {
                 shared_ptr<IRep_>   fVal_;
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 template    <typename T>

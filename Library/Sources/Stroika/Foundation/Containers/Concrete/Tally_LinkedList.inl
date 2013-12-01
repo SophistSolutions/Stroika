@@ -44,7 +44,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                     virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override
                     {
                         return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
@@ -161,7 +161,7 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename T, typename TRAITS>
                 typename Iterable<TallyEntry<T>>::_SharedPtrIRep   Tally_LinkedList<T, TRAITS>::Rep_::Clone () const
                 {

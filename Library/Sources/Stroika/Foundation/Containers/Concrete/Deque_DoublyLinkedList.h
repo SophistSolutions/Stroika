@@ -52,7 +52,7 @@ namespace   Stroika {
                     nonvirtual  Deque_DoublyLinkedList<T, TRAITS>&  operator= (const Deque_DoublyLinkedList<T, TRAITS>& src);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   Rep_;

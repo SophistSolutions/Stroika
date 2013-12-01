@@ -798,7 +798,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
             sigHandlerThread2Abort_.Abort ();
 //            fStopping_ = true;
             break;
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
         case    kSIG_ReReadConfiguration:
 #else
         case    SIGHUP:

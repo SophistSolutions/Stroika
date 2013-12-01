@@ -51,7 +51,7 @@ namespace   Stroika {
                     nonvirtual  Bag_stdforward_list<T, TRAITS>&  operator= (const Bag_stdforward_list<T, TRAITS>& bag);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   Rep_;

@@ -86,32 +86,21 @@
 
 
 
-
 /*
-@CONFIGVAR:     qHas_Syslog
-@DESCRIPTION:   <p>tmphack - goes someplace else... -LGP 2011-09-27 </p>
-*/
-#ifndef qHas_Syslog
-#define qHas_Syslog     qPlatform_POSIX
-#endif
-
-
-
-
-
-/*
-@CONFIGVAR:     qCompilerAndStdLib_SupportsLocaleTM_put
+@CONFIGVAR:     qCompilerAndStdLib_LocaleTM_put_Buggy
 @DESCRIPTION:   <p></p>
 */
-#ifndef qCompilerAndStdLib_SupportsLocaleTM_put
+#ifndef qCompilerAndStdLib_LocaleTM_put_Buggy
+
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_SupportsLocaleTM_put     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_LocaleTM_put_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #elif   defined (_MSC_VER)
 // MSFT tries to support this but its buggy so disable usage
-#define qCompilerAndStdLib_SupportsLocaleTM_put     (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_LocaleTM_put_Buggy     (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_SupportsLocaleTM_put     1
+#define qCompilerAndStdLib_LocaleTM_put_Buggy     0
 #endif
+
 #endif
 
 
@@ -119,15 +108,20 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
-@DESCRIPTION:   <p></p>
+@CONFIGVAR:     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
+@DESCRIPTION:
+    const time_get<wchar_t>& tmget = use_facet <time_get<wchar_t>> (l);
+    istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
+    ErroniousReportFailWhenDateBefore1900
 */
-#ifndef qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
+#ifndef qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
+
 #if   defined (_MSC_VER)
-#define qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900     (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900     1
+#define qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy     0
 #endif
+
 #endif
 
 
@@ -135,15 +129,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+@CONFIGVAR:     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
 @DESCRIPTION:   <p></p>
 */
-#ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+#ifndef qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    (_MSC_VER <= _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear    0
+#define qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy    0
 #endif
+
 #endif
 
 
@@ -152,15 +148,16 @@
 
 /*
 @CONFIGVAR:     qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
-@DESCRIPTION:   See also qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
+@DESCRIPTION:   See also qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
+    crazy bug - regression - with VC2k13
+    Maybe same thing...
 */
-#ifndef qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+#ifndef qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
 
 #if     defined (_MSC_VER)
-// crazy bug - regression - with VC2k13
-#define qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry  (_MSC_VER != _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy  (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry   1
+#define qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy   0
 #endif
 
 #endif
@@ -170,15 +167,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_constexpr
-@DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_Buggy
+@DESCRIPTION:   NYI for VS2k13, but expected soon
 */
-#ifndef qCompilerAndStdLib_Supports_constexpr
+#ifndef qCompilerAndStdLib_constexpr_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_constexpr   (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_constexpr_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_constexpr   1
+#define qCompilerAndStdLib_constexpr_Buggy   1
 #endif
+
 #endif
 
 
@@ -186,7 +185,7 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
+@CONFIGVAR:     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 @DESCRIPTION:   Bug with Microsoft VS 2k13.net C++ compiler where first use of floating point
 *               numbers produces nan/#IND... Workraround is to just do bogus early use.
 *
@@ -200,12 +199,14 @@
 *                   instruction used by foo ends up producing an IND.
 *
 */
-#ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
+#ifndef qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug   0
+#define qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy   0
 #endif
+
 #endif
 
 
@@ -213,19 +214,21 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+@CONFIGVAR:     qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
 @DESCRIPTION:   <p>Defined true if the compiler generates errors for static assertions in functions
             which should never be expanded. Such functions/static_assertions CAN be handy to make it
             more obvious of type mismatches with As<> etc templates.</p>
 */
-#ifndef qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded
+#ifndef qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy
+
 #if     defined (__clang__)
-#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 4)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ <= 4)))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded           (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
 #else
-#define qCompilerAndStdLib_FailsStaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded            0
+#define qCompilerAndStdLib_StaticAssertionsInTemplateFunctionsWhichShouldNeverBeExpanded_Buggy       0
 #endif
+
 #endif
 
 
@@ -233,19 +236,20 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_regex
+@CONFIGVAR:     qCompilerAndStdLib_regex_Buggy
 @DESCRIPTION:   <p>Defined true if the compiler supports regex_replace</p>
 */
-#ifndef qCompilerAndStdLib_Supports_regex
+#ifndef qCompilerAndStdLib_regex_Buggy
+
 #if     defined (__clang__)
 // @todo - this seems broken with clang 3.4 - so probably MY bug - not gcc/clang bug... debug soon!
-#define qCompilerAndStdLib_Supports_regex       ((__clang_major__ < 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_regex_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 4))
 #elif   defined (__GNUC__)
 // @todo - this seems broken with gcc 4.8 so I'm pretty sure its not a gcc bug. Debug more carefully!!!
 // Empirically seems to not work with gcc47, and I saw lots of stuff on internet to suggest not.
-#define qCompilerAndStdLib_Supports_regex       (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_regex_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
 #else
-#define qCompilerAndStdLib_Supports_regex       1
+#define qCompilerAndStdLib_regex_Buggy       0
 #endif
 
 #endif
@@ -255,17 +259,19 @@
 
 
 /*
-@CONFIGVAR:     qSupportTemplateParamterOfNumericLimitsMinMax
+@CONFIGVAR:     qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 @DESCRIPTION:
 */
-#ifndef qSupportTemplateParamterOfNumericLimitsMinMax
+#ifndef qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
+
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qSupportTemplateParamterOfNumericLimitsMinMax           (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
-#define qSupportTemplateParamterOfNumericLimitsMinMax           (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy           (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qSupportTemplateParamterOfNumericLimitsMinMax            1
+#define qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy            0
 #endif
+
 #endif
 
 
@@ -273,15 +279,15 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_noexcept
-@DESCRIPTION:   <p>Defined true if the compiler supports noexcept</p>
+@CONFIGVAR:     qCompilerAndStdLib_noexcept_Buggy
+@DESCRIPTION:   Defined 0 if the compiler supports noexcept
 */
-#ifndef qCompilerAndStdLib_Supports_noexcept
+#ifndef qCompilerAndStdLib_noexcept_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_noexcept    (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_noexcept_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_noexcept    1
+#define qCompilerAndStdLib_noexcept_Buggy    0
 #endif
 
 #endif
@@ -291,15 +297,15 @@
 
 
 /**
-@CONFIGVAR:     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
-@DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Note well understood.
+@CONFIGVAR:     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
+@DESCRIPTION:   Crazy workaround of bug with llvc 3.2. Not well understood.
 */
-#ifndef qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+#ifndef qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors       ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy       ((__clang_major__ == 3) && (__clang_minor__ < 5))
 #else
-#define qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors        1
+#define qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy        0
 #endif
 
 #endif
@@ -308,6 +314,7 @@
 
 
 
+//@CONFIGVAR:     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
 // Not sure if this is a compiler bug/template lib bug, or just an adnvantage of the stroika SharedPtr
 // verus std::shared_ptr<> stuff (now I'm getting rid of) over the std::shared_ptr<>
 //
@@ -344,12 +351,12 @@
 //      1>          c:\sandbox\stroika\devroot\library\sources\stroika\foundation\streams\basicbinaryoutputstream.cpp(139) : see reference to function template instantiation
 //
 //
-#ifndef qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#ifndef qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
 
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes 1
+#define qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy 1
 #endif
 
 #endif
@@ -359,17 +366,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+@CONFIGVAR:     qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
 @DESCRIPTION:
                 Note - this compiles with clang 3.4, but fails to generate the
                 correct code.
 */
-#ifndef qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+#ifndef qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
 #else
-#define qCompilerAndStdLib_Supports_CompareStronglyTypedEnums     1
+#define qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy     0
 #endif
 
 #endif
@@ -383,11 +390,13 @@
 @DESCRIPTION:
 */
 #ifndef qCompilerAndStdLib_GCC_48_OptimizerBug
+
 #if     defined (__GNUC__) && !defined (__clang__)
 #define qCompilerAndStdLib_GCC_48_OptimizerBug     (__GNUC__ == 4 && (__GNUC_MINOR__ == 7 or __GNUC_MINOR__ == 8))
 #else
 #define qCompilerAndStdLib_GCC_48_OptimizerBug     0
 #endif
+
 #endif
 
 
@@ -395,17 +404,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+@CONFIGVAR:     qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
 @DESCRIPTION:
 */
-#ifndef qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+#ifndef qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
 
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__clang_major__ == 3 && (__clang_minor__ < 5))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
 #else
-#define qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc     1
+#define qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy     0
 #endif
 
 #endif
@@ -431,40 +440,46 @@
 
 
 
-#ifndef qCompilerAndStdLib_Supports_thread_local_keyword
+#ifndef qCompilerAndStdLib_thread_local_keyword_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_thread_local_keyword (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_thread_local_keyword_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #elif     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_thread_local_keyword (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_thread_local_keyword_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#else
+#define qCompilerAndStdLib_thread_local_keyword_Buggy   0
 #endif
+
 #endif
 
 
 
 
 
-#ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
-#if     defined (_MSC_VER)
 // @todo - investigate this better
-//
+#ifndef qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug
+
+#if     defined (_MSC_VER)
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_templateoftemplateCompilerCrasherBug   0
 #endif
+
 #endif
 
 
 
 
 
-#ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-#if     defined (_MSC_VER)
 // @todo - investigate this better
-//
+#ifndef qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
+
+#if     defined (_MSC_VER)
 #define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
 #define qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug   0
 #endif
+
 #endif
 
 
@@ -473,12 +488,14 @@
 
 // Dangerous with newer compilers - defaulting this to on.
 // Hard to detect if it doesn't work...
-#ifndef qCompilerAndStdLib_thread_local_initializersSupported
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_thread_local_initializersSupported (_MSC_VER >= _MS_VS_2k13_VER_)
+#ifndef qCompilerAndStdLib_thread_local_initializers_Buggy
+
+#if     defined (__GNUC__) && !defined (__clang__)
+#define qCompilerAndStdLib_thread_local_initializers_Buggy      (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #else
-#define qCompilerAndStdLib_thread_local_initializersSupported (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_thread_local_initializers_Buggy      0
 #endif
+
 #endif
 
 
@@ -508,18 +525,20 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
+@CONFIGVAR:     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
 @DESCRIPTION:   Not sure if this is a gcc compiler bug or not - but seems wierd
 
                 GCC 4.6 requires this above extra namesapce stuff. Not sure reasonable or bug? Investigate before creating bug workaround define
                  -- LGP 2012-05-26
 */
-#if     !defined (qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS)
+#if     !defined (qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy)
+
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy     (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
 #else
-#define qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS       1
+#define qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy       0
 #endif
+
 #endif
 
 
@@ -534,7 +553,7 @@
 #if     !defined (qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug)
 
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8)))
+#define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug     (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
 #define qCompilerAndStdLib_IllUnderstoodSequenceCTORinitializerListBug       0
 #endif
@@ -545,15 +564,19 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_lambda_default_argument
-@DESCRIPTION:   <p>Defined true if the compiler supports lambda functions as default arguments to other functions</p>
+@CONFIGVAR:     qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
+@DESCRIPTION:   See also qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 */
-#ifndef qCompilerAndStdLib_Supports_lambda_default_argument
+#ifndef qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy
+
 #if     defined (__GNUC__) && !defined (__clang__)
-#define qCompilerAndStdLib_Supports_lambda_default_argument     (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_lambda_default_argument     1
+#define qCompilerAndStdLib_lambda_default_argument_with_template_param_as_function_cast_Buggy   0
 #endif
+
 #endif
 
 
@@ -561,29 +584,21 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
-@DESCRIPTION:   <p></p>
+@CONFIGVAR:     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
+@DESCRIPTION:   See also qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
 */
-#ifndef qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast    (_MSC_VER > _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_Supports_lambda_default_argument_with_template_param_as_function_cast     qCompilerAndStdLib_Supports_lambda_default_argument
-#endif
-#endif
+#ifndef qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
 
-
-
-
-
-#ifndef qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (__clang_major__ > 3 || (__clang_major__ == 3 && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__clang_major__ == 3 && (__clang_minor__ < 5))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (__GNUC__ == 4 && (__GNUC_MINOR__ < 8))
 #elif   defined (_MSC_VER)
-#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (_MSC_VER > _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser   (__GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 8)))
+#define qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy    0
 #endif
+
 #endif
 
 
@@ -595,11 +610,13 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__PRETTY_FUNCTION__
+
 #if     defined (__GNUC__)
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   1
 #else
 #define qCompilerAndStdLib_Support__PRETTY_FUNCTION__   0
 #endif
+
 #endif
 
 
@@ -611,11 +628,13 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__func__
+
 #if     defined (__GNUC__)
 #define qCompilerAndStdLib_Support__func__   1
 #else
 #define qCompilerAndStdLib_Support__func__   0
 #endif
+
 #endif
 
 
@@ -627,11 +646,13 @@
 @DESCRIPTION:   <p>FOR ASSERT</p>
 */
 #ifndef qCompilerAndStdLib_Support__FUNCTION__
+
 #if     defined (_MSC_VER)
 #define qCompilerAndStdLib_Support__FUNCTION__   1
 #else
 #define qCompilerAndStdLib_Support__FUNCTION__   0
 #endif
+
 #endif
 
 
@@ -639,48 +660,20 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+@CONFIGVAR:     qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
 @DESCRIPTION:   <p>
             template    <typename   T>
             T   NearlyEquals (T l, T r, T epsilon = (1000 * numeric_limits<T>::epsilon()));
             </p>
 */
-#ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug
+#ifndef qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug      (_MSC_VER <= _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompilerBug      0
-#endif
-#endif
-
-
-
-
-
-#ifndef qCompilerAndStdLib_gcc_useless_no_return_warning
-#if     defined (__GNUC__) && !defined (__clang__)
-// just early 4.6 builds like using on ARM for re-Vision
-// still broken but my 'fix' doest seem to work ;-(
-//#define qCompilerAndStdLib_gcc_useless_no_return_warning       1
-#define qCompilerAndStdLib_gcc_useless_no_return_warning       0
-#else
-#define qCompilerAndStdLib_gcc_useless_no_return_warning       0
-#endif
+#define qCompilerAndStdLib_TemplateCompileWithNumericLimitsCompiler_Buggy      0
 #endif
 
-
-
-
-
-#ifndef qCompilerAndStdLib_gcc_useless_varargs_warning
-#if     defined (__GNUC__) && !defined (__clang__)
-// just early 4.6 builds like using on ARM for re-Vision
-//#define qCompilerAndStdLib_gcc_useless_varargs_warning       (__GNUC__ == 4 && (__GNUC_MINOR__ == 6))
-// still broken but my 'fix' doest seem to work ;-(
-#define qCompilerAndStdLib_gcc_useless_varargs_warning       0
-#else
-#define qCompilerAndStdLib_gcc_useless_varargs_warning       0
-#endif
 #endif
 
 
@@ -688,19 +681,21 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-@DESCRIPTION:   <p>Defined true if the compiler supports constexpr</p>
+@CONFIGVAR:     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
+@DESCRIPTION:
 */
-#ifndef qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#ifndef qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
+
 #if     defined (__clang__)
 // Seems to compile with clang 3.4, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember      ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy      ((__clang_major__ == 3) && (__clang_minor__ < 5))
 #elif     defined (__GNUC__)
 // Seems to compile with gcc 4.7.2, but then caused link errors - unclear if my bug or gcc bug?
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       (__GNUC__ == 4 && (__GNUC_MINOR__ < 9))
 #else
-#define qCompilerAndStdLib_Supports_constexpr_StaticDataMember       qCompilerAndStdLib_Supports_constexpr
+#define qCompilerAndStdLib_constexpr_StaticDataMember_Buggy       qCompilerAndStdLib_constexpr_Buggy
 #endif
+
 #endif
 
 
@@ -708,15 +703,17 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
 @DESCRIPTION:   <p></p>
 */
-#ifndef qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#ifndef qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
+
 #if     defined (_MSC_VER)
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       (_MSC_VER <= _MS_VS_2k13_VER_)
+#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy       (_MSC_VER == _MS_VS_2k13_VER_)
 #else
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug       0
+#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy       0
 #endif
+
 #endif
 
 
@@ -724,17 +721,19 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_Supports_string_conversions
+@CONFIGVAR:     qCompilerAndStdLib_string_conversions_Buggy
 @DESCRIPTION:   22.3.3.2.2  string conversions  N
 */
-#ifndef qCompilerAndStdLib_Supports_string_conversions
+#ifndef qCompilerAndStdLib_string_conversions_Buggy
+
 #if     defined (__clang__)
-#define qCompilerAndStdLib_Supports_string_conversions              ((__clang_major__ > 3) || ((__clang_major__ == 3) && (__clang_minor__ >= 5)))
+#define qCompilerAndStdLib_string_conversions_Buggy              ((__clang_major__ == 3) && (__clang_minor__ <= 4))
 #elif   defined (__GNUC__)
-#define qCompilerAndStdLib_Supports_string_conversions              ( __GNUC__ > 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ >= 9)))
+#define qCompilerAndStdLib_string_conversions_Buggy              (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
 #else
-#define qCompilerAndStdLib_Supports_string_conversions              1
+#define qCompilerAndStdLib_string_conversions_Buggy              0
 #endif
+
 #endif
 
 
@@ -786,7 +785,7 @@
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
 // easy enough to disable ;-)
-#if     defined (_MSC_VER) && _MSC_VER <= _MS_VS_2k13_VER_
+#if     defined (_MSC_VER) && (_MSC_VER == _MS_VS_2k13_VER_)
 #define _ALLOW_KEYWORD_MACROS
 #endif
 
@@ -794,8 +793,7 @@
 
 
 
-// SHOULD GO ELSEWHERE -- LGP 2011-10-27
-#if     !qCompilerAndStdLib_Supports_noexcept
+#if     qCompilerAndStdLib_noexcept_Buggy
 #define noexcept    throw ()
 #endif
 
@@ -803,7 +801,7 @@
 
 
 
-#if     !qCompilerAndStdLib_Supports_constexpr
+#if     qCompilerAndStdLib_constexpr_Buggy
 // This works as an adequate workaround pretty often
 #define constexpr   const
 #endif
@@ -812,7 +810,7 @@
 
 
 
-#if     !qCompilerAndStdLib_Supports_thread_local_keyword
+#if     qCompilerAndStdLib_thread_local_keyword_Buggy
 #if     defined (__GNUC__)
 #define thread_local    __thread
 #else
@@ -887,19 +885,19 @@
  *  work pefrectly - since it doesnt create a name of the desired type, but its usually
  *  pretty close.
  */
-#if  qCompilerAndStdLib_Supports_constexpr_StaticDataMember
-#define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
-    static  constexpr TYPE NAME = VALUE;
-#else
+#if     qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
 #define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
     enum  { NAME = static_cast<TYPE> (VALUE) };
+#else
+#define DEFINE_CONSTEXPR_CONSTANT(TYPE,NAME,VALUE)\
+    static  constexpr TYPE NAME = VALUE;
 #endif
 
 
 
 
 
-#if     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPointBug
+#if     qCompilerAndStdLib_HasFirstTimeUsePerTranslationUnitFloatingPoint_Buggy
 #define FILE_SCOPE_TOP_OF_TRANSLATION_UNIT_MSVC_FLOATING_POINT_BWA()\
     namespace {\
         struct _FILE_SCOPE_ATSTARTOFMODULE_MSVC_FLOATING_POINT_BWA_ {\

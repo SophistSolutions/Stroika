@@ -34,7 +34,7 @@
 
 
 
-#if     !qSupportTemplateParamterOfNumericLimitsMinMax
+#if     qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
 #include    <climits>
 #endif
 
@@ -72,7 +72,7 @@ namespace   Stroika {
 
                 /**
                  */
-#if     qSupportTemplateParamterOfNumericLimitsMinMax
+#if     !qCompilerAndStdLib_TemplateParamterOfNumericLimitsMinMax_Buggy
                 template    <typename T>
                 struct  DefaultDiscreteRangeTraits_Integral  : ExplicitDiscreteRangeTraits < T, numeric_limits<T>::lowest (), numeric_limits<T>::max (), decltype (T() - T()), make_unsigned < decltype (T() - T()) >> {
                         };
@@ -148,7 +148,7 @@ namespace   Stroika {
                 typedef typename inherited_RangeType::ElementType   ElementType;
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 struct   MyIteratorRep_;

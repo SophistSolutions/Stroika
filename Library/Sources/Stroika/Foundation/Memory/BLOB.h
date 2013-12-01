@@ -179,7 +179,7 @@ namespace   Stroika {
                 nonvirtual  size_t      length () const;
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 struct  BasicRep_;

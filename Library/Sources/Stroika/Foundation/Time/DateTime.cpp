@@ -310,7 +310,7 @@ DateTime    DateTime::Parse (const String& rep, const locale& l)
     tm when;
     memset (&when, 0, sizeof (when));
     tmget.get_date (itbegin, itend, iss, state, &when);
-#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
     // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
     // -- LGP 2011-10-09
     if (not (-200 <= when.tm_year and when.tm_year < 200)) {
@@ -326,7 +326,7 @@ DateTime    DateTime::Parse (const String& rep, LCID lcid)
     if (rep.empty ()) {
         return Date ();
     }
-#if     !qCompilerAndStdLib_Supports_VarDateFromStrOnFirstTry
+#if     qCompilerAndStdLib_VarDateFromStrOnFirstTry_Buggy
     {
         static  bool    sDidOnce_ = false;
         if (not sDidOnce_) {

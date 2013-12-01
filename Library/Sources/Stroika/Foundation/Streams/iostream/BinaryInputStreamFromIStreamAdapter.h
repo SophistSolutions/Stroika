@@ -53,7 +53,7 @@ namespace   Stroika {
                  */
                 class   BinaryInputStreamFromIStreamAdapter : public BinaryInputStream {
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   IRep_;

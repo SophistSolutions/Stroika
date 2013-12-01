@@ -751,7 +751,7 @@ namespace   Stroika {
                  *              SignalHandler () directly on this class.
                  */
             public:
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
                 static  constexpr   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
 #else
                 static  const   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;

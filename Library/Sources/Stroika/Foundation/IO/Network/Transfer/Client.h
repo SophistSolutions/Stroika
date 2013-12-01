@@ -69,7 +69,7 @@ namespace   Stroika {
                     using   Time::DurationSecondsType;
 
 
-#if     !qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+#if     qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                     const   Mapping<String, String>   kEmptyMapString2MapVal_;
 #endif
 
@@ -177,7 +177,7 @@ namespace   Stroika {
 
                         // Simple wrappers, with hardwired methods
                     public:
-#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
                         nonvirtual  Response    Get (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Post (const vector<Byte>& data, const InternetMediaType& contentType, const Mapping<String, String>& extraHeaders = Mapping<String, String> ());
                         nonvirtual  Response    Delete (const Mapping<String, String>& extraHeaders = Mapping<String, String> ());

@@ -54,7 +54,7 @@ namespace   Stroika {
                     nonvirtual  Sequence_DoublyLinkedList<T, TRAITS>& operator= (const Sequence_DoublyLinkedList<T, TRAITS>& s);
 
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     class   Rep_;

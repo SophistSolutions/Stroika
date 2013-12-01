@@ -1455,6 +1455,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\DataExchange\CheckedConverter.h">
       <Filter>Sources\DataExchange</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Configuration\Private\Defaults_Execution_Logging_.h">
+      <Filter>Sources\Configuration\Private</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">

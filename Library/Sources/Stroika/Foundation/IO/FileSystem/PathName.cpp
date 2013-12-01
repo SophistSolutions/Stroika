@@ -17,7 +17,7 @@ using   namespace   Stroika::Foundation::IO::FileSystem;
 
 
 
-#if     !qCompilerAndStdLib_Supports_constexpr
+#if     qCompilerAndStdLib_constexpr_Buggy
 #if     qPlatform_Windows
 const   wchar_t   FileSystem::kPathComponentSeperator =   '\\';
 #elif   qPlatform_POSIX

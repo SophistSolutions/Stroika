@@ -523,9 +523,6 @@ namespace   {
 
 
 namespace   {
-#if     !qCompilerAndStdLib_Supports_lambda_default_argument
-    static  bool    Test11_TRIM_ISALPHA (Character c)               {       return c.IsAlphabetic ();       }
-#endif
     void    Test11_Trim_ ()
     {
         const   String  kT1 =   L"  abc";

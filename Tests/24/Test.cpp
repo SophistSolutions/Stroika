@@ -156,7 +156,7 @@ namespace   {
         Memory::Optional<String> middleName;
     };
     struct PersonReader_ : public ComplexObjectReader<Person_> {
-#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
         PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ())
 #else
         PersonReader_ (Person_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_)
@@ -186,7 +186,7 @@ namespace   {
         Person_         withWhom;
     };
     struct AppointmentReader_ : public ComplexObjectReader<Appointment_> {
-#if     qCompilerAndStdLib_Supports_templated_constructionInTemplateConstructors
+#if     !qCompilerAndStdLib_templated_constructionInTemplateConstructors_Buggy
         AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = Mapping<String, VariantValue> ()):
 #else
         AppointmentReader_ (Appointment_* v, const Mapping<String, VariantValue>& attrs = kEmptyMapString2VariantVal_):

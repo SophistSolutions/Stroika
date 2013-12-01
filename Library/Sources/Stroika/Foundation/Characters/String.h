@@ -267,7 +267,7 @@ namespace   Stroika {
              */
             class   String {
             public:
-#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
                 static  constexpr size_t    kBadIndex   = wstring::npos;
 #else
                 DEFINE_CONSTEXPR_CONSTANT (size_t, kBadIndex, -1);
@@ -555,11 +555,11 @@ namespace   Stroika {
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
 
             public:
-#if     !qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
+#if     qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 inline  static  bool    DefaultTrimArg_ (Character c)               {       return c.IsWhitespace ();       }
 #endif
 
-#if     qCompilerAndStdLib_Supports_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyCloser
+#if     !qCompilerAndStdLib_DefaultParamerOfStaticFunctionWithValueLambdaOfWithEmptyClosure_Buggy
                 /*
                  * String LTrim () scans the characters form the left to right, and applies the given
                  * 'shouldBeTrimmed' function (defaults to IsWhitespace). All such characters are removed,
@@ -722,7 +722,7 @@ namespace   Stroika {
                 /**
                  *  std::basic_string alias for npos = kBadIndex
                  */
-#if     qCompilerAndStdLib_Supports_constexpr_StaticDataMember
+#if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
                 static  constexpr size_t    npos   = kBadIndex;
 #else
                 DEFINE_CONSTEXPR_CONSTANT (size_t, npos, kBadIndex);

@@ -274,7 +274,7 @@ namespace   Stroika {
                     * actualInto = static_cast<ENUM_TYPE> (d.As<SerializeAsType> ());
                     Assert (sizeof (SerializeAsType) == sizeof (ENUM_TYPE));
                     Assert (static_cast<SerializeAsType> (*actualInto) == d.As<SerializeAsType> ());  // no round-trip loss
-#if     qCompilerAndStdLib_Supports_CompareStronglyTypedEnums
+#if     !qCompilerAndStdLib_CompareStronglyTypedEnums_Buggy
                     if (not (ENUM_TYPE::eSTART <= *actualInto and * actualInto <= ENUM_TYPE::eEND))
                     {
                         DbgTrace ("Enumeration ('%s') value %d out of range", typeid (ENUM_TYPE).name (), static_cast<int> (*actualInto));

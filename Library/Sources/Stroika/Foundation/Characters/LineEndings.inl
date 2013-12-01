@@ -25,7 +25,7 @@ namespace   Stroika {
              ********************************** GetEOL **************************************
              ********************************************************************************
              */
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
             template    <>
             inline  constexpr const char*       GetEOL ()
             {

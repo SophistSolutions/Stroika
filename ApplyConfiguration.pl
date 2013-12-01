@@ -377,6 +377,7 @@ sub WriteStroikaConfigCHeader
 	print (OUT "#include	\"Private/Defaults_Database_ODBCClient_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_DataExchange_XML_Common_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Debug_Trace_.h\"\n");
+	print (OUT "#include	\"Private/Defaults_Execution_Logging_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Execution_Module_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Execution_Threads_.h\"\n");
 	print (OUT "#include	\"Private/Defaults_Memory_Common_.h\"\n");

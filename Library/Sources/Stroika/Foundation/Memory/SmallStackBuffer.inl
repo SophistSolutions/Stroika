@@ -77,7 +77,7 @@ namespace   Stroika {
                 //, fBuffer_ ()
                 , fPointer_ (fBuffer_)
             {
-#if     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+#if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
                 static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");
@@ -90,7 +90,7 @@ namespace   Stroika {
                 //, fBuffer_ (),
                 , fPointer_ (fBuffer_)
             {
-#if     qCompilerAndStdLib_Supports_TypeTraitsNewNamesIsCopyableEtc
+#if     !qCompilerAndStdLib_TypeTraitsNewNamesIsCopyableEtc_Buggy
                 static_assert(std::is_trivially_constructible<T>::value, "require T is is_trivially_constructible");
                 static_assert(std::is_trivially_destructible<T>::value, "require T is is_trivially_destructible");
                 static_assert(std::is_trivially_copyable<T>::value, "require T is is_trivially_copyable");

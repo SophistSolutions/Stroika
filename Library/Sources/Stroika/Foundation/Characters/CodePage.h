@@ -6,7 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
-#if     qCompilerAndStdLib_Supports_string_conversions
+#if     !qCompilerAndStdLib_string_conversions_Buggy
 #include    <codecvt>
 #endif
 

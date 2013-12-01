@@ -141,7 +141,7 @@ namespace   {
  *  This code is used to test/valdiate the underlying locale/stdc++ library, which we've had alot of trouble
  *  with!
  */
-#if     qDebug && qCompilerAndStdLib_SupportsLocaleTM_put && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
 namespace {
     void    TestDateLocaleRoundTripsForDateWithThisLocale_get_put_Lib_ (int tm_Year, int tm_Mon, int tm_mDay, const locale& l)
     {
@@ -230,7 +230,7 @@ Time::Private_::Date_ModuleData_::Date_ModuleData_ ()
  ************************************** Date ************************************
  ********************************************************************************
  */
-#if     !qCompilerAndStdLib_Supports_constexpr || 1
+#if     qCompilerAndStdLib_constexpr_Buggy || 1
 const   Date&    Date::kMin  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMin;
 const   Date&    Date::kMax  =   Execution::ModuleInitializer<Time::Private_::Date_ModuleData_>::Actual ().fMax;
 #endif
@@ -333,7 +333,7 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
     tm when;
     memset (&when, 0, sizeof (when));
     istreambuf_iterator<wchar_t> i = tmget.get_date (itbegin, itend, iss, state, &when);
-#if     !qCompilerAndStdLib_TMPutDoesntErroniousReportFailWhenDateBefore1900
+#if     qCompilerAndStdLib_TMGetGetDateWhenDateBefore1900_Buggy
     if ((state & ios::failbit) and when.tm_year >= 1752 and when.tm_year < 1900) {
         // ignore fail bit
         state = ios::goodbit;
@@ -343,14 +343,14 @@ Date    Date::Parse (const String& rep, const locale& l, size_t* consumedCharsIn
         Execution::DoThrow (FormatException ());
     }
     *consumedCharsInStringUpTo = ComputeIdx_ (itbegin, i);
-#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear
+#if     qCompilerAndStdLib_LocaleDateParseBugOffBy1900OnYear_Buggy
     // This is a crazy correction. I have almost no idea why (unless its some Y2K workaround gone crazy). I hope this fixes it???
     // -- LGP 2011-10-09
     if (not (-200 <= when.tm_year and when.tm_year < 200)) {
         when.tm_year -= 1900;
     }
 #endif
-#if     qDebug && qCompilerAndStdLib_SupportsLocaleTM_put && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     return AsDate_ (when);
@@ -475,7 +475,7 @@ String Date::Format (const locale& l) const
     if (empty ()) {
         return String ();
     }
-#if     qDebug && qCompilerAndStdLib_SupportsLocaleTM_put && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
+#if     qDebug && !qCompilerAndStdLib_LocaleTM_put_Buggy && qDo_Aggressive_InternalChekcingOfUnderlyingLibrary_To_Debug_Locale_Date_Issues_
     TestDateLocaleRoundTripsForDateWithThisLocaleLib_ (AsDate_ (when), l);
 #endif
     // http://new.cplusplus.com/reference/std/locale/time_put/put/

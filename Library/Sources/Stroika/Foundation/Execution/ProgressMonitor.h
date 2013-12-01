@@ -95,7 +95,7 @@ namespace   Stroika {
                 typedef std::function<void (const ProgressMonitor& progressMonitor)>    ChangedCallbackType;
 
             private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
                 class IRep_;

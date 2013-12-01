@@ -184,7 +184,7 @@ long double  Duration::As () const
     return ParseTime_ (fDurationRep_);                           // could cache value, but ... well - maybe not worth the effort/cost of extra data etc.
 }
 
-#if     !qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
+#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
 namespace   Stroika {
     namespace   Foundation {
         namespace   Time {
@@ -216,7 +216,7 @@ namespace   Stroika {
                 return ASCIIStringToWide (fDurationRep_);
             }
 
-#if     !qCompilerAndStdLib_SupportsTemplateSpecializationInAnyNS
+#if     qCompilerAndStdLib_TemplateSpecializationInAnyNS_Buggy
         }
     }
 }

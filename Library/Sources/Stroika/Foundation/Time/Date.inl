@@ -23,7 +23,7 @@ namespace   Stroika {
              *************************************** Date ***********************************
              ********************************************************************************
              */
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
             inline  constexpr Date::Date ()
                 : fJulianDateRep_ (kEmptyJulianRep)
             {
@@ -34,7 +34,7 @@ namespace   Stroika {
             {
             }
 #endif
-#if     qCompilerAndStdLib_Supports_constexpr
+#if     !qCompilerAndStdLib_constexpr_Buggy
             inline  constexpr Date::Date (JulianRepType julianRep)
                 : fJulianDateRep_ (julianRep)
             {

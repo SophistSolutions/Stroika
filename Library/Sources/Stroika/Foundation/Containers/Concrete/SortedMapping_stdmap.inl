@@ -47,7 +47,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                     virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  Clone () const override
                     {
                         return Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
@@ -79,7 +79,7 @@ namespace   Stroika {
 
 #if 1
                 private:
-#if     !qCompilerAndStdLib_Supports_SharedPtrOfPrivateTypes
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
                     //template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
@@ -179,7 +179,7 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverTBug
+#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone () const
                 {
