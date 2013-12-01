@@ -30,11 +30,38 @@ namespace   Stroika {
                     {
                         RequireNotNull (intoResult);
                         Require (wsStart <= wsEnd);
-                        size_t  wsLen   =   (wsEnd - wsStart);
-                        int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), nullptr, 0, nullptr, nullptr);
-                        intoResult->resize (stringLength);
-                        if (stringLength != 0) {
-                            Verify (::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
+                        if (wsStart == wsEnd) {
+                            intoResult->clear ();
+                            return;
+                        }
+                        Assert ((wsEnd - wsStart) < numeric_limits<int>::max ());   // WideCharToMultiByte API uses int - and this impl assumes fits
+                        const bool  kUseOptimizedApporach_ = true;
+                        if (kUseOptimizedApporach_) {
+                            int     wsLen               =   static_cast<int> (wsEnd - wsStart);
+                            int     guessNewSterlLen    =   max<int> (wsLen, 2 * 64 - 10); // for ascii, wsLen enuf. For most string, they will fit in 64 chars (apx)
+                            // in these cases, we solve in one pass/one call to OS/charmapper
+                            intoResult->resize (guessNewSterlLen);  // maybe over-allocates a bit but will pare back
+                            int nCharsWritten = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
+                            if ((nCharsWritten == 0) and (::GetLastError () == ERROR_INSUFFICIENT_BUFFER)) {
+                                guessNewSterlLen = ::WideCharToMultiByte (codePage, 0, wsStart, static_cast<int> (wsLen), nullptr, 0, nullptr, nullptr);
+                                intoResult->resize (guessNewSterlLen);
+                                nCharsWritten = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), guessNewSterlLen, nullptr, nullptr);
+                            }
+                            Assert (nCharsWritten != 0);
+                            Verify (nCharsWritten != 0);
+                            Verify (nCharsWritten > 0);
+                            Verify (nCharsWritten <= guessNewSterlLen);
+                            if (nCharsWritten != guessNewSterlLen) {
+                                intoResult->resize (nCharsWritten); // shrink to fit
+                            }
+                        }
+                        else {
+                            int  wsLen = static_cast<int> (wsEnd - wsStart);
+                            int stringLength = ::WideCharToMultiByte (codePage, 0, wsStart, wsLen, nullptr, 0, nullptr, nullptr);
+                            intoResult->resize (stringLength);
+                            if (stringLength != 0) {
+                                Verify (::WideCharToMultiByte (codePage, 0, wsStart, wsLen, Containers::Start (*intoResult), stringLength, nullptr, nullptr) == stringLength);
+                            }
                         }
                     }
 
@@ -48,11 +75,32 @@ namespace   Stroika {
                     {
                         RequireNotNull (intoResult);
                         Require (sStart <= sEnd);
-                        size_t  sLen    =   (sEnd - sStart);
-                        int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0);
-                        intoResult->resize (newStrLen);
-                        if (newStrLen != 0) {
-                            Verify (::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), Containers::Start (*intoResult), newStrLen) == newStrLen);
+                        if (sStart == sEnd) {
+                            intoResult->clear ();
+                            return;
+                        }
+                        Assert ((sEnd - sStart) < numeric_limits<int>::max ()); // MultiByteToWideChar API uses int - and this impl assumes fits
+                        int  sLen = static_cast<int> (sEnd - sStart);
+                        Assert (sLen > 0);
+                        const bool  kUseOptimizedApporach_ = true;
+                        if (kUseOptimizedApporach_) {
+                            int guessNewSterlLen = sLen;
+                            Assert (guessNewSterlLen <= ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0));
+                            intoResult->resize (guessNewSterlLen);  // maybe overallocates a little sometimes...
+                            int nCharsWritten = ::MultiByteToWideChar (codePage, 0, sStart, sLen, Containers::Start (*intoResult), guessNewSterlLen);
+                            Verify (nCharsWritten != 0);
+                            Verify (nCharsWritten > 0);
+                            Verify (nCharsWritten <= guessNewSterlLen);
+                            if (nCharsWritten != guessNewSterlLen) {
+                                intoResult->resize (nCharsWritten); // shrink to fit
+                            }
+                        }
+                        else {
+                            int newStrLen = ::MultiByteToWideChar (codePage, 0, sStart, sLen, nullptr, 0);
+                            intoResult->resize (newStrLen);
+                            if (newStrLen != 0) {
+                                Verify (::MultiByteToWideChar (codePage, 0, sStart, sLen, Containers::Start (*intoResult), newStrLen) == newStrLen);
+                            }
                         }
                     }
 
