@@ -33,11 +33,6 @@ sub RunAndPrint
 sub	DoRunBuilds {
 	my $solutionName = $_[0];
 	
-	# ANSI
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Debug-A-32,Platform=Win32 /target:$useBld");
-	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-A-32,Platform=Win32 /target:$useBld");
-	
-	#UNICODE
 	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Debug-U-32,Platform=Win32 /target:$useBld");
 	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Debug-U-64,Platform=x64 /target:$useBld");
 	RunAndPrint ("msbuild.exe $EXTRA_MSBUILD_ARGS $solutionName /p:Configuration=Release-U-32,Platform=Win32 /target:$useBld");

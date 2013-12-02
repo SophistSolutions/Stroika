@@ -1,6 +1,3 @@
-CheckFileExists ("../../../Builds/Windows/Debug-A-32/HTMLViewCompiler.exe");
-CheckFileExists ("../../../Builds/Windows/Release-A-32/HTMLViewCompiler.exe");
-
 CheckFileExists ("../../../Builds/Windows/Debug-U-32/HTMLViewCompiler.exe");
 CheckFileExists ("../../../Builds/Windows/Debug-U-64/HTMLViewCompiler.exe");
 CheckFileExists ("../../../Builds/Windows/Release-U-32/HTMLViewCompiler.exe");

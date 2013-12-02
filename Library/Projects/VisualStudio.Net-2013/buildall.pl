@@ -33,12 +33,7 @@ sub RunAndPrint
 }
 
 
-my @kConfigurations = (	
-					#ANSI
-					"Configuration=Debug-A-32,Platform=Win32",
-					"Configuration=Release-A-32,Platform=Win32",
-					
-					#UNICODE
+my @kConfigurations = (
 					"Configuration=Debug-U-32,Platform=Win32",
 					"Configuration=Debug-U-64,Platform=x64",
 					"Configuration=Release-U-32,Platform=Win32",

@@ -41,8 +41,6 @@ if ("$^O" eq "linux") {
 $dbgOrRel = '';
 }
 	if ($dbgOrRel eq 'All') {
-		DoRunSimpleTest ('Debug-A-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
-		DoRunSimpleTest ('Release-A-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 		DoRunSimpleTest ('Debug-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 		DoRunSimpleTest ('Release-U-32', $outDir, $tstName, $dirPrefix, $suffixFromTrgDir);
 		if (bitter() eq 64) {
