@@ -32,7 +32,11 @@ namespace   Stroika {
                     class   WindowsResourceManager : public Manager {
                     public:
                         WindowsResourceManager (HMODULE hModule);
+
                     private:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+                    public:
+#endif
                         class   IRep_;
                     };
 

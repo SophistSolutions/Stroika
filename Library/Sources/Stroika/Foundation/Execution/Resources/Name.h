@@ -46,6 +46,9 @@ namespace   Stroika {
 #endif
 
                 public:
+                    /**
+                     *  Just for viewing purposes, and will not necessarily be usable for low level resource calls.
+                     */
                     nonvirtual  String          GetPrintName () const;
 
                 public:

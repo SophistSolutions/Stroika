@@ -5,6 +5,7 @@
 
 #include    "../../../Characters/SDKString.h"
 #include    "../../../Configuration/Common.h"
+#include    "../../../Memory/BlockAllocated.h"
 
 #include    "../ResourceNotFoundException.h"
 
@@ -43,15 +44,19 @@ public:
         }
         DoThrow (ResourceNotFoundException ());
     }
+public:
+    DECLARE_USE_BLOCK_ALLOCATION (IRep_);
 };
 
 
 
 
-
-
+/*
+********************************************************************************
+***************************** WindowsResourceManager ***************************
+********************************************************************************
+*/
 WindowsResourceManager::WindowsResourceManager (HMODULE hModule)
     : Manager (_SharedRep (new IRep_ (hModule)))
 {
 }
-
