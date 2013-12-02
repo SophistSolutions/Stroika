@@ -31,7 +31,7 @@ public:
     }
     virtual Accessor    ReadResource (const Name& name) const override
     {
-        HRSRC   hres    =   ::FindResource (fModule_, name.GetName ().AsSDKString ().c_str (), name.GetType ());
+        HRSRC   hres = ::FindResource (fModule_, name.GetSDKString (), name.GetType ());
         if (hres != nullptr) {
             HGLOBAL lglbl   =   ::LoadResource (fModule_, hres);
             if (lglbl != nullptr) {

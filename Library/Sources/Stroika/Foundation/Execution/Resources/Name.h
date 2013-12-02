@@ -8,6 +8,7 @@
 
 #include    "../../Characters/String.h"
 #include    "../../Configuration/Common.h"
+#include    "../../Memory/Optional.h"
 
 
 
@@ -20,6 +21,8 @@ namespace   Stroika {
                 using   namespace   Stroika::Foundation::Characters;
                 using   namespace   Stroika::Foundation::Configuration;
 
+                /**
+                 */
 #if     qPlatform_Windows
                 // This can be any Windows RT-type, such as RT_CURSOR, or RT_DIALOG
                 typedef LPCTSTR ResourceType;
@@ -33,16 +36,33 @@ namespace   Stroika {
                 }
 
 
+                /**
+                */
                 class   Name {
                 public:
                     Name (const String& name, ResourceType type = PredefinedTypes::kRES);
+#if     qPlatform_Windows
+                    Name (const int intResName, ResourceType type = PredefinedTypes::kRES);
+#endif
 
                 public:
-                    nonvirtual  String          GetName () const;
+                    nonvirtual  String          GetPrintName () const;
+
+                public:
+                    /**
+                     *  NOTE - be careful with this - as its not threadsafe, and the lifetime of the SDKString exists
+                     *  only until the next non-const call to (including destruction) of this Name object.
+                     */
+                    const SDKChar*              GetSDKString () const;
+
+                public:
                     nonvirtual  ResourceType    GetType () const;
 
                 private:
-                    String          fName_;
+                    SDKString               fName_;
+#if     qPlatform_Windows
+                    Memory::Optional<int>   fIntName_;
+#endif
                     ResourceType    fType_;
                 };
 
