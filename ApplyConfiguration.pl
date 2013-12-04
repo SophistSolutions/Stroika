@@ -238,6 +238,8 @@ sub MakeUnixDirs {
 
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPClient";
 		system ("ln -s ../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
+		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPService";
+		system ("ln -s ../../../Samples/SSDPService/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPService/Makefile");
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SimpleService";
 		system ("ln -s ../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
 
