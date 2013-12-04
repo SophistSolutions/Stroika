@@ -3,13 +3,14 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if 0
+#if qPlatform_POSIX
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <net/if.h>
 #include <netinet/in.h>
+#include <netdb.h>
 #include <arpa/inet.h>
 #endif
 
@@ -141,8 +142,10 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     return 0;
 
 #elif   qPlatform_POSIX
+
+    //// HORRIBLY IMPL - NOT THREADSAFE
     char ac[1024];
-    if (gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
+    if (gethostname (ac, sizeof(ac)) < 0) {
 
 
         return InternetAddress ();

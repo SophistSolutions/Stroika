@@ -13166,3 +13166,6 @@ mkCFG.sh
 README.md
 RunAstyle.pl
 TOOLS_CHECKED
+Library/Sources/Stroika/Foundation/IO/Network/NetworkInterfaces.h
+Library/Sources/Stroika/Foundation/IO/Network/NetworkInterfaces.inl
+Library/Sources/Stroika/Foundation/IO/Network/NetworkInterfaces.cpp
