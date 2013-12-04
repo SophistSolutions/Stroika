@@ -9,7 +9,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
-#include    "Stroika/Frameworks/UPnP/SSDP/Server/PeriodicNotifier.h"
+#include    "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 
 using   namespace std;
 
@@ -27,9 +27,6 @@ using   Server::PeriodicNotifier;
 
 int main (int argc, const char* argv[])
 {
-    bool    listen  =   false;
-    Optional<String>    searchFor;
-
     try {
         Device  d;
         d.fLocation = L"http://PITIPERE";

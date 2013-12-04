@@ -34,6 +34,12 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.inl">
       <Filter>Sources\SSDP\Server</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.inl">
+      <Filter>Sources\SSDP\Server</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.inl">
+      <Filter>Sources\SSDP\Server</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">
@@ -54,6 +60,12 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.cpp">
       <Filter>Sources\SSDP\Server</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.cpp">
+      <Filter>Sources\SSDP\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.cpp">
+      <Filter>Sources\SSDP\Server</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h">
@@ -72,6 +84,12 @@
       <Filter>Sources\SSDP</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.h">
+      <Filter>Sources\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\BasicServer.h">
+      <Filter>Sources\SSDP\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\SearchResponder.h">
       <Filter>Sources\SSDP\Server</Filter>
     </ClInclude>
   </ItemGroup>
