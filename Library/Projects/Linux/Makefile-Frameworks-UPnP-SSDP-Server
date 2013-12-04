@@ -8,6 +8,6 @@ SrcDir						=       $(RelPathToStroikaDevRoot)Library/Sources/Stroika/Frameworks
 vpath %cpp $(SrcDir)
 
 Objs	=	\
-	$(ObjDir)Server.o\
+	$(ObjDir)PeriodicNotifier.o\
 
 all:	$(Objs)
