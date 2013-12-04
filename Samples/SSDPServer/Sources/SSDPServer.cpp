@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
 
 using   namespace std;
@@ -29,7 +30,7 @@ int main (int argc, const char* argv[])
 {
     try {
         Device  d;
-        d.fLocation = L"http://PITIPERE";
+        d.fLocation = String (L"http://") + IO::Network::GetPrimaryInternetAddress ().As<String> ();
         d.fServer = L"sample-stroika-ssdp-server";
         d.fUSN = L"uuid:TESTUID";
         d.fST = L"upnp:rootdevice";
