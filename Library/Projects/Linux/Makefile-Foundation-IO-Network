@@ -18,7 +18,7 @@ Objs	=	\
 	$(ObjDir)Socket.o\
 	$(ObjDir)SocketAddress.o\
 	$(ObjDir)SocketStream.o\
-	$(ObjDir)NetworkIntefaces.o\
+	$(ObjDir)NetworkInterfaces.o\
 	$(ObjDir)URL.o\
 
 all:	$(Objs) $(SubDirs)
