@@ -81,7 +81,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Server.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.inl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">
@@ -129,17 +129,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Framework_UPnP_Client_%(Filename).obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Server.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Framework_UPnP_Server_%(Filename).obj</ObjectFileName>
-    </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
@@ -147,7 +137,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Common.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\Server.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Server\PeriodicNotifier.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3ADD4C32-1D77-47A2-9F23-83908A2446F6}</ProjectGuid>

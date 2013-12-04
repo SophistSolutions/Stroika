@@ -14,7 +14,11 @@
 #include    "../../Device.h"
 
 /**
- * TODO:
+*  \file
+*
+*  \version    <a href="code_status.html#Beta">Beta</a>
+*
+* TODO:
  *      @todo   Consider adding OnError callback?
  *
  *      @todo   Better docs on 'Firewall Note' - and maybe workaround suggestions.

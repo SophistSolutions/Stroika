@@ -37,6 +37,7 @@ namespace   Stroika {
                 String fST;         // usually ST header (or NT for notify)
             };
 
+
         }
     }
 }

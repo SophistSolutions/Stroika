@@ -13,6 +13,10 @@
 
 
 /**
+ *  \file
+ *
+ *  \version    <a href="code_status.html#Beta">Beta</a>
+ *
  * TODO:
  *
  *      @todo   must re-read ssdp spec for exact format of messages!
