@@ -15,6 +15,9 @@
 #endif
 
 #include     "../../Execution/ErrNoException.h"
+#if     qPlatform_Windows
+#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#endif
 
 #include    "NetworkInterfaces.h"
 
@@ -109,18 +112,46 @@ int main (void)
 #endif
 
 
+
+#if     qPlatform_Windows
+namespace {
+    bool    sStartedUp_ = false;
+    bool    sAutoSetup_ =   true;
+
+    void    CheckStarup_ ()
+    {
+        if (not sStartedUp_) {
+            WSADATA wsaData;        // Initialize Winsock
+            int iResult = WSAStartup (MAKEWORD (2, 2), &wsaData);
+            if (iResult != 0) {
+                Execution::Platform::Windows::Exception::DoThrow (::WSAGetLastError ());
+            }
+            sStartedUp_ = true;
+        }
+    }
+}
+#endif
+
+
 InternetAddress Network::GetPrimaryInternetAddress ()
 {
+    /// HORRIBLY KLUDGY BAD IMPL!!!
+
+
 #if qPlatform_Windows
+    CheckStarup_ ();
 
 #if 0
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
 #endif
 
+#if 0
+
     WSAData wsaData;
     if (WSAStartup (MAKEWORD (1, 1), &wsaData) != 0) {
 //      return 255;
     }
+#endif
 
     char ac[1024];
     if (gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
