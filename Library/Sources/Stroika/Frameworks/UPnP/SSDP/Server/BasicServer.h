@@ -30,6 +30,23 @@ namespace   Stroika {
                 namespace Server {
 
 
+                    /*
+                     *  When this object is instantiated, it fires off threads to notify and respond to
+                     *  searches. When it is destroyed, it stops doing that.
+                    */
+                    class   BasicServer {
+                    public:
+                        typedef PeriodicNotifier::FrequencyInfo FrequencyInfo;
+
+                    public:
+                        BasicServer (const BasicServer&) = delete;
+                        BasicServer (const Device& d, const FrequencyInfo& fi);
+                        const BasicServer& operator= (const BasicServer&) = delete;
+
+                    private:
+                        class   Rep_;
+                        shared_ptr<Rep_>    fRep_;
+                    };
 
 
                 }

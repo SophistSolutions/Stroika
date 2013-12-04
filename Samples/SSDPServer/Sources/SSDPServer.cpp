@@ -20,7 +20,7 @@ using   namespace Stroika::Frameworks::UPnP::SSDP;
 using   Characters::String;
 using   Containers::Sequence;
 using   Memory::Optional;
-using   Server::PeriodicNotifier;
+using   Server::BasicServer;
 
 
 
@@ -33,14 +33,12 @@ int main (int argc, const char* argv[])
         d.fServer = L"sample-stroika-ssdp-server";
         d.fUSN = L"uuid:TESTUID";
         d.fST = L"upnp:rootdevice";
-        PeriodicNotifier l;
-        l.Run (d, PeriodicNotifier::FrequencyInfo ());
+        BasicServer b (d, BasicServer::FrequencyInfo ());
         Execution::Event ().Wait ();    // wait forever - til user hits ctrl-c
     }
     catch (...) {
         cerr << "Exception - terminating..." << endl;
         return EXIT_FAILURE;
     }
-
     return EXIT_SUCCESS;
 }
