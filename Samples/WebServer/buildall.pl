@@ -16,7 +16,7 @@ my @kConfigurations = (
 
 my $useProjectDir= "Projects/" . GetProjectPlatformSubdir ();
 
-print("Building Samples/SSDPServer...\n");
+print("Building Samples/WebServer...\n");
 if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 	use Cwd;
 	use Cwd 'abs_path';
@@ -24,19 +24,19 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 
 	chdir ("../../IntermediateFiles/$activeConfig");
 	if ($useBld eq "rebuild") {
-		print ("Samples_SSDPServer; clobber...\n");
-		system ("cd Samples_SSDPServer; make -s clobber");
+		print ("Samples_WebServer; clobber...\n");
+		system ("cd Samples_WebServer; make -s clobber");
 		$useBld = "all";
 	}
 	
-	print ("Samples_SSDPServer; $useBld...\n");
-	system ("cd Samples_SSDPServer; make -s $useBld");
+	print ("Samples_WebServer; $useBld...\n");
+	system ("cd Samples_WebServer; make -s $useBld");
 	chdir ($savedDir);
 }
 if ("$^O" eq "cygwin") {
 	foreach (@kConfigurations) {
 		my $curConfig	=	$_;
 		my $extraArgs = GetMSBuildArgs();
-		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs SSDPServer.sln /p:$curConfig /target:$useBld");
+		RunAndPrint ("cd $useProjectDir; msbuild.exe $extraArgs WebServer.sln /p:$curConfig /target:$useBld");
 	}
 }
