@@ -1,0 +1,27 @@
+include	../Library/Configuration.mk
+include	../Library/SharedBuildRules.mk
+include	../Library/SharedMakeVariables.mk
+
+
+
+RelPathToStroikaDevRoot	=	../../../
+SrcDir				=	$(RelPathToStroikaDevRoot)Samples/WebServer/
+Includes				+=	-I.
+
+TARGETEXE				=	$(RelPathToStroikaDevRoot)Builds/DefaultConfiguration/Samples_WebServer
+
+
+VPATH	=			$(SrcDir)/Sources/
+
+
+Objs	=	\
+	$(ObjDir)WebServer.o\
+
+
+all:	$(TARGETEXE)
+
+
+$(TARGETEXE):	$(Objs)
+	$(Linker) -o $(TARGETEXE) $(Objs) $(StroikaLinkerArgs) $(StroikaLibsWithSupportLibs)
+
+

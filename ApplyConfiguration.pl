@@ -240,6 +240,10 @@ sub MakeUnixDirs {
 		system ("ln -s ../../../Samples/SSDPClient/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPClient/Makefile");
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SSDPServer";
 		system ("ln -s ../../../Samples/SSDPServer/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SSDPServer/Makefile");
+
+		mkdir "$intermediateFiles$currentConfiguration/Samples_WebServer";
+		system ("ln -s ../../../Samples/WebServer/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_WebServer/Makefile");
+
 		mkdir "$intermediateFiles$currentConfiguration/Samples_SimpleService";
 		system ("ln -s ../../../Samples/SimpleService/Projects/Linux/Makefile $intermediateFiles$currentConfiguration/Samples_SimpleService/Makefile");
 
