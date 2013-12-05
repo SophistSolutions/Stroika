@@ -26,7 +26,7 @@ namespace   Stroika {
                     return result;
                 }
 
-
+#if 0
                 template    <typename T>
                 void    Append2Vector (vector<T>* v, const vector<T>& v2)
                 {
@@ -39,6 +39,17 @@ namespace   Stroika {
                 }
                 template    <typename T, typename ContainerOfT>
                 void    Append2Vector (vector<T>* v, const ContainerOfT& v2)
+                {
+                    RequireNotNull (v);
+                    size_t  c   =   max (v->capacity (), v->size () + v2.size ());
+                    v->reserve (c);
+                    for (typename ContainerOfT::const_iterator i = v2.begin (); i != v2.end (); ++i) {
+                        v->push_back (*i);
+                    }
+                }
+#endif
+                template    <typename T, typename ContainerOfT>
+                void    Append (vector<T>* v, const ContainerOfT& v2)
                 {
                     RequireNotNull (v);
                     size_t  c   =   max (v->capacity (), v->size () + v2.size ());

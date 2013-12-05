@@ -350,7 +350,7 @@ RetryWithNoCERTCheck:
         vector<Byte>    bytesArray;
         bytesArray.reserve (totalBytes);
         for (auto i = bytesRead.begin (); i != bytesRead.end (); ++i) {
-            Containers::STL::Append2Vector (&bytesArray, *i);
+            Containers::STL::Append (&bytesArray, *i);
         }
         response.fData = bytesArray;
     }

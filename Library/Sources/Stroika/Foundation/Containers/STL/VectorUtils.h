@@ -26,10 +26,8 @@ namespace   Stroika {
                 vector<T>   mkVC (const ContainerOfT& ts);
 
 
-                template    <typename T>
-                void    Append2Vector (vector<T>* v, const vector<T>& v2);
                 template    <typename T, typename ContainerOfT>
-                void    Append2Vector (vector<T>* v, const ContainerOfT& v2);
+                void    Append (vector<T>* v, const ContainerOfT& v2);
 
 #if 0
                 template    <typename T>
