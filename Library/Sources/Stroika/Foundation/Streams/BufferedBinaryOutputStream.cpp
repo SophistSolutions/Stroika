@@ -152,3 +152,13 @@ BufferedBinaryOutputStream::BufferedBinaryOutputStream (const BinaryOutputStream
     : BinaryOutputStream (_SharedIRep (new IRep_ (realOut)))
 {
 }
+
+void    BufferedBinaryOutputStream::Abort ()
+{
+    AssertNotImplemented ();
+}
+
+void    BufferedBinaryOutputStream::Flush ()
+{
+    AssertNotImplemented ();
+}
