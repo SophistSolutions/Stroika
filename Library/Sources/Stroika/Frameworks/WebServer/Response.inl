@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Frameworks_WebServer_HTTPResponse_inl_
-#define _Stroika_Frameworks_WebServer_HTTPResponse_inl_ 1
+#ifndef _Stroika_Frameworks_WebServer_Response_inl_
+#define _Stroika_Frameworks_WebServer_Response_inl_ 1
 
 
 /*
@@ -17,42 +17,42 @@ namespace   Stroika {
         namespace   WebServer {
 
 
-            //  class   HTTPResponse
-            inline  HTTPResponse::State HTTPResponse::GetState () const
+            //  class   Response
+            inline  Response::State Response::GetState () const
             {
                 return fState_;
             }
-            inline  IO::Network::HTTP::Status   HTTPResponse::GetStatus () const
+            inline  IO::Network::HTTP::Status   Response::GetStatus () const
             {
                 return fStatus_;
             }
-            inline  InternetMediaType   HTTPResponse::GetContentType () const
+            inline  InternetMediaType   Response::GetContentType () const
             {
                 return fContentType_;
             }
-            inline  Characters::CodePage    HTTPResponse::GetCodePage () const
+            inline  Characters::CodePage    Response::GetCodePage () const
             {
                 return fCodePage_;
             }
-            inline  void    HTTPResponse::write (const wchar_t* e)
+            inline  void    Response::write (const wchar_t* e)
             {
                 RequireNotNull (e);
                 write (e, e + ::wcslen (e));
             }
-            inline  void    HTTPResponse::write (const wstring& e)
+            inline  void    Response::write (const wstring& e)
             {
                 if (not e.empty ()) {
                     write (Containers::Start (e), Containers::End (e));
                 }
             }
-            inline  void    HTTPResponse::writeln (const wchar_t* e)
+            inline  void    Response::writeln (const wchar_t* e)
             {
                 RequireNotNull (e);
                 const   wchar_t kEOL[]  =   L"\r\n";
                 write (e, e + ::wcslen (e));
                 write (std::begin (kEOL), std::end (kEOL));
             }
-            inline  void    HTTPResponse::writeln (const wstring& e)
+            inline  void    Response::writeln (const wstring& e)
             {
                 const   wchar_t kEOL[]  =   L"\r\n";
                 if (not e.empty ()) {
@@ -60,19 +60,19 @@ namespace   Stroika {
                 }
                 write (std::begin (kEOL), std::end (kEOL));
             }
-            inline  void    HTTPResponse::clear ()
+            inline  void    Response::clear ()
             {
                 fBytes_.clear ();
             }
-            inline  bool    HTTPResponse::empty () const
+            inline  bool    Response::empty () const
             {
                 return fBytes_.empty ();
             }
-            inline  const vector<Byte>& HTTPResponse::GetBytes () const
+            inline  const vector<Byte>& Response::GetBytes () const
             {
                 return fBytes_;
             }
-            inline  HTTPResponse::ContentSizePolicy HTTPResponse::GetContentSizePolicy () const
+            inline  Response::ContentSizePolicy Response::GetContentSizePolicy () const
             {
                 return fContentSizePolicy_;
             }
@@ -80,4 +80,4 @@ namespace   Stroika {
         }
     }
 }
-#endif  /*_Stroika_Frameworks_WebServer_HTTPResponse_inl_*/
+#endif  /*_Stroika_Frameworks_WebServer_Response_inl_*/

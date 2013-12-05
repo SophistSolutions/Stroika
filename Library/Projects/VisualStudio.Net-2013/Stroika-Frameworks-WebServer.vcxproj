@@ -75,11 +75,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.cpp" />
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
@@ -100,23 +97,26 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.h" />
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPConnection.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.inl" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Request.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\RequestHandler.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Response.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BB1903E4-C75B-430B-9E6F-8CAEA64BF194}</ProjectGuid>

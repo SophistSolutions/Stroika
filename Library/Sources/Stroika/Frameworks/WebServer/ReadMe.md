@@ -12,3 +12,5 @@ TODO:
 	>	Add in notion of Rails-like Router. Something with good defaults but less opaque about
 		how mapping done. Maybe use std::function and RegExp to match urls and direct requests
 		to handlers? Or maybe abstract classes bette r than std::function here?
+
+	>	Consider migrating most (all?) classes down a level under "HTTP" folder

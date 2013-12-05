@@ -19,7 +19,7 @@
 #include    "../../Foundation/IO/Network/HTTP/Headers.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "HTTPResponse.h"
+#include    "Response.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -44,7 +44,7 @@ namespace   {
 
 /*
  ********************************************************************************
- ************************ WebServer::HTTPResponse *******************************
+ ************************ WebServer::Response *******************************
  ********************************************************************************
  */
 namespace   {
@@ -60,7 +60,7 @@ namespace   {
     const   size_t  kResponseBufferReallocChunkSizeReserve_ =   16 * 1024;
 }
 
-HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutputStream outStream, const InternetMediaType& ct)
+Response::Response (const IO::Network::Socket& s,  Streams::BinaryOutputStream outStream, const InternetMediaType& ct)
     : fSocket_ (s)
     , fState_ (State::eInProgress)
     , fStatus_ (StatusCodes::kOK)
@@ -77,18 +77,18 @@ HTTPResponse::HTTPResponse (const IO::Network::Socket& s,  Streams::BinaryOutput
     AddHeader (IO::Network::HTTP::HeaderName::kServer, L"Stroka-Based-Web-Server");
 }
 
-HTTPResponse::~HTTPResponse ()
+Response::~Response ()
 {
     Require (fState_ == State::eCompleted);
 }
 
-void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp)
+void    Response::SetContentSizePolicy (ContentSizePolicy csp)
 {
     Require (csp == ContentSizePolicy::eAutoCompute or csp == ContentSizePolicy::eNone);
     fContentSizePolicy_ = csp;
 }
 
-void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
+void    Response::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size)
 {
     Require (csp == ContentSizePolicy::eExact);
     Require (fState_ == State::eInProgress);
@@ -96,27 +96,27 @@ void    HTTPResponse::SetContentSizePolicy (ContentSizePolicy csp, uint64_t size
     fContentSize_ = size;
 }
 
-void    HTTPResponse::SetContentType (const InternetMediaType& contentType)
+void    Response::SetContentType (const InternetMediaType& contentType)
 {
     Require (fState_ == State::eInProgress);
     fContentType_ = contentType;
 }
 
-void    HTTPResponse::SetCodePage (Characters::CodePage codePage)
+void    Response::SetCodePage (Characters::CodePage codePage)
 {
     Require (fState_ == State::eInProgress);
     Require (fBytes_.empty ());
     fCodePage_ = codePage;
 }
 
-void    HTTPResponse::SetStatus (Status newStatus, const String& overrideReason)
+void    Response::SetStatus (Status newStatus, const String& overrideReason)
 {
     Require (fState_ == State::eInProgress);
     fStatus_ = newStatus;
     fStatusOverrideReason_ = overrideReason;
 }
 
-void    HTTPResponse::AddHeader (String headerName, String value)
+void    Response::AddHeader (String headerName, String value)
 {
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
@@ -124,13 +124,13 @@ void    HTTPResponse::AddHeader (String headerName, String value)
     fHeaders_.insert (map<String, String>::value_type (headerName, value));
 }
 
-void    HTTPResponse::ClearHeader ()
+void    Response::ClearHeader ()
 {
     Require (fState_ == State::eInProgress);
     fHeaders_.clear ();
 }
 
-void    HTTPResponse::ClearHeader (String headerName)
+void    Response::ClearHeader (String headerName)
 {
     Require (fState_ == State::eInProgress);
     Require (kDisallowedOtherHeaders_.find (headerName) == kDisallowedOtherHeaders_.end ());
@@ -140,12 +140,12 @@ void    HTTPResponse::ClearHeader (String headerName)
     }
 }
 
-map<String, String>  HTTPResponse::GetSpecialHeaders () const
+map<String, String>  Response::GetSpecialHeaders () const
 {
     return fHeaders_;
 }
 
-map<String, String>  HTTPResponse::GetEffectiveHeaders () const
+map<String, String>  Response::GetEffectiveHeaders () const
 {
     map<String, String>  tmp =   GetSpecialHeaders ();
     switch (GetContentSizePolicy ()) {
@@ -169,7 +169,7 @@ map<String, String>  HTTPResponse::GetEffectiveHeaders () const
     return tmp;
 }
 
-void    HTTPResponse::Flush ()
+void    Response::Flush ()
 {
     if (fState_ == State::eInProgress) {
         {
@@ -205,7 +205,7 @@ void    HTTPResponse::Flush ()
     Ensure (fBytes_.empty ());
 }
 
-void    HTTPResponse::End ()
+void    Response::End ()
 {
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Flush ();
@@ -214,7 +214,7 @@ void    HTTPResponse::End ()
     Ensure (fBytes_.empty ());
 }
 
-void    HTTPResponse::Abort ()
+void    Response::Abort ()
 {
     if (fState_ != State::eCompleted) {
         fState_ = State::eCompleted;
@@ -226,7 +226,7 @@ void    HTTPResponse::Abort ()
     Ensure (fBytes_.empty ());
 }
 
-void    HTTPResponse::Redirect (const String& url)
+void    Response::Redirect (const String& url)
 {
     Require (fState_ == State::eInProgress);
     fBytes_.clear ();
@@ -239,7 +239,7 @@ void    HTTPResponse::Redirect (const String& url)
     fState_ = State::eCompleted;
 }
 
-void    HTTPResponse::write (const Byte* s, const Byte* e)
+void    Response::write (const Byte* s, const Byte* e)
 {
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));
@@ -254,7 +254,7 @@ void    HTTPResponse::write (const Byte* s, const Byte* e)
     }
 }
 
-void    HTTPResponse::write (const wchar_t* s, const wchar_t* e)
+void    Response::write (const wchar_t* s, const wchar_t* e)
 {
     Require ((fState_ == State::eInProgress) or (fState_ == State::eInProgressHeaderSentState));
     Require ((fState_ == State::eInProgress) or (GetContentSizePolicy () != ContentSizePolicy::eAutoCompute));

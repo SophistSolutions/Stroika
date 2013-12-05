@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Framework_WebServer_HTTPRequest_h_
-#define _Stroika_Framework_WebServer_HTTPRequest_h_ 1
+#ifndef _Stroika_Framework_WebServer_Request_h_
+#define _Stroika_Framework_WebServer_Request_h_ 1
 
 #include    "../StroikaPreComp.h"
 
@@ -32,14 +32,14 @@ namespace   Stroika {
             using   DataExchange::InternetMediaType;
 
             // Maybe associated TextStream, and maybe readline method goes here
-            struct  HTTPRequest {
+            struct  Request {
             public:
-                HTTPRequest () = delete;
-                HTTPRequest (const HTTPRequest&) = delete;
-                HTTPRequest (const Streams::BinaryInputStream& inStream);
+                Request () = delete;
+                Request (const Request&) = delete;
+                Request (const Streams::BinaryInputStream& inStream);
 
             public:
-                nonvirtual  const HTTPRequest& operator= (const HTTPRequest&) = delete;
+                nonvirtual  const Request& operator= (const Request&) = delete;
 
             public:
                 Streams::BinaryInputStream              fInputStream;
@@ -64,6 +64,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "HTTPRequest.inl"
+#include    "Request.inl"
 
-#endif  /*_Stroika_Framework_WebServer_HTTPRequest_h_*/
+#endif  /*_Stroika_Framework_WebServer_Request_h_*/

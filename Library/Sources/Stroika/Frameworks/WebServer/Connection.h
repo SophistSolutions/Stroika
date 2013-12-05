@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Framework_WebServer_HTTPConnection_h_
-#define _Stroika_Framework_WebServer_HTTPConnection_h_  1
+#ifndef _Stroika_Framework_WebServer_Connection_h_
+#define _Stroika_Framework_WebServer_Connection_h_  1
 
 #include    "../StroikaPreComp.h"
 
@@ -12,8 +12,8 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/IO/Network/SocketStream.h"
-#include    "HTTPRequest.h"
-#include    "HTTPResponse.h"
+#include    "Request.h"
+#include    "Response.h"
 
 
 
@@ -33,20 +33,20 @@ namespace   Stroika {
             using   Stroika::Foundation::IO::Network::Socket;
             using   Stroika::Foundation::IO::Network::SocketStream;
 
-            class   HTTPConnection {
+            class   Connection {
             public:
-                HTTPConnection () = delete;
-                HTTPConnection (const HTTPConnection&) = delete;
-                explicit HTTPConnection (Socket s);
+                Connection () = delete;
+                Connection (const Connection&) = delete;
+                explicit Connection (Socket s);
             public:
-                ~HTTPConnection ();
+                ~Connection ();
 
             public:
-                nonvirtual  const HTTPConnection& operator= (const HTTPConnection&) = delete;
+                nonvirtual  const Connection& operator= (const Connection&) = delete;
 
             public:
                 // Must rethink this organization -but for now - call this once at start of connection to fill in details in
-                // the HTTP Request object
+                // the  Request object
                 nonvirtual  void    ReadHeaders ();
 // not sure we want this
                 nonvirtual  void    Close ();
@@ -54,16 +54,16 @@ namespace   Stroika {
 
             public:
                 nonvirtual  Socket              GetSocket () const;
-                nonvirtual  HTTPRequest&        GetRequest ();
-                nonvirtual  const HTTPRequest&  GetRequest () const;
-                nonvirtual  HTTPResponse&       GetResponse ();
-                nonvirtual  const HTTPResponse& GetResponse () const;
+                nonvirtual  Request&        GetRequest ();
+                nonvirtual  const Request&  GetRequest () const;
+                nonvirtual  Response&       GetResponse ();
+                nonvirtual  const Response& GetResponse () const;
 
             private:
                 Socket          fSocket_;
                 SocketStream    fSocketStream_;
-                HTTPRequest     fRequest_;
-                HTTPResponse    fResponse_;
+                Request     fRequest_;
+                Response    fResponse_;
             };
 
         }
@@ -78,6 +78,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "HTTPConnection.inl"
+#include    "Connection.inl"
 
-#endif  /*_Stroika_Framework_WebServer_HTTPConnection_h_*/
+#endif  /*_Stroika_Framework_WebServer_Connection_h_*/

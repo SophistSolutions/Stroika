@@ -13,7 +13,7 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "HTTPConnection.h"
+#include    "Connection.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -29,10 +29,10 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::HTTPConnection ****************************
+ ************************* WebServer::Connection ****************************
  ********************************************************************************
  */
-HTTPConnection::HTTPConnection (Socket s)
+Connection::Connection (Socket s)
     : fSocket_ (s)
     , fSocketStream_ (s)
     , fRequest_ (fSocketStream_)
@@ -40,14 +40,14 @@ HTTPConnection::HTTPConnection (Socket s)
 {
 }
 
-HTTPConnection::~HTTPConnection ()
+Connection::~Connection ()
 {
-    if (fResponse_.GetState () != HTTPResponse::State::eCompleted) {
+    if (fResponse_.GetState () != Response::State::eCompleted) {
         IgnoreExceptionsForCall (fResponse_.Abort ());
     }
 }
 
-void    HTTPConnection::ReadHeaders ()
+void    Connection::ReadHeaders ()
 {
     // @todo - DONT use TextStream::ReadLine - because that asserts SEEKABLE - which may not be true (and probably isn't here anymore)
     // Instead - we need a special variant that looks for CRLF - which doesn't require backtracking...!!!
@@ -90,7 +90,7 @@ void    HTTPConnection::ReadHeaders ()
     }
 }
 
-void    HTTPConnection::Close ()
+void    Connection::Close ()
 {
     fResponse_.Flush ();
     fSocket_.Close ();

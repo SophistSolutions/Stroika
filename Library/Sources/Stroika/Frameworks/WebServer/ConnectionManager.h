@@ -12,10 +12,10 @@
 #include    "../../Foundation/Execution/Lockable.h"
 #include    "../../Foundation/Execution/ThreadPool.h"
 
-#include    "HTTPRequest.h"
-#include    "HTTPRequestHandler.h"
-#include    "HTTPResponse.h"
-#include    "HTTPConnection.h"
+#include    "Request.h"
+#include    "RequestHandler.h"
+#include    "Response.h"
+#include    "Connection.h"
 
 
 
@@ -43,7 +43,7 @@ namespace   Stroika {
 
             /**
              *  This class is a useful helper for managing a set of connections. You can start it and stop it
-             *  (it maintains internal threads). And you can hand it HTTPConnections, along with a set of handlers,
+             *  (it maintains internal threads). And you can hand it Connections, along with a set of handlers,
              *  and it will monitor the connections, and when any is ready with more input, it will assign the
              *  appropriate handler to handle the request, and produce the response.
              *
@@ -66,12 +66,12 @@ namespace   Stroika {
                 nonvirtual  void    AbortAndWaitForDone (Time::DurationSecondsType timeout = Time::kInfinite);
 
             public:
-                nonvirtual  void    AddHandler (const shared_ptr<HTTPRequestHandler>& h);
-                nonvirtual  void    RemoveHandler (const shared_ptr<HTTPRequestHandler>& h);
+                nonvirtual  void    AddHandler (const shared_ptr<RequestHandler>& h);
+                nonvirtual  void    RemoveHandler (const shared_ptr<RequestHandler>& h);
 
             public:
-                nonvirtual  void    AddConnection (const shared_ptr<HTTPConnection>& conn);
-                nonvirtual  void    AbortConnection (const shared_ptr<HTTPConnection>& conn);
+                nonvirtual  void    AddConnection (const shared_ptr<Connection>& conn);
+                nonvirtual  void    AbortConnection (const shared_ptr<Connection>& conn);
 
             public:
                 /**
@@ -79,17 +79,17 @@ namespace   Stroika {
                  *  But this will return just those which are not 'done'. Of course - due to asyncrhony,
                  *  by the time one looks at the list, some may already be done.
                  */
-                nonvirtual  vector<shared_ptr<HTTPConnection>> GetConnections () const;
+                nonvirtual  vector<shared_ptr<Connection>> GetConnections () const;
 
             private:
                 //VERY VERY SUPER PRIMITIVE FIFRST DRAFT OF CONNECTION HANDLING
                 nonvirtual  void    DoMainConnectionLoop_ ();
-                nonvirtual  void    DoOneConnection_ (shared_ptr<HTTPConnection> c);
+                nonvirtual  void    DoOneConnection_ (shared_ptr<Connection> c);
 
             private:
                 // REALLY could use Stroika threadsafe lists here!!! - so could just iterate and forget!
-                Execution::Lockable<list<shared_ptr<HTTPRequestHandler>>>    fHandlers_;
-                Execution::Lockable<list<shared_ptr<HTTPConnection>>>        fActiveConnections_;
+                Execution::Lockable<list<shared_ptr<RequestHandler>>>    fHandlers_;
+                Execution::Lockable<list<shared_ptr<Connection>>>        fActiveConnections_;
 
                 // we may eventually want two thread pools - one for managing bookkeeping/monitoring harvests, and one for actually handling
                 // connections. Or maybe a single thread for the bookkeeping, and the pool for handling ongoing connections?

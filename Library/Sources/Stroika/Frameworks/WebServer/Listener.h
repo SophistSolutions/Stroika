@@ -12,8 +12,8 @@
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
 #include    "../../Foundation/IO/Network/SocketStream.h"
-#include    "HTTPRequest.h"
-#include    "HTTPResponse.h"
+#include    "Request.h"
+#include    "Response.h"
 
 
 

@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Framework_WebServer_HTTPResponse_h_
-#define _Stroika_Framework_WebServer_HTTPResponse_h_    1
+#ifndef _Stroika_Framework_WebServer_Response_h_
+#define _Stroika_Framework_WebServer_Response_h_    1
 
 #include    "../StroikaPreComp.h"
 
@@ -55,17 +55,17 @@ namespace   Stroika {
             /*
              * As of yet to specify FLUSH semantics - when we flush... Probably need options (ctor/config)
              */
-            struct  HTTPResponse {
+            struct  Response {
             public:
-                HTTPResponse () = delete;
-                HTTPResponse (const HTTPResponse&) = delete;
-                HTTPResponse (const IO::Network::Socket& s, Streams::BinaryOutputStream outStream, const InternetMediaType& ct);
+                Response () = delete;
+                Response (const Response&) = delete;
+                Response (const IO::Network::Socket& s, Streams::BinaryOutputStream outStream, const InternetMediaType& ct);
 
                 // Reponse must be completed (OK to Abort ()) before being destroyed
-                ~HTTPResponse ();
+                ~Response ();
 
             public:
-                nonvirtual  const HTTPResponse& operator= (const HTTPResponse&) = delete;
+                nonvirtual  const Response& operator= (const Response&) = delete;
 
             public:
                 /*
@@ -224,6 +224,6 @@ namespace   Stroika {
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
-#include    "HTTPResponse.inl"
+#include    "Response.inl"
 
-#endif  /*_Stroika_Framework_WebServer_HTTPResponse_h_*/
+#endif  /*_Stroika_Framework_WebServer_Response_h_*/

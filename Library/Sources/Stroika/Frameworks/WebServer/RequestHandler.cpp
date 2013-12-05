@@ -12,7 +12,7 @@
 #include    "../../Foundation/Execution/Exceptions.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"
 
-#include    "HTTPRequest.h"
+#include    "RequestHandler.h"
 
 
 using   namespace   Stroika::Foundation;
@@ -28,14 +28,13 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::HTTPRequest *******************************
+ ********************* WebServer::RequestHandler ****************************
  ********************************************************************************
  */
-HTTPRequest::HTTPRequest (const Streams::BinaryInputStream& inStream)
-    : fInputStream (inStream)
-    , fInputTextStream (fInputStream)
-    , fHTTPVersion ()
-    , fURL ()
-    , fHeaders ()
+RequestHandler::RequestHandler ()
+{
+}
+
+RequestHandler::~RequestHandler ()
 {
 }
