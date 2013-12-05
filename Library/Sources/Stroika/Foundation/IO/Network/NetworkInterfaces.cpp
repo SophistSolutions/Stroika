@@ -3,7 +3,7 @@
  */
 #include    "../../StroikaPreComp.h"
 
-#if qPlatform_POSIX
+#if     qPlatform_POSIX
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -12,6 +12,10 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#elif   qPlatform_Windows
+#include    <WinSock2.h>
+#include    <WS2tcpip.h>
+//#include  <winsock.h>
 #endif
 
 #include     "../../Execution/ErrNoException.h"
@@ -98,17 +102,13 @@ int main (void)
 
     return 0;
 }
-
-
 #endif
 
-#if qPlatform_Windows
 
+
+#if     qPlatform_Windows
 // /SEE THIS COD EOFR WINDOWS
 //http ://support.microsoft.com/default.aspx?scid=http://support.microsoft.com:80/support/kb/articles/Q129/3/15.asp&NoWebContent=1
-
-
-#include <winsock.h>
 #endif
 
 
@@ -136,63 +136,64 @@ namespace {
 InternetAddress Network::GetPrimaryInternetAddress ()
 {
     /// HORRIBLY KLUDGY BAD IMPL!!!
-
-
-#if qPlatform_Windows
+#if     qPlatform_Windows
     CheckStarup_ ();
-
 #if 0
     DWORD TEST = GetComputerNameEx((COMPUTER_NAME_FORMAT)cnf, buffer, &dwSize))
 #endif
-
-#if 0
-
-    WSAData wsaData;
-    if (WSAStartup (MAKEWORD (1, 1), &wsaData) != 0) {
-//      return 255;
-    }
-#endif
-
     char ac[1024];
     if (gethostname (ac, sizeof(ac)) == SOCKET_ERROR) {
-
-
         return InternetAddress ();
     }
     struct hostent* phe = gethostbyname (ac);
-    if (phe == 0) {
+    if (phe == nullptr) {
     return InternetAddress ();
     }
     for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
         struct in_addr addr;
         memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-        //cout << "Address " << i << ": " << inet_ntoa (addr) << endl;
         return InternetAddress (addr);
     }
-
-    return 0;
-
+    return InternetAddress ();
 #elif   qPlatform_POSIX
+    auto getFlags = [] (int sd, const char* name) {
+        char buf[1024];
 
-    //// HORRIBLY IMPL - NOT THREADSAFE
-    char ac[1024];
-    if (gethostname (ac, sizeof(ac)) < 0) {
+        struct ifreq ifreq;
+        memset(&ifreq, 0, sizeof (ifreq));
+        strcpy (ifreq.ifr_name, name);
 
+        int r = ioctl (sd, SIOCGIFFLAGS, (char*)&ifreq);
+        Assert (r == 0);
+        return (ifreq.ifr_flags);
+    };
 
-        return InternetAddress ();
+    struct ifreq ifreqs[32];
+    struct ifconf ifconf;
+    memset (&ifconf, 0, sizeof(ifconf));
+    ifconf.ifc_req = ifreqs;
+    ifconf.ifc_len = sizeof(ifreqs);
+
+    int sd = socket (PF_INET, SOCK_STREAM, 0);
+    Assert (sd >= 0);
+
+    int r = ioctl (sd, SIOCGIFCONF, (char*)&ifconf);
+    Assert (r == 0);
+
+    InternetAddress result;
+    for (int i = 0; i < ifconf.ifc_len / sizeof(struct ifreq); ++i) {
+        int flags = getFlags (sd, ifreqs[i].ifr_name);
+        if ((flags & IFF_UP)
+                and (not (flags & IFF_LOOPBACK))
+                and (flags & IFF_RUNNING)
+           ) {
+            result = InternetAddress (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr);
+            break;
+        }
+        //printf ("%s: %s\n", ifreqs[i].ifr_name, inet_ntoa (((struct sockaddr_in*)&ifreqs[i].ifr_addr)->sin_addr));
+        //printf (" flags: %s\n", flags (sd, ifreqs[i].ifr_name));
     }
-    struct hostent* phe = gethostbyname (ac);
-    if (phe == 0) {
-        return InternetAddress ();
-    }
-    for (int i = 0; phe->h_addr_list[i] != 0; ++i) {
-        struct in_addr addr;
-        memcpy (&addr, phe->h_addr_list[i], sizeof(struct in_addr));
-        //cout << "Address " << i << ": " << inet_ntoa (addr) << endl;
-        return InternetAddress (addr);
-    }
-
-    //static struct ifreq ifreqs[32];
-    return InternetAddress ();
+    close (sd);
+    return result;
 #endif
 }
