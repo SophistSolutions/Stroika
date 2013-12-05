@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
 #include    "Stroika/Frameworks/UPnP/SSDP/Server/BasicServer.h"
+#include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
 
 using   namespace std;
 
