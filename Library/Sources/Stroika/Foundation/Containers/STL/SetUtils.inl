@@ -15,17 +15,6 @@ namespace   Stroika {
             namespace   STL {
 
 
-                template    <typename T>
-                set<T>  Difference (const set<T>& lhs, const set<T>& rhs)
-                {
-                    set<T>  result;
-                    for (typename set<T>::const_iterator i = lhs.begin (); i != lhs.end (); ++i) {
-                        if (rhs.find (*i) == rhs.end ()) {
-                            result.insert (*i);
-                        }
-                    }
-                    return result;
-                }
 #if 0
                 template    <typename T>
                 inline  set<T>  operator- (const set<T>& lhs, const set<T>& rhs)
@@ -109,23 +98,57 @@ namespace   Stroika {
                     return false;
                 }
 
-                template    <typename T>
-                void    Union (set<T>* s1, const set<T>& s2)
+                template    <typename T, typename FROMCONTAINER>
+                void    Union (set<T>* s1, const FROMCONTAINER& s2)
                 {
-                    for (typename set<T>::const_iterator i = s2.begin (); i != s2.end (); ++i) {
-                        if (s1->find (*i) == s1->end ()) {
-                            s1->insert (*i);
+                    for (auto i : s2) {
+                        if (s1->find (i) == s1->end ()) {
+                            s1->insert (i);
                         }
                     }
                 }
-
-                template    <typename T>
-                set<T>  Union (const set<T>& s1, const set<T>& s2)
+                template    <typename T, typename FROMCONTAINER>
+                set<T>  Union (const set<T>& s1, const FROMCONTAINER& s2)
                 {
                     set<T>  result  =   s1;
                     Union (&result, s2);
                     return result;
                 }
+
+
+                template    <typename T, typename FROMCONTAINER>
+                void    Difference (set<T>* s1, const FROMCONTAINER& s2)
+                {
+                    RequireNotNull (s1);
+                    for (auto i : s2) {
+                        if (s1->find (i) != s1->end ()) {
+                            result.erase (i);
+                        }
+                    }
+                    return result;
+                }
+                template    <typename T, typename FROMCONTAINER>
+                set<T>  Difference (const set<T>& s1, const FROMCONTAINER& s2)
+                {
+                    set<T>  result = s1;
+                    Difference (&result, s2);
+                    return result;
+                }
+
+#if 0
+                template    <typename T>
+                set<T>  Difference (const set<T>& lhs, const set<T>& rhs)
+                {
+                    set<T>  result;
+                    for (typename set<T>::const_iterator i = lhs.begin (); i != lhs.end (); ++i) {
+                        if (rhs.find (*i) == rhs.end ()) {
+                            result.insert (*i);
+                        }
+                    }
+                    return result;
+                }
+#endif
+
 
             }
         }

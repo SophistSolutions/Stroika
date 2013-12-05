@@ -42,13 +42,15 @@ namespace   Stroika {
                 template    <typename T>
                 bool    Intersect (const set<T>& s1, const set<T>& s2);
 
-                template    <typename T>
-                void    Union (set<T>* s1, const set<T>& s2);
-                template    <typename T>
-                set<T>  Union (const set<T>& s1, const set<T>& s2);
+                template    <typename T, typename FROMCONTAINER>
+                void    Union (set<T>* s1, const FROMCONTAINER& s2);
+                template    <typename T, typename FROMCONTAINER>
+                set<T>  Union (const set<T>& s1, const FROMCONTAINER& s2);
 
-                template    <typename T>
-                set<T>  Difference (const set<T>& lhs, const set<T>& rhs);
+                template    <typename T, typename FROMCONTAINER>
+                void    Difference (set<T>* s1, const FROMCONTAINER& s2);
+                template    <typename T, typename FROMCONTAINER>
+                set<T>  Difference (const set<T>& s1, const FROMCONTAINER& s2);
 
             }
         }
