@@ -12,6 +12,7 @@
 #include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
+#include    "Stroika/Frameworks/WebServer/Listener.h"
 
 using   namespace std;
 

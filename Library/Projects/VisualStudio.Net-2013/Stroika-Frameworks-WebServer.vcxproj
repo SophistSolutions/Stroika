@@ -80,6 +80,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)/WebServer-Listener.obj</ObjectFileName>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h" />
@@ -87,6 +107,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.inl" />
@@ -94,6 +115,7 @@
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequest.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPRequestHandler.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\HTTPResponse.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
