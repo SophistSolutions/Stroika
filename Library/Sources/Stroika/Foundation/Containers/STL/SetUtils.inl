@@ -122,10 +122,9 @@ namespace   Stroika {
                     RequireNotNull (s1);
                     for (auto i : s2) {
                         if (s1->find (i) != s1->end ()) {
-                            result.erase (i);
+                            s1->erase (i);
                         }
                     }
-                    return result;
                 }
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  Difference (const set<T>& s1, const FROMCONTAINER& s2)
