@@ -11,7 +11,6 @@
 
 
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO::Network;
 
