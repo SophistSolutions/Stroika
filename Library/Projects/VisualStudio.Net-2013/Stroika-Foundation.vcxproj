@@ -533,6 +533,26 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.cpp" />
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-A-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-DbgMemLeaks-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|x64'">$(IntDir)\IO-Network-Listener.o</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.cpp" />
@@ -853,6 +873,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Status.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\SocketAddress.h" />
@@ -1100,6 +1121,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Headers.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\Methods.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\InternetAddress.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Socket.inl" />

@@ -9,9 +9,6 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
@@ -27,9 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\ConnectionManager.h">
-      <Filter>Sources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.h">
       <Filter>Sources</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.h">
@@ -50,9 +44,6 @@
       <Filter>Sources</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\ReadMe.md" />
-    <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Listener.inl">
-      <Filter>Sources</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Frameworks\WebServer\Connection.inl">
       <Filter>Sources</Filter>
     </None>

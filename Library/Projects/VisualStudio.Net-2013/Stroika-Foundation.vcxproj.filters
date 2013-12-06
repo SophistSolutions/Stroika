@@ -642,6 +642,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.cpp">
       <Filter>Sources\IO\Network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.cpp">
+      <Filter>Sources\IO\Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1464,6 +1467,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.h">
       <Filter>Sources\IO\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.h">
+      <Filter>Sources\IO\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2194,6 +2200,9 @@
       <Filter>Sources\DataExchange</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\NetworkInterfaces.inl">
+      <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl">
       <Filter>Sources\IO\Network</Filter>
     </None>
   </ItemGroup>

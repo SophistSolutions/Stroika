@@ -10,21 +10,19 @@
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
+#include    "Stroika/Foundation/IO/Network/Listener.h"
 
 #include    "Stroika/Frameworks/WebServer/ConnectionManager.h"
-#include    "Stroika/Frameworks/WebServer/Listener.h"
 
 using   namespace std;
 
 using   namespace Stroika::Foundation;
+using   namespace Stroika::Foundation::IO::Network;
 using   namespace Stroika::Frameworks::WebServer;
 
 using   Characters::String;
 using   Containers::Sequence;
 using   Memory::Optional;
-
-using   IO::Network::InternetAddress;
-using   IO::Network::SocketAddress;
 
 
 
