@@ -11,8 +11,18 @@
 #include    "../../Configuration/Common.h"
 
 
+/**
+*  \file
+*
+*  \version    <a href="code_status.html#Alpha-Late">Alpha-Late</a>
+*
+* TODO:
+*
+*      @todo    Perhaps obsolete this entire module? Perhaps these utilities are useful
+*               since so much code still uses STL?
+*
+*/
 
-/// THIS MODULE SB OBSOLETE ONCE WE GET STROIKA CONTAINERS WORKING
 
 
 namespace   Stroika {
@@ -21,6 +31,7 @@ namespace   Stroika {
             namespace   STL {
 
 
+                /// @todo - THIS really SB obsolete - not sure why not just use vector<T> () CTOR?
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  mkSfromC (const FROMCONTAINER& rhs);
 
