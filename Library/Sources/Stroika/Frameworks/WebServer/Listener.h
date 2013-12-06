@@ -11,7 +11,8 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/IO/Network/SocketStream.h"
+#include    "../../Foundation/IO/Network/Socket.h"
+#include    "../../Foundation/IO/Network/SocketAddress.h"
 #include    "Request.h"
 #include    "Response.h"
 
@@ -29,9 +30,28 @@ namespace   Stroika {
             using   namespace   Stroika::Foundation;
             using   namespace   Stroika::Foundation::IO;
             using   Characters::String;
+            using   IO::Network::SocketAddress;
 
-            using   Stroika::Foundation::IO::Network::Socket;
-            using   Stroika::Foundation::IO::Network::SocketStream;
+            using   IO::Network::Socket;
+
+
+            /*
+             *  This maintains thread inside. VERY ROUGH DRAFT API.
+             *
+             *
+            */
+            class   Listener {
+            public:
+                // Define params object for stuff like listen backlog (for now hardwire)
+                Listener (const SocketAddress& addr, const function<void(Socket newConnection)>& newConnectionAcceptor);
+                Listener (const Listener&) = delete;
+            public:
+                const Listener& operator= (const Listener&) = delete;
+
+            private:
+                struct  Rep_;
+                shared_ptr<Rep_>    fRep_;
+            };
 
 
         }
