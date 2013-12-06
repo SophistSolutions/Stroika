@@ -39,6 +39,13 @@ namespace   Stroika {
                 AddAll (src);
             }
             template    <typename T, typename TRAITS>
+            inline  Set<T, TRAITS>::Set (const std::set<T>& src)
+                : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (src);
+            }
+            template    <typename T, typename TRAITS>
             template    <typename CONTAINER_OF_T>
             inline  Set<T, TRAITS>::Set (const CONTAINER_OF_T& src)
                 : inherited (static_cast<const inherited&> (Concrete::Set_Factory<T, TRAITS>::mk ()))

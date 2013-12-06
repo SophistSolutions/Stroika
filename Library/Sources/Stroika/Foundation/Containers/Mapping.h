@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <map>
+
 #include    "../Common/Compare.h"
 #include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Common.h"
@@ -93,6 +95,13 @@ namespace   Stroika {
              *
              *  \em Factory:
              *      @see Concrete::Mapping_Factory<> to see default implementations.
+             *
+             *  \em Design Note:
+             *      Included <map> and have explicit CTOR for map<> so that Stroika Mapping can be used more interoperably
+             *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+             *      if you declare an API with Mapping<KEY_TYPE,VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
+             *
+             *      Similarly for std::initalizer_list.
              */
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
@@ -143,6 +152,7 @@ namespace   Stroika {
                 Mapping (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
                 Mapping (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
                 Mapping (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
+                Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& m);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Mapping (const CONTAINER_OF_PAIR_KEY_T& cp);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>

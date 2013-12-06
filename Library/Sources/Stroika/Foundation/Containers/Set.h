@@ -6,6 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <set>
+
 #include    "../Configuration/Common.h"
 #include    "../Common/Compare.h"
 #include    "../Configuration/Concepts.h"
@@ -86,6 +88,13 @@ namespace   Stroika {
              *
              *  \em Factory:
              *      @see Concrete::Set_Factory<> to see default implementations.
+             *
+             *  \em Design Note:
+             *      Included <set> and have explicit CTOR for set<> so that Stroika Set can be used more interoperably
+             *      with set<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
+             *      if you declare an API with Set<T> arguments, its important STL sources passing in set<T> work transparently.
+             *
+             *      Similarly for std::initalizer_list.
              */
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
             class   Set : public Iterable<T> {
@@ -116,6 +125,7 @@ namespace   Stroika {
                 Set ();
                 Set (const Set<T, TRAITS>& s);
                 Set (const std::initializer_list<T>& s);
+                Set (const std::set<T>& s);
                 template <typename CONTAINER_OF_T>
                 explicit Set (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>

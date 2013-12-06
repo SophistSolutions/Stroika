@@ -51,6 +51,13 @@ namespace   Stroika {
                 AddAll (m);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const std::map<KEY_TYPE, VALUE_TYPE>& m)
+                : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            {
+                AssertMember (&inherited::_GetRep (), _IRep);
+                AddAll (m);
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
             inline  Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Mapping (const CONTAINER_OF_PAIR_KEY_T& cp)
                 : inherited (Concrete::Mapping_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
