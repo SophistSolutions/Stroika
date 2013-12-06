@@ -27,6 +27,8 @@ namespace   Stroika {
                 /**
                  * TODO:
                  *
+                 *      @todo   In socket class, set CLOSE_ON_EXEC?
+                 *
                  *      @todo   Document (or define new expcetion) thrown when operaiton done on CLOSED socket.
                  *              and acutally handle all the nullptr cases...
                  *

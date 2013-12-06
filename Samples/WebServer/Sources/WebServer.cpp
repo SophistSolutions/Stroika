@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
 #include    "Stroika/Foundation/IO/Network/Listener.h"
 
@@ -29,16 +30,14 @@ using   Memory::Optional;
 int main (int argc, const char* argv[])
 {
     try {
-        ConnectionManager   cm;
-        //d.fLocation = String (L"http://") + IO::Network::GetPrimaryInternetAddress ().As<String> ();
+        ConnectionManager   cm; // use??? @todo??
 
         auto onConnect = [](Socket s) {
             Execution::Thread runConnectionOnAnotherThread ([s]() {
                 // now read
                 Connection conn (s);
                 conn.ReadHeaders ();    // bad API. Must rethink...
-                //conn.GetResponse ().AddHeader (IO::Network::HTTP::???)
-                conn.GetResponse ().AddHeader (L"Server", L"stroika-web-server-demo");
+                conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-web-server-demo");
                 String url = conn.GetRequest ().fURL.GetFullURL ();
                 conn.GetResponse ().writeln (L"<html><body><p>Hi Mom</p></body></html>");
                 conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
