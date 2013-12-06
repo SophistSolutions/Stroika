@@ -85,7 +85,7 @@ namespace   Stroika {
                         const bool  kUseOptimizedApporach_ = true;
                         if (kUseOptimizedApporach_) {
                             int guessNewSterlLen = sLen;
-                            Assert (guessNewSterlLen <= ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0));
+                            Assert (guessNewSterlLen >= ::MultiByteToWideChar (codePage, 0, sStart, static_cast<int> (sLen), nullptr, 0));
                             intoResult->resize (guessNewSterlLen);  // maybe overallocates a little sometimes...
                             int nCharsWritten = ::MultiByteToWideChar (codePage, 0, sStart, sLen, Containers::Start (*intoResult), guessNewSterlLen);
                             Verify (nCharsWritten != 0);
