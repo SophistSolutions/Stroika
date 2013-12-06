@@ -24,6 +24,17 @@ namespace   Stroika {
 
 
 
+                template    <typename T>
+                bool    Intersects (const set<T>& s1, const set<T>& s2)
+                {
+                    for (typename set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
+                        if (s2.find (*i) != s2.end ()) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
 
 
 
@@ -49,16 +60,6 @@ namespace   Stroika {
                 }
 
 
-                template    <typename T>
-                bool    Intersect (const set<T>& s1, const set<T>& s2)
-                {
-                    for (typename set<T>::const_iterator i = s1.begin (); i != s1.end (); ++i) {
-                        if (s2.find (*i) != s2.end ()) {
-                            return true;
-                        }
-                    }
-                    return false;
-                }
 
 
                 template    <typename T, typename FROMCONTAINER>

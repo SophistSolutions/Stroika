@@ -36,8 +36,11 @@ namespace   Stroika {
                 set<T>  mkSfromC (const FROMCONTAINER& rhs);
 
 
+                /*
+                 * Returns true if the intersetion of s1 and s2 is non-empty
+                */
                 template    <typename T>
-                bool    Intersect (const set<T>& s1, const set<T>& s2);
+                bool    Intersects (const set<T>& s1, const set<T>& s2);
 
 
                 template    <typename T>
@@ -54,6 +57,7 @@ namespace   Stroika {
                 void    Difference (set<T>* s1, const FROMCONTAINER& s2);
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  Difference (const set<T>& s1, const FROMCONTAINER& s2);
+
 
             }
         }
