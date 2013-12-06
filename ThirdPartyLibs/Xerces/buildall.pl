@@ -35,7 +35,7 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
 	#my $MIRROR_PREFIX_ = "http://www.fightrice.com/mirrors/apache/";
 	my $MIRROR_PREFIX_ = "http://psg.mtu.edu/pub/apache/";
-	system ("wget --tries=10 --output-document=../Origs-Cache/$BASENAME.tar.gz $MIRROR_PREFIX_/xerces/c/3/sources/$BASENAME.tar.gz");
+	system ("wget --tries=10 --output-document=../Origs-Cache/$BASENAME.tar.gz $MIRROR_PREFIX_/xerces/c/3/sources/$BASENAME.tar.gz || (rm -f ../Origs-Cache/$BASENAME.tar.gz && false)");
 }
 	
 

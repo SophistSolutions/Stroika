@@ -34,7 +34,7 @@ BUILDS_DIR=	CURRENT/Builds/
 all:	$(TRGDIR)
 
 $(ZIPEDFILE):
-	wget --tries=10 --no-check-certificate -O $(ZIPEDFILE)  $(FETCHURL) 
+	wget --tries=10 --no-check-certificate -O $(ZIPEDFILE)  $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPEDFILE)
 	@echo Building $(TRGDIR)...

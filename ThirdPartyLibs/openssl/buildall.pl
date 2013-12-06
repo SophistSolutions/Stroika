@@ -43,7 +43,7 @@ if (lc ("$BLD_TRG") eq "rebuild") {
 }
 
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
-	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz");
+	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz || (rm -f ../Origs-Cache/$BASENAME.tar.gz && false)");
 }
 
 if (-e "CURRENT/e_os.h") {
