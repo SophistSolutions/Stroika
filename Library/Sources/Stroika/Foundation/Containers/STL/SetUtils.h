@@ -20,27 +20,19 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
-#if 0
-                template    <typename T>
-                set<T>  operator- (const set<T>& lhs, const set<T>& rhs);
-                template    <typename T>
-                set<T>  operator+ (const set<T>& lhs, const set<T>& rhs);
-                template    <typename T, typename FROMCONTAINER>
-                set<T>& operator+= (set<T>& lhs, const FROMCONTAINER& rhs);
-                template    <typename T, typename FROMCONTAINER>
-                set<T>& operator-= (set<T>& lhs, const FROMCONTAINER& rhs);
-#endif
 
                 template    <typename T, typename FROMCONTAINER>
                 set<T>  mkSfromC (const FROMCONTAINER& rhs);
 
+
                 template    <typename T>
-                void    Intersect (set<T>* s1, const set<T>& s2);
+                bool    Intersect (const set<T>& s1, const set<T>& s2);
+
 
                 template    <typename T>
                 set<T>  Intersection (const set<T>& s1, const set<T>& s2);
                 template    <typename T>
-                bool    Intersect (const set<T>& s1, const set<T>& s2);
+                void    Intersection (set<T>* s1, const set<T>& s2);
 
                 template    <typename T, typename FROMCONTAINER>
                 void    Union (set<T>* s1, const FROMCONTAINER& s2);
