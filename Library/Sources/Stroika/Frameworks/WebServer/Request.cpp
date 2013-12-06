@@ -28,12 +28,12 @@ using   namespace   Stroika::Frameworks::WebServer;
 
 /*
  ********************************************************************************
- ************************* WebServer::Request *******************************
+ ************************* WebServer::Request ***********************************
  ********************************************************************************
  */
 Request::Request (const Streams::BinaryInputStream& inStream)
     : fInputStream (inStream)
-    , fInputTextStream (fInputStream)
+//    , fInputTextStream (fInputStream)
     , fHTTPVersion ()
     , fURL ()
     , fHeaders ()

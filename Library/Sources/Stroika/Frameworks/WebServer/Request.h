@@ -43,7 +43,7 @@ namespace   Stroika {
 
             public:
                 Streams::BinaryInputStream              fInputStream;
-                Streams::TextInputStreamBinaryAdapter   fInputTextStream;
+//                Streams::TextInputStreamBinaryAdapter   fInputTextStream;
 
             public:
                 String                                  fHTTPVersion;

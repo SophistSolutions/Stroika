@@ -12,6 +12,7 @@ Objs	=	\
 	$(ObjDir)Exception.o\
 	$(ObjDir)Headers.o\
 	$(ObjDir)Methods.o\
+	$(ObjDir)MessageStartTextInputStreamBinaryAdapter.o\
 	$(ObjDir)Status.o\
 
 all:	$(Objs)

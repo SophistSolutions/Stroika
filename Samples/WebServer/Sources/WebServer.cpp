@@ -39,6 +39,7 @@ int main (int argc, const char* argv[])
                 conn.ReadHeaders ();    // bad API. Must rethink...
                 conn.GetResponse ().AddHeader (IO::Network::HTTP::HeaderName::kServer, L"stroika-web-server-demo");
                 String url = conn.GetRequest ().fURL.GetFullURL ();
+				DbgTrace (L"Serving page %s", url.c_str ());
                 conn.GetResponse ().writeln (L"<html><body><p>Hi Mom</p></body></html>");
                 conn.GetResponse ().SetContentType (DataExchange::PredefinedInternetMediaType::Text_HTML_CT ());
                 conn.GetResponse ().End ();
