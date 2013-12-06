@@ -160,5 +160,10 @@ void    BufferedBinaryOutputStream::Abort ()
 
 void    BufferedBinaryOutputStream::Flush ()
 {
-    AssertNotImplemented ();
+    _SharedIRep rep = _GetRep ();
+
+    // @todo CLEANUP
+    IRep_* r = dynamic_cast<IRep_*> (rep.get ());
+    AssertNotNull (r);
+    r->Flush ();
 }

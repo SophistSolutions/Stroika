@@ -110,9 +110,14 @@ namespace   {
             {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
-                AssertNotImplemented ();
-                return 0;
+                ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
+                int flags = 0;
+                int r = ::recv (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flags);
+                if (r < 0) {
+                    Execution::DoThrow (StringException (L"fix error"));
+                }
+                return size_t (r);// rough attempt...
 #elif   qPlatform_POSIX
                 return Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd] () -> int { return ::read (fSD_, intoStart, intoEnd - intoStart); });
 #else
@@ -123,7 +128,8 @@ namespace   {
             {
                 // Must do erorr checking and throw exceptions!!!
 #if     qPlatform_Windows
-                AssertNotImplemented ();
+                int flags = 0;
+                int n = ::send (fSD_, reinterpret_cast<const char*> (start), end - start, flags);
                 //int       n   =   ::_write (fSD_, start, end - start);
 #elif   qPlatform_POSIX
                 int     n   =   Execution::Handle_ErrNoResultInteruption ([this, &start, &end] () -> int { return ::write (fSD_, start, end - start); });
@@ -191,7 +197,6 @@ AGAIN:
                     }
                 }
 #if     qPlatform_Windows
-                AssertNotImplemented ();
                 return Socket::Attach (r);
 #elif   qPlatform_POSIX
                 return Socket::Attach (Execution::ThrowErrNoIfNegative (r));
@@ -324,6 +329,7 @@ Socket::PlatformNativeHandle    Socket::Detach ()
 
 void    Socket::Bind (const SocketAddress& sockAddr, BindFlags bindFlags)
 {
+    Require (fRep_.get () != nullptr);  // Construct with Socket::Kind::SOCKET_STREAM?
     PlatformNativeHandle    sfd =    fRep_->GetNativeSocket ();
 
     {

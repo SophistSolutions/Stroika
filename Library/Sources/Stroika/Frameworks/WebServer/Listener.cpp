@@ -30,7 +30,7 @@ struct Listener::Rep_ {
     Rep_ (const SocketAddress& addr, const function<void (Socket newConnection)>& newConnectionAcceptor)
         : fSockAddr (addr)
         , fNewConnectionAcceptor (newConnectionAcceptor)
-        , fMasterSocket ()
+        , fMasterSocket (Socket::SocketKind::STREAM)
     {
         fMasterSocket.Bind (addr);  // do in CTOR so throw propagated
         fMasterSocket.Listen (10);//need param

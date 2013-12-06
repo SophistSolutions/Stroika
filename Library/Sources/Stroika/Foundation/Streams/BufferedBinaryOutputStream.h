@@ -43,6 +43,9 @@ namespace   Stroika {
              */
             class   BufferedBinaryOutputStream : public BinaryOutputStream {
             private:
+                typedef BinaryOutputStream  inherited;
+
+            private:
                 class   IRep_;
 
             public:
