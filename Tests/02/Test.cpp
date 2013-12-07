@@ -646,6 +646,10 @@ namespace   {
         VerifyTestResult (String (L"abc").Find (L"x") == String::kBadIndex);
         VerifyTestResult (String (L"abc").Find (L"b", 2) == String::kBadIndex);
     }
+    void    Test17_ReplaceAll_ ()
+    {
+        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
+    }
     void    Test17_RegExp_Search_ ()
     {
 #if     qCompilerAndStdLib_Supports_regex
@@ -904,6 +908,8 @@ namespace   {
         Test15_StripAll_ ();
         Test16_Format_ ();
         Test17_Find_ ();
+        Test17_ReplaceAll_ ();
+        Test17_ReplaceAll_ ();
         Test17_RegExp_ ();
         Test18_Compare_ ();
         Test19_ConstCharStar_ ();
