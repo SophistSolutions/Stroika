@@ -76,6 +76,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.inl" />
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.inl" />
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.inl" />
@@ -97,6 +98,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-32|Win32'">$(IntDir)Framework_UPnP_%(Filename).obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release-Logging-U-64|Win32'">$(IntDir)Framework_UPnP_%(Filename).obj</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp" />
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-64|Win32'">$(IntDir)Framework_UPnP_Client_%(Filename).obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug-U-32|Win32'">$(IntDir)Framework_UPnP_Client_%(Filename).obj</ObjectFileName>
@@ -137,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\CachingListener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Listener.h" />
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Client\Search.h" />

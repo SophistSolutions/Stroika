@@ -10,6 +10,7 @@
 #include    "../../../../Foundation/Configuration/Common.h"
 
 #include    "../../Device.h"
+#include    "../../DeviceDescription.h"
 #include    "PeriodicNotifier.h"
 #include    "SearchResponder.h"
 
