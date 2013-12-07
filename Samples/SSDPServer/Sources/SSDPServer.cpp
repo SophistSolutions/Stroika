@@ -78,12 +78,10 @@ int main (int argc, const char* argv[])
         Device  d;
         d.fLocation = Characters::Format (L"http://%s:%d", IO::Network::GetPrimaryInternetAddress ().As<String> ().c_str (), portForOurWS);
         d.fServer = L"unix/5.1 UPnP/1.1 MyProduct/1.0";     // @todo wrong - to be fixed
-        d.fUSN = L"uuid:315CAAE0-668D-47C7-A178-24C9EE756627";
-        d.fST = L"upnp:rootdevice";
+        d.fDeviceID = L"315CAAE0-668D-47C7-A178-24C9EE756627";
 
         DeviceDescription   deviceInfo;
         deviceInfo.fPresentationURL = L"http://www.sophists.com/";
-        deviceInfo.fUDN = d.fUSN;
         deviceInfo.fDeviceType = L"urn:sophists.com:device:deviceType:1.0";
         deviceInfo.fManufactureName = L"Sophist Solutions, Inc.";
         deviceInfo.fFriendlyName = L"Sophist Solutions fake device";

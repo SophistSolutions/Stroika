@@ -8,6 +8,8 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Containers/Mapping.h"
+#include    "../../Foundation/Memory/Optional.h"
 
 
 /*
@@ -31,10 +33,22 @@ namespace   Stroika {
              */
             class   Device {
             public:
-                String fUSN;
-                String fLocation;
-                String fServer;
-                String fST;         // usually ST header (or NT for notify)
+                String  fDeviceID;      // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
+                String  fLocation;
+                String  fServer;
+//                String    fST;         // usually ST header (or NT for notify)
+            };
+
+
+
+            // @todo MOVE TO SEPARET IFLE
+            struct  DeviceAnnouncement {
+                Memory::Optional<bool>      fAlive; // else Bye notification, or empty if neither
+                String                      fUSN;
+                String                      fLocation;
+                String                      fServer;
+                String                      fST;         // usually ST header (or NT for notify)
+                Containers::Mapping<String, String>     fRawHeaders;
             };
 
 

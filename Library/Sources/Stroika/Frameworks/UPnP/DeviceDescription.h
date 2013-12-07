@@ -32,7 +32,7 @@ namespace   Stroika {
              * whcih appears to the XML file (poitned to by Device location field).
              */
             struct  DeviceDescription {
-                String  fUDN;
+//               String  fUDN;
                 String  fPresentationURL;
                 String  fDeviceType;            //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
                 String  fManufactureName;

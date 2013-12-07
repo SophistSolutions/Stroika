@@ -46,8 +46,6 @@ namespace   Stroika {
                      */
                     class   Listener {
                     public:
-                        class Result;
-                    public:
                         Listener ();
                         Listener (const Listener&) = delete;
 
@@ -67,7 +65,7 @@ namespace   Stroika {
                          *  Note - the callback will be called on an arbitrary thread, so the callback must be threadsafe.
                          *  This can be done after the listening has started.
                          */
-                        void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds);
+                        void    AddOnFoundCallback (const std::function<void (const DeviceAnnouncement& d)>& callOnFinds);
 
                     public:
                         /**
@@ -88,14 +86,16 @@ namespace   Stroika {
                         shared_ptr<Rep_>    fRep_;
                     };
 
-
+#if 0
                     /**
                      */
                     class Listener::Result : public Device {
                     public:
                         Containers::Mapping<String, String>     fRawHeaders;
+                        String                                  fUSN;
                         Memory::Optional<bool>                  fAlive; // else Bye notification, or empty if neither
                     };
+#endif
 
 
                 }

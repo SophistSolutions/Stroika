@@ -42,7 +42,7 @@ public:
         , fThread_ ()
     {
     }
-    void    AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds)
+    void    AddOnFoundCallback (const std::function<void (const DeviceAnnouncement& d)>& callOnFinds)
     {
         lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
@@ -116,7 +116,7 @@ public:
 
         const   String  kOKRESPONSELEAD_    =   L"HTTP/1.1 200";
         if (firstLine.length () >= kOKRESPONSELEAD_.length () and firstLine.SubString (0, kOKRESPONSELEAD_.length ()) == kOKRESPONSELEAD_) {
-            Result d;
+            DeviceAnnouncement d;
             while (true) {
                 String line =   in.ReadLine ().Trim ();
                 if (line.empty ()) {
@@ -156,10 +156,10 @@ public:
         }
     }
 private:
-    recursive_mutex                                 fCritSection_;
-    vector<std::function<void(const Result& d)>>    fFoundCallbacks_;
-    Socket                                          fSocket_;
-    Execution::Thread                               fThread_;
+    recursive_mutex                                             fCritSection_;
+    vector<std::function<void (const DeviceAnnouncement& d)>>   fFoundCallbacks_;
+    Socket                                                      fSocket_;
+    Execution::Thread                                           fThread_;
 };
 
 
@@ -183,7 +183,7 @@ Search::~Search ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void    Search::AddOnFoundCallback (const std::function<void(const Result& d)>& callOnFinds)
+void    Search::AddOnFoundCallback (const std::function<void (const DeviceAnnouncement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }

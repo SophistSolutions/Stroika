@@ -28,8 +28,7 @@ using   namespace   Stroika::Frameworks::UPnP;
 ********************************************************************************
 */
 DeviceDescription::DeviceDescription ()
-    : fUDN ()
-    , fPresentationURL ()
+    : fPresentationURL ()
     , fDeviceType ()
     , fManufactureName ()
     , fFriendlyName ()
@@ -64,14 +63,14 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     /*
     // very very rough prelim draft
     *Example based on
-    http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf
+    http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.0.pdf
     */
     stringstream tmp;
     tmp << "<?xml version=\"1.0\"?>" << endl;
-    tmp << "<root xmlns=\"urn:schemas-upnp-org:device-1-0\" configId=\"configuration number\">" << endl;
+    tmp << "<root xmlns=\"urn:schemas-upnp-org:device-1-0\">" << endl;
     tmp << "	<specVersion>" << endl;
     tmp << "		<major>1</major>" << endl;
-    tmp << "		<minor>1</minor>" << endl;
+    tmp << "		<minor>0</minor>" << endl;
     tmp << "	</specVersion>" << endl;
     tmp << "	<device>" << endl;
     tmp << "		<deviceType>" << QuoteForXML (dd.fDeviceType) << "</deviceType>" << endl;
@@ -85,13 +84,13 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     tmp << "		<modelNumber>" << QuoteForXML (dd.fModelNumber) << "</modelNumber>" << endl;
     tmp << "		<modelURL>" << QuoteForXML (dd.fModelURL) << "</modelURL>" << endl;
     tmp << "		<serialNumber>" << QuoteForXML (dd.fSerialNumber) << "</serialNumber>" << endl;
-    tmp << "		<UDN>" << QuoteForXML (dd.fUDN) << "</UDN>" << endl;
+    tmp << "		<UDN>uuid:" << QuoteForXML (d.fDeviceID) << "</UDN>" << endl;
     if (not dd.fUPC.empty ()) {
         tmp << "		<UPC>" << QuoteForXML (dd.fUPC) << "</UPC>" << endl;
     }
 
+#if 0
     tmp << "		<iconList>" << endl;
-#if 1
     tmp << "			<icon>" << endl;
     tmp << "				<mimetype>image/png</mimetype>" << endl;
     tmp << "				<width>16</width>" << endl;
@@ -100,9 +99,10 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     tmp << "				<url>myIcon.png</url>" << endl;
     tmp << "			</icon>" << endl;
     // <!-- XML to declare other icons, if any, go here -->
-#endif
     tmp << "		</iconList>" << endl;
+#endif
 
+#if 0
     tmp << "	<serviceList>" << endl;
     tmp << "		<service>" << endl;
     tmp << "			<serviceType>urn:schemas-upnp-org:service:serviceType:v</serviceType>" << endl;
@@ -115,12 +115,15 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     // (if any) go here -->
     // <!-- Declarations for other services added by UPnP vendor (if any) go here -->
     tmp << "	</serviceList>" << endl;
+#endif
 
+#if 0
     tmp << "	<deviceList>" << endl;
     // <!-- Description of embedded devices defined by a UPnP Forum working committee
     // (if any) go here -->
     // <!-- Description of embedded devices added by UPnP vendor (if any) go here -->
     tmp << "	</deviceList>" << endl;
+#endif
 
     if (not dd.fPresentationURL.empty ()) {
         tmp << "	<presentationURL>" << QuoteForXML (dd.fPresentationURL) << "</presentationURL>" << endl;

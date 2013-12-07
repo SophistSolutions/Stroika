@@ -33,7 +33,7 @@ namespace {
     void    DoListening_ (Listener* l)
     {
         cout << "Listening..." << endl;
-        l->AddOnFoundCallback ([] (const Listener::Result & d) {
+        l->AddOnFoundCallback ([](const DeviceAnnouncement & d) {
             lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (NOTIFY):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
@@ -55,7 +55,7 @@ namespace {
     void    DoSearching_ (Search* searcher, const String& searchFor)
     {
         cout << "Searching for '" << searchFor.AsUTF8 () << "'..." << endl;
-        searcher->AddOnFoundCallback ([] (const Search::Result & d) {
+        searcher->AddOnFoundCallback ([](const DeviceAnnouncement & d) {
             lock_guard<mutex> critSection (kStdOutMutex_);
             cout << "\tFound device (MATCHED SEARCH):" << endl;
             cout << "\t\tUSN:      " << d.fUSN.AsUTF8 () << endl;
