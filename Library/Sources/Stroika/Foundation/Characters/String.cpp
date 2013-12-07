@@ -571,11 +571,14 @@ String  String::ReplaceAll (const RegularExpression& regEx, const String& with, 
 
 String  String::ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co) const
 {
-    AssertNotImplemented ();
-#if     ! (defined (__GNUC__) && (__GNUC__ < 4 || (__GNUC__ == 4 && (__GNUC_MINOR__ <= 6))))
-    // This causes GCC 4.6.2 or earlier to barf, and since it doesnt work anyhow, dont disable the rest...
-    return String (regex_replace (As<wstring> (), wregex (string2SearchFor.As<wstring> ()), with.As<wstring> ()));
-#endif
+    Require (not string2SearchFor.empty ());
+    // simplistic quickie impl...
+    String  result = *this;
+    size_t  i;
+    while ((i = result.Find (string2SearchFor, co)) != String::npos) {
+        result = result.SubString (0, i) + result.SubString (i + string2SearchFor.length ());
+    }
+    return result;
 }
 
 String  String::SubString (size_t from, size_t to) const
