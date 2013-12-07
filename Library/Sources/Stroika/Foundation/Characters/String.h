@@ -552,6 +552,8 @@ namespace   Stroika {
 
                  * CHECK - BUT HI HTINK WE DEFINE TO REPLACE ALL? OR MAKE PARAM?
                 * See regex_replace () for definition of the regEx language
+                *
+                *   Require (not string2SearchFor.empty ());
                 *       TODO: GIVE EXAMPLES
                  */
                 nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
