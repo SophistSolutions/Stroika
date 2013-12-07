@@ -43,7 +43,7 @@ void    PeriodicNotifier::Run (const Device& d, const FrequencyInfo& fi)
             Memory::BLOB    data;
             {
                 Streams::BasicBinaryOutputStream    out;
-                Streams::TextOutputStreamBinaryAdapter  textOut (out);
+                Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
                 //// SUPER ROUGH FIRST DRAFT
                 textOut.Write (Format (L"NOTIFY * HTTP/1.1\r\n"));
                 textOut.Write (Format (L"Host: 239.255.255.250:reservedSSDPport\r\n"));

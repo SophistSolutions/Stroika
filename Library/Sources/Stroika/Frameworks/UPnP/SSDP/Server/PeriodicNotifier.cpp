@@ -41,7 +41,7 @@ namespace {
         Memory::BLOB    data;
         {
             Streams::BasicBinaryOutputStream    out;
-            Streams::TextOutputStreamBinaryAdapter  textOut (out);
+            Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
             //// SUPER ROUGH FIRST DRAFT
             textOut.Write (Format (L"NOTIFY * HTTP/1.1\r\n"));
             textOut.Write (Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
