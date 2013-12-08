@@ -41,9 +41,17 @@ namespace   Stroika {
             public:
                 KeyValuePair ();
                 KeyValuePair (const KeyType& key, const ValueType& value);
-                template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+                template    <
+                    typename KEY2_TYPE,
+                    typename VALUE2_TYPE,
+                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<const KEY2_TYPE&, KEY_TYPE>::value && is_convertible<const VALUE2_TYPE&, VALUE_TYPE>::value, void >::type
+                    >
                 KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value);
-                template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+                template    <
+                    typename KEY2_TYPE,
+                    typename VALUE2_TYPE,
+                    typename ENABLE_IF_TEST = typename enable_if < is_convertible<const KEY2_TYPE&, KEY_TYPE>::value && is_convertible<const VALUE2_TYPE&, VALUE_TYPE>::value, void >::type
+                    >
                 KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value);
 
             public:
