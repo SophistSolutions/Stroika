@@ -8,6 +8,7 @@
 
 #include    "../../../../Foundation/Characters/String.h"
 #include    "../../../../Foundation/Configuration/Common.h"
+#include    "../../../../Foundation/Traversal/Iterable.h"
 
 #include    "../../Device.h"
 
@@ -29,6 +30,7 @@ namespace   Stroika {
                 namespace Server {
 
 
+                    using   Traversal::Iterable;
 
                     /**
                      *
@@ -38,7 +40,7 @@ namespace   Stroika {
 
                         SearchResponder ();
 
-                        void    Run (const Device& d);
+                        void    Run (const Iterable<Advertisement>& advertisements);
 
 
 

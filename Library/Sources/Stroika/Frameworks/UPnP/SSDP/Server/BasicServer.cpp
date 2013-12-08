@@ -4,6 +4,7 @@
 #include    "../../../StroikaPreComp.h"
 
 #include    "../../../../Foundation/Characters/Format.h"
+#include    "../../../../Foundation/Containers/Sequence.h"
 #include    "../../../../Foundation/Execution/Sleep.h"
 #include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/IO/Network/Socket.h"
@@ -11,11 +12,13 @@
 #include    "../../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
 
 #include    "../Common.h"
+#include    "../Advertisement.h"
 #include    "BasicServer.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
@@ -37,16 +40,35 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 */
 class   BasicServer::Rep_ {
 public:
+    Sequence<Advertisement> fAdvertisements;
+
     Rep_ (const Device& d, const FrequencyInfo& fi)
+        : fAdvertisements ()
     {
-        fNotifierThread_ = Thread ([d, fi]() {
+        {
+            SSDP::Advertisement  dan;
+            dan.fLocation = d.fLocation;
+            dan.fServer = d.fServer;
+            {
+                dan.fST = L"upnp:rootdevice";
+                dan.fUSN = Format (L"uuid:%s::upnp:rootdevice", d.fDeviceID.c_str ());
+                fAdvertisements.Append (dan);
+            }
+            {
+                dan.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                dan.fST = dan.fUSN;
+                fAdvertisements.Append (dan);
+            }
+        }
+
+        fNotifierThread_ = Thread ([this, fi]() {
             PeriodicNotifier l;
-            l.Run (d, PeriodicNotifier::FrequencyInfo ());
+            l.Run (fAdvertisements, PeriodicNotifier::FrequencyInfo ());
         });
         fNotifierThread_.Start ();
-        fSearchResponderThread_ = Thread ([d, fi]() {
+        fSearchResponderThread_ = Thread ([this, fi]() {
             SearchResponder sr;
-            sr.Run (d);
+            sr.Run (fAdvertisements);
         });
         fSearchResponderThread_.Start ();
     }

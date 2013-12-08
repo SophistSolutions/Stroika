@@ -12,6 +12,7 @@
 #include    "../../../../Foundation/IO/Network/Socket.h"
 #include    "../../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
+#include    "../Advertisement.h"
 #include    "../Common.h"
 
 #include    "Listener.h"
@@ -52,7 +53,7 @@ public:
         fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
-    void    AddOnFoundCallback (const std::function<void(const DeviceAnnouncement& d)>& callOnFinds)
+    void    AddOnFoundCallback (const std::function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
         lock_guard<recursive_mutex> critSection (fCritSection_);
         fFoundCallbacks_.push_back (callOnFinds);
@@ -99,7 +100,7 @@ public:
 #endif
         const   String  kNOTIFY_LEAD    =   L"NOTIFY ";
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
-            DeviceAnnouncement d;
+            SSDP::Advertisement d;
             while (true) {
                 String line =   in.ReadLine ().Trim ();
                 if (line.empty ()) {
@@ -154,7 +155,7 @@ public:
     }
 private:
     recursive_mutex                                             fCritSection_;
-    vector<std::function<void (const DeviceAnnouncement& d)>>   fFoundCallbacks_;
+    vector<std::function<void (const SSDP::Advertisement& d)>>  fFoundCallbacks_;
     Socket                                                      fSocket_;
     Execution::Thread                                           fThread_;
 };
@@ -179,7 +180,7 @@ Listener::~Listener ()
     IgnoreExceptionsForCall (fRep_->Stop ());
 }
 
-void    Listener::AddOnFoundCallback (const std::function<void (const DeviceAnnouncement& d)>& callOnFinds)
+void    Listener::AddOnFoundCallback (const std::function<void (const SSDP::Advertisement& d)>& callOnFinds)
 {
     fRep_->AddOnFoundCallback (callOnFinds);
 }

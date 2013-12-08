@@ -126,7 +126,7 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
 #endif
 
     if (not dd.fPresentationURL.empty ()) {
-        tmp << "	<presentationURL>" << QuoteForXML (dd.fPresentationURL) << "</presentationURL>" << endl;
+        tmp << "		<presentationURL>" << QuoteForXML (dd.fPresentationURL) << "</presentationURL>" << endl;
     }
     tmp << "	</device>" << endl;
     tmp << "</root>" << endl;

@@ -8,7 +8,9 @@
 
 #include    "../../../../Foundation/Characters/String.h"
 #include    "../../../../Foundation/Configuration/Common.h"
+#include    "../../../../Foundation/Traversal/Iterable.h"
 
+#include    "../Advertisement.h"
 #include    "../../Device.h"
 
 /*
@@ -29,6 +31,9 @@ namespace   Stroika {
                 namespace Server {
 
 
+                    using   Traversal::Iterable;
+
+
                     /**
                      *  A big part of SSDP server functinality is to send periodic notifications of the Device info
                      *
@@ -44,7 +49,7 @@ namespace   Stroika {
                         struct FrequencyInfo {
 
                         };
-                        void    Run (const Device& d, const FrequencyInfo& fi);
+                        void    Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
 
 
 

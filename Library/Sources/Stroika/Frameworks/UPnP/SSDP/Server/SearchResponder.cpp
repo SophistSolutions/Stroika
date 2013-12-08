@@ -13,12 +13,14 @@
 #include    "../../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 #include    "../../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
 
+#include    "../Advertisement.h"
 #include    "../Common.h"
 #include    "SearchResponder.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -40,7 +42,7 @@ SearchResponder::SearchResponder ()
 }
 
 namespace {
-    void    DoSend_ (DeviceAnnouncement deviceAnnouncement, Socket s, SocketAddress sendTo)
+    void    DoSend_ (SSDP::Advertisement deviceAnnouncement, Socket s, SocketAddress sendTo)
     {
         Memory::BLOB    data;
         {
@@ -63,7 +65,7 @@ namespace {
         }
         s.SendTo (data.begin (), data.end (), sendTo);
     };
-    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Device& d, Socket useSocket, SocketAddress sendTo)
+    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 
@@ -73,7 +75,7 @@ namespace {
 #endif
         const   String  kNOTIFY_LEAD = L"M-SEARCH ";
         if (firstLine.length () > kNOTIFY_LEAD.length () and firstLine.SubString (0, kNOTIFY_LEAD.length ()) == kNOTIFY_LEAD) {
-            DeviceAnnouncement da;
+            SSDP::Advertisement da;
             while (true) {
                 String line = in.ReadLine ().Trim ();
                 if (line.empty ()) {
@@ -101,6 +103,30 @@ namespace {
                 }
             }
 
+#if 1
+            bool    matches = false;
+            if (da.fST == L"upnp:rootdevice") {
+                matches = true;
+            }
+            else if (da.fST == L"ssdp:all") {
+                matches = true;
+            }
+            else if (da.fST.StartsWith (String (L"uuid:"))) {
+                for (auto a : advertisements) {
+                    // @todo - not quite right... well - maybe right - look more closely
+                    if (a.fUSN == da.fST) {
+                        matches = true;
+                    }
+                }
+            }
+            if (matches) {
+                // if any match, I think we are supposed to send all
+                for (auto a : advertisements) {
+                    DoSend_ (a, useSocket, sendTo);
+                }
+            }
+
+#else
             if (da.fST == L"upnp:rootdevice") {
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
@@ -143,15 +169,16 @@ namespace {
                 int breakere = 1;
                 // for now ignore other searches but we should match on device, and owned services, and I'm sure more...
             }
+#endif
 
         }
     }
 
 }
 
-void    SearchResponder::Run (const Device& d)
+void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
-    Execution::Thread t ([this, d]() {
+    Execution::Thread t ([this, advertisements]() {
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
@@ -166,7 +193,7 @@ void    SearchResponder::Run (const Device& d)
                 size_t nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), d, s, from);
+                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), advertisements, s, from);
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();

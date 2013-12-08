@@ -43,6 +43,9 @@
     <None Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.inl">
       <Filter>Sources</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.inl">
+      <Filter>Sources\SSDP</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.cpp">
@@ -72,6 +75,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.cpp">
+      <Filter>Sources\SSDP</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\Device.h">
@@ -100,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\DeviceDescription.h">
       <Filter>Sources</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Frameworks\UPnP\SSDP\Advertisement.h">
+      <Filter>Sources\SSDP</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

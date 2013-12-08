@@ -10,12 +10,14 @@
 #include    "../../../../Foundation/Streams/BasicBinaryOutputStream.h"
 #include    "../../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
 
+#include    "../Advertisement.h"
 #include    "../Common.h"
 #include    "PeriodicNotifier.h"
 
 
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Characters;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
@@ -36,7 +38,7 @@ PeriodicNotifier::PeriodicNotifier ()
 }
 
 namespace {
-    void    DoSend_ (DeviceAnnouncement deviceAnnouncement, Socket s)
+    void    DoSend_ (SSDP::Advertisement deviceAnnouncement, Socket s)
     {
         Memory::BLOB    data;
         {
@@ -62,26 +64,16 @@ namespace {
     };
 }
 
-void    PeriodicNotifier::Run (const Device& d, const FrequencyInfo& fi)
+void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
-    Execution::Thread t ([d, fi]() {
+    Execution::Thread t ([advertisements, fi]() {
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         while (true) {
-            DeviceAnnouncement  dan;
-            dan.fLocation = d.fLocation;
-            dan.fServer = d.fServer;
-            {
-                dan.fST = L"upnp:rootdevice";
-                dan.fUSN = Format (L"uuid:%s::upnp:rootdevice", d.fDeviceID.c_str ());
-                DoSend_ (dan, s);
-            }
-            {
-                dan.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                dan.fST = dan.fUSN;
-                DoSend_ (dan, s);
+            for (auto a : advertisements) {
+                DoSend_ (a, s);
             }
             Execution::Sleep (30.0);
         }
