@@ -63,7 +63,7 @@ namespace {
         }
         s.SendTo (data.begin (), data.end (), sendTo);
     };
-    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Device& d, SocketAddress sendTo)
+    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Device& d, Socket useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 
@@ -102,26 +102,23 @@ namespace {
             }
 
             if (da.fST == L"upnp:rootdevice") {
-                Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                DoSend_ (da, s, sendTo);    //
+                DoSend_ (da, useSocket, sendTo);    //
             }
             else if (da.fST.StartsWith (String (L"uuid:") + d.fDeviceID)) {
-                Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
                 da.fUSN = d.fDeviceID;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                DoSend_ (da, s, sendTo);    //
+                DoSend_ (da, useSocket, sendTo);    //
             }
             else if (da.fST == L"ssdp:all") {
-                Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                DoSend_ (da, s, sendTo);    //
+                DoSend_ (da, useSocket, sendTo);    //
             }
             else {
                 int breakere = 1;
@@ -150,7 +147,7 @@ void    SearchResponder::Run (const Device& d)
                 size_t nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), d, from);
+                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), d, s, from);
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();
