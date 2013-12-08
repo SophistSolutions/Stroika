@@ -40,6 +40,10 @@ namespace   Stroika {
             };
 
 
+            /*
+            */
+            String  MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID);
+
 
             // @todo MOVE TO SEPARET IFLE
             struct  DeviceAnnouncement {
