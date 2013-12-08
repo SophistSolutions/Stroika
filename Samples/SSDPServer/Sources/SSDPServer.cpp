@@ -77,7 +77,7 @@ int main (int argc, const char* argv[])
 
         Device  d;
         d.fLocation = Characters::Format (L"http://%s:%d", IO::Network::GetPrimaryInternetAddress ().As<String> ().c_str (), portForOurWS);
-        d.fServer = L"unix/5.1 UPnP/1.1 MyProduct/1.0";     // @todo wrong - to be fixed
+        d.fServer = L"unix/5.1 UPnP/1.0 MyProduct/1.0";     // @todo wrong - to be fixed
         d.fDeviceID = UPnP::MungePrimaryMacAddrIntoBaseDeviceID (L"315CAAE0-1335-57BF-A178-24C9EE756627");
 
         DeviceDescription   deviceInfo;

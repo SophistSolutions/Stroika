@@ -40,7 +40,7 @@ SearchResponder::SearchResponder ()
 }
 
 namespace {
-    void    DoSend_ (DeviceAnnouncement deviceAnnouncement, Socket s)
+    void    DoSend_ (DeviceAnnouncement deviceAnnouncement, Socket s, SocketAddress sendTo)
     {
         Memory::BLOB    data;
         {
@@ -61,9 +61,9 @@ namespace {
             ///need fluush API on  OUTSTREAM
             data = out.As<Memory::BLOB> ();
         }
-        s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
+        s.SendTo (data.begin (), data.end (), sendTo);
     };
-    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Device& d)
+    void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Device& d, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
 
@@ -105,28 +105,29 @@ namespace {
                 Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
+                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                DoSend_ (da, s, sendTo);    //
+            }
+            else if (da.fST.StartsWith (String (L"uuid:") + d.fDeviceID)) {
+                Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
+                da.fServer = d.fServer;
+                da.fLocation = d.fLocation;
                 da.fUSN = d.fDeviceID;
-                DoSend_ (da, s);    //
+                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                DoSend_ (da, s, sendTo);    //
             }
             else if (da.fST == L"ssdp:all") {
                 Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
-                da.fUSN = d.fDeviceID;
-                DoSend_ (da, s);    //
+                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                DoSend_ (da, s, sendTo);    //
             }
             else {
+                int breakere = 1;
                 // for now ignore other searches but we should match on device, and owned services, and I'm sure more...
             }
 
-#if 0
-            {
-                lock_guard<recursive_mutex> critSection (fCritSection_);
-                for (auto i : fFoundCallbacks_) {
-                    i (d);
-                }
-            }
-#endif
         }
     }
 
@@ -149,7 +150,7 @@ void    SearchResponder::Run (const Device& d)
                 size_t nBytesRead = s.ReceiveFrom (std::begin (buf), std::end (buf), 0, &from);
                 Assert (nBytesRead <= NEltsOf (buf));
                 using   namespace   Streams;
-                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), d);
+                ParsePacketAndRespond_ (TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (std::begin (buf), std::begin (buf) + nBytesRead)), d, from);
             }
             catch (const Execution::ThreadAbortException&) {
                 Execution::DoReThrow ();
