@@ -39,17 +39,24 @@ class   BasicServer::Rep_ {
 public:
     Rep_ (const Device& d, const FrequencyInfo& fi)
     {
-        fThread_ = Thread ([d, fi]() {
+        fNotifierThread_ = Thread ([d, fi]() {
             PeriodicNotifier l;
             l.Run (d, PeriodicNotifier::FrequencyInfo ());
         });
-        fThread_.Start ();
+        fNotifierThread_.Start ();
+        fSearchResponderThread_ = Thread ([d, fi]() {
+            SearchResponder sr;
+            sr.Run (d);
+        });
+        fSearchResponderThread_.Start ();
     }
     ~Rep_ ()
     {
-        fThread_.AbortAndWaitForDone ();
+        fNotifierThread_.AbortAndWaitForDone ();
+        fSearchResponderThread_.AbortAndWaitForDone ();
     }
-    Execution::Thread     fThread_;
+    Execution::Thread     fNotifierThread_;
+    Execution::Thread     fSearchResponderThread_;
 };
 
 

@@ -18,6 +18,8 @@
  *
  * TODO:
  *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
+ *
+ *      @todo   This is a rough draft implementation. Quite incomplete (and not sure working, untested)
  */
 
 namespace   Stroika {
@@ -27,24 +29,16 @@ namespace   Stroika {
                 namespace Server {
 
 
-#if 0
 
                     /**
-                     *  A big part of SSDP server functinality is to send periodic notifications of the Device info
-                     *
-                     *
-                     *  Could pass in thread or maybe just keep it hidden
                      *
                      */
-                    class   PeriodicNotifier {
+                    class   SearchResponder {
                     public:
 
-                        PeriodicNotifier ();
+                        SearchResponder ();
 
-                        struct FrequencyInfo {
-
-                        };
-                        void    Run (const Device& d, const FrequencyInfo& fi);
+                        void    Run (const Device& d);
 
 
 
@@ -58,7 +52,6 @@ namespace   Stroika {
                         // thread as needed, does responses etc.
 #endif
                     };
-#endif
 
 
                 }
