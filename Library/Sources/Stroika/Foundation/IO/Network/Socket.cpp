@@ -152,14 +152,19 @@ namespace   {
             }
             virtual size_t    ReceiveFrom (Byte* intoStart, Byte* intoEnd, int flag, SocketAddress* fromAddress) override
             {
+                RequireNotNull (fromAddress);
                 // Must do erorr checking and throw exceptions!!!
                 sockaddr    sa;
                 socklen_t   salen   =   sizeof(sa);
 #if     qPlatform_Windows
                 Require (intoEnd - intoStart < numeric_limits<int>::max ());
-                return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), static_cast<int> (intoEnd - intoStart), flag, &sa, &salen)));
+                *fromAddress = sa;
+                return result;
 #elif   qPlatform_POSIX
-                return static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+                size_t result = static_cast<size_t> (Execution::ThrowErrNoIfNegative (Execution::Handle_ErrNoResultInteruption ([this, &intoStart, &intoEnd, &flag, &sa, &salen] () -> int { return ::recvfrom (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flag, &sa, &salen); })));
+                *fromAddress = sa;
+                return result;
 #else
                 AssertNotImplemented ();
 #endif
