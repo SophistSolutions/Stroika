@@ -232,16 +232,16 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
     char buf[10 * 1024];
     ifc.ifc_len = sizeof(buf);
     ifc.ifc_buf = buf;
-    Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeHandle (), SIOCGIFCONF, &ifc));
+    Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeSocket (), SIOCGIFCONF, &ifc));
 
     const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof(struct ifreq));
     for (const ifreq* it = ifc.ifc_req ; it != end; ++it) {
         struct ifreq    ifr;
         memset (&ifr, 0, sizeof (ifr));
         Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
-        if (::ioctl (s, SIOCGIFFLAGS, &ifr) == 0) {
+        if (::ioctl (s.GetNativeSocket (), SIOCGIFFLAGS, &ifr) == 0) {
             if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (::ioctl (s, SIOCGIFHWADDR, &ifr) == 0) {
+                if (::ioctl (s.GetNativeSocket (), SIOCGIFHWADDR, &ifr) == 0) {
                     return printMacAddr (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data));
                 }
             }
