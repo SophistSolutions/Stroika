@@ -10,6 +10,7 @@
 #include    <vector>
 
 #include    "../Configuration/Common.h"
+#include    "../Memory/BLOB.h"
 
 #include    "BinaryInputStream.h"
 #include    "Seekable.h"
@@ -59,6 +60,7 @@ namespace   Stroika {
             private:
                 class   IRep_;
             public:
+                ExternallyOwnedMemoryBinaryInputStream (const Memory::BLOB& b);
                 ExternallyOwnedMemoryBinaryInputStream (const vector<Byte>& v);
                 ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end);
             };

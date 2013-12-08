@@ -115,6 +115,11 @@ private:
  ***************** Streams::ExternallyOwnedMemoryBinaryInputStream **************
  ********************************************************************************
  */
+ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const Memory::BLOB& b)
+    : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (b.begin (), b.end ())))
+{
+}
+
 ExternallyOwnedMemoryBinaryInputStream::ExternallyOwnedMemoryBinaryInputStream (const Byte* start, const Byte* end)
     : BinaryInputStream (shared_ptr<_IRep> (new IRep_ (start, end)))
 {
