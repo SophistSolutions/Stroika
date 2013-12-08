@@ -108,6 +108,13 @@ namespace {
                 da.fUSN = d.fDeviceID;
                 DoSend_ (da, s);    //
             }
+            else if (da.fST == L"ssdp:all") {
+                Socket s (Socket::SocketKind::DGRAM);   // unclear what socket to use - probably doesnt matter (though maybe should save/re-use?
+                da.fServer = d.fServer;
+                da.fLocation = d.fLocation;
+                da.fUSN = d.fDeviceID;
+                DoSend_ (da, s);    //
+            }
             else {
                 // for now ignore other searches but we should match on device, and owned services, and I'm sure more...
             }
