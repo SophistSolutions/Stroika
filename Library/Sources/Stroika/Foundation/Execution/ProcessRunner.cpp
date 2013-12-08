@@ -548,6 +548,7 @@ Characters::String  ProcessRunner::Run (const Characters::String& cmdStdInValue,
         Streams::BasicBinaryInputOutputStream   useStdOut;
 
         // Prefill stream
+        // @todo - decide if we should use Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM
         Streams::TextOutputStreamBinaryAdapter (useStdIn).Write (cmdStdInValue.c_str ());
         Assert (useStdIn.ReadGetOffset () == 0);
 
