@@ -40,8 +40,11 @@ namespace   Stroika {
 
             public:
                 KeyValuePair ();
-                KeyValuePair (const pair<KeyType, ValueType>& value);
                 KeyValuePair (const KeyType& key, const ValueType& value);
+                template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+                KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value);
+                template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+                KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value);
 
             public:
                 KeyType     fKey;

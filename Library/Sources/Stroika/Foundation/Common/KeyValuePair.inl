@@ -29,15 +29,23 @@ namespace   Stroika {
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KeyType, ValueType>& value)
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
+                : fKey (key)
+                , fValue (value)
+            {
+            }
+            template    <typename KEY_TYPE, typename VALUE_TYPE>
+            template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const pair<KEY2_TYPE, VALUE2_TYPE>& value)
                 : fKey (value.first)
                 , fValue (value.second)
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
-            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyType& key, const ValueType& value)
-                : fKey (key)
-                , fValue (value)
+            template    <typename KEY2_TYPE, typename VALUE2_TYPE>
+            inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value)
+                : fKey (value.first)
+                , fValue (value.second)
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
