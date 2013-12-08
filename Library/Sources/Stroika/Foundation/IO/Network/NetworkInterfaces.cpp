@@ -239,10 +239,10 @@ String  Network::GetPrimaryNetworkDeviceMacAddress ()
         struct ifreq    ifr;
         memset (&ifr, 0, sizeof (ifr));
         Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
-        if (ioctl (sock, SIOCGIFFLAGS, &ifr) == 0) {
+        if (::ioctl (s, SIOCGIFFLAGS, &ifr) == 0) {
             if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-                if (ioctl (sock, SIOCGIFHWADDR, &ifr) == 0) {
-                    return printMacAddr (ifr.ifr_hwaddr.sa_data);
+                if (::ioctl (s, SIOCGIFHWADDR, &ifr) == 0) {
+                    return printMacAddr (reinterpret_cast<const uint8_t*> (ifr.ifr_hwaddr.sa_data));
                 }
             }
         }
