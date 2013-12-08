@@ -5,6 +5,8 @@
 
 #include    "../../../Foundation/Characters/Format.h"
 #include    "../../../Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "../../../Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "../../../Foundation/Streams/TextInputStreamBinaryAdapter.h"
 #include    "../../../Foundation/Streams/TextOutputStreamBinaryAdapter.h"
 
 #include    "Common.h"
@@ -13,6 +15,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Streams;
 using   namespace   Stroika::Foundation::IO::Network;
 
 using   namespace   Stroika::Frameworks;
@@ -65,4 +68,54 @@ Memory::BLOB        SSDP::Serialize (const String& headLine, const Advertisement
 */
 void    SSDP::DeSerialize (const Memory::BLOB& b, String* headLine, Advertisement* advertisement)
 {
+    RequireNotNull (headLine);
+    RequireNotNull (advertisement);
+    *advertisement = Advertisement ();
+
+    TextInputStreamBinaryAdapter in = TextInputStreamBinaryAdapter (ExternallyOwnedMemoryBinaryInputStream (b));
+
+    *headLine = in.ReadLine ().Trim ();
+    while (true) {
+        String line = in.ReadLine ().Trim ();
+        if (line.empty ()) {
+            break;
+        }
+
+        // Need to simplify this code (stroika string util)
+        String  label;
+        String  value;
+        {
+            size_t n = line.Find (':');
+            if (n != Characters::String::kBadIndex) {
+                label = line.SubString (0, n);
+                value = line.SubString (n + 1).Trim ();
+            }
+        }
+        if (not label.empty ()) {
+            advertisement->fRawHeaders.Add (label, value);
+        }
+        if (label.Compare (L"Location", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            advertisement->fLocation = value;
+        }
+        else if (label.Compare (L"NT", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            advertisement->fST = value;
+        }
+        else if (label.Compare (L"USN", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            advertisement->fUSN = value;
+        }
+        else if (label.Compare (L"Server", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            advertisement->fServer = value;
+        }
+        else if (label.Compare (L"NTS", Characters::CompareOptions::eCaseInsensitive) == 0) {
+            if (value.Compare (L"ssdp:alive", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                advertisement->fAlive = true;
+            }
+            else if (value.Compare (L"ssdp:bye", Characters::CompareOptions::eCaseInsensitive) == 0) {
+                advertisement->fAlive = false;
+            }
+        }
+        else {
+            int hreab = 1;
+        }
+    }
 }

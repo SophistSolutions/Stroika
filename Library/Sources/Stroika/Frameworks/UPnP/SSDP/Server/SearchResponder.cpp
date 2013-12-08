@@ -42,35 +42,6 @@ SearchResponder::SearchResponder ()
 }
 
 namespace {
-    void    DoSend_ (SSDP::Advertisement deviceAnnouncement, Socket s, SocketAddress sendTo)
-    {
-        deviceAnnouncement.fAlive.clear (); // in responder we dont set alive flag
-
-#if 1
-        Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", deviceAnnouncement);
-#else
-        Memory::BLOB    data;
-        {
-            Streams::BasicBinaryOutputStream    out;
-            Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
-            //// SUPER ROUGH FIRST DRAFT
-            textOut.Write (Format (L"HTTP/1.1 200 OK\r\n"));
-            textOut.Write (Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
-            textOut.Write (Format (L"Cache-Control: max-age=60\r\n"));    // @todo fix
-            if (not deviceAnnouncement.fLocation.empty ()) {
-                textOut.Write (Format (L"Location: %s\r\n", deviceAnnouncement.fLocation.c_str ()));
-            }
-            if (not deviceAnnouncement.fServer.empty ()) {
-                textOut.Write (Format (L"Server: %s\r\n", deviceAnnouncement.fServer.c_str ()));
-            }
-            textOut.Write (Format (L"ST: %s\r\n", deviceAnnouncement.fST.c_str ()));
-            textOut.Write (Format (L"USN: %s\r\n", deviceAnnouncement.fUSN.c_str ()));
-            ///need fluush API on  OUTSTREAM
-            data = out.As<Memory::BLOB> ();
-        }
-#endif
-        s.SendTo (data.begin (), data.end (), sendTo);
-    };
     void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
     {
         String firstLine = in.ReadLine ().Trim ();
@@ -109,7 +80,6 @@ namespace {
                 }
             }
 
-#if 1
             bool    matches = false;
             if (da.fST == L"upnp:rootdevice") {
                 matches = true;
@@ -128,55 +98,11 @@ namespace {
             if (matches) {
                 // if any match, I think we are supposed to send all
                 for (auto a : advertisements) {
-                    DoSend_ (a, useSocket, sendTo);
+                    a.fAlive.clear (); // in responder we dont set alive flag
+                    Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", a);
+                    useSocket.SendTo (data.begin (), data.end (), sendTo);
                 }
             }
-
-#else
-            if (da.fST == L"upnp:rootdevice") {
-                da.fServer = d.fServer;
-                da.fLocation = d.fLocation;
-                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                DoSend_ (da, useSocket, sendTo);    //
-
-                {
-                    da.fServer = d.fServer;
-                    da.fLocation = d.fLocation;
-                    da.fUSN = d.fDeviceID;
-                    da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                    da.fST = da.fUSN;
-                    DoSend_ (da, useSocket, sendTo);    //
-                }
-            }
-            else if (da.fST.StartsWith (String (L"uuid:") + d.fDeviceID)) {
-                da.fServer = d.fServer;
-                da.fLocation = d.fLocation;
-                da.fUSN = d.fDeviceID;
-                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                da.fST = da.fUSN;
-                DoSend_ (da, useSocket, sendTo);    //
-            }
-            else if (da.fST == L"ssdp:all") {
-                da.fServer = d.fServer;
-                da.fLocation = d.fLocation;
-                da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                da.fST = da.fUSN;
-                DoSend_ (da, useSocket, sendTo);    //
-                {
-                    da.fServer = d.fServer;
-                    da.fLocation = d.fLocation;
-                    da.fUSN = d.fDeviceID;
-                    da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
-                    da.fST = da.fUSN;
-                    DoSend_ (da, useSocket, sendTo);    //
-                }
-            }
-            else {
-                int breakere = 1;
-                // for now ignore other searches but we should match on device, and owned services, and I'm sure more...
-            }
-#endif
-
         }
     }
 

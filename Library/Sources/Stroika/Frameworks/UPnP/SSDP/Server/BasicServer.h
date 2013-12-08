@@ -21,6 +21,8 @@
  *  \version    <a href="code_status.html#Alpha">Alpha</a>
  *
  * TODO:
+ *      @todo   Add serviceList support
+ *
  *      @todo   Look at http://brisa.garage.maemo.org/doc/html/upnp/ssdp.html for example server API
  */
 

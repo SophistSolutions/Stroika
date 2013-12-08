@@ -37,39 +37,6 @@ PeriodicNotifier::PeriodicNotifier ()
 {
 }
 
-namespace {
-    void    DoSend_ (SSDP::Advertisement deviceAnnouncement, Socket s)
-    {
-        deviceAnnouncement.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
-
-#if 1
-        Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", deviceAnnouncement);
-#else
-        Memory::BLOB    data;
-        {
-            Streams::BasicBinaryOutputStream    out;
-            Streams::TextOutputStreamBinaryAdapter  textOut (out, Streams::TextOutputStreamBinaryAdapter::Format::eUTF8WithoutBOM);
-            //// SUPER ROUGH FIRST DRAFT
-            textOut.Write (Format (L"NOTIFY * HTTP/1.1\r\n"));
-            textOut.Write (Format (L"Host: %s:%d\r\n", SSDP::V4::kSocketAddress.GetInternetAddress ().As<String> ().c_str (), SSDP::V4::kSocketAddress.GetPort ()));
-            textOut.Write (Format (L"Cache-Control: max-age=60\r\n"));    // @todo fix
-            if (not deviceAnnouncement.fLocation.empty ()) {
-                textOut.Write (Format (L"Location: %s\r\n", deviceAnnouncement.fLocation.c_str ()));
-            }
-            textOut.Write (Format (L"NTS: ssdp:alive\r\n"));
-            if (not deviceAnnouncement.fServer.empty ()) {
-                textOut.Write (Format (L"Server: %s\r\n", deviceAnnouncement.fServer.c_str ()));
-            }
-            textOut.Write (Format (L"NT: %s\r\n", deviceAnnouncement.fST.c_str ()));
-            textOut.Write (Format (L"USN: %s\r\n", deviceAnnouncement.fUSN.c_str ()));
-            ///need fluush API on  OUTSTREAM
-            data = out.As<Memory::BLOB> ();
-        }
-#endif
-        s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
-    };
-}
-
 void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
     Execution::Thread t ([advertisements, fi]() {
@@ -79,7 +46,9 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
         s.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         while (true) {
             for (auto a : advertisements) {
-                DoSend_ (a, s);
+                a.fAlive = true;   // periodic notifier must announce alive (we dont support 'going down' yet
+                Memory::BLOB    data = SSDP::Serialize (L"NOTIFY * HTTP/1.1", a);
+                s.SendTo (data.begin (), data.end (), UPnP::SSDP::V4::kSocketAddress);
             }
             Execution::Sleep (30.0);
         }
