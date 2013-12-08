@@ -106,19 +106,38 @@ namespace {
                 da.fLocation = d.fLocation;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
                 DoSend_ (da, useSocket, sendTo);    //
+
+                {
+                    da.fServer = d.fServer;
+                    da.fLocation = d.fLocation;
+                    da.fUSN = d.fDeviceID;
+                    da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                    da.fST = da.fUSN;
+                    DoSend_ (da, useSocket, sendTo);    //
+                }
             }
             else if (da.fST.StartsWith (String (L"uuid:") + d.fDeviceID)) {
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
                 da.fUSN = d.fDeviceID;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                da.fST = da.fUSN;
                 DoSend_ (da, useSocket, sendTo);    //
             }
             else if (da.fST == L"ssdp:all") {
                 da.fServer = d.fServer;
                 da.fLocation = d.fLocation;
                 da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                da.fST = da.fUSN;
                 DoSend_ (da, useSocket, sendTo);    //
+                {
+                    da.fServer = d.fServer;
+                    da.fLocation = d.fLocation;
+                    da.fUSN = d.fDeviceID;
+                    da.fUSN = Format (L"uuid:%s", d.fDeviceID.c_str ());
+                    da.fST = da.fUSN;
+                    DoSend_ (da, useSocket, sendTo);    //
+                }
             }
             else {
                 int breakere = 1;
