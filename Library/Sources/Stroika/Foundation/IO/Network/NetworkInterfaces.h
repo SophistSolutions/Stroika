@@ -57,6 +57,14 @@ namespace   Stroika {
                 /// add optikon for fitlering out localhost
 
 
+                // Usefull as a (semi)persisent seed for GUIDs etc
+                // Otherwise, not super-well defined
+                // THINK OUT RELATION BETWEENT HIS AND GetPrimaryInternetAddress???
+                //
+                // think through and document erorr conditions
+                String GetPrimaryNetworkDeviceMacAddress ();
+
+
             }
         }
     }

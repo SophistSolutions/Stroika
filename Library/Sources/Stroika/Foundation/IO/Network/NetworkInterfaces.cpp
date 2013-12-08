@@ -3,6 +3,8 @@
  */
 #include    "../../StroikaPreComp.h"
 
+#include    <cstdio>
+
 #if     qPlatform_POSIX
 #include <unistd.h>
 #include <sys/types.h>
@@ -15,13 +17,16 @@
 #elif   qPlatform_Windows
 #include    <WinSock2.h>
 #include    <WS2tcpip.h>
-//#include  <winsock.h>
+#include    <Iphlpapi.h>
 #endif
 
-#include     "../../Execution/ErrNoException.h"
+#include    "../../Characters/CString/Utilities.h"
+#include    "../../Execution/ErrNoException.h"
 #if     qPlatform_Windows
-#include "../../../Foundation/Execution/Platform/Windows/Exception.h"
+#include    "../../../Foundation/Execution/Platform/Windows/Exception.h"
 #endif
+
+#include    "Socket.h"
 
 #include    "NetworkInterfaces.h"
 
@@ -197,3 +202,53 @@ InternetAddress Network::GetPrimaryInternetAddress ()
     return result;
 #endif
 }
+
+
+String  Network::GetPrimaryNetworkDeviceMacAddress ()
+{
+    auto printMacAddr = [](const uint8_t macaddrBytes[6]) -> String {
+        char     buf[100];
+        (void)::memset (buf, 0, sizeof (buf));
+        (void)snprintf (buf, sizeof (buf), "%02x-%02x-%02x-%02x-%02x-%02x",
+        macaddrBytes[0], macaddrBytes[1],
+        macaddrBytes[2], macaddrBytes[3],
+        macaddrBytes[4], macaddrBytes[5]
+                       );
+        return String::FromAscii (buf);
+    };
+#if     qPlatform_Windows
+    IP_ADAPTER_INFO adapterInfo[10];
+    DWORD dwBufLen = sizeof(adapterInfo);
+    Execution::Platform::Windows::ThrowIfNotERROR_SUCCESS (::GetAdaptersInfo (adapterInfo, &dwBufLen));
+    for (PIP_ADAPTER_INFO pi = adapterInfo; pi != nullptr; pi = pi->Next) {
+        // check attributes - IF TEST to see if good adaptoer
+        // @todo
+        return printMacAddr (pi->Address);
+    }
+#elif qPlatform_POSIX
+    Socket s = Socket (Socket::SocketKind::DGRAM);
+
+    ifconf   ifc;
+    char buf[10 * 1024];
+    ifc.ifc_len = sizeof(buf);
+    ifc.ifc_buf = buf;
+    Execution::ThrowErrNoIfNegative (::ioctl (s.GetNativeHandle (), SIOCGIFCONF, &ifc));
+
+    const struct ifreq* const end = ifc.ifc_req + (ifc.ifc_len / sizeof(struct ifreq));
+    for (const ifreq* it = ifc.ifc_req ; it != end; ++it) {
+        struct ifreq    ifr;
+        memset (&ifr, 0, sizeof (ifr));
+        Characters::CString::Copy (ifr.ifr_name, NEltsOf (ifr.ifr_name), it->ifr_name);
+        if (ioctl (sock, SIOCGIFFLAGS, &ifr) == 0) {
+            if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
+                if (ioctl (sock, SIOCGIFHWADDR, &ifr) == 0) {
+                    return printMacAddr (ifr.ifr_hwaddr.sa_data);
+                }
+            }
+        }
+    }
+#endif
+    return String ();
+}
+
+

@@ -1496,7 +1496,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1518,7 +1518,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1540,7 +1540,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1562,7 +1562,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1584,7 +1584,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1606,7 +1606,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3d.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3d.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Debug\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1636,7 +1636,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1666,7 +1666,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1696,7 +1696,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1726,7 +1726,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1756,7 +1756,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1786,7 +1786,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1816,7 +1816,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1846,7 +1846,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1876,7 +1876,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1906,7 +1906,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win32\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1936,7 +1936,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
@@ -1966,7 +1966,7 @@
     </Link>
     <Lib>
       <AdditionalOptions>/ignore:4221 %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalDependencies>xerces-c_static_3.lib;</AdditionalDependencies>
+      <AdditionalDependencies>xerces-c_static_3.lib;;Iphlpapi.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\..\..\ThirdPartyLibs\Xerces\CURRENT\Build\Win64\VC12\Static Release\;</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
