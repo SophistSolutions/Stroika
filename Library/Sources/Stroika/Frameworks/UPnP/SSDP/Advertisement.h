@@ -8,6 +8,7 @@
 
 #include    "../../../Foundation/Characters/String.h"
 #include    "../../../Foundation/Containers/Mapping.h"
+#include    "../../../Foundation/Memory/BLOB.h"
 #include    "../../../Foundation/Memory/Optional.h"
 #include    "../../../Foundation/Configuration/Common.h"
 #include    "../../../Foundation/IO/Network/SocketAddress.h"
@@ -30,6 +31,7 @@ namespace   Stroika {
 
 
                 using   Foundation::Memory::Optional;
+                using   Foundation::Memory::BLOB;
                 using   Foundation::Characters::String;
                 using   Foundation::Containers::Mapping;
 
@@ -37,13 +39,23 @@ namespace   Stroika {
                 /**
                  */
                 struct  Advertisement {
-                    Optional<bool>      fAlive; // else Bye notification, or empty if neither
+                    Optional<bool>              fAlive; // else Bye notification, or empty if neither
                     String                      fUSN;
                     String                      fLocation;
                     String                      fServer;
                     String                      fST;         // usually ST header (or NT for notify)
                     Mapping<String, String>     fRawHeaders;
                 };
+
+
+                /*
+                */
+                BLOB        Serialize (const String& headLine, const Advertisement& ad);
+
+
+                /*
+                */
+                void    DeSerialize (const BLOB& b, String* headLine, Advertisement* advertisement);
 
 
             }

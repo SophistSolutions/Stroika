@@ -44,6 +44,11 @@ SearchResponder::SearchResponder ()
 namespace {
     void    DoSend_ (SSDP::Advertisement deviceAnnouncement, Socket s, SocketAddress sendTo)
     {
+        deviceAnnouncement.fAlive.clear (); // in responder we dont set alive flag
+
+#if 1
+        Memory::BLOB    data = SSDP::Serialize (L"HTTP/1.1 200 OK", deviceAnnouncement);
+#else
         Memory::BLOB    data;
         {
             Streams::BasicBinaryOutputStream    out;
@@ -63,6 +68,7 @@ namespace {
             ///need fluush API on  OUTSTREAM
             data = out.As<Memory::BLOB> ();
         }
+#endif
         s.SendTo (data.begin (), data.end (), sendTo);
     };
     void    ParsePacketAndRespond_ (Streams::TextInputStream in, const Iterable<Advertisement>& advertisements, Socket useSocket, SocketAddress sendTo)
