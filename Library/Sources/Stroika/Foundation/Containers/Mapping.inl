@@ -159,11 +159,6 @@ namespace   Stroika {
                 _GetRep ().Add (key, newElt);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (pair<KeyType, ValueType> p)
-            {
-                _GetRep ().Add (p.first, p.second);
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
             {
                 _GetRep ().Add (p.fKey, p.fValue);
@@ -187,27 +182,6 @@ namespace   Stroika {
                  */
                 AddAll (std::begin (items), std::end (items));
             }
-#if 0
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_PAIR_KEY_T>
-            void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll_pair (COPY_FROM_ITERATOR_PAIR_KEY_T start, COPY_FROM_ITERATOR_PAIR_KEY_T end)
-            {
-                for (auto i = start; i != end; ++i) {
-                    Add (i->first, i->second);
-                }
-            }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll_pair (const CONTAINER_OF_PAIR_KEY_T& items)
-            {
-                /*
-                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
-                 *  attempt to add items that already exist, it would do nothing to our iteration
-                 *  and therefore not lead to an infinite loop.
-                 */
-                AddAll_pair (std::begin (items), std::end (items));
-            }
-#endif
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             inline  void    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
             {

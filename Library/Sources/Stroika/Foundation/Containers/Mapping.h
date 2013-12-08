@@ -232,7 +232,6 @@ namespace   Stroika {
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
                 nonvirtual  void    Add (KeyType key, ValueType newElt);
-                nonvirtual  void    Add (pair<KeyType, ValueType> p);
                 nonvirtual  void    Add (KeyValuePair<KeyType, ValueType> p);
 
             public:
