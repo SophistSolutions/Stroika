@@ -44,8 +44,8 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE>
             template    <typename KEY2_TYPE, typename VALUE2_TYPE, typename ENABLE_IF_TEST>
             inline  KeyValuePair<KEY_TYPE, VALUE_TYPE>::KeyValuePair (const KeyValuePair<KEY2_TYPE, VALUE2_TYPE>& value)
-                : fKey (value.first)
-                , fValue (value.second)
+                : fKey (value.fKey)
+                , fValue (value.fValue)
             {
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE>
