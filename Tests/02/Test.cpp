@@ -649,6 +649,8 @@ namespace   {
     void    Test17_ReplaceAll_ ()
     {
         VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
+        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"x") == L"01x23x45x67x89");
+        VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"--") == L"01--23--45--67--89");
     }
     void    Test17_RegExp_Search_ ()
     {

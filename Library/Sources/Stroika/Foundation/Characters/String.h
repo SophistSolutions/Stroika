@@ -555,6 +555,9 @@ namespace   Stroika {
                 *
                 *   Require (not string2SearchFor.empty ());
                 *       TODO: GIVE EXAMPLES
+                *
+                * Note - it IS legal to have with contain the original search for string, or even to have it 'created' as part of where it gets
+                * inserted. The implementation will only replace those that pre-existed.
                  */
                 nonvirtual  String  ReplaceAll (const RegularExpression& regEx, const String& with, CompareOptions co = CompareOptions::eWithCase) const;
                 nonvirtual  String  ReplaceAll (const String& string2SearchFor, const String& with, CompareOptions co = CompareOptions::eWithCase) const;

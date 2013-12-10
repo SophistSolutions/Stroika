@@ -574,9 +574,10 @@ String  String::ReplaceAll (const String& string2SearchFor, const String& with, 
     Require (not string2SearchFor.empty ());
     // simplistic quickie impl...
     String  result = *this;
-    size_t  i;
-    while ((i = result.Find (string2SearchFor, co)) != String::npos) {
-        result = result.SubString (0, i) + result.SubString (i + string2SearchFor.length ());
+    size_t      i   =   0;
+    while ((i = result.Find (string2SearchFor, i, co)) != String::npos) {
+        result = result.SubString (0, i) + with + result.SubString (i + string2SearchFor.length ());
+        i += with.length ();
     }
     return result;
 }
