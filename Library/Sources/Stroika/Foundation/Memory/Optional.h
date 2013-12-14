@@ -131,16 +131,23 @@ namespace   Stroika {
             public:
                 /**
                  *  Erases (destroys) any present value for this Optional<T> instance. After calling clear (),
-                 *  the empty () will return true.
+                 *  the IsMissing () will return true.
                  */
                 nonvirtual  void    clear ();
+
+            public:
+                /**
+                *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
+                *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
+                */
+                nonvirtual  bool    IsMissing () const; // means no value (it is optional!)
 
             public:
                 /**
                  *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
                  *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
                  */
-                nonvirtual  bool    empty () const; // means no value (it is optional!)
+                nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing()"); // means no value (it is optional!)
 
             public:
                 /**
@@ -150,7 +157,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Always safe to call. If empty, returns argument 'default' or 'sentinal' value.
+                 *  Always safe to call. If IsMissing, returns argument 'default' or 'sentinal' value.
                  */
                 nonvirtual  T   Value (T defaultValue = T ()) const;
 

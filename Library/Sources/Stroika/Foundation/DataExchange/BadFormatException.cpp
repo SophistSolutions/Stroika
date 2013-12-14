@@ -31,13 +31,13 @@ namespace   {
     String mkMessage_OffsetInfo_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     {
         String result;
-        if (not lineNumber.empty ()) {
+		if (not lineNumber.IsMissing ()) {
             result += Format (L"Line %d", *lineNumber);
-            if (not columnNumber.empty ()) {
+			if (not columnNumber.IsMissing ()) {
                 result += Format (L"; Column %d", *columnNumber);
             }
         }
-        if (not fileOffset.empty ()) {
+		if (not fileOffset.IsMissing ()) {
             if (not result.empty ()) {
                 result += L"; ";
             }
@@ -115,8 +115,8 @@ void    _NoReturn_  Execution::DoThrow (const DataExchange::BadFormatException& 
     Memory::Optional<unsigned int>  colNumber;
     Memory::Optional<uint64_t>      fileOffset;
     e2Throw.GetPositionInfo (&lineNum, &colNumber, &fileOffset);
-    int useLineNum  =   lineNum.empty () ? -1 : *lineNum;
-    int useColNum   =   colNumber.empty () ? -1 : *colNumber;
+    int useLineNum  =   lineNum.IsMissing () ? -1 : *lineNum;
+    int useColNum   =   colNumber.IsMissing () ? -1 : *colNumber;
     DbgTrace (L"Throwing exception: DataExchange::BadFormatException ('%s', LINE=%d, COL=%d)", e2Throw.GetDetails ().LimitLength (50).c_str (), useLineNum, useColNum);
 #endif
     throw e2Throw;

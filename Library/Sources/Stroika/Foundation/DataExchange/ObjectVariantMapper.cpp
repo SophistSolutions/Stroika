@@ -91,7 +91,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
         {
             //DbgTrace (L"(fieldname = %s, offset=%d", i.fSerializedFieldName.c_str (), i.fOffset);
             Memory::Optional<VariantValue> o = m.Lookup (i.fSerializedFieldName);
-            if (not o.empty ()) {
+			if (not o.IsMissing ()) {
                 mapper->ToObject (i.fTypeInfo, *o, intoObjOfTypeT + i.fOffset);
             }
         }

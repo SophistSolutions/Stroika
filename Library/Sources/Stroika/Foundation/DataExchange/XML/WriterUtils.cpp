@@ -101,7 +101,7 @@ string  XML::QuoteForXMLAttribute (const String& s)
 
 string  XML::QuoteForXMLAttribute (const Memory::Optional<String>& s)
 {
-    if (s.empty ()) {
+    if (s.IsMissing ()) {
         return string ();
     }
     return QuoteForXMLAttribute (*s);
@@ -221,7 +221,7 @@ string  XML::QuoteForXML (const String& s)
 
 string  XML::QuoteForXML (const Memory::Optional<String>& s)
 {
-    if (s.empty ()) {
+    if (s.IsMissing ()) {
         return string ();
     }
     return QuoteForXML (*s);

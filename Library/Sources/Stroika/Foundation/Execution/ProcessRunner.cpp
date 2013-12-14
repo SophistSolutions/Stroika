@@ -257,7 +257,7 @@ void    ProcessRunner::SetStdErr (const Streams::BinaryOutputStream& err)
 IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress)
 {
     SDKString cmdLine;
-    if (fCommandLine_.empty ()) {
+    if (fCommandLine_.IsMissing ()) {
     }
     else {
         cmdLine = *fCommandLine_;

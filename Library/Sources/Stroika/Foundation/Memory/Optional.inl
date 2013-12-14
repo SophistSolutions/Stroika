@@ -147,9 +147,14 @@ namespace   Stroika {
                 return fValue_ == nullptr ? nullptr : fValue_->get ();
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Optional<T, TRAITS>::empty () const
+            inline  bool    Optional<T, TRAITS>::IsMissing () const
             {
                 return fValue_ == nullptr;
+            }
+            template    <typename T, typename TRAITS>
+            inline  bool    Optional<T, TRAITS>::empty () const
+            {
+                return IsMissing ();
             }
             template    <typename T, typename TRAITS>
             inline  bool    Optional<T, TRAITS>::IsPresent () const
@@ -159,7 +164,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  T Optional<T, TRAITS>::Value (T defaultValue) const
             {
-                return empty () ? defaultValue : *fValue_->get ();
+                return IsMissing () ? defaultValue : *fValue_->get ();
             }
             template    <typename T, typename TRAITS>
             inline  const T* Optional<T, TRAITS>::operator-> () const

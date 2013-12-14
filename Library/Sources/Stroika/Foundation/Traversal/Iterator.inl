@@ -92,7 +92,7 @@ namespace   Stroika {
             template    <typename T>
             inline bool    Iterator<T>::Done () const
             {
-                return fCurrent_.empty ();
+                return fCurrent_.IsMissing ();
             }
             template    <typename T>
             inline    T   Iterator<T>::operator* () const
@@ -207,7 +207,7 @@ namespace   Stroika {
                         RequireNotNull (rhs);
                         Memory::Optional<T> tmp;
                         const_cast<typename Iterator<T>::IRep*> (rhs)->More (&tmp, false);
-                        return tmp.empty ();
+                        return tmp.IsMissing ();
                     }
                     virtual shared_ptr<IRep>    Clone () const override
                     {

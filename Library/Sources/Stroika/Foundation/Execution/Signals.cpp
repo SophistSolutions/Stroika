@@ -86,7 +86,7 @@ set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType s
 {
     lock_guard<mutex> critSec (sCritSection_);
     Optional<set<SignalHandlerType>>    i   =   sHandlers_.Lookup (signal);
-    return i.empty () ? set<SignalHandlerType> () : *i;
+    return i.IsMissing () ? set<SignalHandlerType> () : *i;
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)

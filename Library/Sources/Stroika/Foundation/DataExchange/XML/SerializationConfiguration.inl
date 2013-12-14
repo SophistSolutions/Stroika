@@ -27,8 +27,8 @@ namespace   Stroika {
                 }
                 inline  void    SerializationConfiguration::SetDocumentElementName (const Optional<String>& n)
                 {
-                    Require (n.empty () or not (*n).empty ());  // should validate legit xml elt name
-                    fDocumentElementName_ = n.empty () ? String () : *n;
+                    Require (n.IsMissing () or not (*n).empty ());  // should validate legit xml elt name
+                    fDocumentElementName_ = n.IsMissing () ? String () : *n;
                 }
                 inline  Optional<String>    SerializationConfiguration::GetArrayElementName () const
                 {
@@ -36,8 +36,8 @@ namespace   Stroika {
                 }
                 inline  void    SerializationConfiguration::SetArrayElementName (const Optional<String>& n)
                 {
-                    Require (n.empty () or not (*n).empty ());  // should validate legit xml elt name
-                    fArrayElementName_ = n.empty () ? String () : *n;
+                    Require (n.IsMissing () or not (*n).empty ());  // should validate legit xml elt name
+                    fArrayElementName_ = n.IsMissing () ? String () : *n;
                 }
 
 

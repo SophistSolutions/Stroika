@@ -204,7 +204,7 @@ void    Main::Run (const CommandArgs& args)
     for (String i : args.fUnusedArguments) {
         fServiceRep_->HandleCommandLineArgument (i);
     }
-    if (args.fMajorOperation.empty ()) {
+	if (args.fMajorOperation.IsMissing ()) {
         Execution::DoThrow (Execution::InvalidCommandLineArgument (L"No recognized operation"));
     }
     switch (*args.fMajorOperation) {
