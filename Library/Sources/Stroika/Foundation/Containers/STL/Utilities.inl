@@ -15,7 +15,6 @@ namespace   Stroika {
             namespace   STL {
 
 
-
                 template    <typename   CREATE_CONTAINER_TYPE, typename FROM_CONTAINER_TYPE>
                 inline  CREATE_CONTAINER_TYPE  Make (const FROM_CONTAINER_TYPE& rhs)
                 {
@@ -33,7 +32,6 @@ namespace   Stroika {
                     }
                     return false;
                 }
-
 
 
                 template    <typename T, typename ContainerOfT>
@@ -81,8 +79,6 @@ namespace   Stroika {
                         *s1 = Intersection (*s1, s2);
                     }
                 }
-
-
 
 
                 template    <typename T, typename FROMCONTAINER>
