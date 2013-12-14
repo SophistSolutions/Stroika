@@ -718,6 +718,24 @@
 
 
 
+/*
+@CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
+@DESCRIPTION:
+*/
+#ifndef qCompilerAndStdLib_deprecatedFeatureMissing
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_deprecatedFeatureMissing             ((__clang_major__ == 3) && (__clang_minor__ <= 4))
+#elif   defined (__GNUC__)
+#define qCompilerAndStdLib_deprecatedFeatureMissing             (__GNUC__ == 4 && (__GNUC_MINOR__ <= 8))
+#elif   defined (_MSC_VER)
+#define qCompilerAndStdLib_deprecatedFeatureMissing             (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qCompilerAndStdLib_deprecatedFeatureMissing              0
+#endif
+
+#endif
+
 
 
 /*
@@ -871,6 +889,22 @@
 #define _NoOp_  __noop
 #else
 #define _NoOp_(...)
+#endif
+#endif
+
+
+
+
+
+/*
+ */
+#if     !defined (_Deprecated_)
+#if     qCompilerAndStdLib_deprecatedFeatureMissing && defined (__GNUC__)
+#define _Deprecated_(func,MESSAGE) func __attribute__ ((deprecated))
+#elif   qCompilerAndStdLib_deprecatedFeatureMissing && defined(_MSC_VER)
+#define _Deprecated_(func,MESSAGE) __declspec(deprecated) func
+#else
+#define _Deprecated_(func,MESSAGE) [[deprecated(MESSAGE)]] func
 #endif
 #endif
 
