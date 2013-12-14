@@ -11,6 +11,8 @@
 
 #include    "../../Configuration/Common.h"
 
+#include    "Utilities.h"
+
 
 //// THIS FILE DEPRECATED - DELETE FOR v2.0a12
 

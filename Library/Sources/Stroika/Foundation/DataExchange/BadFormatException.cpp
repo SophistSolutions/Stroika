@@ -31,13 +31,13 @@ namespace   {
     String mkMessage_OffsetInfo_ (Memory::Optional<unsigned int> lineNumber, Memory::Optional<unsigned int> columnNumber, Memory::Optional<uint64_t> fileOffset)
     {
         String result;
-		if (not lineNumber.IsMissing ()) {
+        if (not lineNumber.IsMissing ()) {
             result += Format (L"Line %d", *lineNumber);
-			if (not columnNumber.IsMissing ()) {
+            if (not columnNumber.IsMissing ()) {
                 result += Format (L"; Column %d", *columnNumber);
             }
         }
-		if (not fileOffset.IsMissing ()) {
+        if (not fileOffset.IsMissing ()) {
             if (not result.empty ()) {
                 result += L"; ";
             }
