@@ -1476,6 +1476,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\IO\Network\HTTP\MessageStartTextInputStreamBinaryAdapter.h">
       <Filter>Sources\IO\Network\HTTP</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h">
+      <Filter>Sources\Containers\STL</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2210,6 +2213,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\IO\Network\Listener.inl">
       <Filter>Sources\IO\Network</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl">
+      <Filter>Sources\Containers\STL</Filter>
     </None>
   </ItemGroup>
 </Project>

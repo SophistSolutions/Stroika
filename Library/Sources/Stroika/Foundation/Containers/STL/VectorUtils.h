@@ -12,6 +12,8 @@
 #include    "../../Configuration/Common.h"
 
 
+//// THIS FILE DEPRECATED - DELETE FOR v2.0a12
+
 /**
 *  \file
 *
@@ -32,25 +34,13 @@ namespace   Stroika {
             namespace   STL {
 
 
+                //DEPREACRED
                 /// @todo - THIS really SB obsolete - not sure why not just use vector<T> () CTOR?
-                template    <typename T, typename ContainerOfT>
-                vector<T>   mkVC (const ContainerOfT& ts);
-
-                /*
-                 *  Though you can append to a vector<> with
-                 *      insert (this->begin (), arg.begin (), arg.end ())
-                 *  That's awkward if 'arg' is an unnamed value - say the result of a function. You must
-                 *  assign to a named temporary. This helper makes that unneeded.
-                 */
-                template    <typename T, typename ContainerOfT>
-                void    Append (vector<T>* v, const ContainerOfT& v2);
-
-
-                // @todo - redo with RHS as arbirrary container. Probably redo with stroika Set<>
-                // maybe osbolete cuz can alway use
-                // (Containers::Set<T> (s1) & s2).As<vector<T>> ()
-                template    <typename T>
-                vector<T>   Intersection (const vector<T>& s1, const vector<T>& s2);
+                template    <typename T, typename FROMCONTAINER>
+                _Deprecated_ (inline  vector<T>  mkVC (const FROMCONTAINER& rhs), "Use Make<> directly")
+                {
+                    return Make<vector<T>> (rhs);
+                }
 
 
             }

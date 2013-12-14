@@ -10,6 +10,9 @@
 
 #include    "../../Configuration/Common.h"
 
+#include    "Utilities.h"
+
+//// THIS FILE DEPRECATED - DELETE FOR v2.0a12
 
 /**
 *  \file
@@ -30,33 +33,14 @@ namespace   Stroika {
         namespace   Containers {
             namespace   STL {
 
-
+                //DEPREACRED
                 /// @todo - THIS really SB obsolete - not sure why not just use vector<T> () CTOR?
                 template    <typename T, typename FROMCONTAINER>
-                set<T>  mkSfromC (const FROMCONTAINER& rhs);
+                _Deprecated_ (inline  set<T>  mkSfromC (const FROMCONTAINER& rhs), "Use Make<> instead")
+                {
+                    return Make<set<T>> (rhs);
+                }
 
-
-                /*
-                 * Returns true if the intersetion of s1 and s2 is non-empty
-                */
-                template    <typename T>
-                bool    Intersects (const set<T>& s1, const set<T>& s2);
-
-
-                template    <typename T>
-                set<T>  Intersection (const set<T>& s1, const set<T>& s2);
-                template    <typename T>
-                void    Intersection (set<T>* s1, const set<T>& s2);
-
-                template    <typename T, typename FROMCONTAINER>
-                void    Union (set<T>* s1, const FROMCONTAINER& s2);
-                template    <typename T, typename FROMCONTAINER>
-                set<T>  Union (const set<T>& s1, const FROMCONTAINER& s2);
-
-                template    <typename T, typename FROMCONTAINER>
-                void    Difference (set<T>* s1, const FROMCONTAINER& s2);
-                template    <typename T, typename FROMCONTAINER>
-                set<T>  Difference (const set<T>& s1, const FROMCONTAINER& s2);
 
 
             }

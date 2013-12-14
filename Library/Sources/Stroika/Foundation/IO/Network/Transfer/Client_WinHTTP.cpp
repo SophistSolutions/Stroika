@@ -13,7 +13,7 @@
 #include    "../../../Characters/CString/Utilities.h"
 #include    "../../../Characters/Format.h"
 #include    "../../../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
-#include    "../../../Containers/STL/VectorUtils.h"
+#include    "../../../Containers/STL/Utilities.h"
 #include    "../../../Time/Date.h"
 #include    "../../../Time/DateTime.h"
 #include    "../../../Execution/Exceptions.h"

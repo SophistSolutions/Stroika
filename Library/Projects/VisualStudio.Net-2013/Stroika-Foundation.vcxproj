@@ -753,6 +753,7 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Stack.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.h" />
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Tally.h" />
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\AES.h" />
@@ -1041,6 +1042,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Compare.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\ReadMe.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\SetUtils.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\Utilities.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\STL\VectorUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Tally.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Containers\TODO.md" />

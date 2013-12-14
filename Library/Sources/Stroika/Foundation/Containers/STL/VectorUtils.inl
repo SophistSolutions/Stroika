@@ -15,6 +15,7 @@ namespace   Stroika {
             namespace   STL {
 
 
+#if 0
                 template    <typename T, typename ContainerOfT>
                 vector<T>   mkVC (const ContainerOfT& ts)
                 {
@@ -25,7 +26,9 @@ namespace   Stroika {
                     }
                     return result;
                 }
+#endif
 
+#if 0
 
                 template    <typename T, typename ContainerOfT>
                 void    Append (vector<T>* v, const ContainerOfT& v2)
@@ -52,6 +55,7 @@ namespace   Stroika {
                     }
                     return result;
                 }
+#endif
 
 
             }
