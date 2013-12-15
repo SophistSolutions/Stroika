@@ -20,6 +20,8 @@
 /**
  *      \file
  *
+ *  \version    <a href="code_status.html#Alpha">Alpha</a>
+ *
  * TODO:
  *
  *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
@@ -27,8 +29,8 @@
  *
  *              That maybe best. Template specialization where KEY=void?
  *
- *				THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
- *				arg?
+ *              THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
+ *              arg?
  *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
