@@ -87,25 +87,31 @@ namespace   Stroika {
                 }
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>
-            bool    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key, RESULT* result)
+            Memory::Optional<RESULT>    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key)
             {
                 lock_guard<mutex> critSec (fMutex_);
                 ClearIfNeeded_ ();
                 typename map<KEY, MyResult_>::iterator i = fMap_.find (key);
                 if (i == fMap_.end ()) {
                     fStats.IncrementMisses ();
-                    return false;
+                    return Memory::Optional<RESULT> ();
                 }
                 else {
                     if (fAccessFreshensDate_) {
                         i->second.fLastAccessedAt = Time::GetTickCount ();
                     }
-                    if (result != nullptr) {
-                        *result = i->second.fResult;
-                    }
                     fStats.IncrementHits ();
-                    return true;
+                    return Memory::Optional<RESULT> (i->second.fResult);
                 }
+            }
+            template    <typename   KEY, typename RESULT, typename TRAITS>
+            inline  bool    TimedCache<KEY, RESULT, TRAITS>::AccessElement (const KEY& key, RESULT* result)
+            {
+                Memory::Optional<RESULT>    r = AccessElement (key);
+                if (r.IsPresent () and result != nullptr) {
+                    *result = *r;
+                }
+                return r.IsPresent ();
             }
             template    <typename   KEY, typename RESULT, typename TRAITS>
             void    TimedCache<KEY, RESULT, TRAITS>::AddElement (const KEY& key, const RESULT& result)

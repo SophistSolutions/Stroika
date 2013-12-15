@@ -12,6 +12,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Characters/SDKChar.h"
 #include    "../Debug/Assertions.h"
+#include    "../Memory/Optional.h"
 #include    "../Time/Realtime.h"
 
 
@@ -21,18 +22,17 @@
  *
  * TODO:
  *
- *      @todo   DOCS
+ *      @todo   This class is logically a map. But you may want to have individual values with timed cache!
+ *              Basically - KEY=RESULT? And then the arg to add/lookup dont take key? Maybe key is void?
+ *
+ *              That maybe best. Template specialization where KEY=void?
+ *
+ *				THEN - maybe reverse order of template params? VALUE/KEY - so then we can have KEY=void as default
+ *				arg?
  *
  *      @todo   Use Concepts or other such constraint on T/ELEMENT declarations (and docs)
  *
  *      @todo   Add regression test for this class
- *
- *      @todo   Add mutex and docs about thread safety
- *
- *      @todo   AccessElement () API IS INTRINSICTLY UN-THREADSAFE!!! We document threadsafe, but thats not really right. Fix that
- *              API so it is threadsafe??? Or adverise all threadafe except thtat?
- *
- *              AccessElement () - maybe - could return Memory::Optional<T>
  *
  *      @todo   Perhaps use Stroika Mapping<> instead of std::map<> - and in that way - we can use aribtrary externally
  *              specified map impl - so can use HASHING or BTREE, based on passed in arg. So we dont ahve problem with
@@ -137,7 +137,11 @@ namespace   Stroika {
                 nonvirtual  void    SetTimeout (Time::DurationSecondsType timeoutInSeconds);
 
             public:
-                nonvirtual  bool    AccessElement (const KEY& key, RESULT* result);
+                /**
+                 *  Lookup the given value and return it if its in the Cache.
+                 */
+                nonvirtual  Memory::Optional<RESULT>    AccessElement (const KEY& key);
+                nonvirtual  bool                        AccessElement (const KEY& key, RESULT* result);
 
             public:
                 nonvirtual  void    AddElement (const KEY& key, const RESULT& result);
@@ -146,6 +150,9 @@ namespace   Stroika {
                 nonvirtual  void    DoBookkeeping ();   // optional - need not be called
 
             public:
+                /**
+                 *  This can be peeked at (or reset). This is purely advisory.
+                 */
                 typename TRAITS::StatsType  fStats;
 
             private:
