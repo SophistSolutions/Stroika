@@ -89,6 +89,7 @@ namespace   Stroika {
                 }
                 inline  String  URL::GetHostRelativePath () const
                 {
+                    Ensure (not fRelPath_.StartsWith (L"/"));
                     return fRelPath_;
                 }
                 inline  void    URL::SetHostRelativePath (const String& hostRelativePath)
@@ -105,10 +106,12 @@ namespace   Stroika {
                 }
                 inline  String  URL::GetQueryString () const
                 {
+                    Ensure (not fQuery_.StartsWith (L"?"));
                     return fQuery_;
                 }
                 inline  void    URL::SetQueryString (const String& queryString)
                 {
+                    Require (not queryString.StartsWith (L"?"));    // should validate that it parses
                     fQuery_ = queryString;
                 }
                 inline  String  URL::GetFragment () const

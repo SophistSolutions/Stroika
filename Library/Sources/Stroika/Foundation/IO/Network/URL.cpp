@@ -302,6 +302,8 @@ URL::URL (const SchemeType& protocol, const String& host, Memory::Optional<PortT
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
+    Require (not relPath.StartsWith (L"/"));
+    Require (not query.StartsWith (L"?"));
     ValidateScheme_ (fProtocol_);
 }
 
@@ -313,6 +315,8 @@ URL::URL (const SchemeType& protocol, const String& host, const String& relPath,
     , fQuery_ (query)
     , fFragment_ (fragment)
 {
+    Require (not relPath.StartsWith (L"/"));
+    Require (not query.StartsWith (L"?"));
     ValidateScheme_ (fProtocol_);
 }
 
@@ -360,13 +364,12 @@ bool    URL::IsSecure () const
 String URL::GetFullURL () const
 {
     String result;
-    //result.reserve (10 + fHost.length () + fRelPath_.length () + fQuery.length () + fFragment_.length ());
 
     if (fProtocol_.empty ()) {
-        result += L"http:";
+        result += Characters::Concrete::String_Constant (L"http:");
     }
     else {
-        result += fProtocol_ + L":";
+        result += fProtocol_ + Characters::Concrete::String_Constant (L":");
     }
 
     if (not fHost_.empty ()) {
@@ -374,7 +377,7 @@ String URL::GetFullURL () const
         if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
-        result +=  L"/";
+        result += Characters::Concrete::String_Constant (L"/");
     }
 
     result += fRelPath_;
