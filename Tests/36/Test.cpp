@@ -255,7 +255,7 @@ namespace {
                     Filter<int> ([] (int i) -> bool { return (i & 1); }).
                     Find<int> ([] (int i) -> bool { return i == 8 ; })
                     ;
-                VerifyTestResult (answer.empty ());
+                VerifyTestResult (answer.IsMissing ());
             }
         }
 
