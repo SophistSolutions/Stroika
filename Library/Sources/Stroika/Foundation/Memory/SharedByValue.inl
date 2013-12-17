@@ -77,8 +77,8 @@ namespace   Stroika {
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const SharedByValue<TRAITS>&&  from)
-                : fCopier_ (std::move (from.fCopier_))
+            inline  SharedByValue<TRAITS>::SharedByValue (SharedByValue<TRAITS>&& from)
+                : fCopier_ (from.fCopier_)
                 , fSharedImpl_ (std::move (from.fSharedImpl_))
             {
             }
@@ -89,8 +89,8 @@ namespace   Stroika {
             {
             }
             template    <typename TRAITS>
-            inline  SharedByValue<TRAITS>::SharedByValue (const shared_ptr_type&&  from, const copier_type& copier)
-                : fCopier_ (std::move (copier))
+            inline  SharedByValue<TRAITS>::SharedByValue (shared_ptr_type&& from, const copier_type& copier)
+                : fCopier_ (copier)
                 , fSharedImpl_ (std::move (from))
             {
             }
