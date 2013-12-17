@@ -39,7 +39,7 @@ namespace   Stroika {
                 Time::DurationSecondsType   waitTil = Time::GetTickCount () + timeout;
                 while (true) {
                     Memory::Optional<T> tmp = fQueue_.RemoveHeadIf ();
-                    if (not tmp.empty ()) {
+                    if (tmp.IsPresent ()) {
                         return *tmp;
                     }
                     fDataAvailable_.Wait (waitTil - Time::GetTickCount ());

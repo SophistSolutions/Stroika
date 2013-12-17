@@ -30,9 +30,10 @@ namespace   {
     {
         {
             Optional<int>   x;
-            VerifyTestResult (x.empty ());
+            VerifyTestResult (x.IsMissing ());
             x = 1;
-            VerifyTestResult (not x.empty ());
+            VerifyTestResult (not x.IsMissing ());
+            VerifyTestResult (x.IsPresent ());
             VerifyTestResult (*x == 1);
         }
         {
