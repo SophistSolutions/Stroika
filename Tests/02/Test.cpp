@@ -451,6 +451,8 @@ namespace   {
 
     void    Test8_ReadOnlyStrings_ ()
     {
+        // NOTE - THIS TESTS String_Constant
+        //  typedef String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly String_Constant;
         String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly s (L"fred");
         VerifyTestResult (s[0] == 'f');
         s.SetLength (3);
@@ -902,19 +904,17 @@ namespace {
             VerifyTestResult (i == 3);
         }
         {
-            // Enforce at least doesnt crash. We may want to change semantics for iteration while chaing - but at least dont die!
-            //
-            // NOPE - THIS IS WRONG/BAD - SEE TODO IN STRING CODE
+            // Current (may want to rethink since differs from containers) spec is that iteration 'captures' value logically
+            // at the time we start iterating
+            // -- LGP 2013-12-17
             String x = L"123";
             int i = 0;
             for (auto c : x) {
                 VerifyTestResult (c == x[i]);
                 i++;
-                if (i == 1) {
-                    x += L"9";
-                }
+                x += L"9";
             }
-            //VerifyTestResult (i == 3);
+            VerifyTestResult (i == 3);
         }
     }
 }

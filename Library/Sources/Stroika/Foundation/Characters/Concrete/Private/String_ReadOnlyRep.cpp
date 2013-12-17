@@ -25,34 +25,50 @@ using   Traversal::Iterator;
  */
 Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
 {
+    // WRITEUP DEISGN
+    //      CHOICE - LIVE UPDATE (like with containers)
+    //      OR SNAPSHOT AT TIME OF START ITER
+    //      OR LOGICALLTY later, but really only copy on first
+    //      change
+    //
+    // EVENTUTALLY do 3? but may require enable_shared_from_this () - so not worth it
+    // but for now do #2.
+    // #1 implies extra overhead on updates - probably not woth while for strings.
+    //
+
+
+    typedef shared_ptr<String::_IRep> ttt;
+
     // @todo - FIX FOR THREADAFETY AND SAFETY WHEN UPDATING - BROKEN
     // --LGP 2013-12-17
     struct MyIterRep_ : Iterator<Character>::IRep {
+
+
         //UNSAFE OR DOC WHY SAFE??? KEEPS PTR TO BASE STRING REP BUT NOT THREADSAFTY ETC CHECKS
         // MAYBE SHOULD STORE SMART PTR? BUT HOW WITHOUT enabled_shared_from_this which has significnat overhead
 
-        const String::_IRep&    fStringRep_;    // effectively RO, since if anyone modifies, our copy will remain unchanged
-        size_t                  fCurIdx;
+        ttt  fStr;    // effectively RO, since if anyone modifies, our copy will remain unchanged
+        size_t          fCurIdx;
 
-        MyIterRep_ (const String::_IRep& r, size_t idx = 0)
-            : fStringRep_ (r)
+        MyIterRep_ (const ttt& r, size_t idx = 0)
+            : fStr (r)
             , fCurIdx (idx)
         {
-            Require (fCurIdx <= fStringRep_.GetLength ());
+            Require (fCurIdx <= fStr->GetLength ());
         }
         virtual SharedIRepPtr   Clone () const override
         {
-            return SharedIRepPtr (new MyIterRep_ (fStringRep_, fCurIdx));
+            return SharedIRepPtr (new MyIterRep_ (fStr, fCurIdx));
         }
         virtual void    More (Memory::Optional<Character>* result, bool advance) override
         {
             RequireNotNull (result);
             if (advance) {
-                Require (fCurIdx <= fStringRep_.GetLength ());
+                Require (fCurIdx <= fStr->GetLength ());
                 fCurIdx++;
             }
-            if (fCurIdx < fStringRep_.GetLength ()) {
-                *result = fStringRep_.GetAt (fCurIdx);
+            if (fCurIdx < fStr->GetLength ()) {
+                *result = fStr->GetAt (fCurIdx);
             }
             else {
                 result->clear ();
@@ -64,7 +80,7 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
             return false;
         }
     };
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (*this)));
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_IRep> (Clone ()))));
 }
 
 size_t  ReadOnlyRep::_Rep::GetLength () const
