@@ -293,13 +293,13 @@ namespace   Stroika {
                 String (const Character* from, const Character* to);
                 String (const std::wstring& r);
                 String (const String& from);
-                String (const String&&  from);
+                String (String&& from);
                 ~String ();
 
             protected:
                 /**
-                * rep MUST be not-null
-                */
+                 * rep MUST be not-null
+                 */
                 String (const _SharedPtrIRep& rep);
                 String (_SharedPtrIRep&& rep);
 

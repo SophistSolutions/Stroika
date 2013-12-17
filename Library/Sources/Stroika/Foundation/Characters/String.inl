@@ -54,7 +54,7 @@ namespace   Stroika {
                 : inherited (from)
             {
             }
-            inline  String::String (const String&& from)
+            inline  String::String (String&& from)
                 : inherited (std::move (from))
             {
             }
