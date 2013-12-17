@@ -95,6 +95,18 @@ namespace   Stroika {
                 RequireNotNull (fRep_.get ());
             }
             template    <typename T>
+            inline  Iterable<T>::Iterable (Iterable<T>&& from)
+                : fRep_ (std::move (from.fRep_))
+            {
+                RequireNotNull (fRep_.get ());
+            }
+            template    <typename T>
+            inline  Iterable<T>::Iterable (_SharedPtrIRep&& rep)
+                : fRep_ (std::move (rep))
+            {
+                RequireNotNull (fRep_.get ());
+            }
+            template    <typename T>
             inline  Iterable<T>::~Iterable ()
             {
             }
