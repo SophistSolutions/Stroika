@@ -120,7 +120,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color>::FullRange ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -131,7 +131,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color, RangeTraits::DefaultDiscreteRangeTraits<Color>>::FullRange ()) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -142,7 +142,7 @@ namespace {
             Optional<Color> lastItemHit;
             for (auto i : DiscreteRange<Color> (Optional<Color> (), Optional<Color> ())) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
             }
             VerifyTestResult (nItemsHit == 3);
@@ -153,7 +153,7 @@ namespace {
             Optional<Color> lastItemHit;
             DiscreteRange<Color> (Optional<Color> (), Optional<Color> ()).Apply ([&nItemsHit, &lastItemHit] (Color i) {
                 nItemsHit++;
-                VerifyTestResult (lastItemHit.empty () or * lastItemHit < i);
+                VerifyTestResult (lastItemHit.IsMissing () or * lastItemHit < i);
                 lastItemHit = i;
             });
             VerifyTestResult (nItemsHit == 3);
