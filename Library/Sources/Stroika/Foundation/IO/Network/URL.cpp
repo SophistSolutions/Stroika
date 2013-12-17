@@ -432,33 +432,33 @@ bool    URL::Equals (const URL& rhs) const
 
     // No need to compare this case-insensatively, because we tolower the schema on construction
     if (fProtocol_ != rhs.fProtocol_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
 
     //@todo - consider if we want to do CASE INSENSIVE COMAPRE - I THINK WE MUST!!!
     if (fHost_ != rhs.fHost_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
 
     if (fPort_ != rhs.fPort_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
-
     if (fRelPath_ != rhs.fRelPath_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
     if (fQuery_ != rhs.fQuery_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
     if (fFragment_ != rhs.fFragment_) {
-        Assert (referenceEquals == false);
+        Ensure (referenceEquals == false);
         return false;
     }
+    Ensure (referenceEquals == true);
     return true;
 #if 0
     // A simpler way to compare - and probably better - is if they both produce the same URL string, they are the
