@@ -559,6 +559,7 @@ namespace   Stroika {
                  */
                 virtual SharedIRepPtr   Clone () const                      = 0;
                 /**
+                #if 0
                  *  More () is dual function - depending on its arguments. If advance is true, it moves the
                  *  iterator to the next legal position.
                  *
@@ -571,6 +572,19 @@ namespace   Stroika {
                  *  is true, then More() returns true for exactly the cases where a valid value is copied out.
                  *
                  *  @todo FIX THIS DOCS FOR NEW ARGS TO MORE
+                 #endif
+
+                 DRAFT NEW DOCS:
+                 *
+                 *  More () takes two required arguments - one an optional result, and the other a flag about whether or
+                 *  not to advance.
+                 *
+                 *  It IS legal to call More () with advance true even when already at the end of iteration.
+                 *  This design choice was made to be multi-threading friendly.
+                 *
+                 *  This function returns the current value in result if the iterator is positioned at a valid position,
+                 *  and sets result to an empty value if at the end - its 'at end'.
+                 *
                  */
                 virtual void    More (Memory::Optional<T>* result, bool advance)     = 0;
                 /**
