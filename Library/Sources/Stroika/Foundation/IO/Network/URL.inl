@@ -20,7 +20,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************************** URLQuery *******************************
+                 ************************************ URLQuery **********************************
                  ********************************************************************************
                  */
                 inline  const Containers::Mapping<String, String>& URLQuery::GetMap () const
@@ -89,7 +89,6 @@ namespace   Stroika {
                 }
                 inline  String  URL::GetHostRelativePath () const
                 {
-                    Ensure (not fRelPath_.StartsWith (L"/"));
                     return fRelPath_;
                 }
                 inline  void    URL::SetHostRelativePath (const String& hostRelativePath)

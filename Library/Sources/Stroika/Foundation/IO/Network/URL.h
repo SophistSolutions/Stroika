@@ -120,7 +120,7 @@ namespace   Stroika {
 
                 public:
                     /**
-                     * See SetProtocol () for handling of the 'protocol' parameter.
+                     *  See SetProtocol () for handling of the 'protocol' parameter.
                      *  See SetQuery() for setting the query parameter.
                      *  See SetHostRelativePath for the 'relPath' restrictions.
                      *  This Requires() its arguments are valid and in range. use
@@ -223,21 +223,22 @@ namespace   Stroika {
 
                 public:
                     /**
-                    *
-                    *   Note this never starts with a '/' but can contain slashes.
-                    */
+                     *  Note this does NOT contain the '/' separating the hostname from the relative path,
+                     *  so it typically doesnt start with a '/', but frequently contains them. It MAY legally
+                     *  start with a '/' because http://www.ietf.org/rfc/rfc1738.txt doesnt specifically prohibit this.
+                     */
                     nonvirtual  String  GetHostRelativePath () const;
 
                 public:
                     /**
-                     @todo - smae thing we did for protocol/scjema - add type and documetn restrictions on that tyep and then enforce here! (exceptions)
+                     *  @see GetHostRelativePath for format restrictions.
                      */
                     nonvirtual  void    SetHostRelativePath (const String& hostRelativePath);
 
                 public:
                     /**
-                     *  Note this never starts with a '/' but can contain slashes.
-                     */
+                    *   @see GetHostRelativePath for format restrictions. This can be empty.
+                    */
                     nonvirtual  String  GetHostRelPathDir () const;
 
                 public:

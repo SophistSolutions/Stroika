@@ -32,11 +32,13 @@ using   Stroika::Foundation::Execution::ThrowIfErrorHRESULT;
 using   namespace   Stroika::Foundation::IO;
 using   namespace   Stroika::Foundation::IO::Network;
 
+using   Characters::Concrete::String_Constant;
+
 
 
 
 namespace {
-    URL::SchemeType NormalizeScheme_ (URL::SchemeType s)
+    URL::SchemeType NormalizeScheme_ (const URL::SchemeType& s)
     {
         // replace all uppercase with lowercase - dont validate here
         return s.ToLowerCase ();
@@ -81,13 +83,13 @@ namespace   {
 uint16_t     Network::GetDefaultPortForProtocol (const String& proto)
 {
     // From http://www.iana.org/assignments/port-numbers
-    if (proto == L"")       {       return 80;  }
-    if (proto == L"http")   {       return 80;  }
-    if (proto == L"https")  {       return 443; }
-    if (proto == L"ldap")   {       return 389; }
-    if (proto == L"ldaps")  {       return 636; }
-    if (proto == L"ftp")    {       return 21;  }
-    if (proto == L"ftps")   {       return 990; }
+    if (proto == String ())                     {   return 80; }
+    if (proto == String_Constant (L"http"))     {   return 80; }
+    if (proto == String_Constant (L"https"))    {   return 443; }
+    if (proto == String_Constant (L"ldap"))     {   return 389; }
+    if (proto == String_Constant (L"ldaps"))    {   return 636; }
+    if (proto == String_Constant (L"ftp"))      {   return 21; }
+    if (proto == String_Constant (L"ftps"))     {   return 990; }
 
     AssertNotReached (); // if this ever happens - we probably have some work todo - the above list is inadequate
     return 80;  // hack...
@@ -287,7 +289,7 @@ URL::URL (const String& w)
                     //Assert (fPort == ::_wtoi (testPort.c_str ()));
                 }
             }
-            Assert (testRelPath == fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((Characters::Concrete::String_Constant (L"/") + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
+            Assert (testRelPath == fRelPath_ or testRelPath.find (':') != String::kBadIndex or ((String_Constant (L"/") + fRelPath_) == testRelPath));  //old code didnt handle port#   --LGP 2007-09-20
             Assert (testQuery == fQuery_ or not fFragment_.empty ()); // old code didn't check fragment
         }
     }
@@ -366,34 +368,34 @@ String URL::GetFullURL () const
     String result;
 
     if (fProtocol_.empty ()) {
-        result += Characters::Concrete::String_Constant (L"http:");
+        result += String_Constant (L"http:");
     }
     else {
-        result += fProtocol_ + Characters::Concrete::String_Constant (L":");
+        result += fProtocol_ + String_Constant (L":");
     }
 
     if (not fHost_.empty ()) {
-        result += Characters::Concrete::String_Constant (L"//") + fHost_;
+        result += String_Constant (L"//") + fHost_;
         if (fPort_ != kDefaultPortSentinal_ and fPort_ != GetDefaultPortForProtocol (fProtocol_)) {
             result += Format (L":%d", fPort_);
         }
-        result += Characters::Concrete::String_Constant (L"/");
+        result += String_Constant (L"/");
     }
 
     result += fRelPath_;
 
     if (not fQuery_.empty ()) {
-        result += Characters::Concrete::String_Constant (L"?") + fQuery_;
+        result += String_Constant (L"?") + fQuery_;
     }
 
     if (not fFragment_.empty ()) {
-        result += Characters::Concrete::String_Constant (L"#") + fFragment_;
+        result += String_Constant (L"#") + fFragment_;
     }
 
     return result;
 }
 
-String URL::GetHostRelPathDir () const
+String  URL::GetHostRelPathDir () const
 {
     String  result  =   fRelPath_;
     size_t  i       =   result.rfind ('/');
@@ -603,4 +605,3 @@ String URLQuery::ComputeQueryString () const
     }
     return ASCIIStringToWide (result);
 }
-
