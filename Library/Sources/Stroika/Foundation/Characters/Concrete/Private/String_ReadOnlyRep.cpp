@@ -22,10 +22,32 @@ using   namespace   Stroika::Foundation::Characters::Concrete::Private;
  **************************** ReadOnlyRep::_Rep *********************************
  ********************************************************************************
  */
+Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
+{
+    AssertNotImplemented ();
+    return Traversal::Iterator<Character>::GetEmptyIterator ();
+}
+
 size_t  ReadOnlyRep::_Rep::GetLength () const
 {
     Assert (_fStart <= _fEnd);
     return _fEnd - _fStart;
+}
+
+bool  ReadOnlyRep::_Rep::IsEmpty () const
+{
+    Assert (_fStart <= _fEnd);
+    return _fEnd == _fStart;
+}
+
+void  ReadOnlyRep::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
+{
+    _Apply (doToElement);
+}
+
+Traversal::Iterator<Character>  ReadOnlyRep::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
+{
+    return _ApplyUntilTrue (doToElement);
 }
 
 Character   ReadOnlyRep::_Rep::GetAt (size_t index) const

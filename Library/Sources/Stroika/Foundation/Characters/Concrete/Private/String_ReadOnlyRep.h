@@ -59,8 +59,16 @@ namespace   Stroika {
                             // PROTECTED INLINE UTILITY
                             nonvirtual     const Character*    _Peek () const;
 
+                            // Overrides for Iterable<Character>
                         public:
+                            virtual Traversal::Iterator<Character>              MakeIterator () const override;
                             virtual size_t                                      GetLength () const override;
+                            virtual bool                                        IsEmpty () const override;
+                            virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                            virtual Traversal::Iterator<Character>              ApplyUntilTrue (_APPLYUNTIL_ARGTYPE) const override;
+
+                            // Overrides for String::_IRep
+                        public:
                             virtual Character                                   GetAt (size_t index) const override;
                             virtual const Character*                            Peek () const override;
                             virtual pair<const Character*, const Character*>    GetData () const override;

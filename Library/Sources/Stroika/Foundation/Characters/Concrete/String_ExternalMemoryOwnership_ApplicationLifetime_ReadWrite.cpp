@@ -45,9 +45,9 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual shared_ptr<_IRep>   Clone () const override
+        virtual _SharedPtrIRep   Clone () const override
         {
-            return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -79,13 +79,13 @@ public:
         : inherited (start, end)
     {
     }
-    virtual shared_ptr<_IRep>   Clone () const override
+    virtual _SharedPtrIRep   Clone () const override
     {
         /*
          * Subtle point - but since this code involves SHARING buffer space, we cannot have two different string reps both sharing the same pointer. Only
          * one can use it, and the other must make a copy.
          */
-        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
 public:
     DECLARE_USE_BLOCK_ALLOCATION(MyRep_);
@@ -112,6 +112,6 @@ public:
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite::String_ExternalMemoryOwnership_ApplicationLifetime_ReadWrite (wchar_t* cString)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
+    : String (_SharedPtrIRep (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
 {
 }

@@ -44,9 +44,9 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual shared_ptr<_IRep>   Clone () const override
+        virtual _SharedPtrIRep   Clone () const override
         {
-            return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -70,56 +70,56 @@ namespace   {
  ********************************************************************************
  */
 String_BufferedArray::String_BufferedArray ()
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0)))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0)))
 {
 }
 
 String_BufferedArray::String_BufferedArray (size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve)))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0, reserve)))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wchar_t* cString, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve)))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString), reserve)))
 {
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ())))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length ())))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const wstring& str, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve)))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (str.data (), str.data () + str.length (), reserve)))
 {
     Require (GetLength () <= reserve);
 }
 
 String_BufferedArray::String_BufferedArray (const String& from)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ())))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength ())))
 {
 }
 
 String_BufferedArray::String_BufferedArray (const String& from, size_t reserve)
-    : String (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve)))
+    : String (_SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (from.As<const wchar_t*> (), from.As<const wchar_t*> () + from.GetLength (), reserve)))
 {
     Require (GetLength () <= reserve);
 }
 
 size_t  String_BufferedArray::capacity () const
 {
-    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
-    return dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ())->capacity ();
+    AssertMember (&_GetRep (), String_BufferedArray_Rep_);
+    return static_cast<const String_BufferedArray_Rep_*> (&_GetRep ())->capacity ();
 }
 
 void    String_BufferedArray::reserve (size_t n)
 {
-    AssertNotNull (dynamic_cast<String_BufferedArray_Rep_*> (const_cast<String_BufferedArray*> (this)->_fRep.get ()));
-    dynamic_cast<String_BufferedArray_Rep_*> (_fRep.get ())->reserve (n);
+    AssertMember (&_GetRep (), String_BufferedArray_Rep_);
+    return static_cast<String_BufferedArray_Rep_*> (&_GetRep ())->reserve (n);
 }

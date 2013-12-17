@@ -48,9 +48,9 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual shared_ptr<_IRep>   Clone () const override
+        virtual _SharedPtrIRep   Clone () const override
         {
-            return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -70,13 +70,13 @@ public:
     {
         Require (start + ::wcslen (start) == end);
     }
-    virtual shared_ptr<_IRep>   Clone () const override
+    virtual _SharedPtrIRep   Clone () const override
     {
         /*
          * Subtle point. If we are making a clone, its cuz caller wants to change the buffer, and they cannot cuz its readonly, so
          * make a rep that is modifyable
          */
-        return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+        return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
     }
     virtual const wchar_t*  c_str_peek () const  noexcept override
     {
@@ -102,7 +102,7 @@ public:
  ********************************************************************************
  */
 String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString)
-    : inherited (_SharedRepByValuePtr::shared_ptr_type (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
+    : inherited (_SharedPtrIRep (DEBUG_NEW MyRep_ (cString, cString + wcslen (cString))))
 {
 }
 

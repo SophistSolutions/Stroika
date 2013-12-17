@@ -10,6 +10,7 @@
 
 #include    "../Execution/ModuleInit.h"
 #include    "../Memory/SharedByValue.h"
+#include    "../Traversal/Iterable.h"
 #include    "SDKString.h"
 
 #include    "Character.h"
@@ -268,7 +269,10 @@ namespace   Stroika {
              *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
              *      @see   Concrete::String_Common
              */
-            class   String {
+            class   String : public Traversal::Iterable<Character> {
+            private:
+                typedef Iterable<Character> inherited;
+
             public:
 #if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
                 static  constexpr size_t    kBadIndex   = wstring::npos;
@@ -291,6 +295,13 @@ namespace   Stroika {
                 String (const String& from);
                 String (const String&&  from);
                 ~String ();
+
+            protected:
+                /**
+                * rep MUST be not-null
+                */
+                String (const _SharedPtrIRep& rep);
+                String (_SharedPtrIRep&& rep);
 
             public:
                 nonvirtual  String& operator= (const String& newString);
@@ -798,34 +809,10 @@ namespace   Stroika {
 
             protected:
                 class   _IRep;
-                typedef     shared_ptr<_IRep>   _SharedPtrIRep;
-            protected:
-                static  _SharedPtrIRep   _Clone (const _IRep& rep);
 
             protected:
-                struct  _Rep_Cloner {
-                    inline  static  _SharedPtrIRep   Copy (const _IRep& t)
-                    {
-                        return String::_Clone (t);
-                    }
-                };
-
-            protected:
-                typedef Memory::SharedByValue<Memory::SharedByValue_Traits<_IRep, _SharedPtrIRep, _Rep_Cloner>>  _SharedRepByValuePtr;
-                _SharedRepByValuePtr _fRep;
-
-            protected:
-                /**
-                 * rep MUST be not-null
-                 */
-                String (const _SharedRepByValuePtr::shared_ptr_type& rep);
-                String (const _SharedRepByValuePtr::shared_ptr_type&&  rep);
-#if 0
-            private:
-
-                // constructs a StringRep_Catenate
-                friend  String  operator+ (const String& lhs, const String& rhs);
-#endif
+                nonvirtual  const _IRep&    _GetRep () const;
+                nonvirtual  _IRep&          _GetRep ();
             };
 
 
@@ -852,7 +839,7 @@ namespace   Stroika {
             /**
              * Protected helper Rep class.
              */
-            class   String::_IRep {
+            class   String::_IRep : public Iterable<Character>::_IRep {
             protected:
                 _IRep ();
 
@@ -877,12 +864,20 @@ namespace   Stroika {
                  *      and transparently by thorwing an excpetion that never makes it out of the String module/cpp file.
                  */
                 class   UnsupportedFeatureException {};
+#if 0
+            public:
+                virtual _SharedPtrIRep      Clone () const = 0;
+                virtual Iterator<T>         MakeIterator () const = 0;
+                virtual size_t              GetLength () const = 0;
+                virtual bool                IsEmpty () const = 0;
+                virtual void                Apply (_APPLY_ARGTYPE doToElement) const = 0;
+                virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE) const = 0;
+#endif
 
             public:
+//                virtual _SharedPtrIRep      Clone () const                          = 0;
 
-                virtual _SharedPtrIRep      Clone () const                          = 0;
-
-                virtual size_t              GetLength () const                      = 0;
+                //              virtual size_t              GetLength () const                      = 0;
                 virtual void                RemoveAll ()                            = 0;
 
                 virtual Character           GetAt (size_t index) const              = 0;

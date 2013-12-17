@@ -53,9 +53,9 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual shared_ptr<_IRep>   Clone () const override
+        virtual _SharedPtrIRep   Clone () const override
         {
-            return shared_ptr<_IRep> (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
+            return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
     public:
         DECLARE_USE_BLOCK_ALLOCATION(String_BufferedArray_Rep_);
@@ -149,17 +149,19 @@ static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t mu
 
 namespace   {
     struct  MyEmptyString_ : String {
+#if 0
         static  shared_ptr<String::_IRep>   Clone_ (const _IRep& rep)
         {
             return (rep.Clone ());
         }
-        static  _SharedRepByValuePtr mkEmptyStrRep_ ()
+#endif
+        static  _SharedPtrIRep mkEmptyStrRep_ ()
         {
             static  bool                            sInited_    =   false;
-            static  _SharedRepByValuePtr s_;
+            static  _SharedPtrIRep s_;
             if (not sInited_) {
                 sInited_ = true;
-                s_ = _SharedRepByValuePtr (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0));
+                s_ = _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (nullptr, 0));
             }
             return s_;
         }
@@ -167,56 +169,78 @@ namespace   {
 }
 
 String::String ()
-    : _fRep (MyEmptyString_::mkEmptyStrRep_ ())
+    : inherited (MyEmptyString_::mkEmptyStrRep_ ())
 {
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String::String (const char16_t* cString)
-    : _fRep (MyEmptyString_::mkEmptyStrRep_ ())
+    : inherited (MyEmptyString_::mkEmptyStrRep_ ())
 {
     RequireNotNull (cString);
     // Horrible, but temporarily OK impl
     for (const char16_t* i = cString; *i != '\0'; ++i) {
         InsertAt (*i, (i - cString));
     }
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String::String (const wchar_t* cString)
-    : _fRep (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepByValuePtr (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
+    : inherited (cString[0] == '\0' ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (cString, cString + wcslen (cString))))
 {
     RequireNotNull (cString);
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String::String (const wchar_t* from, const wchar_t* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepByValuePtr (DEBUG_NEW String_BufferedArray_Rep_ (from, to)))
+    : inherited ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (from, to)))
 {
     Require (from <= to);
     Require (from != nullptr or from == to);
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String::String (const Character* from, const Character* to)
-    : _fRep ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepByValuePtr (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))))
+    : inherited ((from == to) ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (reinterpret_cast<const wchar_t*> (from), reinterpret_cast<const wchar_t*> (to))))
 {
     static_assert (sizeof (Character) == sizeof (wchar_t), "Character and wchar_t must be same size");
     Require (from <= to);
     Require (from != nullptr or from == to);
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String::String (const std::wstring& r)
-    : _fRep (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : _SharedRepByValuePtr (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ())))
+    : inherited (r.empty () ? MyEmptyString_::mkEmptyStrRep_ () : _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (r.data (), r.data () + r.length ())))
 {
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
-String::String (const _SharedRepByValuePtr::shared_ptr_type& rep)
-    : _fRep (rep, _Rep_Cloner ())
+String::String (const _SharedPtrIRep& rep)
+    : inherited (rep)
 {
-    RequireNotNull (rep.get ());
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
-String::String (const _SharedRepByValuePtr::shared_ptr_type&&  rep)
-    : _fRep (std::move (rep), _Rep_Cloner ())
+String::String (_SharedPtrIRep&& rep)
+    : inherited (std::move (rep))
 {
-    RequireNotNull (rep.get ());
+#if     qDebug
+    _GetRep (); // just make sure non-null and right type
+#endif
 }
 
 String  String::FromUTF8 (const char* from)
@@ -294,20 +318,21 @@ void    String::SetLength (size_t newLength)
 {
     try {
         if (newLength == 0) {
-            _fRep->RemoveAll ();
+            _GetRep ().RemoveAll ();
         }
         else {
-            _fRep->SetLength (newLength);
+            _GetRep ().SetLength (newLength);
         }
     }
     catch (const _IRep::UnsupportedFeatureException&) {
         Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, max (GetLength (), newLength));
-        _fRep = tmp._fRep;
+        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        *this = tmp;
         if (newLength == 0) {
-            _fRep->RemoveAll ();
+            _GetRep ().RemoveAll ();
         }
         else {
-            _fRep->SetLength (newLength);
+            _GetRep ().SetLength (newLength);
         }
     }
 }
@@ -317,12 +342,13 @@ void    String::SetCharAt (Character c, size_t i)
     Require (i >= 0);
     Require (i < GetLength ());
     try {
-        _fRep->SetAt (c, i);
+        _GetRep ().SetAt (c, i);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
         Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
-        _fRep = tmp._fRep;
-        _fRep->SetAt (c, i);
+        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        *this = tmp;
+        _GetRep ().SetAt (c, i);
     }
 }
 
@@ -337,12 +363,13 @@ void    String::InsertAt (const Character* from, const Character* to, size_t at)
         return;
     }
     try {
-        _fRep->InsertAt (from, to, at);
+        _GetRep ().InsertAt (from, to, at);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
         Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + (to - from));
-        _fRep = tmp._fRep;
-        _fRep->InsertAt (from, to, at);
+        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        *this = tmp;
+        _GetRep ().InsertAt (from, to, at);
     }
 }
 
@@ -351,12 +378,13 @@ void    String::RemoveAt (size_t from, size_t to)
     Require (from <= to);
     Require (to <= GetLength ());
     try {
-        _fRep->RemoveAt (from, to);
+        _GetRep ().RemoveAt (from, to);
     }
     catch (const _IRep::UnsupportedFeatureException&) {
         Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this);
-        _fRep = tmp._fRep;
-        _fRep->RemoveAt (from, to);
+        // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+        *this = tmp;
+        _GetRep ().RemoveAt (from, to);
     }
 }
 
@@ -376,7 +404,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
     switch (co) {
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (_fRep->GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
+                    if (_GetRep ().GetAt (i).ToLowerCase () == c.ToLowerCase ()) {
                         return (i);
                     }
                 }
@@ -384,7 +412,7 @@ size_t  String::Find (Character c, size_t startAt, CompareOptions co) const
             break;
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i < length; i++) {
-                    if (_fRep->GetAt (i) == c) {
+                    if (_GetRep ().GetAt (i) == c) {
                         return (i);
                     }
                 }
@@ -411,7 +439,7 @@ size_t  String::Find (const String& subString, size_t startAt, CompareOptions co
         case CompareOptions::eCaseInsensitive: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (_fRep->GetAt (i + j).ToLowerCase () != subString._fRep->GetAt (j).ToLowerCase ()) {
+                        if (_GetRep ().GetAt (i + j).ToLowerCase () != subString._GetRep ().GetAt (j).ToLowerCase ()) {
                             goto nogood1;
                         }
                     }
@@ -424,7 +452,7 @@ nogood1:
         case CompareOptions::eWithCase: {
                 for (size_t i = startAt; i <= limit; i++) {
                     for (size_t j = 0; j < subStrLen; j++) {
-                        if (_fRep->GetAt (i + j) != subString._fRep->GetAt (j)) {
+                        if (_GetRep ().GetAt (i + j) != subString._GetRep ().GetAt (j)) {
                             goto nogood2;
                         }
                     }
@@ -510,7 +538,7 @@ size_t  String::RFind (Character c) const
     //TODO: FIX HORRIBLE PERFORMANCE!!!
     size_t length = GetLength ();
     for (size_t i = length; i > 0; --i) {
-        if (_fRep->GetAt (i - 1) == c) {
+        if (_GetRep ().GetAt (i - 1) == c) {
             return (i - 1);
         }
     }
@@ -598,7 +626,7 @@ String  String::SubString (size_t from, size_t to) const
 #if     qString_SubStringClassWorks
     return (String (DEBUG_NEW String_Substring_::MyRep_ (_fRep, from, length), false));
 #else
-    return (String (_fRep->Peek () + from, _fRep->Peek () + from + length));
+    return (String (_GetRep ().Peek () + from, _GetRep ().Peek () + from + length));
 #endif
 }
 
@@ -609,7 +637,7 @@ String  String::LTrim (bool (*shouldBeTrimmmed) (Character)) const
     // Could be much more efficient if pushed into REP - so we avoid each character virtual call...
     size_t length = GetLength ();
     for (size_t i = 0; i < length; ++i) {
-        if (not (*shouldBeTrimmmed) (_fRep->GetAt (i))) {
+        if (not (*shouldBeTrimmmed) (_GetRep ().GetAt (i))) {
             if (i == 0) {
                 // no change in string
                 return *this;
@@ -631,7 +659,7 @@ String  String::RTrim (bool (*shouldBeTrimmmed) (Character)) const
     size_t length = GetLength ();
     if (length != 0) {
         for (ptrdiff_t i = length - 1; i != 0; --i) {
-            if (not (*shouldBeTrimmmed) (_fRep->GetAt (i))) {
+            if (not (*shouldBeTrimmmed) (_GetRep ().GetAt (i))) {
                 size_t  nCharsRemoved   =   (length - 1) - i;
                 if (nCharsRemoved == 0) {
                     // no change in string
@@ -796,20 +824,21 @@ void    String::AsASCII (string* into) const
 
 const wchar_t*  String::c_str () const
 {
-    const   wchar_t*    result  =   _fRep->c_str_peek ();
+    const   wchar_t*    result = _GetRep ().c_str_peek ();
     if (result == nullptr) {
         // Then we must force it to be NUL-terminated
         //
         // We want to DECLARE c_str() as const, becuase it doesn't conceptually change the underlying data, but to get the
-        // fRep cloning stuff to work right, we must access it through a
+        // fRep cloning stuff to work right, we must access it through a non-cost pointer
         String* REALTHIS    =   const_cast<String*> (this);
         try {
-            return REALTHIS->_fRep->c_str_change ();
+            return REALTHIS->_GetRep ().c_str_change ();
         }
         catch (const _IRep::UnsupportedFeatureException&) {
             Concrete::String_BufferedArray    tmp =   Concrete::String_BufferedArray (*this, GetLength () + 1);
-            REALTHIS->_fRep = tmp._fRep;
-            return REALTHIS->_fRep->c_str_change ();
+            // @todo - CONSIDER CAREFULLY IF THIS IS THREADAFE??? DOCUMENT WHY IF IT IS!!! --LGP 2013-12-17
+            *REALTHIS = tmp;
+            return REALTHIS->_GetRep ().c_str_change ();
         }
     }
     else {
