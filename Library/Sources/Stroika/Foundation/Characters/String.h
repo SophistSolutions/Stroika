@@ -55,6 +55,10 @@
  *
  * TODO:
  *
+ *      @todo   CURRENT CODE Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
+ *              IS BROKEN if you update string during iteration!!! Serious bug. Not sure how
+ *              I want to resolve?
+ *
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *

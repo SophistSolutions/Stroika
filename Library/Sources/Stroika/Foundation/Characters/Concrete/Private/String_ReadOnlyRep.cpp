@@ -15,6 +15,7 @@ using   namespace   Stroika::Foundation::Characters;
 using   namespace   Stroika::Foundation::Characters::Concrete::Private;
 
 
+using   Traversal::Iterator;
 
 
 /*
@@ -24,8 +25,46 @@ using   namespace   Stroika::Foundation::Characters::Concrete::Private;
  */
 Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
 {
-    AssertNotImplemented ();
-    return Traversal::Iterator<Character>::GetEmptyIterator ();
+    // @todo - FIX FOR THREADAFETY AND SAFETY WHEN UPDATING - BROKEN
+    // --LGP 2013-12-17
+    struct MyIterRep_ : Iterator<Character>::IRep {
+        //UNSAFE OR DOC WHY SAFE??? KEEPS PTR TO BASE STRING REP BUT NOT THREADSAFTY ETC CHECKS
+        // MAYBE SHOULD STORE SMART PTR? BUT HOW WITHOUT enabled_shared_from_this which has significnat overhead
+
+        const String::_IRep&    fStringRep_;    // effectively RO, since if anyone modifies, our copy will remain unchanged
+        size_t                  fCurIdx;
+
+        MyIterRep_ (const String::_IRep& r, size_t idx = 0)
+            : fStringRep_ (r)
+            , fCurIdx (idx)
+        {
+            Require (fCurIdx <= fStringRep_.GetLength ());
+        }
+        virtual SharedIRepPtr   Clone () const override
+        {
+            return SharedIRepPtr (new MyIterRep_ (fStringRep_, fCurIdx));
+        }
+        virtual void    More (Memory::Optional<Character>* result, bool advance) override
+        {
+            RequireNotNull (result);
+            if (advance) {
+                Require (fCurIdx <= fStringRep_.GetLength ());
+                fCurIdx++;
+            }
+            if (fCurIdx < fStringRep_.GetLength ()) {
+                *result = fStringRep_.GetAt (fCurIdx);
+            }
+            else {
+                result->clear ();
+            }
+        }
+        virtual bool    StrongEquals (const IRep* rhs) const
+        {
+            AssertNotImplemented ();
+            return false;
+        }
+    };
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (*this)));
 }
 
 size_t  ReadOnlyRep::_Rep::GetLength () const

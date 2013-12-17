@@ -887,6 +887,40 @@ namespace {
 }
 
 
+
+
+namespace {
+    void    Test26_Iteration_ ()
+    {
+        {
+            String x = L"123";
+            int i = 0;
+            for (auto c : x) {
+                VerifyTestResult (c == x[i]);
+                i++;
+            }
+            VerifyTestResult (i == 3);
+        }
+        {
+            // Enforce at least doesnt crash. We may want to change semantics for iteration while chaing - but at least dont die!
+            //
+            // NOPE - THIS IS WRONG/BAD - SEE TODO IN STRING CODE
+            String x = L"123";
+            int i = 0;
+            for (auto c : x) {
+                VerifyTestResult (c == x[i]);
+                i++;
+                if (i == 1) {
+                    x += L"9";
+                }
+            }
+            //VerifyTestResult (i == 3);
+        }
+    }
+}
+
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -921,6 +955,7 @@ namespace   {
         Test23_FormatV_ ();
         Test24_Float2String ();
         Test25_RemoveAt_ ();
+        Test26_Iteration_ ();
     }
 }
 
