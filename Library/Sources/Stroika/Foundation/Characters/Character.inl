@@ -101,7 +101,7 @@ namespace   Stroika {
             }
             inline  Character   Character::ToLowerCase () const
             {
-                // Cannot find good spec on towlower/towupper, so not sure this cehck is necessary
+                // Cannot find good spec on towlower/towupper, so not sure that this check is necessary
                 if (::iswupper (fCharacterCode_)) {
                     return static_cast<wchar_t> (::towlower (fCharacterCode_));
                 }
