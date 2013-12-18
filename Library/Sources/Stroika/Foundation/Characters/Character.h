@@ -136,6 +136,9 @@ namespace   Stroika {
                 nonvirtual  int Compare (Character rhs) const;
 
             public:
+                static int      Compare (const Character* lhsStart, const Character* lhsEnd, const Character* rhsStart, const Character* rhsEnd, CompareOptions co);
+
+            public:
                 /**
                 *  Basic operator overloads with the obivous meaning, and simply indirect to @Compare (const String& rhs)
                 */
