@@ -852,10 +852,10 @@ namespace   Stroika {
             public:
                 virtual ~_IRep ();
 
-            public:
+            protected:
                 typedef     String::_IterableSharedPtrIRep  _IterableSharedPtrIRep;
 
-            public:
+            protected:
                 typedef     String::_SharedPtrIRep  _SharedPtrIRep;
 
             public:

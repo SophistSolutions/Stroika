@@ -36,21 +36,17 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
     // #1 implies extra overhead on updates - probably not woth while for strings.
     //
 
-
-    typedef shared_ptr<String::_IRep> ttt;
-
     // @todo - FIX FOR THREADAFETY AND SAFETY WHEN UPDATING - BROKEN
     // --LGP 2013-12-17
+    //UNSAFE OR DOC WHY SAFE??? KEEPS PTR TO BASE STRING REP BUT NOT THREADSAFTY ETC CHECKS
+    // MAYBE SHOULD STORE SMART PTR? BUT HOW WITHOUT enabled_shared_from_this which has significnat overhead
+
+
+
     struct MyIterRep_ : Iterator<Character>::IRep {
-
-
-        //UNSAFE OR DOC WHY SAFE??? KEEPS PTR TO BASE STRING REP BUT NOT THREADSAFTY ETC CHECKS
-        // MAYBE SHOULD STORE SMART PTR? BUT HOW WITHOUT enabled_shared_from_this which has significnat overhead
-
-        ttt  fStr;    // effectively RO, since if anyone modifies, our copy will remain unchanged
+        _SharedPtrIRep  fStr;           // effectively RO, since if anyone modifies, our copy will remain unchanged
         size_t          fCurIdx;
-
-        MyIterRep_ (const ttt& r, size_t idx = 0)
+        MyIterRep_ (const _SharedPtrIRep& r, size_t idx = 0)
             : fStr (r)
             , fCurIdx (idx)
         {
@@ -79,10 +75,9 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
             AssertNotImplemented ();
             return false;
         }
-    public:
         DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
-    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_IRep> (Clone ()))));
+    return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_SharedPtrIRep::element_type> (Clone ()))));
 }
 
 size_t  ReadOnlyRep::_Rep::GetLength () const
