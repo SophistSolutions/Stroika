@@ -55,6 +55,20 @@
  *
  * TODO:
  *
+ *      @todo   The string REPS are (I think) fully threadsafe, but I dont think the String envelope class is.
+ *              We need to be much more careful about the Envelope class thread safety.
+ *
+ *              For example,
+ *
+ *              String  String::StripAll (bool (*removeCharIf) (Character)) const
+ *              {
+ *                  ...
+ *                  size_t  n   =   GetLength ();
+ *                  for (size_t i = 0; i < n; ++i) {
+ *                      Character   c   =   operator[] (i);
+ *              ...
+ *              What if someone changed the length in the middle of the loop!
+ *
  *      @todo   Annotate basic string aliases as (std::basic_string alias - as below). At least try and think
  *              through if this seems ugly/pointless.
  *
@@ -268,6 +282,31 @@ namespace   Stroika {
              *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadOnly
              *      @see   Concrete::String_ExternalMemoryOwnership_StackLifetime_ReadWrite
              *      @see   Concrete::String_Common
+             *
+             *  \note   Design Choice - Iterable<T> / Iterator<T> behavior
+             *      We have two basic choices of how to define the behavior of iterators:
+             *      o   Live Update (like we do for Containers) - where changes to the
+             *          String appear in iteration.
+             *
+             *      o   Snapshot at the start of iteration
+             *
+             *      The advantages of 'live update' are that its probably better / clearer semantics. We may
+             *      want to switch to that. But to implement, we need to keep the update and iteration code
+             *      in sync.
+             *
+             *      'Snapshot at the start of iteration' can be more efficient, and easier to implement.
+             *      So - we do that for now.
+             *
+             *      Among 'snapshot' impl choices - we COULD do lazy copy snapshot (COW). That would perform best.
+             *      But to do so - the way the code is currently structured, we would need to use enable_shared_from_this
+             *      so we can recover a shared_ptr in ReadOnlyRep::_Rep::MakeIterator.
+             *
+             *      enable_shared_from_this() would add costs (at least size) even when we dont use String iteration
+             *      (which we didnt even impelement for a couple years, so may not be that critical).
+             *
+             *      For now - stick to simple impl - of just copy on start of iteration.
+             *          -- LGP 2013-12-17
+             *
              */
             class   String : public Traversal::Iterable<Character> {
             private:

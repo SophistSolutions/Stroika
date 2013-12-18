@@ -25,24 +25,6 @@ using   Traversal::Iterator;
  */
 Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
 {
-    // WRITEUP DEISGN
-    //      CHOICE - LIVE UPDATE (like with containers)
-    //      OR SNAPSHOT AT TIME OF START ITER
-    //      OR LOGICALLTY later, but really only copy on first
-    //      change
-    //
-    // EVENTUTALLY do 3? but may require enable_shared_from_this () - so not worth it
-    // but for now do #2.
-    // #1 implies extra overhead on updates - probably not woth while for strings.
-    //
-
-    // @todo - FIX FOR THREADAFETY AND SAFETY WHEN UPDATING - BROKEN
-    // --LGP 2013-12-17
-    //UNSAFE OR DOC WHY SAFE??? KEEPS PTR TO BASE STRING REP BUT NOT THREADSAFTY ETC CHECKS
-    // MAYBE SHOULD STORE SMART PTR? BUT HOW WITHOUT enabled_shared_from_this which has significnat overhead
-
-
-
     struct MyIterRep_ : Iterator<Character>::IRep {
         _SharedPtrIRep  fStr;           // effectively RO, since if anyone modifies, our copy will remain unchanged
         size_t          fCurIdx;
