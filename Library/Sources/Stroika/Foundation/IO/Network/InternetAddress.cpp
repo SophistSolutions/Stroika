@@ -183,7 +183,41 @@ bool    InternetAddress::IsLocalhostAddress () const
 
 bool    InternetAddress::IsPrivateAddress () const
 {
-    AssertNotImplemented ();
+    switch (fAddressFamily_) {
+        case AddressFamily::V4: {
+                /*
+                 *  From http://en.wikipedia.org/wiki/Private_network
+                 *      24-bit block    10.0.0.0 - 10.255.255.255   16,777,216  single class A network  10.0.0.0/8 (255.0.0.0)  24 bits 8 bits
+                 *      20 - bit block  172.16.0.0 - 172.31.255.255 1, 048, 576 16 contiguous class B networks  172.16.0.0 / 12 (255.240.0.0)   20 bits 12 bits
+                 *      16 - bit block  192.168.0.0 - 192.168.255.255   65, 536 256 contiguous class C networks 192.168.0.0 / 16 (255.255.0.0)
+                 */
+                if (fV4_.s_net == 10) {
+                    return true;
+                }
+                else if (fV4_.s_net == 172 and (16 <= fV4_.s_host and fV4_.s_host == 31)) {
+                    return true;
+                }
+                else if (fV4_.s_net == 192 and fV4_.s_host == 168) {
+                    return true;
+                }
+                return false;
+            }
+            break;
+        case AddressFamily::V6: {
+                /*
+                 *  From http://en.wikipedia.org/wiki/Private_network
+                 *
+                 *      The concept of private networks and special address reservation for such networks
+                 *      has been carried over to the next generation of the Internet Protocol, IPv6.
+                 *      The address block fc00:: / 7 has been reserved by IANA as described in RFC 4193.
+                 *      These addresses are called Unique Local Addresses (ULA).They are defined as being
+                 *      unicast in character and contain a 40 - bit random number in the routing prefix.
+                 */
+                return fV6_.s6_words[0] == 0xfc00;
+            }
+            break;
+    }
+    AssertNotReached ();
     return false;
 }
 
