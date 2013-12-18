@@ -72,7 +72,6 @@ namespace   Stroika {
                             virtual Character                                   GetAt (size_t index) const override;
                             virtual const Character*                            Peek () const override;
                             virtual pair<const Character*, const Character*>    GetData () const override;
-                            virtual int                                         Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const override;
                             virtual void                                        InsertAt (const Character* srcStart, const Character* srcEnd, size_t index) override;
                             virtual void                                        RemoveAll () override;
                             virtual void                                        SetAt (Character item, size_t index) override;

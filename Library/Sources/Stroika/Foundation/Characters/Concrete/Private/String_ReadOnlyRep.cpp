@@ -105,13 +105,6 @@ pair<const Character*, const Character*> ReadOnlyRep::_Rep::GetData () const
     return pair<const Character*, const Character*> ((const Character*)_fStart, (const Character*)_fEnd);
 }
 
-int ReadOnlyRep::_Rep::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
-{
-    Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
-    Assert (_fStart <= _fEnd);
-    return Character::Compare (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd), rhsStart, rhsEnd, co);
-}
-
 void    ReadOnlyRep::_Rep::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)
 {
     Execution::DoThrow (UnsupportedFeatureException ());

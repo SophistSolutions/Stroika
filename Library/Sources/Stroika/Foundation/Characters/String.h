@@ -934,8 +934,6 @@ namespace   Stroika {
 
                 virtual pair<const Character*, const Character*> GetData () const   = 0;
 
-                virtual int                 Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const   =   0;
-
             public:
                 /*
                  *  CopyTo () copies the contents of this string to the target buffer.
