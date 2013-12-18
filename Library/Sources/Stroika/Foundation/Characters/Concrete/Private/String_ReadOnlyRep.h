@@ -84,10 +84,6 @@ namespace   Stroika {
                         protected:
                             const wchar_t*  _fStart;
                             const wchar_t*  _fEnd;
-
-                        private:
-                            nonvirtual  int Compare_CS_ (const Character* rhsStart, const Character* rhsEnd) const;
-                            nonvirtual  int Compare_CI_ (const Character* rhsStart, const Character* rhsEnd) const;
                         };
                     };
 

@@ -105,53 +105,11 @@ pair<const Character*, const Character*> ReadOnlyRep::_Rep::GetData () const
     return pair<const Character*, const Character*> ((const Character*)_fStart, (const Character*)_fEnd);
 }
 
-inline  int ReadOnlyRep::_Rep::Compare_CS_ (const Character* rhsStart, const Character* rhsEnd) const
-{
-// TODO: Need a more efficient implementation - but this should do for starters...
-    Assert (_fStart <= _fEnd);
-    size_t lLen = _GetLength ();
-    size_t rLen = (rhsEnd - rhsStart);
-    size_t length   =   min (lLen, rLen);
-    for (size_t i = 0; i < length; i++) {
-        if (_fStart[i] != rhsStart[i].GetCharacterCode ()) {
-            return (_fStart[i] - rhsStart[i].GetCharacterCode ());
-        }
-    }
-    return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-}
-
-inline  int ReadOnlyRep::_Rep::Compare_CI_ (const Character* rhsStart, const Character* rhsEnd) const
-{
-// TODO: Need a more efficient implementation - but this should do for starters...
-    Assert (_fStart <= _fEnd);
-    // Not sure wcscasecmp even helps because of convert to c-str
-    //return ::wcscasecmp (l.c_str (), r.c_str ());;
-    size_t lLen = _GetLength ();
-    size_t rLen = (rhsEnd - rhsStart);
-    size_t length   =   min (lLen, rLen);
-    for (size_t i = 0; i < length; i++) {
-        Character   lc  =   Character (_fStart[i]).ToLowerCase ();
-        Character   rc  =   rhsStart[i].ToLowerCase ();
-        if (lc.GetCharacterCode () != rc.GetCharacterCode ()) {
-            return (lc.GetCharacterCode () - rc.GetCharacterCode ());
-        }
-    }
-    return Containers::CompareResultNormalizeHelper<ptrdiff_t, int> (static_cast<ptrdiff_t> (lLen) - static_cast<ptrdiff_t> (rLen));
-}
-
 int ReadOnlyRep::_Rep::Compare (const Character* rhsStart, const Character* rhsEnd, CompareOptions co) const
 {
     Require (co == CompareOptions::eWithCase or co == CompareOptions::eCaseInsensitive);
     Assert (_fStart <= _fEnd);
-    switch (co) {
-        case    CompareOptions::eWithCase:
-            return Compare_CS_ (rhsStart, rhsEnd);
-        case    CompareOptions::eCaseInsensitive:
-            return Compare_CI_ (rhsStart, rhsEnd);
-        default:
-            AssertNotReached ();
-            return 0;
-    }
+    return Character::Compare (reinterpret_cast<const Character*> (_fStart), reinterpret_cast<const Character*> (_fEnd), rhsStart, rhsEnd, co);
 }
 
 void    ReadOnlyRep::_Rep::InsertAt (const Character* srcStart, const Character* srcEnd, size_t index)

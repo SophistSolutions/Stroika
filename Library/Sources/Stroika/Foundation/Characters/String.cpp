@@ -567,10 +567,18 @@ size_t  String::RFind (const String& subString) const
 
 bool    String::StartsWith (const String& subString, CompareOptions co) const
 {
-    if (subString.GetLength () >  GetLength ()) {
+    size_t  subStrLen = subString.GetLength ();
+    if (subStrLen >  GetLength ()) {
         return false;
     }
-    return SubString (0, subString.GetLength ()).Compare (subString, co) == 0;
+#if     qDebug
+    bool    referenceResult = (SubString (0, subString.GetLength ()).Compare (subString, co) == 0);
+#endif
+    const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
+    pair<const Character*, const Character*> thisData = _GetRep ().GetData ();
+    bool    result = (Character::Compare (thisData.first, thisData.first + subStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    Assert (result == referenceResult);
+    return result;
 }
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
