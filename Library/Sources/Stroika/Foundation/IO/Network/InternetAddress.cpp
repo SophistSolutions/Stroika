@@ -183,23 +183,65 @@ bool    InternetAddress::IsLocalhostAddress () const
 
 bool    InternetAddress::IsPrivateAddress () const
 {
+#if     qDebug && defined (s_net)
+    auto ipv4Checker = [](in_addr n) -> bool {
+        if (n.s_net == 10)
+        {
+            return true;
+        }
+        else if (n.s_net == 172 and (16 <= n.s_host and n.s_host == 31))
+        {
+            return true;
+        }
+        else if (n.s_net == 192 and n.s_host == 168)
+        {
+            return true;
+        }
+        return false;
+    };
+#endif
+#if     qDebug && defined (s6_words)
+    auto ipv6Checker = [](in6_addr n) -> bool {
+        return n.s6_words[0] == 0xfc00;
+    };
+#endif
     switch (fAddressFamily_) {
         case AddressFamily::V4: {
                 /*
-                 *  From http://en.wikipedia.org/wiki/Private_network
-                 *      24-bit block    10.0.0.0 - 10.255.255.255   16,777,216  single class A network  10.0.0.0/8 (255.0.0.0)  24 bits 8 bits
-                 *      20 - bit block  172.16.0.0 - 172.31.255.255 1, 048, 576 16 contiguous class B networks  172.16.0.0 / 12 (255.240.0.0)   20 bits 12 bits
-                 *      16 - bit block  192.168.0.0 - 192.168.255.255   65, 536 256 contiguous class C networks 192.168.0.0 / 16 (255.255.0.0)
+                 * http://www.faqs.org/rfcs/rfc1918.html
+                 *
+                 *  3. Private Address Space
+                 *
+                 *      The Internet Assigned Numbers Authority (IANA) has reserved the
+                 *      following three blocks of the IP address space for private internets:
+                 *
+                 *      10.0.0.0        -   10.255.255.255  (10/8 prefix)
+                 *      172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
+                 *      192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
                  */
-                if (fV4_.s_net == 10) {
+                uint8_t net = (fV4_.s_addr >> 24);
+                uint8_t host = ((fV4_.s_addr >> 16) & 0xff);
+                if (net == 10) {
+#if     defined (s_net)
+                    Assert (ipv4Checker (fV4_));
+#endif
                     return true;
                 }
-                else if (fV4_.s_net == 172 and (16 <= fV4_.s_host and fV4_.s_host == 31)) {
+                else if (net == 172 and (16 <= host and host == 31)) {
+#if     defined (s_net)
+                    Assert (ipv4Checker (fV4_));
+#endif
                     return true;
                 }
-                else if (fV4_.s_net == 192 and fV4_.s_host == 168) {
+                else if (net == 192 and host == 168) {
+#if     defined (s_net)
+                    Assert (ipv4Checker (fV4_));
+#endif
                     return true;
                 }
+#if     defined (s_net)
+                Assert (not ipv4Checker (fV4_));
+#endif
                 return false;
             }
             break;
@@ -213,7 +255,11 @@ bool    InternetAddress::IsPrivateAddress () const
                  *      These addresses are called Unique Local Addresses (ULA).They are defined as being
                  *      unicast in character and contain a 40 - bit random number in the routing prefix.
                  */
-                return fV6_.s6_words[0] == 0xfc00;
+                bool result = fV6_.s6_addr[0] == 0xfc and fV6_.s6_addr[1] == 0x0;
+#if     defined (s6_words)
+                Assert (ipv6Checker (fV6_) == result);
+#endif
+                return result;
             }
             break;
     }

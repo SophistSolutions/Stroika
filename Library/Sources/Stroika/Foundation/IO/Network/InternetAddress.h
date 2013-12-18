@@ -55,7 +55,7 @@ namespace   Stroika {
                  *
                  *  InternetAddress supports either IPv4 or IPv6 format addresses.
                  */
-                class InternetAddress {
+                class   InternetAddress {
                 public:
                     /**
                      *  This can be V4, V6, or UNKNOWN. The value of this flag is the internet af_family type (e.g. AF_INET).
