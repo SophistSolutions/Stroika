@@ -553,6 +553,9 @@ namespace   Stroika {
                  *  And the overload taking a RegularExpression - returns BOTH the location where the match
                  *  is found, but the length of the match.
                  *
+                 *  Note - for the special case of Find(empty-string) - the return value is 0 if this string
+                 *  is non-empty, and kBadIndex if this string was empty.
+                 *
                  *  \req (startAt <= GetLength ());
                  *
                  *  @see FindEach ()
@@ -575,6 +578,13 @@ namespace   Stroika {
                  *  to iterate over each match:
                  *      e.g.:
                  *          for (auto i : s.FindEach ("xxx")) {....}
+                 *
+                 *  Also, to count matches, you can use:
+                 *      size_t nMatches = FindEach (matchexp).size ();
+                 *
+                 *  Note: FindEach handles the special case of an empty match as ignored, so FindEach(empty-str-or-regexp)
+                 *  always returns an empty list. Also - for the String case, it returns distinct matches, so if you
+                 *  search String ("AAAA").FindEach ("AA"), you will get 2 answers ({0, 2}).
                  *
                  *  @see Find ()
                  *  @see FindEachString ()

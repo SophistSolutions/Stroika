@@ -16,6 +16,8 @@
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_StackLifetime_ReadWrite.h"
 #include    "Stroika/Foundation/Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "Stroika/Foundation/Containers/Common.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
+#include    "Stroika/Foundation/Containers/STL/Utilities.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Memory/SmallStackBuffer.h"
@@ -648,6 +650,17 @@ namespace   {
         VerifyTestResult (String (L"abc").Find (L"x") == String::kBadIndex);
         VerifyTestResult (String (L"abc").Find (L"b", 2) == String::kBadIndex);
     }
+    void    Test17_FindEach_ ()
+    {
+        {
+            // @todo - Either have FindEach return Sequence or fix vector stuff!!!
+            VerifyTestResult (String (L"abc").FindEach (L"b") == Containers::Sequence<size_t> ({ 1 }).As<vector<size_t>> ());
+        }
+        // @todo - Either have FindEach return Sequence or fix vector stuff!!!
+        VerifyTestResult (String (L"01-23-45-67-89").FindEach (L"-") == Containers::Sequence<size_t> ({ 2, 5, 8, 11 }).As<vector<size_t>> ());
+        // @todo - Either have FindEach return Sequence or fix vector stuff!!!
+        VerifyTestResult (String (L"AAAA").FindEach (L"AA") == Containers::Sequence<size_t> ({ 0, 2 }).As<vector<size_t>> ());
+    }
     void    Test17_ReplaceAll_ ()
     {
         VerifyTestResult (String (L"01-23-45-67-89").ReplaceAll (L"-", L"") == L"0123456789");
@@ -683,6 +696,7 @@ namespace   {
     void    Test17_RegExp_ ()
     {
         Test17_Find_ ();
+        Test17_FindEach_ ();
         Test17_RegExp_Search_ ();
 #if     qCompilerAndStdLib_Supports_regex
         VerifyTestResult ((String (L"Hello world").Find (RegularExpression (L"ello", RegularExpression::SyntaxType::eECMAScript)) == pair<size_t, size_t> (1, 5)));

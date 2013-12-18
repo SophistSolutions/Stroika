@@ -482,24 +482,31 @@ pair<size_t, size_t>  String::Find (const RegularExpression& regEx, size_t start
 vector<size_t>  String::FindEach (const String& string2SearchFor, CompareOptions co) const
 {
     vector<size_t>  result;
-    AssertNotImplemented ();
+    for (size_t i = Find (string2SearchFor, 0, co); i != String::kBadIndex; i = Find (string2SearchFor, i, co)) {
+        result.push_back (i);
+        i += string2SearchFor.length ();    // this cannot point past end of this string because we FOUND string2SearchFor
+    }
     return result;
 }
 
 vector<pair<size_t, size_t>>  String::FindEach (const RegularExpression& regEx) const
 {
     vector<pair<size_t, size_t>>  result;
-#if     !qCompilerAndStdLib_regex_Buggy
-    wstring         tmp     =   As<wstring> ();
+#if     qCompilerAndStdLib_regex_Buggy
+    AssertNotImplemented ();
+#else
+    //@TODO - FIX - IF we get back zero length match
+    wstring         tmp = As<wstring> ();
     std::wsmatch    res;
     regex_search (tmp, res, regEx.GetCompiled ());
-    result.reserve (res.size ());
-    size_t  nMatches    =   res.size ();
+    size_t  nMatches = res.size ();
+    result.reserve (nMatches);
     for (size_t mi = 0; mi < nMatches; ++mi) {
-        result.push_back (pair<size_t, size_t> (res.position (mi), res.length (mi)));
+        size_t matchLen = res.length (mi);  // avoid populating with lots of empty matches - specail case of empty search
+        if (matchLen != 0) {
+            result.push_back (pair<size_t, size_t> (res.position (mi), matchLen));
+        }
     }
-#else
-    AssertNotImplemented ();
 #endif
     return result;
 }
