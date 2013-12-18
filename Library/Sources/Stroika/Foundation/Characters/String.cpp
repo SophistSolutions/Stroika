@@ -583,10 +583,19 @@ bool    String::StartsWith (const String& subString, CompareOptions co) const
 
 bool    String::EndsWith (const String& subString, CompareOptions co) const
 {
-    if (subString.GetLength () >  GetLength ()) {
+    size_t  thisStrLen = GetLength ();
+    size_t  subStrLen = subString.GetLength ();
+    if (subStrLen >  thisStrLen) {
         return false;
     }
-    return SubString (GetLength () - subString.GetLength (), GetLength ()).Compare (subString, co) == 0;
+#if     qDebug
+    bool    referenceResult = (SubString (thisStrLen - subStrLen, thisStrLen).Compare (subString, co) == 0);
+#endif
+    const Character*    subStrStart = reinterpret_cast<const Character*> (subString.c_str ());
+    pair<const Character*, const Character*> thisData = _GetRep ().GetData ();
+    bool    result = (Character::Compare (thisData.first + thisStrLen - subStrLen, thisData.first + thisStrLen, subStrStart, subStrStart + subStrLen, co) == 0);
+    Assert (result == referenceResult);
+    return result;
 }
 
 bool    String::Match (const RegularExpression& regEx) const
