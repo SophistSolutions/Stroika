@@ -297,6 +297,15 @@ namespace   Stroika {
                 ~String ();
 
             protected:
+                class   _IRep;
+
+            protected:
+                typedef Iterable<Character>::_SharedPtrIRep _IterableSharedPtrIRep;
+
+            protected:
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
+            protected:
                 /**
                  * rep MUST be not-null
                  */
@@ -808,9 +817,6 @@ namespace   Stroika {
                 nonvirtual  String      substr (size_t from, size_t count = kBadIndex) const;
 
             protected:
-                class   _IRep;
-
-            protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
             };
@@ -845,6 +851,9 @@ namespace   Stroika {
 
             public:
                 virtual ~_IRep ();
+
+            public:
+                typedef     String::_IterableSharedPtrIRep  _IterableSharedPtrIRep;
 
             public:
                 typedef     String::_SharedPtrIRep  _SharedPtrIRep;

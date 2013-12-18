@@ -53,7 +53,7 @@ namespace   {
             : inherited (start, end, reserve)
         {
         }
-        virtual _SharedPtrIRep   Clone () const override
+        virtual  _IterableSharedPtrIRep   Clone () const override
         {
             return _SharedPtrIRep (DEBUG_NEW String_BufferedArray_Rep_ (_fStart, _fEnd));
         }
@@ -127,7 +127,7 @@ namespace   {
 
 
 namespace   {
-    regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
+    inline  regex_constants::syntax_option_type mkOption_ (RegularExpression::SyntaxType st)
     {
         regex_constants::syntax_option_type f   =   (st == RegularExpression::SyntaxType::eECMAScript ? regex_constants::ECMAScript : regex_constants::basic);
         return f;

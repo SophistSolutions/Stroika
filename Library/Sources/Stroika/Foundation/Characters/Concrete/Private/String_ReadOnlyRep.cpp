@@ -79,6 +79,8 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
             AssertNotImplemented ();
             return false;
         }
+    public:
+        DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };
     return Iterator<Character> (Iterator<Character>::SharedIRepPtr (new MyIterRep_ (dynamic_pointer_cast<String::_IRep> (Clone ()))));
 }

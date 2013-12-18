@@ -76,12 +76,6 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), String::_IRep);
                 return static_cast<String::_IRep&> (inherited::_GetRep ());         // static cast for performance sake - dynamic cast in Ensure
             }
-#if 0
-            inline  shared_ptr<String::_IRep>   String::_Clone (const _IRep& rep)
-            {
-                return (rep.Clone ());
-            }
-#endif
             inline  void    String::CopyTo (Character* bufFrom, Character* bufTo) const
             {
                 RequireNotNull (bufFrom);
