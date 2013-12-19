@@ -8,13 +8,15 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/Containers/Mapping.h"
 #include    "../../Foundation/Memory/Optional.h"
+
 
 
 /*
  * TODO:
  */
+
+
 
 namespace   Stroika {
     namespace   Frameworks {
@@ -24,24 +26,21 @@ namespace   Stroika {
             using   Characters::String;
 
 
-
-            // PROBABYLY add new file/mopdule for class ElaboratedDevice : public Device {};
-
-
             /**
-             * high level device description - from ssdp. This is the BASIC device info
+             * High level device description - from ssdp. This is the BASIC device info.
+             *
+             *  @see DeviceDescription for more details on the device.
              */
             class   Device {
             public:
                 String  fDeviceID;      // this is the UUID (e.g. 315CAAE0-668D-47C7-A178-24C9EE756627)
                 String  fLocation;
                 String  fServer;
-//                String    fST;         // usually ST header (or NT for notify)
             };
 
 
-            /*
-            */
+            /**
+             */
             String  MungePrimaryMacAddrIntoBaseDeviceID (String baseDeviceID);
 
 

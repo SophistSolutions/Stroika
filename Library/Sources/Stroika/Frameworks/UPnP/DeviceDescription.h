@@ -8,6 +8,9 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Containers/Sequence.h"
+#include    "../../Foundation/DataExchange/InternetMediaType.h"
+#include    "../../Foundation/IO/Network/URL.h"
 #include    "../../Foundation/Memory/BLOB.h"
 
 #include    "Device.h"
@@ -29,6 +32,9 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
+            using   Containers::Sequence;
+            using   DataExchange::InternetMediaType;
+            using   IO::Network::URL;
 
 
             /**
@@ -36,19 +42,51 @@ namespace   Stroika {
              * whcih appears to the XML file (poitned to by Device location field).
              */
             struct  DeviceDescription {
-                String  fPresentationURL;
-                String  fDeviceType;            //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
-                String  fManufactureName;
-                String  fFriendlyName;
-                String  fManufacturingURL;
-                String  fModelDescription;
-                String  fModelName;
-                String  fModelNumber;
-                String  fModelURL;
-                String  fSerialNumber;
-                String  fUPC;
+                String              fPresentationURL;
+                String              fDeviceType;            //  http://upnp.org/specs/arch/UPnP-arch-DeviceArchitecture-v1.1.pdf - <deviceType> - Page 44
+                String              fManufactureName;
+                String              fFriendlyName;
+                String              fManufacturingURL;
+                String              fModelDescription;
+                String              fModelName;
+                String              fModelNumber;
+                String              fModelURL;
+                String              fSerialNumber;
+                String              fUPC;
+
+                struct  Icon;
+                Sequence<Icon>      fIcons;
+
+                struct  Service;
+                Sequence<Service>   fServices;
 
                 DeviceDescription ();
+            };
+
+
+            /**
+             */
+            struct  DeviceDescription::Icon {
+                Icon ();
+
+                InternetMediaType   fMimeType;
+                uint16_t            fHorizontalPixels;
+                uint16_t            fVerticalPixels;
+                uint16_t            fColorDepth;
+                URL                 fURL;       // url to the icon image file
+            };
+
+
+            /**
+            */
+            struct  DeviceDescription::Service {
+                Service ();
+
+                String      fServiceType;           // eg urn:schemas - upnp - org : service : serviceType : v
+                String      fServiceID;             // eg urn : upnp - org : serviceId : serviceID
+                URL         fSCPDURL;               // URL to service description
+                URL         fControlURL;            // URL to service description
+                URL         fEventSubURL;           // URL to service description
             };
 
 

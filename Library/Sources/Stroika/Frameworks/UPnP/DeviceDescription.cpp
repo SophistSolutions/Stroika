@@ -24,6 +24,42 @@ using   namespace   Stroika::Frameworks::UPnP;
 
 /*
 ********************************************************************************
+*************************** DeviceDescription::Icon ****************************
+********************************************************************************
+*/
+DeviceDescription::Icon::Icon ()
+    : fMimeType ()
+    , fHorizontalPixels (16)
+    , fVerticalPixels (16)
+    , fColorDepth (8)
+    , fURL ()
+{
+}
+
+
+
+
+
+/*
+********************************************************************************
+************************ DeviceDescription::Service ****************************
+********************************************************************************
+*/
+DeviceDescription::Service::Service ()
+    : fServiceType ()
+    , fServiceID ()
+    , fSCPDURL ()
+    , fControlURL ()
+    , fEventSubURL ()
+{
+}
+
+
+
+
+
+/*
+********************************************************************************
 ******************************* DeviceDescription ******************************
 ********************************************************************************
 */
@@ -39,13 +75,10 @@ DeviceDescription::DeviceDescription ()
     , fModelURL ()
     , fSerialNumber ()
     , fUPC ()
+    , fIcons ()
+    , fServices ()
 {
 }
-
-
-
-
-
 
 
 
@@ -88,34 +121,32 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     if (not dd.fUPC.empty ()) {
         tmp << "		<UPC>" << QuoteForXML (dd.fUPC) << "</UPC>" << endl;
     }
-
-#if 0
-    tmp << "		<iconList>" << endl;
-    tmp << "			<icon>" << endl;
-    tmp << "				<mimetype>image/png</mimetype>" << endl;
-    tmp << "				<width>16</width>" << endl;
-    tmp << "				<height>16</height>" << endl;
-    tmp << "				<depth>2</depth>" << endl;
-    tmp << "				<url>myIcon.png</url>" << endl;
-    tmp << "			</icon>" << endl;
-    // <!-- XML to declare other icons, if any, go here -->
-    tmp << "		</iconList>" << endl;
-#endif
-
-#if 0
-    tmp << "	<serviceList>" << endl;
-    tmp << "		<service>" << endl;
-    tmp << "			<serviceType>urn:schemas-upnp-org:service:serviceType:v</serviceType>" << endl;
-    tmp << "			<serviceId>urn:upnp-org:serviceId:serviceID</serviceId>" << endl;
-    tmp << "			<SCPDURL>URL to service description</SCPDURL>" << endl;
-    tmp << "			<controlURL>URL for control</controlURL>" << endl;
-    tmp << "			<eventSubURL>URL for eventing</eventSubURL>" << endl;
-    tmp << "		</service>" << endl;
-    // <!-- Declarations for other services defined by a UPnP Forum working committee
-    // (if any) go here -->
-    // <!-- Declarations for other services added by UPnP vendor (if any) go here -->
-    tmp << "	</serviceList>" << endl;
-#endif
+    if (dd.fIcons.size () != 0) {
+        tmp << "		<iconList>" << endl;
+        for (DeviceDescription::Icon i : dd.fIcons) {
+            tmp << "			<icon>" << endl;
+            tmp << "				<mimetype>" << QuoteForXML (i.fMimeType.As<String> ()) << "</mimetype>" << endl;
+            tmp << "				<width>" << i.fHorizontalPixels << "</width>" << endl;
+            tmp << "				<height>" << i.fVerticalPixels << "</height>" << endl;
+            tmp << "				<depth>" << i.fColorDepth << "</depth>" << endl;
+            tmp << "				<url>" << QuoteForXML (i.fURL.GetFullURL ()) << "</url>" << endl;
+            tmp << "			</icon>" << endl;
+        }
+        tmp << "		</iconList>" << endl;
+    }
+    if (dd.fServices.size () != 0) {
+        tmp << "		<serviceList>" << endl;
+        for (DeviceDescription::Service i : dd.fServices) {
+            tmp << "			<service>" << endl;
+            tmp << "				<serviceType>" << QuoteForXML (i.fServiceType) << "</serviceType>" << endl;
+            tmp << "				<serviceId>" << QuoteForXML (i.fServiceID) << "</serviceId>" << endl;
+            tmp << "				<SCPDURL>" << QuoteForXML (i.fSCPDURL.GetFullURL ()) << "</SCPDURL>" << endl;
+            tmp << "				<controlURL>" << QuoteForXML (i.fControlURL.GetFullURL ()) << "</controlURL>" << endl;
+            tmp << "				<eventSubURL>" << QuoteForXML (i.fEventSubURL.GetFullURL ()) << "</eventSubURL>" << endl;
+            tmp << "			</service>" << endl;
+        }
+        tmp << "		</serviceList>" << endl;
+    }
 
 #if 0
     tmp << "	<deviceList>" << endl;
