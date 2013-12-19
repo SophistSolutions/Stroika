@@ -95,10 +95,6 @@
  *      @todo   Add #include of Comparer and template specialize Comparer for String??? Maybe
  *              Maybe not needed. Or maybe can avoid the #include and just do template specailizaiton?
  *
- *      @todo   See if we can move operator+, operaotr<, ==, etc functions to be METHODS of String
- *              instead of global functions. This works best for namespace issues. BUT - it has negatives with
- *              commutativity issues (wchar* == String versus String == wchar*).
- *
  *      @todo   WHEN we have String_stdwstring implemented  - we can do String (wstring&& ctor that
  *              does std::move of wstring - and builds String_stdwstring rep! That could be notably
  *              faster for constructing Strings from wstring - in some cases...
