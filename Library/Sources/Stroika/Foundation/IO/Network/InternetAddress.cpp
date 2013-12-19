@@ -95,9 +95,8 @@ InternetAddress::InternetAddress (const string& s, AddressFamily af)
 }
 
 InternetAddress::InternetAddress (const String& s, AddressFamily af)
-    : fAddressFamily_ (AddressFamily::UNKNOWN)
+    : InternetAddress (s.AsUTF8 (), af)
 {
-    *this = InternetAddress (s.AsUTF8 (), af);
 }
 
 namespace   Stroika {
