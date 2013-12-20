@@ -133,7 +133,7 @@ namespace   Stroika {
             template    <typename EQUALS_COMPARER>
             inline  void  Collection<T>::Remove (T item)
             {
-                for (Iterator<T> i = begin (); i != end (); ++i) {
+                for (Iterator<T> i = this->begin (); i != this->end (); ++i) {
                     if (EQUALS_COMPARER::Equals (*i, item)) {
                         _GetRep ().Remove (i);
                         return;
