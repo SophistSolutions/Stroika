@@ -189,13 +189,13 @@ namespace   Stroika {
                 Collection_Array<T>::Collection_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
                 }
@@ -204,7 +204,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     if (start != end) {
                         SetCapacity (end - start);
                         this->AddAll (start, end);
@@ -214,13 +214,13 @@ namespace   Stroika {
                 inline  Collection_Array<T>::Collection_Array (const Collection_Array<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Collection_Array<T>&   Collection_Array<T>::operator= (const Collection_Array<T>& rhs)
                 {
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T>

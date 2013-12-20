@@ -205,34 +205,34 @@ namespace   Stroika {
                 Collection_stdforward_list<T>::Collection_stdforward_list ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 Collection_stdforward_list<T>::Collection_stdforward_list (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename T>
                 Collection_stdforward_list<T>::Collection_stdforward_list (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename T>
                 Collection_stdforward_list<T>::Collection_stdforward_list (const Collection_stdforward_list<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T>
                 inline  Collection_stdforward_list<T>& Collection_stdforward_list<T>::operator= (const Collection_stdforward_list<T>& rhs)
                 {
                     inherited::operator= (static_cast<const inherited&> (rhs));
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
 
