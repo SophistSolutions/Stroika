@@ -55,7 +55,6 @@ namespace   Stroika {
                 public:
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
-                    virtual void    Remove (T item) override;
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    RemoveAll () override;
 
@@ -152,14 +151,6 @@ namespace   Stroika {
                     auto      mir =   dynamic_cast<const IteratorRep_&> (ir);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.SetAt (mir.fIterator, newValue);
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    Collection_LinkedList<T, TRAITS>::Rep_::Remove (T item)
-                {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        fData_.Remove (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

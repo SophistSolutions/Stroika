@@ -57,7 +57,6 @@ namespace   Stroika {
                 public:
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
-                    virtual void    Remove (T item) override;
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    RemoveAll () override;
 
@@ -157,24 +156,6 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Assert (not i.Done ());
                         *mir.fIterator.fStdIterator = newValue;
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                void    Collection_stdforward_list<T, TRAITS>::Rep_::Remove (T item)
-                {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        auto ei = fData_.before_begin ();
-                        for (auto i = fData_.begin (); i != fData_.end (); ++i) {
-                            if (TRAITS::EqualsCompareFunctionType::Equals (*i, item)) {
-                                Memory::SmallStackBuffer<typename DataStructureImplType_::ForwardIterator*>   items2Patch (0);
-                                fData_.TwoPhaseIteratorPatcherPass1 (i, &items2Patch);
-                                auto newI = fData_.erase_after (ei);
-                                fData_.TwoPhaseIteratorPatcherPass2 (&items2Patch, newI);
-                                return;
-                            }
-                            ei = i;
-                        }
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

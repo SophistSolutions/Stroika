@@ -128,9 +128,15 @@ namespace   Stroika {
                 _GetRep ().Update (i, newValue);
             }
             template    <typename T, typename TRAITS>
+            template    <typename EQUALS_COMPARER>
             inline  void  Collection<T, TRAITS>::Remove (T item)
             {
-                _GetRep ().Remove (item);
+                for (Iterator<T> i = begin (); i != end (); ++i) {
+                    if (EQUALS_COMPARER::Equals (*i, item)) {
+                        _GetRep ().Remove (i);
+                        return;
+                    }
+                }
             }
             template    <typename T, typename TRAITS>
             inline  void    Collection<T, TRAITS>::RemoveAll ()
@@ -138,15 +144,15 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename T, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_OF_T>
+            template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER>
             void    Collection<T, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-                    Remove (*i);
+                    Remove<EQUALS_COMPARER> (*i);
                 }
             }
             template    <typename T, typename TRAITS>
-            template    <typename CONTAINER_OF_T>
+            template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER>
             inline  void    Collection<T, TRAITS>::RemoveAll (const CONTAINER_OF_T& c)
             {
                 if (static_cast<const void*> (this) == static_cast<const void*> (std::addressof (c))) {

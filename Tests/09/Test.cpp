@@ -34,10 +34,7 @@ namespace {
     void     RunTests_ ()
     {
         typedef typename CONCRETE_CONTAINER::ElementType    T;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto testFunc = [](const Collection<T, TraitsType>& s) {
-        };
-        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, Collection<T, TraitsType>> (testFunc);
+        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, Collection<T>> ();
     }
 }
 

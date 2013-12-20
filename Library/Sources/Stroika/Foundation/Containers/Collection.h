@@ -107,6 +107,7 @@ namespace   Stroika {
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
+#if 0
             public:
                 /**
                  *  Just a short-hand for the 'TRAITS' part of Collection<T,TRAITS>. This is often handy to use in
@@ -120,6 +121,7 @@ namespace   Stroika {
                  *  building other templates.
                  */
                 typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
+#endif
 
             public:
                 Collection ();
@@ -183,6 +185,7 @@ namespace   Stroika {
                  *
                  * The value pointed to by 'i' is removed.
                  */
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  void    Remove (T item);
                 nonvirtual  void    Remove (const Iterator<T>& i);
 
@@ -195,9 +198,9 @@ namespace   Stroika {
                  *  The no-argument verison Produces an empty bag.
                  */
                 nonvirtual  void    RemoveAll ();
-                template    <typename COPY_FROM_ITERATOR_OF_T>
+                template    <typename COPY_FROM_ITERATOR_OF_T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
-                template    <typename CONTAINER_OF_T>
+                template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
 
             public:
@@ -244,7 +247,6 @@ namespace   Stroika {
             public:
                 virtual void    Add (T item)                                =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
-                virtual void    Remove (T item)                             =   0;
                 virtual void    Remove (const Iterator<T>& i)               =   0;
                 virtual void    RemoveAll ()                                =   0;
             };
