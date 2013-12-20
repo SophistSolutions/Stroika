@@ -302,7 +302,7 @@ void    Main::RunAsService ()
 
 void    Main::RunDirectly ()
 {
-    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunAsService"));
+    Debug::TraceContextBumper traceCtx (SDKSTR ("Stroika::Frameworks::Service::Main::RunDirectly"));
     GetServiceRep_ ()._RunDirectly ();
 }
 
@@ -716,13 +716,22 @@ void            Main::BasicUNIXServiceImpl::_Stop (Time::DurationSecondsType tim
     else {
         Time::DurationSecondsType timeoutAt =   Time::GetTickCount () + timeout;
         // Send signal to server to stop
-        Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGTERM));
-        while (_IsServiceActuallyRunning ()) {
-            Execution::Sleep (0.5);
-            if (Time::GetTickCount () > timeoutAt) {
-                Execution::DoThrow (Execution::WaitTimedOutException ());
+        if (_IsServiceActuallyRunning ()) {
+            Execution::ThrowErrNoIfNegative (kill (_GetServicePID (), SIGTERM));
+
+            Time::DurationSecondsType   waitFor = 0.001;    // wait just a little at first but then progressively longer (avoid busy wait)
+            while (_IsServiceActuallyRunning ()) {
+                Execution::Sleep (waitFor);
+                if (waitFor < timeout and waitFor < 5) {
+                    waitFor *= 2;
+                }
+                if (Time::GetTickCount () > timeoutAt) {
+                    Execution::DoThrow (Execution::WaitTimedOutException ());
+                }
             }
         }
+        // in case not cleanly stopped before
+        (void)unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     }
 }
 
@@ -748,6 +757,7 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 
 void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
 {
+    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, SignalHandler_);
     Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler_);
     Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler_);
 }
@@ -793,6 +803,7 @@ void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
     DbgTrace (L"(signal = %s)", Execution::SignalToName (signum).c_str ());
     // VERY PRIMITIVE IMPL FOR NOW -- LGP 2011-09-24
     switch (signum) {
+        case    SIGINT:
         case    SIGTERM:
             DbgTrace ("setting fStopping_ to true");
             sigHandlerThread2Abort_.Abort ();
