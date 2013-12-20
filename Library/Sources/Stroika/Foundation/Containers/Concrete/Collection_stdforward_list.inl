@@ -220,7 +220,7 @@ namespace   Stroika {
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     AssertMember (&inherited::_GetRep (), Rep_);
-                    this->AddAll (start, end);
+                    this->AddAll (src);
                 }
                 template    <typename T>
                 Collection_stdforward_list<T>::Collection_stdforward_list (const Collection_stdforward_list<T>& src)
