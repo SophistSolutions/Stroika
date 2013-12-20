@@ -8,7 +8,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
-#include    "../../Foundation/Containers/Sequence.h"
+#include    "../../Foundation/Containers/Collection.h"
 #include    "../../Foundation/DataExchange/InternetMediaType.h"
 #include    "../../Foundation/IO/Network/URL.h"
 #include    "../../Foundation/Memory/BLOB.h"
@@ -32,7 +32,7 @@ namespace   Stroika {
 
             using   namespace   Stroika::Foundation;
             using   Characters::String;
-            using   Containers::Sequence;
+            using   Containers::Collection;
             using   DataExchange::InternetMediaType;
             using   IO::Network::URL;
 
@@ -55,10 +55,10 @@ namespace   Stroika {
                 String              fUPC;
 
                 struct  Icon;
-                Sequence<Icon>      fIcons;
+                Collection<Icon>      fIcons;
 
                 struct  Service;
-                Sequence<Service>   fServices;
+                Collection<Service>   fServices;
 
                 DeviceDescription ();
             };

@@ -121,7 +121,7 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
     if (not dd.fUPC.empty ()) {
         tmp << "		<UPC>" << QuoteForXML (dd.fUPC) << "</UPC>" << endl;
     }
-    if (dd.fIcons.size () != 0) {
+    if (not dd.fIcons.empty ()) {
         tmp << "		<iconList>" << endl;
         for (DeviceDescription::Icon i : dd.fIcons) {
             tmp << "			<icon>" << endl;
@@ -134,7 +134,7 @@ Memory::BLOB        UPnP::Serialize (const Device& d, const DeviceDescription& d
         }
         tmp << "		</iconList>" << endl;
     }
-    if (dd.fServices.size () != 0) {
+    if (not dd.fServices.empty ()) {
         tmp << "		<serviceList>" << endl;
         for (DeviceDescription::Service i : dd.fServices) {
             tmp << "			<service>" << endl;
