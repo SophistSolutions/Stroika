@@ -1,182 +1,156 @@
 /*
- * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
+ * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//  TEST    Foundation::Streams
+//  TEST    Foundation::Memory
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    <sstream>
+#include    "Stroika/Foundation/Containers/Mapping.h"
+#include    "Stroika/Foundation/Debug/Assertions.h"
+#include    "Stroika/Foundation/Debug/Trace.h"
 
-#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/BinaryOutputStreamFromOStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/iostream/TextInputStreamFromIStreamAdapter.h"
-#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
+#include    "Stroika/Foundation/Memory/AnyVariantValue.h"
+#include    "Stroika/Foundation/Memory/Optional.h"
+#include    "Stroika/Foundation/Memory/SharedByValue.h"
 
+#include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
 
+
+
+using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::Streams;
-using   namespace   Stroika::Foundation::Streams::iostream;
+using   namespace   Stroika::Foundation::Memory;
 
 
-
+//TODO: DOES IT EVEN NEED TO BE SAID? THese tests are a bit sparse ;-)
 
 namespace   {
-    namespace   BasicBinaryInputStream_ {
-
-        void    TestBasicConstruction_ ()
+    void    Test1_Optional ()
+    {
         {
-            {
-                BasicBinaryInputStream  s (nullptr, nullptr);
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                const char  kData[] =   "1";
-                BasicBinaryInputStream  s (reinterpret_cast<const Byte*> (std::begin(kData)), reinterpret_cast<const Byte*> (std::end (kData)));
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-                Byte    result[100] = { 0 };
-                VerifyTestResult (s.Read (std::begin (result), std::end (result)) == 2);
-                VerifyTestResult (result[0] == '1');
-                VerifyTestResult (result[1] == '\0');
-            }
+            Optional<int>   x;
+            VerifyTestResult (x.IsMissing ());
+            x = 1;
+            VerifyTestResult (not x.IsMissing ());
+            VerifyTestResult (x.IsPresent ());
+            VerifyTestResult (*x == 1);
         }
-
-
-        void    Tests_ ()
         {
-            TestBasicConstruction_ ();
+            // Careful about self-assignment
+            Optional<int>   x;
+            x = 3;
+            x = max (*x, 1);
+            VerifyTestResult (x == 3);
+        }
+    }
+    void    Test2_SharedByValue ()
+    {
+    }
+    void    Test_4_Optional_Of_Mapping_Copy_Problem_ ()
+    {
+        using   namespace   Stroika::Foundation::Memory;
+        using   namespace   Stroika::Foundation::Containers;
+        Mapping<int, float>  ml1, ml2;
+        ml1 = ml2;
+
+        Optional<Mapping<int, float>>  ol1, ol2;
+        if (ol2.IsPresent ()) {
+            ml1 = *ol2;
+        }
+        ol1 = ml1;
+        Optional<Mapping<int, float>>  xxxx2 (ml1);
+
+        // fails to compile prior to 2013-09-09
+        Optional<Mapping<int, float>>  xxxx1 (ol1);
+        // fails to compile prior to 2013-09-09
+        ol1 = ol2;
+    }
+    void    Test_5_AnyVariantValue_ ()
+    {
+        {
+            VerifyTestResult (AnyVariantValue ().empty ());
+            VerifyTestResult (not AnyVariantValue (1).empty ());
+            VerifyTestResult (not AnyVariantValue ("1").empty ());
+            //VerifyTestResult (AnyVariantValue ("1").GetType () == typeid ("1"));  // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (AnyVariantValue (1).As<int> () == 1);
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            VerifyTestResult (not v.empty ());
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (L"a");
+            //VerifyTestResult (v.GetType () == typeid (L"a")); // not sure why this fails but not worthy worrying about yet
+            VerifyTestResult (not v.empty ());
+            v.clear ();
+            VerifyTestResult (v.empty ());
+            VerifyTestResult (v.GetType () == typeid (void));
+        }
+        {
+            struct JIM {
+                int a;
+            };
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (JIM ());
+            VerifyTestResult (v.GetType () == typeid (JIM));
+        }
+        {
+            AnyVariantValue v;
+            VerifyTestResult (v.empty ());
+            v = AnyVariantValue (1);
+            v = v;
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+            v = AnyVariantValue (v);
+            VerifyTestResult (v.GetType () == typeid (1));
+            VerifyTestResult (v.As<int> () == 1);
+        }
+        {
+            static int nCopies = 0;
+            struct Copyable {
+                Copyable ()
+                {
+                    ++nCopies;
+                }
+                Copyable (const Copyable&)
+                {
+                    ++nCopies;
+                }
+                ~Copyable ()
+                {
+                    --nCopies;
+                }
+                const Copyable& operator= (const Copyable&) = delete;
+            };
+            {
+                AnyVariantValue v;
+                VerifyTestResult (v.empty ());
+                v = AnyVariantValue (Copyable ());
+                v = v;
+                v = AnyVariantValue (AnyVariantValue (v));
+                v = AnyVariantValue (AnyVariantValue (Copyable ()));
+                VerifyTestResult (v.GetType () == typeid (Copyable));
+            }
+            VerifyTestResult (0 == nCopies);
         }
     }
 }
 
 
-
-
-
 namespace   {
-    namespace   BasicBinaryOutputStream_ {
 
-        void    TestBasicConstruction_ ()
-        {
-            {
-                BasicBinaryOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-            }
-            {
-                BasicBinaryOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (s.IsSeekable ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
-    }
-}
-
-
-
-namespace   {
-    namespace   BasicBinaryInputOutputStream_ {
-
-        void    TestBasicConstruction_ ()
-        {
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (not s.empty ());
-                VerifyTestResult (not s.IsSeekable ());
-                VerifyTestResult (static_cast<BinaryInputStream> (s).IsSeekable ());
-                VerifyTestResult (static_cast<BinaryOutputStream> (s).IsSeekable ());
-            }
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (not s.empty ());
-
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                Memory::BLOB    b = s.As<Memory::BLOB> ();
-                VerifyTestResult (b.size () == sizeof (kData_));
-                VerifyTestResult (b == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-            {
-                BasicBinaryInputOutputStream  s;
-                VerifyTestResult (s.ReadGetOffset () == 0);
-                VerifyTestResult (s.WriteGetOffset () == 0);
-                const Byte  kData_[] = { 3, 53, 43, 23, 3 };
-                s.Write (std::begin (kData_), std::end (kData_));
-                VerifyTestResult (s.ReadGetOffset () == 0);
-                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
-                Byte bArr[1024];
-                Verify (s.Read (std::begin (bArr), std::end (bArr)) == sizeof (kData_));
-                VerifyTestResult (s.ReadGetOffset () == sizeof (kData_));
-                VerifyTestResult (s.WriteGetOffset () == sizeof (kData_));
-                VerifyTestResult (Memory::BLOB (std::begin (bArr), std::begin (bArr) + s.ReadGetOffset ()) == Memory::BLOB (std::begin (kData_), std::end (kData_)));
-            }
-        }
-
-        void    Tests_ ()
-        {
-            TestBasicConstruction_ ();
-        }
-    }
-}
-
-
-
-
-namespace   {
-    namespace   BinaryOutputStreamFromOStreamAdapter_ {
-
-        void    T1_ ()
-        {
-            {
-                stringstream s;
-                BinaryOutputStreamFromOStreamAdapter  so (s);
-                const char kData_[] = "ddasdf3294234";
-                so.Write (reinterpret_cast<const Byte*> (std::begin (kData_)), reinterpret_cast<const Byte*> (std::begin (kData_)) + strlen (kData_));
-                VerifyTestResult (s.str () == kData_);
-            }
-        }
-
-        void    Tests_ ()
-        {
-            T1_ ();
-        }
-    }
-}
-
-
-
-
-
-
-
-namespace   {
     void    DoRegressionTests_ ()
     {
-        BasicBinaryInputStream_::Tests_ ();
-        BasicBinaryOutputStream_::Tests_ ();
-        BasicBinaryInputOutputStream_::Tests_ ();
-        BinaryOutputStreamFromOStreamAdapter_::Tests_ ();
+        Test1_Optional ();
+        Test2_SharedByValue ();
+        Test_4_Optional_Of_Mapping_Copy_Problem_ ();
+        Test_5_AnyVariantValue_ ();
     }
 }
-
-
 
 
 
@@ -186,3 +160,6 @@ int main (int argc, const char* argv[])
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);
     return EXIT_SUCCESS;
 }
+
+
+

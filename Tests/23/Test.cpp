@@ -1,644 +1,549 @@
 ﻿/*
-* Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
-*/
-//  TEST    Foundation::DataExchangeFormat::ObjectVariantMapper
+ * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
+ */
+//  TEST    Foundation::DataExchange::Reader/Writers(JSON/XML)
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
+#include    <iostream>
+#include    <sstream>
+
+#include    "Stroika/Foundation/Containers/STL/VectorUtils.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
 #include    "Stroika/Foundation/Configuration/Locale.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
-#include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Writer.h"
+#include    "Stroika/Foundation/DataExchange/XML/Reader.h"
+#include    "Stroika/Foundation/DataExchange/XML/Writer.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
-#include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
-#include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
-#include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-//#include    "Stroika/Foundation/Memory/VariantValue.h"
-#include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryInputStream.h"
+#include    "Stroika/Foundation/Streams/BasicBinaryOutputStream.h"
+#include    "Stroika/Foundation/Streams/ExternallyOwnedMemoryBinaryInputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
-#include    "Stroika/Foundation/Time/DateTime.h"
-#include    "Stroika/Foundation/Time/Duration.h"
-#include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
 
 
-
-
 using   namespace   Stroika::Foundation;
-using   namespace   Stroika::Foundation::DataExchange;
 
+using   Characters::String;
+using   DataExchange::VariantValue;
 using   Memory::Byte;
-using   Time::Date;
-using   Time::DateTime;
-using   Time::Duration;
-using   Time::TimeOfDay;
+
+
+
+///// @todo ADD SEPEARET MODULE TO TEST VARIANTVALUE!!!
+
+
+
+/*
+ * Validating JSON parse results:
+ *      http://json.parser.online.fr/
+ */
 
 
 
 
 
 namespace   {
-    namespace DoRegressionTests_BasicDataRoundtrips_1_ {
-        template    <typename T>
-        void    RoundTripTest_ (T v)
-        {
-            VariantValue mv = v;
-            VerifyTestResult (mv.As<T> () == v);
-        }
-        template    <typename T>
-        void    RoundTripMinMax_ ()
-        {
-            RoundTripTest_ (numeric_limits<T>::lowest ());
-            RoundTripTest_ (numeric_limits<T>::max ());
-        }
-        void    DoAll ()
-        {
-            RoundTripMinMax_<int> ();
-            RoundTripMinMax_<unsigned int> ();
-            RoundTripMinMax_<long> ();
-            RoundTripMinMax_<unsigned long> ();
-            RoundTripMinMax_<long long> ();
-            RoundTripMinMax_<unsigned long long> ();
-            RoundTripMinMax_<int8_t> ();
-            RoundTripMinMax_<uint8_t> ();
-            RoundTripMinMax_<int16_t> ();
-            RoundTripMinMax_<uint16_t> ();
-            RoundTripMinMax_<int32_t> ();
-            RoundTripMinMax_<uint32_t> ();
-            RoundTripMinMax_<int64_t> ();
-            RoundTripMinMax_<uint64_t> ();
-            RoundTripMinMax_<float> ();
-            RoundTripMinMax_<float> ();
-            RoundTripMinMax_<double> ();
-            RoundTripMinMax_<double> ();
-            //enum class Fred { Barny };
-            //RoundTripMinMax_<Fred> ();
-            RoundTripTest_<int> (3);
-        }
-    }
-}
+    namespace JSON_ONLY_ {
+        /*
+         *  This section is for using the direct - JSON-only APIs, and verifying the results look like good JSON
+         */
 
-namespace   {
-    void    DoRegressionTests_SimpleMapToFromJSON_2_ ()
-    {
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
 
-        struct SharedContactsConfig_ {
-            bool                        fEnabled;
-            DateTime                    fLastSynchronizedAt;
-            Mapping<String, String>     fThisPHRsIDToSharedContactID;
-
-            SharedContactsConfig_ ()
-                : fEnabled (false)
-                , fLastSynchronizedAt ()
-                , fThisPHRsIDToSharedContactID ()
+        namespace Test_01_BasicWriterTests_ {
+            void    CheckMatchesExpected_WRITER_ (const VariantValue& v, const string& expected)
             {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return fEnabled == rhs.fEnabled and
-                       fLastSynchronizedAt == rhs.fLastSynchronizedAt and
-                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID
-                       ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        // register each of your mappable (even private) types
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
-        });
-#endif
-
-        bool newEnabled = true;
-        SharedContactsConfig_   tmp;
-        tmp.fEnabled = newEnabled;
-        tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
-        tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileOutputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            JSON::Writer ().Write (v, tmp);
-        }
-
-        if (kWrite2FileAsWell_) {
-            IO::FileSystem::BinaryFileInputStream tmp (IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt");
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmp));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-namespace   {
-    void    DoRegressionTests_SimpleMapToFromJSON_3_ ()
-    {
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        struct SharedContactsConfig_ {
-            int fInt1;
-            unsigned long long fInt2;
-            long long fInt3;
-            int32_t fInt4;
-
-            SharedContactsConfig_ ()
-                : fInt1 (0)
-                , fInt2 (0)
-                , fInt3 (0)
-                , fInt4 (0)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return
-                    fInt1 == rhs.fInt1 and
-                    fInt2 == rhs.fInt2 and
-                    fInt3 == rhs.fInt3 and
-                    fInt4 == rhs.fInt4
-                    ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        // register each of your mappable (even private) types
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"Int1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"Int2"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt3, L"Int3"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt4, L"Int4"),
-        });
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fInt1 = 2;
-        tmp.fInt2 = numeric_limits<decltype (tmp.fInt2)>::max ();
-        tmp.fInt3 = numeric_limits<decltype (tmp.fInt3)>::max ();
-        tmp.fInt4 = numeric_limits<decltype (tmp.fInt4)>::min ();
-
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"t.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-
-
-
-namespace   {
-    void    DoRegressionTests_SimpleMapRangeTypes_4_ ()
-    {
-        using   namespace Traversal;
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        struct SharedContactsConfig_ {
-            Range<int>  fIntRange;
-            DiscreteRange<int> fDiscIntRange2;
-
-            SharedContactsConfig_ ()
-                : fIntRange (-3, 99)
-                , fDiscIntRange2 (4, 19)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return
-                    fIntRange == rhs.fIntRange
-                    and fDiscIntRange2 == rhs.fDiscIntRange2
-                    ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Range<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<DiscreteRange<int>> ());
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
-        });
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fIntRange = Range<int> (1, 10);
-        tmp.fDiscIntRange2 = DiscreteRange<int> (38, 39);
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"4.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-
-
-
-
-
-
-namespace   {
-    void    DoRegressionTests_SimpleEnumTypes_5_ ()
-    {
-        using   namespace Traversal;
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        enum class Fred {
-            a = -3,
-            b,
-            c,
-            d,
-            e,
-            f,
-            g,
-            h,
-
-            Stroika_Define_Enum_Bounds (a, h)
-        };
-        struct SharedContactsConfig_ {
-            Fred fEnum1;
-
-            SharedContactsConfig_ ()
-                : fEnum1 (Fred::a)
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return
-                    fEnum1 == rhs.fEnum1
-                    ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Fred> ());
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), std::end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnum1, L"fEnum1"),
-        });
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fEnum1 = Fred::b;
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"5.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-
-
-
-
-
-
-namespace   {
-    void    DoRegressionTests_DurationsDateTime_6_ ()
-    {
-        using   namespace Traversal;
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        struct SharedContactsConfig_ {
-            Duration fDuration1;
-            DateTime fDateTime1;
-            DateTime fDate1;
-            TimeOfDay fTimeOfDay1;
-
-            SharedContactsConfig_ ()
-                : fDuration1 (chrono::milliseconds (200))
-                , fDateTime1 ()
-                , fDate1 ()
-                , fTimeOfDay1 ()
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return
-                    fDuration1 == rhs.fDuration1
-                    and fDateTime1 == rhs.fDateTime1
-                    and fDate1 == rhs.fDate1
-                    and fTimeOfDay1 == rhs.fTimeOfDay1
-                    ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDuration1, L"fDuration1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDateTime1, L"fDateTime1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDate1, L"fDate1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fTimeOfDay1, L"fTimeOfDay1"),
-        });
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fDate1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
-        tmp.fDateTime1 = DateTime (Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
-        tmp.fTimeOfDay1 = tmp.fDateTime1.GetTimeOfDay ();
-        tmp.fTimeOfDay1 = TimeOfDay (tmp.fTimeOfDay1.GetAsSecondsCount () + 60);
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"6.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-
-
-
-
-
-namespace   {
-    void    DoRegressionTests_VariantValue_7_ ()
-    {
-        using   namespace Traversal;
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        struct SharedContactsConfig_ {
-            VariantValue fVV1;
-
-            SharedContactsConfig_ ()
-                : fVV1 ()
-            {
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                return
-                    fVV1 == rhs.fVV1
-                    ;
-            }
-        };
-
-        ObjectVariantMapper mapper;
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fVV1, L"fVV1"),
-        });
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fVV1 = Date (Time::Year (2001), Time::MonthOfYear::eFebruary, Time::DayOfMonth::e12);
-        VariantValue v = mapper.FromObject (tmp);
-
-        // at this point - we should have VariantValue object with "Enabled" field.
-        // This can then be serialized using
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"7.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
-        }
-
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        //  @todo - FIX COMPARE OF VARIANTS !!!!
-        //        VerifyTestResult (tmp2 == tmp);
-    }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-namespace   {
-    void    DoRegressionTests_MakeCommonSerializer_8_ ()
-    {
-        using   namespace Traversal;
-        const bool kWrite2FileAsWell_ = true;      // just for debugging
-
-        struct SharedContactsConfig_ {
-            int                     fInt1;
-            Memory::Optional<int>   fInt2;
-            Mapping<int, int>       fMapping1;
-            Sequence<int>           fSequence1;
-            int                     fBasicArray1[5];
-            Set<int>                fSet1_;
-
-            SharedContactsConfig_ ()
-                : fInt1 (3)
-                , fInt2 ()
-                , fMapping1 ()
-                , fSequence1 ()
-                //, fBasicArray1 ()
-                , fSet1_ ()
-            {
-                memset (&fBasicArray1, 0, sizeof (fBasicArray1));
-            }
-
-            bool operator== (const SharedContactsConfig_& rhs) const
-            {
-                if (memcmp (fBasicArray1, rhs.fBasicArray1, sizeof (fBasicArray1)) != 0) {
-                    return false;
+                Streams::BasicBinaryOutputStream    out;
+                DataExchange::JSON::Writer ().Write (v, out);
+                string x = out.As<string> ();
+                for (string::size_type i = 0; i < min (x.length (), expected.length ()); ++i) {
+                    if (x[i] != expected[i]) {
+                        VerifyTestResult (false);
+                    }
                 }
-                return
-                    fInt1 == rhs.fInt1 and
-                    fInt2 == rhs.fInt2 and
-                    fMapping1 == rhs.fMapping1 and
-                    fSequence1 == rhs.fSequence1 and
-                    fSet1_ == rhs.fSet1_
-                    ;
+                VerifyTestResult (out.As<string> () == expected);
             }
-        };
-
-        ObjectVariantMapper mapper;
-#if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
-        ObjectVariantMapper::StructureFieldInfo kInfo[] = {
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
-        };
-        mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
-#else
-        mapper.AddClass<SharedContactsConfig_> ({
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt1, L"fInt1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fInt2, L"fInt2"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fMapping1, L"fMapping1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSequence1, L"fSequence1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fBasicArray1, L"fBasicArray1"),
-            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fSet1_, L"fSet1_"),
-        });
-#endif
-
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Memory::Optional<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Mapping<int, int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Sequence<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Set<int>> ());
-#if 1
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer_Array<int, 5> ());
-#else
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<int[5]> ());
-#endif
-
-        SharedContactsConfig_   tmp;
-        tmp.fInt1 = 4;
-        tmp.fInt2 = 6;
-        tmp.fSequence1.Append (5);
-        tmp.fMapping1.Add (3, 5);
-        tmp.fBasicArray1[3] = 5;
-        tmp.fSet1_.Add (193);
-        VariantValue v = mapper.FromObject (tmp);
-
-        Streams::BasicBinaryInputOutputStream   tmpStream;
-        JSON::Writer ().Write (v, tmpStream);
-
-        if (kWrite2FileAsWell_) {
-            String fileName = IO::FileSystem::WellKnownLocations::GetTemporary () + L"8.txt";
-            JSON::Writer ().Write (v, IO::FileSystem::BinaryFileOutputStream (fileName));
-            SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (IO::FileSystem::BinaryFileInputStream (fileName)));
+            void    DoIt ()
+            {
+                {
+                    VariantValue    v1 = L"hello world";
+                    CheckMatchesExpected_WRITER_ (v1, "\"hello world\"\n");
+                }
+                {
+                    VariantValue    v1 =    3;
+                    CheckMatchesExpected_WRITER_ (v1, "3\n");
+                }
+                {
+                    VariantValue    v1 =    4.7;
+                    CheckMatchesExpected_WRITER_ (v1, "4.7\n");
+                }
+                {
+                    VariantValue    v1 =    L"\"";
+                    CheckMatchesExpected_WRITER_ (v1, "\"\\\"\"\n");
+                }
+                {
+                    // array
+                    vector<VariantValue>    v;
+                    v.push_back (3);
+                    v.push_back (7);
+                    v.push_back (L"cookie");
+                    VariantValue    v1 =    v;
+                    CheckMatchesExpected_WRITER_ (v1, "[\n    3,\n    7,\n    \"cookie\"\n]\n");
+                }
+                {
+                    // object
+                    map<wstring, VariantValue>   v;
+                    v[L"Arg1"] = 32;
+                    v[L"Arg2"] = L"Cookies";
+                    v[L"Arg3"] = Containers::Sequence<VariantValue> ({ 19 });
+                    VariantValue    v1 =    v;
+                    CheckMatchesExpected_WRITER_ (v1, "{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}\n");
+                }
+            }
         }
 
-        // THEN deserialized, and mapped back to C++ object form
-        SharedContactsConfig_    tmp2 = mapper.ToObject<SharedContactsConfig_> (JSON::Reader ().Read (tmpStream));
-        VerifyTestResult (tmp2 == tmp);
+
+        namespace Test_02_BasicReaderTests_ {
+            void    CheckMatchesExpected_READER_ (const string& v, const VariantValue& expected)
+            {
+                stringstream    tmp;
+                tmp << v;
+                VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                VerifyTestResult (v1 == expected);
+            }
+
+            void    DoIt ()
+            {
+                {
+                    VariantValue    v1 = L"hello world";
+                    CheckMatchesExpected_READER_ ("\"hello world\"", v1);
+                }
+                {
+                    VariantValue    v1 =    3;
+                    CheckMatchesExpected_READER_ ("3", v1);
+                }
+                {
+                    VariantValue    v1 =    L"\uFDD0";
+                    CheckMatchesExpected_READER_ ("\"\\uFDD0\"", v1);
+                }
+                {
+                    VariantValue    v1 =    4.7;
+                    CheckMatchesExpected_READER_ ("4.7", v1);
+                }
+                {
+                    // array
+                    vector<VariantValue>    v;
+                    v.push_back (3);
+                    v.push_back (7);
+                    v.push_back (L"cookie");
+                    VariantValue    v1 =    v;
+                    CheckMatchesExpected_READER_ ("[\n    3,\n    7,\n    \"cookie\"\n]", v1);
+                }
+                {
+                    // object
+                    map<wstring, VariantValue>   v;
+                    v[L"Arg1"] = 32;
+                    v[L"Arg2"] = L"Cookies";
+                    v[L"Arg3"] = Containers::Sequence<VariantValue> ({ 19 });
+                    VariantValue    v1 =    v;
+                    CheckMatchesExpected_READER_ ("{\n    \"Arg1\" : 32,\n    \"Arg2\" : \"Cookies\",\n    \"Arg3\" : [\n        19\n    ]\n}", v1);
+                }
+                {
+                    // Bug found in another JSON reader (sent me by Ryan - 2011-07-27)
+                    const   string  kExample    =   "{\"nav_items\":[{\"main_link\":{\"href\":\"/about/index.html\",\"text\":\"Who We Are\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/company-management.html\",\"text\":\"Management\"}},{\"header\":{\"href\":\"/about/mission-statement.html\",\"text\":\"Mission\"}},{\"header\":{\"href\":\"/about/company-history.html\",\"text\":\" History\"}},{\"header\":{\"href\":\"/about/headquarters.html\",\"text\":\"Corporate Headquarters\"}},{\"header\":{\"href\":\"/about/diversity.html\",\"text\":\"Diversity\"}},{\"header\":{\"href\":\"/about/supplier-diversity.html\",\"text\":\"Supplier Diversity\"}}]}]},{\"main_link\":{\"href\":\"http://investor.compuware.com\",\"text\":\"Investor Relations\"}},{\"main_link\":{\"href\":\"/about/newsroom.html\",\"text\":\"News Room\"},\"column\":[{\"link_list\":[{},{\"header\":{\"href\":\"/about/analyst-reports\",\"text\":\"Analyst Reports\"}},{\"header\":{\"href\":\"/about/awards-recognition.html\",\"text\":\"Awards and Recognition\"}},{\"header\":{\"href\":\"/about/blogs.html\",\"text\":\"Blog Home\"}},{\"header\":{\"href\":\"/about/press-analyst-contacts.html\",\"text\":\"Contact Us\"}},{\"header\":{\"href\":\"/about/customers.html\",\"text\":\"Customers\"}},{\"header\":{\"href\":\"/about/press-mentions\",\"text\":\"Press Mentions\"}},{\"header\":{\"href\":\"/about/press-releases\",\"text\":\"Press Releases\"}},{\"header\":{\"href\":\"/about/press-resources.html\",\"text\":\"Press Resources\"}}]}]},{\"main_link\":{\"href\":\"#top\",\"text\":\"Sponsorships\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"/about/lemans-sponsorship.html\",\"text\":\"Le Mans\"}},{\"header\":{\"href\":\"/about/nhl-sponsorship.html\",\"text\":\"NHL\"}},{}]}]},{\"main_link\":{\"href\":\"/about/community-involvement.html\",\"text\":\"Community Involvement\"},\"column\":[{\"link_list\":[{\"header\":{\"href\":\"http://communityclicks.compuware.com\",\"text\":\"Community Clicks Blog\"}},{\"header\":{\"href\":\"javascript:securenav('/forms/grant-eligibility-form.html')\",\"text\":\"Grant Eligibility Form\"}},{}]}]},{\"main_link\":{\"href\":\"/government/\",\"text\":\"Government\"}}]}";
+                    stringstream    tmp;
+                    tmp << kExample;
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                    VerifyTestResult (v1.GetType () == VariantValue::Type::eMap);
+                }
+
+            }
+        }
+
+
+        namespace Test_03_CheckCanReadFromSmallBadSrc_ {
+            void    VerifyThisStringFailsToParse_ (const string& s)
+            {
+                stringstream    tmp;
+                tmp << s;
+                try {
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tmp);
+                    VerifyTestResult (false);   // should get exception
+                }
+                catch (const DataExchange::BadFormatException&) {
+                    // GOOD
+                }
+                catch (...) {
+                    VerifyTestResult (false);   // should get BadFormatException
+                }
+            }
+            void    DoIt ()
+            {
+                VerifyThisStringFailsToParse_ ("n");
+                VerifyThisStringFailsToParse_ ("'");
+                VerifyThisStringFailsToParse_ ("\"");
+                VerifyThisStringFailsToParse_ ("[");
+                VerifyThisStringFailsToParse_ ("}");
+                VerifyThisStringFailsToParse_ ("]");
+            }
+        }
+
+
+        namespace Test_04_CheckStringQuoting_ {
+
+            void    CheckRoundtrip_encode_decode_unchanged (const VariantValue& v)
+            {
+                string  encodedRep;
+                {
+                    Streams::BasicBinaryOutputStream    out;
+                    DataExchange::JSON::Writer ().Write (v, out);
+                    encodedRep = out.As<string> ();
+                }
+                {
+                    stringstream    tmp;
+                    tmp << encodedRep;
+                    VariantValue    vOut = DataExchange::JSON::Reader ().Read (tmp);
+                    VerifyTestResult (vOut == v);
+                }
+            }
+
+            void    DoIt ()
+            {
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"cookie"));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"c:\\"));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"'"));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\""));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\\u20a9")); //  ₩
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\u20a9"));  //  ₩
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (L"\"apple\""));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<long long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::min ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long int>::max ()));
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::min ()));
+#if 1
+                CheckRoundtrip_encode_decode_unchanged (VariantValue (numeric_limits<unsigned long long int>::max ()));
+#endif
+            }
+        }
+
+
+        namespace Test_05_ParseRegressionTest_1_ {
+            void    DoIt ()
+            {
+                {
+                    const char  kJSONExample_[] =
+                        "{"
+                        "    \"Automated Backups\" : {"
+                        "        \"From\" : {"
+                        "            \"CurrentHRWildcard\" : true,"
+                        "            \"PrintName\" : \"{Current HR}\""
+                        "        },"
+                        "        \"LastRanAt\" : {"
+                        "            \"ID-ca22f72c-9ff5-4082-82d0-d9763c64ddd6\" : \"2013-03-03T13:53:05-05:00\""
+                        "        },"
+                        "        \"Operation\" : 0,"
+                        "        \"Output\" : {"
+                        "            \"AttachmentPolicy\" : 2,"
+                        "            \"Format\" : \"application/x-healthframe-snapshotphr-3\","
+                        "            \"MaxFiles\" : 0,"
+                        "            \"NamePolicy\" : 1,"
+                        "            \"Password\" : \"\""
+                        "        },"
+                        "        \"PolicyName\" : \"Automated Backups\","
+                        "        \"Schedule\" : 2,"
+                        "        \"To\" : {"
+                        "            \"DefaultBackupDirectory\" : true,"
+                        "            \"PrintName\" : \"{Default Backup Directory}\""
+                        "        }"
+                        "    }"
+                        "}"
+                        ;
+                    VariantValue v = DataExchange::JSON::Reader ().Read (Streams::ExternallyOwnedMemoryBinaryInputStream (reinterpret_cast<const Byte*> (std::begin (kJSONExample_)), reinterpret_cast<const Byte*> (std::begin (kJSONExample_)) + strlen (kJSONExample_)));
+                    map<wstring, VariantValue>  mv  =   v.As<map<wstring, VariantValue>> ();
+                    VerifyTestResult (mv[L"Automated Backups"].GetType () == VariantValue::Type::eMap);
+                    map<wstring, VariantValue>  outputMap   =   v.As<map<wstring, VariantValue>> ()[L"Output"].As<map<wstring, VariantValue>> ();
+                    outputMap[L"MaxFiles"] = 123456789;
+                    mv[L"Output"] = outputMap;
+                    v = mv;
+
+                    string  jsonExampleWithUpdatedMaxFilesReference;
+                    {
+                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        jsonExampleWithUpdatedMaxFilesReference = tmpStrm.As<string> ();
+                    }
+                    {
+                        // Verify change of locale has no effect on results
+                        locale  prevLocale  =   locale::global (locale ("C"));
+                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                        locale::global (prevLocale);
+                    }
+                    {
+                        // Verify change of locale has no effect on results
+                        locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                        Streams::BasicBinaryOutputStream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        VerifyTestResult (jsonExampleWithUpdatedMaxFilesReference == tmpStrm.As<string> ());
+                        locale::global (prevLocale);
+                    }
+
+                }
+            }
+        }
+
+
+        namespace Test_06_ParseRegressionTest_2_ {
+            void    DoIt ()
+            {
+                auto f = [] () {
+                    map<wstring, VariantValue>  mv;
+                    mv[L"MaxFiles"] = VariantValue (405);
+                    VariantValue    v   =    VariantValue (mv);
+
+                    string  encoded;
+                    {
+                        stringstream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        encoded = tmpStrm.str ();
+                    }
+                    stringstream    tnmStrStrm (encoded);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
+                    VerifyTestResult (v1 == v);
+                };
+                f ();
+                {
+                    locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                    f ();
+                    locale::global (prevLocale);
+                }
+            }
+        }
+
+
+        namespace Test_07_ParserTestReadWriteBasictypes_ {
+            void    DoIt ()
+            {
+                using   namespace   Time;
+                auto f = [] (VariantValue v) {
+                    string  encoded;
+                    {
+                        stringstream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (v, tmpStrm);
+                        encoded = tmpStrm.str ();
+                    }
+                    stringstream    tnmStrStrm (encoded);
+                    VariantValue    v1  =   DataExchange::JSON::Reader ().Read (tnmStrStrm);
+                    // JSON reader comes back with strings - because date/datetime are not native types
+                    if (v.GetType () == VariantValue::Type::eDate and v1.GetType () == VariantValue::Type::eString) {
+                        v1 = VariantValue (v1.As<Time::Date> ());
+                    }
+                    if (v.GetType () == VariantValue::Type::eDateTime and v1.GetType () == VariantValue::Type::eString) {
+                        v1 = VariantValue (v1.As<Time::DateTime> ());
+                    }
+                    if (v.GetType () == VariantValue::Type::eFloat) {
+                        VerifyTestResult (Math::NearlyEquals (v1.As<double> (), v.As<double> (), 0.001));
+                    }
+                    else {
+                        VerifyTestResult (v1 == v);
+                    }
+                };
+                auto    doAll = [f] () {
+                    f (VariantValue (405));
+                    f (VariantValue (4405));
+                    f (VariantValue (44905));
+                    f (VariantValue (405.1));
+                    f (VariantValue (4405.2));
+                    f (VariantValue (44905.3));
+                    f (VariantValue (L"'"));
+                    f (VariantValue (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12)));
+                    f (VariantValue (DateTime (Date (Year (1933), MonthOfYear::eFebruary, DayOfMonth::e12), TimeOfDay (432))));
+
+                    {
+                        stringstream    tmpStrm;
+                        DataExchange::JSON::Writer ().Write (VariantValue (44905.3), tmpStrm);
+                        string tmp = tmpStrm.str ();
+                        VerifyTestResult (tmp.find (",") == string::npos);
+                    }
+                };
+                {
+                    doAll ();
+                    locale  prevLocale  =   locale::global (Configuration::FindNamedLocale (L"en", L"us"));
+                    doAll ();
+                    locale::global (prevLocale);
+                }
+            }
+        }
+
+
+        namespace Test_08_ReadEmptyStreamShouldNotFail_ {
+            void    DoIt ()
+            {
+                try {
+                    VariantValue    vOut    =   DataExchange::JSON::Reader ().Read (Streams::BasicBinaryInputStream (nullptr, nullptr));
+                    VerifyTestResult (false);
+                }
+                catch (const DataExchange::BadFormatException&) {
+                    // Good - this should fail
+                }
+            }
+        }
+
+
+        void    DoAll_ ()
+        {
+            Test_01_BasicWriterTests_::DoIt ();
+            Test_02_BasicReaderTests_::DoIt ();
+            Test_03_CheckCanReadFromSmallBadSrc_::DoIt ();
+            Test_04_CheckStringQuoting_::DoIt ();
+            Test_05_ParseRegressionTest_1_::DoIt ();
+            Test_06_ParseRegressionTest_2_::DoIt ();
+            Test_07_ParserTestReadWriteBasictypes_::DoIt ();
+            Test_08_ReadEmptyStreamShouldNotFail_::DoIt ();
+        }
     }
 }
 
 
 
 
+
+
+
+namespace   {
+    namespace XML_ONLY_ {
+        /*
+         *  This section is for using the direct - XML-only APIs, and verifying the results look like good XML
+         */
+
+
+
+        namespace Test_01_FirstPlayingAroundTest_ {
+            void    DoIt ()
+            {
+                {
+                    DataExchange::XML::Writer w;
+                    VariantValue    v   =   VariantValue (44905.3);
+                    Streams::BasicBinaryOutputStream    out;
+                    w.Write (v, out);
+                    string x = out.As<string> ();
+                    int breakhere = 1;
+                }
+                {
+                    DataExchange::XML::Writer w;
+                    map<wstring, VariantValue>  mv;
+                    mv[L"MaxFiles"] = VariantValue (405);
+                    VariantValue    v   =    VariantValue (mv);
+                    Streams::BasicBinaryOutputStream    out;
+                    w.Write (v, out);
+                    string x = out.As<string> ();
+                    int breakhere = 1;
+                }
+            }
+        }
+
+
+
+        void    DoAll_ ()
+        {
+            Test_01_FirstPlayingAroundTest_::DoIt ();
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+namespace   {
+    namespace GENERIC_SERIALIZE_DESERIALIZE_ {
+        /*
+         *  This section is for generic tests - that will be applied to BOTH the default JSON reader/writers
+         *  and the default XML readers/writers (with no mods)
+         */
+
+        void    DoAll_ ()
+        {
+
+
+
+        }
+    }
+}
+
+
+
+namespace {
+    /// @TODO MOVE ELSEWHERE
+    template <typename T>
+    void Test3_VariantValue_Helper_MinMax_ ()
+    {
+        {
+            VariantValue v = numeric_limits<T>::lowest ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
+            VariantValue v = numeric_limits<T>::min ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+        {
+            VariantValue v = numeric_limits<T>::max ();
+            VariantValue vs = v.As<String> ();
+            VariantValue vrt = vs.As<T> ();
+            VerifyTestResult (v == vrt);
+        }
+    }
+    void    Test3_VariantValue ()
+    {
+        using Characters::String;
+        {
+            VariantValue v;
+            VerifyTestResult (v.empty ());
+            v = String (L"hi");
+            VerifyTestResult (v == L"hi");
+        }
+        Test3_VariantValue_Helper_MinMax_<int> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned int> ();
+        Test3_VariantValue_Helper_MinMax_<long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long> ();
+        Test3_VariantValue_Helper_MinMax_<long long> ();
+        Test3_VariantValue_Helper_MinMax_<unsigned long long> ();
+        Test3_VariantValue_Helper_MinMax_<float> ();
+        Test3_VariantValue_Helper_MinMax_<double> ();
+        Test3_VariantValue_Helper_MinMax_<long double> ();
+    }
+
+}
 
 
 
 namespace   {
     void    DoRegressionTests_ ()
     {
-        DoRegressionTests_BasicDataRoundtrips_1_::DoAll ();
-        DoRegressionTests_SimpleMapToFromJSON_2_ ();
-        DoRegressionTests_SimpleMapToFromJSON_3_ ();
-        DoRegressionTests_SimpleMapRangeTypes_4_ ();
-        DoRegressionTests_SimpleEnumTypes_5_ ();
-        DoRegressionTests_DurationsDateTime_6_ ();
-        DoRegressionTests_VariantValue_7_ ();
-        DoRegressionTests_MakeCommonSerializer_8_ ();
+        JSON_ONLY_::DoAll_();
+        XML_ONLY_::DoAll_();
+        GENERIC_SERIALIZE_DESERIALIZE_::DoAll_();
+
+        Test3_VariantValue ();
     }
 }
 

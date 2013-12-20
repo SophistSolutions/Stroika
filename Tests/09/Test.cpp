@@ -1,97 +1,82 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
- */
-//      TEST    Foundation::Containers::Deque
-//      STATUS  PRELIMINARY
+* Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
+*/
+//  TEST    Foundation::Containers::Collection
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/Deque.h"
-#include    "Stroika/Foundation/Containers/Concrete/Deque_DoublyLinkedList.h"
+#include    "Stroika/Foundation/Containers/Collection.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
-
+#include    "../TestCommon/CommonTests_Collection.h"
 #include    "../TestHarness/SimpleClass.h"
-#include    "../TestCommon/CommonTests_Queue.h"
 #include    "../TestHarness/TestHarness.h"
 
+#include    "Stroika/Foundation/Containers/Concrete/Collection_Array.h"
+#include    "Stroika/Foundation/Containers/Concrete/Collection_LinkedList.h"
+#include    "Stroika/Foundation/Containers/Concrete/Collection_stdforward_list.h"
 
 
 using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
-using   Concrete::Deque_DoublyLinkedList;
-
-
-
-
-
-namespace {
-    namespace Test1_BasicDequeTest_ {
-        template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-        void    DoAllTests_ ()
-        {
-            // test DQUEUE METHODS - NYI
-        }
-    }
-}
-
-
+using   Concrete::Collection_Array;
+using   Concrete::Collection_LinkedList;
+using   Concrete::Collection_stdforward_list;
 
 
 namespace {
-    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-    void    SimpleQueueTest_All_NotRequiringEquals_For_Type ()
+    template    <typename CONCRETE_CONTAINER>
+    void     RunTests_ ()
     {
-        CommonTests::QueueTests::SimpleQueueTest_All_NotRequiringEquals_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
-    }
-    template <typename CONCRETE_CONTAINER, typename EQUALS_COMPARER>
-    void    SimpleQueueTest_All_For_Type ()
-    {
-        CommonTests::QueueTests::SimpleQueueTest_All_For_Type<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
-        Test1_BasicDequeTest_::DoAllTests_<CONCRETE_CONTAINER, EQUALS_COMPARER> ();
+        typedef typename CONCRETE_CONTAINER::ElementType    T;
+        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        auto testFunc = [](const Collection<T, TraitsType>& s) {
+        };
+        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, Collection<T, TraitsType>> (testFunc);
     }
 }
-
-
-
 
 
 namespace   {
+
     void    DoRegressionTests_ ()
     {
-        typedef Common::ComparerWithEquals<size_t>  COMPARE_SIZET;
-        typedef Common::ComparerWithEquals<SimpleClass>  COMPARE_SimpleClass;
-        struct  COMPARE_SimpleClassWithoutComparisonOperators {
+        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
+        typedef Collection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_CollectionTRAITS;
 
-        typedef Deque_DefaultTraits<SimpleClassWithoutComparisonOperators, COMPARE_SimpleClassWithoutComparisonOperators> Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits;
+        RunTests_<Collection<size_t>> ();
+        RunTests_<Collection<SimpleClass>> ();
+        RunTests_<Collection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
 
-        SimpleQueueTest_All_For_Type<Deque<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Deque<SimpleClassWithoutComparisonOperators, Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        RunTests_<Collection_LinkedList<size_t>> ();
+        RunTests_<Collection_LinkedList<SimpleClass>> ();
+        RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
 
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
-        SimpleQueueTest_All_NotRequiringEquals_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
-        SimpleQueueTest_All_For_Type<Deque_DoublyLinkedList<SimpleClassWithoutComparisonOperators, Deque_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        RunTests_<Collection_Array<size_t>> ();
+        RunTests_<Collection_Array<SimpleClass>> ();
+        RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+
+        RunTests_<Collection_stdforward_list<size_t>> ();
+        RunTests_<Collection_stdforward_list<SimpleClass>> ();
+        RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
     }
+
 }
 
 
 
-
-int     main (int argc, const char* argv[])
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

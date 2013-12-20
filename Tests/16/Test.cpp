@@ -1,23 +1,22 @@
 /*
- * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
- */
-//      TEST    Foundation::Containers::SortedMapping
-//      STATUS  Alpha-Late
+* Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
+*/
+//  TEST    Foundation::Containers::SortedBag
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    <iostream>
 #include    <sstream>
 
-#include    "Stroika/Foundation/Containers/SortedMapping.h"
-#include    "Stroika/Foundation/Containers/Concrete/SortedMapping_stdmap.h"
+#include    "Stroika/Foundation/Containers/SortedBag.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 
-
-#include    "../TestCommon/CommonTests_Mapping.h"
+#include    "../TestCommon/CommonTests_Bag.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
+
+#include    "Stroika/Foundation/Containers/Concrete/SortedBag_LinkedList.h"
 
 
 
@@ -25,58 +24,37 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
-using   Memory::Optional;
+using   Concrete::SortedBag_LinkedList;
 
-using   Concrete::SortedMapping_stdmap;
+using   Memory::Optional;
 
 
 namespace {
-    template    <typename   CONCRETE_CONTAINER>
-    void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
+    template    <typename CONCRETE_CONTAINER>
+    void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType      ValueType;
-        typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
+        typedef typename CONCRETE_CONTAINER::ElementType    T;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto extraChecksFunction = [] (const SortedMapping<KeyType, ValueType, TraitsType>& m) {
+        auto testFunc = [] (const SortedBag<T, TraitsType>& s) {
             // verify in sorted order
-            Optional<ElementType> last;
-            for (ElementType i : m) {
+            Optional<T> last;
+            for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
                 }
                 last = i;
             }
         };
-        CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
-    }
-    template    <typename   CONCRETE_CONTAINER>
-    void    DoTestForConcreteContainer_ ()
-    {
-        typedef typename CONCRETE_CONTAINER::KeyType        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType      ValueType;
-        typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto extraChecksFunction = [] (const SortedMapping<KeyType, ValueType, TraitsType>& m) {
-            // verify in sorted order
-            Optional<ElementType> last;
-            for (ElementType i : m) {
-                if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::KeyWellOrderCompareFunctionType::Compare (last->fKey, i.fKey) <= 0);
-                }
-                last = i;
-            }
-        };
-        CommonTests::MappingTests::SimpleMappingTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::BagTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER, SortedBag<T, TraitsType>> (testFunc);
     }
 }
 
 
-
 namespace   {
+
     void    DoRegressionTests_ ()
     {
-        struct  MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
+        struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
@@ -87,33 +65,23 @@ namespace   {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
-        struct  MySimpleClassWithoutComparisonOperators_ComparerWithCompare_ : MySimpleClassWithoutComparisonOperators_ComparerWithEquals_ {
-            typedef SimpleClassWithoutComparisonOperators ElementType;
-            static  int    Compare (ElementType v1, ElementType v2)
-            {
-                return v1.GetValue () - v2.GetValue ();
-            }
-        };
-        typedef SortedMapping_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-        MySimpleClassWithoutComparisonOperators_ComparerWithEquals_,
-        MySimpleClassWithoutComparisonOperators_ComparerWithCompare_
-        >   SimpleClassWithoutComparisonOperators_MappingTRAITS;
+        typedef SortedBag_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
 
-        DoTestForConcreteContainer_<SortedMapping<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<SortedMapping<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        RunTests_<SortedBag<size_t>> ();
+        RunTests_<SortedBag<SimpleClass>> ();
+        RunTests_<SortedBag<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
 
-        DoTestForConcreteContainer_<SortedMapping_stdmap<size_t, size_t>> ();
-        DoTestForConcreteContainer_<SortedMapping_stdmap<SimpleClass, SimpleClass>> ();
-        DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_<SortedMapping_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_MappingTRAITS>> ();
+        RunTests_<SortedBag_LinkedList<size_t>> ();
+        RunTests_<SortedBag_LinkedList<SimpleClass>> ();
+        RunTests_<SortedBag_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
     }
+
 }
 
 
-int     main (int argc, const char* argv[])
+
+
+int main (int argc, const char* argv[])
 {
     Stroika::TestHarness::Setup ();
     Stroika::TestHarness::PrintPassOrFail (DoRegressionTests_);

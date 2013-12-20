@@ -43,6 +43,9 @@
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Bag.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
+      <Filter>TestCommon</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h">
       <Filter>TestCommon</Filter>
     </ClInclude>

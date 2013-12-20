@@ -1,24 +1,23 @@
 /*
  * Copyright(c) Sophist Solutions Inc. 1990-2013.  All rights reserved
  */
-//      TEST    Foundation::Containers::SortedTally
-//      STATUS  very minimal/incomplete
+//      TEST    Foundation::Containers::SortedSet
+//      STATUS  PRELIMINARY
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
-#include    "Stroika/Foundation/Containers/SortedTally.h"
-#include    "Stroika/Foundation/Containers/Concrete/SortedTally_stdmap.h"
+#include    <iostream>
+#include    <sstream>
+
+#include    "Stroika/Foundation/Containers/SortedSet.h"
+#include    "Stroika/Foundation/Containers/Concrete/SortedSet_stdset.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 
-#include    "../TestCommon/CommonTests_Tally.h"
+#include    "../TestCommon/CommonTests_Set.h"
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
-
-#include    "../TestCommon/CommonTests_Tally.h"
-#include    "../TestHarness/SimpleClass.h"
-#include    "../TestHarness/TestHarness.h"
 
 
 using   namespace   Stroika;
@@ -26,36 +25,44 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
-using   Concrete::SortedTally_stdmap;
+using   Concrete::SortedSet_stdset;
 
 
 
 namespace {
-    template    <typename   CONCRETE_CONTAINER>
-    void    DoTestForConcreteContainer_ ()
+    template    <typename CONCRETE_CONTAINER>
+    void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
-        auto extraChecksFunction = [] (const SortedTally<TallyOfElementType, TraitsType>& t) {
+        typedef typename CONCRETE_CONTAINER::ElementType    T;
+        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
+        auto testFunc = [] (const SortedSet<T, TraitsType>& s) {
             // verify in sorted order
-            Memory::Optional<TallyOfElementType> last;
-            for (TallyEntry<TallyOfElementType> i : t) {
+            Memory::Optional<T> last;
+            for (T i : s) {
                 if (last.IsPresent ()) {
-                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i.fItem) <= 0);
+                    VerifyTestResult (TraitsType::WellOrderCompareFunctionType::Compare (*last, i) <= 0);
                 }
-                last = i.fItem;
+                last = i;
             }
         };
-        CommonTests::TallyTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);
+        CommonTests::SetTests::Test_All_For_Type<CONCRETE_CONTAINER, SortedSet<T, TraitsType>> (testFunc);
     }
 }
 
 
 namespace   {
-
     void    DoRegressionTests_ ()
     {
-        struct  MySimpleClassWithoutComparisonOperators_ComparerWithComparer_ {
+        using namespace CommonTests::SetTests;
+
+        struct  MySimpleClassWithoutComparisonOperators_CompareEquals_ {
+            typedef SimpleClassWithoutComparisonOperators ElementType;
+            static  bool    Equals (ElementType v1, ElementType v2)
+            {
+                return v1.GetValue () == v2.GetValue ();
+            }
+        };
+        struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2)
             {
@@ -63,25 +70,20 @@ namespace   {
             }
             static  int    Compare (ElementType v1, ElementType v2)
             {
-                return v1.GetValue () - v2.GetValue ();
+                return static_cast<int> (v1.GetValue ()) - static_cast<int> (v2.GetValue ());
             }
         };
-        typedef SortedTally_DefaultTraits <
-        SimpleClassWithoutComparisonOperators,
-        MySimpleClassWithoutComparisonOperators_ComparerWithComparer_
-        >   SimpleClassWithoutComparisonOperators_SortedTallyTRAITS;
+        typedef SortedSet_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_CompareEquals_, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_SETTRAITS;
 
-        DoTestForConcreteContainer_<SortedTally<size_t>> ();
-        DoTestForConcreteContainer_<SortedTally<SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedTally<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedTallyTRAITS>> ();
+        RunTests_<SortedSet<size_t>> ();
+        RunTests_<SortedSet<SimpleClass>> ();
+        RunTests_<SortedSet<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
 
-        DoTestForConcreteContainer_<SortedTally_stdmap<size_t>> ();
-        DoTestForConcreteContainer_<SortedTally_stdmap<SimpleClass>> ();
-        DoTestForConcreteContainer_<SortedTally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SortedTallyTRAITS>> ();
+        RunTests_<SortedSet_stdset<size_t>> ();
+        RunTests_<SortedSet_stdset<SimpleClass>> ();
+        RunTests_<SortedSet_stdset<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_SETTRAITS>> ();
     }
-
 }
-
 
 
 int     main (int argc, const char* argv[])
