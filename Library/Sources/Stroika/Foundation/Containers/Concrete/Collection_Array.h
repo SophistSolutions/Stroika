@@ -40,12 +40,12 @@ namespace   Stroika {
 
                 public:
                     Collection_Array ();
-                    Collection_Array (const Collection<T>& collection);
-                    Collection_Array (const Collection_Array<T>& collection);
+                    Collection_Array (const Collection<T>& src);
+                    Collection_Array (const Collection_Array<T>& src);
                     Collection_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Collection_Array<T>& operator= (const Collection_Array<T>& collection);
+                    nonvirtual  Collection_Array<T>& operator= (const Collection_Array<T>& rhs);
 
                 public:
                     /**

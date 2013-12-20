@@ -12,8 +12,8 @@
 #include    "../../Memory/BlockAllocated.h"
 
 #include    "../Private/PatchingDataStructures/LinkedList.h"
+#include    "../Private/IteratorImplHelper.h"
 #include    "../Private/SynchronizationUtils.h"
-
 
 
 namespace   Stroika {
@@ -184,29 +184,34 @@ namespace   Stroika {
                 Collection_LinkedList<T>::Collection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     this->AddAll (start, end);
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     this->AddAll (src);
                 }
                 template    <typename T>
                 Collection_LinkedList<T>::Collection_LinkedList (const Collection_LinkedList<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T>
                 inline  Collection_LinkedList<T>& Collection_LinkedList<T>::operator= (const Collection_LinkedList<T>& rhs)
                 {
                     inherited::operator= (rhs);
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     return *this;
                 }
 

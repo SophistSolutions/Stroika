@@ -30,11 +30,13 @@ namespace   Stroika {
             inline  Collection<T>::Collection ()
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Collection<T>::Collection (const Collection<T>& b)
-                : inherited (static_cast<const inherited&> (b))
+            inline  Collection<T>::Collection (const Collection<T>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             inline  Collection<T>::Collection (const _SharedPtrIRep& rep)
@@ -44,19 +46,19 @@ namespace   Stroika {
                 EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
-            inline  Collection<T>::Collection (const std::initializer_list<T>& b)
+            inline  Collection<T>::Collection (const std::initializer_list<T>& src)
                 : inherited (Concrete::Collection_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (b);
+                AddAll (src);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
-            inline  Collection<T>::Collection (const CONTAINER_OF_T& b)
+            inline  Collection<T>::Collection (const CONTAINER_OF_T& src)
                 : inherited (Concrete::Collection_Factory<T>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (b);
+                AddAll (src);
             }
             template    <typename T>
             inline  Collection<T>& Collection<T>::operator= (const Collection<T>& rhs)

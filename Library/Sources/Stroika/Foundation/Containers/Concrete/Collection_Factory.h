@@ -38,8 +38,8 @@ namespace   Stroika {
                 /**
                  *  \brief   Singleton factory object - Used to create the default backend implementation of a Collection<> container
                  *
-                 *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T,TRAITS>::Register (), or
-                 *  replace it statically by template-specailizing Collection_Factory<T,TRAITS>::mk () - though the later is trickier.
+                 *  Note - you can override the underlying factory dynamically by calling Collection_Factory<T>::Register (), or
+                 *  replace it statically by template-specailizing Collection_Factory<T>::mk () - though the later is trickier.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */

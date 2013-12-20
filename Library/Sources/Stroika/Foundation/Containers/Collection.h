@@ -34,11 +34,11 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  A Collection<T> is a container to manage an un-ordered collection of items.
+             *  \brief  A Collection<T> is a container to manage an un-ordered collection of items, without equality defined for T
              *
-             *  A Collection<T> is a container pattern to manage an un-ordered collection of items.
-             *  This is both an abstract interface, but the Collection<T> class it actually concrete because
-             *  it automatically binds to a default implementation.
+             *  A Collection<T> is a container pattern to manage an un-ordered collection of items,
+             *  without equality defined for T. This is both an abstract interface, but the Collection<T>
+             *  class it actually concrete because it automatically binds to a default implementation.
              *
              *  A Collection<T> is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
@@ -53,19 +53,6 @@ namespace   Stroika {
              *      case (n^2) and this worst case is the relatively common case of identical
              *      bags.
              *
-             *  Although Bag has an TallyOf () method, it is nonvirtual, and therefore
-             *  not optimized for the various backends. There is a separate class, Tally,
-             *  for cases where you are primarily interested in keeping an summary count
-             *  of the occurences of each item.
-             *
-             *  Bags allow calls to Remove with an item not contained within the bag.
-             *
-             *  As syntactic sugar, using either functional (Add, Remove) or
-             *  operator (+,-) is allowed.
-             *
-             *  @TODO BELOW REWUIRMENT WRONG - BUT CLARIFY!!!
-             * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, T);
-             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
             template    <typename T>
@@ -79,10 +66,10 @@ namespace   Stroika {
 
             public:
                 Collection ();
-                Collection (const Collection<T>& b);
-                Collection (const std::initializer_list<T>& b);
+                Collection (const Collection<T>& src);
+                Collection (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
-                explicit Collection (const CONTAINER_OF_T& b);
+                explicit Collection (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit Collection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -162,7 +149,6 @@ namespace   Stroika {
                  * \brief STL-ish alias for RemoveAll ().
                  */
                 nonvirtual  void    clear ();
-
 
             public:
                 /**

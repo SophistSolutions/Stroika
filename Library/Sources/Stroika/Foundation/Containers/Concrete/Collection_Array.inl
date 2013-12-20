@@ -189,33 +189,38 @@ namespace   Stroika {
                 Collection_Array<T>::Collection_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T>
-                Collection_Array<T>::Collection_Array (const Collection<T>& collection)
+                Collection_Array<T>::Collection_Array (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    SetCapacity (collection.GetLength ());
-                    this->AddAll (collection);
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    SetCapacity (src.GetLength ());
+                    this->AddAll (src);
                 }
                 template    <typename T>
                 Collection_Array<T>::Collection_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     if (start != end) {
                         SetCapacity (end - start);
                         this->AddAll (start, end);
                     }
                 }
                 template    <typename T>
-                inline  Collection_Array<T>::Collection_Array (const Collection_Array<T>& collection)
-                    : inherited (static_cast<const inherited&> (collection))
+                inline  Collection_Array<T>::Collection_Array (const Collection_Array<T>& src)
+                    : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T>
                 inline  Collection_Array<T>&   Collection_Array<T>::operator= (const Collection_Array<T>& rhs)
                 {
                     inherited::operator= (static_cast<const inherited&> (rhs));
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     return *this;
                 }
                 template    <typename T>
