@@ -37,18 +37,18 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Collection_DefaultTraits<T>>
-                class  Collection_LinkedList : public Collection<T, TRAITS> {
+                template    <typename T>
+                class  Collection_LinkedList : public Collection<T> {
                 private:
-                    typedef     Collection<T, TRAITS>  inherited;
+                    typedef     Collection<T>  inherited;
 
                 public:
                     Collection_LinkedList ();
                     Collection_LinkedList (const T* start, const T* end);
-                    Collection_LinkedList (const Collection<T, TRAITS>& Collection);
-                    Collection_LinkedList (const Collection_LinkedList<T, TRAITS>& Collection);
+                    Collection_LinkedList (const Collection<T>& collection);
+                    Collection_LinkedList (const Collection_LinkedList<T>& collection);
 
-                    nonvirtual  Collection_LinkedList<T, TRAITS>&  operator= (const Collection_LinkedList<T, TRAITS>& rhs);
+                    nonvirtual  Collection_LinkedList<T>&  operator= (const Collection_LinkedList<T>& rhs);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

@@ -50,23 +50,21 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Collection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_CollectionTRAITS;
-
         RunTests_<Collection<size_t>> ();
         RunTests_<Collection<SimpleClass>> ();
-        RunTests_<Collection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<Collection<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_LinkedList<size_t>> ();
         RunTests_<Collection_LinkedList<SimpleClass>> ();
-        RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<Collection_LinkedList<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_Array<size_t>> ();
         RunTests_<Collection_Array<SimpleClass>> ();
-        RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<Collection_Array<SimpleClassWithoutComparisonOperators>> ();
 
         RunTests_<Collection_stdforward_list<size_t>> ();
         RunTests_<Collection_stdforward_list<SimpleClass>> ();
-        RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<Collection_stdforward_list<SimpleClassWithoutComparisonOperators>> ();
     }
 
 }

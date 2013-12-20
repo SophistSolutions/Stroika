@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename T, typename TRAITS>
+            template    <typename T>
             class   Collection;
 
 
@@ -43,25 +43,25 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
-                template    <typename T, typename TRAITS>
+                template    <typename T>
                 class   Collection_Factory {
                 private:
-                    static  atomic<Collection<T, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Collection<T> (*) ()>   sFactory_;
 
                 public:
                     /**
-                     *  You can call this directly, but there is no need, as the Collection<T,TRAITS> CTOR does so automatically.
+                     *  You can call this directly, but there is no need, as the Collection<T> CTOR does so automatically.
                      */
-                    static  Collection<T, TRAITS>  mk ();
+                    static  Collection<T>  mk ();
 
                 public:
                     /**
-                     *  Register a replacement creator/factory for the given Collection<T,TRAITS>. Note this is a global change.
+                     *  Register a replacement creator/factory for the given Collection<T>. Note this is a global change.
                      */
-                    static  void    Register (Collection<T, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Collection<T> (*factory) () = nullptr);
 
                 private:
-                    static  Collection<T, TRAITS>  Default_ ();
+                    static  Collection<T>  Default_ ();
                 };
 
 

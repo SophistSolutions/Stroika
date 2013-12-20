@@ -26,13 +26,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **************** Collection_stdforward_list<T, TRAITS>::Rep_ *******************
+                 ********************* Collection_stdforward_list<T>::Rep_ **********************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                class   Collection_stdforward_list<T, TRAITS>::Rep_ : public Collection<T, TRAITS>::_IRep {
+                template    <typename T>
+                class   Collection_stdforward_list<T>::Rep_ : public Collection<T>::_IRep {
                 private:
-                    typedef typename    Collection<T, TRAITS>::_IRep   inherited;
+                    typedef typename    Collection<T>::_IRep   inherited;
 
                 public:
                     Rep_ ();
@@ -53,7 +53,7 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Collection<T, TRAITS>::_IRep overrides
+                    // Collection<T>::_IRep overrides
                 public:
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
@@ -72,18 +72,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************** Collection_stdforward_list<T, TRAITS>::Rep_ *********************
+                ********************** Collection_stdforward_list<T>::Rep_ *********************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                inline  Collection_stdforward_list<T, TRAITS>::Rep_::Rep_ ()
+                template    <typename T>
+                inline  Collection_stdforward_list<T>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Collection_stdforward_list<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T>
+                inline  Collection_stdforward_list<T>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -93,14 +93,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  Collection_stdforward_list<T, TRAITS>::Rep_::Clone () const
+                template    <typename T>
+                typename Iterable<T>::_SharedPtrIRep  Collection_stdforward_list<T>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  Collection_stdforward_list<T, TRAITS>::Rep_::MakeIterator () const
+                template    <typename T>
+                Iterator<T>  Collection_stdforward_list<T>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -110,8 +110,8 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
                 }
-                template    <typename T, typename TRAITS>
-                size_t  Collection_stdforward_list<T, TRAITS>::Rep_::GetLength () const
+                template    <typename T>
+                size_t  Collection_stdforward_list<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         size_t  cnt = 0;
@@ -121,34 +121,34 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                bool  Collection_stdforward_list<T, TRAITS>::Rep_::IsEmpty () const
+                template    <typename T>
+                bool  Collection_stdforward_list<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.empty ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void      Collection_stdforward_list<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T>
+                void      Collection_stdforward_list<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     Collection_stdforward_list<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T>
+                Iterator<T>     Collection_stdforward_list<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_stdforward_list<T, TRAITS>::Rep_::Add (T item)
+                template    <typename T>
+                void    Collection_stdforward_list<T>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.push_front (item);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_stdforward_list<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
+                template    <typename T>
+                void    Collection_stdforward_list<T>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -159,8 +159,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_stdforward_list<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T>
+                void    Collection_stdforward_list<T>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -185,8 +185,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_stdforward_list<T, TRAITS>::Rep_::RemoveAll ()
+                template    <typename T>
+                void    Collection_stdforward_list<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.clear_WithPatching ();
@@ -198,34 +198,34 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************ Collection_stdforward_list<T, TRAITS> ************************
+                ************************* Collection_stdforward_list<T> ************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                Collection_stdforward_list<T, TRAITS>::Collection_stdforward_list ()
+                template    <typename T>
+                Collection_stdforward_list<T>::Collection_stdforward_list ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T, typename TRAITS>
-                Collection_stdforward_list<T, TRAITS>::Collection_stdforward_list (const T* start, const T* end)
+                template    <typename T>
+                Collection_stdforward_list<T>::Collection_stdforward_list (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                 }
-                template    <typename T, typename TRAITS>
-                Collection_stdforward_list<T, TRAITS>::Collection_stdforward_list (const Collection<T, TRAITS>& src)
+                template    <typename T>
+                Collection_stdforward_list<T>::Collection_stdforward_list (const Collection<T>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     inherited::operator+= (src);
                 }
-                template    <typename T, typename TRAITS>
-                Collection_stdforward_list<T, TRAITS>::Collection_stdforward_list (const Collection_stdforward_list<T, TRAITS>& src)
+                template    <typename T>
+                Collection_stdforward_list<T>::Collection_stdforward_list (const Collection_stdforward_list<T>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Collection_stdforward_list<T, TRAITS>& Collection_stdforward_list<T, TRAITS>::operator= (const Collection_stdforward_list<T, TRAITS>& collection)
+                template    <typename T>
+                inline  Collection_stdforward_list<T>& Collection_stdforward_list<T>::operator= (const Collection_stdforward_list<T>& collection)
                 {
                     inherited::operator= (static_cast<const inherited&> (collection));
                     return *this;

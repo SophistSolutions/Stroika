@@ -33,19 +33,19 @@ namespace   Stroika {
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Collection_DefaultTraits<T>>
-                class   Collection_Array : public Collection<T, TRAITS> {
+                template    <typename T>
+                class   Collection_Array : public Collection<T> {
                 private:
-                    typedef     Collection<T, TRAITS>  inherited;
+                    typedef     Collection<T>  inherited;
 
                 public:
                     Collection_Array ();
-                    Collection_Array (const Collection<T, TRAITS>& collection);
-                    Collection_Array (const Collection_Array<T, TRAITS>& collection);
+                    Collection_Array (const Collection<T>& collection);
+                    Collection_Array (const Collection_Array<T>& collection);
                     Collection_Array (const T* start, const T* end);
 
                 public:
-                    nonvirtual  Collection_Array<T, TRAITS>& operator= (const Collection_Array<T, TRAITS>& collection);
+                    nonvirtual  Collection_Array<T>& operator= (const Collection_Array<T>& collection);
 
                 public:
                     /**

@@ -21,14 +21,14 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ***************************** Collection_Factory<T, TRAITS> ***************************
+                 ********************** Collection_Factory<T, TRAITS> ***************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                atomic<Collection<T, TRAITS> (*) ()>   Collection_Factory<T, TRAITS>::sFactory_ (nullptr);
+                template    <typename T>
+                atomic<Collection<T> (*) ()>   Collection_Factory<T>::sFactory_ (nullptr);
 
-                template    <typename T, typename TRAITS>
-                inline  Collection<T, TRAITS>  Collection_Factory<T, TRAITS>::mk ()
+                template    <typename T>
+                inline  Collection<T>  Collection_Factory<T>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,15 +43,15 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_Factory<T, TRAITS>::Register (Collection<T, TRAITS> (*factory) ())
+                template    <typename T>
+                void    Collection_Factory<T>::Register (Collection<T> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename T, typename TRAITS>
-                Collection<T, TRAITS>  Collection_Factory<T, TRAITS>::Default_ ()
+                template    <typename T>
+                Collection<T>  Collection_Factory<T>::Default_ ()
                 {
-                    return Collection_Array<T, TRAITS> ();
+                    return Collection_Array<T> ();
                 }
 
 

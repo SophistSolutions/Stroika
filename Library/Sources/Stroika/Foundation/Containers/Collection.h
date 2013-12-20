@@ -33,44 +33,14 @@ namespace   Stroika {
             using   Traversal::Iterator;
 
 
-            template    <typename T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-            struct   Collection_DefaultTraits {
-                /**
-                 *  @todo DOCUMENT WHAT GOES HERE. CAN A LAMBDA GO HERE? HOW TODO WITH LAMBDAS?
-                 *          MAYBE to use a lamnda - use soemthing LIKE? Not quite - maybe ???.... THINK OUT
-                 *          typedef std::function<int(T,T)> CompareFunctionType;
-                 *
-                 *          (working on this as of 2013-07-03 in Comparer.h code - though alot todo here as well)
-                 *
-                 *  NB: NOT USED YET - JUST PLAYING WITH HOW WE WANT TODO THIS...
-                 *
-                 *  (TODO - DOC WHAT THIS MEANS - CUZ IT APPEARS TO BE ACTUALLY REQUIRED - cuz virtual methods. Maybe shouldbt but hard to
-                 *      AVOID FOR this class. Maybe should have more abstract thing - or maybe should ahve this be such - so
-                 *      these things not implementated virtually - and collection can eb something that doesnt require operator== or any comparer???
-                 *      @todo - think about above!!! And clarify these docs
-                 *      @todo DID GOOD JOB OF THIS WITH SEQUENCE. DECIDE IF BAG ALWAYS REQUIRES EQUALS!!!
-                 *
-                 *  Note - this comparer is NOT required - and not actually used except for certain specific methods:
-                 *      o   Bag<T, TRAITS>::Contains (T)
-                 *      o   Bag<T, TRAITS>::Remove (T)
-                 *      o   Bag<T, TRAITS>::UniqueElements ()
-                 *      o   Bag<T, TRAITS>::TallyOf()
-                 *      o   Bag<T, TRAITS>::Equals()
-                 */
-                typedef EQUALS_COMPARER EqualsCompareFunctionType;
-
-                RequireConceptAppliesToTypeMemberOfClass(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
-            };
-
-
             /**
-             *  \brief  A Collection<T, TRAITS> is a container to manage an un-ordered collection of items.
+             *  \brief  A Collection<T> is a container to manage an un-ordered collection of items.
              *
-             *  A Collection<T, TRAITS> is a container pattern to manage an un-ordered collection of items.
-             *  This is both an abstract interface, but the Collection<T, TRAITS> class it actually concrete because
+             *  A Collection<T> is a container pattern to manage an un-ordered collection of items.
+             *  This is both an abstract interface, but the Collection<T> class it actually concrete because
              *  it automatically binds to a default implementation.
              *
-             *  A Collection<T, TRAITS> is the simplest kind of collection. It allows addition and
+             *  A Collection<T> is the simplest kind of collection. It allows addition and
              *  removal of elements, but makes no guarantees about element ordering. Two
              *  collections are considered equal if they contain the same items, even if iteration
              *  order is different.
@@ -98,7 +68,7 @@ namespace   Stroika {
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              */
-            template    <typename T, typename TRAITS = Collection_DefaultTraits<T>>
+            template    <typename T>
             class   Collection : public Iterable<T> {
             private:
                 typedef Iterable<T> inherited;
@@ -107,25 +77,9 @@ namespace   Stroika {
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
-#if 0
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Collection<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                typedef TRAITS  TraitsType;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
-#endif
-
             public:
                 Collection ();
-                Collection (const Collection<T, TRAITS>& b);
+                Collection (const Collection<T>& b);
                 Collection (const std::initializer_list<T>& b);
                 template <typename CONTAINER_OF_T>
                 explicit Collection (const CONTAINER_OF_T& b);
@@ -136,7 +90,7 @@ namespace   Stroika {
                 explicit Collection (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Collection<T, TRAITS>& operator= (const Collection<T, TRAITS>& rhs);
+                nonvirtual  Collection<T>& operator= (const Collection<T>& rhs);
 
             public:
                 /**
@@ -147,7 +101,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Add the given item(s) to this Collection<T,TRAITS>. Note - if the given items are already present, another
+                 * Add the given item(s) to this Collection<T>. Note - if the given items are already present, another
                  * copy will be added. No promises are made about where the added value will appear in iteration.
                  */
                 nonvirtual  void    Add (T item);
@@ -178,7 +132,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Collection<T, TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Collection<T> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  * SECOND OVERLOAD:
                  * This function requires that the iterator 'i' came from this container.
@@ -193,7 +147,7 @@ namespace   Stroika {
                 /**
                  * It is legal to remove something that is not there. This function removes the first instance of item
                  * (or each item for the 'items' overload), meaning that another instance of item could still be in the
-                 * Collection<T, TRAITS> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
+                 * Collection<T> after the remove. Thus function just reduces the Tally() by one (or zero if item wasn't found).
                  *
                  *  The no-argument verison Produces an empty bag.
                  */
@@ -220,8 +174,8 @@ namespace   Stroika {
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
-                nonvirtual  Collection<T, TRAITS>& operator+= (T item);
-                nonvirtual  Collection<T, TRAITS>& operator+= (const Collection<T, TRAITS>& items);
+                nonvirtual  Collection<T>& operator+= (T item);
+                nonvirtual  Collection<T>& operator+= (const Collection<T>& items);
 
 
             protected:
@@ -231,13 +185,13 @@ namespace   Stroika {
 
 
             /**
-             *  \brief  Implementation detail for Collection<T,TRAITS> implementors.
+             *  \brief  Implementation detail for Collection<T> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the Collection<T,TRAITS> container API.
+             *  the Collection<T> container API.
              */
-            template    <typename T, typename TRAITS>
-            class   Collection<T, TRAITS>::_IRep : public Iterable<T>::_IRep {
+            template    <typename T>
+            class   Collection<T>::_IRep : public Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

@@ -24,13 +24,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 **************************** Collection_Array<T,TRAITS>::Rep_ *************************
+                 ********************* Collection_Array<T,TRAITS>::Rep_ *************************
                  ********************************************************************************
                  */
-                template    <typename T, typename TRAITS>
-                class   Collection_Array<T, TRAITS>::Rep_ : public Collection<T, TRAITS>::_IRep {
+                template    <typename T>
+                class   Collection_Array<T>::Rep_ : public Collection<T>::_IRep {
                 private:
-                    typedef typename    Collection<T, TRAITS>::_IRep   inherited;
+                    typedef typename    Collection<T>::_IRep   inherited;
 
                 public:
                     Rep_ ();
@@ -51,7 +51,7 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Collection<T,TRAITS>::_IRep overrides
+                    // Collection<T>::_IRep overrides
                 public:
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
@@ -61,7 +61,7 @@ namespace   Stroika {
                 private:
                     typedef Private::PatchingDataStructures::Array_Patch <
                     T,
-                    Private::DataStructures::Array_DefaultTraits<T, typename TRAITS::EqualsCompareFunctionType>
+                    Private::DataStructures::Array_DefaultTraits<T, void>
                     >
                     DataStructureImplType_;
 
@@ -79,15 +79,15 @@ namespace   Stroika {
                 *********************** Collection_Array<T,TRAITS>::Rep_ ***********************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                inline  Collection_Array<T, TRAITS>::Rep_::Rep_ ()
+                template    <typename T>
+                inline  Collection_Array<T>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Collection_Array<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                template    <typename T>
+                inline  Collection_Array<T>::Rep_::Rep_ (const Rep_& from)
                     : fLockSupport_ ()
                     , fData_ ()
                 {
@@ -96,14 +96,14 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  Collection_Array<T, TRAITS>::Rep_::Clone () const
+                template    <typename T>
+                typename Iterable<T>::_SharedPtrIRep  Collection_Array<T>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>  Collection_Array<T, TRAITS>::Rep_::MakeIterator () const
+                template    <typename T>
+                Iterator<T>  Collection_Array<T>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -113,34 +113,34 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<T> (tmpRep);
                 }
-                template    <typename T, typename TRAITS>
-                size_t  Collection_Array<T, TRAITS>::Rep_::GetLength () const
+                template    <typename T>
+                size_t  Collection_Array<T>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                bool  Collection_Array<T, TRAITS>::Rep_::IsEmpty () const
+                template    <typename T>
+                bool  Collection_Array<T>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength () == 0);
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void      Collection_Array<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                template    <typename T>
+                void      Collection_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                template    <typename T, typename TRAITS>
-                Iterator<T>     Collection_Array<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                template    <typename T>
+                Iterator<T>     Collection_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_Array<T, TRAITS>::Rep_::Add (T item)
+                template    <typename T>
+                void    Collection_Array<T>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         // Appending is fastest
@@ -148,8 +148,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_Array<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
+                template    <typename T>
+                void    Collection_Array<T>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -159,8 +159,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_Array<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
+                template    <typename T>
+                void    Collection_Array<T>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -170,8 +170,8 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                void    Collection_Array<T, TRAITS>::Rep_::RemoveAll ()
+                template    <typename T>
+                void    Collection_Array<T>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
@@ -182,23 +182,23 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ***************************** Collection_Array<T,TRAITS> ******************************
+                ********************** Collection_Array<T,TRAITS> ******************************
                 ********************************************************************************
                 */
-                template    <typename T, typename TRAITS>
-                Collection_Array<T, TRAITS>::Collection_Array ()
+                template    <typename T>
+                Collection_Array<T>::Collection_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
-                template    <typename T, typename TRAITS>
-                Collection_Array<T, TRAITS>::Collection_Array (const Collection<T, TRAITS>& collection)
+                template    <typename T>
+                Collection_Array<T>::Collection_Array (const Collection<T>& collection)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     SetCapacity (collection.GetLength ());
                     this->AddAll (collection);
                 }
-                template    <typename T, typename TRAITS>
-                Collection_Array<T, TRAITS>::Collection_Array (const T* start, const T* end)
+                template    <typename T>
+                Collection_Array<T>::Collection_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
@@ -207,19 +207,19 @@ namespace   Stroika {
                         this->AddAll (start, end);
                     }
                 }
-                template    <typename T, typename TRAITS>
-                inline  Collection_Array<T, TRAITS>::Collection_Array (const Collection_Array<T, TRAITS>& collection)
+                template    <typename T>
+                inline  Collection_Array<T>::Collection_Array (const Collection_Array<T>& collection)
                     : inherited (static_cast<const inherited&> (collection))
                 {
                 }
-                template    <typename T, typename TRAITS>
-                inline  Collection_Array<T, TRAITS>&   Collection_Array<T, TRAITS>::operator= (const Collection_Array<T, TRAITS>& rhs)
+                template    <typename T>
+                inline  Collection_Array<T>&   Collection_Array<T>::operator= (const Collection_Array<T>& rhs)
                 {
                     inherited::operator= (static_cast<const inherited&> (rhs));
                     return *this;
                 }
-                template    <typename T, typename TRAITS>
-                inline  const typename Collection_Array<T, TRAITS>::Rep_&  Collection_Array<T, TRAITS>::GetRep_ () const
+                template    <typename T>
+                inline  const typename Collection_Array<T>::Rep_&  Collection_Array<T>::GetRep_ () const
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
@@ -228,8 +228,8 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<const Rep_&> (inherited::_GetRep ()));
                 }
-                template    <typename T, typename TRAITS>
-                inline  typename Collection_Array<T, TRAITS>::Rep_&    Collection_Array<T, TRAITS>::GetRep_ ()
+                template    <typename T>
+                inline  typename Collection_Array<T>::Rep_&    Collection_Array<T>::GetRep_ ()
                 {
                     /*
                      * This cast is safe since we there is no Iterable<T>::_SetRep() - and so no way to ever change
@@ -238,24 +238,24 @@ namespace   Stroika {
                     AssertMember (&inherited::_GetRep (), Rep_);
                     return (static_cast<Rep_&> (inherited::_GetRep ()));
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    Collection_Array<T, TRAITS>::Compact ()
+                template    <typename T>
+                inline  void    Collection_Array<T>::Compact ()
                 {
                     CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
                         GetRep_ ().fData_.Compact ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  size_t  Collection_Array<T, TRAITS>::GetCapacity () const
+                template    <typename T>
+                inline  size_t  Collection_Array<T>::GetCapacity () const
                 {
                     CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
                         return (GetRep_ ().fData_.GetCapacity ());
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-                template    <typename T, typename TRAITS>
-                inline  void    Collection_Array<T, TRAITS>::SetCapacity (size_t slotsAlloced)
+                template    <typename T>
+                inline  void    Collection_Array<T>::SetCapacity (size_t slotsAlloced)
                 {
                     CONTAINER_LOCK_HELPER_START (GetRep_ ().fLockSupport_) {
                         GetRep_ ().fData_.SetCapacity (slotsAlloced);

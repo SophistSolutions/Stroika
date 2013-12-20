@@ -32,23 +32,23 @@ namespace   Stroika {
 
 
                 /**
-                 *  \brief Collection_stdforward_list<T, TRAITS> is an std::forward_list (singly linked list)-based concrete implementation of the Collection<T, TRAITS> container pattern.
+                 *  \brief Collection_stdforward_list<T> is an std::forward_list (singly linked list)-based concrete implementation of the Collection<T> container pattern.
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  *
                  */
-                template    <typename T, typename TRAITS = Collection_DefaultTraits<T>>
-                class  Collection_stdforward_list : public Collection<T, TRAITS> {
+                template    <typename T>
+                class  Collection_stdforward_list : public Collection<T> {
                 private:
-                    typedef     Collection<T, TRAITS>  inherited;
+                    typedef     Collection<T>  inherited;
 
                 public:
                     Collection_stdforward_list ();
                     Collection_stdforward_list (const T* start, const T* end);
-                    Collection_stdforward_list (const Collection<T, TRAITS>& collection);
-                    Collection_stdforward_list (const Collection_stdforward_list<T, TRAITS>& collection);
+                    Collection_stdforward_list (const Collection<T>& collection);
+                    Collection_stdforward_list (const Collection_stdforward_list<T>& collection);
 
-                    nonvirtual  Collection_stdforward_list<T, TRAITS>&  operator= (const Collection_stdforward_list<T, TRAITS>& collection);
+                    nonvirtual  Collection_stdforward_list<T>&  operator= (const Collection_stdforward_list<T>& collection);
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
