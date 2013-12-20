@@ -47,7 +47,7 @@ namespace   Stroika {
             }
             template    <typename T>
             inline  Collection<T>::Collection (const std::initializer_list<T>& src)
-                : inherited (Concrete::Collection_Factory<T, TRAITS>::mk ())
+                : inherited (Concrete::Collection_Factory<T>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
