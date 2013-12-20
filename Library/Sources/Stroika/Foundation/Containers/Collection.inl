@@ -23,7 +23,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************************** Collection<T,TRAITS> ************************************
+             ************************* Collection<T,TRAITS> *********************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -77,9 +77,15 @@ namespace   Stroika {
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename T, typename TRAITS>
-            inline  bool    Collection<T, TRAITS>::Contains (T item) const
+            template    <typename EQUALS_COMPARER>
+            bool    Collection<T, TRAITS>::Contains (T item) const
             {
-                return (_GetRep ().Contains (item));
+                for (auto i : *this) {
+                    if (EQUALS_COMPARER::Equals (i, item)) {
+                        return true;
+                    }
+                }
+                return false;
             }
             template    <typename T, typename TRAITS>
             inline  void    Collection<T, TRAITS>::clear ()
@@ -109,11 +115,6 @@ namespace   Stroika {
                 else {
                     AddAll (std::begin (c), std::end (c));
                 }
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool  Collection<T, TRAITS>::Equals (const Collection<T, TRAITS>& rhs) const
-            {
-                return (_GetRep ().Equals (rhs._GetRep ()));
             }
             template    <typename T, typename TRAITS>
             inline  void    Collection<T, TRAITS>::Add (T item)
@@ -161,18 +162,6 @@ namespace   Stroika {
                 _GetRep ().Remove (i);
             }
             template    <typename T, typename TRAITS>
-            inline  size_t    Collection<T, TRAITS>::TallyOf (const Iterator<T>& i) const
-            {
-                // @todo - add appropriate virtual method to Rep, and implement more efficiently...
-                Require (not i.Done ());
-                return _GetRep ().TallyOf (*i);
-            }
-            template    <typename T, typename TRAITS>
-            inline  size_t    Collection<T, TRAITS>::TallyOf (T item) const
-            {
-                return _GetRep ().TallyOf (item);
-            }
-            template    <typename T, typename TRAITS>
             inline  Collection<T, TRAITS>& Collection<T, TRAITS>::operator+= (T item)
             {
                 Add (item);
@@ -184,33 +173,11 @@ namespace   Stroika {
                 AddAll (items);
                 return *this;
             }
-            template    <typename T, typename TRAITS>
-            inline  Collection<T, TRAITS>& Collection<T, TRAITS>::operator-= (T item)
-            {
-                Remove (item);
-                return *this;
-            }
-            template    <typename T, typename TRAITS>
-            inline  Collection<T, TRAITS>& Collection<T, TRAITS>::operator-= (const Collection<T, TRAITS>& items)
-            {
-                RemoveAll (items);
-                return (*this);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool  Collection<T, TRAITS>::operator== (const Collection<T, TRAITS>& rhs) const
-            {
-                return Equals (rhs);
-            }
-            template    <typename T, typename TRAITS>
-            inline  bool    Collection<T, TRAITS>::operator!= (const Collection<T, TRAITS>& rhs) const
-            {
-                return (not Equals (rhs));
-            }
 
 
             /*
              ********************************************************************************
-             ****************************** Collection<T,TRAITS>::_IRep ****************************
+             *********************** Collection<T,TRAITS>::_IRep ****************************
              ********************************************************************************
              */
             template    <typename T, typename TRAITS>
@@ -220,40 +187,6 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Collection<T, TRAITS>::_IRep::~_IRep ()
             {
-            }
-            template    <typename T, typename TRAITS>
-            bool  Collection<T, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
-            {
-                if (this == &rhs) {
-                    return true;
-                }
-                if (this->GetLength () != rhs.GetLength ()) {
-                    return false;
-                }
-
-                // Needlessly horrible algorithm, but correct, and adequate as a reference
-                for (Iterator<T> i = this->MakeIterator (); not i.Done (); ++i) {
-                    if (this->TallyOf (*i) != rhs.TallyOf (*i)) {
-                        return (false);
-                    }
-                }
-                for (Iterator<T> i = rhs.MakeIterator (); not i.Done (); ++i) {
-                    if (this->TallyOf (*i) != rhs.TallyOf (*i)) {
-                        return (false);
-                    }
-                }
-                return (true);
-            }
-            template    <typename T, typename TRAITS>
-            size_t    Collection<T, TRAITS>::_IRep::_TallyOf_Reference_Implementation (T item) const
-            {
-                size_t  count = 0;
-                for (Iterator<T> i = this->MakeIterator (); not i.Done (); ++i) {
-                    if (TRAITS::EqualsCompareFunctionType::Equals (*i, item)) {
-                        count++;
-                    }
-                }
-                return count;
             }
 
 

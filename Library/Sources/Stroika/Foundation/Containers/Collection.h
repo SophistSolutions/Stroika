@@ -140,6 +140,7 @@ namespace   Stroika {
                 /**
                  * \brief Compares items with TRAITS::EqualsCompareFunctionType::Equals, and returns true if any match.
                  */
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    Contains (T item) const;
 
             public:
@@ -208,36 +209,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 * NYI - but this can be remove duplicates. So you can say
-                 *      for (auto i : bag) {} OR
-                 *      for (auto i : bag.UniqueElements ()) {}
-                 */
-                nonvirtual  Iterable<T>   UniqueElements () const;
-
-            public:
-                /*
-                 *  Two Bags are considered equal if they contain the same elements (by comparing them with
-                 *  TRAITS::EqualsCompareFunctionType::Equals) with the same count.
-                 *
-                 *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the
-                 *  same item in the RHS.
-                 *
-                 *  Equals is commutative().
-                 */
-                nonvirtual  bool    Equals (const Collection<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *  Since items can appear more than once, this function traverses the bag and returns the
-                 *  count of times the given item appears. Note that TallyOf (T) returns zero if the item
-                 *  is not present. For TallyOf (T), the TRAITS::EqualsCompareFunctionType::Equals() function
-                 *  is used to compare.
-                 */
-                nonvirtual  size_t  TallyOf (const Iterator<T>& i) const;
-                nonvirtual  size_t  TallyOf (T item) const;
-
-            public:
-                /**
                  *  operator+ is syntactic sugar on Add() or AddAll() - depending on the overload.
                  *
                  *  *DEVELOPER NOTE*
@@ -249,30 +220,6 @@ namespace   Stroika {
                 nonvirtual  Collection<T, TRAITS>& operator+= (T item);
                 nonvirtual  Collection<T, TRAITS>& operator+= (const Collection<T, TRAITS>& items);
 
-            public:
-                /**
-                 *  operator- is syntactic sugar on Remove() or RemoveAll() - depending on the overload.
-                 *
-                 *  *DEVELOPER NOTE*
-                 *      Note - we use an overload
-                 *      of Bag<T,TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
-                 *      to distinguish the two cases. If I can figure that out, this can transparently be
-                 *      replaced with operator+= (X), with appropriate specializations.
-                 */
-                nonvirtual  Collection<T, TRAITS>& operator-= (T item);
-                nonvirtual  Collection<T, TRAITS>& operator-= (const Collection<T, TRAITS>& items);
-
-            public:
-                /**
-                 *      Syntactic sugar on Equals()
-                 */
-                nonvirtual  bool    operator== (const Collection<T, TRAITS>& rhs) const;
-
-            public:
-                /**
-                 *      Syntactic sugar on not Equals()
-                 */
-                nonvirtual  bool    operator!= (const Collection<T, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -295,25 +242,11 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool    Equals (const _IRep& rhs) const             =   0;
-                virtual bool    Contains (T item) const                     =   0;
-                virtual size_t  TallyOf (T item) const                      =   0;
                 virtual void    Add (T item)                                =   0;
                 virtual void    Update (const Iterator<T>& i, T newValue)   =   0;
                 virtual void    Remove (T item)                             =   0;
                 virtual void    Remove (const Iterator<T>& i)               =   0;
                 virtual void    RemoveAll ()                                =   0;
-
-                /*
-                 *  Reference Implementations (often not used except for ensure's, but can be used for
-                 *  quickie backends).
-                 *
-                 *  Importantly, these are all non-virtual so not actually pulled in or even compiled unless
-                 *  the sucblass refers to the method in a subclass virtual override.
-                 */
-            protected:
-                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
-                nonvirtual size_t  _TallyOf_Reference_Implementation (T item) const;
             };
 
 

@@ -34,7 +34,6 @@ namespace CommonTests {
                 {
                     for(size_t i = 1; i <= kTestSize; i++) {
                         s.Add(i);
-                        VerifyTestResult(s.Contains(i));
                         applyToContainer (s);
                     }
                     VerifyTestResult(s.GetLength() == kTestSize);
@@ -44,11 +43,8 @@ namespace CommonTests {
                     VerifyTestResult(s.GetLength() == kTestSize);
                     for (T i : s) {
                         size_t  oldLength = s.GetLength ();
-                        VerifyTestResult(s.Contains(i));
-                        VerifyTestResult(s.Contains(s.GetLength ()));
                         size_t item2Remove = s.GetLength ();
                         s.Remove (item2Remove);
-                        VerifyTestResult(not s.Contains(item2Remove));
                         applyToContainer (s);
                         VerifyTestResult(s.GetLength () == oldLength - 1);
                     }
@@ -63,11 +59,9 @@ namespace CommonTests {
                     {
                         for (T it : s) {
                             for(size_t i = 1; i <= kTestSize; i++) {
-                                VerifyTestResult(s.Contains(i));
                                 VerifyTestResult(s.GetLength() == kTestSize - i + 1);
                                 s.Remove(i);
                                 applyToContainer (s);
-                                VerifyTestResult(not s.Contains(i - 1));
                                 VerifyTestResult(s.GetLength() == kTestSize - i);
                             }
                         }
@@ -148,11 +142,6 @@ namespace CommonTests {
 #endif
 
                 for(size_t i = 1; i <= s.GetLength(); i++) {
-                    VerifyTestResult(s.Contains(i));
-                    VerifyTestResult(not s.Contains(0));
-                }
-
-                for(size_t i = 1; i <= s.GetLength(); i++) {
                     for (T it : s) {
                         if (EqualsCompareFunctionType::Equals (it, i)) {
                             break;
@@ -190,21 +179,13 @@ namespace CommonTests {
                 USING_BASECollection_CONTAINER s1 (s);
                 applyToContainer (s1);
 
-                VerifyTestResult(s1 == s);
-                VerifyTestResult(s1 == s);
-
                 USING_BASECollection_CONTAINER s2 = s1;
                 applyToContainer (s2);
-
-                VerifyTestResult(s2 == s);
-                VerifyTestResult(s2 == s1);
 
                 s2.Add(three);
                 applyToContainer (s);
                 applyToContainer (s1);
                 applyToContainer (s2);
-                VerifyTestResult(s1 == s);
-                VerifyTestResult(s2 != s1);
 
                 IteratorTests_ (s, applyToContainer);
                 applyToContainer (s);
@@ -221,11 +202,8 @@ namespace CommonTests {
                 VerifyTestResult(s.GetLength() == 1);
                 s += three;
                 VerifyTestResult(s.GetLength() == 2);
-                VerifyTestResult(s.Contains(three));
                 s.Remove(three);
                 VerifyTestResult(s.GetLength() == 1);
-                s -= three;
-                VerifyTestResult(s.IsEmpty());
                 s.RemoveAll();
                 VerifyTestResult(s.IsEmpty());
 
@@ -245,30 +223,8 @@ namespace CommonTests {
 
                 for(i = 1; i <= K; i++) {
                     s.Add(i);
-                    VerifyTestResult(s.Contains(i));
-                    VerifyTestResult(s.TallyOf(i) == 1);
                     VerifyTestResult(s.GetLength() == i);
                 }
-                for(i = K; i > 0; i--) {
-                    s -= i;
-                    VerifyTestResult(not s.Contains(i));
-                    VerifyTestResult(s.GetLength() == (i - 1));
-                }
-                VerifyTestResult(s.IsEmpty());
-
-                for(i = 1; i <= K / 2; i++) {
-                    s += 1;
-                    applyToContainer (s);
-                    VerifyTestResult(s.TallyOf(1) == i);
-                }
-                size_t oldLength = s.GetLength();
-                s += s;
-                applyToContainer (s);
-                VerifyTestResult(s.GetLength() == oldLength * 2);
-                s -= s;
-                applyToContainer (s);
-                VerifyTestResult(s.GetLength() == 0);
-
 #if     qPrintTimings
                 t = GetCurrentTime() - t;
                 cout << tab << "finished testing Collection<size_t>; time elapsed = " << t << endl;
@@ -286,101 +242,80 @@ namespace CommonTests {
         }
 
 
-        namespace   Test2_TallyOf_ {
 
-            template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION>
-            void    SimpleTallyTest_ (TEST_FUNCTION applyToContainer)
+        namespace   Test2_TestsWithComparer_ {
+            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
+            void        On_Container_ (USING_Collection_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType ELEMENT_TYPE;
-                USING_Collection_CONTAINER   collection;
-                ELEMENT_TYPE    t1  =   1;
-                ELEMENT_TYPE    t2  =   2;
-                ELEMENT_TYPE    t3  =   3;
-                VerifyTestResult (collection.IsEmpty ());
-                collection.Add (t1);
-                collection.Add (t1);
-                applyToContainer (collection);
-                VerifyTestResult (not collection.IsEmpty ());
-                VerifyTestResult (collection.TallyOf (t3) == 0);
-                VerifyTestResult (collection.TallyOf (t1) == 2);
-                {
-                    USING_Collection_CONTAINER   collection2 = collection;
-                    VerifyTestResult (collection2.TallyOf (t3) == 0);
-                    VerifyTestResult (collection2.TallyOf (t1) == 2);
-                    collection.Add (t1);
-                    applyToContainer (collection);
-                    VerifyTestResult (collection2.TallyOf (t1) == 2);
-                    VerifyTestResult (collection.TallyOf (t1) == 3);
+                typedef typename USING_Collection_CONTAINER::ElementType   T;
+                typedef typename USING_Collection_CONTAINER::TraitsType    TraitsType;
+                size_t  three = 3;
+
+                applyToContainer (s);
+                USING_BASECollection_CONTAINER s1 (s);
+                applyToContainer (s1);
+
+                USING_BASECollection_CONTAINER s2 = s1;
+                applyToContainer (s2);
+
+                s2.Add (three);
+                applyToContainer (s);
+                applyToContainer (s1);
+                applyToContainer (s2);
+
+                IteratorTests_ (s, applyToContainer);
+                applyToContainer (s);
+
+#if     qDebug
+                const   size_t  K = 200;
+#else
+                const   size_t  K = 500;
+#endif
+                size_t i;
+
+                VerifyTestResult (s.IsEmpty ());
+                s.Add (three);
+                VerifyTestResult (s.GetLength () == 1);
+                s += three;
+                VerifyTestResult (s.GetLength () == 2);
+                VerifyTestResult (s.Contains (three));
+                s.Remove (three);
+                VerifyTestResult (s.GetLength () == 1);
+                s.RemoveAll ();
+                VerifyTestResult (s.IsEmpty ());
+
+                for (i = 1; i <= K; i++) {
+                    s.Add (i);
+                    applyToContainer (s);
                 }
+                applyToContainer (s);
+                CollectionTimings_ (s, applyToContainer);
+                applyToContainer (s);
+                VerifyTestResult (s.IsEmpty ());
+
+#if     qPrintTimings
+                Time t = GetCurrentTime ();
+                cout << tab << "testing Collection<size_t>..." << endl;
+#endif
+
+                for (i = 1; i <= K; i++) {
+                    s.Add (i);
+                    VerifyTestResult (s.Contains (i));
+                    VerifyTestResult (s.GetLength () == i);
+                }
+#if     qPrintTimings
+                t = GetCurrentTime () - t;
+                cout << tab << "finished testing Collection<size_t>; time elapsed = " << t << endl;
+#endif
             }
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
-            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                SimpleTallyTest_<USING_Collection_CONTAINER> (applyToContainer);
+                USING_Collection_CONTAINER s;
+                On_Container_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (s, applyToContainer);
             }
         }
-
-
-
-
-        namespace   Test3_Equals_ {
-
-            template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION>
-            void    SimpleOpEqualsTest_ (TEST_FUNCTION applyToContainer)
-            {
-                typedef typename USING_Collection_CONTAINER::ElementType ELEMENT_TYPE;
-                USING_Collection_CONTAINER   collection;
-                ELEMENT_TYPE    t1  =   1;
-                ELEMENT_TYPE    t2  =   2;
-                ELEMENT_TYPE    t3  =   3;
-                VerifyTestResult (collection.IsEmpty ());
-                collection.Add (t1);
-                collection.Add (t1);
-                applyToContainer (collection);
-                {
-                    USING_Collection_CONTAINER   collection2 = collection;
-                    VerifyTestResult (collection2 == collection);
-                    VerifyTestResult (not (collection2 != collection));
-                    collection.Add (t1);
-                    applyToContainer (collection);
-                    VerifyTestResult (not (collection2 == collection));
-                    VerifyTestResult (collection2 != collection);
-                }
-
-                VerifyTestResult (collection.GetLength () == 3);
-                collection.Add (t3);
-                collection.Add (t1);
-                collection.Add (t1);
-                collection.Add (t3);
-                applyToContainer (collection);
-                {
-                    USING_Collection_CONTAINER   collection2 = collection;
-                    VerifyTestResult (collection2 == collection);
-                    VerifyTestResult (not (collection2 != collection));
-                    collection.Add (t1);
-                    VerifyTestResult (not (collection2 == collection));
-                    VerifyTestResult (collection2 != collection);
-                    collection.Remove (t1);
-                    applyToContainer (collection);
-                    VerifyTestResult (collection2 == collection);
-                    VerifyTestResult (not (collection2 != collection));
-                }
-
-            }
-
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
-            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
-            {
-                SimpleOpEqualsTest_<USING_Collection_CONTAINER> (applyToContainer);
-            }
-
-        }
-
-
-
-
-
 
 
         namespace   Test4_IteratorsBasics_ {
@@ -484,12 +419,16 @@ namespace CommonTests {
         void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
-            Test2_TallyOf_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
-            Test3_Equals_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
             Test4_IteratorsBasics_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
             Test5_Apply_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
         }
 
+
+        template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
+        void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        {
+            Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
+        }
 
     }
 }

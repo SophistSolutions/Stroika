@@ -24,7 +24,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** Collection_LinkedList<T, TRAITS>::Rep_ ************************
+                 ******************* Collection_LinkedList<T, TRAITS>::Rep_ *********************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
@@ -53,9 +53,6 @@ namespace   Stroika {
 
                     // Collection<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Collection<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool    Contains (T item) const override;
-                    virtual size_t  TallyOf (T item) const override;
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
                     virtual void    Remove (T item) override;
@@ -75,7 +72,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ********************** Collection_LinkedList<T, TRAITS>::Rep_ *************************
+                ****************** Collection_LinkedList<T, TRAITS>::Rep_ **********************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
@@ -138,24 +135,6 @@ namespace   Stroika {
                 Iterator<T>     Collection_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
-                }
-                template    <typename T, typename TRAITS>
-                bool    Collection_LinkedList<T, TRAITS>::Rep_::Equals (const typename Collection<T, TRAITS>::_IRep& rhs) const
-                {
-                    return this->_Equals_Reference_Implementation (rhs);
-                }
-                template    <typename T, typename TRAITS>
-                bool    Collection_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
-                {
-                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return fData_.Lookup (item) != nullptr;
-                    }
-                    CONTAINER_LOCK_HELPER_END ();
-                }
-                template    <typename T, typename TRAITS>
-                size_t    Collection_LinkedList<T, TRAITS>::Rep_::TallyOf (T item) const
-                {
-                    return this->_TallyOf_Reference_Implementation (item);
                 }
                 template    <typename T, typename TRAITS>
                 void    Collection_LinkedList<T, TRAITS>::Rep_::Add (T item)
