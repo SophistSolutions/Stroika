@@ -22,6 +22,16 @@
  *
  *
  * TODO:
+ *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
+ *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
+ *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event
+ *              object to cleanly shutodown and the other to HARD ABORT!
+ *
+ *              This API encourages that mistake. I changed the Servide code to use SetSignalHandler - but
+ *              That has the default of being hard to debug/non-modular. Maybe have a "SetDefaultHanlder"
+ *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
+ *              handlers?
+ *
  *      @todo   ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT
  *
  *              Much signal handling - like in Frameworks::Service::Main - unsafe anyhow cuz of malloc in signal handler)
