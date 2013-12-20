@@ -757,9 +757,9 @@ pid_t   Main::BasicUNIXServiceImpl::_GetServicePID () const
 
 void    Main::BasicUNIXServiceImpl::SetupSignalHanlders_ ()
 {
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGINT, SignalHandler_);
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (SIGTERM, SignalHandler_);
-    Execution::SignalHandlerRegistry::Get ().AddSignalHandler (kSIG_ReReadConfiguration, SignalHandler_);
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler_);
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (SIGTERM, SignalHandler_);
+    Execution::SignalHandlerRegistry::Get ().SetSignalHandlers (kSIG_ReReadConfiguration, SignalHandler_);
 }
 
 String  Main::BasicUNIXServiceImpl::_GetPIDFileName () const
