@@ -148,11 +148,11 @@ namespace   Stroika {
                 {
                     return fTallyRep_->IsEmpty ();  // subtle but since we never store items with a zero count, this is OK
                 }
-                virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override
+                virtual void                                    Apply (typename _ElementsIterableHelperRep::_APPLY_ARGTYPE doToElement) const override
                 {
                     return this->_Apply (doToElement);
                 }
-                virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override
+                virtual Iterator<T>                             ApplyUntilTrue (typename _ElementsIterableHelperRep::_APPLYUNTIL_ARGTYPE doToElement) const override
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
@@ -186,11 +186,11 @@ namespace   Stroika {
                 {
                     return fTallyRep_->IsEmpty ();
                 }
-                virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override
+                virtual void                                    Apply (typename _ElementsIterableHelperRep::_APPLY_ARGTYPE doToElement) const override
                 {
                     return this->_Apply (doToElement);
                 }
-                virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override
+                virtual Iterator<T>                             ApplyUntilTrue (typename _ElementsIterableHelperRep::_APPLYUNTIL_ARGTYPE doToElement) const override
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
