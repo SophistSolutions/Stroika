@@ -233,18 +233,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Iterable<T>   UniqueElements () const;
 
-#if 1
-                // lose once Elements()/UniqueElements() works
-            public:
-                /**
-                 * Return an iterator over individual items in the tally - as if the Tally was a Bag,
-                 * not a Tally.
-                 */
-                nonvirtual  Iterator<T> MakeBagIterator () const;
-                nonvirtual  Iterator<T> bagbegin () const;
-                nonvirtual  Iterator<T> bagend () const;
-#endif
-
             public:
                 /*
                  *  Two Tally are considered equal if they contain the same elements (by comparing them with operator==) with the same count.

@@ -186,7 +186,21 @@ namespace CommonTests {
                 }
             }
             for (auto it = s.begin (); it != s.end (); ++it) {
+#if 1
+                for (it1 : s.Elements ()) {
+                    s.RemoveAll ();
+                    applyToContainer (s);
+                }
+#else
                 for (auto it1 = s.bagbegin (); it1 != s.bagend (); ++it1) {
+                    s.RemoveAll ();
+                    applyToContainer (s);
+                }
+#endif
+            }
+            s.Add (3);
+            for (auto it = s.begin (); it != s.end (); ++it) {
+                for (it1 : s.UniqueElements ()) {
                     s.RemoveAll ();
                     applyToContainer (s);
                 }

@@ -88,9 +88,9 @@ namespace   Stroika {
                 }
                 _TallyEntryToItemIteratorWithCountsHelperRep (const _TallyEntryToItemIteratorWithCountsHelperRep& rhs)
                     : inherited (Iterator<TallyEntry<T>> (rhs.fDelegateTo_))
-                    , fCountMoreTimesToGoBeforeAdvance (rhs.fCountMoreTimesToGoBeforeAdvance);
-                , fSaved2Return_ (rhs.fSaved2Return_)
-            {
+                    , fCountMoreTimesToGoBeforeAdvance (rhs.fCountMoreTimesToGoBeforeAdvance)
+                    , fSaved2Return_ (rhs.fSaved2Return_)
+                {
                 }
                 virtual void    More (Memory::Optional<T>* result, bool advance) override
                 {
@@ -362,21 +362,6 @@ namespace   Stroika {
             inline  void    Tally<T, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Iterator<T>    Tally<T, TRAITS>::MakeBagIterator () const
-            {
-                return _GetRep ().MakeBagIterator ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Iterator<T>    Tally<T, TRAITS>::bagbegin () const
-            {
-                return MakeBagIterator ();
-            }
-            template    <typename T, typename TRAITS>
-            inline  Iterator<T>       Tally<T, TRAITS>::bagend () const
-            {
-                return Iterator<T>::GetEmptyIterator ();
             }
             template    <typename T, typename TRAITS>
             inline  void    Tally<T, TRAITS>::Add (T item)
