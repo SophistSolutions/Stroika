@@ -103,9 +103,23 @@ namespace   Stroika {
              *
              */
             template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
-            class  Tally : public Iterable<TallyEntry<T>> {
+            class   Tally : public Iterable<TallyEntry<T>> {
             private:
                 typedef Iterable<TallyEntry<T>> inherited;
+
+            public:
+                /**
+                *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
+                *  building other templates.
+                */
+                typedef TRAITS  TraitsType;
+
+            public:
+                /**
+                *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                *  building other templates.
+                */
+                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
 
             public:
                 /**
@@ -139,11 +153,15 @@ namespace   Stroika {
                 nonvirtual  bool    Contains (T item) const;
 
             public:
+                /**
+                 */
                 nonvirtual  void    Add (T item);
                 nonvirtual  void    Add (T item, size_t count);
                 nonvirtual  void    Add (const TallyEntry<T>& item);
 
             public:
+                /**
+                 */
                 nonvirtual  void    AddAll (const T* start, const T* end);
                 nonvirtual  void    AddAll (const TallyEntry<T>* start, const TallyEntry<T>* end);
                 template <typename CONTAINER_OF_T>
@@ -168,11 +186,13 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll (T item);
 
             public:
-                // if newCount == 0, equivilent to Remove(i). Require not i.Done () - so it must point to a given item.
+                /**
+                 * if newCount == 0, equivilent to Remove(i). Require not i.Done () - so it must point to a given item.
+                 */
                 nonvirtual  void    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount);
 
             public:
-                /*
+                /**
                  *  TallyOf() returns the number of occurences of 'item' in the tally. The items are compared with operator==.
                  *
                  *  If there are no copies of item in the Tally, 0 is returned.
@@ -180,22 +200,41 @@ namespace   Stroika {
                 nonvirtual  size_t  TallyOf (T item) const;
 
             public:
+                /**
+                */
                 nonvirtual  size_t  TotalTally () const;
 
             public:
-                nonvirtual  Tally<T, TRAITS>&   operator+= (T item);
-                nonvirtual  Tally<T, TRAITS>&   operator+= (const Tally<T, TRAITS>& t);
-
-            public:
                 /**
-                 * NYI - but this can be remove duplicates. So you can say
-                 *      for (auto ti : tally) {} OR
-                 *      for (auto i : tally.Elements ()) {}
+                 * This is like the Tally was a Bag<T>. If something is in there N times,
+                 *  it will show up in iteration N times. No guarnatee is made as to order of iteration.
                  *
-                 *  Maybe use that to replace MakeBagIterator (and bagbegin etc)...
+                 *  Use Example:
+                 *      Tally<T> t;
+                 *      for (T i : t.Elements ()) {
+                 *      }
+                 *
+                 *  Elements () makes no guarantess about whether or not modifications to the underlying Tally<> will
+                 *  appear in the Elements() Iterable<T>.
+                 *
+                 *  @see UniqueElements
                  */
                 nonvirtual  Iterable<T>   Elements () const;
 
+            public:
+                /**
+                 *  Use Example:
+                 *      Tally<T> t;
+                 *      for (T i : t.UniqueElements ()) {
+                 *      }
+                 *
+                 *  Elements () makes no guarantess about whether or not modifications to the underlying Tally<> will
+                 *  appear in the UniqueElements() Iterable<T>.
+                 */
+                nonvirtual  Iterable<T>   UniqueElements () const;
+
+#if 1
+                // lose once Elements()/UniqueElements() works
             public:
                 /**
                  * Return an iterator over individual items in the tally - as if the Tally was a Bag,
@@ -204,6 +243,7 @@ namespace   Stroika {
                 nonvirtual  Iterator<T> MakeBagIterator () const;
                 nonvirtual  Iterator<T> bagbegin () const;
                 nonvirtual  Iterator<T> bagend () const;
+#endif
 
             public:
                 /*
@@ -217,26 +257,22 @@ namespace   Stroika {
                 nonvirtual  bool    Equals (const Tally<T, TRAITS>& rhs) const;
 
             public:
+                /**
+                 *  Synonym for Equals() (or !Equals());
+                 */
                 nonvirtual  bool    operator== (const Tally<T, TRAITS>& rhs) const;
                 nonvirtual  bool    operator!= (const Tally<T, TRAITS>& rhs) const;
+
+            public:
+                /**
+                 *  Synonym for Add (), or AddAll() (depending on argument);
+                 */
+                nonvirtual  Tally<T, TRAITS>&   operator+= (T item);
+                nonvirtual  Tally<T, TRAITS>&   operator+= (const Tally<T, TRAITS>& t);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
-
-            public:
-                /**
-                 *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
-                 *  building other templates.
-                 */
-                typedef TRAITS  TraitsType;
-
-            public:
-                /**
-                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                 *  building other templates.
-                 */
-                typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
             };
 
 
@@ -253,7 +289,6 @@ namespace   Stroika {
             public:
                 virtual bool        Equals (const _IRep& rhs) const                                 =   0;
                 virtual bool        Contains (T item) const                                         =   0;
-                virtual size_t      GetLength () const                                              =   0;
                 virtual void        RemoveAll ()                                                    =   0;
                 virtual void        Add (T item, size_t count)                                      =   0;
                 virtual void        Remove (T item, size_t count)                                   =   0;

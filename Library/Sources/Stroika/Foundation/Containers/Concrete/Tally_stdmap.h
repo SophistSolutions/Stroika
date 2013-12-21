@@ -16,6 +16,8 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
+ *      @todo   MUST re-implement (clone SortedTally_stdmap<>) code to avoid deadly include empbrace so we
+ *              have the option to use this in the factory.
  */
 
 
