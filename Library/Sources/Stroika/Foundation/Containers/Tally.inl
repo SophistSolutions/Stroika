@@ -136,6 +136,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
+                typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
                 class   Rep_ : public Iterable<T>::_IRep {
                 private:
                     Tally<T, TRAITS>   fTally_;
