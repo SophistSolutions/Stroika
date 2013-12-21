@@ -21,106 +21,10 @@ namespace   Stroika {
         namespace   Containers {
 
 
-#if 0
             /**
-             * Protected helper class to convert from an iterator of TallyEntries
-             * to an iterator over individual items.
-             *
-             *  @todo   BUG - _TallyEntryToItemIteratorHelperRep should stop N times where N is the value of count
-             *          in the source iterator!
-             *
-             *          But document and verify the calling code is expecting this.
-             */
-            template    <typename T, typename TRAITS>
-            class  Tally<T, TRAITS>::_IRep::_TallyEntryToItemIteratorHelperRep : public Iterator<T>::IRep {
-            private:
-                typedef typename    Iterator<T>::IRep   inherited;
-
-            public:
-                _TallyEntryToItemIteratorHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
-                    : inherited ()
-                    , fDelegateTo_ (delegateTo)
-                {
-                }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override
-                {
-                    bool done = fDelegateTo_.Done ();
-                    if (not done and advance) {
-                        fDelegateTo_++;
-                        done = fDelegateTo_.Done ();
-                    }
-                    if (done) {
-                        result->clear ();
-                    }
-                    else {
-                        *result = fDelegateTo_->fItem;
-                    }
-                }
-                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
-                {
-                    return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorHelperRep (Iterator<TallyEntry<T>> (fDelegateTo_)));
-                }
-                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
-                {
-                    AssertNotImplemented ();
-                    return false;
-                }
-
-            private:
-                Iterator<TallyEntry<T>> fDelegateTo_;
-            };
-
-
-            /**
-            */
-            template    <typename T, typename TRAITS>
-            class  Tally<T, TRAITS>::_IRep::_TallyEntryToItemIteratorWithCountsHelperRep : public _TallyEntryToItemIteratorHelperRep {
-            private:
-                typedef _TallyEntryToItemIteratorHelperRep  inherited;
-            private:
-                size_t              fCountMoreTimesToGoBeforeAdvance;
-                Memory::Optional<T> fSaved2Return_;
-            public:
-                _TallyEntryToItemIteratorWithCountsHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
-                    : inherited (delegateTo)
-                    , fCountMoreTimesToGoBeforeAdvance (0)
-                    , fSaved2Return_ ()
-                {
-                }
-                _TallyEntryToItemIteratorWithCountsHelperRep (const _TallyEntryToItemIteratorWithCountsHelperRep& rhs)
-                    : inherited (Iterator<TallyEntry<T>> (rhs.fDelegateTo_))
-                    , fCountMoreTimesToGoBeforeAdvance (rhs.fCountMoreTimesToGoBeforeAdvance)
-                    , fSaved2Return_ (rhs.fSaved2Return_)
-                {
-                }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override
-                {
-                    if (fCountMoreTimesToGoBeforeAdvance > 0) {
-                        *result = fSaved2Return_;
-                        if (advance) {
-                            fCountMoreTimesToGoBeforeAdvance--;
-                        }
-                    }
-                    else {
-                        inherited::More (result, advance);
-                        if (advance) {
-                            fSaved2Return_ = *result;
-                            if (fSaved2Return_.IsPresent ()) {
-                                fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
-                            }
-                        }
-                    }
-                }
-                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
-                {
-                    return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorWithCountsHelperRep (*this));
-                }
-            };
-#endif
-
-
-
-            /**
+             *  Protected helper class to convert from an iterator of TallyEntries
+             *  to an iterator over individual items - repeating items the appropriate number of times
+             *  depending on its count.
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_ElementsHelper : public Iterable<T> {
@@ -227,6 +131,8 @@ namespace   Stroika {
 
 
             /**
+             *  Protected helper class to convert from an iterator of TallyEntries
+             *  to an iterator over unique individual items.
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
