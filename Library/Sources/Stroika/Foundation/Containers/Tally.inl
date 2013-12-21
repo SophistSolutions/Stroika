@@ -71,6 +71,87 @@ namespace   Stroika {
 
 
             /*
+             *  @todo SERIOUS REFRENCE COUNTING BUG HERE - NOTHING HANIGN ONTL LIFETIME OF TALLYREP!
+            */
+            template    <typename T, typename TRAITS>
+            class   Tally<T, TRAITS>::_IRep::_ElementsIterableHelperRep : public Iterable<T>::_IRep {
+            private:
+                typename Tally<T, TRAITS>::_IRep&   fTallyRep_;
+            public:
+                _ElementsIterableHelperRep (const typename Tally<T, TRAITS>::_IRep& rhs)
+                    : fTallyRep_ (rhs)
+                {
+                }
+                virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
+                {
+                    return Iterable<T>::_SharedPtrIRep (new _ElementsIterableHelperRep (fTallyRep_));
+                }
+                virtual Iterator<T>                             MakeIterator () const override
+                {
+                    return Iterator<T> (new _TallyEntryToItemIteratorHelperRep (fTallyRep_->MakeIterator ()));
+                }
+                virtual size_t                                  GetLength () const override
+                {
+                    size_t  n = 0;
+                    for (Iterator<TallyEntry> i = fTallyRep_->MakeIterator (); not i.Done (); ++i) {
+                        n += (*i).fCount;
+                    }
+                    return n;
+                }
+                virtual bool                                    IsEmpty () const override
+                {
+                    return fTallyRep_->IsEmpty ();  // subtle but since we never store items with a zero count, this is OK
+                }
+                virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override
+                {
+                    return this->_Apply (doToElement);
+                }
+                virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override
+                {
+                    return this->_ApplyUntilTrue (doToElement);
+                }
+            };
+
+
+            /*
+             */
+            template    <typename T, typename TRAITS>
+            class   Tally<T, TRAITS>::_IRep::_UniqueElementsIterableHelperRep : public Iterable<T>::_IRep {
+            private:
+                typename Tally<T, TRAITS>::_IRep&   fTallyRep_;
+            public:
+                _UniqueElementsIterableHelperRep (const typename Tally<T, TRAITS>::_IRep& rhs)
+                    : fTallyRep_ (rhs)
+                {
+                }
+                virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
+                {
+                    return Iterable<T>::_SharedPtrIRep (new _ElementsIterableHelperRep (fTallyRep_));
+                }
+                virtual Iterator<T>                             MakeIterator () const override
+                {
+                    return Iterator<T> (new _TallyEntryToItemIteratorHelperRep (fTallyRep_->MakeIterator ()));
+                }
+                virtual size_t                                  GetLength () const override
+                {
+                    return fTallyRep_->GetLength ();
+                }
+                virtual bool                                    IsEmpty () const override
+                {
+                    return fTallyRep_->IsEmpty ();
+                }
+                virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override
+                {
+                    return this->_Apply (doToElement);
+                }
+                virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override
+                {
+                    return this->_ApplyUntilTrue (doToElement);
+                }
+            };
+
+
+            /*
              ********************************************************************************
              ****************************** TallyEntry<T> ***********************************
              ********************************************************************************
@@ -123,6 +204,16 @@ namespace   Stroika {
                     }
                 }
                 return true;
+            }
+            template    <typename T, typename TRAITS>
+            Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _IRep& rhs) const
+            {
+                return Iterable<T> (new _ElementsIterableHelperRep (rhs));
+            }
+            template    <typename T, typename TRAITS>
+            Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _IRep& rhs) const
+            {
+                return Iterable<T> (new _UniqueElementsIterableHelperRep (rhs));
             }
 
 

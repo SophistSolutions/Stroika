@@ -305,10 +305,14 @@ namespace   Stroika {
                  *  the sucblass refers to the method in a subclass virtual override.
                  */
             protected:
-                nonvirtual bool    _Equals_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual bool         _Equals_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual Iterable<T>  _Elements_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _IRep& rhs) const;
 
             protected:
                 class   _TallyEntryToItemIteratorHelperRep;
+                class   _ElementsIterableHelperRep;
+                class   _UniqueElementsIterableHelperRep;
             };
 
 
