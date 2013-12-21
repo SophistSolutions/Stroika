@@ -70,9 +70,55 @@ namespace   Stroika {
             };
 
 
-            /*
-             *  @todo SERIOUS REFRENCE COUNTING BUG HERE - NOTHING HANIGN ONTL LIFETIME OF TALLYREP!
+            /**
             */
+            template    <typename T, typename TRAITS>
+            class  Tally<T, TRAITS>::_IRep::_TallyEntryToItemIteratorWithCountsHelperRep : public _TallyEntryToItemIteratorHelperRep {
+            private:
+                typedef _TallyEntryToItemIteratorHelperRep  inherited;
+            private:
+                size_t              fCountMoreTimesToGoBeforeAdvance;
+                Memory::Optional<T> fSaved2Return_;
+            public:
+                _TallyEntryToItemIteratorWithCountsHelperRep (const Iterator<TallyEntry<T>>& delegateTo)
+                    : inherited (delegateTo)
+                    , fCountMoreTimesToGoBeforeAdvance (0)
+                    , fSaved2Return_ ()
+                {
+                }
+                _TallyEntryToItemIteratorWithCountsHelperRep (const _TallyEntryToItemIteratorWithCountsHelperRep& rhs)
+                    : inherited (Iterator<TallyEntry<T>> (rhs.fDelegateTo_))
+                    , fCountMoreTimesToGoBeforeAdvance (rhs.fCountMoreTimesToGoBeforeAdvance);
+                , fSaved2Return_ (rhs.fSaved2Return_)
+            {
+                }
+                virtual void    More (Memory::Optional<T>* result, bool advance) override
+                {
+                    if (fCountMoreTimesToGoBeforeAdvance > 0) {
+                        *result = fSaved2Return_;
+                        if (advance) {
+                            fCountMoreTimesToGoBeforeAdvance--;
+                        }
+                    }
+                    else {
+                        inherited::More (result, advance);
+                        if (advance) {
+                            fSaved2Return_ = *result;
+                            if (fSaved2Return_.IsPresent ()) {
+                                fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
+                            }
+                        }
+                    }
+                }
+                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                {
+                    return typename Iterator<T>::SharedIRepPtr (new _TallyEntryToItemIteratorWithCountsHelperRep (*this));
+                }
+            };
+
+
+            /*
+             */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_ElementsIterableHelperRep : public Iterable<T>::_IRep {
             private:
@@ -88,7 +134,7 @@ namespace   Stroika {
                 }
                 virtual Iterator<T>                             MakeIterator () const override
                 {
-                    return Iterator<T> (new _TallyEntryToItemIteratorHelperRep (fTallyRep_->MakeIterator ()));
+                    return Iterator<T> (new _TallyEntryToItemIteratorWithCountsHelperRep (fTallyRep_->MakeIterator ()));
                 }
                 virtual size_t                                  GetLength () const override
                 {

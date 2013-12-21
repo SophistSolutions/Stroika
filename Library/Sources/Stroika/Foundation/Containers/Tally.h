@@ -311,6 +311,7 @@ namespace   Stroika {
 
             protected:
                 class   _TallyEntryToItemIteratorHelperRep;
+                class   _TallyEntryToItemIteratorWithCountsHelperRep;
                 class   _ElementsIterableHelperRep;
                 class   _UniqueElementsIterableHelperRep;
             };
