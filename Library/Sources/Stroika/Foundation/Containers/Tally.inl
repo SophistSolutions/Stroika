@@ -142,28 +142,44 @@ namespace   Stroika {
                         struct  TallyEntryToItemIterator : public Iterator<T> {
                             struct  Rep : public Iterator<T>::IRep {
                                 typedef typename    Iterator<T>::IRep   inherited;
-                                Rep (const Iterator<TallyEntry<T>>& delegateTo)
+                                Rep (const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
                                     : inherited ()
                                     , fDelegateTo_ (delegateTo)
+                                    , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
+                                    , fSaved2Return_ (saved2Return)
                                 {
                                 }
                                 virtual void    More (Memory::Optional<T>* result, bool advance) override
                                 {
-                                    bool done = fDelegateTo_.Done ();
-                                    if (not done and advance) {
-                                        fDelegateTo_++;
-                                        done = fDelegateTo_.Done ();
-                                    }
-                                    if (done) {
-                                        result->clear ();
+                                    if (fCountMoreTimesToGoBeforeAdvance > 0) {
+                                        *result = fSaved2Return_;
+                                        if (advance) {
+                                            fCountMoreTimesToGoBeforeAdvance--;
+                                        }
                                     }
                                     else {
-                                        *result = fDelegateTo_->fItem;
+                                        bool done = fDelegateTo_.Done ();
+                                        if (not done and advance) {
+                                            fDelegateTo_++;
+                                            done = fDelegateTo_.Done ();
+                                        }
+                                        if (done) {
+                                            result->clear ();
+                                        }
+                                        else {
+                                            *result = fDelegateTo_->fItem;
+                                        }
+                                        if (advance) {
+                                            fSaved2Return_ = *result;
+                                            if (fSaved2Return_.IsPresent ()) {
+                                                fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
+                                            }
+                                        }
                                     }
                                 }
                                 virtual typename Iterator<T>::SharedIRepPtr Clone () const override
                                 {
-                                    return typename Iterator<T>::SharedIRepPtr (new Rep (Iterator<TallyEntry<T>> (fDelegateTo_)));
+                                    return typename Iterator<T>::SharedIRepPtr (new Rep (Iterator<TallyEntry<T>> (fDelegateTo_), fCountMoreTimesToGoBeforeAdvance, fSaved2Return_));
                                 }
                                 virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
                                 {
@@ -171,6 +187,8 @@ namespace   Stroika {
                                     return false;
                                 }
                                 Iterator<TallyEntry<T>> fDelegateTo_;
+                                size_t                  fCountMoreTimesToGoBeforeAdvance;
+                                Memory::Optional<T>     fSaved2Return_;
                             };
                             TallyEntryToItemIterator (const Iterator<TallyEntry<T>>& delegateTo)
                                 : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (delegateTo)))
