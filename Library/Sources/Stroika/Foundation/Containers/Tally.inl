@@ -133,7 +133,7 @@ namespace   Stroika {
                         : fTally_ (iterateOverTally)
                     {
                     }
-                    virtual _SharedPtrIRep    Clone () const override
+                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
                     {
                         return _SharedPtrIRep (new Rep_ (fTally_));
                     }
