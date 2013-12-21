@@ -31,11 +31,6 @@
  *
  *      @todo   Redo code so operator+= () is an cosmetic alias and AddAll() is primary.
  *
- *      @todo   Consider if MakeBagIterator/bagbegin/bagend should  be replaced with
- *              As<Bag<T>>(), and then As<Bag<T>>().begin ()? Or some such?
- *              OR
- *              just look at the Elements() method. That maybe good enough? Maybe take param to say includes dups?
- *
  *      @todo   Maybe get rid of TallyEntry<T> and instead repalce with pair<T,count>. If not
  *              then change Mapping to use a named type like  this...
  *
@@ -283,7 +278,8 @@ namespace   Stroika {
                 virtual void        Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
                 virtual void        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
                 virtual size_t      TallyOf (T item) const                                          =   0;
-                virtual Iterator<T> MakeBagIterator () const                                        =   0;
+                virtual Iterable<T> Elements () const                                               =   0;
+                virtual Iterable<T> UniqueElements () const                                         =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
@@ -294,14 +290,12 @@ namespace   Stroika {
                  */
             protected:
                 nonvirtual bool         _Equals_Reference_Implementation (const _IRep& rhs) const;
-                nonvirtual Iterable<T>  _Elements_Reference_Implementation (const _IRep& rhs) const;
-                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _IRep& rhs) const;
+                nonvirtual Iterable<T>  _Elements_Reference_Implementation () const;
+                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation () const;
 
             protected:
-                class   _TallyEntryToItemIteratorHelperRep;
-                class   _TallyEntryToItemIteratorWithCountsHelperRep;
-                class   _ElementsIterableHelperRep;
-                class   _UniqueElementsIterableHelperRep;
+                class   _ElementsHelper;
+                class   _UniqueElementsHelper;
             };
 
 

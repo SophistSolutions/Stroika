@@ -10,7 +10,7 @@
 #include    "Stroika/Foundation/Containers/Tally.h"
 #include    "Stroika/Foundation/Containers/Concrete/Tally_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Tally_LinkedList.h"
-#include    "Stroika/Foundation/Containers/Concrete/Tally_stdmap.h"
+//#include    "Stroika/Foundation/Containers/Concrete/Tally_stdmap.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -26,7 +26,7 @@ using   namespace   Stroika::Foundation::Containers;
 
 using   Concrete::Tally_Array;
 using   Concrete::Tally_LinkedList;
-using   Concrete::Tally_stdmap;
+//using   Concrete::Tally_stdmap;
 
 
 
@@ -72,6 +72,7 @@ namespace   {
         DoTestForConcreteContainer_<Tally_LinkedList<SimpleClass>> ();
         DoTestForConcreteContainer_<Tally_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_TallyTRAITS>> ();
 
+#if 0
         DoTestForConcreteContainer_<Tally_stdmap<size_t>> ();
         DoTestForConcreteContainer_<Tally_stdmap<SimpleClass>> ();
         {
@@ -88,6 +89,7 @@ namespace   {
             >   SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS;
             DoTestForConcreteContainer_<Tally_stdmap<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_Mapping_stdmap_TRAITS>> ();
         }
+#endif
 
     }
 

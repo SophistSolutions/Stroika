@@ -73,7 +73,8 @@ namespace   Stroika {
                     virtual void                                    Remove (const Iterator<TallyEntry<T>>& i) override;
                     virtual void                                    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
                     virtual size_t                                  TallyOf (T item) const override;
-                    virtual Iterator<T>                             MakeBagIterator () const override;
+                    virtual Iterable<T>                             Elements () const override;
+                    virtual Iterable<T>                             UniqueElements () const override;
 
                 private:
                     typedef Private::PatchingDataStructures::STLContainerWrapper <
@@ -351,12 +352,14 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>    SortedTally_stdmap<T, TRAITS>::Rep_::MakeBagIterator () const
+                Iterable<T>    SortedTally_stdmap<T, TRAITS>::Rep_::Elements () const
                 {
-                    Iterator<T> tmp =   Iterator<T> (typename Iterator<T>::SharedIRepPtr (new typename Rep_::_TallyEntryToItemIteratorHelperRep (MakeIterator ())));
-                    //tmphack - must fix to have iteratorrep dont proerply and not need to init owning itgerator object
-                    tmp++;
-                    return tmp;
+                    return this->_Elements_Reference_Implementation ();
+                }
+                template    <typename T, typename TRAITS>
+                Iterable<T>    SortedTally_stdmap<T, TRAITS>::Rep_::UniqueElements () const
+                {
+                    return this->_UniqueElements_Reference_Implementation ();
                 }
 
 
