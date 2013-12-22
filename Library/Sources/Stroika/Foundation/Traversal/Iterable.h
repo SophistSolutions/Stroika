@@ -8,6 +8,7 @@
 
 #include    <functional>
 
+#include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
