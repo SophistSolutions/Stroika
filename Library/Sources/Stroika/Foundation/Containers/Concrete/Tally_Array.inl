@@ -270,7 +270,7 @@ namespace   Stroika {
                         }
                         Assert (index >= 0);
                         Assert (index < fData_.GetLength ());
-                        return (tmp.fCount);
+                        return fData_[index].fCount;
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

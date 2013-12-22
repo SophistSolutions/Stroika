@@ -52,6 +52,12 @@ namespace   Stroika {
                                     , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
                                     , fSaved2Return_ (saved2Return)
                                 {
+                                    if (not fDelegateTo_.Done ()) {
+                                        fSaved2Return_ = fDelegateTo_->fItem;
+                                        if (fSaved2Return_.IsPresent ()) {
+                                            fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
+                                        }
+                                    }
                                 }
                                 virtual void    More (Memory::Optional<T>* result, bool advance) override
                                 {

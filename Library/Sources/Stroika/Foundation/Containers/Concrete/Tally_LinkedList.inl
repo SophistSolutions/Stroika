@@ -260,7 +260,7 @@ namespace   Stroika {
                         for (typename NonPatchingDataStructureImplType_::ForwardIterator it (&fData_); it.More (&c, true); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (c.fItem, item)) {
                                 Ensure (c.fCount != 0);
-                                return (c.fCount);
+                                return c.fCount;
                             }
                         }
                     }
