@@ -308,11 +308,13 @@ namespace   Stroika {
                 Tally_Array<T, TRAITS>::Tally_Array ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T, typename TRAITS>
                 Tally_Array<T, TRAITS>::Tally_Array (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     SetCapacity (end - start);
                     this->AddAll (start, end);
                 }
@@ -320,13 +322,29 @@ namespace   Stroika {
                 inline  Tally_Array<T, TRAITS>::Tally_Array (const Tally_Array<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                 }
                 template    <typename T, typename TRAITS>
                 Tally_Array<T, TRAITS>::Tally_Array (const Tally<T, TRAITS>& src)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), _IRep);
                     SetCapacity (src.GetLength ());
                     this->AddAll (src);
+                }
+                template    <typename T, typename TRAITS>
+                Tally_Array<T, TRAITS>::Tally_Array (const std::initializer_list<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    this->AddAll (s);
+                }
+                template    <typename T, typename TRAITS>
+                Tally_Array<T, TRAITS>::Tally_Array (const std::initializer_list<TallyEntry<T>>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 inline  Tally_Array<T, TRAITS>& Tally_Array<T, TRAITS>::operator= (const Tally_Array<T, TRAITS>& rhs)

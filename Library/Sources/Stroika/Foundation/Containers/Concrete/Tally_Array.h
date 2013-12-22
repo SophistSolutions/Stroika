@@ -45,6 +45,8 @@ namespace   Stroika {
                 public:
                     Tally_Array ();
                     Tally_Array (const Tally<T, TRAITS>& src);
+                    Tally_Array (const std::initializer_list<T>& s);
+                    Tally_Array (const std::initializer_list<TallyEntry<T>>& s);
                     Tally_Array (const Tally_Array<T, TRAITS>& src);
                     Tally_Array (const T* start, const T* end);
                     Tally_Array (const TallyEntry<T>* start, const TallyEntry<T>* end);

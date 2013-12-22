@@ -44,6 +44,8 @@ namespace   Stroika {
                     Tally_LinkedList ();
                     Tally_LinkedList (const Tally<T, TRAITS>& src);
                     Tally_LinkedList (const Tally_LinkedList<T, TRAITS>& src);
+                    Tally_LinkedList (const std::initializer_list<T>& s);
+                    Tally_LinkedList (const std::initializer_list<TallyEntry<T>>& s);
                     Tally_LinkedList (const T* start, const T* end);
 
                 public:

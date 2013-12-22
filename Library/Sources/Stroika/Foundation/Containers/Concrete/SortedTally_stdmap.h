@@ -44,6 +44,8 @@ namespace   Stroika {
                 public:
                     SortedTally_stdmap ();
                     SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src);
+                    SortedTally_stdmap (const std::initializer_list<T>& s);
+                    SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& s);
                     template <typename CONTAINER_OF_T>
                     explicit SortedTally_stdmap (const CONTAINER_OF_T& src);
                     SortedTally_stdmap (const T* start, const T* end);

@@ -136,7 +136,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
-                typedef	typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
+                typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
                 class   Rep_ : public Iterable<T>::_IRep {
                 private:
                     Tally<T, TRAITS>   fTally_;
@@ -324,14 +324,14 @@ namespace   Stroika {
                 : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (begin (s), end (s));
+                AddAll (s);
             }
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const std::initializer_list<TallyEntry<T>>& s)
                 : inherited (Concrete::Tally_Factory<T, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (begin (s), end (s));
+                AddAll (s);
             }
             template    <typename T, typename TRAITS>
             Tally<T, TRAITS>::Tally (const T* start, const T* end)

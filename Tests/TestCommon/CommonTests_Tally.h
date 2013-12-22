@@ -251,8 +251,6 @@ namespace CommonTests {
 
 
 
-
-
         namespace Test2_Equals {
             template <typename USING_TALLY_CONTAINER>
             void    DoAllTests_ ()
@@ -276,11 +274,25 @@ namespace CommonTests {
 
 
 
+        namespace Test3_Elements {
+            template <typename USING_TALLY_CONTAINER>
+            void    DoAllTests_ ()
+            {
+                USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                VerifyTestResult (s.size () == 4);
+                VerifyTestResult (s.Elements ().size () == 7);
+            }
+        }
+
+
+
+
         template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
         void    All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_MiscStarterTests_::DoAllTests_<USING_TALLY_CONTAINER> (applyToContainer);
             Test2_Equals::DoAllTests_<USING_TALLY_CONTAINER> ();
+            Test3_Elements::DoAllTests_<USING_TALLY_CONTAINER> ();
         }
 
 

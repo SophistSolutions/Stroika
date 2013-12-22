@@ -66,6 +66,8 @@ namespace   Stroika {
                     template    <typename CONTAINER_OF_T>
                     Tally_stdmap (const CONTAINER_OF_T& src);
                     Tally_stdmap (const Tally_stdmap<T, TRAITS>& src);
+                    Tally_stdmap (const std::initializer_list<T>& s);
+                    Tally_stdmap (const std::initializer_list<TallyEntry<T>>& s);
                     Tally_stdmap (const T* start, const T* end);
 
                 public:

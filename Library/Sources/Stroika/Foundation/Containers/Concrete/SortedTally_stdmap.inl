@@ -385,6 +385,20 @@ namespace   Stroika {
                 {
                 }
                 template    <typename T, typename TRAITS>
+                SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const std::initializer_list<T>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    this->AddAll (s);
+                }
+                template    <typename T, typename TRAITS>
+                SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& s)
+                    : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                {
+                    AssertMember (&inherited::_GetRep (), _IRep);
+                    this->AddAll (s);
+                }
+                template    <typename T, typename TRAITS>
                 template    <typename CONTAINER_OF_T>
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const CONTAINER_OF_T& src) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
