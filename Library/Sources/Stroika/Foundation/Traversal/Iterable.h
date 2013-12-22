@@ -84,11 +84,10 @@ namespace   Stroika {
              *
              *  Iterable<T> also supports read-only applicative operations on the contained data.
              *
-             *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an exceedingly simplistic pattern
-             *  of access.
+             *  Iterable<T> is much like idea of 'abstract readonly container', but which only supports an
+             *  exceedingly simplistic pattern of access.
              *
              *  *Important Design Note*:
-             *
              *      We have no:
              *          nonvirtual  void    _SetRep (SharedIRepPtr rep);
              *
@@ -102,6 +101,8 @@ namespace   Stroika {
              *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
              *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
              *      their values were the same.
+             *
+             *      ((REVISION - 2013-12-21 - SEE NEW SETEUQALS/TALLYEQUALS/EXACTEUALS methods below)
              *
              *  *Important Design Note*:
              *      Probably important - for performance??? - that all these methods are const,
@@ -185,6 +186,49 @@ namespace   Stroika {
                  */
                 nonvirtual  bool    IsEmpty () const;
 
+                /**
+                * THESE MAKE SENSE IN ITERABLE<T> so maybe put there
+                * NTI.
+                *
+                *   Note we intentially do NOT define operator==/!= cuz its quite unclear which one would  want to do
+                *   and for some iterables (infinite sequnce of random points) - calling these would be silly/harmful.
+                */
+            public:
+                // NYI - but equiv to convert this and RHS to set<T(with given equal compare) and check equals
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                // NYI - but equiv to convert this and RHS to Tally<T(with given equal compare) and check equals
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    TallyEquals (const RHS_CONTAINER_TYPE& rhs) const;
+                // NYI - but equiv to iterate over both in order and when one misses return !=
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    ExactEquals (const RHS_CONTAINER_TYPE& rhs) const;
+
+#if 0
+                // @todo    UNCLEAR if we wish to include this? It CAN be implemented generically...
+            public:
+                /*
+                * This function returns true iff the collections are - by value - equal.
+                *
+                *This at least conceptually involves iterating
+                * over each item, and seeing if the results are the same.
+                {{{ SEE EMIAL DISCUSSION WITH STERL - NOT ADEUqte dfeinfiotn}}}
+                *
+                *  Two containers are considered Equal if they the can be expected to give the exact same sequence of results
+                *  when iterating over their contents.
+                *
+                *  Note - this does NOT necessarily mean they will give the same results, because some amount of non-deterinism is allowed
+                *  in iteration. For example, if you have an abstract collection of random numbers (us Collection to represent a sequnce of a
+                *  billion random numbers) - and then make a copy of that sequence (just incrementing a reference count). Intuitively one
+                *  would consdier those two Collections<> equal, and Stroika will report them as such.  But when you go to iterate over each
+                *  they might produce different answers.
+                *
+                *  For most normal cases - Arrays, Linked Lists, etc, this is a 'too subtle' and 'academic' distinction, and the obvious
+                *  interpetation applies (you iterate over both - in order - and get the same answer).
+                */
+                nonvirtual  bool    Equals (const Collection<T>& rhs) const;
+#endif
+
             public:
                 /**
                  * \brief STL-ish alias for IsEmpty()
@@ -233,31 +277,6 @@ namespace   Stroika {
                  * \brief Support for ranged for, and STL syntax in general
                  */
                 static Iterator<T> end ();
-
-#if 0
-                // @todo    UNCLEAR if we wish to include this? It CAN be implemented generically...
-            public:
-                /*
-                 * This function returns true iff the collections are - by value - equal.
-                 *
-                 *This at least conceptually involves iterating
-                 * over each item, and seeing if the results are the same.
-                        {{{ SEE EMIAL DISCUSSION WITH STERL - NOT ADEUqte dfeinfiotn}}}
-                 *
-                 *  Two containers are considered Equal if they the can be expected to give the exact same sequence of results
-                 *  when iterating over their contents.
-                 *
-                 *  Note - this does NOT necessarily mean they will give the same results, because some amount of non-deterinism is allowed
-                 *  in iteration. For example, if you have an abstract collection of random numbers (us Collection to represent a sequnce of a
-                 *  billion random numbers) - and then make a copy of that sequence (just incrementing a reference count). Intuitively one
-                 *  would consdier those two Collections<> equal, and Stroika will report them as such.  But when you go to iterate over each
-                 *  they might produce different answers.
-                 *
-                 *  For most normal cases - Arrays, Linked Lists, etc, this is a 'too subtle' and 'academic' distinction, and the obvious
-                 *  interpetation applies (you iterate over both - in order - and get the same answer).
-                 */
-                nonvirtual  bool    Equals (const Collection<T>& rhs) const;
-#endif
 
             public:
                 /**
