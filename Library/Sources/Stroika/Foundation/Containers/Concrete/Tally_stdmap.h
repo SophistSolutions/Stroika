@@ -6,7 +6,7 @@
 
 #include    "../../StroikaPreComp.h"
 
-#include    "../Mapping.h"
+#include    "../Tally.h"
 
 
 
@@ -72,6 +72,16 @@ namespace   Stroika {
 
                 public:
                     nonvirtual  Tally_stdmap<T, TRAITS>& operator= (const Tally_stdmap<T, TRAITS>& rhs);
+
+                private:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+                public:
+#endif
+                    class Rep_;
+
+                private:
+                    nonvirtual  const Rep_& GetRep_ () const;
+                    nonvirtual  Rep_&       GetRep_ ();
                 };
 
 
