@@ -278,11 +278,34 @@ namespace CommonTests {
             template <typename USING_TALLY_CONTAINER>
             void    DoAllTests_ ()
             {
-                USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
-                VerifyTestResult (s.size () == 4);
-                VerifyTestResult (s.Elements ().size () == 7);
+                {
+                    typedef typename    USING_TALLY_CONTAINER::TallyOfElementType   T;
+                    typedef typename    USING_TALLY_CONTAINER::TraitsType           TraitsType;
+                    USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    VerifyTestResult (s.size () == 4);
+                    VerifyTestResult (s.Elements ().size () == 7);
+                    Tally<T, TraitsType> tmp = Tally<T, TraitsType> (s.Elements ());
+                    VerifyTestResult (tmp.TallyOf (1) == 1);
+                    VerifyTestResult (tmp.TallyOf (0) == 0);
+                    VerifyTestResult (tmp.TallyOf (4) == 4);
+                }
             }
         }
+
+
+
+        namespace Test4_UniqueElements {
+            template <typename USING_TALLY_CONTAINER>
+            void    DoAllTests_ ()
+            {
+                {
+                    USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    VerifyTestResult (s.size () == 4);
+                    VerifyTestResult (s.UniqueElements ().size () == 4);
+                }
+            }
+        }
+
 
 
 
@@ -293,6 +316,7 @@ namespace CommonTests {
             Test1_MiscStarterTests_::DoAllTests_<USING_TALLY_CONTAINER> (applyToContainer);
             Test2_Equals::DoAllTests_<USING_TALLY_CONTAINER> ();
             Test3_Elements::DoAllTests_<USING_TALLY_CONTAINER> ();
+            Test4_UniqueElements::DoAllTests_<USING_TALLY_CONTAINER> ();
         }
 
 
