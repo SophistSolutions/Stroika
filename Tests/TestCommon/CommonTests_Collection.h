@@ -338,8 +338,8 @@ namespace CommonTests {
         }
 
 
-		template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
-		void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+        void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> ();
             Test4_IteratorsBasics_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> ();

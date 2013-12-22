@@ -35,7 +35,7 @@ namespace {
     {
         typedef typename CONCRETE_CONTAINER::ElementType    T;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-		auto testFunc = [](const SortedCollection<T, TraitsType>& s) {
+        auto testFunc = [](const SortedCollection<T, TraitsType>& s) {
             // verify in sorted order
             Optional<T> last;
             for (T i : s) {
@@ -45,7 +45,7 @@ namespace {
                 last = i;
             }
         };
-		CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, SortedCollection<T, TraitsType>> (testFunc);
+        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, SortedCollection<T, TraitsType>> (testFunc);
     }
 }
 
@@ -54,8 +54,8 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-		Collection<int> x;
-		SortedCollection<int> y;
+        Collection<int> x;
+        SortedCollection<int> y;
 
 #if 0
         struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
@@ -69,15 +69,15 @@ namespace   {
                 return v1.GetValue () - v2.GetValue ();
             }
         };
-		typedef SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_CollectionTRAITS;
+        typedef SortedCollection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_Comparer_>   SimpleClassWithoutComparisonOperators_CollectionTRAITS;
 
-		RunTests_<SortedCollection<size_t>> ();
-		RunTests_<SortedCollection<SimpleClass>> ();
-		RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<SortedCollection<size_t>> ();
+        RunTests_<SortedCollection<SimpleClass>> ();
+        RunTests_<SortedCollection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
 
-		RunTests_<SortedCollection_LinkedList<size_t>> ();
-		RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
-		RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
+        RunTests_<SortedCollection_LinkedList<size_t>> ();
+        RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
+        RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
 #endif
     }
 
