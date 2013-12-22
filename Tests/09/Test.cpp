@@ -34,7 +34,7 @@ namespace {
     void     RunTests_ ()
     {
         typedef typename CONCRETE_CONTAINER::ElementType    T;
-        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, Collection<T>> ([](const Collection<T>& c) {
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER, Collection<T>> ([](const Collection<T>& c) {
         });
     }
 }

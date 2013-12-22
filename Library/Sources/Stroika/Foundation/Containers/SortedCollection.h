@@ -21,8 +21,7 @@
  *
  *
  *  TODO:
- *      @todo   UNSURE IF WE WANT TO SUPPORT EQUALS HERE. I THINK ITS WELL DEFINED (by ordering) - so may as well!
- *              Same for CONTAINS.
+ *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
  *
  *      @todo   Fixup constructors (templated by value and iterator ctors)
  *
@@ -42,8 +41,18 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            /**
+             *  Traits to define the well-ordering of elements of the SortedCollection.
+             *
+             *  Note - that a well-ordering also imputes a notion of equality (not (a<b or b < a)), so we define
+             *  that as well.
+             *
+             */
             template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
             struct   SortedCollection_DefaultTraits {
+
+                /**
+                */
                 typedef WELL_ORDER_COMPARER EqualsCompareFunctionType;
 
                 RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
@@ -57,7 +66,13 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
+             *  \brief  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
+             *
+             *  A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
+             *
+             *  Note that even though you cannot remove elements by value, or check "Contains" etc on Collection - in general, you always
+             *  can with a SortedCollection, because the well-ordering required to define a sorted collection also imputes
+             *  a notion of equality which is used for Contains etc.
              *
              *  @see Collection<T, TRAITS>
              *  @see SortedMapping<Key,T>
@@ -93,10 +108,10 @@ namespace   Stroika {
                 /**
                  */
                 SortedCollection ();
-                SortedCollection (const SortedCollection<T, TRAITS>& sb);
-                SortedCollection (const std::initializer_list<T>& sb);
+                SortedCollection (const SortedCollection<T, TRAITS>& src);
+                SortedCollection (const std::initializer_list<T>& src);
                 template <typename CONTAINER_OF_T>
-                explicit SortedCollection (const CONTAINER_OF_T& s);
+                explicit SortedCollection (const CONTAINER_OF_T& src);
                 template <typename COPY_FROM_ITERATOR_OF_T>
                 explicit SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
@@ -121,13 +136,10 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   SortedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
-
-                // seriously rethink... work in progress -- LGP 2013-12-22
             public:
-                virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const  = 0;
-                virtual bool    Contains (T item) const = 0;
-                virtual void    Remove (T item) = 0;
-
+                virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const     = 0;
+                virtual bool    Contains (T item) const                                     = 0;
+                virtual void    Remove (T item)                                             = 0;
             };
 
 

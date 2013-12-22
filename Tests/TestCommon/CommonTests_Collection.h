@@ -11,6 +11,9 @@
 #include    "../TestHarness/TestHarness.h"
 #include    "CommonTests_Iterable.h"
 
+/**
+ *  @todo   SimpleCollectionTest_TestsWhichRequireEquals() never called
+ */
 
 namespace CommonTests {
     namespace CollectionTests {
@@ -18,7 +21,8 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
-        namespace Test1_ {
+
+        namespace Test1_OldMiscBagTests_ {
 
             template <typename USING_Collection_CONTAINER>
             void    IteratorTests_ (USING_Collection_CONTAINER& s)
@@ -161,13 +165,12 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER>
-            void    DoAllTests_ ()
+            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_Collection_CONTAINER s;
                 On_Container_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (s);
             }
-
         }
 
 
@@ -247,6 +250,7 @@ namespace CommonTests {
         }
 
 
+
         namespace   Test4_IteratorsBasics_ {
 
             template <typename USING_Collection_CONTAINER>
@@ -288,14 +292,12 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER>
-            void    DoAllTests_ ()
+            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 BasicIteratorTest_<USING_Collection_CONTAINER> ();
             }
-
         }
-
 
 
 
@@ -304,8 +306,8 @@ namespace CommonTests {
 
         namespace   Test5_Apply_ {
 
-            template <typename USING_Collection_CONTAINER>
-            void    DoIt_ ()
+            template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION>
+            void    DoIt_ (TEST_FUNCTION applyToContainer)
             {
                 typedef typename USING_Collection_CONTAINER::ElementType       T;
                 USING_Collection_CONTAINER   b;
@@ -315,6 +317,8 @@ namespace CommonTests {
                 for (int i = FIRST; i < LAST; ++i) {
                     b.Add (i);
                 }
+
+                applyToContainer (b);
 
                 {
                     static size_t   count;
@@ -326,29 +330,36 @@ namespace CommonTests {
                     });
                     VerifyTestResult (count == LAST - FIRST);
                 }
+
+                applyToContainer (b);
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER>
-            void    DoAllTests_ ()
+            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                DoIt_<USING_Collection_CONTAINER> ();
+                DoIt_<USING_Collection_CONTAINER> (applyToContainer);
             }
-
         }
 
 
+
+
+        /**
+         */
         template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    SimpleCollectionTest_Generic (TEST_FUNCTION applyToContainer)
         {
-            Test1_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> ();
-            Test4_IteratorsBasics_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> ();
-            Test5_Apply_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> ();
+            Test1_OldMiscBagTests_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
+            Test4_IteratorsBasics_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
+            Test5_Apply_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
         }
 
 
+        /**
+        */
         template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
-        void    SimpleCollectionTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    SimpleCollectionTest_TestsWhichRequireEquals (TEST_FUNCTION applyToContainer)
         {
             Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
         }

@@ -45,7 +45,7 @@ namespace {
                 last = i;
             }
         };
-        CommonTests::CollectionTests::SimpleCollectionTest_All_For_Type<CONCRETE_CONTAINER, SortedCollection<T, TraitsType>> (testFunc);
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER, SortedCollection<T, TraitsType>> (testFunc);
     }
 }
 
@@ -54,10 +54,6 @@ namespace   {
 
     void    DoRegressionTests_ ()
     {
-        Collection<int> x;
-        SortedCollection<int> y;
-
-#if 0
         struct  MySimpleClassWithoutComparisonOperators_Comparer_ {
             typedef SimpleClassWithoutComparisonOperators ElementType;
             static  bool    Equals (ElementType v1, ElementType v2)
@@ -78,7 +74,6 @@ namespace   {
         RunTests_<SortedCollection_LinkedList<size_t>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClass>> ();
         RunTests_<SortedCollection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_CollectionTRAITS>> ();
-#endif
     }
 
 }
