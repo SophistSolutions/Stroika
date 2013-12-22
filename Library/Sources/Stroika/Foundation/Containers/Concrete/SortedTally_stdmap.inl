@@ -372,30 +372,33 @@ namespace   Stroika {
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src) :
                     inherited (static_cast<const inherited&> (src))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                 }
                 template    <typename T, typename TRAITS>
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const std::initializer_list<T>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& s)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
-                    AssertMember (&inherited::_GetRep (), _IRep);
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (s);
                 }
                 template    <typename T, typename TRAITS>
@@ -403,22 +406,27 @@ namespace   Stroika {
                 SortedTally_stdmap<T, TRAITS>::SortedTally_stdmap (const CONTAINER_OF_T& src) :
                     inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
                 inline  SortedTally_stdmap<T, TRAITS>& SortedTally_stdmap<T, TRAITS>::operator= (const SortedTally_stdmap<T, TRAITS>& src)
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     inherited::operator= (static_cast<const inherited&> (src));
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return *this;
                 }
                 template    <typename T, typename TRAITS>
                 inline  const typename SortedTally_stdmap<T, TRAITS>::Rep_&    SortedTally_stdmap<T, TRAITS>::GetRep_ () const
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return reinterpret_cast<const Rep_&> (this->_GetRep ());
                 }
                 template    <typename T, typename TRAITS>
                 inline  typename SortedTally_stdmap<T, TRAITS>::Rep_&  SortedTally_stdmap<T, TRAITS>::GetRep_ ()
                 {
+                    AssertMember (&inherited::_GetRep (), Rep_);
                     return reinterpret_cast<Rep_&> (this->_GetRep ());
                 }
 
