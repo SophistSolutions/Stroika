@@ -1,5 +1,12 @@
 TODO (Foundation::Containers)
 
+
+	(o)		IMPORTANT to do with Comparers - like EqualsComparer. We need to be able to pass in 
+			object (so they work with lambdas - with closers), and store no space when there is
+			no space used (what we do now).
+
+			Implement with SFINAE
+
 	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
 
 	(o)		Use type traits stuff like this ... to capture better defaults for factories and concrete types -
