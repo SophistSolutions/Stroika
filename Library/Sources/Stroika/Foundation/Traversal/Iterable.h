@@ -20,6 +20,13 @@
  *
  *  TODO:
  *
+ *      @todo   See below - do we want to add Equals() - similar issue to Contains()
+ *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
+ *
+ *      @todo   Perhaps add Contains:
+ *              The same we we have tenative ExactEquals - we could ahve a Contains() method that takes a Compare function
+ *              (and defaults to CompareEquals). This could then be MOVED here from "Collection" and other subclasses.
+ *
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
  *              GENERATOR (though dont)
  *
@@ -43,14 +50,6 @@
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
  *              this API works fully with lambdas - even bound...
- *
- *      @todo   See below - do we want to add Equals() - similar issue to Contains()
- *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
- *
- *      @todo   Perhaps add Contains:
- *                  Contains () is true iff an iteration over the Collection<T,TTRAITS> would return at least one element such that (*it == item).
- *                  Just note method MAY not be defined if no way todo == (or not in traits)
- *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
  */
 
 
@@ -177,6 +176,9 @@ namespace   Stroika {
                  * the same number of elements you would visit if you created an iterator (MakeIterator())
                  * and visited all items. In practice, as the actual number might vary as the underlying
                  * iterable could change while being iterated over.
+                 *
+                 *  Also note that GetLength () can return a rediculous number - like numeric_limits<size_t>::max () -
+                 *  for logically infinite sequences... like a sequence of random numbers.
                  */
                 nonvirtual  size_t          GetLength () const;
 
