@@ -42,16 +42,20 @@ namespace   Stroika {
                     typedef SortedTally<T, TRAITS>    inherited;
 
                 public:
+                    /**
+                     */
                     SortedTally_stdmap ();
                     SortedTally_stdmap (const SortedTally_stdmap<T, TRAITS>& src);
-                    SortedTally_stdmap (const std::initializer_list<T>& s);
-                    SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& s);
+                    SortedTally_stdmap (const std::initializer_list<T>& src);
+                    SortedTally_stdmap (const std::initializer_list<TallyEntry<T>>& src);
                     template <typename CONTAINER_OF_T>
                     explicit SortedTally_stdmap (const CONTAINER_OF_T& src);
                     SortedTally_stdmap (const T* start, const T* end);
                     SortedTally_stdmap (const TallyEntry<T>* start, const TallyEntry<T>* end);
 
                 public:
+                    /**
+                    */
                     nonvirtual  SortedTally_stdmap<T, TRAITS>& operator= (const SortedTally_stdmap<T, TRAITS>& src);
 
                 private:
@@ -80,5 +84,5 @@ namespace   Stroika {
  */
 #include    "SortedTally_stdmap.inl"
 
-#endif  /*_Stroika_Foundation_Containers_Concrete_Tally_Array_h_*/
+#endif  /*_Stroika_Foundation_Containers_Concrete_SortedTally_stdmap_h_*/
 
