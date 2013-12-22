@@ -1224,9 +1224,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Mapping_stdmap.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
@@ -1249,12 +1246,6 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedBag_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedBag_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.h">
@@ -1496,6 +1487,15 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.h">
       <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_Factory.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h">
+      <Filter>Sources\Containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1974,9 +1974,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedMapping.inl">
       <Filter>Sources\Containers</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedBag.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedSet.inl">
       <Filter>Sources\Containers</Filter>
     </None>
@@ -1996,12 +1993,6 @@
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedSet_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedBag_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedBag_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Stack_Factory.inl">
@@ -2249,6 +2240,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Collection_stdforward_list.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_Factory.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedCollection_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl">
+      <Filter>Sources\Containers</Filter>
     </None>
   </ItemGroup>
 </Project>

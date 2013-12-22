@@ -8,10 +8,10 @@
  ********************************************************************************
  */
 
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedBag_Factory_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedBag_Factory_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedCollection_Factory_inl_
 
-#include    "SortedBag_LinkedList.h"
+#include    "SortedCollection_LinkedList.h"
 
 namespace   Stroika {
     namespace   Foundation {
@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 *********************** SortedBag_Factory<T, TRAITS> ***************************
+                 *********************** SortedCollection_Factory<T, TRAITS> ***************************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                atomic<SortedBag<T, TRAITS> (*) ()>     SortedBag_Factory<T, TRAITS>::sFactory_ (nullptr);
+                atomic<SortedCollection<T, TRAITS> (*) ()>     SortedCollection_Factory<T, TRAITS>::sFactory_ (nullptr);
                 template    <typename T, typename TRAITS>
-                inline  SortedBag<T, TRAITS>  SortedBag_Factory<T, TRAITS>::mk ()
+                inline  SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -43,14 +43,14 @@ namespace   Stroika {
                     return f ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_Factory<T, TRAITS>::Register (SortedBag<T, TRAITS> (*factory) ())
+                void    SortedCollection_Factory<T, TRAITS>::Register (SortedCollection<T, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
                 template    <typename T, typename TRAITS>
-                SortedBag<T, TRAITS>  SortedBag_Factory<T, TRAITS>::Default_ ()
+                SortedCollection<T, TRAITS>  SortedCollection_Factory<T, TRAITS>::Default_ ()
                 {
-                    return SortedBag_LinkedList<T, TRAITS> ();
+                    return SortedCollection_LinkedList<T, TRAITS> ();
                 }
 
 

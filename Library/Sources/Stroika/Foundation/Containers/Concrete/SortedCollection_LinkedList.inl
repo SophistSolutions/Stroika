@@ -1,8 +1,8 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_Concrete_SortedBag_LinkedList_inl_
-#define _Stroika_Foundation_Containers_Concrete_SortedBag_LinkedList_inl_
+#ifndef _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_inl_
+#define _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_inl_
 
 /*
  ********************************************************************************
@@ -25,13 +25,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ******************* SortedBag_LinkedList<T, TRAITS>::Rep_ **********************
+                 ************ SortedCollection_LinkedList<T, TRAITS>::Rep_ **********************
                  ********************************************************************************
                  */
                 template    <typename T, typename TRAITS>
-                class   SortedBag_LinkedList<T, TRAITS>::Rep_ : public SortedBag<T, TRAITS>::_IRep {
+                class   SortedCollection_LinkedList<T, TRAITS>::Rep_ : public SortedCollection<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedBag<T, TRAITS>::_IRep   inherited;
+                    typedef typename    SortedCollection<T, TRAITS>::_IRep   inherited;
 
                 public:
                     Rep_ ();
@@ -52,16 +52,18 @@ namespace   Stroika {
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
-                    // Bag<T, TRAITS>::_IRep overrides
+                    // Collection<T>::_IRep overrides
                 public:
-                    virtual bool    Equals (const typename Bag<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool    Contains (T item) const override;
-                    virtual size_t  TallyOf (T item) const override;
                     virtual void    Add (T item) override;
                     virtual void    Update (const Iterator<T>& i, T newValue) override;
-                    virtual void    Remove (T item) override;
                     virtual void    Remove (const Iterator<T>& i) override;
                     virtual void    RemoveAll () override;
+
+                    // SortedCollection<T>::_IRep overrides
+                public:
+                    virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const override;
+                    virtual bool    Contains (T item) const override;
+                    virtual void    Remove (T item) override;
 
                 private:
                     nonvirtual  void    AddWithoutLocks_ (T item);
@@ -83,18 +85,18 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ****************** SortedBag_LinkedList<T, TRAITS>::Rep_ ***********************
+                *************** SortedCollection_LinkedList<T, TRAITS>::Rep_ *******************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                inline  SortedBag_LinkedList<T, TRAITS>::Rep_::Rep_ ()
+                inline  SortedCollection_LinkedList<T, TRAITS>::Rep_::Rep_ ()
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
                 {
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedBag_LinkedList<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
+                inline  SortedCollection_LinkedList<T, TRAITS>::Rep_::Rep_ (const Rep_& from)
                     : inherited ()
                     , fLockSupport_ ()
                     , fData_ ()
@@ -105,13 +107,13 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  SortedBag_LinkedList<T, TRAITS>::Rep_::Clone () const
+                typename Iterable<T>::_SharedPtrIRep  SortedCollection_LinkedList<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>  SortedBag_LinkedList<T, TRAITS>::Rep_::MakeIterator () const
+                Iterator<T>  SortedCollection_LinkedList<T, TRAITS>::Rep_::MakeIterator () const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
@@ -122,7 +124,7 @@ namespace   Stroika {
                     return Iterator<T> (tmpRep);
                 }
                 template    <typename T, typename TRAITS>
-                size_t  SortedBag_LinkedList<T, TRAITS>::Rep_::GetLength () const
+                size_t  SortedCollection_LinkedList<T, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.GetLength ());
@@ -130,7 +132,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                bool  SortedBag_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
+                bool  SortedCollection_LinkedList<T, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return (fData_.IsEmpty ());
@@ -138,22 +140,24 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void      SortedBag_LinkedList<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                void      SortedCollection_LinkedList<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     SortedBag_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     SortedCollection_LinkedList<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedBag_LinkedList<T, TRAITS>::Rep_::Equals (const typename Bag<T, TRAITS>::_IRep& rhs) const
+                bool    SortedCollection_LinkedList<T, TRAITS>::Rep_::Equals (const typename Collection<T>::_IRep& rhs) const
                 {
-                    return this->_Equals_Reference_Implementation (rhs);
+                    AssertNotImplemented ();
+                    return false;
+                    //return this->_Equals_Reference_Implementation (rhs);
                 }
                 template    <typename T, typename TRAITS>
-                bool    SortedBag_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
+                bool    SortedCollection_LinkedList<T, TRAITS>::Rep_::Contains (T item) const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         return fData_.Lookup (item) != nullptr;
@@ -161,12 +165,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                size_t    SortedBag_LinkedList<T, TRAITS>::Rep_::TallyOf (T item) const
-                {
-                    return this->_TallyOf_Reference_Implementation (item);
-                }
-                template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::Add (T item)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         AddWithoutLocks_ (item);
@@ -174,7 +173,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Update (const Iterator<T>& i, T newValue)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -193,7 +192,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::Remove (T item)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Remove (T item)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.Remove (item);
@@ -201,7 +200,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::Remove (const Iterator<T>& i)
                 {
                     const typename Iterator<T>::IRep&    ir  =   i.GetRep ();
                     AssertMember (&ir, IteratorRep_);
@@ -212,7 +211,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::RemoveAll ()
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::RemoveAll ()
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         fData_.RemoveAll ();
@@ -220,7 +219,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void    SortedBag_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
+                void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
                 {
                     typename Rep_::DataStructureImplType_::ForwardIterator it (&fData_);
                     // skip the smaller items
@@ -233,34 +232,34 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ******************* SortedBag_LinkedList<T, TRAITS> ****************************
+                ******************* SortedCollection_LinkedList<T, TRAITS> ****************************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
-                SortedBag_LinkedList<T, TRAITS>::SortedBag_LinkedList ()
+                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList ()
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                 }
                 template    <typename T, typename TRAITS>
-                SortedBag_LinkedList<T, TRAITS>::SortedBag_LinkedList (const T* start, const T* end)
+                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const T* start, const T* end)
                     : inherited (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     Require ((start == end) or (start != nullptr and end != nullptr));
                     this->AddAll (start, end);
                 }
                 template    <typename T, typename TRAITS>
-                SortedBag_LinkedList<T, TRAITS>::SortedBag_LinkedList (const SortedBag<T, TRAITS>& src)
-                    : SortedBag<T, TRAITS> (typename inherited::_SharedPtrIRep (new Rep_ ()))
+                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection<T, TRAITS>& src)
+                    : SortedCollection<T, TRAITS> (typename inherited::_SharedPtrIRep (new Rep_ ()))
                 {
                     this->AddAll (src);
                 }
                 template    <typename T, typename TRAITS>
-                SortedBag_LinkedList<T, TRAITS>::SortedBag_LinkedList (const SortedBag_LinkedList<T, TRAITS>& src)
+                SortedCollection_LinkedList<T, TRAITS>::SortedCollection_LinkedList (const SortedCollection_LinkedList<T, TRAITS>& src)
                     : inherited (static_cast<const inherited&> (src))
                 {
                 }
                 template    <typename T, typename TRAITS>
-                inline  SortedBag_LinkedList<T, TRAITS>& SortedBag_LinkedList<T, TRAITS>::operator= (const SortedBag_LinkedList<T, TRAITS>& rhs)
+                inline  SortedCollection_LinkedList<T, TRAITS>& SortedCollection_LinkedList<T, TRAITS>::operator= (const SortedCollection_LinkedList<T, TRAITS>& rhs)
                 {
                     inherited::operator= (static_cast<const inherited&> (rhs));
                     return *this;
@@ -272,4 +271,4 @@ namespace   Stroika {
     }
 }
 
-#endif /* _Stroika_Foundation_Containers_Concrete_SortedBag_LinkedList_inl_ */
+#endif /* _Stroika_Foundation_Containers_Concrete_SortedCollection_LinkedList_inl_ */

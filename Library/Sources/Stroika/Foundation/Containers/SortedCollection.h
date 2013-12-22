@@ -1,14 +1,14 @@
 /*
  * Copyright(c) Sophist Solutions, Inc. 1990-2013.  All rights reserved
  */
-#ifndef _Stroika_Foundation_Containers_SortedBag_h_
-#define _Stroika_Foundation_Containers_SortedBag_h_  1
+#ifndef _Stroika_Foundation_Containers_SortedCollection_h_
+#define _Stroika_Foundation_Containers_SortedCollection_h_  1
 
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Concepts.h"
 
-#include    "Bag.h"
+#include    "Collection.h"
 
 
 
@@ -21,6 +21,9 @@
  *
  *
  *  TODO:
+ *      @todo   UNSURE IF WE WANT TO SUPPORT EQUALS HERE. I THINK ITS WELL DEFINED (by ordering) - so may as well!
+ *              Same for CONTAINS.
+ *
  *      @todo   Fixup constructors (templated by value and iterator ctors)
  *
  *      @todo   Improve test cases, and notice that sorting doesnt actually work for sorted-linked-list.
@@ -40,7 +43,11 @@ namespace   Stroika {
 
 
             template    <typename T, typename WELL_ORDER_COMPARER = Common::ComparerWithWellOrder<T>>
-            struct   SortedBag_DefaultTraits : Bag_DefaultTraits <T, WELL_ORDER_COMPARER> {
+            struct   SortedCollection_DefaultTraits {
+                typedef WELL_ORDER_COMPARER EqualsCompareFunctionType;
+
+                RequireConceptAppliesToTypeMemberOfClass (Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);
+
                 /**
                  */
                 typedef WELL_ORDER_COMPARER WellOrderCompareFunctionType;
@@ -50,19 +57,19 @@ namespace   Stroika {
 
 
             /**
-             *      A SortedBag is a Bag<T, TRAITS> which remains sorted (iteration produces items sorted) even as you add and remove entries.
+             *      A SortedCollection is a Collection<T> which remains sorted (iteration produces items sorted) even as you add and remove entries.
              *
-             *  @see Bag<T, TRAITS>
+             *  @see Collection<T, TRAITS>
              *  @see SortedMapping<Key,T>
              *  @see SortedSet<T, TRAITS>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
-            template    <typename T, typename TRAITS = SortedBag_DefaultTraits<T>>
-            class   SortedBag : public Bag<T, TRAITS> {
+            template    <typename T, typename TRAITS = SortedCollection_DefaultTraits<T>>
+            class   SortedCollection : public Collection<T> {
             private:
-                typedef Bag<T, TRAITS>  inherited;
+                typedef Collection<T>  inherited;
 
             protected:
                 class   _IRep;
@@ -70,7 +77,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Just a short-hand for the 'TRAITS' part of SortedBag<T,TRAITS>. This is often handy to use in
+                 *  Just a short-hand for the 'TRAITS' part of SortedCollection<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
                 typedef TRAITS  TraitsType;
@@ -85,35 +92,42 @@ namespace   Stroika {
             public:
                 /**
                  */
-                SortedBag ();
-                SortedBag (const SortedBag<T, TRAITS>& sb);
-                SortedBag (const std::initializer_list<T>& sb);
+                SortedCollection ();
+                SortedCollection (const SortedCollection<T, TRAITS>& sb);
+                SortedCollection (const std::initializer_list<T>& sb);
                 template <typename CONTAINER_OF_T>
-                explicit SortedBag (const CONTAINER_OF_T& s);
+                explicit SortedCollection (const CONTAINER_OF_T& s);
                 template <typename COPY_FROM_ITERATOR_OF_T>
-                explicit SortedBag (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
+                explicit SortedCollection (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
 
             protected:
-                explicit SortedBag (const _SharedPtrIRep& rep);
+                explicit SortedCollection (const _SharedPtrIRep& rep);
 
             public:
                 /**
                  */
-                nonvirtual  SortedBag<T, TRAITS>& operator= (const SortedBag<T, TRAITS>& rhs);
+                nonvirtual  SortedCollection<T, TRAITS>& operator= (const SortedCollection<T, TRAITS>& rhs);
             };
 
 
             /**
-             *  \brief  Implementation detail for SortedBag<T, TRAITS> implementors.
+             *  \brief  Implementation detail for SortedCollection<T, TRAITS> implementors.
              *
              *  Protected abstract interface to support concrete implementations of
-             *  the SortedBag<T, TRAITS> container API.
+             *  the SortedCollection<T, TRAITS> container API.
              *
              *  Note that this doesn't add any methods, but still serves the purpose of allowing
              *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T, typename TRAITS>
-            class   SortedBag<T, TRAITS>::_IRep : public Bag<T, TRAITS>::_IRep {
+            class   SortedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
+
+                // seriously rethink... work in progress -- LGP 2013-12-22
+            public:
+                virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const  = 0;
+                virtual bool    Contains (T item) const = 0;
+                virtual void    Remove (T item) = 0;
+
             };
 
 
@@ -128,6 +142,6 @@ namespace   Stroika {
  ********************************************************************************
  */
 
-#include    "SortedBag.inl"
+#include    "SortedCollection.inl"
 
-#endif  /*_Stroika_Foundation_Containers_SortedBag_h_ */
+#endif  /*_Stroika_Foundation_Containers_SortedCollection_h_ */

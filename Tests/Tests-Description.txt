@@ -13,7 +13,7 @@
 [13]	Foundation::Containers::Queue
 [14]	Foundation::Containers::Sequence
 [15]	Foundation::Containers::Set
-[16]	Foundation::Containers::SortedBag
+[16]	Foundation::Containers::SortedCollection
 [17]	Foundation::Containers::SortedMapping
 [18]	Foundation::Containers::SortedSet
 [19]	Foundation::Containers::SortedTally
