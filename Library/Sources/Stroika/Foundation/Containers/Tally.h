@@ -29,11 +29,6 @@
  *              Also likewise key for Tally_stdmap<> - cuz now you cannot assign Tally_stdmap<> to
  *              Tally<T>!!!!
  *
- *      @todo   Redo code so operator+= () is an cosmetic alias and AddAll() is primary.
- *
- *      @todo   Maybe get rid of TallyEntry<T> and instead repalce with pair<T,count>. If not
- *              then change Mapping to use a named type like  this...
- *
  *      @todo   Need Tally_stdmap<T> implementation (re-use SortedTally_stdmap they way we did
  *              for mapping).
  *
@@ -45,6 +40,12 @@
  *              and templated objhect CTOR while these are iteratored (without mcuh better partial
  *              template specializaiton - I THINK????). Maybe use different method for one or the other
  *              to distinguish?
+ *
+ *              USE SFINAE stuff we used in Mapping<> etc. Simplify AddAll and do the magic in Add.
+ *
+ *      @todo   Current DOCS for Tally::Remove() say that for variant T, count, the value MUST be present.
+ *              But I think this is not in the spirit we've used elsewhere, due to multithreading.
+ *              Better to allow them to not be present, else hard to synchonize (check and remove)
  *
  */
 
@@ -202,7 +203,9 @@ namespace   Stroika {
 
             public:
                 /**
-                */
+                 *  Returns the sum of all tallys of all contained elements. This is equivilent
+                 *  to Elements ().size ().
+                 */
                 nonvirtual  size_t  TotalTally () const;
 
             public:
