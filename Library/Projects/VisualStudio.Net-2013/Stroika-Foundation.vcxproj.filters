@@ -873,9 +873,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Time\Duration.h">
       <Filter>Sources\Time</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bag.h">
-      <Filter>Sources\Containers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Characters\Format.h">
       <Filter>Sources\Characters</Filter>
     </ClInclude>
@@ -1040,12 +1037,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.h">
       <Filter>Sources\Cache</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.h">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1233,9 +1224,6 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_SparseSortedMapping.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Factory.h">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
@@ -1277,9 +1265,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.h">
       <Filter>Sources\Containers</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_stdforward_list.h">
-      <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.h">
       <Filter>Sources\Cryptography\Hash</Filter>
@@ -1497,6 +1482,15 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.h">
       <Filter>Sources\Containers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.h">
+      <Filter>Sources\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -1643,9 +1637,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Time\DateTime.inl">
       <Filter>Sources\Time</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bag.inl">
-      <Filter>Sources\Containers</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Characters\Format.inl">
       <Filter>Sources\Characters</Filter>
     </None>
@@ -1741,12 +1732,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cache\TimedCache.inl">
       <Filter>Sources\Cache</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Array.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_LinkedList.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Tally_Array.inl">
       <Filter>Sources\Containers\Concrete</Filter>
@@ -1980,9 +1965,6 @@
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\SortedMapping_stdmap.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_Factory.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
-    </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Sequence_Factory.inl">
       <Filter>Sources\Containers\Concrete</Filter>
     </None>
@@ -2024,9 +2006,6 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedTally.inl">
       <Filter>Sources\Containers</Filter>
-    </None>
-    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bag_stdforward_list.inl">
-      <Filter>Sources\Containers\Concrete</Filter>
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Cryptography\Hash\Common.inl">
       <Filter>Sources\Cryptography\Hash</Filter>
@@ -2249,6 +2228,15 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\SortedCollection.inl">
       <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Bijection.inl">
+      <Filter>Sources\Containers</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_Factory.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
 </Project>

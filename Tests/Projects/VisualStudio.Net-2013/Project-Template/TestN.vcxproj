@@ -530,7 +530,7 @@
     <ClInclude Include="..\..\..\TestHarness\TestHarness.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Bag.h" />
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Iterable.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_SortedIterators.h" />
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Mapping.h" />

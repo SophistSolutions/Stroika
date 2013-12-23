@@ -40,7 +40,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\TestCommon\CommonTests_Bag.h">
+    <ClInclude Include="..\..\..\TestCommon\CommonTests_Bijection.h">
       <Filter>TestCommon</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\TestCommon\CommonTests_Collection.h">
