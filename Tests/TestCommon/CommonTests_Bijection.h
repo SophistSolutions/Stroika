@@ -24,6 +24,8 @@ namespace CommonTests {
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 USING_BIJECTION_CONTAINER s;
+                s.Add (3, 5);
+                VerifyTestResult (s.length () == 1);
             }
 
         }

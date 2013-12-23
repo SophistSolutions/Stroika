@@ -5,7 +5,7 @@
 [05]	Foundation::Containers::Private::DataStructures::DoublyLinkedList
 [06]	Foundation::Containers::Private::DataStructures::STLContainerWrapper
 [07]	Foundation::Containers::Private::DataStructures::SkipList
-[08]	Foundation::Containers::Bag
+[08]	Foundation::Containers::Bijection
 [09]	Foundation::Containers::Collection
 [10]	Foundation::Containers::Deque
 [11]	Foundation::Containers::Mapping
