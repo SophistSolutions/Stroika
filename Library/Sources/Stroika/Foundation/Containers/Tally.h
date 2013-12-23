@@ -29,11 +29,8 @@
  *              Also likewise key for Tally_stdmap<> - cuz now you cannot assign Tally_stdmap<> to
  *              Tally<T>!!!!
  *
- *      @todo   Need Tally_stdmap<T> implementation (re-use SortedTally_stdmap they way we did
- *              for mapping).
- *
  *      @todo   Consider rewriting all Tally<> concrete types using Mapping<T,counttype> concrete impl?
- *              Probably wont work but document why... (Add () semantics - but maybe).
+ *              Might not work easily but document why... (Add () semantics - but maybe).
  *
  *      @todo   AddAll() and CTOR for Tally (and SortedTally and concrete types) is confused by having
  *              overload taking T* and TallyEntry<T>*. Issue is that we cannot do templated iterator
@@ -276,6 +273,9 @@ namespace   Stroika {
                 typedef typename Iterable<TallyEntry<T>>::_IRep  inherited;
 
             protected:
+                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+
+            protected:
                 _IRep ();
 
             public:
@@ -287,8 +287,12 @@ namespace   Stroika {
                 virtual void        Remove (const Iterator<TallyEntry<T>>& i)                       =   0;
                 virtual void        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) =   0;
                 virtual size_t      TallyOf (T item) const                                          =   0;
-                virtual Iterable<T> Elements () const                                               =   0;
-                virtual Iterable<T> UniqueElements () const                                         =   0;
+                // Subtle point - shared rep argument to Elements() allows shared ref counting
+                // without the cost of a clone or enable_shared_from_this
+                virtual Iterable<T> Elements (const _SharedPtrIRep& rep) const                      =   0;
+                // Subtle point - shared rep argument to Elements() allows shared ref counting
+                // without the cost of a clone or enable_shared_from_this
+                virtual Iterable<T> UniqueElements (const _SharedPtrIRep& rep) const                =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
@@ -299,8 +303,8 @@ namespace   Stroika {
                  */
             protected:
                 nonvirtual bool         _Equals_Reference_Implementation (const _IRep& rhs) const;
-                nonvirtual Iterable<T>  _Elements_Reference_Implementation () const;
-                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation () const;
+                nonvirtual Iterable<T>  _Elements_Reference_Implementation (const _SharedPtrIRep& rep) const;
+                nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const;
 
             protected:
                 class   _ElementsHelper;

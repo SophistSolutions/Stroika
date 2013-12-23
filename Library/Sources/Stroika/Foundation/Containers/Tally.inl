@@ -277,20 +277,16 @@ namespace   Stroika {
                 return true;
             }
             template    <typename T, typename TRAITS>
-            Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation () const
+            Iterable<T>  Tally<T, TRAITS>::_IRep::_Elements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
-                // Clone - just cuz thats the simlest, safest way to get an object whose lifetime extends
-                // past this objects lifetime (without using shared_from_this).
-                typename Tally<T, TRAITS>::_SharedPtrIRep   s = dynamic_pointer_cast<typename Tally<T, TRAITS>::_SharedPtrIRep::element_type> (this->Clone ());
-                return _ElementsHelper (Tally<T, TRAITS> (s));
+                Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
+                return _ElementsHelper (Tally<T, TRAITS> (rep));
             }
             template    <typename T, typename TRAITS>
-            Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation () const
+            Iterable<T>  Tally<T, TRAITS>::_IRep::_UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const
             {
-                // Clone - just cuz thats the simlest, safest way to get an object whose lifetime extends
-                // past this objects lifetime (without using shared_from_this).
-                typename Tally<T, TRAITS>::_SharedPtrIRep   s = dynamic_pointer_cast<typename Tally<T, TRAITS>::_SharedPtrIRep::element_type> (this->Clone ());
-                return _UniqueElementsHelper (Tally<T, TRAITS> (s));
+                Require (rep.get () == this);   // allows reference counting but without using enable_shared_from_this (so cheap!)
+                return _UniqueElementsHelper (Tally<T, TRAITS> (rep));
             }
 
 
@@ -382,12 +378,19 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   Tally<T, TRAITS>::Elements () const
             {
-                return _GetRep ().Elements ();
+                auto xx = this->_GetSharedPtrIRep ();
+                typename Iterable<TallyEntry<T>>::_SharedPtrIRep tt = this->_GetSharedPtrIRep ();
+
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (this->_GetSharedPtrIRep ());
+                AssertNotNull (ss.get ());
+                return ss->Elements (ss);
             }
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   Tally<T, TRAITS>::UniqueElements () const
             {
-                return _GetRep ().UniqueElements ();
+                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (this->_GetSharedPtrIRep ());
+                AssertNotNull (ss.get ());
+                return ss->UniqueElements (ss);
             }
             template    <typename T, typename TRAITS>
             inline  bool  Tally<T, TRAITS>::Equals (const Tally<T, TRAITS>& rhs) const

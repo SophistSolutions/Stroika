@@ -68,8 +68,8 @@ namespace   Stroika {
                     virtual void                                Remove (const Iterator<TallyEntry<T>>& i) override;
                     virtual void                                UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
                     virtual size_t                              TallyOf (T item) const override;
-                    virtual Iterable<T>                         Elements () const override;
-                    virtual Iterable<T>                         UniqueElements () const override;
+                    virtual Iterable<T>                         Elements (const _SharedPtrIRep& rep) const override;
+                    virtual Iterable<T>                         UniqueElements (const _SharedPtrIRep& rep) const override;
 
                 private:
                     typedef Private::DataStructures::LinkedList<TallyEntry<T>>                              NonPatchingDataStructureImplType_;
@@ -268,14 +268,14 @@ namespace   Stroika {
                     return 0;
                 }
                 template    <typename T, typename TRAITS>
-                Iterable<T>    Tally_LinkedList<T, TRAITS>::Rep_::Elements () const
+                Iterable<T>    Tally_LinkedList<T, TRAITS>::Rep_::Elements (const _SharedPtrIRep& rep) const
                 {
-                    return this->_Elements_Reference_Implementation ();
+                    return this->_Elements_Reference_Implementation (rep);
                 }
                 template    <typename T, typename TRAITS>
-                Iterable<T>    Tally_LinkedList<T, TRAITS>::Rep_::UniqueElements () const
+                Iterable<T>    Tally_LinkedList<T, TRAITS>::Rep_::UniqueElements (const _SharedPtrIRep& rep) const
                 {
-                    return this->_UniqueElements_Reference_Implementation ();
+                    return this->_UniqueElements_Reference_Implementation (rep);
                 }
 
 
