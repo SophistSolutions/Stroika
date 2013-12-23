@@ -23,9 +23,17 @@ namespace CommonTests {
             template <typename USING_BIJECTION_CONTAINER, typename USING_BASEBIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
+                typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeType    RangeType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
                 USING_BIJECTION_CONTAINER s;
                 s.Add (3, 5);
                 VerifyTestResult (s.length () == 1);
+                VerifyTestResult (s.ContainsDomainElement (3));
+                VerifyTestResult (not s.ContainsDomainElement (5));
+                VerifyTestResult (s.ContainsRangeElement (5));
+                VerifyTestResult (not s.ContainsRangeElement (3));
+                VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (3), 5));
             }
 
         }

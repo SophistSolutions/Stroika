@@ -8,6 +8,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Bijection.h"
+#include    "Stroika/Foundation/Containers/Concrete/Bijection_LinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
 
@@ -15,7 +16,6 @@
 #include    "../TestHarness/SimpleClass.h"
 #include    "../TestHarness/TestHarness.h"
 
-#include    "Stroika/Foundation/Containers/Concrete/Bijection_LinkedList.h"
 
 
 using   namespace   Stroika;
@@ -49,19 +49,15 @@ namespace   {
                 return v1.GetValue () == v2.GetValue ();
             }
         };
-        typedef Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
+        typedef Bijection_DefaultTraits<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_, MySimpleClassWithoutComparisonOperators_ComparerWithEquals_>   SimpleClassWithoutComparisonOperators_BAGTRAITS;
 
         RunTests_<Bijection<size_t, size_t>> ();
         RunTests_<Bijection<SimpleClass, SimpleClass>> ();
-#if 0
         RunTests_<Bijection<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
-#endif
 
         RunTests_<Bijection_LinkedList<size_t, size_t>> ();
         RunTests_<Bijection_LinkedList<SimpleClass, SimpleClass>> ();
-#if 0
         RunTests_<Bijection_LinkedList<SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators, SimpleClassWithoutComparisonOperators_BAGTRAITS>> ();
-#endif
     }
 
 }

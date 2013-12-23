@@ -153,7 +153,7 @@ namespace   Stroika {
                 // REIMPLEMENT USING InverseLookup()!!! @todo
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
                 for (pair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
-                    if (t.second == v) {
+                    if (RangeEqualsCompareFunctionType::Equals (t.second, v)) {
                         return true;
                     }
                 }
