@@ -245,32 +245,10 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As() const
+            template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
+            inline  CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As() const
             {
-                return As_<CONTAINER_OF_Key_T> ();
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int>::type usesInsertPair) const
-            {
-                CONTAINER_OF_Key_T  result;
-                for (auto i : *this) {
-                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-                    result.insert (result.end (), pair<DOMAIN_TYPE, RANGE_TYPE> (i.fKey, i.fValue));
-                }
-                return result;
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename   CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int >::type) const
-            {
-                CONTAINER_OF_Key_T  result;
-                for (auto i : *this) {
-                    // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-                    result.insert (result.end (), KeyValuePair<DOMAIN_TYPE, RANGE_TYPE> (i.fKey, i.fValue));
-                }
-                return result;
+                return CONTAINER_PAIR_RANGE_DOMAIN (this->begin (), this->end ());
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const

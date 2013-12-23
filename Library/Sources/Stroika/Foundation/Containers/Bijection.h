@@ -327,7 +327,6 @@ namespace   Stroika {
             public:
                 /**
                  *  This function should work for any container which accepts
-                 *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>) OR
                  *  (ITERATOR_OF<pair<Key,Value>>,ITERATOR_OF<pair<Key,Value>>).
                  *
                  *  These As<> overloads also may require the presence of an insert(ITERATOR, Value) method
@@ -336,14 +335,8 @@ namespace   Stroika {
                  *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
                  *  vector<pair<DomainType,RangeType>>, etc...
                  */
-                template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T As () const;
-
-            private:
-                template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int>::type usesInsertPair = 0) const;
-                template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
+                template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
+                nonvirtual  CONTAINER_PAIR_RANGE_DOMAIN As () const;
 
             public:
                 /**
