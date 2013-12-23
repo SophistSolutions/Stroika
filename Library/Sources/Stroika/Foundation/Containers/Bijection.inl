@@ -22,7 +22,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ************************
+             *************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *********************
              ********************************************************************************
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -32,38 +32,27 @@ namespace   Stroika {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& m)
-                : inherited (static_cast<const inherited&> (m))
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src)
+                : inherited (static_cast<const inherited&> (src))
             {
+                RequireMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& m)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src)
                 : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (m);
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& m)
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
-            {
-                AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (m);
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::map<DOMAIN_TYPE, RANGE_TYPE>& m)
-                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
-            {
-                AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (m);
+                AddAll (src);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& cp)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& src)
                 : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
-                AddAll (cp);
+                AddAll (src);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -72,12 +61,14 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
+                RequireMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  const typename  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_GetRep () const
@@ -182,7 +173,7 @@ namespace   Stroika {
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
-                 *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
+                 *  Note - unlike some other containers - we dont need to check for this != &s because if we
                  *  attempt to add items that already exist, it would do nothing to our iteration
                  *  and therefore not lead to an infinite loop.
                  */
@@ -285,7 +276,7 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep *****************
+             ************ Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep *****************
              ********************************************************************************
              */
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>

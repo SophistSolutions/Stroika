@@ -153,9 +153,7 @@ namespace   Stroika {
                  */
                 Bijection ();
                 Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src);
-                Bijection (const std::initializer_list<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& src);
                 Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& src);
-                Bijection (const std::map<DOMAIN_TYPE, RANGE_TYPE>& src);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Bijection (const CONTAINER_OF_PAIR_KEY_T& src);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
