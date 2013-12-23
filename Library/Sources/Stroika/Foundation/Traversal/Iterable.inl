@@ -135,6 +135,12 @@ namespace   Stroika {
                 return *fRep_;
             }
             template    <typename T>
+            inline  typename Iterable<T>::_SharedPtrIRep   Iterable<T>::_GetSharedPtrIRep () const
+            {
+                EnsureNotNull (fRep_.get ());
+                return fRep_.GetSharedPtr ();
+            }
+            template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
                 return _GetRep ().MakeIterator ();
