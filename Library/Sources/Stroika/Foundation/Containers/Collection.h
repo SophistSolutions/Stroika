@@ -19,7 +19,26 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   Docs mostly from Bag<> code - and need major revisions!!!
  *
+*
+ *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
+ *
+ *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
+ *
+ *      @todo   Consider adding RetainAll (Set<T>) API - like in Collection.h, and Java. Key diff is was force
+ *              use of SET as arg - not another Bag? Or maybe overload with different container types as args?
+ *              COULD do 2 versions - one with Iterable<T> and one with Set<T>. trick is to get definition
+ *              to work without untoward dependencies between set and bag code? I think that means
+ *              most of the check impl needs to be in the envelope to avoid always building it through vtables.
+ *
+ *      @todo   Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
+ *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
+ *
+ *              NO - Probably not. One - this restricts use to backends capable of this randomizing of order (eg. not hashtables
+ *              or trees), and is incompatible with the idea of subtypes like  SortedBag<T>. Instead - see if I can
+ *              come up with a compromise - maybe a "Shake" method that produces a NEW BAG of a possibly different backend TYPE!
+ *              THAT can work!
  */
 
 
