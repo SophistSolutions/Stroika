@@ -42,7 +42,7 @@ namespace   Stroika {
 
             /**
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<KEY_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<VALUE_TYPE>>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename KEY_EQUALS_COMPARER = Common::ComparerWithEquals<DOMAIN_TYPE>, typename VALUE_EQUALS_COMPARER = Common::ComparerWithEqualsOptionally<RANGE_TYPE>>
             struct   Bijection_DefaultTraits {
                 /**
                  */
@@ -59,7 +59,7 @@ namespace   Stroika {
                  *  Define typedef for this Bijection traits object (so other traits can generically allow recovery of the
                  *  underlying Bijection's TRAITS objects.
                  */
-                typedef Bijection_DefaultTraits<KEY_TYPE, VALUE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  BijectionTraitsType;
+                typedef Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE, KEY_EQUALS_COMPARER, VALUE_EQUALS_COMPARER>  BijectionTraitsType;
             };
 
 
@@ -84,14 +84,14 @@ namespace   Stroika {
              *  \em Design Note:
              *      Included <map> and have explicit CTOR for map<> so that Stroika Bijection can be used more interoperably
              *      with map<> - and used without an explicit CTOR. Use Explicit CTOR to avoid accidental converisons. But
-             *      if you declare an API with Bijection<KEY_TYPE,VALUE_TYPE> arguments, its important STL sources passing in map<> work transparently.
+             *      if you declare an API with Bijection<DOMAIN_TYPE,RANGE_TYPE> arguments, its important STL sources passing in map<> work transparently.
              *
              *      Similarly for std::initalizer_list.
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Bijection_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
-            class   Bijection : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
+            class   Bijection : public Iterable<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> {
             private:
-                typedef Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  inherited;
+                typedef Iterable<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>  inherited;
 
             protected:
                 class   _IRep;
@@ -105,12 +105,12 @@ namespace   Stroika {
             public:
                 /**
                  */
-                typedef KEY_TYPE    KeyType;
+                typedef DOMAIN_TYPE    KeyType;
 
             public:
                 /**
                  */
-                typedef VALUE_TYPE  ValueType;
+                typedef RANGE_TYPE  ValueType;
 
             public:
                 /**
@@ -134,10 +134,10 @@ namespace   Stroika {
                  *  The underlying data structure of the Bijection is defined by @see Concrete::Bijection_Factory<>
                  */
                 Bijection ();
-                Bijection (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& m);
-                Bijection (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m);
-                Bijection (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m);
-                Bijection (const std::map<KEY_TYPE, VALUE_TYPE>& m);
+                Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& m);
+                Bijection (const std::initializer_list<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& m);
+                Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& m);
+                Bijection (const std::map<DOMAIN_TYPE, RANGE_TYPE>& m);
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
                 explicit Bijection (const CONTAINER_OF_PAIR_KEY_T& cp);
                 template    <typename COPY_FROM_ITERATOR_KEY_T>
@@ -147,7 +147,7 @@ namespace   Stroika {
                 explicit Bijection (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& operator= (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& src) =   default;
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& src) =   default;
 
             public:
                 /**
@@ -235,7 +235,7 @@ namespace   Stroika {
                  *      answers but review Remove()for other containers as well.
                  */
                 nonvirtual  void    Remove (KeyType key);
-                nonvirtual  void    Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i);
+                nonvirtual  void    Remove (const Iterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& i);
 
             public:
                 /**
@@ -263,9 +263,9 @@ namespace   Stroika {
 
             private:
                 template    <typename CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair = 0) const;
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int>::type usesInsertPair = 0) const;
                 template    <typename   CONTAINER_OF_Key_T>
-                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
+                nonvirtual  CONTAINER_OF_Key_T  As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int >::type usesDefaultIterableImpl = 0) const;
 
             public:
                 /**
@@ -278,7 +278,7 @@ namespace   Stroika {
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
-                nonvirtual  bool    Equals (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+                nonvirtual  bool    Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
@@ -290,25 +290,25 @@ namespace   Stroika {
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator+= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  */
                 template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
+                nonvirtual  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& operator-= (const CONTAINER_OF_PAIR_KEY_T& items);
 
             public:
                 /**
                  *      Syntactic sugar on Equals()
                  */
-                nonvirtual  bool    operator== (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+                nonvirtual  bool    operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
             public:
                 /**
                  *      Syntactic sugar on not Equals()
                  */
-                nonvirtual  bool    operator!= (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const;
+                nonvirtual  bool    operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const;
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
@@ -322,8 +322,8 @@ namespace   Stroika {
              *  Protected abstract interface to support concrete implementations of
              *  the Bijection<T> container API.
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            class   Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_IRep {
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            class   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep : public Iterable<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>::_IRep {
             protected:
                 _IRep ();
 
@@ -339,7 +339,7 @@ namespace   Stroika {
                 virtual  bool               Lookup (KeyType key, Memory::Optional<ValueType>* item) const   =   0;
                 virtual  void               Add (KeyType key, ValueType newElt)                             =   0;
                 virtual  void               Remove (KeyType key)                                            =   0;
-                virtual  void               Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i)         =   0;
+                virtual  void               Remove (Iterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>> i)         =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for

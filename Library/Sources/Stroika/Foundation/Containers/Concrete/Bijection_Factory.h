@@ -29,7 +29,7 @@ namespace   Stroika {
         namespace   Containers {
 
 
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             class   Bijection;
 
 
@@ -44,31 +44,31 @@ namespace   Stroika {
                  *
                  *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 class   Bijection_Factory {
                 private:
-                    static  atomic<Bijection<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>   sFactory_;
+                    static  atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>   sFactory_;
 
                 public:
                     /**
                      *  You can call this directly, but there is no need, as the Bijection<T,TRAITS> CTOR does so automatically.
                      */
-                    static  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  mk ();
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  mk ();
 
                 public:
                     /**
-                     *  Register a replacement creator/factory for the given Bijection<KEY_TYPE, VALUE_TYPE,TRAITS>. Note this is a global change.
+                     *  Register a replacement creator/factory for the given Bijection<DOMAIN_TYPE, RANGE_TYPE,TRAITS>. Note this is a global change.
                      */
-                    static  void    Register (Bijection<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) () = nullptr);
+                    static  void    Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) () = nullptr);
 
                 private:
-                    static  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_ ();
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_ ();
 
                 private:
                     template    <typename CHECK_KEY>
-                    static  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type* = 0);
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type* = 0);
                     template    <typename CHECK_KEY>
-                    static  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type* = 0);
+                    static  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type* = 0);
                 };
 
 

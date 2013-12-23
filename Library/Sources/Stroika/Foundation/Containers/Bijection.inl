@@ -22,84 +22,84 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************** Bijection<KEY_TYPE, VALUE_TYPE, TRAITS> ************************
+             ***************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ************************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection ()
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection ()
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& m)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& m)
                 : inherited (static_cast<const inherited&> (m))
             {
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const std::initializer_list<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& m)
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& m)
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (m);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<KEY_TYPE, VALUE_TYPE>>& m)
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::initializer_list<pair<DOMAIN_TYPE, RANGE_TYPE>>& m)
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (m);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const std::map<KEY_TYPE, VALUE_TYPE>& m)
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const std::map<DOMAIN_TYPE, RANGE_TYPE>& m)
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (m);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& cp)
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const CONTAINER_OF_PAIR_KEY_T& cp)
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (cp);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-                : inherited (Concrete::Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ())
+            Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+                : inherited (Concrete::Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ())
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (start, end);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& rep)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Bijection (const _SharedPtrIRep& rep)
                 : inherited (typename inherited::_SharedPtrIRep (rep))
             {
                 RequireNotNull (rep);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  const typename  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep () const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  const typename  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_GetRep () const
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
                 EnsureMember (&inherited::_GetRep (), _IRep);
                 return *static_cast<const _IRep*> (&inherited::_GetRep ());
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  typename    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep&     Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_GetRep ()
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  typename    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep&     Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_GetRep ()
             {
                 // Unsure - MAY need to use dynamic_cast here - but I think static cast performs better, so try...
                 EnsureMember (&inherited::_GetRep (), _IRep);
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Iterable<KEY_TYPE>    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Keys () const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Keys () const
             {
                 return _GetRep ().Keys ();
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
             {
                 if (item == nullptr) {
                     return _GetRep ().Lookup (key, nullptr);
@@ -113,67 +113,67 @@ namespace   Stroika {
                     return false;
                 }
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
             {
                 return _GetRep ().Lookup (key, item);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Memory::Optional<VALUE_TYPE>    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key) const
             {
-                Memory::Optional<VALUE_TYPE>   r;
+                Memory::Optional<RANGE_TYPE>   r;
                 bool    result = _GetRep ().Lookup (key, &r);
                 Ensure (result == r.IsPresent ());
                 return r;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
             {
                 return _GetRep ().Lookup (key, nullptr);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  VALUE_TYPE   Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
             {
-                Memory::Optional<VALUE_TYPE>   r    =   Lookup (key);
+                Memory::Optional<RANGE_TYPE>   r    =   Lookup (key);
                 return r.IsPresent () ? *r : defaultValue;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsKey (KeyType key) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsKey (KeyType key) const
             {
                 return _GetRep ().Lookup (key, nullptr);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::ContainsValue (ValueType v) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsValue (ValueType v) const
             {
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                for (KeyValuePair<KEY_TYPE, VALUE_TYPE> t : *this) {
+                for (KeyValuePair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
                     if (t.second == v) {
                         return true;
                     }
                 }
                 return false;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
             {
                 _GetRep ().Add (key, newElt);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
             {
                 _GetRep ().Add (p.fKey, p.fValue);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEYVALUE>
-            void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
+            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (COPY_FROM_ITERATOR_KEYVALUE start, COPY_FROM_ITERATOR_KEYVALUE end)
             {
                 for (auto i = start; i != end; ++i) {
                     Add (*i);
                 }
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_KEYVALUE>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::AddAll (const CONTAINER_OF_KEYVALUE& items)
             {
                 /*
                  *  Note - unlike Bag<T> - we dont need to check for this != &s because if we
@@ -182,96 +182,96 @@ namespace   Stroika {
                  */
                 AddAll (std::begin (items), std::end (items));
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (KeyType key)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (KeyType key)
             {
                 _GetRep ().Remove (key);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>& i)
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& i)
             {
                 _GetRep ().Remove (i);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll ()
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
+            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 for (auto i : items) {
                     Remove (i.first);
                 }
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
+            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
             {
                 for (auto i = start; i != end; ++i) {
                     Remove (i->first);
                 }
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::As() const
+            inline  CONTAINER_OF_Key_T Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As() const
             {
                 return As_<CONTAINER_OF_Key_T> ();
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_Key_T>
-            CONTAINER_OF_Key_T  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int>::type usesInsertPair) const
+            CONTAINER_OF_Key_T  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As_ (typename enable_if <is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int>::type usesInsertPair) const
             {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
                     // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-                    result.insert (result.end (), pair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
+                    result.insert (result.end (), pair<DOMAIN_TYPE, RANGE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename   CONTAINER_OF_Key_T>
-            inline  CONTAINER_OF_Key_T  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<KEY_TYPE, VALUE_TYPE>>::value, int >::type) const
+            inline  CONTAINER_OF_Key_T  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As_ (typename enable_if < !is_convertible <typename CONTAINER_OF_Key_T::value_type, pair<DOMAIN_TYPE, RANGE_TYPE>>::value, int >::type) const
             {
                 CONTAINER_OF_Key_T  result;
                 for (auto i : *this) {
                     // the reason we use the overload with an extra result.end () here is so it will work with std::map<> or std::vector<>
-                    result.insert (result.end (), KeyValuePair<KEY_TYPE, VALUE_TYPE> (i.fKey, i.fValue));
+                    result.insert (result.end (), KeyValuePair<DOMAIN_TYPE, RANGE_TYPE> (i.fKey, i.fValue));
                 }
                 return result;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::Equals (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Equals (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
             {
                 return (_GetRep ().Equals (rhs._GetRep ()));
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  void    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::clear ()
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::clear ()
             {
                 _GetRep ().RemoveAll ();
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>&    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator+= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 AddAll (items);
                 return *this;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_PAIR_KEY_T>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>&    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator-= (const CONTAINER_OF_PAIR_KEY_T& items)
             {
                 RemoveAll (items);
                 return *this;
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::operator== (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator== (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
             {
                 return Equals (rhs);
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::operator!= (const Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>& rhs) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::operator!= (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>& rhs) const
             {
                 return not Equals (rhs);
             }
@@ -279,19 +279,19 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ***************** Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep *****************
+             ***************** Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep *****************
              ********************************************************************************
              */
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_IRep ()
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_IRep ()
             {
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::~_IRep ()
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::~_IRep ()
             {
             }
-            template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            bool    Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::_IRep::_Equals_Reference_Implementation (const _IRep& rhs) const
             {
                 if (this == &rhs) {
                     return true;

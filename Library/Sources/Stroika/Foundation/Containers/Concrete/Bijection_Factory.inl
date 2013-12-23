@@ -21,13 +21,13 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************** Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS> *******************
+                 ************** Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS> *******************
                  ********************************************************************************
                  */
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                atomic<Bijection<KEY_TYPE, VALUE_TYPE, TRAITS> (*) ()>    Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::sFactory_ (nullptr);
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::mk ()
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                atomic<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*) ()>    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::sFactory_ (nullptr);
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::mk ()
                 {
                     /*
                      *  Would have been more performant to just and assure always properly set, but to initialize
@@ -42,39 +42,39 @@ namespace   Stroika {
                     }
                     return f ();
                 }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                void    Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Register (Bijection<KEY_TYPE, VALUE_TYPE, TRAITS> (*factory) ())
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                void    Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Register (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS> (*factory) ())
                 {
                     sFactory_ = factory;
                 }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_ ()
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_ ()
                 {
                     /*
                      *  Use SFINAE to select best default implementation.
                      */
-                    return Default_SFINAE_<KEY_TYPE> ();
+                    return Default_SFINAE_<DOMAIN_TYPE> ();
                 }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type*)
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if <Common::Has_Operator_LessThan<CHECK_KEY>::value>::type*)
                 {
                     // KISS - we will want to use SFINAE eventually so keep infrastructure in place
-                    return Bijection_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                    return Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
                 }
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 template    <typename CHECK_KEY>
-                inline  Bijection<KEY_TYPE, VALUE_TYPE, TRAITS>  Bijection_Factory<KEY_TYPE, VALUE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type*)
+                inline  Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  Bijection_Factory<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Default_SFINAE_ (typename enable_if < !Common::Has_Operator_LessThan<CHECK_KEY>::value >::type*)
                 {
                     /*
                      *  Note - though this is not an efficient implementation of Bijection<> for large sizes, its probably the most
-                     *  efficeint representation which adds no requirements to KEY_TYPE, such as operator< (or a traits less) or
+                     *  efficeint representation which adds no requirements to DOMAIN_TYPE, such as operator< (or a traits less) or
                      *  a hash function. And its quite reasonable for small Bijection's - which are often the case.
                      *
                      *  Calls may use an explicit initializer of Bijection_xxx<> to get better performance for large sized
                      *  maps.
                      */
-                    return Bijection_LinkedList<KEY_TYPE, VALUE_TYPE, TRAITS> ();
+                    return Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS> ();
                 }
 
 
