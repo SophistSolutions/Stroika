@@ -195,7 +195,13 @@ namespace   Stroika {
                 _GetRep ().Add (key, newElt);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyValuePair<DomainType, RangeType> p)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (pair<DomainType, RangeType> p)
+            {
+                _GetRep ().Add (p.first, p.second);
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template    <typename KEYVALUEPAIR, typename ENABLE_IF_TEST>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KEYVALUEPAIR p)
             {
                 _GetRep ().Add (p.fKey, p.fValue);
             }
@@ -219,9 +225,14 @@ namespace   Stroika {
                 AddAll (std::begin (items), std::end (items));
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (DomainType key)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveDomainElement (DomainType d)
             {
-                _GetRep ().Remove (key);
+                _GetRep ().RemoveDomainElement (d);
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveRangeElement (RangeType r)
+            {
+                _GetRep ().RemoveRangeElement (r);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
@@ -232,22 +243,6 @@ namespace   Stroika {
             inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll ()
             {
                 _GetRep ().RemoveAll ();
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename CONTAINER_OF_PAIR_KEY_T>
-            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items)
-            {
-                for (auto i : items) {
-                    Remove (i.first);
-                }
-            }
-            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            template    <typename COPY_FROM_ITERATOR_KEY_T>
-            void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end)
-            {
-                for (auto i = start; i != end; ++i) {
-                    Remove (i->first);
-                }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_OF_Key_T>

@@ -67,7 +67,8 @@ namespace   Stroika {
                     virtual bool                Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
                     virtual  bool                InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
                     virtual void                Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
-                    virtual void                Remove (DOMAIN_TYPE key) override;
+                    virtual  void                   RemoveDomainElement (DomainType d) override;
+                    virtual  void                   RemoveRangeElement (RangeType r) override;
                     virtual void                Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
 
                 public:
@@ -229,11 +230,24 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Remove (DOMAIN_TYPE key)
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveDomainElement (DOMAIN_TYPE d)
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
-                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
+                            if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
+                                fData_.RemoveAt (it);
+                                return;
+                            }
+                        }
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                }
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveRangeElement (RANGE_TYPE r)
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
                                 fData_.RemoveAt (it);
                                 return;
                             }

@@ -6,10 +6,9 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <map>
+#include    <utility>
 
 #include    "../Common/Compare.h"
-#include    "../Common/KeyValuePair.h"
 #include    "../Configuration/Common.h"
 #include    "../Configuration/Concepts.h"
 #include    "../Memory/Optional.h"
@@ -30,6 +29,9 @@
  *              of a regular Mapping (without exhaustive search on lookup from range).
  *
  *              But currently just a functional, proof-of-concept linked list implementation.
+ *
+ *      @todo   Consider adding templated for RemoveAllDomainElements/RemoveAllRangeElements
+ *              taking containers or iterator ranges.
  */
 
 
@@ -41,7 +43,6 @@ namespace   Stroika {
 
             using   Traversal::Iterable;
             using   Traversal::Iterator;
-            using   Common::KeyValuePair;
 
 
             /**
@@ -167,9 +168,7 @@ namespace   Stroika {
 
             public:
                 /**
-                & @todo - REPLACE THIS WITH DOMAINELEMENTS() and RangeElements()
-                *
-                 *  DomainElements () returns an Iterable object with just the key part of the Bijection.
+                 *  DomainElements () returns an Iterable object with just the domain (first) part of the Bijection.
                  *
                  *  Note this method may not return a collection which is sorted. Note also, the
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
@@ -191,9 +190,7 @@ namespace   Stroika {
 
             public:
                 /**
-                & @todo - REPLACE THIS WITH DOMAINELEMENTS() and RangeElements()
-                *
-                 *  DomainElements () returns an Iterable object with just the key part of the Bijection.
+                 *  RangeElements () returns an Iterable object with just the key part of the Bijection.
                  *
                  *  Note this method may not return a collection which is sorted. Note also, the
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
@@ -215,8 +212,6 @@ namespace   Stroika {
 
             public:
                 /**
-                *   @todo Need InverseLookup () too!
-                *
                  *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
                  *  a default value on Lookup (so for case where not present) - as in:
                  *      returm m.Lookup (key).Value (putDefaultValueHere);
@@ -224,6 +219,10 @@ namespace   Stroika {
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *
+                 *  @see   LookupValue ()
+                 *  @see   InverseLookup ()
+                 *  @see   InverseLookupValue ()
                  */
                 nonvirtual  Memory::Optional<RangeType> Lookup (DomainType key) const;
                 nonvirtual  bool                        Lookup (DomainType key, Memory::Optional<RangeType>* item) const;
@@ -233,6 +232,10 @@ namespace   Stroika {
             public:
                 /**
                  *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+                 *
+                 *  @see   Lookup ()
+                 *  @see   InverseLookup ()
+                 *  @see   InverseLookupValue ()
                  */
                 nonvirtual  RangeType   LookupValue (DomainType key, RangeType defaultValue = RangeType ()) const;
 
@@ -247,6 +250,10 @@ namespace   Stroika {
                  *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
                  *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
                  *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 *
+                 *  @see   Lookup ()
+                 *  @see   LookupValue ()
+                 *  @see   InverseLookupValue ()
                  */
                 nonvirtual  Memory::Optional<DomainType>    InverseLookup (RangeType key) const;
                 nonvirtual  bool                            InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const;
@@ -256,24 +263,22 @@ namespace   Stroika {
             public:
                 /**
                  *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+                 *
+                 *  @see   Lookup ()
+                 *  @see   LookupValue ()
+                 *  @see   InverseLookup ()
                  */
                 nonvirtual  DomainType   InverseLookupValue (RangeType key, DomainType defaultValue = DomainType ()) const;
 
             public:
                 /**
-                * @todo rename/use ContainsDomainElement () / ContainsRangeEleemnt()
                  *  Synonym for (Lookup (v).IsPresent ()) or DomainElements ().Contains (v)
                  */
                 nonvirtual  bool    ContainsDomainElement (DomainType key) const;
 
             public:
                 /**
-                * @todo rename/use ContainsDomainElement () / ContainsRangeEleemnt()
-                 *  Likely inefficeint for a map, but perhaps helpful. Walks entire list of entires
-                 *  and applies operator== on each value, and returns true if contained. Perhpas not
-                 *  very useful but symetric to ContainsKey().
-                 *
-                 *  \req RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
+                 *  Synonym for (InverseLookup (v).IsPresent ()) or RangeElements ().Contains (v)
                  */
                 nonvirtual  bool    ContainsRangeElement (RangeType v) const;
 
@@ -285,7 +290,9 @@ namespace   Stroika {
                  *  then the iteration order is not changed (helpful for AddAll() semantics, and perhaps elsewhere).
                  */
                 nonvirtual  void    Add (DomainType key, RangeType newElt);
-                nonvirtual  void    Add (KeyValuePair<DomainType, RangeType> p);
+                nonvirtual  void    Add (pair<DomainType, RangeType> p);
+                template    < typename KEYVALUEPAIR, typename ENABLE_IF_TEST = typename enable_if < !is_convertible<const KEYVALUEPAIR&, pair<DomainType, RangeType>>::value, void >::type >
+                nonvirtual  void    Add (KEYVALUEPAIR p);
 
             public:
                 /**
@@ -297,24 +304,25 @@ namespace   Stroika {
 
             public:
                 /**
-                *   @todo REMOVE() of KEY bad idea for bijection!
-                 *  NOTE- calling Remove(Key) when the key is not found is perfectly legal.
-                 *
-                 *  @todo CONSIDER:::
-                 *      TBD in the case of Remove() on in iterator???? Probably should have consistent
-                 *      answers but review Remove()for other containers as well.
                  */
-                nonvirtual  void    Remove (DomainType key);
                 nonvirtual  void    Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i);
+
+            public:
+                /**
+                 *  This removes any mapping from 'd' to anything. It is not an error if 'd' isn not already in the domain.
+                 */
+                nonvirtual  void    RemoveDomainElement (DomainType d);
+
+            public:
+                /**
+                 *  This removes any mapping from anything to 'r'. It is not an error if 'r' isn not already in the range.
+                 */
+                nonvirtual  void    RemoveRangeElement (RangeType r);
 
             public:
                 /**
                  */
                 nonvirtual  void    RemoveAll ();
-                template    <typename CONTAINER_OF_PAIR_KEY_T>
-                nonvirtual  void    RemoveAll (const CONTAINER_OF_PAIR_KEY_T& items);
-                template    <typename COPY_FROM_ITERATOR_KEY_T>
-                nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_KEY_T start, COPY_FROM_ITERATOR_KEY_T end);
 
             public:
                 /**
@@ -401,17 +409,18 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             public:
-                virtual bool                    Equals (const _IRep& rhs) const                                     =   0;
-                virtual void                    RemoveAll ()                                                        =   0;
-                virtual  Iterable<DomainType>   DomainElements () const                                             =   0;
-                virtual  Iterable<RangeType>    RangeElements () const                                              =   0;
+                virtual bool                    Equals (const _IRep& rhs) const                                             =   0;
+                virtual void                    RemoveAll ()                                                                =   0;
+                virtual  Iterable<DomainType>   DomainElements () const                                                     =   0;
+                virtual  Iterable<RangeType>    RangeElements () const                                                      =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
-                virtual  bool                   Lookup (DomainType key, Memory::Optional<RangeType>* item) const    =   0;
-                virtual  bool                   InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const    =   0;
-                virtual  void                   Add (DomainType key, RangeType newElt)                              =   0;
-                virtual  void                   Remove (DomainType key)                                             =   0;
-                virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                  =   0;
+                virtual  bool                   Lookup (DomainType key, Memory::Optional<RangeType>* item) const            =   0;
+                virtual  bool                   InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const     =   0;
+                virtual  void                   Add (DomainType key, RangeType newElt)                                      =   0;
+                virtual  void                   RemoveDomainElement (DomainType d)                                          =   0;
+                virtual  void                   RemoveRangeElement (RangeType r)                                            =   0;
+                virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                          =   0;
 
                 /*
                  *  Reference Implementations (often not used except for ensure's, but can be used for
