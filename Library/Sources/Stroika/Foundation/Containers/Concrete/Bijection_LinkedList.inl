@@ -60,16 +60,16 @@ namespace   Stroika {
 
                     // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
                 public:
-                    virtual bool                Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const override;
-                    virtual void                RemoveAll () override;
-                    virtual Iterable<DOMAIN_TYPE>  DomainElements () const override;
-                    virtual Iterable<RANGE_TYPE>  RangeElements () const override;
-                    virtual bool                Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
-                    virtual  bool                InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
-                    virtual void                Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
-                    virtual  void                   RemoveDomainElement (DomainType d) override;
-                    virtual  void                   RemoveRangeElement (RangeType r) override;
-                    virtual void                Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
+                    virtual bool                    Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const override;
+                    virtual void                    RemoveAll () override;
+                    virtual Iterable<DOMAIN_TYPE>   DomainElements () const override;
+                    virtual Iterable<RANGE_TYPE>    RangeElements () const override;
+                    virtual bool                    Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
+                    virtual  bool                   InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
+                    virtual void                    Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
+                    virtual  void                   RemoveDomainElement (DOMAIN_TYPE d) override;
+                    virtual  void                   RemoveRangeElement (RANGE_TYPE r) override;
+                    virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
 
                 public:
                     typedef typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::DomainEqualsCompareFunctionType    DomainEqualsCompareFunctionType;
