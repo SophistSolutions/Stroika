@@ -104,16 +104,22 @@ namespace   Stroika {
 
             public:
                 /**
-                *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
-                *  building other templates.
-                */
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Tally<T, TRAITS>    ArchetypeContainerType;
+
+            public:
+                /**
+                 *  Just a short-hand for the 'TRAITS' part of Bag<T,TRAITS>. This is often handy to use in
+                 *  building other templates.
+                 */
                 typedef TRAITS  TraitsType;
 
             public:
                 /**
-                *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
-                *  building other templates.
-                */
+                 *  Just a short-hand for the EqualsCompareFunctionType specified through traits. This is often handy to use in
+                 *  building other templates.
+                 */
                 typedef typename TraitsType::EqualsCompareFunctionType  EqualsCompareFunctionType;
 
             public:

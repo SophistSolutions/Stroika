@@ -118,6 +118,12 @@ namespace   Stroika {
             private:
                 typedef Iterable<T> inherited;
 
+            public:
+                /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Queue<T, TRAITS>    ArchetypeContainerType;
+
             protected:
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;

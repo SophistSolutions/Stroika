@@ -21,7 +21,6 @@
  * TODO:
  *      @todo   Docs mostly from Bag<> code - and need major revisions!!!
  *
-*
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
@@ -78,6 +77,12 @@ namespace   Stroika {
             class   Collection : public Iterable<T> {
             private:
                 typedef Iterable<T> inherited;
+
+            public:
+                /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Collection<T>   ArchetypeContainerType;
 
             protected:
                 class   _IRep;

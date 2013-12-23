@@ -108,6 +108,13 @@ namespace   Stroika {
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
+
+            public:
+                /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>  ArchetypeContainerType;
+
             public:
                 /**
                  */

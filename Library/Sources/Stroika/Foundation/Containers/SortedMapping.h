@@ -65,6 +65,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS> ArchetypeContainerType;
+
+            public:
+                /**
                 *  This constructor creates a concrete sorted mapping object, either empty,
                 *  or initialized with any argument values.
                 *

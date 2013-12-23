@@ -114,6 +114,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>   ArchetypeContainerType;
+
+            public:
+                /**
                  */
                 typedef TRAITS      TraitsType;
 

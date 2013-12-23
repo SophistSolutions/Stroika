@@ -91,6 +91,12 @@ namespace   Stroika {
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
+                /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef PriorityQueue<T>    ArchetypeContainerType;
+
+            public:
                 /*
                  */
                 PriorityQueue ();

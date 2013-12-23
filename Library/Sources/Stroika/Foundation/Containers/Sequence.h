@@ -191,6 +191,12 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Use this typedef in templates to recover the basic functional container pattern of concrete types.
+                 */
+                typedef Sequence<T, TRAITS> ArchetypeContainerType;
+
+            public:
+                /**
                  *  Just a short-hand for the 'TRAITS' part of Sequence<T,TRAITS>. This is often handy to use in
                  *  building other templates.
                  */
