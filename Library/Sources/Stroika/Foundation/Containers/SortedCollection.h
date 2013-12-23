@@ -29,7 +29,7 @@
  *
  *      @todo   Implement using redblback trees.
  *
- *      @todo   See if there is a good STL backend to use to implement this? Multimap<T,void> is the closest
+ *      @todo   See if there is a good STL backend to use to implement this? std::multimap<T,void> is the closest
  *              I can see.
  *
  */

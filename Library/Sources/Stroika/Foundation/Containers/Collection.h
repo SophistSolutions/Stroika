@@ -19,8 +19,6 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  * TODO:
- *      @todo   Docs mostly from Bag<> code - and need major revisions!!!
- *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
@@ -33,6 +31,12 @@
  *
  *      @todo   Perhaps add a Shake() method that produces a NEW Collection of a possibly different backend TYPE!
  *              with a random ordering.
+ *
+ *      @todo   Document relationship with Java Collection<T> (http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html)
+ *              Similar but Stroika container interface/containter connection, Equals handling, and other language specific
+ *              issues. Java has more 'all' variants (and retainAll - see possible todo above). And java makes this
+ *              strictly an interface - used by lots of other subtypes (like set<>) - which we may wish to do as
+ *              well (not sure - sterl feels this is a very bad idea, and I'm ambivilent).
  */
 
 
@@ -67,11 +71,11 @@ namespace   Stroika {
              *      bags.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
-			 *
-			 *	\note	Shake
-			 *		Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
-			 *		the use to backends capable of this randomizing of order (eg. not hashtables
-			 *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>
+             *
+             *  \note   Shake
+             *      Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
+             *      the use to backends capable of this randomizing of order (eg. not hashtables
+             *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>
              */
             template    <typename T>
             class   Collection : public Iterable<T> {
@@ -101,7 +105,7 @@ namespace   Stroika {
                 explicit Collection (const _SharedPtrIRep& rep);
 
             public:
-                nonvirtual  Collection<T>& operator= (const Collection<T>& rhs);
+                nonvirtual  Collection<T>& operator= (const Collection<T>& rhs) = default;
 
             public:
                 /**
@@ -180,13 +184,12 @@ namespace   Stroika {
                  *
                  *  *DEVELOPER NOTE*
                  *      Note - we use an overload
-                 *      of Bag<T, TRAITS> for the container case instead of a template, because I'm not sure how to use specializations
+                 *      of Collection<T> for the container case instead of a template, because I'm not sure how to use specializations
                  *      to distinguish the two cases. If I can figure that out, this can transparently be
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
                 nonvirtual  Collection<T>& operator+= (T item);
                 nonvirtual  Collection<T>& operator+= (const Collection<T>& items);
-
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;

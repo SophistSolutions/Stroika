@@ -51,6 +51,7 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             template    <typename CONTAINER_OF_T>
@@ -59,12 +60,7 @@ namespace   Stroika {
             {
                 AssertMember (&inherited::_GetRep (), _IRep);
                 AddAll (src);
-            }
-            template    <typename T>
-            inline  Collection<T>& Collection<T>::operator= (const Collection<T>& rhs)
-            {
-                inherited::operator= (rhs);
-                return *this;
+                EnsureMember (&inherited::_GetRep (), _IRep);
             }
             template    <typename T>
             inline  const typename  Collection<T>::_IRep&    Collection<T>::_GetRep () const
@@ -88,11 +84,6 @@ namespace   Stroika {
                     }
                 }
                 return false;
-            }
-            template    <typename T>
-            inline  void    Collection<T>::clear ()
-            {
-                RemoveAll ();
             }
             template    <typename T>
             template    <typename COPY_FROM_ITERATOR_OF_T>
@@ -168,6 +159,11 @@ namespace   Stroika {
             inline  void    Collection<T>::Remove (const Iterator<T>& i)
             {
                 _GetRep ().Remove (i);
+            }
+            template    <typename T>
+            inline  void    Collection<T>::clear ()
+            {
+                RemoveAll ();
             }
             template    <typename T>
             inline  Collection<T>& Collection<T>::operator+= (T item)
