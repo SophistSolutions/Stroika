@@ -94,18 +94,23 @@ namespace   Stroika {
                 return *static_cast<_IRep*> (&inherited::_GetRep ());
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Keys () const
+            inline  Iterable<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::DomainElements () const
             {
-                return _GetRep ().Keys ();
+                return _GetRep ().DomainElements ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, ValueType* item) const
+            inline  Iterable<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::RangeElements () const
+            {
+                return _GetRep ().RangeElements ();
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, RangeType* item) const
             {
                 if (item == nullptr) {
                     return _GetRep ().Lookup (key, nullptr);
                 }
                 else {
-                    Memory::Optional<ValueType> tmp;
+                    Memory::Optional<RangeType> tmp;
                     if (_GetRep ().Lookup (key, &tmp)) {
                         *item = *tmp;
                         return true;
@@ -114,12 +119,12 @@ namespace   Stroika {
                 }
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, Memory::Optional<ValueType>* item) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, Memory::Optional<RangeType>* item) const
             {
                 return _GetRep ().Lookup (key, item);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key) const
+            inline  Memory::Optional<RANGE_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key) const
             {
                 Memory::Optional<RANGE_TYPE>   r;
                 bool    result = _GetRep ().Lookup (key, &r);
@@ -127,26 +132,27 @@ namespace   Stroika {
                 return r;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (KeyType key, nullptr_t) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Lookup (DomainType key, nullptr_t) const
             {
                 return _GetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (KeyType key, ValueType defaultValue) const
+            inline  RANGE_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::LookupValue (DomainType key, RangeType defaultValue) const
             {
                 Memory::Optional<RANGE_TYPE>   r    =   Lookup (key);
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsKey (KeyType key) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (DomainType key) const
             {
                 return _GetRep ().Lookup (key, nullptr);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsValue (ValueType v) const
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsRangeElement (RangeType v) const
             {
+                // REIMPLEMENT USING InverseLookup()!!! @todo
                 //WRONG - need something similar...@todo - use new traits - RequireConceptAppliesToTypeInFunction(RequireOperatorEquals, T);
-                for (KeyValuePair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
+                for (pair<DOMAIN_TYPE, RANGE_TYPE> t : *this) {
                     if (t.second == v) {
                         return true;
                     }
@@ -154,12 +160,12 @@ namespace   Stroika {
                 return false;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyType key, ValueType newElt)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (DomainType key, RangeType newElt)
             {
                 _GetRep ().Add (key, newElt);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyValuePair<KeyType, ValueType> p)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Add (KeyValuePair<DomainType, RangeType> p)
             {
                 _GetRep ().Add (p.fKey, p.fValue);
             }
@@ -183,12 +189,12 @@ namespace   Stroika {
                 AddAll (std::begin (items), std::end (items));
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (KeyType key)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (DomainType key)
             {
                 _GetRep ().Remove (key);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<KeyValuePair<DOMAIN_TYPE, RANGE_TYPE>>& i)
+            inline  void    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Remove (const Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>& i)
             {
                 _GetRep ().Remove (i);
             }
@@ -303,8 +309,8 @@ namespace   Stroika {
                 // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
                 // are present, and with the same Bijection in the second.
                 for (auto i = this->MakeIterator (); not i.Done (); ++i) {
-                    Memory::Optional<ValueType>   tmp;
-                    if (not rhs.Lookup (i->fKey, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->fValue)) {
+                    Memory::Optional<RangeType>   tmp;
+                    if (not rhs.Lookup (i->first, &tmp) or not RangeEqualsCompareFunctionType::Equals (*tmp, i->second)) {
                         return false;
                     }
                 }
