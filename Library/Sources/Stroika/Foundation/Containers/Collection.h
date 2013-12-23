@@ -31,13 +31,8 @@
  *              to work without untoward dependencies between set and bag code? I think that means
  *              most of the check impl needs to be in the envelope to avoid always building it through vtables.
  *
- *      @todo   Add Shake() method, which MAY randomize the ordering of items. Note - since ordering is not
- *              defined, this may do nothing, but will often randomize order. Often handy as a testing tool.
- *
- *              NO - Probably not. One - this restricts use to backends capable of this randomizing of order (eg. not hashtables
- *              or trees), and is incompatible with the idea of subtypes like  SortedBag<T>. Instead - see if I can
- *              come up with a compromise - maybe a "Shake" method that produces a NEW BAG of a possibly different backend TYPE!
- *              THAT can work!
+ *      @todo   Perhaps add a Shake() method that produces a NEW Collection of a possibly different backend TYPE!
+ *              with a random ordering.
  */
 
 
@@ -72,6 +67,11 @@ namespace   Stroika {
              *      bags.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
+			 *
+			 *	\note	Shake
+			 *		Considered adding a Shake() method (when this was called Bag<T>), but that would restrict
+			 *		the use to backends capable of this randomizing of order (eg. not hashtables
+			 *      or trees), and is incompatible with the idea of subtypes like  SortedCollection<T>
              */
             template    <typename T>
             class   Collection : public Iterable<T> {
