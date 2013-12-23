@@ -7,6 +7,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Containers/Bijection.h"
+#include    "Stroika/Foundation/Containers/Mapping.h"
 
 #include    "../TestHarness/TestHarness.h"
 #include    "CommonTests_Iterable.h"
@@ -63,12 +64,57 @@ namespace CommonTests {
         }
 
 
+        namespace Test3_ConstructFromOtherTypes_ {
+
+            template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                {
+                    map<int, int>   t;
+                    t.insert (map<int, int>::value_type (2, 4));
+                    typename USING_BIJECTION_CONTAINER::ArchetypeContainerType  s = USING_BIJECTION_CONTAINER (t);
+                    VerifyTestResult (s.length () == 1);
+                    VerifyTestResult (s.ContainsDomainElement (2));
+                    VerifyTestResult (s.ContainsRangeElement (4));
+                    VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
+                    VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                }
+                {
+                    pair<int, int>  t[] = {
+                        { 2, 4 }
+                    };
+                    typename USING_BIJECTION_CONTAINER::ArchetypeContainerType  s = USING_BIJECTION_CONTAINER (t);
+                    VerifyTestResult (s.length () == 1);
+                    VerifyTestResult (s.ContainsDomainElement (2));
+                    VerifyTestResult (s.ContainsRangeElement (4));
+                    VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
+                    VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                }
+                {
+                    Mapping<int, int>   t;
+                    t.Add (2, 4);
+                    typename USING_BIJECTION_CONTAINER::ArchetypeContainerType  s = USING_BIJECTION_CONTAINER (t);
+                    VerifyTestResult (s.length () == 1);
+                    VerifyTestResult (s.ContainsDomainElement (2));
+                    VerifyTestResult (s.ContainsRangeElement (4));
+                    VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (2), 4));
+                    VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (4), 2));
+                }
+            }
+
+        }
+
+
+
 
         template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
         void    SimpleTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_VeryBasics_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
             Test2_MultipeItems_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
+            Test3_ConstructFromOtherTypes_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
         }
 
     }
