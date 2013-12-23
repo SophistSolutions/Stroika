@@ -36,10 +36,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType                        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType                      ValueType;
-        typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType  MappingTraitsType;
-        auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
+        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // only work todo on sorted mappings
         };
         CommonTests::MappingTests::SimpleMappingTest_AllTestsWhichDontRequireComparer_For_Type_<CONCRETE_CONTAINER> (extraChecksFunction);
@@ -47,10 +44,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType                        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType                      ValueType;
-        typedef typename CONCRETE_CONTAINER::TraitsType::MappingTraitsType  MappingTraitsType;
-        auto extraChecksFunction = [](const Mapping<KeyType, ValueType, MappingTraitsType>& m) {
+        auto extraChecksFunction = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // only work todo on sorted mappings
         };
         CommonTests::MappingTests::SimpleMappingTest_All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);

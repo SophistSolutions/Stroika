@@ -20,10 +20,10 @@ namespace CommonTests {
 
 
         namespace Test1_MiscStarterTests_ {
-            template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
-            void    TallyIteratorTests_ (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
+            void    TallyIteratorTests_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_TALLY_CONTAINER::TallyOfElementType   T;
+                typedef typename CONCRETE_CONTAINER::TallyOfElementType   T;
                 const   size_t  kTestSize = 6;
 
                 VerifyTestResult (s.GetLength () == 0);
@@ -32,7 +32,7 @@ namespace CommonTests {
                 for (TallyEntry<T> i : s) {
                     VerifyTestResult (false);
                 }
-                IterableTests::SimpleIterableTest_All_For_Type<USING_TALLY_CONTAINER> (s, applyToContainer);
+                IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, applyToContainer);
 
                 /*
                 * Try removes while iterating forward.
@@ -42,7 +42,7 @@ namespace CommonTests {
                         s.Add (T (i));
                     }
                     applyToContainer (s);
-                    IterableTests::SimpleIterableTest_All_For_Type<USING_TALLY_CONTAINER> (s, applyToContainer);
+                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, applyToContainer);
 
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         s.UpdateCount (it, 1);
@@ -127,30 +127,29 @@ namespace CommonTests {
 
 
 
-            template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
-            void    SimpleTallyTests (USING_TALLY_CONTAINER& s, TEST_FUNCTION applyToContainer)
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
+            void    SimpleTallyTests (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_TALLY_CONTAINER::TallyOfElementType          T;
-                typedef typename USING_TALLY_CONTAINER::TraitsType                  TraitsType;
-                typedef typename USING_TALLY_CONTAINER::EqualsCompareFunctionType   EqualsCompareFunctionType;
+                typedef typename CONCRETE_CONTAINER::EqualsCompareFunctionType   EqualsCompareFunctionType;
+                typedef typename CONCRETE_CONTAINER::ArchetypeContainerType         TALLY_ARCHTYPE;
 
                 size_t  three = 3;
 
                 applyToContainer (s);
 
-                Tally<T, TraitsType>   s1 (s);
+                TALLY_ARCHTYPE   s1 (s);
 
                 VerifyTestResult (s1 == s);
-                Tally<T, TraitsType>   s2 = s1;
+                TALLY_ARCHTYPE   s2 = s1;
 
                 VerifyTestResult (s2 == s);
                 VerifyTestResult (s2 == s1);
                 s2.Add (three);
-                applyToContainer (USING_TALLY_CONTAINER (s2));
+                applyToContainer (CONCRETE_CONTAINER (s2));
                 VerifyTestResult (s1 == s);
                 VerifyTestResult (s2 != s1);
 
-                TallyIteratorTests_<USING_TALLY_CONTAINER> (s, applyToContainer);
+                TallyIteratorTests_<CONCRETE_CONTAINER> (s, applyToContainer);
 
                 const   size_t  K = 500;
 
@@ -238,11 +237,11 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 {
-                    USING_TALLY_CONTAINER s;
+                    CONCRETE_CONTAINER s;
                     SimpleTallyTests (s, applyToContainer);
                 }
             }
@@ -252,16 +251,16 @@ namespace CommonTests {
 
 
         namespace Test2_Equals {
-            template <typename USING_TALLY_CONTAINER>
+            template <typename CONCRETE_CONTAINER>
             void    DoAllTests_ ()
             {
-                USING_TALLY_CONTAINER s;
-                USING_TALLY_CONTAINER s2 = s;
+                CONCRETE_CONTAINER s;
+                CONCRETE_CONTAINER s2 = s;
                 s.Add (1);
                 s.Add (1);
                 s.Add (2);
                 VerifyTestResult (s.size () == 2);
-                USING_TALLY_CONTAINER s3 = s;
+                CONCRETE_CONTAINER s3 = s;
                 VerifyTestResult (s == s3);
                 VerifyTestResult (s.Equals (s3));
                 VerifyTestResult (not (s != s3));
@@ -275,16 +274,15 @@ namespace CommonTests {
 
 
         namespace Test3_Elements {
-            template <typename USING_TALLY_CONTAINER>
+            template <typename CONCRETE_CONTAINER>
             void    DoAllTests_ ()
             {
                 {
-                    typedef typename    USING_TALLY_CONTAINER::TallyOfElementType   T;
-                    typedef typename    USING_TALLY_CONTAINER::TraitsType           TraitsType;
-                    USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    typedef typename CONCRETE_CONTAINER::ArchetypeContainerType TALLY_ARCHTYPE;
+                    CONCRETE_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.Elements ().size () == 7);
-                    Tally<T, TraitsType> tmp = Tally<T, TraitsType> (s.Elements ());
+                    TALLY_ARCHTYPE tmp = TALLY_ARCHTYPE (s.Elements ());
                     VerifyTestResult (tmp.TallyOf (1) == 1);
                     VerifyTestResult (tmp.TallyOf (0) == 0);
                     VerifyTestResult (tmp.TallyOf (4) == 4);
@@ -295,11 +293,11 @@ namespace CommonTests {
 
 
         namespace Test4_UniqueElements {
-            template <typename USING_TALLY_CONTAINER>
+            template <typename CONCRETE_CONTAINER>
             void    DoAllTests_ ()
             {
                 {
-                    USING_TALLY_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
+                    CONCRETE_CONTAINER s = { 1, 2, 3, 4, 4, 4, 4 };
                     VerifyTestResult (s.size () == 4);
                     VerifyTestResult (s.UniqueElements ().size () == 4);
                 }
@@ -310,13 +308,13 @@ namespace CommonTests {
 
 
 
-        template <typename USING_TALLY_CONTAINER, typename TEST_FUNCTION>
+        template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
         void    All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_MiscStarterTests_::DoAllTests_<USING_TALLY_CONTAINER> (applyToContainer);
-            Test2_Equals::DoAllTests_<USING_TALLY_CONTAINER> ();
-            Test3_Elements::DoAllTests_<USING_TALLY_CONTAINER> ();
-            Test4_UniqueElements::DoAllTests_<USING_TALLY_CONTAINER> ();
+            Test1_MiscStarterTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
+            Test2_Equals::DoAllTests_<CONCRETE_CONTAINER> ();
+            Test3_Elements::DoAllTests_<CONCRETE_CONTAINER> ();
+            Test4_UniqueElements::DoAllTests_<CONCRETE_CONTAINER> ();
         }
 
 

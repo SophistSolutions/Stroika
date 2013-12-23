@@ -34,9 +34,9 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
         typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
-        auto extraChecksFunction = [] (const SortedTally<TallyOfElementType, TraitsType>& t) {
+        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & t) {
             // verify in sorted order
             Memory::Optional<TallyOfElementType> last;
             for (TallyEntry<TallyOfElementType> i : t) {

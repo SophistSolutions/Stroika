@@ -34,9 +34,7 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::TallyOfElementType     TallyOfElementType;
-        typedef typename CONCRETE_CONTAINER::TraitsType             TraitsType;
-        auto extraChecksFunction = [] (const Tally<TallyOfElementType, TraitsType>& t) {
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & t) {
             // only work todo on sorted mappings
         };
         CommonTests::TallyTests::All_For_Type<CONCRETE_CONTAINER> (extraChecksFunction);

@@ -34,11 +34,9 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_AllTestsWhichDontRequireComparer_For_Type_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType      ValueType;
         typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto extraChecksFunction = [] (const SortedMapping<KeyType, ValueType, TraitsType>& m) {
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
             Optional<ElementType> last;
             for (ElementType i : m) {
@@ -53,11 +51,9 @@ namespace {
     template    <typename   CONCRETE_CONTAINER>
     void    DoTestForConcreteContainer_ ()
     {
-        typedef typename CONCRETE_CONTAINER::KeyType        KeyType;
-        typedef typename CONCRETE_CONTAINER::ValueType      ValueType;
         typedef typename CONCRETE_CONTAINER::ElementType    ElementType;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto extraChecksFunction = [] (const SortedMapping<KeyType, ValueType, TraitsType>& m) {
+        auto extraChecksFunction = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & m) {
             // verify in sorted order
             Optional<ElementType> last;
             for (ElementType i : m) {
