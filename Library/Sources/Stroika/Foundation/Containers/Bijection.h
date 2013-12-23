@@ -23,11 +23,13 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo   VERY PRELIMAINRY - NOT REALLY BIJECTION YET!!!
+ *      @todo   Bijection_InjectivityViolationPolicy not respected.
  *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
  *              of a regular Mapping (without exhaustive search on lookup from range).
+ *
+ *              But currently just a functional, proof-of-concept linked list implementation.
  */
 
 
