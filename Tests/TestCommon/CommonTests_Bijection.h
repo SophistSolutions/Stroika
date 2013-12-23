@@ -20,7 +20,7 @@ namespace CommonTests {
 
         namespace Test1_ {
 
-            template <typename USING_BIJECTION_CONTAINER, typename USING_BASEBIJECTION_CONTAINER, typename TEST_FUNCTION>
+            template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
@@ -39,10 +39,10 @@ namespace CommonTests {
         }
 
 
-        template <typename USING_BIJECTION_CONTAINER, typename USING_BASEBIJECTION_CONTAINER, typename TEST_FUNCTION>
+        template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
         void    SimpleBagTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_::DoAllTests_<USING_BIJECTION_CONTAINER, USING_BASEBIJECTION_CONTAINER> (applyToContainer);
+            Test1_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
         }
 
     }

@@ -33,8 +33,7 @@ namespace {
     template    <typename CONCRETE_CONTAINER>
     void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    T;
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER, Collection<T>> ([](const Collection<T>& c) {
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> ([](const typename CONCRETE_CONTAINER::ArchetypeContainerType & c) {
         });
     }
 }

@@ -35,7 +35,7 @@ namespace {
     {
         typedef typename CONCRETE_CONTAINER::ElementType    T;
         typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto testFunc = [](const SortedCollection<T, TraitsType>& s) {
+        auto testFunc = [](const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
             // verify in sorted order
             Optional<T> last;
             for (T i : s) {
@@ -45,7 +45,7 @@ namespace {
                 last = i;
             }
         };
-        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER, SortedCollection<T, TraitsType>> (testFunc);
+        CommonTests::CollectionTests::SimpleCollectionTest_Generic<CONCRETE_CONTAINER> (testFunc);
     }
 }
 

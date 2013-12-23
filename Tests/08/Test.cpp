@@ -29,11 +29,9 @@ namespace {
     template    <typename CONCRETE_CONTAINER>
     void     RunTests_ ()
     {
-        typedef typename CONCRETE_CONTAINER::ElementType    T;
-        typedef typename CONCRETE_CONTAINER::TraitsType     TraitsType;
-        auto testFunc = [] (const Bijection<T, TraitsType>& s) {
+        auto testFunc = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
         };
-        CommonTests::BijectionTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER, Bijection<T, TraitsType>> (testFunc);
+        CommonTests::BijectionTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
     }
 }
 

@@ -24,10 +24,10 @@ namespace CommonTests {
 
         namespace Test1_OldMiscBagTests_ {
 
-            template <typename USING_Collection_CONTAINER>
-            void    IteratorTests_ (USING_Collection_CONTAINER& s)
+            template <typename CONCRETE_CONTAINER>
+            void    IteratorTests_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::ElementType   T;
 
                 const   size_t  kTestSize   = 100;
 
@@ -41,7 +41,7 @@ namespace CommonTests {
                     }
                     VerifyTestResult(s.GetLength() == kTestSize);
 
-                    IterableTests::SimpleIterableTest_All_For_Type<USING_Collection_CONTAINER> (s, [](const Collection<T>&) {});
+                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, [](const typename CONCRETE_CONTAINER::ArchetypeContainerType&) {});
 
                     VerifyTestResult(s.GetLength() == kTestSize);
                     s.RemoveAll ();
@@ -81,10 +81,10 @@ namespace CommonTests {
                 s.RemoveAll ();
             }
 
-            template <typename USING_Collection_CONTAINER>
-            void    CollectionTimings_ (USING_Collection_CONTAINER& s)
+            template <typename CONCRETE_CONTAINER>
+            void    CollectionTimings_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType       T;
+                typedef typename CONCRETE_CONTAINER::ElementType       T;
 #if     qPrintTimings
                 Time t = GetCurrentTime();
                 cout << tab << "testing Collection<size_t> of length " << s.GetLength() << endl;
@@ -114,15 +114,15 @@ namespace CommonTests {
 #endif
             }
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER>
-            void        On_Container_ (USING_Collection_CONTAINER& s)
+            template <typename CONCRETE_CONTAINER>
+            void        On_Container_ (CONCRETE_CONTAINER& s)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::ElementType   T;
                 size_t  three = 3;
 
-                USING_BASECollection_CONTAINER s1 (s);
+                typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);
 
-                USING_BASECollection_CONTAINER s2 = s1;
+                typename CONCRETE_CONTAINER::ArchetypeContainerType s2 = s1;
 
                 s2.Add(three);
 
@@ -165,29 +165,29 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                USING_Collection_CONTAINER s;
-                On_Container_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (s);
+                CONCRETE_CONTAINER s;
+                On_Container_<CONCRETE_CONTAINER> (s);
             }
         }
 
 
 
         namespace   Test2_TestsWithComparer_ {
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
-            void        On_Container_ (USING_Collection_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
+            void        On_Container_ (CONCRETE_CONTAINER& s, TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType   T;
-                typedef typename USING_Collection_CONTAINER::TraitsType    TraitsType;
+                typedef typename CONCRETE_CONTAINER::ElementType   T;
+                typedef typename CONCRETE_CONTAINER::TraitsType    TraitsType;
                 size_t  three = 3;
 
                 applyToContainer (s);
-                USING_BASECollection_CONTAINER s1 (s);
+                typename CONCRETE_CONTAINER::ArchetypeContainerType s1 (s);
                 applyToContainer (s1);
 
-                USING_BASECollection_CONTAINER s2 = s1;
+                typename CONCRETE_CONTAINER::ArchetypeContainerType s2 = s1;
                 applyToContainer (s2);
 
                 s2.Add (three);
@@ -241,11 +241,11 @@ namespace CommonTests {
 #endif
             }
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION, typename EQUALS_COMPARER>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer, EQUALS_COMPARER equals_comparer)
             {
-                USING_Collection_CONTAINER s;
-                On_Container_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (s, applyToContainer);
+                CONCRETE_CONTAINER s;
+                On_Container_<CONCRETE_CONTAINER> (s, applyToContainer);
             }
         }
 
@@ -253,24 +253,24 @@ namespace CommonTests {
 
         namespace   Test4_IteratorsBasics_ {
 
-            template <typename USING_Collection_CONTAINER>
+            template <typename CONCRETE_CONTAINER>
             void    BasicIteratorTest_ ()
             {
-                USING_Collection_CONTAINER   collection;
-                typename USING_Collection_CONTAINER::ElementType t1 = 1;
-                typename USING_Collection_CONTAINER::ElementType t2 = 2;
-                typename USING_Collection_CONTAINER::ElementType t3 = 3;
+                CONCRETE_CONTAINER   collection;
+                typename CONCRETE_CONTAINER::ElementType t1 = 1;
+                typename CONCRETE_CONTAINER::ElementType t2 = 2;
+                typename CONCRETE_CONTAINER::ElementType t3 = 3;
                 VerifyTestResult (collection.IsEmpty ());
                 collection.Add (t1);
                 collection.Add (t1);
                 {
-                    USING_Collection_CONTAINER   bb = collection;
+                    CONCRETE_CONTAINER   bb = collection;
                     VerifyTestResult (bb.MakeIterator () != collection.MakeIterator ());
                     VerifyTestResult (bb.MakeIterator () != bb.MakeIterator ());        // WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
                 }
                 {
-                    Iterator<typename USING_Collection_CONTAINER::ElementType>   i = collection.begin ();
-                    Iterator<typename USING_Collection_CONTAINER::ElementType>   ii = i;
+                    Iterator<typename CONCRETE_CONTAINER::ElementType>   i = collection.begin ();
+                    Iterator<typename CONCRETE_CONTAINER::ElementType>   ii = i;
                     VerifyTestResult (i == ii);
                     VerifyTestResult (i != collection.end ()); // because bag wasn't empty
                     ++i;
@@ -279,7 +279,7 @@ namespace CommonTests {
                 }
                 {
                     VerifyTestResult (collection.size () == 2);    // cuz we said so above
-                    Iterator<typename USING_Collection_CONTAINER::ElementType>   i = collection.begin ();
+                    Iterator<typename CONCRETE_CONTAINER::ElementType>   i = collection.begin ();
                     VerifyTestResult (not i.Done ());
                     VerifyTestResult (i != collection.end ());
                     ++i;
@@ -292,10 +292,10 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                BasicIteratorTest_<USING_Collection_CONTAINER> ();
+                BasicIteratorTest_<CONCRETE_CONTAINER> ();
             }
         }
 
@@ -306,11 +306,11 @@ namespace CommonTests {
 
         namespace   Test5_Apply_ {
 
-            template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoIt_ (TEST_FUNCTION applyToContainer)
             {
-                typedef typename USING_Collection_CONTAINER::ElementType       T;
-                USING_Collection_CONTAINER   b;
+                typedef typename CONCRETE_CONTAINER::ElementType       T;
+                CONCRETE_CONTAINER   b;
 
                 constexpr int FIRST = 0;
                 constexpr int LAST = 100;
@@ -335,10 +335,10 @@ namespace CommonTests {
             }
 
 
-            template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+            template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
-                DoIt_<USING_Collection_CONTAINER> (applyToContainer);
+                DoIt_<CONCRETE_CONTAINER> (applyToContainer);
             }
         }
 
@@ -347,21 +347,21 @@ namespace CommonTests {
 
         /**
          */
-        template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION>
+        template <typename CONCRETE_CONTAINER, typename TEST_FUNCTION>
         void    SimpleCollectionTest_Generic (TEST_FUNCTION applyToContainer)
         {
-            Test1_OldMiscBagTests_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
-            Test4_IteratorsBasics_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
-            Test5_Apply_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer);
+            Test1_OldMiscBagTests_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
+            Test4_IteratorsBasics_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
+            Test5_Apply_::DoAllTests_<CONCRETE_CONTAINER> (applyToContainer);
         }
 
 
         /**
         */
-        template <typename USING_Collection_CONTAINER, typename USING_BASECollection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
+        template <typename USING_Collection_CONTAINER, typename TEST_FUNCTION, typename WITH_COMPARE_EQUALS>
         void    SimpleCollectionTest_TestsWhichRequireEquals (TEST_FUNCTION applyToContainer)
         {
-            Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER, USING_BASECollection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
+            Test2_TestsWithComparer_::DoAllTests_<USING_Collection_CONTAINER> (applyToContainer, WITH_COMPARE_EQUALS ());
         }
 
     }
