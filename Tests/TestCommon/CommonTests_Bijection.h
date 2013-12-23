@@ -18,13 +18,14 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
-        namespace Test1_ {
+        namespace Test1_VeryBasics_ {
 
             template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
                 typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
                 typedef typename    USING_BIJECTION_CONTAINER::RangeType    RangeType;
+                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
                 typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
                 USING_BIJECTION_CONTAINER s;
                 s.Add (3, 5);
@@ -34,15 +35,40 @@ namespace CommonTests {
                 VerifyTestResult (s.ContainsRangeElement (5));
                 VerifyTestResult (not s.ContainsRangeElement (3));
                 VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (3), 5));
+                VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (5), 3));
+            }
+
+        }
+
+        namespace Test2_MultipeItems_ {
+
+            template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename    USING_BIJECTION_CONTAINER::DomainType   DomainType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeType    RangeType;
+                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                USING_BIJECTION_CONTAINER s;
+                for (int i = 0; i < 100; ++i) {
+                    s.Add (3 + i, 5 + i);
+                }
+                VerifyTestResult (s.length () == 100);
+                VerifyTestResult (s.ContainsDomainElement (3));
+                VerifyTestResult (s.ContainsRangeElement (5));
+                VerifyTestResult (RangeEqualsCompareFunctionType::Equals (*s.Lookup (3), 5));
+                VerifyTestResult (DomainEqualsCompareFunctionType::Equals (*s.InverseLookup (5), 3));
             }
 
         }
 
 
+
         template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleBagTest_All_For_Type (TEST_FUNCTION applyToContainer)
+        void    SimpleTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
+            Test1_VeryBasics_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
+            Test2_MultipeItems_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
         }
 
     }

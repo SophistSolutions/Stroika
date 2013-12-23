@@ -31,7 +31,7 @@ namespace {
     {
         auto testFunc = [] (const typename CONCRETE_CONTAINER::ArchetypeContainerType & s) {
         };
-        CommonTests::BijectionTests::SimpleBagTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
+        CommonTests::BijectionTests::SimpleTest_All_For_Type<CONCRETE_CONTAINER> (testFunc);
     }
 }
 

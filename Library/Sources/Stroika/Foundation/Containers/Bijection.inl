@@ -134,6 +134,45 @@ namespace   Stroika {
                 return r.IsPresent () ? *r : defaultValue;
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, DomainType* item) const
+            {
+                if (item == nullptr) {
+                    return _GetRep ().InverseLookup (key, nullptr);
+                }
+                else {
+                    Memory::Optional<DomainType> tmp;
+                    if (_GetRep ().InverseLookup (key, &tmp)) {
+                        *item = *tmp;
+                        return true;
+                    }
+                    return false;
+                }
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const
+            {
+                return _GetRep ().InverseLookup (key, item);
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  Memory::Optional<DOMAIN_TYPE>    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key) const
+            {
+                Memory::Optional<DOMAIN_TYPE>   r;
+                bool    result = _GetRep ().InverseLookup (key, &r);
+                Ensure (result == r.IsPresent ());
+                return r;
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookup (RangeType key, nullptr_t) const
+            {
+                return _GetRep ().InverseLookup (key, nullptr);
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            inline  DOMAIN_TYPE   Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::InverseLookupValue (RangeType key, DomainType defaultValue) const
+            {
+                Memory::Optional<DOMAIN_TYPE>   r    =   InverseLookup (key);
+                return r.IsPresent () ? *r : defaultValue;
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             inline  bool    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::ContainsDomainElement (DomainType key) const
             {
                 return _GetRep ().Lookup (key, nullptr);

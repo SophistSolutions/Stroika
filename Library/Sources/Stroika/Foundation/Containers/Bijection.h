@@ -238,6 +238,29 @@ namespace   Stroika {
 
             public:
                 /**
+                *   @todo Need InverseLookup () too!
+                *
+                 *  Note - as since Lookup/1 returns an Optional<T> - it can be used very easily to provide
+                 *  a default value on Lookup (so for case where not present) - as in:
+                 *      returm m.Lookup (key).Value (putDefaultValueHere);
+                 *
+                 *  Note - for both overloads taking an item pointer, the pointer may be nullptr (in which case not assigned to).
+                 *  But if present, will always be assigned to if Lookup returns true (found). And for the optional overload
+                 *      \req    Ensure (item == nullptr or returnValue == item->IsPresent());
+                 */
+                nonvirtual  Memory::Optional<DomainType>    InverseLookup (RangeType key) const;
+                nonvirtual  bool                            InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const;
+                nonvirtual  bool                            InverseLookup (RangeType key, DomainType* item) const;
+                nonvirtual  bool                            InverseLookup (RangeType key, nullptr_t) const;
+
+            public:
+                /**
+                 *  Always safe to call. If result empty/missing, returns argument 'default' or 'sentinal' value.
+                 */
+                nonvirtual  DomainType   InverseLookupValue (RangeType key, DomainType defaultValue = DomainType ()) const;
+
+            public:
+                /**
                 * @todo rename/use ContainsDomainElement () / ContainsRangeEleemnt()
                  *  Synonym for (Lookup (v).IsPresent ()) or DomainElements ().Contains (v)
                  */
@@ -385,6 +408,7 @@ namespace   Stroika {
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual  bool                   Lookup (DomainType key, Memory::Optional<RangeType>* item) const    =   0;
+                virtual  bool                   InverseLookup (RangeType key, Memory::Optional<DomainType>* item) const    =   0;
                 virtual  void                   Add (DomainType key, RangeType newElt)                              =   0;
                 virtual  void                   Remove (DomainType key)                                             =   0;
                 virtual  void                   Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i)                  =   0;

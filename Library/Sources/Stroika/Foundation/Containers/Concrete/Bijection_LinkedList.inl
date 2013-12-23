@@ -65,6 +65,7 @@ namespace   Stroika {
                     virtual Iterable<DOMAIN_TYPE>  DomainElements () const override;
                     virtual Iterable<RANGE_TYPE>  RangeElements () const override;
                     virtual bool                Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
+                    virtual  bool                InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
                     virtual void                Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
                     virtual void                Remove (DOMAIN_TYPE key) override;
                     virtual void                Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
@@ -183,6 +184,25 @@ namespace   Stroika {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 if (item != nullptr) {
                                     *item = it.Current ().second;
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
+                    if (item != nullptr) {
+                        item->clear ();
+                    }
+                    return false;
+                }
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                bool    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const
+                {
+                    CONTAINER_LOCK_HELPER_START (fLockSupport_) {
+                        for (typename Private::DataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                            if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, key)) {
+                                if (item != nullptr) {
+                                    *item = it.Current ().first;
                                 }
                                 return true;
                             }
