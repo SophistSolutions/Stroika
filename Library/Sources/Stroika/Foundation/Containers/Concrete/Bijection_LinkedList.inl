@@ -24,7 +24,7 @@ namespace   Stroika {
 
                 /*
                  ********************************************************************************
-                 ************ Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::*****************
+                 ********* Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::***************
                  ********************************************************************************
                  */
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -50,13 +50,13 @@ namespace   Stroika {
                         return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep     Clone () const override;
+                    virtual typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep	Clone () const override;
 #endif
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                              MakeIterator () const override;
-                    virtual size_t                                              GetLength () const override;
-                    virtual bool                                                IsEmpty () const override;
-                    virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>        ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>								MakeIterator () const override;
+                    virtual size_t																GetLength () const override;
+                    virtual bool																IsEmpty () const override;
+                    virtual void																Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>								ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
                 public:
@@ -72,7 +72,8 @@ namespace   Stroika {
                     virtual void                    Remove (Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>> i) override;
 
                 public:
-                    typedef typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::DomainEqualsCompareFunctionType    DomainEqualsCompareFunctionType;
+                    typedef typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::DomainEqualsCompareFunctionType	DomainEqualsCompareFunctionType;
+                    typedef typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::RangeEqualsCompareFunctionType	RangeEqualsCompareFunctionType;
 
                 private:
                     typedef Private::PatchingDataStructures::LinkedList<pair<DOMAIN_TYPE, RANGE_TYPE>>             DataStructureImplType_;
