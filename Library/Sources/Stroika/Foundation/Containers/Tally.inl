@@ -118,7 +118,7 @@ namespace   Stroika {
                     {
                         size_t  n = 0;
                         for (Iterator<TallyEntry<T>> i = fTallyRep_->MakeIterator (); not i.Done (); ++i) {
-                            n += (*i).fCount;
+                            n += i->fCount;
                         }
                         return n;
                     }
