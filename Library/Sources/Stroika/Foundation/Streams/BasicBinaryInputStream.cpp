@@ -67,34 +67,37 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (offset) > fData_.GetSize ()) {
+                    SeekOffsetType  uoffset =   static_cast<SeekOffsetType> (offset);
+                    if (uoffset > fData_.GetSize ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + offset;
+                    fCursor_ = fData_.begin () + uoffset;
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (newOffset) > fData_.GetSize ()) {
+                    SeekOffsetType  unewOffset  =   static_cast<SeekOffsetType> (newOffset);
+                    if (unewOffset > fData_.GetSize ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + newOffset;
+                    fCursor_ = fData_.begin () + unewOffset;
                 }
                 break;
             case    Whence::eFromEnd: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   fData_.GetSize () + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   fData_.GetSize () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (newOffset) > fData_.GetSize ()) {
+                    SeekOffsetType  unewOffset  =   static_cast<SeekOffsetType> (newOffset);
+                    if (unewOffset > fData_.GetSize ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + newOffset;
+                    fCursor_ = fData_.begin () + unewOffset;
                 }
                 break;
         }

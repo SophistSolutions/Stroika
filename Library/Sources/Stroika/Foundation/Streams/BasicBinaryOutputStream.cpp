@@ -73,10 +73,11 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (offset > fData_.size ()) {
+                    SeekOffsetType  uoffset =   static_cast<SeekOffsetType> (offset);
+                    if (uoffset > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (offset);
+                    fCursor_ = fData_.begin () + uoffset;
                 }
                 break;
             case    Whence::eFromCurrent: {
