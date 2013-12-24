@@ -196,7 +196,8 @@ namespace   Stroika {
             inline void Sequence<T, TRAITS>::AppendAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end)
             {
                 for (auto i = start; i != end; ++i) {
-                    _GetRep ().Insert (kBadSequenceIndex, &*i, (&*i) + 1);
+                    auto tmp = *i;
+                    _GetRep ().Insert (kBadSequenceIndex, &tmp, &tmp + 1);
                 }
             }
             template    <typename T, typename TRAITS>
