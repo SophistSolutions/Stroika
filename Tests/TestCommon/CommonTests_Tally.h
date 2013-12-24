@@ -188,6 +188,16 @@ namespace CommonTests {
                 }
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
+                        applyToContainer (s);
+                    }
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    for (auto it1 : s.UniqueElements ()) {
+                        applyToContainer (s);
+                    }
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    for (auto it1 : s.Elements ()) {
                         s.RemoveAll ();
                         applyToContainer (s);
                     }
