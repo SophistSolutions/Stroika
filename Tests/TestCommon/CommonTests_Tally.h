@@ -186,6 +186,14 @@ namespace CommonTests {
                         }
                     }
                 }
+
+                s.RemoveAll ();
+                VerifyTestResult (s.IsEmpty ());
+                for (size_t i = 1; i <= K / 50; i++) {
+                    s.Add (i);
+                }
+                applyToContainer (s);
+
                 for (auto it = s.begin (); it != s.end (); ++it) {
                     for (auto it1 : s.Elements ()) {
                         applyToContainer (s);
