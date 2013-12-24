@@ -326,6 +326,18 @@ namespace   Stroika {
                  */
                 nonvirtual  void    RemoveAll ();
 
+
+            public:
+                /*
+                 *  Return a mapping - in the reverse direction (a Bijection is (restricted) form of mapping. The type of
+                 *  TARGET_CONTAINER can be either a Bijection (in the opposite direction as the source), or
+                 *  A Mapping<> (also in the reverse direction).
+                 *
+                 *  Note - this returns a copy (by value) of this Bijections data.
+                 */
+                template    <typename   TARGET_CONTAINER = Bijection<RANGE_TYPE, DOMAIN_TYPE>>
+                nonvirtual  TARGET_CONTAINER    Inverse () const;
+
             public:
                 /**
                  *  This function should work for any container which accepts
@@ -336,6 +348,12 @@ namespace   Stroika {
                  *
                  *  So - for example, Sequence<pair<DomainType,RangeType>>, map<DomainType,RangeType>,
                  *  vector<pair<DomainType,RangeType>>, etc...
+                 *
+                 *  This works for:
+                 *      o   Mapping<DOMAIN_TYPE, RANGE_TYPE>
+                 *      o   map<DOMAIN_TYPE, RANGE_TYPE>
+                 *      o   vector<pair<DOMAIN_TYPE, RANGE_TYPE>>
+                 *      o   Sequence<pair<DOMAIN_TYPE, RANGE_TYPE>>
                  */
                 template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
                 nonvirtual  CONTAINER_PAIR_RANGE_DOMAIN As () const;

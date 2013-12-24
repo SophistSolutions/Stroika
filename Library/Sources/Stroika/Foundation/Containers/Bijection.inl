@@ -245,6 +245,16 @@ namespace   Stroika {
                 _GetRep ().RemoveAll ();
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            template    <typename   TARGET_CONTAINER>
+            TARGET_CONTAINER    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Inverse () const
+            {
+                TARGET_CONTAINER    r;
+                for (pair<DOMAIN_TYPE, RANGE_TYPE> i : *this) {
+                    r.Add (i.second, i.first);
+                }
+                return r;
+            }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
             template    <typename CONTAINER_PAIR_RANGE_DOMAIN>
             inline  CONTAINER_PAIR_RANGE_DOMAIN Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::As() const
             {
