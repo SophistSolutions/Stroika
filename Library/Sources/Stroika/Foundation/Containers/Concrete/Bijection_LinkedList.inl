@@ -62,8 +62,8 @@ namespace   Stroika {
                 public:
                     virtual bool                    Equals (const typename Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep& rhs) const override;
                     virtual void                    RemoveAll () override;
-                    virtual Iterable<DOMAIN_TYPE>   DomainElements () const override;
-                    virtual Iterable<RANGE_TYPE>    RangeElements () const override;
+                    virtual Iterable<DOMAIN_TYPE>   Preimage () const override;
+                    virtual Iterable<RANGE_TYPE>    Image () const override;
                     virtual bool                    Lookup (DOMAIN_TYPE key, Memory::Optional<RANGE_TYPE>* item) const override;
                     virtual  bool                   InverseLookup (RANGE_TYPE key, Memory::Optional<DOMAIN_TYPE>* item) const override;
                     virtual void                    Add (DOMAIN_TYPE key, RANGE_TYPE newElt) override;
@@ -167,13 +167,13 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterable<DOMAIN_TYPE>    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::DomainElements () const
+                Iterable<DOMAIN_TYPE>    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Preimage () const
                 {
                     AssertNotImplemented ();
                     return *(Iterable<DOMAIN_TYPE>*)nullptr;
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterable<RANGE_TYPE>    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RangeElements () const
+                Iterable<RANGE_TYPE>    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Image () const
                 {
                     AssertNotImplemented ();
                     return *(Iterable<RANGE_TYPE>*)nullptr;

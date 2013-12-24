@@ -24,13 +24,15 @@
  *  TODO:
  *      @todo   Bijection_InjectivityViolationPolicy not respected.
  *
+ *      @todo   Preimage() and Image () NTI
+ *
  *      @todo   Best backend I can think of would be two opposing maps (or hash tables). Discuss with
  *              Sterl to see if he can think of any way todo this that doesn't double the storage
  *              of a regular Mapping (without exhaustive search on lookup from range).
  *
  *              But currently just a functional, proof-of-concept linked list implementation.
  *
- *      @todo   Consider adding templated for RemoveAllDomainElements/RemoveAllRangeElements
+ *      @todo   Consider adding templated for RemoveAllFromPreimage/RemoveAllFromImage
  *              taking containers or iterator ranges.
  */
 
@@ -168,7 +170,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  DomainElements () returns an Iterable object with just the domain (first) part of the Bijection.
+                 *  Preimage () returns an Iterable object with just the domain (first) part of the Bijection.
                  *
                  *  Note this method may not return a collection which is sorted. Note also, the
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
@@ -186,11 +188,11 @@ namespace   Stroika {
                  *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
                  *      keys a logical copy at the point 'keys' is called.
                  */
-                nonvirtual  Iterable<DomainType>   DomainElements () const;
+                nonvirtual  Iterable<DomainType>   Preimage () const;
 
             public:
                 /**
-                 *  RangeElements () returns an Iterable object with just the key part of the Bijection.
+                 *  Image () returns an Iterable object with just the key part of the Bijection.
                  *
                  *  Note this method may not return a collection which is sorted. Note also, the
                  *  returned value is a copy of the keys (by value) - at least logically (implementations
@@ -208,7 +210,7 @@ namespace   Stroika {
                  *      sense to apply that lazy-copy (copy-on-write) paradigm here, and make the returned set of
                  *      keys a logical copy at the point 'keys' is called.
                  */
-                nonvirtual  Iterable<RangeType>   RangeElements () const;
+                nonvirtual  Iterable<RangeType>   Image () const;
 
             public:
                 /**
@@ -272,13 +274,13 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Synonym for (Lookup (v).IsPresent ()) or DomainElements ().Contains (v)
+                 *  Synonym for (Lookup (v).IsPresent ()) or Preimage ().Contains (v)
                  */
                 nonvirtual  bool    ContainsDomainElement (DomainType key) const;
 
             public:
                 /**
-                 *  Synonym for (InverseLookup (v).IsPresent ()) or RangeElements ().Contains (v)
+                 *  Synonym for (InverseLookup (v).IsPresent ()) or Image ().Contains (v)
                  */
                 nonvirtual  bool    ContainsRangeElement (RangeType v) const;
 
@@ -340,7 +342,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Two Bijections are considered equal if they contain the same elements (DomainElements) and each key is associated
+                 *  Two Bijections are considered equal if they contain the same elements (Preimage) and each key is associated
                  *  with the same value. There is no need for the items to appear in the same order for the two Bijections to
                  *  be equal. There is no need for the backends to be of the same underlying representation either (stlmap
                  *  vers linkedlist).
@@ -404,8 +406,8 @@ namespace   Stroika {
             public:
                 virtual bool                    Equals (const _IRep& rhs) const                                             =   0;
                 virtual void                    RemoveAll ()                                                                =   0;
-                virtual  Iterable<DomainType>   DomainElements () const                                                     =   0;
-                virtual  Iterable<RangeType>    RangeElements () const                                                      =   0;
+                virtual  Iterable<DomainType>   Preimage () const                                                     =   0;
+                virtual  Iterable<RangeType>    Image () const                                                      =   0;
                 // always clear/set item, and ensure return value == item->IsValidItem());
                 // 'item' arg CAN be nullptr
                 virtual  bool                   Lookup (DomainType key, Memory::Optional<RangeType>* item) const            =   0;
