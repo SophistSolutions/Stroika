@@ -128,6 +128,9 @@ namespace   Stroika {
                 typedef T   TallyOfElementType;
 
             protected:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 class   _IRep;
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
@@ -307,6 +310,9 @@ namespace   Stroika {
                 nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const;
 
             protected:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 class   _ElementsHelper;
                 class   _UniqueElementsHelper;
             };

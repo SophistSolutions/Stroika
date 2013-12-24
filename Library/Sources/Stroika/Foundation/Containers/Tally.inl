@@ -28,6 +28,9 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_ElementsHelper : public Iterable<T> {
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;         // hack for gcc/windoze compiler quirks - lose when I can ....
                 class   AdaptorRep_ : public Iterable<T>::_IRep {
                 private:
@@ -152,6 +155,9 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;     // hack for gcc/windoze compiler quirks - lose when I can ....
                 class   AdaptorRep_ : public Iterable<T>::_IRep {
                 private:
