@@ -31,7 +31,7 @@ namespace   Stroika {
                 typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;         // hack for gcc/windoze compiler quirks - lose when I can ....
                 class   AdaptorRep_ : public Iterable<T>::_IRep {
                 private:
-                    Iterable<TallyEntry<T>>::_SharedPtrIRep   fTallyRep_;
+                    typename    Iterable<TallyEntry<T>>::_SharedPtrIRep   fTallyRep_;
                 public:
                     AdaptorRep_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
                         : fTallyRep_ (iterateOverTally)
