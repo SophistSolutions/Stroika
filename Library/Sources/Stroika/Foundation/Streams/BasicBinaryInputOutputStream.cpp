@@ -100,8 +100,8 @@ public:
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    Streams::SeekOffsetType curOffset   =   fReadCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    Streams::SeekOffsetType         curOffset   =   fReadCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
@@ -112,8 +112,8 @@ public:
                 }
                 break;
             case    Whence::eFromEnd: {
-                    Streams::SeekOffsetType curOffset   =   fReadCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   fData_.size () + offset;
+                    Streams::SeekOffsetType         curOffset   =   fReadCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   fData_.size () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
