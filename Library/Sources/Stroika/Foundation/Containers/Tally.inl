@@ -33,6 +33,8 @@ namespace   Stroika {
                 private:
                     typename    Iterable<TallyEntry<T>>::_SharedPtrIRep   fTallyRep_;
                 public:
+                    DECLARE_USE_BLOCK_ALLOCATION(AdaptorRep_);
+                public:
                     AdaptorRep_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
                         : fTallyRep_ (iterateOverTally)
                     {
@@ -50,6 +52,7 @@ namespace   Stroika {
                         struct  MyIterator_ : public Iterator<T> {
                             struct  Rep : public Iterator<T>::IRep {
                                 typedef typename    Iterator<T>::IRep   inherited;
+                                DECLARE_USE_BLOCK_ALLOCATION(Rep);
                                 Rep (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
                                     : inherited ()
                                     , fIterateOverTallyKeepalive_ (iterateOverTally)
@@ -154,6 +157,7 @@ namespace   Stroika {
                 private:
                     typename Iterable<TallyEntry<T>>::_SharedPtrIRep   fTallyRep_;
                 public:
+                    DECLARE_USE_BLOCK_ALLOCATION(AdaptorRep_);
                     AdaptorRep_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
                         : fTallyRep_ (iterateOverTally)
                     {
@@ -167,6 +171,7 @@ namespace   Stroika {
                         struct  MyIter_ : public Iterator<T> {
                             struct  Rep : public Iterator<T>::IRep {
                                 typedef typename    Iterator<T>::IRep   inherited;
+                                DECLARE_USE_BLOCK_ALLOCATION(Rep);
                                 Rep (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo)
                                     : inherited ()
                                     , fIterateOverTallyKeepalive_ (iterateOverTally)
