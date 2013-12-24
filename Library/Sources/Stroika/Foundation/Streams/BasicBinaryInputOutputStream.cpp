@@ -93,7 +93,7 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (offset > fData_.size ()) {
+                    if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     fReadCursor_ = fData_.begin () + static_cast<size_t> (offset);
@@ -142,15 +142,15 @@ public:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (offset > fData_.size ()) {
+                    if (static_cast<SeekOffsetType> (offset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     fWriteCursor_ = fData_.begin () + static_cast<size_t> (offset);
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    Streams::SeekOffsetType curOffset   =   fWriteCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    Streams::SeekOffsetType         curOffset   =   fWriteCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
@@ -161,8 +161,8 @@ public:
                 }
                 break;
             case    Whence::eFromEnd: {
-                    Streams::SeekOffsetType curOffset   =   fWriteCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   fData_.size () + offset;
+                    Streams::SeekOffsetType     curOffset       =   fWriteCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType newOffset     =   fData_.size () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
