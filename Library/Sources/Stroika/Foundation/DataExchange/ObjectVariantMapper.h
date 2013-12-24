@@ -10,6 +10,7 @@
 #include    <typeindex>
 
 #include    "../Characters/String.h"
+#include    "../Containers/Bijection.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Sequence.h"
 #include    "../Containers/Set.h"
@@ -292,14 +293,16 @@ namespace   Stroika {
                 static  TypeMappingDetails  MakeCommonSerializer ();
 
             private:
+                template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
+                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Set<T>&);
-                template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
 #if 0
                 // haven't gotten to work
                 template    <typename T, size_t SZ>

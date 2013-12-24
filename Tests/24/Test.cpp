@@ -5,6 +5,7 @@
 #include    "Stroika/Foundation/StroikaPreComp.h"
 
 #include    "Stroika/Foundation/Configuration/Locale.h"
+#include    "Stroika/Foundation/Containers/Bijection.h"
 #include    "Stroika/Foundation/DataExchange/BadFormatException.h"
 #include    "Stroika/Foundation/DataExchange/ObjectVariantMapper.h"
 #include    "Stroika/Foundation/DataExchange/JSON/Reader.h"
@@ -13,7 +14,6 @@
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileInputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/BinaryFileOutputStream.h"
 #include    "Stroika/Foundation/IO/FileSystem/WellKnownLocations.h"
-//#include    "Stroika/Foundation/Memory/VariantValue.h"
 #include    "Stroika/Foundation/Streams/BasicBinaryInputOutputStream.h"
 #include    "Stroika/Foundation/Math/Common.h"
 #include    "Stroika/Foundation/Time/DateTime.h"
@@ -26,6 +26,7 @@
 
 
 using   namespace   Stroika::Foundation;
+using   namespace   Stroika::Foundation::Containers;
 using   namespace   Stroika::Foundation::DataExchange;
 
 using   Memory::Byte;
@@ -88,11 +89,13 @@ namespace   {
             bool                        fEnabled;
             DateTime                    fLastSynchronizedAt;
             Mapping<String, String>     fThisPHRsIDToSharedContactID;
+            Bijection<String, String>   fThisPHRsIDToSharedContactID2;
 
             SharedContactsConfig_ ()
                 : fEnabled (false)
                 , fLastSynchronizedAt ()
                 , fThisPHRsIDToSharedContactID ()
+                , fThisPHRsIDToSharedContactID2 ()
             {
             }
 
@@ -100,7 +103,8 @@ namespace   {
             {
                 return fEnabled == rhs.fEnabled and
                        fLastSynchronizedAt == rhs.fLastSynchronizedAt and
-                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID
+                       fThisPHRsIDToSharedContactID == rhs.fThisPHRsIDToSharedContactID and
+                       fThisPHRsIDToSharedContactID2 == rhs.fThisPHRsIDToSharedContactID2
                        ;
             }
         };
@@ -113,6 +117,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID2, L"This-HR-ContactID-To-SharedContactID-Bijection"),
         };
         mapper.AddClass<SharedContactsConfig_> (begin (kInfo), end (kInfo));
 #else
@@ -120,13 +125,16 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fEnabled, L"Enabled"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fLastSynchronizedAt, L"Last-Synchronized-At"),
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID, L"This-HR-ContactID-To-SharedContactID-Map"),
+            ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fThisPHRsIDToSharedContactID2, L"This-HR-ContactID-To-SharedContactID-Bijection"),
         });
 #endif
 
+        mapper.AddCommonType<Bijection<String, String>> ();
         bool newEnabled = true;
         SharedContactsConfig_   tmp;
         tmp.fEnabled = newEnabled;
         tmp.fThisPHRsIDToSharedContactID.Add (L"A", L"B");
+        tmp.fThisPHRsIDToSharedContactID2.Add (L"A", L"B");
         tmp.fLastSynchronizedAt = DateTime (Time::Date (Time::Year (1998), Time::MonthOfYear::eApril, Time::DayOfMonth::e11), Time::TimeOfDay::Parse (L"3pm", locale::classic ()));
 
         VariantValue v = mapper.FromObject (tmp);
@@ -259,8 +267,8 @@ namespace   {
 
         ObjectVariantMapper mapper;
 
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<Range<int>> ());
-        mapper.Add (ObjectVariantMapper::MakeCommonSerializer<DiscreteRange<int>> ());
+        mapper.AddCommonType<Range<int>> ();
+        mapper.AddCommonType<DiscreteRange<int>> ();
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),

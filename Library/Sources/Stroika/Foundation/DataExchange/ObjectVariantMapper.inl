@@ -171,13 +171,46 @@ namespace   Stroika {
                 };
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Set<T>), toVariantMapper, fromVariantMapper);
             }
+            template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
+            {
+                auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
+                    RequireNotNull (fromObjOfTypeT);
+                    Sequence<VariantValue> s;
+                    const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*  actualMember    =   reinterpret_cast<const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*> (fromObjOfTypeT);
+                    for (auto i : *actualMember)
+                    {
+                        Sequence<VariantValue>  encodedPair;
+                        encodedPair.Append (mapper->FromObject<DOMAIN_TYPE> (i.first));
+                        encodedPair.Append (mapper->FromObject<RANGE_TYPE> (i.second));
+                        s.Append (VariantValue (encodedPair));
+                    }
+                    return VariantValue (s);
+                };
+                auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
+                    RequireNotNull (intoObjOfTypeT);
+                    Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
+                    Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*  actualInto  =   reinterpret_cast<Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>*> (intoObjOfTypeT);
+                    actualInto->clear ();
+                    for (VariantValue encodedPair : s)
+                    {
+                        Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
+                        if (p.size () != 2) {
+                            DbgTrace ("Bijection ('%s') element with item count (%d) other than 2", typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
+                            Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
+                        }
+                        actualInto->Add (mapper->ToObject<DOMAIN_TYPE> (p[0]), mapper->ToObject<RANGE_TYPE> (p[1]));
+                    }
+                };
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
+            }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
                     Sequence<VariantValue> s;
-                    const Mapping<KEY_TYPE, VALUE_TYPE>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE>*> (fromObjOfTypeT);
+                    const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualMember    =   reinterpret_cast<const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (fromObjOfTypeT);
                     for (auto i : *actualMember)
                     {
                         Sequence<VariantValue>  encodedPair;
@@ -190,19 +223,19 @@ namespace   Stroika {
                 auto fromVariantMapper = [] (const ObjectVariantMapper * mapper, const VariantValue & d, Byte * intoObjOfTypeT) -> void {
                     RequireNotNull (intoObjOfTypeT);
                     Sequence<VariantValue>          s  =   d.As<Sequence<VariantValue>> ();
-                    Mapping<KEY_TYPE, VALUE_TYPE>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE>*> (intoObjOfTypeT);
+                    Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*  actualInto  =   reinterpret_cast<Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>*> (intoObjOfTypeT);
                     actualInto->clear ();
                     for (VariantValue encodedPair : s)
                     {
                         Sequence<VariantValue>  p   =   encodedPair.As<Sequence<VariantValue>> ();
                         if (p.size () != 2) {
-                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE>).name (), static_cast<int> (p.size ()));
+                            DbgTrace ("Mapping ('%s') element with item count (%d) other than 2", typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>).name (), static_cast<int> (p.size ()));
                             Execution::DoThrow<BadFormatException> (BadFormatException (L"Mapping element with item count other than 2"));
                         }
                         actualInto->Add (mapper->ToObject<KEY_TYPE> (p[0]), mapper->ToObject<VALUE_TYPE> (p[1]));
                     }
                 };
-                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE>), toVariantMapper, fromVariantMapper);
+                return ObjectVariantMapper::TypeMappingDetails (typeid (Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T, size_t SZ>
 #if 1
