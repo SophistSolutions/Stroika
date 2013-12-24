@@ -100,11 +100,12 @@ protected:
                     if (offset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (offset > fBufferFilledUpValidBytes_) {
+                    SeekOffsetType  uOffset =   static_cast<SeekOffsetType> (offset);
+                    if (uOffset > fBufferFilledUpValidBytes_) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work with large streams
-                    fOffset_ = offset;
+                    fOffset_ = static_cast<size_t> (offset);
                 }
                 break;
             case    Whence::eFromCurrent: {
@@ -113,11 +114,12 @@ protected:
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (newOffset > fBufferFilledUpValidBytes_) {
+                    SeekOffsetType  uNewOffset  =   static_cast<SeekOffsetType> (newOffset);
+                    if (uNewOffset > fBufferFilledUpValidBytes_) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                    fOffset_ = newOffset;
+                    fOffset_ = static_cast<size_t> (newOffset);
                 }
                 break;
             case    Whence::eFromEnd: {
@@ -126,11 +128,12 @@ protected:
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (newOffset > fBufferFilledUpValidBytes_) {
+                    SeekOffsetType  uNewOffset  =   static_cast<SeekOffsetType> (newOffset);
+                    if (uNewOffset > fBufferFilledUpValidBytes_) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                    fOffset_ = newOffset;
+                    fOffset_ = static_cast<size_t> (newOffset);
                 }
                 break;
         }
