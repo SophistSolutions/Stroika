@@ -77,7 +77,7 @@ public:
                     if (uoffset > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + uoffset;
+                    fCursor_ = fData_.begin () + static_cast<size_t> (uoffset);
                 }
                 break;
             case    Whence::eFromCurrent: {
