@@ -8,6 +8,7 @@
 
 #include    "Stroika/Foundation/Containers/Bijection.h"
 #include    "Stroika/Foundation/Containers/Mapping.h"
+#include    "Stroika/Foundation/Containers/Sequence.h"
 
 #include    "../TestHarness/TestHarness.h"
 #include    "CommonTests_Iterable.h"
@@ -109,12 +110,96 @@ namespace CommonTests {
 
 
 
+        namespace Test4_As_ {
+
+            template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::DomainType DomainType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeType RangeType;
+                {
+                    USING_BIJECTION_CONTAINER   b;
+                    b.Add (3, 5);
+                    b.Add (4, 19);
+#if 0
+                    {
+                        map<DomainType, RangeType>  m = b.As<map<DomainType, RangeType>> ();
+                        VerifyTestResult (m.size () == 2);
+                        VerifyTestResult (m.find (3) != m.end ());
+                        VerifyTestResult (m.find (9) == m.end ());
+                    }
+#endif
+                    {
+                        typedef typename Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>  MAPPING_TRAITS;
+                        Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
+                        VerifyTestResult (m.size () == 2);
+                        VerifyTestResult (m.ContainsKey (3));
+                        VerifyTestResult (not m.ContainsKey (9));
+                    }
+                    {
+                        vector<pair<DomainType, RangeType>> m = b.As<vector<pair<DomainType, RangeType>>> ();
+                        VerifyTestResult (m.size () == 2);
+                    }
+                    {
+                        Sequence<pair<DomainType, RangeType>>   m = b.As<Sequence<pair<DomainType, RangeType>>> ();
+                        VerifyTestResult (m.size () == 2);
+                    }
+                }
+            }
+
+        }
+
+
+
+
+        namespace Test5_Inverse_ {
+
+            template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
+            void    DoAllTests_ (TEST_FUNCTION applyToContainer)
+            {
+                typedef typename    USING_BIJECTION_CONTAINER::DomainEqualsCompareFunctionType DomainEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeEqualsCompareFunctionType RangeEqualsCompareFunctionType;
+                typedef typename    USING_BIJECTION_CONTAINER::DomainType DomainType;
+                typedef typename    USING_BIJECTION_CONTAINER::RangeType RangeType;
+                {
+                    USING_BIJECTION_CONTAINER   b;
+                    b.Add (3, 5);
+                    b.Add (4, 19);
+#if 0
+                    {
+                        map<DomainType, RangeType>  m = b.As<map<DomainType, RangeType>> ();
+                        VerifyTestResult (m.size () == 2);
+                        VerifyTestResult (m.find (3) != m.end ());
+                        VerifyTestResult (m.find (9) == m.end ());
+                    }
+#endif
+#if 0
+                    {
+                        typedef typename Mapping_DefaultTraits<RangeType, DomainType, RangeEqualsCompareFunctionType, DomainEqualsCompareFunctionType>  MAPPING_TRAITS;
+                        Mapping<RangeType, DomainType, MAPPING_TRAITS>  m = b.Inverse<Mapping<RangeType, DomainType, MAPPING_TRAITS>> ();
+                        VerifyTestResult (m.size () == 2);
+                        //VerifyTestResult (m.ContainsKey (5));
+                        //VerifyTestResult (not m.ContainsKey (9));
+                    }
+#endif
+                }
+            }
+
+        }
+
+
+
+
         template <typename USING_BIJECTION_CONTAINER, typename TEST_FUNCTION>
         void    SimpleTest_All_For_Type (TEST_FUNCTION applyToContainer)
         {
             Test1_VeryBasics_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
             Test2_MultipeItems_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
             Test3_ConstructFromOtherTypes_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
+            Test4_As_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
+            Test5_Inverse_::DoAllTests_<USING_BIJECTION_CONTAINER> (applyToContainer);
         }
 
     }
