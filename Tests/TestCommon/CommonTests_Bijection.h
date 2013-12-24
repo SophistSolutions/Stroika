@@ -132,18 +132,18 @@ namespace CommonTests {
                     }
 #endif
                     {
-                        typedef typename Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>  MAPPING_TRAITS;
-                        Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
+                        typedef Mapping_DefaultTraits<DomainType, RangeType, DomainEqualsCompareFunctionType, RangeEqualsCompareFunctionType>  MAPPING_TRAITS;
+                        Mapping<DomainType, RangeType, MAPPING_TRAITS>  m = b.template As<Mapping<DomainType, RangeType, MAPPING_TRAITS>> ();
                         VerifyTestResult (m.size () == 2);
                         VerifyTestResult (m.ContainsKey (3));
                         VerifyTestResult (not m.ContainsKey (9));
                     }
                     {
-                        vector<pair<DomainType, RangeType>> m = b.As<vector<pair<DomainType, RangeType>>> ();
+                        vector<pair<DomainType, RangeType>> m = b.template As<vector<pair<DomainType, RangeType>>> ();
                         VerifyTestResult (m.size () == 2);
                     }
                     {
-                        Sequence<pair<DomainType, RangeType>>   m = b.As<Sequence<pair<DomainType, RangeType>>> ();
+                        Sequence<pair<DomainType, RangeType>>   m = b.template As<Sequence<pair<DomainType, RangeType>>> ();
                         VerifyTestResult (m.size () == 2);
                     }
                 }
