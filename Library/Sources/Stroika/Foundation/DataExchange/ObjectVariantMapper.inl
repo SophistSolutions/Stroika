@@ -122,7 +122,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Optional<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Sequence<T>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Sequence<T>&)
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
@@ -147,7 +147,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Sequence<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename T>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Set<T>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Set<T>&)
             {
                 auto toVariantMapper = [](const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
@@ -172,7 +172,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Set<T>), toVariantMapper, fromVariantMapper);
             }
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&)
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);
@@ -205,7 +205,7 @@ namespace   Stroika {
                 return ObjectVariantMapper::TypeMappingDetails (typeid (Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>), toVariantMapper, fromVariantMapper);
             }
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&)
             {
                 auto toVariantMapper = [] (const ObjectVariantMapper * mapper, const Byte * fromObjOfTypeT) -> VariantValue {
                     RequireNotNull (fromObjOfTypeT);

@@ -105,6 +105,7 @@ namespace   Stroika {
 
 
             using   Characters::String;
+            using   Containers::Bijection;
             using   Containers::Mapping;
             using   Containers::Sequence;
             using   Containers::Set;
@@ -294,15 +295,15 @@ namespace   Stroika {
 
             private:
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Bijection<DOMAIN_TYPE, RANGE_TYPE, TRAITS>&);
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Mapping<KEY_TYPE, VALUE_TYPE, TRAITS>&);
                 template    <typename T>
                 static  TypeMappingDetails  MakeCommonSerializer_ (const Memory::Optional<T>&);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Sequence<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Sequence<T>&);
                 template    <typename T>
-                static  TypeMappingDetails  MakeCommonSerializer_ (const Containers::Set<T>&);
+                static  TypeMappingDetails  MakeCommonSerializer_ (const Set<T>&);
 #if 0
                 // haven't gotten to work
                 template    <typename T, size_t SZ>
@@ -457,9 +458,9 @@ namespace   Stroika {
             template    <>
             ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Time::TimeOfDay> ();
             template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, Characters::String>> ();
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, Characters::String>> ();
             template    <>
-            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Containers::Mapping<Characters::String, VariantValue>> ();
+            ObjectVariantMapper::TypeMappingDetails  ObjectVariantMapper::MakeCommonSerializer<Mapping<Characters::String, VariantValue>> ();
 
 
         }
