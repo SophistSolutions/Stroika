@@ -128,6 +128,14 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
+#if 1
+                //TMPHACK - til we make it easier to generate "DerviedIterables<>"
+                // Do a generic helper template - DerivedIterable<> which is an Iterable<T> but makes
+                // it easy to take a source iterator and prepackage it. THen uise that for all the other crap
+                // I've been maulally doing. (like Tally<T>::_ElementsHelper!!!!
+                //      --LGP 2013-12-24
+            public:
+#endif
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
