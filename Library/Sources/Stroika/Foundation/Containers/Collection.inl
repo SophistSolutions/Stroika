@@ -172,7 +172,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T>
-            inline  Collection<T>& Collection<T>::operator+= (const Collection<T>& items)
+            inline  Collection<T>& Collection<T>::operator+= (const Iterable<T>& items)
             {
                 AddAll (items);
                 return *this;

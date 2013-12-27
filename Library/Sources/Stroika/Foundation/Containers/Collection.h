@@ -189,7 +189,7 @@ namespace   Stroika {
                  *      replaced with operator+= (X), with appropriate specializations.
                  */
                 nonvirtual  Collection<T>& operator+= (T item);
-                nonvirtual  Collection<T>& operator+= (const Collection<T>& items);
+                nonvirtual  Collection<T>& operator+= (const Iterable<T>& items);
 
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;

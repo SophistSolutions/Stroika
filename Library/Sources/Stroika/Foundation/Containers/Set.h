@@ -205,7 +205,7 @@ namespace   Stroika {
             public:
                 /**
                  */
-                nonvirtual  Set<T, TRAITS>   Union (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  Set<T, TRAITS>   Union (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -216,7 +216,7 @@ namespace   Stroika {
                 /**
                  *  Alias for Union
                  */
-                nonvirtual  Set<T, TRAITS>   operator+ (const Set<T, TRAITS>& rhs) const;
+                nonvirtual  Set<T, TRAITS>   operator+ (const Iterable<T>& rhs) const;
 
             public:
                 /**
@@ -237,7 +237,7 @@ namespace   Stroika {
                  *  Design note  use Addll/RemoveAll() for CONTAINER variant - since can easily lead to ambiguity/confusion
                  */
                 nonvirtual  Set<T, TRAITS>& operator+= (T item);
-                nonvirtual  Set<T, TRAITS>& operator+= (const Set<T, TRAITS>& items);
+                nonvirtual  Set<T, TRAITS>& operator+= (const Iterable<T>& items);
 
             public:
                 /**

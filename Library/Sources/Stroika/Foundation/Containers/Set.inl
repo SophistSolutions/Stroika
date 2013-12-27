@@ -174,7 +174,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            Set<T, TRAITS>   Set<T, TRAITS>::Union (const Set<T, TRAITS>& rhs) const
+            Set<T, TRAITS>   Set<T, TRAITS>::Union (const Iterable<T>& rhs) const
             {
                 Set<T, TRAITS>   r   =   *this;
                 r.AddAll (rhs);
@@ -192,7 +192,7 @@ namespace   Stroika {
                 return result;
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator+ (const Set<T, TRAITS>& rhs) const
+            inline  Set<T, TRAITS>   Set<T, TRAITS>::operator+ (const Iterable<T>& rhs) const
             {
                 return Union (rhs);
             }
@@ -223,7 +223,7 @@ namespace   Stroika {
                 return *this;
             }
             template    <typename T, typename TRAITS>
-            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const Set<T, TRAITS>& items)
+            inline  Set<T, TRAITS>& Set<T, TRAITS>::operator+= (const Iterable<T>& items)
             {
                 AddAll (items);
                 return *this;
