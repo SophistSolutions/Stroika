@@ -81,27 +81,29 @@ public:
                 }
                 break;
             case    Whence::eFromCurrent: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   curOffset + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   curOffset + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                    Streams::SeekOffsetType         uNewOffset   =      newOffset;
+                    if (static_cast<size_t> (uNewOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                    fCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                 }
                 break;
             case    Whence::eFromEnd: {
-                    Streams::SeekOffsetType curOffset   =   fCursor_ - fData_.begin ();
-                    Streams::SeekOffsetType newOffset   =   fData_.size () + offset;
+                    Streams::SeekOffsetType         curOffset   =   fCursor_ - fData_.begin ();
+                    Streams::SignedSeekOffsetType   newOffset   =   fData_.size () + offset;
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (static_cast<size_t> (newOffset) > fData_.size ()) {
+                    Streams::SeekOffsetType         uNewOffset   =      newOffset;
+                    if (static_cast<size_t> (uNewOffset) > fData_.size ()) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    fCursor_ = fData_.begin () + static_cast<size_t> (newOffset);
+                    fCursor_ = fData_.begin () + static_cast<size_t> (uNewOffset);
                 }
                 break;
         }
