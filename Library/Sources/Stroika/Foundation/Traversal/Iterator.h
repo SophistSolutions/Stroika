@@ -454,7 +454,7 @@ namespace   Stroika {
                 SharedByValueRepType    fIterator_;
 
             private:
-                Memory::Optional<T>     fCurrent_;      // SSW 9/19/2011: naive impementation that requires a no-arg constructor for T and has to build a T before being asked for current
+                Memory::Optional<T>     fCurrent_;
 
             private:
                 static  SharedIRepPtr    Clone_ (const IRep& rep);
