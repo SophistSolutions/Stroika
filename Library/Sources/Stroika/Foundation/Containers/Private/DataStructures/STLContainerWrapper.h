@@ -105,6 +105,12 @@ namespace   Stroika {
                         nonvirtual  size_t  CurrentIndex () const;
 
                     public:
+                        nonvirtual  bool    Equals (const typename STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator& rhs) const
+                        {
+                            return fStdIterator == rhs.fStdIterator;
+                        }
+
+                    public:
                         /**
                          */
                         nonvirtual  void    RemoveCurrent ();

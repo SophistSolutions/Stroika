@@ -19,7 +19,7 @@
  *
  *      @todo   Get use of Private::IteratorImplHelper_ working
  *
- *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals ()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::Equals ()
  */
 
 

@@ -103,7 +103,7 @@ namespace   Stroika {
                                 {
                                     return typename Iterator<T>::SharedIRepPtr (new Rep (fIterateOverTallyKeepalive_, Iterator<TallyEntry<T>> (fDelegateTo_), fCountMoreTimesToGoBeforeAdvance, fSaved2Return_));
                                 }
-                                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                                virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override
                                 {
                                     AssertNotImplemented ();
                                     return false;
@@ -203,7 +203,7 @@ namespace   Stroika {
                                 {
                                     return typename Iterator<T>::SharedIRepPtr (new Rep (fIterateOverTallyKeepalive_, Iterator<TallyEntry<T>> (fDelegateTo_)));
                                 }
-                                virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                                virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override
                                 {
                                     AssertNotImplemented ();
                                     return false;

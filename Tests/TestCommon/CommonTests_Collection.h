@@ -263,11 +263,13 @@ namespace CommonTests {
                 VerifyTestResult (collection.IsEmpty ());
                 collection.Add (t1);
                 collection.Add (t1);
+#if 0
                 {
                     CONCRETE_CONTAINER   bb = collection;
                     VerifyTestResult (bb.MakeIterator () != collection.MakeIterator ());
                     VerifyTestResult (bb.MakeIterator () != bb.MakeIterator ());        // WE may want to change the definition so this is allowed (-- LGP 2012-07-30)
                 }
+#endif
                 {
                     Iterator<typename CONCRETE_CONTAINER::ElementType>   i = collection.begin ();
                     Iterator<typename CONCRETE_CONTAINER::ElementType>   ii = i;
@@ -275,7 +277,7 @@ namespace CommonTests {
                     VerifyTestResult (i != collection.end ()); // because bag wasn't empty
                     ++i;
                     ++ii;
-                    VerifyTestResult (i != ii);     // because bag wasn't empty and because of quirky (efficient) definition of Iterator<T>::operator== - may want to change this -- LGP 2012-07-30
+                    VerifyTestResult (i == ii);
                 }
                 {
                     VerifyTestResult (collection.size () == 2);    // cuz we said so above

@@ -257,6 +257,12 @@ namespace   Stroika {
                         nonvirtual  size_t  CurrentIndex () const;
 
                     public:
+                        nonvirtual  bool    Equals (const typename DoublyLinkedList<T, TRAITS>::ForwardIterator& rhs) const
+                        {
+                            return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+                        }
+
+                    public:
                         nonvirtual  void    Invariant () const;
 
                     protected:

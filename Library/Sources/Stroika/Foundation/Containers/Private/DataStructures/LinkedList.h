@@ -241,6 +241,10 @@ namespace   Stroika {
                         nonvirtual  T       Current () const;
 
                         nonvirtual size_t CurrentIndex () const;
+                        nonvirtual  bool    Equals (const typename LinkedList<T, TRAITS>::ForwardIterator& rhs) const
+                        {
+                            return _fCurrent == rhs._fCurrent and _fSuppressMore == rhs._fSuppressMore;
+                        }
 
                     public:
                         nonvirtual  void    Invariant () const;

@@ -51,7 +51,7 @@ namespace   Stroika {
                 public:
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
                     virtual void                                More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool                                StrongEquals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override;
 
                 public:
                     ContainerRepLockDataSupport_&           fLockSupport;

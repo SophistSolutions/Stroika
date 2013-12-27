@@ -17,7 +17,7 @@
  *
  *  TODO:
  *
- *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::Equals()
  *
  */
 

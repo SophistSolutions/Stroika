@@ -54,7 +54,7 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
-                virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                 {
                     RequireNotNull (rhs);
                     AssertNotImplemented ();

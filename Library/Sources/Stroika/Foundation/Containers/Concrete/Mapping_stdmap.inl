@@ -130,7 +130,7 @@ namespace   Stroika {
                             }
                             CONTAINER_LOCK_HELPER_END ();
                         }
-                        virtual bool                                StrongEquals (const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override
+                        virtual bool                                Equals (const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override
                         {
                             AssertNotImplemented ();
                             return false;

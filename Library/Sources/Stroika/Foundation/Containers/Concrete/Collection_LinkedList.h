@@ -16,7 +16,7 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
- *      @todo   Correctly implement override of Iterator<T>::IRep::StrongEquals()
+ *      @todo   Correctly implement override of Iterator<T>::IRep::Equals()
  *
  *      @todo   Finish using CONTAINER_LOCK_HELPER_START() - synchronizaiton support
  *              THEN - MAYBE - try todo better, but at least do this as starter

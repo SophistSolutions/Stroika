@@ -325,93 +325,36 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  \brief
-                 *  Provides a limited notion of equality suitable for STL-style iteration and iterator comparison.
+                 *  \brief Equals () checks if two iterators are equal to one another (point to the same position in the sequence).
                  *
-                 *  Two iterators are considered WeakEquals() if they are BOTH Done(). If one is done, but the
-                 *  other not, they are not equal. If they are both not done, they are both equal if they are the
-                 *  exact same rep.
+                 *  \em NB: Equals () is the same notion of equality as used by STL iterators.
                  *
-                 *  Note - for WeakEquals(). The following assertion will fail:
-                 *
-                 *          Iterator<T> x = getIterator();
-                 *          Iterator<T> y = x;
-                 *          x++;
-                 *          y++;
-                 *          Assert (WeakEquals (x, y));    // This MAY succeed or MAY fail! - it will succeed IFF x.Done()
-                 *
-                 *  When there are two copies of an iterator, and one copy is modified, this breaks the connection between
-                 *  the iterators, so they can never be equal again.
-                 *
-                 *  This definition was chosen to be sufficient to provide for efficient implementation of STL-style
-                 *  iteration (note that operator==() is an alias for WeakEquals()).
-                 *
-                 *      Iterator<T> i   =   getIterator();
-                 *      Iterator<T> e   =   end ();
-                 *
-                 *      for (; i != e; ++i) {
-                 *      }
-                 *
-                 *  This style works because e.Done () is always true, (and the Rep for e is always different than
-                 *  the rep for i). and so the only way for the iterators to become equal is for i.Done () to be true.
-                 *
-                 *  Note that WeakEquals() is *commutative*.
-                 *
-                 *  @see StrongEquals().
-                 */
-                nonvirtual  bool    WeakEquals (const Iterator& rhs) const;
-
-            public:
-                /**
-                 *  \brief
-                 *  StrongEquals () is a more restrictive, more logically coherent, but more expensive to compute
-                 *  definition of Iterator<T> equality.
-                 *
-                 *  StrongEquals () is a more restrictive, more logically coherent, but potentially more expensive
-                 *  to compute definition of Iterator<T> equality.
-                 *
-                 *  \em NB: StrongEquals () is the same notion of equality as used by STL iterators.
+                 *  \em NB: It is \req required that the two iterators being compared must come from the same source.
                  *
                  *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
-                 *  are considered StrongEquals (). This is mainly because we use a different representation for 'done'
-                 *  iterators. They are kind-of-fake iterator objects.
+                 *  are considered Equals (). This is mainly because we use a different representation for 'done'
+                 *  iterators.
                  *
-                 *  NB:
-                 *
-                 *      if (a.StrongEquals (b)) {
-                 *          Assert (a.WeakEquals (b));
-                 *      }
-                 *
-                 *  HOWEVER:
-                 *
-                 *      if (a.WeakEquals (b)) {
-                 *          Assert (a.StrongEquals (b) OR not a.StrongEquals (b));  // all bets are off
-                 *      }
-                 *
-                 *  Note - for StrongEquals. The following assertion will succeed:
+                 *  Note - for Equals. The following assertion will succeed:
                  *
                  *          Iterator<T> x = getIterator();
                  *          Iterator<T> y = x;
                  *          x++;
                  *          y++;
-                 *          Assert (StrongEquals (x, y));    // will always succeed (x++ and y++ may fail if iterator already at end)
-                 *                                           // See WeakEquals ()
+                 *          Assert (Equals (x, y));     // assume x and y not already 'at end' then...
+                 *                                      // will always succeed (x++ and y++ )
                  *
-                 *  Note that StrongEquals is *commutative*.
+                 *  Note that Equals is *commutative*.
                  *
-                 *  @see WeakEquals ().
+                 *  @see operator== ().
+                 *  @see operator!= ().
                  */
-                nonvirtual  bool    StrongEquals (const Iterator& rhs) const;
+                nonvirtual  bool    Equals (const Iterator& rhs) const;
 
             public:
                 /**
-                 *  \brief  WeakEquals(): this is normally used to compare two iterators already known to be from the same source.
-                 *
-                 *  operator==() just maps trivially to WeakEquals().
-                 *
-                 *  In fact, the definition of WeakEquals() was chosen to most efficiently, but adequately make STL-style
-                 *  iterator usage work properly.
+                 *  \brief  operator== is a shorthand for Equals() - but frequently performs better
                  */
                 nonvirtual  bool    operator== (const Iterator& rhs) const;
 
@@ -554,7 +497,7 @@ namespace   Stroika {
 
             public:
                 /**
-                 * Clone() makes a copy of the state of this iterator, which can separately be tracked with StrongEquals ()
+                 * Clone() makes a copy of the state of this iterator, which can separately be tracked with Equals ()
                  * and/or More() to get values and move forward through the iteration.
                  */
                 virtual SharedIRepPtr   Clone () const                      = 0;
@@ -590,9 +533,13 @@ namespace   Stroika {
                 /**
                  * \brief two iterators must be iterating over the same source, and be up to the same position.
                  *
-                 *  @see Iterator<T>::StrongEquals
+                 *  \req rhs != nullptr
+                 *
+                 *  \req this and rhs must be of the same dynamic type, and come from the same iterable object
+                 *
+                 *  @see Iterator<T>::Equals
                  */
-                virtual bool    StrongEquals (const IRep* rhs) const            = 0;
+                virtual bool    Equals (const IRep* rhs) const            = 0;
             };
 
 

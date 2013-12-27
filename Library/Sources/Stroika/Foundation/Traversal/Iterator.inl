@@ -130,33 +130,15 @@ namespace   Stroika {
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
-            bool    Iterator<T>::WeakEquals (const Iterator& rhs) const
-            {
-                bool    lDone   =   Done ();
-                bool    rDone   =   rhs.Done ();
-                if (lDone != rDone) {
-                    return false;
-                }
-                if (lDone) {
-                    Assert (rDone);
-                    return true;
-                }
-                Assert (not lDone and not rDone);
-                // assigning to local variables to ensure const version called
-                const   Iterator<T>::IRep* lhsRep = fIterator_.get ();
-                const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.get ();
-                return (lhsRep == rhsRep);
-            }
-            template    <typename T>
-            bool    Iterator<T>::StrongEquals (const Iterator& rhs) const
+            bool    Iterator<T>::Equals (const Iterator& rhs) const
             {
                 /*
-                 *  StrongEquals is checked by first checking handling the case of special 'done' iterators. If two
-                 *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special - even if from different sources)
-                 *  they are considered equal).
+                 *  Equals is checked by first checking handling the case of special 'done' iterators. If two
+                 *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special -
+                 *  even if from different sources) they are considered equal.
                  *
-                 *  But then - we check that they are the same dynamic type, and if so, hand to one, and let it do the dynamic/concrete type
-                 *  specific checks for equality.
+                 *  But then - we check that they are the same dynamic type, and if so, hand to one,
+                 *  and let it do the dynamic/concrete type specific checks for equality.
                  */
                 bool    lDone   =   Done ();
                 bool    rDone   =   rhs.Done ();
@@ -171,21 +153,18 @@ namespace   Stroika {
                 // assigning to local variables to ensure const version called
                 const   Iterator<T>::IRep* lhsRep = fIterator_.get ();
                 const   Iterator<T>::IRep* rhsRep = rhs.fIterator_.get ();
-                if (typeid (lhsRep) != typeid (rhsRep)) {
-                    return false;
-                }
-                Ensure (lhsRep->StrongEquals (rhsRep) == rhsRep->StrongEquals (lhsRep));
-                return (lhsRep->StrongEquals (rhsRep));
+                Ensure (lhsRep->Equals (rhsRep) == rhsRep->Equals (lhsRep));
+                return lhsRep->Equals (rhsRep);
             }
             template    <typename T>
             inline  bool   Iterator<T>::operator== (const Iterator& rhs)  const
             {
-                return WeakEquals (rhs);
+                return Equals (rhs);
             }
             template    <typename T>
             inline bool   Iterator<T>::operator!= (const Iterator& rhs)  const
             {
-                return not operator== (rhs);
+                return not Equals (rhs);
             }
             template    <typename T>
             inline  typename Iterator<T>::SharedIRepPtr   Iterator<T>::Clone_ (const typename Iterator<T>::IRep& rep)
@@ -202,7 +181,7 @@ namespace   Stroika {
                         RequireNotNull (result);
                         result->clear ();
                     }
-                    virtual bool    StrongEquals (const typename Iterator<T>::IRep* rhs) const override
+                    virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
                         RequireNotNull (rhs);
                         Memory::Optional<T> tmp;

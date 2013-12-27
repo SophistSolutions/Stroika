@@ -52,10 +52,14 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
                 result->clear ();
             }
         }
-        virtual bool    StrongEquals (const IRep* rhs) const
+        virtual bool    Equals (const IRep* rhs) const
         {
-            AssertNotImplemented ();
-            return false;
+            RequireNotNull (rhs);
+            RequireMember (rhs, MyIterRep_);
+            const MyIterRep_* rrhs =   dynamic_cast<const MyIterRep_*> (rhs);
+            AssertNotNull (rrhs);
+            Require (fStr == rrhs->fStr);   // from same string object
+            return fCurIdx == rrhs->fCurIdx;
         }
         DECLARE_USE_BLOCK_ALLOCATION (MyIterRep_);
     };

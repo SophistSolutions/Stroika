@@ -56,10 +56,14 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
-                bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::StrongEquals (const typename Iterator<T>::IRep* rhs) const
+                bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::Equals (const typename Iterator<T>::IRep* rhs) const
                 {
-                    AssertNotImplemented ();
-                    return false;
+                    RequireNotNull (rhs);
+                    typedef IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>   ActualIterImplType_;
+                    RequireMember (rhs, ActualIterImplType_);
+                    const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
+                    AssertNotNull (rrhs);
+                    return fIterator.Equals (rrhs->fIterator);
                 }
 
 
