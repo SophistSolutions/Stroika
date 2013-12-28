@@ -30,6 +30,11 @@ namespace CommonTests {
             }
         }
 
+        template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
+        void    Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, TEST_FUNCTION applyToContainer)
+        {
+            (void)container.Contains (3);
+        }
 
         template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
         void    SimpleIterableTest_All_For_Type (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, TEST_FUNCTION applyToContainer)

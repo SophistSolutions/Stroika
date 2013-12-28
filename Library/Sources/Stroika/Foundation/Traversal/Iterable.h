@@ -21,9 +21,6 @@
  *
  *  TODO:
  *
- *      @todo   Probably add overload of ApplyUntilTrue() that takes Iterator<T> as arugument instead of T
- *              so you can delete the item pointed to by T.
- *
  *      @todo   See below - do we want to add Equals() - similar issue to Contains()
  *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
  *
@@ -31,10 +28,15 @@
  *              The same we we have tenative ExactEquals - we could ahve a Contains() method that takes a Compare function
  *              (and defaults to CompareEquals). This could then be MOVED here from "Collection" and other subclasses.
  *
+ *      @todo   Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
+ *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
+ *              <<<NO - DOCUMENT WHY WE CHOSE NOT TO>>> - DO USE TRAITS AT HGIHER LEVEL THOUGH...
+ *
+ *      @todo   Probably add overload of ApplyUntilTrue() that takes Iterator<T> as arugument instead of T
+ *              so you can delete the item pointed to by T.
+ *
  *      @todo   REDO DOCS FOR ITERABLE - SO CLEAR ITS ALSO THE BASIS OF "GENERATORS". IT COULD  BE RENAMED
  *              GENERATOR (though dont)
- *
- *      @todo   Note that GetLength() CAN RETURN MAXINT (or some defined max) - and/or maybe some other sentinal? Maybe no sentinals?
  *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
  *
@@ -43,13 +45,6 @@
  *              More()...
  *
  *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>
- *
- *      @todo   Consider renaming Iterable<T> to Collection<T>. Or at least document
- *              why not...
- *
- *      @todo   Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
- *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
- *              <<<NO - DOCUMENT WHY WE CHOSE NOT TO>>> - DO USE TRAITS AT HGIHER LEVEL THOUGH...
  *
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure
@@ -98,6 +93,22 @@ namespace   Stroika {
              *      to assure that the underlying type is of the appropriate subtype.
              *
              *      For example - see Bag_Array<T>::GetRep_().
+             *
+             *  *Design Note*:
+             *      Why does Iterable<T> contain a GetLength () method?
+             *
+             *          o   It’s always well defined what GetLength() means (what you would get if you called
+             *              MakeIterable() and iterated a bunch of times til the end).
+             *
+             *          o   Its almost always (and trivial) to perform that computation more efficiently than the
+             *              iterate over each element apporach.
+             *
+             *          The gist of these two consideration means that if you need to find the length of
+             *          an Iterable<T>, if it was defined as a method, you can access the trivial implemeantion,
+             *          and if it was not defined, you would be forced into the costly implementation.
+             *
+             *      Adding GetLength () adds no conceptual cost – because its already so well and clearly defined
+             *      in terms of its basic operation (iteration). And it provides value (maybe just modest value).
              *
              *  *Design Note*:
              *      Chose NOT to include an Equals(Iterable<T> rhs) const method here, but instead duplicatively in
@@ -189,16 +200,37 @@ namespace   Stroika {
                  * and visited all items. In practice, as the actual number might vary as the underlying
                  * iterable could change while being iterated over.
                  *
-                 *  Also note that GetLength () can return a rediculous number - like numeric_limits<size_t>::max () -
+                 *  Also note that GetLength () can return a ridiculous number - like numeric_limits<size_t>::max () -
                  *  for logically infinite sequences... like a sequence of random numbers.
+                 *
+                 *  \em Performance:
+                 *      The performance of GetLength() may vary wildly. It could be anywhere from O(1) to O(N)
+                 *      depending on the underlying type of Iterable<T>.
                  */
                 nonvirtual  size_t          GetLength () const;
 
             public:
                 /**
                  * \brief Returns true iff GetLength() == 0
+                 *
+                 *  \em Performance:
+                 *      The performance of IsEmpty() may vary wildly (@see GetLength) but will nearly always be O(1).
                  */
                 nonvirtual  bool    IsEmpty () const;
+
+            public:
+                /**
+                 *  Apply the (template argument) EQUALS_COMPARER to each element in the Iterable<T> and
+                 *  return true iff found. This invokes no virtual methods dependent (except MakeIterable or some such)
+                 *  and so gains no performance benefits from the organizaiton of the underlying Iterable<T>. This
+                 *  is just a short hand for the direct iteration one would trivially code by hand. Still - its
+                 *  easier to call Contains() that to code that loop!
+                 *
+                 *  And note - subclasses (like Containers::Set<T>) will hide this implementation with a more
+                 *  efficient one (that does indirect to the backend).
+                 */
+                template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    Contains (const T& element) const;
 
                 /**
                 * THESE MAKE SENSE IN ITERABLE<T> so maybe put there
@@ -242,24 +274,6 @@ namespace   Stroika {
                 */
                 nonvirtual  bool    Equals (const Collection<T>& rhs) const;
 #endif
-
-            public:
-                /**
-                 * \brief STL-ish alias for IsEmpty()
-                 */
-                nonvirtual  bool    empty () const;
-
-            public:
-                /**
-                 * \brief STL-ish alias for GetLength()
-                 */
-                nonvirtual  size_t  length () const;
-
-            public:
-                /**
-                 * \brief STL-ish alias for GetLength()
-                 */
-                nonvirtual  size_t  size () const;
 
             public:
                 /**
@@ -354,6 +368,24 @@ namespace   Stroika {
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  CONTAINER_OF_T    As () const;
+
+            public:
+                /**
+                 * \brief STL-ish alias for IsEmpty()
+                 */
+                nonvirtual  bool    empty () const;
+
+            public:
+                /**
+                 * \brief STL-ish alias for GetLength()
+                 */
+                nonvirtual  size_t  length () const;
+
+            public:
+                /**
+                 * \brief STL-ish alias for GetLength()
+                 */
+                nonvirtual  size_t  size () const;
 
             protected:
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();

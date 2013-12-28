@@ -32,6 +32,8 @@
  *      @todo   Perhaps add a Shake() method that produces a NEW Collection of a possibly different backend TYPE!
  *              with a random ordering.
  *
+ *              Or add Bag<> class that does basically this.
+ *
  *      @todo   Document relationship with Java Collection<T> (http://docs.oracle.com/javase/7/docs/api/java/util/Collection.html)
  *              Similar but Stroika container interface/containter connection, Equals handling, and other language specific
  *              issues. Java has more 'all' variants (and retainAll - see possible todo above). And java makes this

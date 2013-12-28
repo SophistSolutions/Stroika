@@ -156,6 +156,17 @@ namespace   Stroika {
                 return _GetRep ().IsEmpty ();
             }
             template    <typename T>
+            template    <typename EQUALS_COMPARER>
+            bool    Iterable<T>::Contains (const T& element) const
+            {
+                for (T i : *this) {
+                    if (typename EQUALS_COMPARER::Equals (i, element)) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();
