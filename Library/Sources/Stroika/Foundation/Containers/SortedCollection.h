@@ -74,6 +74,13 @@ namespace   Stroika {
              *  can with a SortedCollection, because the well-ordering required to define a sorted collection also imputes
              *  a notion of equality which is used for Contains etc.
              *
+             *  \note   \em Iterators
+             *      Note that iterators always run in sorted order, from least
+             *      to largest. Items inserted before the current iterator index will not
+             *      be encountered, and items inserted after the current index will be encountered.
+             *      Items inserted at the current index remain undefined if they will
+             *      be encountered or not.
+             *
              *  @see Collection<T, TRAITS>
              *  @see SortedMapping<Key,T>
              *  @see SortedSet<T, TRAITS>

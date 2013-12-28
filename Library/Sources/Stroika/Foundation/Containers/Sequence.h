@@ -176,6 +176,12 @@ namespace   Stroika {
              *  CollectionIterator). This statement really comes down to our really only
              *  needing sequence iterators rarely, and mostly using CollectionIterators.
              *
+             *  \note   \em Iterators
+             *      Note that iterators always run in Sequence order, from smallest index
+             *      to largest. Items inserted before the current iterator index will not
+             *      be encountered, and items inserted after the current index will be encountered.
+             *      Items inserted at the current index remain undefined if they will
+             *      be encountered or not.
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
