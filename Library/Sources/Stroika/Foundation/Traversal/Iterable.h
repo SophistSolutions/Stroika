@@ -24,14 +24,6 @@
  *      @todo   See below - do we want to add Equals() - similar issue to Contains()
  *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
  *
- *      @todo   Perhaps add Contains:
- *              The same we we have tenative ExactEquals - we could ahve a Contains() method that takes a Compare function
- *              (and defaults to CompareEquals). This could then be MOVED here from "Collection" and other subclasses.
- *
- *      @todo   Consider adding class TWithCompareEquals<T> to add Iterable<T> like functions - where we can count on "T".
- *              Perhaps implement with a Require (TWithCompareEquals<T>) in CTORs for class?
- *              <<<NO - DOCUMENT WHY WE CHOSE NOT TO>>> - DO USE TRAITS AT HGIHER LEVEL THOUGH...
- *
  *      @todo   Probably add overload of ApplyUntilTrue() that takes Iterator<T> as arugument instead of T
  *              so you can delete the item pointed to by T.
  *
