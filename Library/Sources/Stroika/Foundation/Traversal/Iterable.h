@@ -357,6 +357,10 @@ namespace   Stroika {
                  *
                  *  Note - this also works with (nearly all) of the Stroika containers as well
                  *  (e.g. Set<T> x; x.As<Sequence<T>> ());
+                 *
+                 *  \em Design Note:
+                 *      We chose NOT to include an overload taking iterators because there was no connection between
+                 *      'this' and the used iterators, so you may as well just directly call CONTAINER_OF_T(it1, it2).
                  */
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  CONTAINER_OF_T    As () const;
