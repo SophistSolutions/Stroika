@@ -103,6 +103,16 @@ namespace   Stroika {
              *      in terms of its basic operation (iteration). And it provides value (maybe just modest value).
              *
              *  *Design Note*:
+             *      Order of Iteration.
+             *
+             *      Iterables<T> provide no promises about the order of iteration. Specific subclasses (like SortedSet<>)
+             *      often will make specific guarantees about order of iteration.
+             *
+             *      We do NOT even promise you will see the same items, or seem them in the same order as you iterate
+             *      (so for example, you can have a "RandomSequence<>" subclass from Iterable<> and return a different
+             *      sequence of numbers each time you make an iterate and run.
+             *
+             *  *Design Note*:
              *      Chose NOT to include an Equals(Iterable<T> rhs) const method here, but instead duplicatively in
              *      each subclass, so that it could more easily be implemented efficiently (not a biggie), but more
              *      importantly because it doesnt appear to me to make sense so say that a Stack<T> == Set<T>, even if
