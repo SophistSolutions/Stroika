@@ -18,6 +18,23 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
+
+
+        namespace   Test1_IterableTests {
+            template    <typename USING_SET_CONTAINER>
+            void    DoAllTests_ ()
+            {
+                typedef typename USING_SET_CONTAINER::ElementType ELEMENT_TYPE;
+                USING_SET_CONTAINER   s;
+                s.Add (3);
+                s.Add (9);
+                IterableTests::SimpleIterableTest_All_For_Type<Iterable<ELEMENT_TYPE>> (s);
+                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<ELEMENT_TYPE>, typename USING_SET_CONTAINER::EqualsCompareFunctionType> (s, typename USING_SET_CONTAINER::EqualsCompareFunctionType ());
+            }
+        }
+
+
+
         namespace Test1_BasicConstruction {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
@@ -29,8 +46,8 @@ namespace CommonTests {
                 applyToContainer (s1);
                 USING_BASESET_CONTAINER   s2 = s;
                 applyToContainer (s2);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s, applyToContainer);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2, applyToContainer);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s2);
                 ELEMENT_TYPE kVec_[] = {1, 3, 4, 2 };
                 USING_BASESET_CONTAINER s3 = USING_BASESET_CONTAINER (kVec_);
                 VerifyTestResult (s3.GetLength () == 4);
@@ -66,7 +83,7 @@ namespace CommonTests {
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 1);
                 applyToContainer (s);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s, applyToContainer);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_SET_CONTAINER> (s);
                 s.Remove (1);
                 applyToContainer (s);
                 VerifyTestResult (s.size () == 0);
@@ -155,6 +172,7 @@ namespace CommonTests {
         template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
         void    Test_All_For_Type (TEST_FUNCTION applyToContainer)
         {
+            Test1_IterableTests::DoAllTests_<USING_SET_CONTAINER> ();
             Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
             Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
             Test3_Equals::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);

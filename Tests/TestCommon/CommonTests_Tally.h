@@ -32,7 +32,7 @@ namespace CommonTests {
                 for (TallyEntry<T> i : s) {
                     VerifyTestResult (false);
                 }
-                IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, applyToContainer);
+                IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
                 /*
                 * Try removes while iterating forward.
@@ -42,7 +42,7 @@ namespace CommonTests {
                         s.Add (T (i));
                     }
                     applyToContainer (s);
-                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, applyToContainer);
+                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
                     for (auto it = s.begin (); it != s.end (); ++it) {
                         s.UpdateCount (it, 1);

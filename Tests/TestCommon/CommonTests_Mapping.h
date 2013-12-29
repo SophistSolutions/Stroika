@@ -58,7 +58,7 @@ namespace CommonTests {
                 Verify (not m.Lookup (2, nullptr));
                 m.Add (1, 2);
                 VerifyTestResult (m.size () == 1);
-                IterableTests::SimpleIterableTest_All_For_Type<USING_MAPPING_CONTAINER> (m, applyToContainer);
+                IterableTests::SimpleIterableTest_All_For_Type<USING_MAPPING_CONTAINER> (m);
                 m.Remove (1);
                 VerifyTestResult (m.size () == 0);
 

@@ -17,8 +17,9 @@ namespace CommonTests {
         using   namespace   Stroika::Foundation;
         using   namespace   Stroika::Foundation::Containers;
 
-        template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleIterableTests (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, TEST_FUNCTION applyToContainer)
+
+        template <typename USING_ITERABLE_CONTAINER>
+        void    SimpleIterableTests (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container)
         {
             {
                 size_t  l   =   container.GetLength ();
@@ -30,17 +31,62 @@ namespace CommonTests {
             }
         }
 
-        template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, TEST_FUNCTION applyToContainer)
+
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void    Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
-            (void)container.Contains (3);
+            (void)container.Contains<EQUALS_COMPARER> (3);
         }
 
-        template <typename USING_ITERABLE_CONTAINER, typename TEST_FUNCTION>
-        void    SimpleIterableTest_All_For_Type (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, TEST_FUNCTION applyToContainer)
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void    Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
-            SimpleIterableTests<USING_ITERABLE_CONTAINER> (container, applyToContainer);
+            auto iterableCopy = container;
+            VerifyTestResult ((iterableCopy.SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
         }
+
+
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void    Test4_TallyEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
+        {
+            auto iterableCopy = container;
+            // NYI
+            //VerifyTestResult ((iterableCopy.TallyEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+        }
+
+
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void    Test5_ExactEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
+        {
+            auto iterableCopy = container;
+            VerifyTestResult ((iterableCopy.ExactEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+        }
+
+
+
+
+        template    <typename USING_ITERABLE_CONTAINER>
+        void    SimpleIterableTest_All_For_Type (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container)
+        {
+            SimpleIterableTests<USING_ITERABLE_CONTAINER> (container);
+        }
+
+
+
+
+        template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
+        void    SimpleIterableTest_RequiringEqualsComparer (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
+        {
+            Test2_Contains_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
+            Test3_SetEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
+            Test4_TallyEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
+            Test5_ExactEquals_<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container, equalsComparer);
+        }
+
 
 
     }

@@ -41,7 +41,7 @@ namespace CommonTests {
                     }
                     VerifyTestResult(s.GetLength() == kTestSize);
 
-                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s, [](const typename CONCRETE_CONTAINER::ArchetypeContainerType&) {});
+                    IterableTests::SimpleIterableTest_All_For_Type<CONCRETE_CONTAINER> (s);
 
                     VerifyTestResult(s.GetLength() == kTestSize);
                     s.RemoveAll ();
