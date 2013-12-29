@@ -178,7 +178,7 @@ namespace   Stroika {
                 return rep.Clone ();
             }
             template    <typename T>
-            Iterator<T> Iterator<T>::GetEmptyIterator ()
+            inline  Iterator<T> Iterator<T>::GetEmptyIterator ()
             {
 #if 1
                 return Iterator<T> (ConstructionFlagForceAtEnd::ForceAtEnd);
