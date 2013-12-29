@@ -258,51 +258,22 @@ namespace   Stroika {
                  *  and the two Iterables<> be SetEquals().
                  *
                  *  \em Performance:
-                 *      This algorithm is ???
+                 *      This algorithm is N^^3
                  *
-                 &&&&&
-                 *
-                */
+                 */
                 template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    TallyEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
             public:
                 /**
-                * THESE MAKE SENSE IN ITERABLE<T> so maybe put there
-                * NTI.
-                *
-                *   Note we intentially do NOT define operator==/!= cuz its quite unclear which one would  want to do
-                *   and for some iterables (infinite sequnce of random points) - calling these would be silly/harmful.
-                *
-                // NYI - but equiv to convert this and RHS to set<T(with given equal compare) and check equals
-                */
+                 *  ExactEquals () - very measures if iteration over the two containers produces identical sequences
+                 *  of elements (identical by compare with EQUALS_COMPARER).
+                 *
+                 *  \em Performance:
+                 *      This algorithm is O(N)
+                 */
                 template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    ExactEquals (const RHS_CONTAINER_TYPE& rhs) const;
-
-#if 0
-                // @todo    UNCLEAR if we wish to include this? It CAN be implemented generically...
-            public:
-                /*
-                * This function returns true iff the collections are - by value - equal.
-                *
-                *This at least conceptually involves iterating
-                * over each item, and seeing if the results are the same.
-                {{{ SEE EMIAL DISCUSSION WITH STERL - NOT ADEUqte dfeinfiotn}}}
-                *
-                *  Two containers are considered Equal if they the can be expected to give the exact same sequence of results
-                *  when iterating over their contents.
-                *
-                *  Note - this does NOT necessarily mean they will give the same results, because some amount of non-deterinism is allowed
-                *  in iteration. For example, if you have an abstract collection of random numbers (us Collection to represent a sequnce of a
-                *  billion random numbers) - and then make a copy of that sequence (just incrementing a reference count). Intuitively one
-                *  would consdier those two Collections<> equal, and Stroika will report them as such.  But when you go to iterate over each
-                *  they might produce different answers.
-                *
-                *  For most normal cases - Arrays, Linked Lists, etc, this is a 'too subtle' and 'academic' distinction, and the obvious
-                *  interpetation applies (you iterate over both - in order - and get the same answer).
-                */
-                nonvirtual  bool    Equals (const Collection<T>& rhs) const;
-#endif
 
             public:
                 /**

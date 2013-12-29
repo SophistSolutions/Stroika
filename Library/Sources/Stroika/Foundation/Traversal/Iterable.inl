@@ -204,8 +204,31 @@ namespace   Stroika {
             template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
             bool    Iterable<T>::TallyEquals (const RHS_CONTAINER_TYPE& rhs) const
             {
-                AssertNotImplemented ();
-                return false;
+                auto    tallyOf = [] (const Iterable<T>& c, T item) -> size_t {
+                    size_t  total = 0;
+                    for (auto ti : c)
+                    {
+                        if (typename EQUALS_COMPARER::Equals (ti, item)) {
+                            total++;
+                        }
+                    }
+                    return total;
+                };
+                /*
+                 *  An extremely in-efficient but space-constant implementation. N^3 and check
+                 *  a contains b and b contains a
+                 */
+                for (auto ti : *this) {
+                    if (tallyOf (*this, ti) != tallyOf (rhs, ti)) {
+                        return false;
+                    }
+                }
+                for (auto ti : rhs) {
+                    if (tallyOf (*this, ti) != tallyOf (rhs, ti)) {
+                        return false;
+                    }
+                }
+                return true;
             }
             template    <typename T>
             template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>

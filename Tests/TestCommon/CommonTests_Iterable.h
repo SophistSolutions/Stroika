@@ -53,8 +53,7 @@ namespace CommonTests {
         void    Test4_TallyEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            // NYI
-            //VerifyTestResult ((iterableCopy.tempalte TallyEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+            VerifyTestResult ((iterableCopy.tempalte TallyEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
         }
 
 
