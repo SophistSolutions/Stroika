@@ -36,7 +36,7 @@ namespace CommonTests {
         template <typename USING_ITERABLE_CONTAINER, typename EQUALS_COMPARER>
         void    Test2_Contains_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
-            (void)container.Contains<EQUALS_COMPARER> (3);
+            (void)container.template Contains<EQUALS_COMPARER> (3);
         }
 
 
@@ -44,7 +44,7 @@ namespace CommonTests {
         void    Test3_SetEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+            VerifyTestResult ((iterableCopy.template SetEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
         }
 
 
@@ -54,7 +54,7 @@ namespace CommonTests {
         {
             auto iterableCopy = container;
             // NYI
-            //VerifyTestResult ((iterableCopy.TallyEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+            //VerifyTestResult ((iterableCopy.tempalte TallyEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
         }
 
 
@@ -63,7 +63,7 @@ namespace CommonTests {
         void    Test5_ExactEquals_ (const Iterable<typename USING_ITERABLE_CONTAINER::ElementType>& container, EQUALS_COMPARER equalsComparer)
         {
             auto iterableCopy = container;
-            VerifyTestResult ((iterableCopy.ExactEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
+            VerifyTestResult ((iterableCopy.template ExactEquals<USING_ITERABLE_CONTAINER, EQUALS_COMPARER> (container)));
         }
 
 
