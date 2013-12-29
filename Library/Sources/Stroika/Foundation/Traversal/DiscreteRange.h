@@ -168,6 +168,9 @@ namespace   Stroika {
                 static  DiscreteRange<T, TRAITS> FullRange ();
 
             public:
+                using   inherited_RangeType::Contains;
+
+            public:
                 /**
                  *  DiscreteRange<>::emty () and Iterable<T>::empty () have different definitions, but they always coincide in
                  *  value.
