@@ -97,11 +97,12 @@ protected:
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (newOffset > (fTmpHackTextRemaining_.size ())) {
+                    SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
+                    if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                    fOffset_ = newOffset;
+                    fOffset_ = static_cast<size_t> (uNewOffset);
                 }
                 break;
             case    Whence::eFromEnd: {
@@ -110,11 +111,12 @@ protected:
                     if (newOffset < 0) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
-                    if (newOffset > (fTmpHackTextRemaining_.size ())) {
+                    SeekOffsetType  uNewOffset =   static_cast<SeekOffsetType> (newOffset);
+                    if (uNewOffset > (fTmpHackTextRemaining_.size ())) {
                         Execution::DoThrow (std::range_error ("seek"));
                     }
                     // Note - warning here  legit - our caching strategy wtih string is bogus and wont work wtih large streams
-                    fOffset_ = newOffset;
+                    fOffset_ = static_cast<size_t> (uNewOffset);
                 }
                 break;
         }
