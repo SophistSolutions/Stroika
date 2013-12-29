@@ -20,22 +20,23 @@ namespace CommonTests {
 
 
 
-        namespace   Test1_IterableTests {
+        namespace   Test1_IterableTests_ {
             template    <typename USING_SET_CONTAINER>
             void    DoAllTests_ ()
             {
-                typedef typename USING_SET_CONTAINER::ElementType ELEMENT_TYPE;
+                typedef typename USING_SET_CONTAINER::ElementType ElementType;
+                typedef typename USING_SET_CONTAINER::EqualsCompareFunctionType EqualsCompareFunctionType;
                 USING_SET_CONTAINER   s;
                 s.Add (3);
                 s.Add (9);
-                IterableTests::SimpleIterableTest_All_For_Type<Iterable<ELEMENT_TYPE>> (s);
-                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<ELEMENT_TYPE>, typename USING_SET_CONTAINER::EqualsCompareFunctionType> (s, typename USING_SET_CONTAINER::EqualsCompareFunctionType ());
+                IterableTests::SimpleIterableTest_All_For_Type<Iterable<ElementType>> (s);
+                IterableTests::SimpleIterableTest_RequiringEqualsComparer<Iterable<ElementType>, EqualsCompareFunctionType> (s, EqualsCompareFunctionType ());
             }
         }
 
 
 
-        namespace Test1_BasicConstruction {
+        namespace Test2_BasicConstruction_ {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
@@ -68,7 +69,7 @@ namespace CommonTests {
         }
 
 
-        namespace Test2_AddRemove {
+        namespace Test3_AddRemove_ {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
@@ -105,7 +106,7 @@ namespace CommonTests {
         }
 
 
-        namespace Test3_Equals {
+        namespace   Test4_Equals_ {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
@@ -129,7 +130,7 @@ namespace CommonTests {
         }
 
 
-        namespace Test4_UnionDifferenceIntersectionEtc {
+        namespace   Test5_UnionDifferenceIntersectionEtc_ {
             template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
             void    DoAllTests_ (TEST_FUNCTION applyToContainer)
             {
@@ -169,14 +170,16 @@ namespace CommonTests {
         }
 
 
+
+
         template <typename USING_SET_CONTAINER, typename USING_BASESET_CONTAINER, typename TEST_FUNCTION>
         void    Test_All_For_Type (TEST_FUNCTION applyToContainer)
         {
-            Test1_IterableTests::DoAllTests_<USING_SET_CONTAINER> ();
-            Test1_BasicConstruction::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
-            Test2_AddRemove::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
-            Test3_Equals::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
-            Test4_UnionDifferenceIntersectionEtc::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test1_IterableTests_::DoAllTests_<USING_SET_CONTAINER> ();
+            Test2_BasicConstruction_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test3_AddRemove_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test4_Equals_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
+            Test5_UnionDifferenceIntersectionEtc_::DoAllTests_<USING_SET_CONTAINER, USING_BASESET_CONTAINER> (applyToContainer);
         }
 
 
