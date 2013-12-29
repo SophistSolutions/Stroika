@@ -19,11 +19,6 @@
  *
  *  \file
  *
- *  @todo   Consider as speed tweek
- *          // we allow fIterator to equal nullptr, as a sentinal value during iteration, signaling that iteration is Done
- *          #define qIteratorUsingNullRepAsSentinalValue    1
- *          (TESTING  but no ifdef - jsut do it)
- *
  *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
  *          to recheck the current item, and recheck the done state of the container.
  *
@@ -48,10 +43,6 @@
  *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
  *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
  *          all iteration calls to that iterator!
- *
- *  @todo   Merge Current virtual call into More() call? Trouble is constructing
- *          T. We could make fields char fCurrent_[sizeof(T)] but that poses problems
- *          for copying iterators. On balance, probably best to bag it!!!
  *
  *  @todo   CLARIFY (decide on?) the behavior if you lose all references to a container? Does the
  *          iterator remain valid? Does it effectively retain a reference to the contianer?
@@ -134,19 +125,16 @@ namespace   Stroika {
              *  added with an index before the current traversal index.
              *
              *  For example:
-             *
              *          for (Iterator<T> i = container.MakeIterator (); not i.Done (); i.Next ())  {
              *              f (i.Current ());
              *          }
              *
              *  or:
-             *
              *          for (Iterator<T> i = container.begin (); i != container.end (); ++i)  {
              *              f (*i);
              *          }
              *
              *  or:
-             *
              *          for (i : container)  {
              *              f (i);
              *          }
@@ -239,8 +227,11 @@ namespace   Stroika {
                  */
                 typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>   SharedByValueRepType;
 
-            public:
-                enum ConstructionFlagForceAtEnd {
+            private:
+                /*
+                 *  Mostly internal type to select a constructor for the special END iterator.
+                 */
+                enum    ConstructionFlagForceAtEnd {
                     ForceAtEnd
                 };
 
@@ -256,8 +247,10 @@ namespace   Stroika {
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
                 Iterator (const Iterator<T>& from);
-                Iterator (ConstructionFlagForceAtEnd);
                 Iterator () = delete;
+
+            private:
+                Iterator (ConstructionFlagForceAtEnd);
 
             public:
                 /**
@@ -309,6 +302,7 @@ namespace   Stroika {
                  *  values won't be seen until the next iteration.
                  */
                 nonvirtual  void    operator++ ();
+
                 /**
                  *  \brief
                  *      Advance iterator; support for range-based-for, and STL style iteration in general
@@ -436,7 +430,7 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *  Same as *somecontainer*::end ()
+                 *      Same as *somecontainer*::end ()
                  *
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
@@ -482,12 +476,12 @@ namespace   Stroika {
              *
              *  typical uses:
              *
-             *          it++ -> More (null, true)
-             *          *it -> More (&v, false); return v;
-             *          Done -> More (null, false)
+             *          it++ -> More (&ignoredvalue, true)
+             *          *it -> More (&v, false); return *v;
+             *          Done -> More (&v, false); return v.IsPresent();
              *
-             *          (note that for performance and safety reasons the iterator envelope actually
-             *           passes fCurrent_ into More when implenenting ++it
+             *          (note that for performance and thread safety reasons the iterator envelope
+             *           actually passes fCurrent_ into More when implenenting ++it
              */
             template    <typename T>
             class  Iterator<T>::IRep {
@@ -507,25 +501,10 @@ namespace   Stroika {
                  */
                 virtual SharedIRepPtr   Clone () const                      = 0;
                 /**
-                #if 0
-                 *  More () is dual function - depending on its arguments. If advance is true, it moves the
-                 *  iterator to the next legal position.
-                 *
-                 *  If current is not nullptr, then after that advance (if any) - the current value is copied back out.
-                 *
-                 *  It IS legal to call More () with advance true even when already at the end of iteration.
-                 *  This design choice was made to be multi-threading friendly.
-                 *
-                 *  This function returns true iff the iterator is positioned at a valid position, and if (advance
-                 *  is true, then More() returns true for exactly the cases where a valid value is copied out.
-                 *
-                 *  @todo FIX THIS DOCS FOR NEW ARGS TO MORE
-                 #endif
-
-                 DRAFT NEW DOCS:
-                 *
                  *  More () takes two required arguments - one an optional result, and the other a flag about whether or
                  *  not to advance.
+                 *
+                 *  If advance is true, it moves the iterator to the next legal position.
                  *
                  *  It IS legal to call More () with advance true even when already at the end of iteration.
                  *  This design choice was made to be multi-threading friendly.
