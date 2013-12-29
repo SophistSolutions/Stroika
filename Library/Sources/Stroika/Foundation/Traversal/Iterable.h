@@ -21,8 +21,10 @@
  *
  *  TODO:
  *
- *      @todo   See below - do we want to add Equals() - similar issue to Contains()
- *              <<< DOCUMENT NO BECAUSE NO EQUALS CONSTRAINT ON ITEM>>>
+ *      @todo   Ordering of parameters to SetEquals() etc templates? Type deduction versus
+ *              default parameter?
+ *
+ *      @todo   Add find_first_that method? Or something similar. Something that returns iterator.
  *
  *      @todo   Probably add overload of ApplyUntilTrue() that takes Iterator<T> as arugument instead of T
  *              so you can delete the item pointed to by T.
