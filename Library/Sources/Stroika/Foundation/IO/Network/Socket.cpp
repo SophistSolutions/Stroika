@@ -113,7 +113,8 @@ namespace   {
                 ///tmpahcl - a good start
                 //return ::_read (fSD_, intoStart, intoEnd - intoStart);
                 int flags = 0;
-                int r = ::recv (fSD_, reinterpret_cast<char*> (intoStart), intoEnd - intoStart, flags);
+                int nBytesToRead = static_cast<int> (min<size_t> ((intoEnd - intoStart), numeric_limits<int>::max ()));
+                int r = ::recv (fSD_, reinterpret_cast<char*> (intoStart), nBytesToRead, flags);
                 if (r < 0) {
                     Execution::DoThrow (StringException (L"fix error"));
                 }
