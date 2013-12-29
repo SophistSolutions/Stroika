@@ -51,6 +51,7 @@ namespace   Stroika {
                 , fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
+                Require (fIterator_.get () != nullptr or Done ());  // if not special 'auto-done' we must have legit iterator rep
             }
             template    <typename T>
             inline Iterator<T>::Iterator (const SharedIRepPtr& rep)
@@ -71,7 +72,7 @@ namespace   Stroika {
             template    <typename T>
             inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
             {
-                RequireNotNull (rhs.fIterator_.get ());
+                Require (rhs.fIterator_.get () != nullptr or rhs.Done ());  // if not special 'auto-done' we must have legit iterator rep
                 fIterator_ = rhs.fIterator_;
                 fCurrent_ = rhs.fCurrent_;
                 return *this;
@@ -79,13 +80,13 @@ namespace   Stroika {
             template    <typename T>
             inline  typename    Iterator<T>::IRep&         Iterator<T>::GetRep ()
             {
-                EnsureNotNull (fIterator_.get ());
+                EnsureNotNull (fIterator_);
                 return *fIterator_;
             }
             template    <typename T>
             inline  const typename Iterator<T>::IRep&   Iterator<T>::GetRep () const
             {
-                EnsureNotNull (fIterator_.get ());
+                EnsureNotNull (fIterator_);
                 return *fIterator_;
             }
             template    <typename T>
@@ -136,7 +137,7 @@ namespace   Stroika {
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
-            bool    Iterator<T>::Equals (const Iterator& rhs) const
+            inline  bool    Iterator<T>::Equals (const Iterator& rhs) const
             {
                 /*
                  *  Equals is checked by first checking handling the case of special 'done' iterators. If two
