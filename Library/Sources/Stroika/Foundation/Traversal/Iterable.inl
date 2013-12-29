@@ -167,6 +167,63 @@ namespace   Stroika {
                 return false;
             }
             template    <typename T>
+            template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
+            bool    Iterable<T>::SetEquals (const RHS_CONTAINER_TYPE& rhs) const
+            {
+                /*
+                 *  An extremely in-efficient but space-constant implementation. N^2 and check
+                 *  a contains b and b contains a
+                 */
+                for (auto ti : *this) {
+                    bool contained  =   false;
+                    for (auto ri : rhs) {
+                        if (typename EQUALS_COMPARER::Equals (ti, ri)) {
+                            contained = true;
+                            break;
+                        }
+                    }
+                    if (not contained) {
+                        return false;
+                    }
+                }
+                for (auto ri : rhs) {
+                    bool contained  =   false;
+                    for (auto ti : *this) {
+                        if (typename EQUALS_COMPARER::Equals (ti, ri)) {
+                            contained = true;
+                            break;
+                        }
+                    }
+                    if (not contained) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            template    <typename T>
+            template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
+            bool    Iterable<T>::TallyEquals (const RHS_CONTAINER_TYPE& rhs) const
+            {
+                AssertNotImplemented ();
+                return false;
+            }
+            template    <typename T>
+            template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER>
+            bool    Iterable<T>::ExactEquals (const RHS_CONTAINER_TYPE& rhs) const
+            {
+                Iterator<T> li  =   MakeIterator ();
+                Iterator<T> le  =   end ();
+                auto        ri  =   rhs.begin ();
+                auto        re  =   rhs.end ();
+                for (; li != le and ri != re; ++ri, ++li) {
+                    if (not typename EQUALS_COMPARER::Equals (*li, *ri)) {
+                        return false;
+                    }
+                }
+                // only true if we get to end at the same time
+                return li == le and ri == re;
+            }
+            template    <typename T>
             inline  bool    Iterable<T>::empty () const
             {
                 return IsEmpty ();

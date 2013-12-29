@@ -230,25 +230,52 @@ namespace   Stroika {
                  *
                  *  And note - subclasses (like Containers::Set<T>) will hide this implementation with a more
                  *  efficient one (that does indirect to the backend).
+                 *
+                 *  \em Performance:
+                 *      This algorithm is O(N).
+                 *
                  */
                 template    <typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    Contains (const T& element) const;
 
+            public:
+                /**
+                 *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
+                 *  each element in the each iterable is contained in the other. They lengths CAN be differnt
+                 *  and the two Iterables<> be SetEquals().
+                 *
+                 *  \em Performance:
+                 *      This algorithm is O(N) * O(M) where N and M are the length of the two respective iterables.
+                 *
+                 */
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
+
+            public:
+                /**
+                 *  TallyEquals () - very inefficiently - but with constant small memory overhead - returns true if
+                 *  each element in the each iterable is contained in the other. They lengths CAN be differnt
+                 *  and the two Iterables<> be SetEquals().
+                 *
+                 *  \em Performance:
+                 *      This algorithm is ???
+                 *
+                 &&&&&
+                 *
+                */
+                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
+                nonvirtual  bool    TallyEquals (const RHS_CONTAINER_TYPE& rhs) const;
+
+            public:
                 /**
                 * THESE MAKE SENSE IN ITERABLE<T> so maybe put there
                 * NTI.
                 *
                 *   Note we intentially do NOT define operator==/!= cuz its quite unclear which one would  want to do
                 *   and for some iterables (infinite sequnce of random points) - calling these would be silly/harmful.
-                */
-            public:
+                *
                 // NYI - but equiv to convert this and RHS to set<T(with given equal compare) and check equals
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    SetEquals (const RHS_CONTAINER_TYPE& rhs) const;
-                // NYI - but equiv to convert this and RHS to Tally<T(with given equal compare) and check equals
-                template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
-                nonvirtual  bool    TallyEquals (const RHS_CONTAINER_TYPE& rhs) const;
-                // NYI - but equiv to iterate over both in order and when one misses return !=
+                */
                 template    <typename RHS_CONTAINER_TYPE, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  bool    ExactEquals (const RHS_CONTAINER_TYPE& rhs) const;
 
