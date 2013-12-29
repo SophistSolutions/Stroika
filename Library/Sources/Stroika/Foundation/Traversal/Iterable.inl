@@ -160,7 +160,7 @@ namespace   Stroika {
             bool    Iterable<T>::Contains (const T& element) const
             {
                 for (T i : *this) {
-                    if (typename EQUALS_COMPARER::Equals (i, element)) {
+                    if (EQUALS_COMPARER::Equals (i, element)) {
                         return true;
                     }
                 }
@@ -177,7 +177,7 @@ namespace   Stroika {
                 for (auto ti : *this) {
                     bool contained  =   false;
                     for (auto ri : rhs) {
-                        if (typename EQUALS_COMPARER::Equals (ti, ri)) {
+                        if (EQUALS_COMPARER::Equals (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -189,7 +189,7 @@ namespace   Stroika {
                 for (auto ri : rhs) {
                     bool contained  =   false;
                     for (auto ti : *this) {
-                        if (typename EQUALS_COMPARER::Equals (ti, ri)) {
+                        if (EQUALS_COMPARER::Equals (ti, ri)) {
                             contained = true;
                             break;
                         }
@@ -208,7 +208,7 @@ namespace   Stroika {
                     size_t  total = 0;
                     for (auto ti : c)
                     {
-                        if (typename EQUALS_COMPARER::Equals (ti, item)) {
+                        if (EQUALS_COMPARER::Equals (ti, item)) {
                             total++;
                         }
                     }
@@ -239,7 +239,7 @@ namespace   Stroika {
                 auto        ri  =   rhs.begin ();
                 auto        re  =   rhs.end ();
                 for (; li != le and ri != re; ++ri, ++li) {
-                    if (not typename EQUALS_COMPARER::Equals (*li, *ri)) {
+                    if (not EQUALS_COMPARER::Equals (*li, *ri)) {
                         return false;
                     }
                 }
