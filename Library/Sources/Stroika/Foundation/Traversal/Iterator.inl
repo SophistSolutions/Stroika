@@ -51,7 +51,6 @@ namespace   Stroika {
                 , fIterator_ (from.fIterator_)
                 , fCurrent_ (from.fCurrent_)
             {
-                RequireNotNull (from.fIterator_.get ());
             }
             template    <typename T>
             inline Iterator<T>::Iterator (const SharedIRepPtr& rep)
@@ -61,6 +60,13 @@ namespace   Stroika {
                 RequireNotNull (rep.get ());
                 // Reason for cast stuff is to avoid Clone if unneeded.
                 const_cast<IRep*> (rep.get ())->More (&fCurrent_, false);
+            }
+            template    <typename T>
+            inline Iterator<T>::Iterator (ConstructionFlagForceAtEnd)
+                : fIterator_ (nullptr)
+                , fCurrent_ ()
+            {
+                Assert (Done ());
             }
             template    <typename T>
             inline Iterator<T>&    Iterator<T>::operator= (const Iterator<T>& rhs)
@@ -97,29 +103,29 @@ namespace   Stroika {
             template    <typename T>
             inline    T   Iterator<T>::operator* () const
             {
-                RequireNotNull (fIterator_);
                 Require (not Done ());
+                RequireNotNull (fIterator_);
                 return *fCurrent_;
             }
             template    <typename T>
             inline    T*   Iterator<T>::operator-> ()
             {
-                RequireNotNull (fIterator_);
                 Require (not Done ());
+                RequireNotNull (fIterator_);
                 return fCurrent_.get ();
             }
             template    <typename T>
             inline    const T*   Iterator<T>::operator-> () const
             {
-                RequireNotNull (fIterator_);
                 Require (not Done ());
+                RequireNotNull (fIterator_);
                 return fCurrent_.get ();
             }
             template    <typename T>
             inline   void   Iterator<T>::operator++ ()
             {
-                RequireNotNull (fIterator_);
                 Require (not Done ());
+                RequireNotNull (fIterator_);
                 fIterator_->More (&fCurrent_, true);
             }
             template    <typename T>
@@ -174,6 +180,9 @@ namespace   Stroika {
             template    <typename T>
             Iterator<T> Iterator<T>::GetEmptyIterator ()
             {
+#if 1
+                return Iterator<T> (ConstructionFlagForceAtEnd::ForceAtEnd);
+#else
                 class   RepSentinal_ : public Iterator<T>::IRep  {
                 public:
                     virtual void    More (Memory::Optional<T>* result, bool advance) override
@@ -199,6 +208,7 @@ namespace   Stroika {
                 };
                 static  Iterator<T> kSentinal_ = Iterator<T> (typename Iterator<T>::SharedIRepPtr (new RepSentinal_ ()));
                 return kSentinal_;
+#endif
             }
 
 

@@ -19,6 +19,11 @@
  *
  *  \file
  *
+ *  @todo   Consider as speed tweek
+ *          // we allow fIterator to equal nullptr, as a sentinal value during iteration, signaling that iteration is Done
+ *          #define qIteratorUsingNullRepAsSentinalValue    1
+ *          (TESTING  but no ifdef - jsut do it)
+ *
  *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
  *          to recheck the current item, and recheck the done state of the container.
  *
@@ -31,7 +36,9 @@
  *
  *          Restartable iterators would be one way.
  *
- *  @todo   Consider having Iterator<T> have begin(), end() methods that do magic so
+ *  @todo   Traversal::mkIterable ()
+ *
+ *          Consider having Iterator<T> have begin(), end() methods that do magic so
  *          you can also directly use an intertor in
  *              for (auto i : soemthingThatReturnsIterator()) {
  *              }
@@ -47,7 +54,7 @@
  *          for copying iterators. On balance, probably best to bag it!!!
  *
  *  @todo   CLARIFY (decide on?) the behavior if you lose all references to a container? Does the
- *          iterator remain valid? Does it effectively retain a reference to teh contianer?
+ *          iterator remain valid? Does it effectively retain a reference to the contianer?
  *          Or does it instantly go 'empty'?
  *
  *          Not sure it matters much which but we must document this clearly.
@@ -94,11 +101,6 @@
  *                      and sets a flag, so the only cost when this doesnt work is checking that bool flag.
  *                      And the benefit in teh more common case is you avoid the virtual function call! so the it++ can be
  *                      inlined (a big win oftne times).
- *
- *  @todo   Consider as speed tweek
- *          // we allow fIterator to equal nullptr, as a sentinal value during iteration, signaling that iteration is Done
- *          #define qIteratorUsingNullRepAsSentinalValue    1
- *
  */
 
 
@@ -238,21 +240,24 @@ namespace   Stroika {
                 typedef Memory::SharedByValue<Memory::SharedByValue_Traits<IRep, SharedIRepPtr, Rep_Cloner_>>   SharedByValueRepType;
 
             public:
+                enum ConstructionFlagForceAtEnd {
+                    ForceAtEnd
+                };
+
+            public:
                 /**
                  *  \brief
                  *      This overload is usually not called directly. Instead, iterators are
                  *      usually created from a container (eg. Bag<T>::begin()).
                  *
+                 *  Iterators are safely copyable, preserving their current position.
+                 *
                  *  \req RequireNotNull (rep.get ())
                  */
                 explicit Iterator (const SharedIRepPtr& rep);
-                Iterator () = delete;
-
-            public:
-                /**
-                 *  \brief  Iterators are safely copyable, preserving their current position.
-                 */
                 Iterator (const Iterator<T>& from);
+                Iterator (ConstructionFlagForceAtEnd);
+                Iterator () = delete;
 
             public:
                 /**
