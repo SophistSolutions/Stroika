@@ -482,11 +482,12 @@ namespace   {
         public :
             virtual     XMLSize_t readBytes (XMLByte* const toFill, const XMLSize_t maxToRead) override
             {
-                float   curOffset           =   0.0;
-                bool    doProgressBefore    =   (maxToRead > 10 * 1024); // only bother calling both before & after if large read
+                using   ProgressRangeType = ProgressMonitor::ProgressRangeType;
+                ProgressRangeType   curOffset           =   0.0;
+                bool                doProgressBefore    =   (maxToRead > 10 * 1024); // only bother calling both before & after if large read
                 if (fTotalSize > 0.0f and doProgressBefore) {
                     //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
-                    curOffset = fSource.GetOffset ();
+                    curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                     fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
                 }
 
@@ -494,7 +495,7 @@ namespace   {
                 //XMLSize_t   result  =   static_cast<XMLSize_t> (fSource.gcount ()); // safe cast cuz read maxToRead bytes
                 XMLSize_t   result  =   fSource.Read (toFill, toFill + maxToRead);
                 if (fTotalSize > 0) {
-                    curOffset = fSource.GetOffset ();
+                    curOffset = static_cast<ProgressRangeType> (fSource.GetOffset ());
                     //curOffset = fSource ? static_cast<float> (fSource.tellg ()) :  fTotalSize;
                     fProgress.SetCurrentProgressAndThrowIfCanceled (curOffset / fTotalSize);
                 }
