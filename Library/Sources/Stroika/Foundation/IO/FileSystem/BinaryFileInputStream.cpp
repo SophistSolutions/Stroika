@@ -77,7 +77,7 @@ public:
         size_t  nRequested  =   intoEnd - intoStart;
         lock_guard<mutex>  critSec (fCriticalSection_);
 #if     qPlatform_Windows
-        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, nRequested)));
+        return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::_read (fFD_, intoStart, Math::PinToMaxForType<unsigned int> (nRequested))));
 #else
         return static_cast<size_t> (Execution::ThrowErrNoIfNegative (::read (fFD_, intoStart, nRequested)));
 #endif

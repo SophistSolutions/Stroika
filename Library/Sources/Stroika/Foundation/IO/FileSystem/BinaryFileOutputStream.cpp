@@ -83,7 +83,7 @@ public:
             const Byte* i = start;
             while (i < end) {
 #if     qPlatform_Windows
-                int n = Execution::ThrowErrNoIfNegative (_write (fFD_, i, end - i));
+                int n = Execution::ThrowErrNoIfNegative (_write (fFD_, i, Math::PinToMaxForType<unsigned int> (end - i)));
 #else
                 int n = Execution::ThrowErrNoIfNegative (write (fFD_, i, end - i));
 #endif

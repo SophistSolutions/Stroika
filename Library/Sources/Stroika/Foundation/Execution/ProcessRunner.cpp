@@ -399,7 +399,7 @@ IRunnablePtr    ProcessRunner::CreateRunnable (ProgressMonitor::Updater progress
                         const Byte* e   =   p + stdinBLOB.GetSize ();
                         while (p < e) {
                             DWORD   written     =   0;
-                            if (::WriteFile (useSTDIN, p, e - p, &written, nullptr) != 0) {
+                            if (::WriteFile (useSTDIN, p, Math::PinToMaxForType<DWORD> (e - p), &written, nullptr) != 0) {
                                 DWORD   err = ::GetLastError ();
                                 // sometimes we fail because the target process hasn't read enough and the pipe is full.
                                 // Unfortunately - MSFT doesn't seem to have a single clear error message nor any clear
