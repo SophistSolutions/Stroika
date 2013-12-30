@@ -25,6 +25,10 @@
  *
  *          Not sure it matters much which but we must document this clearly.
  *
+ *  @todo   Consider if we want to make the promise currently defined below in Equals()
+ *          about iterating two originally equal iterators. The trouble is - this doesn
+ *          work with generators!!! -- REVIEW-- LGP 2013-12-30
+ *
  *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
  *          to recheck the current item, and recheck the done state of the container.
  *
@@ -135,7 +139,7 @@ namespace   Stroika {
              *          }
              *
              *  or:
-             *          for (i : container)  {
+             *          for (T i : container)  {
              *              f (i);
              *          }
              *
@@ -191,16 +195,13 @@ namespace   Stroika {
              *          and probabe virtual function calls, the current approach of freezing / copying
              *          on iteration seemed better.
              *
-             *          Iterator<T> can never 'be null' and so there is no need to check for a null
-             *          Iterator 'Rep'.
-             *
              *  @see Iterable<T>
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
             template    <typename T>
-            class  Iterator : public std::iterator<input_iterator_tag, T> {
+            class   Iterator : public std::iterator<input_iterator_tag, T> {
             private:
                 typedef typename    std::iterator<input_iterator_tag, T>    inherited;
 
@@ -334,6 +335,8 @@ namespace   Stroika {
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
                  *  are considered Equals (). This is mainly because we use a different representation for 'done'
                  *  iterators.
+                 *
+                 *  @TODO - NOTE - SEE TODO ABOUT ABOUT THIS GUARANTEE???
                  *
                  *  Note - for Equals. The following assertion will succeed:
                  *
