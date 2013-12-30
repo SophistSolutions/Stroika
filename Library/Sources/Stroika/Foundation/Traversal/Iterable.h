@@ -34,11 +34,7 @@
  *
  *      @todo   Fix #define qAPPLY_IMPL_STRATEGY                qAPPLY_IMPL_STRATEGY_COOKIE
  *
- *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
- *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
- *              More()...
- *
- *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>
+ *      @todo   since Iterator<T> now uses iterator<> traits stuff, so should Iterable<T>?
  *
  *      @todo   Apply/ApplyUntilTrue() should also take overload with function object (STL). Also,
  *              consider providing a _IRep version - to implement LOCKING logic promised in the API. Make sure

@@ -19,6 +19,12 @@
  *
  *  \file
  *
+ *  @todo   CLARIFY (decide on?) the behavior if you lose all references to a container? Does the
+ *          iterator remain valid? Does it effectively retain a reference to the contianer?
+ *          Or does it instantly go 'empty'?
+ *
+ *          Not sure it matters much which but we must document this clearly.
+ *
  *  @todo   Consider adding a Refresh() method to iterator. Semantics would be
  *          to recheck the current item, and recheck the done state of the container.
  *
@@ -43,12 +49,6 @@
  *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
  *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
  *          all iteration calls to that iterator!
- *
- *  @todo   CLARIFY (decide on?) the behavior if you lose all references to a container? Does the
- *          iterator remain valid? Does it effectively retain a reference to the contianer?
- *          Or does it instantly go 'empty'?
- *
- *          Not sure it matters much which but we must document this clearly.
  *
  *  @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
  *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
@@ -511,6 +511,11 @@ namespace   Stroika {
                  *
                  *  This function returns the current value in result if the iterator is positioned at a valid position,
                  *  and sets result to an empty value if at the end - its 'at end'.
+                 *
+                 *  \em Design Note
+                 *      We chose to use a pointer parameter instead of a return value to avoid extra
+                 *      initializaiton/copying. Note that the return value optimization rule doesn't apply
+                 *      to assignment, but only initialization.
                  *
                  */
                 virtual void    More (Memory::Optional<T>* result, bool advance)     = 0;

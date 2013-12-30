@@ -40,18 +40,7 @@ namespace   Stroika {
                 {
                     RequireNotNull (result);
                     CONTAINER_LOCK_HELPER_START (fLockSupport) {
-#if 1
                         fIterator.More (result, advance);
-#else
-                        // To fix THIS - we have to fix the CONCRETE ForwardIterator types to have a More() that returns optional!
-                        T val_Must_Fix_So_Doesnt_Req_DEFCTOR;
-                        if (fIterator.More (&val_Must_Fix_So_Doesnt_Req_DEFCTOR, advance)) {
-                            *result = val_Must_Fix_So_Doesnt_Req_DEFCTOR;
-                        }
-                        else {
-                            result->clear ();
-                        }
-#endif
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -63,7 +52,11 @@ namespace   Stroika {
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
-                    return fIterator.Equals (rrhs->fIterator);
+                    // @todo - FIX to use lock-2-at-a-time lock stuff on LHS and RHS
+                    CONTAINER_LOCK_HELPER_START (fLockSupport) {
+                        return fIterator.Equals (rrhs->fIterator);
+                    }
+                    CONTAINER_LOCK_HELPER_END ();
                 }
 
 

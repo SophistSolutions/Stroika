@@ -19,6 +19,13 @@
  *  Private utility to support building of Traversal::Iterator<> objects for concrete Containers.
  *
  * TODO:
+ *      @todo   Crazy temphack cuz current code assumes you must call++ before starting iteration! Crazy!
+ *              Issue is way we implemented the 'CURRENT' stuff with iterators - filling in after teh first
+ *              More()...
+ *
+ *              At this point - this appears to be restricted to ALL BACKEND support Iterator (ForwardIterator) classes.
+ *              The Stroika Iterator API doesn't appear to have this quirk.
+ *
  *
  * Notes:
  *
