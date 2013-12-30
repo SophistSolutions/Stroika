@@ -393,13 +393,6 @@ namespace   Stroika {
                 nonvirtual  typename Iterable<T>::_IRep&         _GetRep ();
                 nonvirtual  const typename Iterable<T>::_IRep&   _GetRep () const;
 
-            protected:
-                /**
-                 * Occasioanlly we need to export the shared_ptr itself, but in that case, the caller must be very careful
-                 *  to continue to respect the 'shared by value' semantics (no changes)
-                 */
-                nonvirtual  _SharedPtrIRep   _GetSharedPtrIRep () const;
-
             private:
                 struct  Rep_Cloner_ {
                     inline  static  shared_ptr<_IRep>  Copy (const _IRep& t)

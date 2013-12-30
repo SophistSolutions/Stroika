@@ -271,7 +271,7 @@ namespace   Stroika {
             /**
              */
             template    <typename T, typename TRAITS>
-            class   Tally<T, TRAITS>::_IRep : public Iterable<TallyEntry<T>>::_IRep {
+            class   Tally<T, TRAITS>::_IRep : public Iterable<TallyEntry<T>>::_IRep, public enable_shared_from_this<typename Tally<T, TRAITS>::_IRep> {
             private:
                 typedef typename Iterable<TallyEntry<T>>::_IRep  inherited;
 

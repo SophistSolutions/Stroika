@@ -125,13 +125,6 @@ namespace   Stroika {
 
             public:
                 /**
-                 *  Return the internal shared_ptr<> from this SharedByValue<>. Be very careful
-                 *  using this.
-                 */
-                nonvirtual  shared_ptr_type     GetSharedPtr () const;
-
-            public:
-                /**
                  * get () returns the real underlying ptr we store. It can be nullptr. This should
                  * rarely be used - use operator-> in preference. This is only for dealing with cases where
                  * the ptr could legitimately be nil.

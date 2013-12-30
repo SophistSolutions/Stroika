@@ -130,12 +130,7 @@ namespace   Stroika {
                 Assure1Reference ();
                 ptr = fSharedImpl_.get ();
                 EnsureNotNull (ptr);
-                return (ptr);
-            }
-            template    <typename TRAITS>
-            inline  typename SharedByValue<TRAITS>::shared_ptr_type     SharedByValue<TRAITS>::GetSharedPtr () const
-            {
-                return fSharedImpl_;
+                return ptr;
             }
             template    <typename TRAITS>
             inline  const typename SharedByValue<TRAITS>::element_type*    SharedByValue<TRAITS>::operator-> () const
@@ -152,7 +147,7 @@ namespace   Stroika {
             {
                 const element_type*  ptr =   get ();
                 EnsureNotNull (ptr);
-                return (*ptr);
+                return *ptr;
             }
             template    <typename TRAITS>
             typename SharedByValue<TRAITS>::element_type& SharedByValue<TRAITS>::operator* ()
@@ -164,7 +159,7 @@ namespace   Stroika {
                 Assure1Reference ();
                 element_type*  ptr =   get ();
                 EnsureNotNull (ptr);
-                return (*ptr);
+                return *ptr;
             }
             template    <typename TRAITS>
             bool SharedByValue<TRAITS>::operator== (const SharedByValue<TRAITS>& rhs) const

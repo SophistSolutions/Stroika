@@ -407,14 +407,14 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   Tally<T, TRAITS>::Elements () const
             {
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (this->_GetSharedPtrIRep ());
+                _SharedPtrIRep  ss = const_cast<Tally<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
                 AssertNotNull (ss.get ());
                 return ss->Elements (ss);
             }
             template    <typename T, typename TRAITS>
             inline  Iterable<T>   Tally<T, TRAITS>::UniqueElements () const
             {
-                _SharedPtrIRep  ss = dynamic_pointer_cast<typename _SharedPtrIRep::element_type> (this->_GetSharedPtrIRep ());
+                _SharedPtrIRep  ss = const_cast<Tally<T, TRAITS>*> (this)->_GetRep ().shared_from_this ();
                 AssertNotNull (ss.get ());
                 return ss->UniqueElements (ss);
             }
