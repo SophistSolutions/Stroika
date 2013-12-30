@@ -139,7 +139,7 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
-#if 1
+#if 0
                 //TMPHACK - til we make it easier to generate "DerviedIterables<>"
                 // Do a generic helper template - DerivedIterable<> which is an Iterable<T> but makes
                 // it easy to take a source iterator and prepackage it. THen uise that for all the other crap
