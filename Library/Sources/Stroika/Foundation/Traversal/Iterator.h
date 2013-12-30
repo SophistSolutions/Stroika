@@ -344,6 +344,16 @@ namespace   Stroika {
                  *          Assert (Equals (x, y));     // assume x and y not already 'at end' then...
                  *                                      // will always succeed (x++ and y++ )
                  *
+                 *  However,
+                 *          Iterator<T> x = getIterator();
+                 *          Iterator<T> y = x;
+                 *          x++;
+                 *          modify_underlying_container()
+                 *          y++;
+                 *          if (Equals (x, y)) {
+                 *              may or may not be so
+                 *          }
+                 *
                  *  Note that Equals is *commutative*.
                  *
                  *  @see operator== ().
@@ -370,10 +380,8 @@ namespace   Stroika {
                  *
                  *  Current() returns the value of the current item visited by the Iterator<T>.
                  *
-                 *  Two things can change the current value of Current():
-                 *      *   operator++()
-                 *      *   Done()  (or any similar functions, NotDone() operator==(), operator!=(), or any of the
-                 *          range-based-for code which implicitly calls these methods.
+                 *  Only one things can change the current value of Current():
+                 *      o   operator++()
                  *
                  *  Because of this, two subsequent calls to it.Current () *cannot* return different values with no
                  *  intervening calls on the iterator, even if the underlying container changes.
@@ -430,7 +438,7 @@ namespace   Stroika {
             public:
                 /**
                  *  \brief
-                 *      Same as *somecontainer*::end ()
+                 *      Used by *somecontainer*::end ()
                  *
                  *  GetEmptyIterator () returns a special iterator which is always empty - always 'at the end'.
                  *  This is handy in implementing STL-style 'if (a != b)' style iterator comparisons.
@@ -526,7 +534,7 @@ namespace   Stroika {
                  *
                  *  \req this and rhs must be of the same dynamic type, and come from the same iterable object
                  *
-                 *  @see Iterator<T>::Equals
+                 *  @see Iterator<T>::Equals for details
                  */
                 virtual bool    Equals (const IRep* rhs) const            = 0;
             };
