@@ -139,6 +139,11 @@ namespace   Stroika {
                 class  _IRep;
 
             protected:
+#if 1
+//tmphack...--LGP 2013-12-30
+// only needed for gcc
+            public:
+#endif
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
