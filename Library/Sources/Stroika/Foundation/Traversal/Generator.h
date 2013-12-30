@@ -39,108 +39,20 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-            //MAKE PRIVATE
-            template    <typename T, typename CURRENT_CONTEXT>
-            struct   GenItWrapper_ : Iterator<T>::IRep  {
-                typedef function<Memory::Optional<T>(shared_ptr<CURRENT_CONTEXT> callContext)>  FUN;
-
-                FUN fFun_;
-                shared_ptr<CURRENT_CONTEXT> fCallContext_;
-                Memory::Optional<T> fCur_;
-                bool fAtEnd_;
-                GenItWrapper_ (FUN f)
-                    : fFun_ (f)
-                    , fCallContext_ (new CURRENT_CONTEXT ())
-                    , fCur_ ()
-                    , fAtEnd_ (false)
-                {
-                }
-                virtual void    More (Memory::Optional<T>* result, bool advance) override
-                {
-                    RequireNotNull (result);
-                    result->clear ();
-                    if (advance) {
-                        Require (not fAtEnd);
-                        Memory::Optional<T> n   =   fFun_ (fCallContext_);
-                        if (n.empty ()) {
-                            fAtEnd_ = true;
-                        }
-                        else {
-                            fCur_ = n;
-                        }
-                    }
-                    if (not fAtEnd) {
-                        *result = fCur_;
-                    }
-                }
-                virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
-                {
-                    RequireNotNull (rhs);
-                    AssertNotImplemented ();
-                    return false;
-                }
-                virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override
-                {
-                    AssertNotImplemented ();
-                    return nullptr;
-                }
-            };
-
-            //MAKE PRIVATE
-            template    <typename T, typename CURRENT_CONTEXT>
-            struct   MyIteratableRep_ : Iterable<T>::_IRep  {
-                typedef function<Memory::Optional<T>(shared_ptr<CURRENT_CONTEXT> callContext)>  FUN;
-
-                FUN fFun_;
-
-                MyIteratableRep_ (FUN f)
-                    : fFun_ (f)
-                {
-                }
-                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const
-                {
-                    return typename Iterable<T>::_SharedPtrIRep(new GenItWrapper_<T, CURRENT_CONTEXT> (fFun_));
-                }
-                virtual Iterator<T>         MakeIterator () const
-                {
-                    return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::GenItWrapper_<T, CURRENT_CONTEXT> (fFun_)));
-                }
-                virtual size_t              GetLength () const
-                {
-                    typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
-                    ///
-                    /// not a good idea, but the best we can do is iterate
-                    size_t  n = 0;
-                    for (auto i = begin (); i != end (); ++i) {
-                        n++;
-                    }
-                    return n;
-                }
-                virtual bool                IsEmpty () const
-                {
-                    for (auto i = begin (); i != end (); ++i) {
-                        return false;
-                    }
-                    return true;
-                }
-                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
-                {
-                    return this->_Apply (doToElement);
-                }
-                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
-                {
-                    return this->_ApplyUntilTrue (doToElement);
-                }
-            };
+            /**
+             *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
+             *  std::function lambda closer (with smart pointers).
+             */
+            template    <typename T>
+            Iterator<T> CreateGeneratorIterator (const function<Memory::Optional<T>()>& getNext);
 
 
             /**
+             *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
+             *  std::function lambda closer (with smart pointers).
              */
-            template    <typename T, typename CURRENT_CONTEXT>
-            Iterable<T> CreateGenerator (function<Memory::Optional<T> (shared_ptr<CURRENT_CONTEXT> callContext)>)
-            {
-                return Iterable<T> (new MyIteratableRep_<T, CURRENT_CONTEXT> (callContext));
-            }
+            template    <typename T>
+            Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext);
 
 
         }
