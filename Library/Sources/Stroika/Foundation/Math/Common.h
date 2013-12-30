@@ -103,7 +103,7 @@ namespace   Stroika {
              *  the right size to call write with.
              */
             template    <typename NEW_T, typename   T>
-            NEW_T   PinToMaxForRange (T initialValue);
+            NEW_T   PinToMaxForType (T initialValue);
 
 
             /**

@@ -215,13 +215,13 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ************************* Math::PinToMaxForRange *******************************
+             ************************** Math::PinToMaxForType *******************************
              ********************************************************************************
              */
             template    <typename NEW_T, typename   T>
-            NEW_T   PinToMaxForRange (T initialValue)
+            NEW_T   PinToMaxForType (T initialValue)
             {
-                typedef result_of(NEW_T () + T ())  LargerType;
+                typedef decltype (NEW_T () + T ())  LargerType; // maybe should use conditional<> for this?
                 return static_cast<NEW_T> (min<LargerType> (initialValue, numeric_limits<NEW_T>::max ()));
             }
 
