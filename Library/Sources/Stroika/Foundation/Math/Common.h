@@ -95,6 +95,18 @@ namespace   Stroika {
 
 
             /**
+             *  This returns the given value, as the new type NEW_T, but if the value wont fit in NEW_T, it returns
+             *  the largest value that would.
+             *
+             *  This is handy for stuff like ::write() system calls, where you might be given a ptrdiff_t, and have to
+             *  call something taking int, and given how these types might be differnt sizes, it simplifies picking
+             *  the right size to call write with.
+             */
+            template    <typename NEW_T, typename   T>
+            NEW_T   PinToMaxForRange (T initialValue);
+
+
+            /**
              *  Note - when we port stroika bignum package - this shoudl support those bignums.
              */
             template    <typename   T>
