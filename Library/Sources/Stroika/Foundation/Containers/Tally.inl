@@ -21,6 +21,136 @@ namespace   Stroika {
         namespace   Containers {
 
 
+            // HELPER TO MOVE ELSEWHERE
+            template    <typename T, typename DATA_BLOB, typename NEW_ITERATOR_REP_TYPE>
+            class   IterableOverIteratorHelper : public Iterable<T> {
+            public:
+                class   _HelperIterableRep : public Iterable<T>::_IRep {
+                protected:
+                    DATA_BLOB   _fDataBlob;
+                protected:
+                    _HelperIterableRep (const DATA_BLOB& iterateOverTally)
+                        : _fDataBlob (iterateOverTally)
+                    {
+                    }
+                public:
+                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
+                    {
+                        return _SharedPtrIRep (new _HelperIterableRep (_fDataBlob));
+                    }
+                    virtual Iterator<T>                             MakeIterator () const override
+                    {
+                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob)));
+                    }
+                    virtual size_t                                  GetLength () const override
+                    {
+                        size_t  n = 0;
+                        for (auto i = MakeIterator (); not i.Done (); ++i) {
+                            n++;
+                        }
+                        return n;
+                    }
+                    virtual bool                                    IsEmpty () const override
+                    {
+                        return GetLength () == 0;
+                    }
+                    virtual void                                    Apply (typename _HelperIterableRep::_APPLY_ARGTYPE doToElement) const override
+                    {
+                        return this->_Apply (doToElement);
+                    }
+                    virtual Iterator<T>                             ApplyUntilTrue (typename _HelperIterableRep::_APPLYUNTIL_ARGTYPE doToElement) const override
+                    {
+                        return this->_ApplyUntilTrue (doToElement);
+                    }
+                };
+            public:
+                IterableOverIteratorHelper (const DATA_BLOB& dataBlob)
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new _HelperIterableRep (dataBlob)))
+                {
+                }
+            };
+
+
+
+            template    <typename T, typename TRAITS>
+            struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
+                ElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
+                    : fIterateOverTally (iterateOverTally)
+                    , fDelegateTo (delegateTo)
+                    , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
+                    , fSaved2Return (saved2Return)
+                {
+                }
+                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    fIterateOverTally;
+                Iterator<TallyEntry<T>>                             fDelegateTo;
+                size_t                                              fCountMoreTimesToGoBeforeAdvance;
+                Memory::Optional<T>                                 fSaved2Return;
+            };
+
+
+            template    <typename T, typename TRAITS>
+            struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
+                struct  Rep : public Iterator<T>::IRep {
+                    typedef typename    Iterator<T>::IRep   inherited;
+                    ElementsIteratorHelperContext_      fContext;
+                    DECLARE_USE_BLOCK_ALLOCATION(Rep);
+                    Rep (const ElementsIteratorHelperContext_& context)
+                        : inherited ()
+                        , fContext (context)
+                    {
+                        if (not fContext.fDelegateTo.Done ()) {
+                            fContext.fSaved2Return = fContext.fDelegateTo->fItem;
+                            if (fContext.fSaved2Return.IsPresent ()) {
+                                fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fDelegateTo->fCount - 1;
+                            }
+                        }
+                    }
+                    virtual void    More (Memory::Optional<T>* result, bool advance) override
+                    {
+                        RequireNotNull (result);
+                        if (fContext.fCountMoreTimesToGoBeforeAdvance > 0) {
+                            *result = fContext.fSaved2Return;
+                            if (advance) {
+                                fContext.fCountMoreTimesToGoBeforeAdvance--;
+                            }
+                        }
+                        else {
+                            bool done = fContext.fDelegateTo.Done ();
+                            if (not done and advance) {
+                                fContext.fDelegateTo++;
+                                done = fContext.fDelegateTo.Done ();
+                            }
+                            if (done) {
+                                result->clear ();
+                            }
+                            else {
+                                *result = fContext.fDelegateTo->fItem;
+                            }
+                            if (advance) {
+                                fContext.fSaved2Return = *result;
+                                if (fContext.fSaved2Return.IsPresent ()) {
+                                    fContext.fCountMoreTimesToGoBeforeAdvance = fContext.fDelegateTo->fCount - 1;
+                                }
+                            }
+                        }
+                    }
+                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override
+                    {
+                        return typename Iterator<T>::SharedIRepPtr (new Rep (fContext));
+                    }
+                    virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
+                    {
+                        AssertNotImplemented ();
+                        return false;
+                    }
+                };
+                ElementsIteratorHelper_ (const ElementsIteratorHelperContext_& context)
+                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (context)))
+                {
+                }
+            };
+
+
             /**
              *  Protected helper class to convert from an iterator of TallyEntries
              *  to an iterator over individual items - repeating items the appropriate number of times
@@ -28,6 +158,43 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_ElementsHelper : public Iterable<T> {
+#if 1
+            public:
+                typedef typename ElementsIteratorHelper_::Rep       MyIteratorRep_;
+                typedef ElementsIteratorHelperContext_      MyDataBLOB;
+
+                struct MyIterableRep_ : IterableOverIteratorHelper<T, MyDataBLOB, MyIteratorRep_>::_HelperIterableRep {
+                    DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                    MyIterableRep_ (const ElementsIteratorHelperContext_& context)
+                        : _HelperIterableRep (context)
+                    {
+                    }
+                    virtual size_t  GetLength () const override
+                    {
+                        size_t  n = 0;
+                        for (Iterator<TallyEntry<T>> i = _fDataBlob.fIterateOverTally->MakeIterator (); not i.Done (); ++i) {
+                            n += i->fCount;
+                        }
+                        return n;
+                    }
+                    virtual bool    IsEmpty () const override
+                    {
+                        return _fDataBlob.fIterateOverTally->IsEmpty ();
+                    }
+                    virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                    {
+                        return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+                    }
+                };
+
+            public:
+                _ElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator ()))))
+                {
+                }
+#else
+
+
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
@@ -146,6 +313,7 @@ namespace   Stroika {
                     : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new AdaptorRep_ (iterateOverTally)))
                 {
                 }
+#endif
             };
 
 
