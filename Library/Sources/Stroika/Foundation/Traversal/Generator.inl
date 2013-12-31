@@ -15,16 +15,21 @@ namespace   Stroika {
 
             namespace Private_ {
 
+                // @todo - I think we can lose fAtEnd and use the fCur.IsMissing/IsPresent()
                 template    <typename T>
                 struct   GenItWrapper_ : Iterator<T>::IRep  {
                     function<Memory::Optional<T>()> fFun_;
                     Memory::Optional<T> fCur_;
-                    bool fAtEnd_;
+                    bool                fAtEnd_;
                     GenItWrapper_ (function<Memory::Optional<T>()> f)
                         : fFun_ (f)
                         , fCur_ ()
                         , fAtEnd_ (false)
                     {
+                        fCur_   =   fFun_ ();
+                        if (fCur_.IsMissing ()) {
+                            fAtEnd_ = true;
+                        }
                     }
                     virtual void    More (Memory::Optional<T>* result, bool advance) override
                     {
@@ -41,6 +46,7 @@ namespace   Stroika {
                             }
                         }
                         if (not fAtEnd_) {
+                            Assert (fCur_.IsPresent ());
                             *result = fCur_;
                         }
                     }
@@ -57,52 +63,6 @@ namespace   Stroika {
                         return shared_ptr<typename Iterator<T>::IRep> (new GenItWrapper_ (*this));
                     }
                 };
-
-#if 0
-                template    <typename T>
-                struct   MyIteratableRep_ : Iterable<T>::_IRep  {
-                    function<Memory::Optional<T>()> fFun_;
-                    MyIteratableRep_ (function<Memory::Optional<T>()> f)
-                        : fFun_ (f)
-                    {
-                    }
-                    virtual typename Iterable<T>::_SharedPtrIRep      Clone () const
-                    {
-                        return typename Iterable<T>::_SharedPtrIRep(new GenItWrapper_<T> (fFun_));
-                    }
-                    virtual Iterator<T>         MakeIterator () const
-                    {
-                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new GenItWrapper_<T> (fFun_)));
-                    }
-                    virtual size_t              GetLength () const
-                    {
-                        typedef typename TRAITS::SignedDifferenceType    SignedDifferenceType;
-                        ///
-                        /// not a good idea, but the best we can do is iterate
-                        size_t  n = 0;
-                        for (auto i = begin (); i != end (); ++i) {
-                            n++;
-                        }
-                        return n;
-                    }
-                    virtual bool                IsEmpty () const
-                    {
-                        for (auto i = begin (); i != end (); ++i) {
-                            return false;
-                        }
-                        return true;
-                    }
-                    virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
-                    {
-                        this->_Apply (doToElement);
-                    }
-                    virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
-                    {
-                        return this->_ApplyUntilTrue (doToElement);
-                    }
-                };
-#endif
-
 
             }
 
@@ -121,7 +81,6 @@ namespace   Stroika {
             template    <typename T>
             Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext)
             {
-#if 1
                 struct  MyIterable_ : Iterable<T> {
                     typedef function<Memory::Optional<T>()>         MyContextData_;
                     typedef typename Private_::GenItWrapper_<T>     MyIteratorRep_;
@@ -142,10 +101,7 @@ namespace   Stroika {
                     {
                     }
                 };
-                return MyIterable_<T> (getNext);
-#else
-                return Iterable<T> (new Private_::MyIteratableRep_<T> (getNext));
-#endif
+                return MyIterable_ (getNext);
             }
 
 

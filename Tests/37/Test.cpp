@@ -330,8 +330,7 @@ namespace {
         {
             constexpr int kMin = 1;
             constexpr int kMax = 10;
-            typedef shared_ptr<int> Context_;
-            Context_ myContext = shared_ptr<int> (new int (kMin - 1));
+            auto myContext = shared_ptr<int> (new int (kMin - 1));
             auto getNext = [myContext] () -> Memory::Optional<int> {
                 (*myContext)++;
                 if (*myContext > 10)
@@ -342,18 +341,18 @@ namespace {
             };
 
             int sum = 0;
-#if 0
             // not working yet.
             for (auto i : CreateGenerator<int> (getNext)) {
                 VerifyTestResult (1 <= i and i <= 10);
                 sum += i;
             }
             VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
-#endif
         }
 
     }
 }
+
+
 
 
 namespace   {
