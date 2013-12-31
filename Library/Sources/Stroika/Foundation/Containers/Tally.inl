@@ -36,7 +36,7 @@ namespace   Stroika {
                 public:
                     virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
                     {
-                        return _SharedPtrIRep (new _HelperIterableRep (_fDataBlob));
+                        return typename Iterable<T>::_SharedPtrIRep (new _HelperIterableRep (_fDataBlob));
                     }
                     virtual Iterator<T>                             MakeIterator () const override
                     {
@@ -56,7 +56,7 @@ namespace   Stroika {
                     }
                     virtual void                                    Apply (typename _HelperIterableRep::_APPLY_ARGTYPE doToElement) const override
                     {
-                        return this->_Apply (doToElement);
+                        this->_Apply (doToElement);
                     }
                     virtual Iterator<T>                             ApplyUntilTrue (typename _HelperIterableRep::_APPLYUNTIL_ARGTYPE doToElement) const override
                     {
@@ -302,7 +302,7 @@ namespace   Stroika {
                     }
                     virtual void                                    Apply (typename AdaptorRep_::_APPLY_ARGTYPE doToElement) const override
                     {
-                        return this->_Apply (doToElement);
+                        this->_Apply (doToElement);
                     }
                     virtual Iterator<T>                             ApplyUntilTrue (typename AdaptorRep_::_APPLYUNTIL_ARGTYPE doToElement) const override
                     {
@@ -397,7 +397,7 @@ namespace   Stroika {
                     }
                     virtual void                                    Apply (typename AdaptorRep_::_APPLY_ARGTYPE doToElement) const override
                     {
-                        return this->_Apply (doToElement);
+                        this->_Apply (doToElement);
                     }
                     virtual Iterator<T>                             ApplyUntilTrue (typename AdaptorRep_::_APPLYUNTIL_ARGTYPE doToElement) const override
                     {
