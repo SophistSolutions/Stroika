@@ -50,6 +50,26 @@ namespace   Stroika {
             /**
              *  Note - if you need to maintain context for the iterator (typically yes) - bind it into the
              *  std::function lambda closer (with smart pointers).
+             *
+             *  EXAMPLE:
+             *      constexpr int kMin = 1;
+             *      constexpr int kMax = 10;
+             *      auto myContext = shared_ptr<int> (new int (kMin - 1));
+             *      auto getNext = [myContext] () -> Memory::Optional<int> {
+             *          (*myContext)++;
+             *          if (*myContext > 10)
+             *          {
+             *              return Memory::Optional<int> ();
+             *          }
+             *          return *myContext;
+             *      };
+             *
+             *      int sum = 0;
+             *      for (auto i : CreateGenerator<int> (getNext)) {
+             *          VerifyTestResult (1 <= i and i <= 10);
+             *          sum += i;
+             *      }
+             *      VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
              */
             template    <typename T>
             Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext);

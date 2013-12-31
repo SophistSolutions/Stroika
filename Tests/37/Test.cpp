@@ -341,7 +341,6 @@ namespace {
             };
 
             int sum = 0;
-            // not working yet.
             for (auto i : CreateGenerator<int> (getNext)) {
                 VerifyTestResult (1 <= i and i <= 10);
                 sum += i;
