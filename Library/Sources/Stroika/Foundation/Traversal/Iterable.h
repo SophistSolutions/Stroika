@@ -87,7 +87,7 @@ namespace   Stroika {
              *  *Design Note*:
              *      Why does Iterable<T> contain a GetLength () method?
              *
-             *          o   It’s always well defined what GetLength() means (what you would get if you called
+             *          o   Itâ€™s always well defined what GetLength() means (what you would get if you called
              *              MakeIterable() and iterated a bunch of times til the end).
              *
              *          o   Its almost always (and trivial) to perform that computation more efficiently than the
@@ -97,7 +97,7 @@ namespace   Stroika {
              *          an Iterable<T>, if it was defined as a method, you can access the trivial implemeantion,
              *          and if it was not defined, you would be forced into the costly implementation.
              *
-             *      Adding GetLength () adds no conceptual cost – because its already so well and clearly defined
+             *      Adding GetLength () adds no conceptual cost â€“ because its already so well and clearly defined
              *      in terms of its basic operation (iteration). And it provides value (maybe just modest value).
              *
              *  *Design Note*:
@@ -123,6 +123,18 @@ namespace   Stroika {
              *      so ??? think through - what this implies- but probably soemthing about not
              *      threading stuff and ???
              *
+             *  *Important Design Note*:
+             *      The Lifetime of Iterator<T> objects created by an Iterable<T> instance must always be less
+             *      than the creating Iterable's lifetime.
+             *
+             *      This may not be enforced by implementations (but generally will be in debug builds). But
+             *      it is a rule!
+             *
+             *      The reason for this is that the underlying memory referenced by the iterator may be going away.
+             *      We could avoid this by adding a shared_ptr<> reference count into each iterator, but that
+             *      would make iterator objects significantly more expensive, and with little apparent value added.
+             *      Similarly for weak_ptr<> references.
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
@@ -143,8 +155,7 @@ namespace   Stroika {
 //tmphack...--LGP 2013-12-30
 // only needed for gcc
             public:
-#endif
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+#endif                typedef shared_ptr<_IRep>   _SharedPtrIRep;
 
             public:
                 /**
