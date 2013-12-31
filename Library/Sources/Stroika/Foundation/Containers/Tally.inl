@@ -22,22 +22,56 @@ namespace   Stroika {
 
 
             // HELPER TO MOVE ELSEWHERE
-            template    <typename T, typename DATA_BLOB, typename NEW_ITERATOR_REP_TYPE>
-            class   IterableOverIteratorHelper : public Iterable<T> {
+            /**
+             *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
+             *
+             *  EXAMPLE:
+             *
+             *  INCOMPLETE!!!
+             *      USE GENERATOR FOR EXAMPLE - CUZ IT MAKES EASY TODO ITERATOR.
+             *
+                    template    <typename T>
+                    class   MyIterableTest : public Iterable<T> {
+                    public:
+                        typedef ACTUAL_ITERATOR_REP   MyIteratorRep_;
+                        struct MyIterableRep_ : IterableFromIteratorHelper<T, MyIteratorRep_>::_Rep {
+                            using   inherited = typename IterableFromIteratorHelper<T, MyIteratorRep_>::_Rep;
+                            DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                            MyIterableRep_ ()
+                                : inherited ()
+                            {
+                            }
+                            virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                            {
+                                return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+                            }
+                        };
+                    public:
+                        MyIterableTest ()
+                            : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ ()))
+                        {
+                        }
+                    };
+
+             */
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB = void>
+            class   IterableFromIteratorHelper : public Iterable<T> {
             public:
-                class   _HelperIterableRep : public Iterable<T>::_IRep {
+                class   _Rep : public Iterable<T>::_IRep {
                 protected:
                     DATA_BLOB   _fDataBlob;
                 protected:
-                    _HelperIterableRep (const DATA_BLOB& iterateOverTally)
-                        : _fDataBlob (iterateOverTally)
+                    _Rep (const DATA_BLOB& dataBLOB)
+                        : _fDataBlob (dataBLOB)
                     {
                     }
                 public:
+#if 0
                     virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
                     {
-                        return typename Iterable<T>::_SharedPtrIRep (new _HelperIterableRep (_fDataBlob));
+                        return typename Iterable<T>::_SharedPtrIRep (new _Rep (*this));
                     }
+#endif
                     virtual Iterator<T>                             MakeIterator () const override
                     {
                         return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob)));
@@ -54,21 +88,24 @@ namespace   Stroika {
                     {
                         return GetLength () == 0;
                     }
-                    virtual void                                    Apply (typename _HelperIterableRep::_APPLY_ARGTYPE doToElement) const override
+                    virtual void                                    Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override
                     {
                         this->_Apply (doToElement);
                     }
-                    virtual Iterator<T>                             ApplyUntilTrue (typename _HelperIterableRep::_APPLYUNTIL_ARGTYPE doToElement) const override
+                    virtual Iterator<T>                             ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override
                     {
                         return this->_ApplyUntilTrue (doToElement);
                     }
                 };
             public:
-                IterableOverIteratorHelper (const DATA_BLOB& dataBlob)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new _HelperIterableRep (dataBlob)))
+                IterableFromIteratorHelper (const DATA_BLOB& dataBlob)
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new _Rep (dataBlob)))
                 {
                 }
             };
+
+
+
 
 
 
@@ -158,13 +195,11 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep::_ElementsHelper : public Iterable<T> {
-#if 1
             public:
-                typedef typename ElementsIteratorHelper_::Rep       MyIteratorRep_;
-                typedef ElementsIteratorHelperContext_      MyDataBLOB;
-
-                struct MyIterableRep_ : IterableOverIteratorHelper<T, MyDataBLOB, MyIteratorRep_>::_HelperIterableRep {
-                    using   inherited = typename IterableOverIteratorHelper<T, MyDataBLOB, MyIteratorRep_>::_HelperIterableRep;
+                typedef typename ElementsIteratorHelper_::Rep   MyIteratorRep_;
+                typedef ElementsIteratorHelperContext_          MyDataBLOB;
+                struct MyIterableRep_ : IterableFromIteratorHelper<T, MyIteratorRep_, MyDataBLOB>::_Rep {
+                    using   inherited = typename IterableFromIteratorHelper<T, MyIteratorRep_, MyDataBLOB>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                         : inherited (context)
@@ -187,134 +222,11 @@ namespace   Stroika {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
                     }
                 };
-
             public:
                 _ElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
                     : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator ()))))
                 {
                 }
-#else
-
-
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
-                typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;         // hack for gcc/windoze compiler quirks - lose when I can ....
-                class   AdaptorRep_ : public Iterable<T>::_IRep {
-                private:
-                    typename    Iterable<TallyEntry<T>>::_SharedPtrIRep   fTallyRep_;
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION(AdaptorRep_);
-                public:
-                    AdaptorRep_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
-                        : fTallyRep_ (iterateOverTally)
-                    {
-                    }
-                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
-                    {
-                        return _SharedPtrIRep (new AdaptorRep_ (fTallyRep_));
-                    }
-                    virtual Iterator<T>                             MakeIterator () const override
-                    {
-                        /*
-                         *  Note that the constructed iterator CAN (and frequently does) live longer than the containing AdaptorRep_, which is why
-                         *  it passes in the fTallyRep_ - so it can keep the object alive.
-                         */
-                        struct  MyIterator_ : public Iterator<T> {
-                            struct  Rep : public Iterator<T>::IRep {
-                                typedef typename    Iterator<T>::IRep   inherited;
-                                DECLARE_USE_BLOCK_ALLOCATION(Rep);
-                                Rep (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
-                                    : inherited ()
-                                    , fIterateOverTallyKeepalive_ (iterateOverTally)
-                                    , fDelegateTo_ (delegateTo)
-                                    , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
-                                    , fSaved2Return_ (saved2Return)
-                                {
-                                    if (not fDelegateTo_.Done ()) {
-                                        fSaved2Return_ = fDelegateTo_->fItem;
-                                        if (fSaved2Return_.IsPresent ()) {
-                                            fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
-                                        }
-                                    }
-                                }
-                                virtual void    More (Memory::Optional<T>* result, bool advance) override
-                                {
-                                    RequireNotNull (result);
-                                    if (fCountMoreTimesToGoBeforeAdvance > 0) {
-                                        *result = fSaved2Return_;
-                                        if (advance) {
-                                            fCountMoreTimesToGoBeforeAdvance--;
-                                        }
-                                    }
-                                    else {
-                                        bool done = fDelegateTo_.Done ();
-                                        if (not done and advance) {
-                                            fDelegateTo_++;
-                                            done = fDelegateTo_.Done ();
-                                        }
-                                        if (done) {
-                                            result->clear ();
-                                        }
-                                        else {
-                                            *result = fDelegateTo_->fItem;
-                                        }
-                                        if (advance) {
-                                            fSaved2Return_ = *result;
-                                            if (fSaved2Return_.IsPresent ()) {
-                                                fCountMoreTimesToGoBeforeAdvance = fDelegateTo_->fCount - 1;
-                                            }
-                                        }
-                                    }
-                                }
-                                virtual typename Iterator<T>::SharedIRepPtr Clone () const override
-                                {
-                                    return typename Iterator<T>::SharedIRepPtr (new Rep (fIterateOverTallyKeepalive_, Iterator<TallyEntry<T>> (fDelegateTo_), fCountMoreTimesToGoBeforeAdvance, fSaved2Return_));
-                                }
-                                virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override
-                                {
-                                    AssertNotImplemented ();
-                                    return false;
-                                }
-                                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    fIterateOverTallyKeepalive_;    // subtle - hang onto in case container goes out of scope so not destroyed
-                                Iterator<TallyEntry<T>>                             fDelegateTo_;
-                                size_t                                              fCountMoreTimesToGoBeforeAdvance;
-                                Memory::Optional<T>                                 fSaved2Return_;
-                            };
-                            MyIterator_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo)
-                                : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (iterateOverTally, delegateTo)))
-                            {
-                            }
-                        };
-                        return MyIterator_ (fTallyRep_, fTallyRep_->MakeIterator ());
-                    }
-                    virtual size_t                                  GetLength () const override
-                    {
-                        size_t  n = 0;
-                        for (Iterator<TallyEntry<T>> i = fTallyRep_->MakeIterator (); not i.Done (); ++i) {
-                            n += i->fCount;
-                        }
-                        return n;
-                    }
-                    virtual bool                                    IsEmpty () const override
-                    {
-                        return fTallyRep_->IsEmpty ();
-                    }
-                    virtual void                                    Apply (typename AdaptorRep_::_APPLY_ARGTYPE doToElement) const override
-                    {
-                        this->_Apply (doToElement);
-                    }
-                    virtual Iterator<T>                             ApplyUntilTrue (typename AdaptorRep_::_APPLYUNTIL_ARGTYPE doToElement) const override
-                    {
-                        return this->_ApplyUntilTrue (doToElement);
-                    }
-                };
-            public:
-                _ElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new AdaptorRep_ (iterateOverTally)))
-                {
-                }
-#endif
             };
 
 
