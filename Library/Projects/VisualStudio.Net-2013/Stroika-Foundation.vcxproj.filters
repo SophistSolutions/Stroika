@@ -1491,6 +1491,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.h">
       <Filter>Sources\Containers\Concrete</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.h">
+      <Filter>Sources\Traversal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2237,6 +2240,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Bijection_LinkedList.inl">
       <Filter>Sources\Containers\Concrete</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Traversal\IterableFromIterator.inl">
+      <Filter>Sources\Traversal</Filter>
     </None>
   </ItemGroup>
 </Project>

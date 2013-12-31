@@ -11,6 +11,7 @@
  */
 
 #include    "../Debug/Assertions.h"
+#include    "../Traversal/IterableFromIterator.h"
 #include    "Tally.h"
 
 #include    "Concrete/Tally_Factory.h"
@@ -19,94 +20,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Containers {
-
-
-            // HELPER TO MOVE ELSEWHERE
-            /**
-             *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
-             *
-             *  EXAMPLE:
-             *
-             *  INCOMPLETE!!!
-             *      USE GENERATOR FOR EXAMPLE - CUZ IT MAKES EASY TODO ITERATOR.
-             *
-                    template    <typename T>
-                    class   MyIterableTest : public Iterable<T> {
-                    public:
-                        typedef ACTUAL_ITERATOR_REP   MyIteratorRep_;
-                        struct MyIterableRep_ : IterableFromIteratorHelper<T, MyIteratorRep_>::_Rep {
-                            using   inherited = typename IterableFromIteratorHelper<T, MyIteratorRep_>::_Rep;
-                            DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
-                            MyIterableRep_ ()
-                                : inherited ()
-                            {
-                            }
-                            virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
-                            {
-                                return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
-                            }
-                        };
-                    public:
-                        MyIterableTest ()
-                            : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ ()))
-                        {
-                        }
-                    };
-
-             */
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB = void>
-            class   IterableFromIteratorHelper : public Iterable<T> {
-            public:
-                class   _Rep : public Iterable<T>::_IRep {
-                protected:
-                    DATA_BLOB   _fDataBlob;
-                protected:
-                    _Rep (const DATA_BLOB& dataBLOB)
-                        : _fDataBlob (dataBLOB)
-                    {
-                    }
-                public:
-#if 0
-                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override
-                    {
-                        return typename Iterable<T>::_SharedPtrIRep (new _Rep (*this));
-                    }
-#endif
-                    virtual Iterator<T>                             MakeIterator () const override
-                    {
-                        return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob)));
-                    }
-                    virtual size_t                                  GetLength () const override
-                    {
-                        size_t  n = 0;
-                        for (auto i = MakeIterator (); not i.Done (); ++i) {
-                            n++;
-                        }
-                        return n;
-                    }
-                    virtual bool                                    IsEmpty () const override
-                    {
-                        return GetLength () == 0;
-                    }
-                    virtual void                                    Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override
-                    {
-                        this->_Apply (doToElement);
-                    }
-                    virtual Iterator<T>                             ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override
-                    {
-                        return this->_ApplyUntilTrue (doToElement);
-                    }
-                };
-            public:
-                IterableFromIteratorHelper (const DATA_BLOB& dataBlob)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new _Rep (dataBlob)))
-                {
-                }
-            };
-
-
-
-
 
 
             template    <typename T, typename TRAITS>
@@ -198,8 +111,8 @@ namespace   Stroika {
             public:
                 typedef typename ElementsIteratorHelper_::Rep   MyIteratorRep_;
                 typedef ElementsIteratorHelperContext_          MyDataBLOB;
-                struct MyIterableRep_ : IterableFromIteratorHelper<T, MyIteratorRep_, MyDataBLOB>::_Rep {
-                    using   inherited = typename IterableFromIteratorHelper<T, MyIteratorRep_, MyDataBLOB>::_Rep;
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep {
+                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                         : inherited (context)
