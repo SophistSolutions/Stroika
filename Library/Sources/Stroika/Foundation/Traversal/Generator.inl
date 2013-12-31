@@ -5,7 +5,7 @@
 #define _Stroika_Foundation_Traversal_Generator_inl_
 
 #include    "../Debug/Assertions.h"
-
+#include    "IterableFromIterator.h"
 
 
 namespace   Stroika {
@@ -31,16 +31,16 @@ namespace   Stroika {
                         RequireNotNull (result);
                         result->clear ();
                         if (advance) {
-                            Require (not fAtEnd);
+                            Require (not fAtEnd_);
                             Memory::Optional<T> n   =   fFun_ ();
-                            if (n.empty ()) {
+                            if (n.IsMissing ()) {
                                 fAtEnd_ = true;
                             }
                             else {
                                 fCur_ = n;
                             }
                         }
-                        if (not fAtEnd) {
+                        if (not fAtEnd_) {
                             *result = fCur_;
                         }
                     }
@@ -49,7 +49,7 @@ namespace   Stroika {
                         RequireNotNull (rhs);
                         // No way to tell equality (some must rethink definition in Iterator<T>::Equals()!!! @todo
                         AssertMember (rhs, GenItWrapper_);
-                        GenItWrapper_&  rrhs = *dynamic_cast<GenItWrapper_*> (rhs);
+                        const GenItWrapper_&  rrhs = *dynamic_cast<const GenItWrapper_*> (rhs);
                         return fAtEnd_ == rrhs.fAtEnd_;
                     }
                     virtual shared_ptr<typename Iterator<T>::IRep>    Clone () const override
@@ -58,7 +58,7 @@ namespace   Stroika {
                     }
                 };
 
-
+#if 0
                 template    <typename T>
                 struct   MyIteratableRep_ : Iterable<T>::_IRep  {
                     function<Memory::Optional<T>()> fFun_;
@@ -101,6 +101,7 @@ namespace   Stroika {
                         return this->_ApplyUntilTrue (doToElement);
                     }
                 };
+#endif
 
 
             }
@@ -120,7 +121,31 @@ namespace   Stroika {
             template    <typename T>
             Iterable<T> CreateGenerator (const function<Memory::Optional<T>()>& getNext)
             {
+#if 1
+                struct  MyIterable_ : Iterable<T> {
+                    typedef function<Memory::Optional<T>()>         MyContextData_;
+                    typedef typename Private_::GenItWrapper_<T>     MyIteratorRep_;
+                    struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
+                        using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
+                        DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+                        MyIterableRep_ (const MyContextData_& context)
+                            : inherited (context)
+                        {
+                        }
+                        virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                        {
+                            return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+                        }
+                    };
+                    MyIterable_ (const function<Memory::Optional<T>()>& getNext)
+                        : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (getNext)))
+                    {
+                    }
+                };
+                return MyIterable_<T> (getNext);
+#else
                 return Iterable<T> (new Private_::MyIteratableRep_<T> (getNext));
+#endif
             }
 
 

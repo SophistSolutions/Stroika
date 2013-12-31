@@ -24,8 +24,8 @@ namespace   Stroika {
 
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelperContext_ {
-                ElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
-                    : fTally (iterateOverTally)
+                ElementsIteratorHelperContext_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally, const Iterator<TallyEntry<T>>& delegateTo, size_t countMoreTimesToGoBeforeAdvance = 0, Memory::Optional<T> saved2Return = Memory::Optional<T> ())
+                    : fTally (tally)
                     , fTallyIterator (delegateTo)
                     , fCountMoreTimesToGoBeforeAdvance (countMoreTimesToGoBeforeAdvance)
                     , fSaved2Return (saved2Return)
@@ -107,12 +107,11 @@ namespace   Stroika {
              *  depending on its count.
              */
             template    <typename T, typename TRAITS>
-            class   Tally<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
-            public:
+            struct  Tally<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
                 typedef typename ElementsIteratorHelper_::Rep   MyIteratorRep_;
-                typedef ElementsIteratorHelperContext_          MyDataBLOB;
-                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep {
-                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep;
+                typedef ElementsIteratorHelperContext_          MyDataBLOB_;
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
                         : inherited (context)
@@ -135,7 +134,6 @@ namespace   Stroika {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
                     }
                 };
-            public:
                 _ElementsIterableHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
                     : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator ()))))
                 {
@@ -185,7 +183,7 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
-                    virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override
+                    virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
                         AssertNotImplemented ();
                         return false;
@@ -203,14 +201,11 @@ namespace   Stroika {
              *  to an iterator over unique individual items.
              */
             template    <typename T, typename TRAITS>
-            class   Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-            public:
-#endif
+            struct  Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
                 typedef typename UniqueElementsIteratorHelper_::Rep   MyIteratorRep_;
-                typedef UniqueElementsIteratorHelperContext_          MyDataBLOB;
-                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep {
-                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB>::_Rep;
+                typedef UniqueElementsIteratorHelperContext_          MyDataBLOB_;
+                struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
+                    using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const UniqueElementsIteratorHelperContext_& context)
                         : inherited (context)
@@ -229,7 +224,6 @@ namespace   Stroika {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
                     }
                 };
-            public:
                 _UniqueElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)
                     : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator ()))))
                 {

@@ -11,6 +11,7 @@
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Traversal/DiscreteRange.h"
 #include    "Stroika/Foundation/Traversal/FunctionalApplication.h"
+#include    "Stroika/Foundation/Traversal/Generator.h"
 #include    "Stroika/Foundation/Traversal/Range.h"
 
 #include    "../TestHarness/TestHarness.h"
@@ -323,6 +324,38 @@ namespace {
 
 
 
+namespace {
+    void    Test9_Generators_ ()
+    {
+        {
+            constexpr int kMin = 1;
+            constexpr int kMax = 10;
+            typedef shared_ptr<int> Context_;
+            Context_ myContext = shared_ptr<int> (new int (kMin - 1));
+            auto getNext = [myContext] () -> Memory::Optional<int> {
+                (*myContext)++;
+                if (*myContext > 10)
+                {
+                    return Memory::Optional<int> ();
+                }
+                return *myContext;
+            };
+
+            int sum = 0;
+#if 0
+            // not working yet.
+            for (auto i : CreateGenerator<int> (getNext)) {
+                VerifyTestResult (1 <= i and i <= 10);
+                sum += i;
+            }
+            VerifyTestResult (sum == (kMax - kMin + 1) * (kMax + kMin) / 2);
+#endif
+        }
+
+    }
+}
+
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -334,8 +367,8 @@ namespace   {
         Test5_ReduceTest_ ();
         Test6_FunctionApplicationContext_ ();
         Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
-
         Test8_DiscreteRangeTestFromDocs_ ();
+        Test9_Generators_ ();
     }
 }
 

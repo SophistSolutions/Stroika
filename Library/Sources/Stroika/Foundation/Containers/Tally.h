@@ -232,17 +232,18 @@ namespace   Stroika {
                  *      for (T i : t.UniqueElements ()) {
                  *      }
                  *
-                 *  Elements () makes no guarantess about whether or not modifications to the underlying Tally<> will
-                 *  appear in the UniqueElements() Iterable<T>.
+                 *  UniqueElements () makes no guarantess about whether or not modifications to the underlying Tally<>
+                 *  will appear in the UniqueElements() Iterable<T>.
                  */
                 nonvirtual  Iterable<T>   UniqueElements () const;
 
             public:
                 /*
-                 *  Two Tally are considered equal if they contain the same elements (by comparing them with operator==) with the same count.
-                 *  In short, they are equal if TallyOf() each item in the LHS equals the TallyOf() the same item in the RHS.
+                 *  Two Tally are considered equal if they contain the same elements (by comparing them with operator==)
+                 *  with the same count. In short, they are equal if TallyOf() each item in the LHS equals the TallyOf()
+                 *  the same item in the RHS.
                  *
-                 *  Equals is commutative().
+                 *  Equals is commutative.
                  *
                  *  Note - this computation MAYBE very expensive, and not optimized (maybe do better in a future release - see TODO).
                  */
@@ -320,7 +321,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   _ElementsIterableHelper;
+                struct  _ElementsIterableHelper;
 
 
             private:
@@ -334,7 +335,7 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   _UniqueElementsHelper;
+                struct  _UniqueElementsHelper;
             };
 
 
