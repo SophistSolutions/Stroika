@@ -310,8 +310,10 @@ namespace   Stroika {
                 nonvirtual Iterable<T>  _UniqueElements_Reference_Implementation (const _SharedPtrIRep& rep) const;
 
             private:
-            public:
                 struct  ElementsIteratorHelperContext_;
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 struct  ElementsIteratorHelper_;
 
             protected:
@@ -322,8 +324,10 @@ namespace   Stroika {
 
 
             private:
-            public:
                 struct  UniqueElementsIteratorHelperContext_;
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
                 struct  UniqueElementsIteratorHelper_;
 
             protected:
