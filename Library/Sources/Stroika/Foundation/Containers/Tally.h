@@ -313,13 +313,23 @@ namespace   Stroika {
             public:
                 struct  ElementsIteratorHelperContext_;
                 struct  ElementsIteratorHelper_;
+
+            protected:
+#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
+            public:
+#endif
+                class   _ElementsIterableHelper;
+
+
+            private:
+            public:
+                struct  UniqueElementsIteratorHelperContext_;
                 struct  UniqueElementsIteratorHelper_;
 
             protected:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
             public:
 #endif
-                class   _ElementsHelper;
                 class   _UniqueElementsHelper;
             };
 
