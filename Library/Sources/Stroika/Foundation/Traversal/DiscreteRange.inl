@@ -132,7 +132,7 @@ namespace   Stroika {
                 }
                 virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
                 {
-                    return this->_Apply (doToElement);
+                    this->_Apply (doToElement);
                 }
                 virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
                 {
