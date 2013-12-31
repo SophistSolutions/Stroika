@@ -164,22 +164,23 @@ namespace   Stroika {
                 typedef ElementsIteratorHelperContext_      MyDataBLOB;
 
                 struct MyIterableRep_ : IterableOverIteratorHelper<T, MyDataBLOB, MyIteratorRep_>::_HelperIterableRep {
+                    using   inherited = typename IterableOverIteratorHelper<T, MyDataBLOB, MyIteratorRep_>::_HelperIterableRep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                     MyIterableRep_ (const ElementsIteratorHelperContext_& context)
-                        : _HelperIterableRep (context)
+                        : inherited (context)
                     {
                     }
                     virtual size_t  GetLength () const override
                     {
                         size_t  n = 0;
-                        for (Iterator<TallyEntry<T>> i = _fDataBlob.fIterateOverTally->MakeIterator (); not i.Done (); ++i) {
+                        for (Iterator<TallyEntry<T>> i = this->_fDataBlob.fIterateOverTally->MakeIterator (); not i.Done (); ++i) {
                             n += i->fCount;
                         }
                         return n;
                     }
                     virtual bool    IsEmpty () const override
                     {
-                        return _fDataBlob.fIterateOverTally->IsEmpty ();
+                        return this->_fDataBlob.fIterateOverTally->IsEmpty ();
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
                     {
