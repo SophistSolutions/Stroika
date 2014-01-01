@@ -365,7 +365,7 @@ namespace {
             for (auto i : MakeIterableFromIterator (iter)) {
                 sum += i;
             }
-            VerifyTestResult (sum = 25);
+            VerifyTestResult (sum == 25);
         }
 
     }
