@@ -6,9 +6,6 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <functional>
-
-#include    "../Common/Compare.h"
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
@@ -40,29 +37,29 @@ namespace   Stroika {
              *  INCOMPLETE!!!
              *      USE GENERATOR FOR EXAMPLE - CUZ IT MAKES EASY TODO ITERATOR.
              *
-                    template    <typename T>
-                    class   MyIterableTest : public Iterable<T> {
-                    public:
-                        typedef ACTUAL_ITERATOR_REP   MyIteratorRep_;
-                        struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_>::_Rep {
-                            using   inherited = typename IterableFromIterator<T, MyIteratorRep_>::_Rep;
-                            DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
-                            MyIterableRep_ ()
-                                : inherited ()
-                            {
-                            }
-                            virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
-                            {
-                                return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
-                            }
-                        };
-                    public:
-                        MyIterableTest ()
-                            : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ ()))
-                        {
-                        }
-                    };
-
+             *      template    <typename T>
+             *      class   MyIterableTest : public Iterable<T> {
+             *      public:
+             *          typedef ACTUAL_ITERATOR_REP   MyIteratorRep_;
+             *          struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_>::_Rep {
+             *              using   inherited = typename IterableFromIterator<T, MyIteratorRep_>::_Rep;
+             *              DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
+             *              MyIterableRep_ ()
+             *                  : inherited ()
+             *              {
+             *              }
+             *              virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+             *              {
+             *                  return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+             *              }
+             *          };
+             *      public:
+             *          MyIterableTest ()
+             *              : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ ()))
+             *          {
+             *          }
+             *      };
+             *
              *
              *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will
              *  want to override to provide a more efficeint IsEmpty () and GetLength () implementation.
