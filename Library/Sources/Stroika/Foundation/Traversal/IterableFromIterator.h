@@ -17,19 +17,6 @@
  *  \file
  *
  *  TODO:
- *  @todo   Traversal::mkIterable ()
- *
- *          Consider having Iterator<T> have begin(), end() methods that do magic so
- *          you can also directly use an intertor in
- *              for (auto i : soemthingThatReturnsIterator()) {
- *              }
- *          I think easy and useful, and biggest concern is the potential for subtle
- *          overload confusion generation.
- *
- *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
- *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
- *          all iteration calls to that iterator!
- *
  *
  */
 
@@ -44,29 +31,25 @@ namespace   Stroika {
              *  Helper class to make it a little easier to wrap an Iterable<> around an Iterator class.
              *
              *  EXAMPLE:
-             *
-             *  INCOMPLETE!!!
-             *      USE GENERATOR FOR EXAMPLE - CUZ IT MAKES EASY TODO ITERATOR.
-             *
              *      template    <typename T>
-             *      class   MyIterableTest : public Iterable<T> {
-             *      public:
-             *          typedef ACTUAL_ITERATOR_REP   MyIteratorRep_;
-             *          struct MyIterableRep_ : IterableFromIterator<T, MyIteratorRep_>::_Rep {
-             *              using   inherited = typename IterableFromIterator<T, MyIteratorRep_>::_Rep;
-             *              DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
-             *              MyIterableRep_ ()
-             *                  : inherited ()
+             *      struct   MyIterable_ : public Iterable<T> {
+             *          struct   Rep : public IterableFromIterator<T>::_Rep {
+             *              Iterator<T>   fOriginalIterator;
+             *              Rep (const Iterator<T>& originalIterator)
+             *                  : fOriginalIterator (originalIterator)
              *              {
+             *              }
+             *              virtual Iterator<T>     MakeIterator () const override
+             *              {
+             *                  return fOriginalIterator;
              *              }
              *              virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
              *              {
-             *                  return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+             *                  return typename Iterable<T>::_SharedPtrIRep (new Rep (*this));
              *              }
              *          };
-             *      public:
-             *          MyIterableTest ()
-             *              : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ ()))
+             *          MyIterable_ (const Iterator<T>& originalIterator)
+             *              : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new Rep (originalIterator)))
              *          {
              *          }
              *      };
