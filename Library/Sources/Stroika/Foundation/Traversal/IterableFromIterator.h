@@ -58,6 +58,8 @@ namespace   Stroika {
              *      Note _Rep is an abstract class, and you MUST provide your own Clone () method, and often will
              *  want to override to provide a more efficeint IsEmpty () and GetLength () implementation.
              *
+             *  @see MakeIterableFromIterator
+             *
              */
             template    <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename DATA_BLOB = void>
             class   IterableFromIterator : public Iterable<T> {
@@ -107,6 +109,8 @@ namespace   Stroika {
              *  \em Important Note
              *      The original Iterator<T> will have lifetime == the constructed Iterable<> - so be careful - that
              *      the thing the Iterator<T> came from has long enough lifetime!
+             *
+             *  @see IterableFromIterator
              */
             template    <typename   T>
             Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator);
