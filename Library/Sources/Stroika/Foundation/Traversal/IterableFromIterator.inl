@@ -5,13 +5,27 @@
 #define _Stroika_Foundation_Traversal_IterableFromIterator_inl_
 
 #include    "../Debug/Assertions.h"
-
+#include    "DelegatedIterator.h"
 
 
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
 
+
+            namespace  Private_ {
+
+                template    <typename T>
+                struct  IteratorTracker {
+                    shared_ptr<unsigned int> fCountRunning = shared_ptr<unsigned int> (new unsigned int (0));
+
+                    Iterator<T>     MakeDelegatedIterator (const Iterator<T>& sourceIterator)
+                    {
+                        return DelegatedIterator<T, shared_ptr<unsigned int>> (sourceIterator, fCountRunning);
+                    }
+                };
+
+            }
 
             /*
              ********************************************************************************
