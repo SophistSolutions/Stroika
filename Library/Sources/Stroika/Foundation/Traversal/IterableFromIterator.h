@@ -17,8 +17,19 @@
  *  \file
  *
  *  TODO:
- *      @todo   add MakeIterableFromIterator() method - taking iterator (clones it).
- *              search for other todos like  this...
+ *  @todo   Traversal::mkIterable ()
+ *
+ *          Consider having Iterator<T> have begin(), end() methods that do magic so
+ *          you can also directly use an intertor in
+ *              for (auto i : soemthingThatReturnsIterator()) {
+ *              }
+ *          I think easy and useful, and biggest concern is the potential for subtle
+ *          overload confusion generation.
+ *
+ *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
+ *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
+ *          all iteration calls to that iterator!
+ *
  *
  */
 

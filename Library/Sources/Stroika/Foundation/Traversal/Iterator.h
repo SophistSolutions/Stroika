@@ -19,12 +19,6 @@
  *
  *  \file
  *
- *  @todo   CLARIFY (decide on?) the behavior if you lose all references to a container? Does the
- *          iterator remain valid? Does it effectively retain a reference to the contianer?
- *          Or does it instantly go 'empty'?
- *
- *          Not sure it matters much which but we must document this clearly.
- *
  *  @todo   Consider if we want to make the promise currently defined below in Equals()
  *          about iterating two originally equal iterators. The trouble is - this doesn
  *          work with generators!!! -- REVIEW-- LGP 2013-12-30
@@ -40,19 +34,6 @@
  *          But if iterating over output, hard (not impossible) to know you are at the end (length).
  *
  *          Restartable iterators would be one way.
- *
- *  @todo   Traversal::mkIterable ()
- *
- *          Consider having Iterator<T> have begin(), end() methods that do magic so
- *          you can also directly use an intertor in
- *              for (auto i : soemthingThatReturnsIterator()) {
- *              }
- *          I think easy and useful, and biggest concern is the potential for subtle
- *          overload confusion generation.
- *
- *          But PROBABLY NOT!!! - That is what Iterable is for. Instead - just have Traversal::mkIterable(Iterator<T>) - and
- *          then that iterable will be a trivail, short-lived private impl iterable that just indirects
- *          all iteration calls to that iterator!
  *
  *  @todo   See if we can replace Rep_Cloner_ stuff with lambda[] inline in type declaration? See if that
  *          has any negative impacts on performacnce/size etc (test win/gcc). Really more an issue
