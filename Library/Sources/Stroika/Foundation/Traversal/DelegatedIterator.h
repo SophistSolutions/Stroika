@@ -43,6 +43,7 @@ namespace   Stroika {
                     virtual void    More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool    Equals (const IRep* rhs) const override;
                 };
+                DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
             };
             template    <typename T>
             class   DelegatedIterator<T, void> : public Iterator<T> {

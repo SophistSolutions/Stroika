@@ -9,6 +9,7 @@
 #include    "../Configuration/Common.h"
 #include    "../Memory/SharedByValue.h"
 
+#include    "DelegatedIterator.h"
 #include    "Iterator.h"
 
 
@@ -25,6 +26,18 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Traversal {
+
+
+#if qDebug
+            namespace  Private_ {
+                template    <typename T>
+                struct  IteratorTracker {
+                    shared_ptr<unsigned int> fCountRunning = shared_ptr<unsigned int> (new unsigned int (0));
+                    ~IteratorTracker ();
+                    Iterator<T>     MakeDelegatedIterator (const Iterator<T>& sourceIterator);
+                };
+            }
+#endif
 
 
             /**
@@ -67,6 +80,10 @@ namespace   Stroika {
                 class   _Rep : public Iterable<T>::_IRep {
                 protected:
                     DATA_BLOB   _fDataBlob;
+#if     qDebug
+                private:
+                    mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+#endif
                 protected:
                     _Rep (const DATA_BLOB& dataBLOB);
                 public:
@@ -81,6 +98,10 @@ namespace   Stroika {
             class   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+#if     qDebug
+                private:
+                    mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+#endif
                 public:
                     virtual Iterator<T>     MakeIterator () const override;
                     virtual size_t          GetLength () const override;

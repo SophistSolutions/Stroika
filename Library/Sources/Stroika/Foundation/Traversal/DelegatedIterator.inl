@@ -25,23 +25,35 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename EXTRA_DATA>
-            typename    DelegatedIterator<T, EXTRA_DATA>::SharedIRepPtr   DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
+            typename    Iterator<T>::SharedIRepPtr   DelegatedIterator<T, EXTRA_DATA>::Rep::Clone () const
             {
-                return typename DelegatedIterator<T, EXTRA_DATA>::SharedIRepPtr (new Rep (*this));
+                return SharedIRepPtr (new Rep (*this));
             }
             template    <typename T, typename EXTRA_DATA>
             void    DelegatedIterator<T, EXTRA_DATA>::Rep::More (Memory::Optional<T>* result, bool advance)
             {
-                fDelegateTo->More (result, advance);
+                fDelegateTo.GetRep ().More (result, advance);
             }
             template    <typename T, typename EXTRA_DATA>
             bool    DelegatedIterator<T, EXTRA_DATA>::Rep::Equals (const IRep* rhs) const
             {
-                return fDelegateTo->Equals (rhs);
+                return fDelegateTo.GetRep ().Equals (rhs);
             }
             template    <typename T>
             DelegatedIterator<T, void>::Rep::Rep (const Iterator<T>& delegateTo)
                 : fDelegateTo (delegateTo)
+            {
+            }
+
+
+            /*
+             ********************************************************************************
+             *********************** DelegatedIterator<T, EXTRA_DATA> ***********************
+             ********************************************************************************
+             */
+            template    <typename T, typename EXTRA_DATA>
+            DelegatedIterator<T, EXTRA_DATA>::DelegatedIterator (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData)
+                : Iterator<T> (SharedIRepPtr (new Rep (delegateTo, extraData)))
             {
             }
 

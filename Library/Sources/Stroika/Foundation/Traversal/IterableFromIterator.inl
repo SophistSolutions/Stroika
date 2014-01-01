@@ -13,19 +13,21 @@ namespace   Stroika {
         namespace   Traversal {
 
 
+#if     qDebug
             namespace  Private_ {
-
                 template    <typename T>
-                struct  IteratorTracker {
-                    shared_ptr<unsigned int> fCountRunning = shared_ptr<unsigned int> (new unsigned int (0));
-
-                    Iterator<T>     MakeDelegatedIterator (const Iterator<T>& sourceIterator)
-                    {
-                        return DelegatedIterator<T, shared_ptr<unsigned int>> (sourceIterator, fCountRunning);
-                    }
-                };
-
+                IteratorTracker<T>::~IteratorTracker ()
+                {
+                    Assert (*fCountRunning == 0);
+                }
+                template    <typename T>
+                Iterator<T>     IteratorTracker<T>::MakeDelegatedIterator (const Iterator<T>& sourceIterator)
+                {
+                    return DelegatedIterator<T, shared_ptr<unsigned int>> (sourceIterator, fCountRunning);
+                }
             }
+#endif
+
 
             /*
              ********************************************************************************
@@ -35,12 +37,19 @@ namespace   Stroika {
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
             inline  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::_Rep (const DATA_BLOB& dataBLOB)
                 : _fDataBlob (dataBLOB)
+#if     qDebug
+                , fIteratorTracker_ ()
+#endif
             {
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
             Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator () const
             {
+#if     qDebug
+                return fIteratorTracker_.MakeDelegatedIterator (Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob))));
+#else
                 return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob)));
+#endif
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
             size_t     IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::GetLength () const
@@ -112,13 +121,23 @@ namespace   Stroika {
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
                         Iterator<T>   fOriginalIterator;
+#if     qDebug
+                        mutable Private_::IteratorTracker<T>    fIteratorTracker_;
+#endif
                         Rep (const Iterator<T>& originalIterator)
                             : fOriginalIterator (originalIterator)
+#if     qDebug
+                            , fIteratorTracker_ ()
+#endif
                         {
                         }
                         virtual Iterator<T>     MakeIterator () const override
                         {
+#if     qDebug
+                            return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);
+#else
                             return fOriginalIterator;
+#endif
                         }
                         virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
                         {
