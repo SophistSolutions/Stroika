@@ -32,7 +32,7 @@ namespace   Stroika {
             size_t     IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::GetLength () const
             {
                 size_t  n = 0;
-                for (auto i = MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
                     n++;
                 }
                 return n;
@@ -40,7 +40,7 @@ namespace   Stroika {
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
             bool  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::IsEmpty () const
             {
-                for (auto i = MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
                     return false;
                 }
                 return true;
