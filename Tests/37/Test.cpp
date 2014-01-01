@@ -354,6 +354,23 @@ namespace {
 
 
 
+namespace {
+    void    Test10_MakeIterableFromIterator_ ()
+    {
+        {
+            Containers::Sequence<int>   a = {1, 3, 5, 7, 9};
+            Iterator<int>   iter = a.MakeIterator ();
+
+            int sum = 0;
+            for (auto i : MakeIterableFromIterator (iter)) {
+                sum += i;
+            }
+            VerifyTestResult (sum = 25);
+        }
+
+    }
+}
+
 namespace   {
 
     void    DoRegressionTests_ ()
@@ -367,6 +384,7 @@ namespace   {
         Test7_FunctionApplicationContextWithDiscreteRangeEtc_ ();
         Test8_DiscreteRangeTestFromDocs_ ();
         Test9_Generators_ ();
+        Test10_MakeIterableFromIterator_ ();
     }
 }
 

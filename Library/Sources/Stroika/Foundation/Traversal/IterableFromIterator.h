@@ -76,7 +76,7 @@ namespace   Stroika {
              *  want to override to provide a more efficeint IsEmpty () and GetLength () implementation.
              *
              */
-            template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB = void>
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE = void, typename DATA_BLOB = void>
             class   IterableFromIterator : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
@@ -92,6 +92,41 @@ namespace   Stroika {
                     virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
                 };
             };
+            template    <typename T, typename NEW_ITERATOR_REP_TYPE>
+            class   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
+            public:
+                class   _Rep : public Iterable<T>::_IRep {
+                public:
+                    virtual Iterator<T>     MakeIterator () const override;
+                    virtual size_t          GetLength () const override;
+                    virtual bool            IsEmpty () const override;
+                    virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                };
+            };
+            template    <typename T>
+            class   IterableFromIterator<T, void, void> : public Iterable<T> {
+            public:
+                class   _Rep : public Iterable<T>::_IRep {
+                public:
+                    virtual size_t          GetLength () const override;
+                    virtual bool            IsEmpty () const override;
+                    virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                };
+            };
+
+
+            /**
+             *  This makes a copy of the given iterator, and wraps it in an iterable. That iterable then makes
+             *  additional copies of that (argument) iterator as needed.
+             *
+             *  \em Important Note
+             *      The original Iterator<T> will have lifetime == the constructed Iterable<> - so be careful - that
+             *      the thing the Iterator<T> came from has long enough lifetime!
+             */
+            template    <typename   T>
+            Iterable<T> MakeIterableFromIterator (const Iterator<T>& iterator);
 
 
         }
