@@ -34,6 +34,7 @@ namespace   Stroika {
             class   DelegatedIterator : public Iterator<T> {
             public:
                 struct   Rep : Iterator<T>::IRep {
+                    using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;  // needed for gcc and clang++, but I'm not sure SB needed? -- LGP 2014-01-01
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
@@ -46,6 +47,7 @@ namespace   Stroika {
             class   DelegatedIterator<T, void> : public Iterator<T> {
             public:
                 struct   Rep : Iterator<T>::IRep {
+                    using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;  // needed for gcc and clang++, but I'm not sure SB needed? -- LGP 2014-01-01
                     Iterator<T> fDelegateTo;
                     Rep (const Iterator<T>& delegateTo);
                     virtual SharedIRepPtr   Clone () const override;
