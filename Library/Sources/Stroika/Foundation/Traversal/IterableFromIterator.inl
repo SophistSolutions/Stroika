@@ -61,7 +61,7 @@ namespace   Stroika {
             size_t     IterableFromIterator<T, void, void>::_Rep::GetLength () const
             {
                 size_t  n = 0;
-                for (auto i = MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
                     n++;
                 }
                 return n;
@@ -69,7 +69,7 @@ namespace   Stroika {
             template    <typename T>
             bool  IterableFromIterator<T, void, void>::_Rep::IsEmpty () const
             {
-                for (auto i = MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
                     return false;
                 }
                 return true;
