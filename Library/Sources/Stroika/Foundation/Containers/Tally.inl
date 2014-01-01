@@ -110,6 +110,9 @@ namespace   Stroika {
             struct  Tally<T, TRAITS>::_IRep::_ElementsIterableHelper : public Iterable<T> {
                 typedef typename ElementsIteratorHelper_::Rep   MyIteratorRep_;
                 typedef ElementsIteratorHelperContext_          MyDataBLOB_;
+#if     qTemplateAccessCheckConfusionProtectedNeststingBug
+                typedef typename Iterable<T>::_SharedPtrIRep          IterableOfTSharedPtrIRep;
+#endif
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
                     using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep;
                     DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
@@ -131,7 +134,11 @@ namespace   Stroika {
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
                     {
+#if     qTemplateAccessCheckConfusionProtectedNeststingBug
+                        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
+#else
                         return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+#endif
                     }
                 };
                 _ElementsIterableHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
@@ -202,6 +209,9 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::_UniqueElementsHelper : public Iterable<T> {
+#if     qTemplateAccessCheckConfusionProtectedNeststingBug
+                typedef typename Iterable<T>::_SharedPtrIRep          IterableOfTSharedPtrIRep;
+#endif
                 typedef typename UniqueElementsIteratorHelper_::Rep   MyIteratorRep_;
                 typedef UniqueElementsIteratorHelperContext_          MyDataBLOB_;
                 struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyDataBLOB_>::_Rep {
@@ -221,7 +231,11 @@ namespace   Stroika {
                     }
                     virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
                     {
+#if     qTemplateAccessCheckConfusionProtectedNeststingBug
+                        return IterableOfTSharedPtrIRep (new MyIterableRep_ (*this));
+#else
                         return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+#endif
                     }
                 };
                 _UniqueElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)

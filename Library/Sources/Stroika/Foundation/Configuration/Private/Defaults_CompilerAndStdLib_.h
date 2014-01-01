@@ -385,6 +385,8 @@
 
 
 
+
+
 /*
 @CONFIGVAR:     qCompilerAndStdLib_GCC_48_OptimizerBug
 @DESCRIPTION:
@@ -452,6 +454,18 @@
 
 #endif
 
+
+
+// @todo - investigate this better
+#ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
+
+#if     defined (_MSC_VER)
+#define qTemplateAccessCheckConfusionProtectedNeststingBug   (_MSC_VER == _MS_VS_2k13_VER_)
+#else
+#define qTemplateAccessCheckConfusionProtectedNeststingBug   0
+#endif
+
+#endif
 
 
 
