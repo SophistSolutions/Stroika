@@ -120,6 +120,7 @@ namespace   Stroika {
             {
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
+                        DECLARE_USE_BLOCK_ALLOCATION(Rep);
                         Iterator<T>   fOriginalIterator;
 #if     qDebug
                         mutable Private_::IteratorTracker<T>    fIteratorTracker_;
