@@ -204,8 +204,59 @@ namespace CommonTests {
                         applyToContainer (s);
                     }
                 }
+                {
+                    auto saved = s;
+                    for (auto it = s.begin (); it != s.end (); ++it) {
+                        s.RemoveAll ();
+                    }
+                    s = saved;
+                }
+                {
+                    auto saved = s;
+                    s.Add (32);
+                    for (auto it1 : s) {
+                        s.RemoveAll ();
+                        applyToContainer (s);
+                    }
+                    s = saved;
+                }
+
+
                 for (auto it = s.begin (); it != s.end (); ++it) {
-                    for (auto it1 : s.Elements ()) {
+                    auto tmp = s;
+                    s.Add (1);
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    auto tmp = s;
+                    for (auto it1 : tmp) {
+                    }
+                    s.Add (1);
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    auto tmp = s.Elements();
+                    for (auto it1 : tmp) {
+                    }
+                }
+                // This next case fails - 2014-01-01
+                // Sent email to Sterl - I think the bug is that we must BreakReferences when
+                // copying a new object - if it has any active iterators. But think that through!
+                // -- LGP 2014-01-01
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    auto tmp = s.Elements();
+                    s.Add (1);
+                }
+
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    for (auto it1 : s.Elements()) {
+                        if (s.TotalTally () < 25) {
+                            s.Add (1);
+                        }
+                        applyToContainer (s);
+                        break;
+                    }
+                }
+                for (auto it = s.begin (); it != s.end (); ++it) {
+                    for (auto it1 : s.Elements()) {
                         s.RemoveAll ();
                         applyToContainer (s);
                     }
