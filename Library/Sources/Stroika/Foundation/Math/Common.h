@@ -6,6 +6,7 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <algorithm>
 #include    <cmath>         // though perhaps not strictly needed, probably wanted if including Stroika/Foundation/Math/Common.h
 #include    <limits>
 #include    <type_traits>
