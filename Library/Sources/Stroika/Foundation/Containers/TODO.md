@@ -1,6 +1,10 @@
 TODO (Foundation::Containers)
 
 
+	(o)		Performance issue - Sequence<T>::RemoveAll() and or any other container RemoveAll() has 
+			the effect of FIRST cloning (if refcount != 1) and THEN clearing all the copied data. This is a waste.
+			If the refcount is non-zero, its more efficeint to just make a new instance of the appropriate type without copying the data.
+
 	(o)		IMPORTANT to do with Comparers - like EqualsComparer. We need to be able to pass in 
 			object (so they work with lambdas - with closers), and store no space when there is
 			no space used (what we do now).
