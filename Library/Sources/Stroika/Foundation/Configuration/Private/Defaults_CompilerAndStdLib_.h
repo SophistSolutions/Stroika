@@ -786,11 +786,12 @@
  */
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
-#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)\
-    _Pragma ( GCC diagnostic push) \
-    _Pragma ( GCC diagnostic ignored WARNING_TO_DISABLE )
-#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)\
-    _Pragma ( GCC diagnostic pop )
+#define GCC_DIAG_STR_(s)		#s
+#define GCC_DIAG_JOINSTR_(x,y)	GCC_DIAG_STR(x ## y)
+#define GCC_DIAG_DO_PRAGMA_(x)	_Pragma (#x)
+#define GCC_DIAG_PRAGMA_(x)		GCC_DIAG_DO_PRAGMA_(GCC diagnostic x)
+#define DISABLE_COMPILER_GCC_WARNING_START(x)   GCC_DIAG_PRAGMA_(push) GCC_DIAG_PRAGMA(ignored GCC_DIAG_JOINSTR_(-W,x))
+#define DISABLE_COMPILER_GCC_WARNING_END(x)     GCC_DIAG_PRAGMA_(pop)
 #else
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
