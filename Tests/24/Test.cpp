@@ -270,8 +270,7 @@ namespace   {
         mapper.AddCommonType<Range<int>> ();
         mapper.AddCommonType<DiscreteRange<int>> ();
 
-        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored -Winvalid-offsetof");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
-        //DISABLE_COMPILER_GCC_WARNING_START(invalid-offsetof);         // Really probably an issue, but not to debug here -- LGP 2014-01-04
+        DISABLE_COMPILER_GCC_WARNING_START("GCC diagnostic ignored \"-Winvalid-offsetof\"");       // Really probably an issue, but not to debug here -- LGP 2014-01-04
 #if     qCompilerAndStdLib_stdinitializer_ObjectVariantMapperBug
         ObjectVariantMapper::StructureFieldInfo kInfo[] = {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fIntRange, L"fIntRange"),
@@ -284,7 +283,7 @@ namespace   {
             ObjectVariantMapper_StructureFieldInfo_Construction_Helper (SharedContactsConfig_, fDiscIntRange2, L"fDiscIntRange2"),
         });
 #endif
-        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored -Winvalid-offsetof");
+        DISABLE_COMPILER_GCC_WARNING_END("GCC diagnostic ignored \"-Winvalid-offsetof\"");
 
         SharedContactsConfig_   tmp;
         tmp.fIntRange = Range<int> (1, 10);

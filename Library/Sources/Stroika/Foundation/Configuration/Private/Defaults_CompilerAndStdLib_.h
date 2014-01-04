@@ -786,13 +786,15 @@
  */
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
-#define GCC_DIAG_STR_(s)                        #s
-#define GCC_DIAG_JOINSTR_(x,y)                  GCC_DIAG_STR_(x ## y)
-#define GCC_DIAG_DO_PRAGMA_(x)                  _Pragma (#x)
-#define GCC_DIAG_PRAGMA_(x)                     GCC_DIAG_DO_PRAGMA_(GCC diagnostic x)
-//#define DISABLE_COMPILER_GCC_WARNING_START(x)   GCC_DIAG_PRAGMA_(push) GCC_DIAG_PRAGMA_(ignored GCC_DIAG_JOINSTR_(-W,x))
-#define DISABLE_COMPILER_GCC_WARNING_START(x)   GCC_DIAG_PRAGMA_(push) _Pragma(x)
-#define DISABLE_COMPILER_GCC_WARNING_END(x)     GCC_DIAG_PRAGMA_(pop)
+// Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
+// and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
+// and no way I can find to concatenate strings that works with _Pragma
+//  --LGP 2014-01-05
+#define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)\
+    _Pragma ( "GCC diagnostic push") \
+    _Pragma ( WARNING_TO_DISABLE )
+#define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)\
+    _Pragma ( "GCC diagnostic pop" )
 #else
 #define DISABLE_COMPILER_GCC_WARNING_START(WARNING_TO_DISABLE)
 #define DISABLE_COMPILER_GCC_WARNING_END(WARNING_TO_DISABLE)
