@@ -787,7 +787,7 @@
 
 #if     qSilenceAnnoyingCompilerWarnings && defined(__GNUC__) && !defined(__clang__)
 #define GCC_DIAG_STR_(s)                        #s
-#define GCC_DIAG_JOINSTR_(x,y)                  GCC_DIAG_STR(x ## y)
+#define GCC_DIAG_JOINSTR_(x,y)                  GCC_DIAG_STR_(x ## y)
 #define GCC_DIAG_DO_PRAGMA_(x)                  _Pragma (#x)
 #define GCC_DIAG_PRAGMA_(x)                     GCC_DIAG_DO_PRAGMA_(GCC diagnostic x)
 #define DISABLE_COMPILER_GCC_WARNING_START(x)   GCC_DIAG_PRAGMA_(push) GCC_DIAG_PRAGMA_(ignored GCC_DIAG_JOINSTR_(-W,x))
