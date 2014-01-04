@@ -817,6 +817,24 @@
 
 
 
+#if     qSilenceAnnoyingCompilerWarnings && defined(__clang__)
+// Note - I tried tricks with token pasting, but only seems to work if I do all token pasting
+// and that fails with 'astyle' which breaks up a-b tokens. Need quotes to work with astyle
+// and no way I can find to concatenate strings that works with _Pragma
+//  --LGP 2014-01-05
+#define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE)\
+    _Pragma ( "clang diagnostic push") \
+    _Pragma ( WARNING_TO_DISABLE )
+#define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)\
+    _Pragma ( "clang diagnostic pop" )
+#else
+#define DISABLE_COMPILER_CLANG_WARNING_START(WARNING_TO_DISABLE)
+#define DISABLE_COMPILER_CLANG_WARNING_END(WARNING_TO_DISABLE)
+#endif
+
+
+
+
 
 
 // MSFT has a hack that prevents workarounds to other features they don't support, but luckily, they may that hack
