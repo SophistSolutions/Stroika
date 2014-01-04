@@ -143,15 +143,13 @@ namespace   Stroika {
              *
              *  Protected abstract interface to support concrete implementations of
              *  the SortedCollection<T, TRAITS> container API.
-             *
-             *  Note that this doesn't add any methods, but still serves the purpose of allowing
-             *  testing/validation that the subtype information is correct (it is sorted).
              */
             template    <typename T, typename TRAITS>
             class   SortedCollection<T, TRAITS>::_IRep : public Collection<T>::_IRep {
             public:
                 virtual bool    Equals (const typename Collection<T>::_IRep& rhs) const     = 0;
                 virtual bool    Contains (T item) const                                     = 0;
+                using  Collection<T>::_IRep::Remove;
                 virtual void    Remove (T item)                                             = 0;
             };
 
