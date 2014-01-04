@@ -13,6 +13,7 @@
 #include    <memory>
 
 #include    "../../../Configuration/Common.h"
+#include    "../../../Memory/Common.h"
 
 
 
@@ -23,21 +24,35 @@ namespace   Stroika {
                 namespace   Windows {
 
 
+                    using   Foundation::Memory::Byte;
+
+
+                    /**
+                     */
                     class   StackBasedHandleLocker {
                     public:
                         StackBasedHandleLocker (HANDLE h);
-                        ~StackBasedHandleLocker ();
-                    private:
-                        StackBasedHandleLocker (const StackBasedHandleLocker&);
-                        const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&);
+                        StackBasedHandleLocker (const StackBasedHandleLocker&) = delete;
 
                     public:
+                        ~StackBasedHandleLocker ();
+
+                    public:
+                        const StackBasedHandleLocker& operator= (const StackBasedHandleLocker&) = delete;
+
+                    public:
+                        /**
+                         */
                         nonvirtual  Byte*   GetPointer () const;
+
+                    public:
+                        /**
+                         */
                         nonvirtual  size_t  GetSize () const;
 
                     private:
-                        HANDLE  fHandle;
-                        Byte*   fPointer;
+                        HANDLE  fHandle_;
+                        Byte*   fPointer_;
                     };
 
 

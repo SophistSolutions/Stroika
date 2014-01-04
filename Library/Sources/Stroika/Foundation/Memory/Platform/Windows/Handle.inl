@@ -11,7 +11,7 @@
  ********************************************************************************
  */
 #include    "../../../Debug/Assertions.h"
-
+#include    "../../../Execution/Exceptions.h"
 
 
 namespace   Stroika {
@@ -21,24 +21,30 @@ namespace   Stroika {
                 namespace   Windows {
 
 
-                    //  class   StackBasedHandleLocker
-                    inline  StackBasedHandleLocker::StackBasedHandleLocker (HANDLE h):
-                        fHandle (h)
+                    /*
+                     ********************************************************************************
+                     ***************************** StackBasedHandleLocker ***************************
+                     ********************************************************************************
+                     */
+                    inline  StackBasedHandleLocker::StackBasedHandleLocker (HANDLE h)
+                        : fHandle_ (h)
+                        , fPointer_ (reinterpret_cast<Byte*> (::GlobalLock (h)))
                     {
                         RequireNotNull (h);
-                        fPointer = reinterpret_cast<Byte*> (::GlobalLock (h));
+                        Execution::ThrowIfNull (fPointer_);
                     }
                     inline  StackBasedHandleLocker::~StackBasedHandleLocker ()
                     {
-                        ::GlobalUnlock (fHandle);
+                        AssertNotNull (fHandle_);
+                        ::GlobalUnlock (fHandle_);
                     }
                     inline  Byte*   StackBasedHandleLocker::GetPointer () const
                     {
-                        return fPointer;
+                        return fPointer_;
                     }
                     inline  size_t  StackBasedHandleLocker::GetSize () const
                     {
-                        return ::GlobalSize (fHandle);
+                        return ::GlobalSize (fHandle_);
                     }
 
 
