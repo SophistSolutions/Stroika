@@ -147,7 +147,7 @@ namespace   Stroika {
                  *  Returns true iff the Optional<T> has no valid value. Attempts to access the value of
                  *  an Optional<T> (eg. through operator* ()) will result in an assertion error.
                  */
-                nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing() - to be removed in v2.0a12"); // means no value (it is optional!)
+                nonvirtual  _Deprecated_ (bool    empty () const, "Instead use IsMissing() - to be removed after v2.0a11");
 
             public:
                 /**
