@@ -71,8 +71,9 @@ void    Stroika::Foundation::Debug::SetAssertionHandler (AssertionHandlerType as
     sAssertFailureHandler_ = (assertionHandler == nullptr) ? DefaultAssertionHandler_ : assertionHandler;
 }
 
-DISABLE_COMPILER_GCC_WARNING_START(noreturn);
-DISABLE_COMPILER_GCC_WARNING_START(enabled-by-default);
+// Cannot figure out how to disable this warning? -- LGP 2014-01-04
+//DISABLE_COMPILER_GCC_WARNING_START(noreturn);
+//DISABLE_COMPILER_GCC_WARNING_START(enabled - by - default);
 void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char* assertCategory, const char* assertionText, const char* fileName, int lineNum, const char* functionName)
 {
     static  bool    s_InTrap    =   false;
@@ -91,8 +92,8 @@ void    _NoReturn_  Stroika::Foundation::Debug::Private::Debug_Trap_ (const char
         throw;
     }
 }
-DISABLE_COMPILER_GCC_WARNING_END(enabled-by-default);
-DISABLE_COMPILER_GCC_WARNING_END(noreturn);
+//DISABLE_COMPILER_GCC_WARNING_END(enabled - by - default);
+//DISABLE_COMPILER_GCC_WARNING_END(noreturn);
 #endif
 
 
