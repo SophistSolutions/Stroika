@@ -44,6 +44,9 @@
  *      @todo   I'm not sure eCurrentLocale_WithZerosStripped is a good idea. Not sure if better
  *              to use separate format print arg or???
  *
+ *      @todo   eCurrentLocale_WithZerosStripped must be fixed to handle locales properly! This is a bit
+ *              of a kludge, and assumes US locale, really.
+ *
  *      @todo   LCID stuff appears to be obsolete, and perhaps not supported by MSFT any longer. Consider
  *              de-supporting.
  *
@@ -306,9 +309,9 @@ namespace   Stroika {
                  *      @see Configuration::GetPlatformDefaultLocale, Configuration::UsePlatformDefaultLocaleAsDefaultLocale ()
                  *
                  *  eCurrentLocale_WithZerosStripped
-                 *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of trailing zero's,
-                 *      and sometimes leading zeros, stripped, so for example, 01:03:05 PM will become 1:03:05 PM,
-                 *      and 04:06:00 PM will become 4:06 PM.
+                 *      eCurrentLocale_WithZerosStripped is eCurrentLocale, but with many cases of leading zero's,
+                 *      stripped, so for example, 03/05/2013 becomes 3/5/2013. This only affects the day/month, and not the
+                 *      year.
                  */
                 enum    class   PrintFormat : uint8_t {
                     eCurrentLocale,

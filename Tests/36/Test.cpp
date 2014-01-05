@@ -303,6 +303,11 @@ namespace   {
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/1903"  or d.Format (Date::PrintFormat::eCurrentLocale) == L"04/05/03");
             VerifyTestResult (d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/1903" or d.Format (Date::PrintFormat::eCurrentLocale_WithZerosStripped) == L"4/5/03");
         }
+
+        {
+            Date d  =   Date (Date::JulianRepType (2455213));
+            VerifyTestResult (d.Format () == L"1/16/10");
+        }
     }
 
 }

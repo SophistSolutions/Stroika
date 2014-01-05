@@ -11,6 +11,7 @@
 #include    <atlbase.h>     // For CComBSTR
 #endif
 
+#include    "../Characters/Concrete/String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Assertions.h"
 #include    "../Execution/Exceptions.h"
@@ -391,17 +392,20 @@ String Date::Format (PrintFormat pf) const
         case    PrintFormat::eCurrentLocale_WithZerosStripped:  {
                 String  tmp =    Format (locale ());
                 /*
-                 * This logic probably needs to be locale-specific, but this is good enuf for now...
+                 *  This logic probably needs to be locale-specific, but this is good enuf for now...
+                 *  Map things like:
+                 *      01:03:05 to 1:03:05
                  *
-                 *  This code also uses wstring stuff instead of String becuase my STRING API SUCKS!!!
-                 *  Adjust String API so this code can be made clear!
-                 *          -- LGP 2013-03-02
+                 *  and map
+                 *      12/05/00 to 12/05, but DONT map 12/15/2000 to 12/15/2000
                  */
+                const   Characters::Concrete::String_Constant   kZero_  =   Characters::Concrete::String_Constant (L"0");
                 size_t i = 0;
-                while ( (i = tmp.Find (L"0", i)) != wstring::npos) {
+                while ( (i = tmp.Find (kZero_, i)) != wstring::npos) {
                     // any 0N (where n a digit) is replaced with a single '0'
+                    Assert (tmp[i] == '0');
                     bool isLeadingZero = false;
-                    if (i < tmp.length () and tmp[i + 1].IsDigit ()) {
+                    if (i + 1 < tmp.length () and tmp[i + 1].IsDigit ()) {
                         if (i == 0 or not tmp[i - 1].IsDigit ()) {
                             // don't strip leading zeros if its the YEAR - the last part of a X/Y/Z combo...
                             //
