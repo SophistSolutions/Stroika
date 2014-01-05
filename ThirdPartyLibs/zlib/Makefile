@@ -3,7 +3,7 @@
 
 DoCreateSymLink=0
 
-VERSION=1.2.7
+VERSION=1.2.8
 BASENAME=zlib-$(VERSION)
 ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 TARFILE=$(BASENAME).tar
@@ -34,7 +34,7 @@ BUILDS_DIR=	CURRENT/Builds/
 all:	$(TRGDIR)
 
 $(ZIPEDFILE):
-	wget --tries=10 --no-check-certificate -O $(ZIPEDFILE)  $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
+	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPEDFILE)
 	@echo Building $(TRGDIR)...

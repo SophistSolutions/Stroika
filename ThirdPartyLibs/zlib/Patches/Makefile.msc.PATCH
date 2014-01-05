@@ -1,7 +1,7 @@
-*** "ORIGS\\win32\\Makefile.msc"	2013-10-08 21:28:21.561499000 -0400
---- "CURRENT\\win32\\Makefile.msc"	2013-10-08 21:28:29.171767900 -0400
+*** ORIGS/win32/Makefile.msc	2014-01-05 10:19:28.363940400 -0500
+--- CURRENT/win32/Makefile.msc	2014-01-05 10:22:35.433219700 -0500
 ***************
-*** 39,88 ****
+*** 43,92 ****
        example.exe minigzip.exe example_d.exe minigzip_d.exe
   
   $(STATICLIB): $(OBJS) $(OBJA)
@@ -9,8 +9,8 @@
   
   $(IMPLIB): $(SHAREDLIB)
   
-  $(SHAREDLIB): win32/zlib.def $(OBJS) $(OBJA) zlib1.res
-! 	$(LD) $(LDFLAGS) -def:win32/zlib.def -dll -implib:$(IMPLIB) \
+  $(SHAREDLIB): $(TOP)/win32/zlib.def $(OBJS) $(OBJA) zlib1.res
+! 	$(LD) $(LDFLAGS) -def:$(TOP)/win32/zlib.def -dll -implib:$(IMPLIB) \
   	  -out:$@ -base:0x5A4C0000 $(OBJS) $(OBJA) zlib1.res
   	if exist $@.manifest \
   	  mt -nologo -manifest $@.manifest -outputresource:$@;2
@@ -35,24 +35,24 @@
   	if exist $@.manifest \
   	  mt -nologo -manifest $@.manifest -outputresource:$@;1
   
-  .c.obj:
+  {$(TOP)}.c.obj:
 ! 	$(CC) -c $(WFLAGS) $(CFLAGS) $<
   
-  {test}.c.obj:
-! 	$(CC) -c -I. $(WFLAGS) $(CFLAGS) $<
+  {$(TOP)/test}.c.obj:
+! 	$(CC) -c -I$(TOP) $(WFLAGS) $(CFLAGS) $<
   
-  {contrib/masmx64}.c.obj:
+  {$(TOP)/contrib/masmx64}.c.obj:
 ! 	$(CC) -c $(WFLAGS) $(CFLAGS) $<
   
-  {contrib/masmx64}.asm.obj:
+  {$(TOP)/contrib/masmx64}.asm.obj:
 ! 	$(AS) -c $(ASFLAGS) $<
   
-  {contrib/masmx86}.asm.obj:
+  {$(TOP)/contrib/masmx86}.asm.obj:
 ! 	$(AS) -c $(ASFLAGS) $<
   
-  adler32.obj: adler32.c zlib.h zconf.h
+  adler32.obj: $(TOP)/adler32.c $(TOP)/zlib.h $(TOP)/zconf.h
   
---- 39,88 ----
+--- 43,92 ----
        example.exe minigzip.exe example_d.exe minigzip_d.exe
   
   $(STATICLIB): $(OBJS) $(OBJA)
@@ -60,8 +60,8 @@
   
   $(IMPLIB): $(SHAREDLIB)
   
-  $(SHAREDLIB): win32/zlib.def $(OBJS) $(OBJA) zlib1.res
-! 	"$(LD)" $(LDFLAGS) -def:win32/zlib.def -dll -implib:$(IMPLIB) \
+  $(SHAREDLIB): $(TOP)/win32/zlib.def $(OBJS) $(OBJA) zlib1.res
+! 	"$(LD)" $(LDFLAGS) -def:$(TOP)/win32/zlib.def -dll -implib:$(IMPLIB) \
   	  -out:$@ -base:0x5A4C0000 $(OBJS) $(OBJA) zlib1.res
   	if exist $@.manifest \
   	  mt -nologo -manifest $@.manifest -outputresource:$@;2
@@ -86,37 +86,20 @@
   	if exist $@.manifest \
   	  mt -nologo -manifest $@.manifest -outputresource:$@;1
   
-  .c.obj:
+  {$(TOP)}.c.obj:
 ! 	"$(CC)" -c $(WFLAGS) $(CFLAGS) $<
   
-  {test}.c.obj:
-! 	"$(CC)" -c -I. $(WFLAGS) $(CFLAGS) $<
+  {$(TOP)/test}.c.obj:
+! 	"$(CC)" -c -I$(TOP) $(WFLAGS) $(CFLAGS) $<
   
-  {contrib/masmx64}.c.obj:
+  {$(TOP)/contrib/masmx64}.c.obj:
 ! 	"$(CC)" -c $(WFLAGS) $(CFLAGS) $<
   
-  {contrib/masmx64}.asm.obj:
+  {$(TOP)/contrib/masmx64}.asm.obj:
 ! 	"$(AS)" -c $(ASFLAGS) $<
   
-  {contrib/masmx86}.asm.obj:
+  {$(TOP)/contrib/masmx86}.asm.obj:
 ! 	"$(AS)" -c $(ASFLAGS) $<
   
-  adler32.obj: adler32.c zlib.h zconf.h
+  adler32.obj: $(TOP)/adler32.c $(TOP)/zlib.h $(TOP)/zconf.h
   
-***************
-*** 133,139 ****
-  minigzip.obj: test/minigzip.c zlib.h zconf.h
-  
-  zlib1.res: win32/zlib1.rc
-! 	$(RC) $(RCFLAGS) /fo$@ win32/zlib1.rc
-  
-  
-  # testing
---- 133,139 ----
-  minigzip.obj: test/minigzip.c zlib.h zconf.h
-  
-  zlib1.res: win32/zlib1.rc
-! 	"$(RC)" $(RCFLAGS) /fo$@ win32/zlib1.rc
-  
-  
-  # testing
