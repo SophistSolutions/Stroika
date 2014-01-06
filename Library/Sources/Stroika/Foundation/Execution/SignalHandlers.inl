@@ -62,6 +62,7 @@ namespace   Stroika {
              ****************************** SignalHandlerRegistry ***************************
              ********************************************************************************
              */
+#if 0
             inline  void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler)
             {
                 SetSignalHandlers (signal, SignalHandlerType (handler));
@@ -70,6 +71,7 @@ namespace   Stroika {
             {
                 AddSignalHandler (signal, SignalHandlerType (handler));
             }
+#endif
 
 
         }

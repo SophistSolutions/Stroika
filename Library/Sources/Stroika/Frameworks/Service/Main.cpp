@@ -33,6 +33,7 @@
 #include    "../../Foundation/Execution/ProcessRunner.h"
 #include    "../../Foundation/Execution/ThreadAbortException.h"
 #include    "../../Foundation/Execution/Sleep.h"
+#include    "../../Foundation/Execution/SignalHandlers.h"
 #include    "../../Foundation/Execution/WaitTimedOutException.h"
 #include    "../../Foundation/IO/FileSystem/WellKnownLocations.h"
 #include    "../../Foundation/Memory/SmallStackBuffer.h"

@@ -212,7 +212,7 @@ namespace   Stroika {
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal);
-                nonvirtual  void    SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler);
+                //nonvirtual  void    SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
 
@@ -221,7 +221,7 @@ namespace   Stroika {
                  * @see GetSignalHandlers()
                  */
                 nonvirtual  void    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
-                nonvirtual  void    AddSignalHandler (SignalIDType signal, const function<void(SignalIDType)>& handler);
+                //nonvirtual  void    AddSignalHandler (SignalIDType signal, const function<void(SignalIDType)>& handler);
 
             public:
                 /**
