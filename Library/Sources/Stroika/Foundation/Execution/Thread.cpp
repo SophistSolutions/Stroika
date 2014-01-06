@@ -153,18 +153,12 @@ SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     : fRunnable_ (runnable)
     , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
-#if     qUseThreads_StdCPlusPlus
     , fThread_ ()
-#elif   qUseThreads_WindowsNative
-    , fThread_ (INVALID_HANDLE_VALUE)
-#endif
     , fStatusCriticalSection_ ()
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ ()
     , fOK2StartEvent_ ()
-#if     qUseThreads_StdCPlusPlus
     , fThreadDone_ ()
-#endif
     , fThreadName_ ()
 {
 #if     qPlatform_POSIX
@@ -186,26 +180,13 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
     ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
 #endif
 
-#if     qUseThreads_StdCPlusPlus
     (*repSharedPtr)->fThread_ = thread ([&repSharedPtr]() -> void { ThreadMain_ (repSharedPtr); });
-#elif   qUseThreads_WindowsNative
-    (*repSharedPtr)->fThread_ = reinterpret_cast<HANDLE> (::_beginthreadex (nullptr, 0, &Rep_::ThreadProc_, repSharedPtr, 0, nullptr));
-    if ((*repSharedPtr)->fThread_ == nullptr) {
-        ThrowIfError_errno_t ();    // I THINK errno sb set, but in case not, do Win32 / GetLastError throw
-        Platform::Windows::Exception::DoThrow (::GetLastError ());
-    }
-#endif
     try {
         (*repSharedPtr)->fRefCountBumpedEvent_.Wait (); // assure we wait for this, so we don't ever let refcount go to zero before the
         // thread has started...
     }
     catch (...) {
-#if     qUseThreads_StdCPlusPlus
         //???
-#elif   qUseThreads_WindowsNative
-        ::CloseHandle ((*repSharedPtr)->fThread_);
-        (*repSharedPtr)->fThread_ = INVALID_HANDLE_VALUE;
-#endif
         Execution::DoReThrow ();
     }
 }
@@ -213,7 +194,6 @@ void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
 Thread::Rep_::~Rep_ ()
 {
     Assert (fStatus_ != Status::eRunning);
-#if     qUseThreads_StdCPlusPlus
     /*
      *  Use thread::detach() - since we have no desire to wait, and detach
      *  will cause all resources for the thread to be deleted once the thread
@@ -226,11 +206,6 @@ Thread::Rep_::~Rep_ ()
     if (fThread_.joinable  ()) {
         fThread_.detach ();
     }
-#elif   qUseThreads_WindowsNative
-    if (fThread_ != INVALID_HANDLE_VALUE) {
-        ::CloseHandle (fThread_);
-    }
-#endif
 }
 
 void    Thread::Rep_::Run_ ()
@@ -262,7 +237,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             // Note that BOTH the fRefCountBumpedEvent_ and the fOK2StartEvent_ wait MUST come inside the try/catch for
             incRefCnt->fRefCountBumpedEvent_.Set ();
 
-#if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
+#if     qPlatform_POSIX
             {
                 // we inherit blocked abort signal given how we are created in DoCreate() - so unblock it - and acept aborts after we've marked
                 // reference count as set.
@@ -295,13 +270,11 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
-#if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
-#endif
         }
         catch (const ThreadAbortException&)
         {
-#if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
+#if     qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
@@ -310,13 +283,11 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
-#if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
-#endif
         }
         catch (...)
         {
-#if     qUseThreads_StdCPlusPlus && qPlatform_POSIX
+#if     qPlatform_POSIX
             ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
 #endif
@@ -325,9 +296,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
-#if     qUseThreads_StdCPlusPlus
             incRefCnt->fThreadDone_.Set ();
-#endif
         }
     }
     catch (const ThreadAbortException&)
@@ -346,20 +315,6 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
         AssertNotReached ();    // This should never happen - but if it does - better a trace message in a tracelog than 'unexpected' being called (with no way out)
     }
 }
-
-#if         qUseThreads_WindowsNative
-unsigned int    __stdcall   Thread::Rep_::ThreadProc_ (void* lpParameter)
-{
-    RequireNotNull (lpParameter);
-    /*
-     * NB: It is important that we do NOT call ::_endthreadex () here because that would cause the
-     * shared_ptr<> here to NOT be destroyed. We could force that with an explicit scope, but there
-     * is no need, since the docs for _beginthreadex () say that _endthreadex () is called automatically.
-     */
-    ThreadMain_ (reinterpret_cast<shared_ptr<Rep_>*> (lpParameter));
-    return 0;
-}
-#endif
 
 void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 {
@@ -394,26 +349,12 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
 
 Thread::IDType  Thread::Rep_::GetID () const
 {
-#if     qUseThreads_StdCPlusPlus
     return fThread_.get_id ();
-#elif   qUseThreads_WindowsNative
-    return MyGetThreadId_ (fThread_);
-#else
-    AssertNotImplemented ();
-    return IDType ();
-#endif
 }
 
 Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 {
-#if     qUseThreads_StdCPlusPlus
     return fThread_.native_handle ();
-#elif   qUseThreads_WindowsNative
-    return fThread_;
-#else
-    AssertNotImplemented ();
-    return NativeHandleType (nullptr);
-#endif
 }
 
 #if     qPlatform_POSIX
@@ -546,11 +487,7 @@ void    Thread::SetThreadName (const wstring& threadName)
             {
                 info.dwType = 0x1000;
                 info.szName = useThreadName.c_str ();
-#if     qUseThreads_WindowsNative
-                info.dwThreadID = MyGetThreadId_ (fRep_->fThread_);
-#else
                 info.dwThreadID = MyGetThreadId_ (fRep_->fThread_.native_handle ());
-#endif
                 info.dwFlags = 0;
             }
             IgnoreExceptionsForCall (::RaiseException (0x406D1388, 0, sizeof(info) / sizeof(DWORD), (ULONG_PTR*)&info));
@@ -567,9 +504,6 @@ void    Thread::Start ()
 {
     RequireNotNull (fRep_);
     Require (GetStatus () == Status::eNotYetRunning);
-#if         qUseThreads_WindowsNative
-    Assert (fRep_->fThread_ != INVALID_HANDLE_VALUE);
-#endif
     DbgTrace (L"Thread::Start: (thread = %s, name='%s')", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str ());
     fRep_->fOK2StartEvent_.Set ();
 }
@@ -583,16 +517,6 @@ void    Thread::Abort ()
     }
     // not status not protected by critsection, but SB OK for this
     DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_);
-
-
-#if         qUseThreads_WindowsNative
-    // I'm not sure this is 100% thread-friendly, in case two people from two different threads tried
-    // to stop the same (third) thread at the same time. But its probably good enough for starters.
-    //      -- LGP 2009-01-14
-
-    // You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-    Require (::GetCurrentThreadId () != MyGetThreadId_ (fRep_->fThread_));
-#endif
 
     // first try to send abort exception, and then - if force - get serious!
     lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
@@ -612,27 +536,12 @@ void    Thread::Abort_Forced_Unsafe ()
         return;
     }
 
-#if         qUseThreads_WindowsNative
-    // You cannot call STOP from within the thread you are stopping! Calling stop would cause a throw out - preventing the stop...
-    Require (::GetCurrentThreadId () != MyGetThreadId_ (fRep_->fThread_));
-#endif
-
     Abort ();
 
     // Wait some reasonable amount of time for the thread to abort
     IgnoreExceptionsForCall (WaitForDone (5.0f));
     lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
-#if         qUseThreads_WindowsNative
-    if (fRep_->fStatus_ != Status::eCompleted and fRep_->fThread_ != INVALID_HANDLE_VALUE) {
-        // This is VERY bad to do. Put assert here that it never happens...
-        AssertNotReached ();
-        DISABLE_COMPILER_MSC_WARNING_START(6258)
-        ::TerminateThread (fRep_->fThread_, -1);
-        DISABLE_COMPILER_MSC_WARNING_END(6258)
-    }
-#else
     AssertNotImplemented ();
-#endif
 }
 
 void    Thread::AbortAndWaitForDone (Time::DurationSecondsType timeout)
@@ -684,7 +593,6 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
         DoThrow (WaitTimedOutException ());
     }
     bool    doWait  =   false;
-#if     qUseThreads_StdCPlusPlus
     /*
      *  First wait on fThreadDone_. If we get passed it, its safe to block indefinitely (since we're exiting
      *  the thread).
@@ -695,31 +603,6 @@ void    Thread::WaitForDone (Time::DurationSecondsType timeout) const
         // this will block indefinitely - but if a timeout was specified
         fRep_->fThread_.join ();
     }
-#elif   qUseThreads_WindowsNative
-    HANDLE  thread  =   nullptr;
-    {
-        lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
-        if (fRep_->fThread_ != INVALID_HANDLE_VALUE and fRep_->fStatus_ != Status::eCompleted) {
-            doWait = true;
-            thread = fRep_->fThread_;
-        }
-    }
-    if (doWait) {
-Again:
-        DWORD   result  = ::WaitForSingleObjectEx (thread, Platform::Windows::Duration2Milliseconds (timeout), true);
-        switch (result) {
-            case    WAIT_TIMEOUT:
-                DoThrow (WaitTimedOutException ());
-            case    WAIT_ABANDONED:
-                DoThrow (WaitAbandonedException ());
-            case    WAIT_IO_COMPLETION:
-                CheckForThreadAborting ();
-                goto Again;  // roughly right to goto again - should decrement timeout- APC other than for abort - we should just keep waiting
-        }
-    }
-#else
-    AssertNotImplemented ();
-#endif
 }
 
 #if     qPlatform_Windows
@@ -769,7 +652,6 @@ Thread::Status  Thread::GetStatus_ () const noexcept
 wstring Execution::FormatThreadID (Thread::IDType threadID)
 {
     // it appears these IDs are < 16bits, so making the printout format shorter makes it a bit more readable.
-#if     qUseThreads_StdCPlusPlus
     Assert (sizeof (threadID) >= sizeof (int));
     if (sizeof (Thread::IDType) >= sizeof (uint64_t)) {
         uint64_t    threadIDInt =   *reinterpret_cast<uint64_t*> (&threadID);
@@ -787,16 +669,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
             return Characters::CString::Format (L"0x%08x", threadIDInt);
         }
     }
-#elif   qUseThreads_WindowsNative
-    if (threadID <= 0xffff) {
-        return Characters::CString::Format (L"0x%04x", threadID);
-    }
-    else {
-        return Characters::CString::Format (L"0x%08x", threadID);
-    }
-#else
     AssertNotImplemented ();
-#endif
 }
 
 

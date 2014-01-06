@@ -60,11 +60,6 @@ namespace   Stroika {
             private:
                 static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
 
-#if         qUseThreads_WindowsNative
-            private:
-                static  unsigned int    __stdcall   ThreadProc_ (void* lpParameter);
-#endif
-
             private:
 #if         qPlatform_POSIX
                 static  void    CalledInRepThreadAbortProc_ (SignalIDType signal);
@@ -77,18 +72,12 @@ namespace   Stroika {
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 bool*                   fTLSAbortFlag_;
-#if     qUseThreads_StdCPlusPlus
                 std::thread             fThread_;
-#elif   qUseThreads_WindowsNative
-                HANDLE                  fThread_;
-#endif
                 mutable recursive_mutex fStatusCriticalSection_;
                 Status                  fStatus_;
                 Event                   fRefCountBumpedEvent_;
                 Event                   fOK2StartEvent_;
-#if     qUseThreads_StdCPlusPlus
                 Event                   fThreadDone_;
-#endif
                 wstring                 fThreadName_;
 
             private:
@@ -129,9 +118,7 @@ namespace   Stroika {
             inline  Thread::IDType  Thread::GetID () const
             {
                 if (fRep_.get () == nullptr) {
-#if     qUseThreads_WindowsNative
-                    return Thread::IDType (0);
-#elif   qPlatform_POSIX
+#if     qPlatform_POSIX
                     return Thread::IDType ();
 #endif
                 }
@@ -175,14 +162,7 @@ namespace   Stroika {
              ********************************************************************************
              */
             inline  Thread::IDType  GetCurrentThreadID () noexcept {
-#if     qUseThreads_WindowsNative
-                return ::GetCurrentThreadId ();
-#elif   qUseThreads_StdCPlusPlus
                 return this_thread::get_id ();
-#else
-                AssertNotImplemented ();
-                return 0;
-#endif
             }
 
 

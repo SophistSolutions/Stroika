@@ -6,13 +6,8 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
-
-#if     qUseThreads_StdCPlusPlus
 #include    <condition_variable>
-#elif   qUseThreads_WindowsNative
-#include    <windows.h>
-#endif
+#include    <mutex>
 
 #include    "../Configuration/Common.h"
 
@@ -90,17 +85,10 @@ namespace   Stroika {
                  */
                 nonvirtual  void    Wait (Time::DurationSecondsType timeout = Time::kInfinite);
 
-#if     qUseThreads_StdCPlusPlus
             private:
                 mutex               fMutex_;
                 condition_variable  fConditionVariable_;
                 bool                fTriggered_;
-#elif   qUseThreads_WindowsNative
-            public:
-                operator HANDLE () const;
-            private:
-                HANDLE  fEventHandle;
-#endif
             };
 
 

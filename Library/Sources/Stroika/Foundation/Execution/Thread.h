@@ -7,43 +7,13 @@
 #include    "../StroikaPreComp.h"
 
 #include    <functional>
-#if     qUseThreads_StdCPlusPlus
 #include    <thread>
-#elif   qUseThreads_WindowsNative
-#include    <windows.h>
-#endif
 
 #include    "../Configuration/Common.h"
 #include    "../Time/Realtime.h"
 #include    "Signals.h"
 
 #include    "IRunnable.h"
-
-
-
-/*
-@CONFIGVAR:     qUseThreads_StdCPlusPlus
-@DESCRIPTION:   <p>qUseThreads_StdCPlusPlus is true iff Stroika is built to use portable standard C++ implementation of threads</p>
-*/
-#if     !defined (qUseThreads_StdCPlusPlus)
-#error "qUseThreads_StdCPlusPlus should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-/*
-@CONFIGVAR:     qUseThreads_WindowsNative
-@DESCRIPTION:   <p>qUseThreads_WindowsNative is true iff Stroika is built to use a native Windows SDK implementation of threads</p>
-*/
-#if     !defined (qUseThreads_WindowsNative)
-#error "qUseThreads_WindowsNative should normally be defined indirectly by StroikaConfig.h"
-#endif
-
-
-
-#if     qUseThreads_StdCPlusPlus && qUseThreads_WindowsNative
-#error "Configuration Error: cannot define both qUseThreads_WindowsNative && qUseThreads_StdCPlusPlus"
-#endif
-
-
 
 
 
@@ -95,11 +65,6 @@
  *
  *      @todo   Be sure no MEMORY or other resource leak in our Thread::Rep::~Rep () handling -
  *              calling detatch when a thread is never waited for. (GNU/C+++ thread impl only)
- *
- *      @todo   Do a PURE PTHREAD implemenation - not using the C++-wrapper classes.
- *              I think they are similar enuoguh and a number of things are only possible using
- *              native PTHreads.  MAYBE refine qUseThreads_StdCPlusPlus into qUseThreads_StdCPlusPlus_PURE
- *              and qUseThreads_StdCPlusPlus_PTHREAD and what we have now is really the latter)
  *
  *      @todo   Add a Method (maybe overload of Start) - which takes a new Runnable, so that
  *              the thread object can be re-run. This will be needed (or at least highly advantageous)
@@ -216,22 +181,14 @@ namespace   Stroika {
                 /**
                  * Thread::IDType is a portable representation which is a key to currently existing system threads.
                  */
-#if     qUseThreads_StdCPlusPlus
                 typedef thread::id  IDType;
-#elif   qUseThreads_WindowsNative
-                typedef DWORD       IDType;
-#endif
 
             public:
                 /**
                  *  Thread::native_handle is the type of the underlying handle to a native thread
                  *  which can allow for using platform APIs.
                  */
-#if     qUseThreads_StdCPlusPlus
                 typedef thread::native_handle_type  NativeHandleType;
-#elif   qUseThreads_WindowsNative
-                typedef HANDLE                      NativeHandleType;
-#endif
 
             public:
                 /**

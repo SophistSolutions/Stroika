@@ -63,22 +63,6 @@ void    Event::Wait (Time::DurationSecondsType timeout)
     if (timeout < 0) {
         DoThrow (WaitTimedOutException ());
     }
-#if         qUseThreads_WindowsNative
-    AssertNotNull (fEventHandle);
-    // must be careful about rounding errors in int->DurationSecondsType->int
-Again:
-    DWORD   result  =   ::WaitForSingleObjectEx (fEventHandle, Platform::Windows::Duration2Milliseconds (timeout), true);
-    switch (result) {
-        case    WAIT_TIMEOUT:
-            DoThrow (WaitTimedOutException ());
-        case    WAIT_ABANDONED:
-            DoThrow (WaitAbandonedException ());
-        case    WAIT_IO_COMPLETION:
-            CheckForThreadAborting ();
-            goto Again;  // roughly right to goto again - should decrement timeout- APC other than for abort - we should just keep waiting
-    }
-    Verify (result == WAIT_OBJECT_0);
-#elif       qUseThreads_StdCPlusPlus
     std::unique_lock<mutex>     lock (fMutex_);
     Time::DurationSecondsType   until   =   Time::GetTickCount () + timeout;
     Assert (until >= timeout);  // so no funny overflow issues...
@@ -108,7 +92,4 @@ Again:
         }
     }
     fTriggered_ = false ;   // autoreset
-#else
-    AssertNotImplemented ();
-#endif
 }
