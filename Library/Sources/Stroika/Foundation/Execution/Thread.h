@@ -414,6 +414,11 @@ namespace   Stroika {
             private:
                 class   Rep_;
                 shared_ptr<Rep_> fRep_;
+
+#if     qPlatform_POSIX
+            private:
+                static  SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_;
+#endif
             };
 
 

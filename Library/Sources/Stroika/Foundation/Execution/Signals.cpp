@@ -9,7 +9,7 @@
 #include    "../Characters/Format.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/Trace.h"
-#include	"../Containers/Concrete/Queue_Array.h"
+#include    "../Containers/Concrete/Queue_Array.h"
 
 #include    "Signals.h"
 
@@ -48,18 +48,11 @@ namespace   {
  ******************** Execution::SignalHandlerRegistry **************************
  ********************************************************************************
  */
-
-#if     qPlatform_POSIX
-// Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
-// variable
-SignalHandlerType   SignalHandlerRegistry::kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
-#endif
-
 const   SignalHandlerType   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
-mutex											SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
-vector<pair<SignalIDType, SignalHandlerType>>	SignalHandlerRegistry::sDirectSignalHandlers_;
-SignalHandlerRegistry							SignalHandlerRegistry::sThe_;
+mutex                                           SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
+vector<pair<SignalIDType, SignalHandlerType>>   SignalHandlerRegistry::sDirectSignalHandlers_;
+SignalHandlerRegistry                           SignalHandlerRegistry::sThe_;
 
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 {
@@ -67,35 +60,35 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 }
 
 namespace {
-	Queue<SignalIDType>	mkQ_ ()
-	{
-		Containers::Concrete::Queue_Array<SignalIDType>	signalQ;
-		signalQ.SetCapacity (100);	// quite arbitrary - @todo make configurable somehow...
-		return signalQ;
-	}
+    Queue<SignalIDType> mkQ_ ()
+    {
+        Containers::Concrete::Queue_Array<SignalIDType> signalQ;
+        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
+        return signalQ;
+    }
 }
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
     : fHandlers_ ()
-	, fIncomingSafeSignals_ (mkQ_ ())
+    , fIncomingSafeSignals_ (mkQ_ ())
 {
 }
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
-	Shutdown ();
+    Shutdown ();
 }
 
 void    SignalHandlerRegistry::Shutdown ()
 {
-	fBlockingQueuePusherThread_.Abort ();	// so stops processing while we remove stuff - not critical
-	// important to vector through this code so we reset signal handlers to not point to stale pointers.
-	for (SignalIDType si : GetHandledSignals ()) {
-		SetSignalHandlers (si);
-	}
-	Assert (fHandlers_.empty ());
-	Assert (sDirectSignalHandlers_.empty ());
-	fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+    fBlockingQueuePusherThread_.Abort ();   // so stops processing while we remove stuff - not critical
+    // important to vector through this code so we reset signal handlers to not point to stale pointers.
+    for (SignalIDType si : GetHandledSignals ()) {
+        SetSignalHandlers (si);
+    }
+    Assert (fHandlers_.empty ());
+    Assert (sDirectSignalHandlers_.empty ());
+    fBlockingQueuePusherThread_.AbortAndWaitForDone ();
 }
 
 Set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
@@ -110,7 +103,7 @@ Set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
 
 Set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
 {
-	return fHandlers_.LookupValue (signal);
+    return fHandlers_.LookupValue (signal);
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
@@ -120,7 +113,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandlerType handler)
 {
-	SetSignalHandlers (signal, Set<SignalHandlerType> ({handler}));
+    SetSignalHandlers (signal, Set<SignalHandlerType> ({handler}));
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const Set<SignalHandlerType>& handlers)
@@ -182,80 +175,80 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
     Set<SignalHandlerType>  handlers    =   GetSignalHandlers (forSignal);
     if (handlers.empty ()) {
         // nothing todo - empty list treated as not in sHandlers_ list
-		lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-		for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
-			if (i->first == forSignal) {
-				i = sDirectSignalHandlers_.erase (i);
-			}
-			else {
-				i++;
-			}
-		}
+        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
+        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+            if (i->first == forSignal) {
+                i = sDirectSignalHandlers_.erase (i);
+            }
+            else {
+                i++;
+            }
+        }
         (void)::signal (forSignal, SIG_DFL);
     }
     else if (IsSigIgnore_ (handlers)) {
-		lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-		for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
-			if (i->first == forSignal) {
-				i = sDirectSignalHandlers_.erase (i);
-			}
-			else {
-				i++;
-			}
-		}
+        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
+        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+            if (i->first == forSignal) {
+                i = sDirectSignalHandlers_.erase (i);
+            }
+            else {
+                i++;
+            }
+        }
         (void)::signal (forSignal, SIG_IGN);
     }
     else {
-		bool	anyDirect	=	handlers.AnyWith ([] (const SignalHandlerType& sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eDirect;});
-		bool	anyIndirect	=	handlers.AnyWith ([] (const SignalHandlerType& sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eSafe;});
+        bool    anyDirect   =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eDirect;});
+        bool    anyIndirect =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eSafe;});
 
-		// @todo
-		// OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
+        // @todo
+        // OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
 
-		// Directly copy in 'direct' signal handlers, and for indirect ones, list our indirect signal handler in the 'direct' list
-		lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-		for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
-			if (i->first == forSignal) {
-				i = sDirectSignalHandlers_.erase (i);
-			}
-			else {
-				i++;
-			}
-		}
-		if (anyDirect) {
-			// add them explicitly
-			for (SignalHandlerType i : handlers) {
-				if (i.GetType () == SignalHandlerType::Type::eDirect) {
-					sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, i));
-				}
-			}
-		}
-		if (anyIndirect) {
-			sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, SignalHandlerType (SecondPassDelegationSignalHandler_, SignalHandlerType::Type::eDirect)));
-		}
+        // Directly copy in 'direct' signal handlers, and for indirect ones, list our indirect signal handler in the 'direct' list
+        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
+        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+            if (i->first == forSignal) {
+                i = sDirectSignalHandlers_.erase (i);
+            }
+            else {
+                i++;
+            }
+        }
+        if (anyDirect) {
+            // add them explicitly
+            for (SignalHandlerType i : handlers) {
+                if (i.GetType () == SignalHandlerType::Type::eDirect) {
+                    sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, i));
+                }
+            }
+        }
+        if (anyIndirect) {
+            sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, SignalHandlerType (SecondPassDelegationSignalHandler_, SignalHandlerType::Type::eDirect)));
+        }
         (void)::signal (forSignal, FirstPassSignalHandler_);
 
-		// @todo REALLY NEED MUTEX TO MAKE THIS START SAFE!
-		// BUT LOW PRIIORTY
-		if (anyIndirect and fBlockingQueuePusherThread_.GetStatus () == Thread::Status::eNull) {
-			Thread watcherThread ([this] () {
-				// This is a safe context
-				Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
-				while (true) {
-					Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
-					SignalIDType	i	=	fIncomingSafeSignals_.RemoveHead ();
-					DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
-					for (SignalHandlerType sh : GetSignalHandlers (i)) {
-						if (sh.GetType () == SignalHandlerType::Type::eSafe) {
-							IgnoreExceptionsExceptThreadAbortForCall (sh (i));
-						}
-					}
-				}
-			});
-			watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
-			watcherThread.Start ();
-			fBlockingQueuePusherThread_ = std::move (watcherThread);
-		}
+        // @todo REALLY NEED MUTEX TO MAKE THIS START SAFE!
+        // BUT LOW PRIIORTY
+        if (anyIndirect and fBlockingQueuePusherThread_.GetStatus () == Thread::Status::eNull) {
+            Thread watcherThread ([this] () {
+                // This is a safe context
+                Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
+                while (true) {
+                    Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
+                    SignalIDType    i   =   fIncomingSafeSignals_.RemoveHead ();
+                    DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
+                    for (SignalHandlerType sh : GetSignalHandlers (i)) {
+                        if (sh.GetType () == SignalHandlerType::Type::eSafe) {
+                            IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+                        }
+                    }
+                }
+            });
+            watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
+            watcherThread.Start ();
+            fBlockingQueuePusherThread_ = std::move (watcherThread);
+        }
     }
 }
 
@@ -292,14 +285,14 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalIDType signal)
 
 void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalIDType signal)
 {
-	/*
-	 * This is still an unsafe context, so CAREFULLY push the signal onto the blocking queue!
-	 */
+    /*
+     * This is still an unsafe context, so CAREFULLY push the signal onto the blocking queue!
+     */
 #if     qDoDbgTraceOnSignalHandlers_
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SecondPassDelegationSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-	Get ().fIncomingSafeSignals_.AddTail (signal);
+    Get ().fIncomingSafeSignals_.AddTail (signal);
 }
 
 

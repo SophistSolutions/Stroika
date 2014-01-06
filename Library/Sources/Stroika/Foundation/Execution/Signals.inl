@@ -33,10 +33,10 @@ namespace   Stroika {
                 , fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
             {
             }
-			inline	SignalHandlerType::Type	SignalHandlerType::GetType () const
-			{
-				return fType_;
-			}
+            inline  SignalHandlerType::Type SignalHandlerType::GetType () const
+            {
+                return fType_;
+            }
             inline  void SignalHandlerType::operator () (SignalIDType i) const
             {
                 Require (fCall_.get () != nullptr);
