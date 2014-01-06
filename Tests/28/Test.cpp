@@ -18,6 +18,7 @@ using   namespace   Stroika;
 using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 
+using   Containers::Set;
 
 
 namespace   {
@@ -28,19 +29,14 @@ namespace   {
     }
     void    Test1_Basic_ ()
     {
-        set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
-#if 1
-        Test1_Basic_called_ =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, Test1_Basic_DoIt_);
-        ::raise (SIGINT);
-        VerifyTestResult (Test1_Basic_called_);
-#else
-        // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
-        bool    called  =   false;
-        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [&called] (SignalIDType signal) -> void {called = true;});
-        ::raise (SIGINT);
-        VerifyTestResult (called);
-#endif
+        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
+            static  bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [] (SignalIDType signal) -> void {called = true;});
+            ::raise (SIGINT);
+            VerifyTestResult (called);
+        }
         SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }

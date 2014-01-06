@@ -19,14 +19,15 @@ using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 
 using   Containers::Mapping;
+using   Containers::Set;
 
 
 namespace   {
     mutex sCritSection_;
 
-    Mapping<SignalIDType, set<SignalHandlerType>>    sHandlers_;
+    Mapping<SignalIDType, Set<SignalHandlerType>>    sHandlers_;
 
-    bool    IsSigIgnore_ (const set<SignalHandlerType>& sigSet)
+    bool    IsSigIgnore_ (const Set<SignalHandlerType>& sigSet)
     {
         return sigSet.size () == 1 and * sigSet.begin () == SignalHandlerRegistry::kIGNORED;
     }
@@ -35,7 +36,7 @@ namespace   {
     {
         Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
         DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
-        set<SignalHandlerType>  handlers;
+        Set<SignalHandlerType>  handlers;
         {
             lock_guard<mutex> critSec (sCritSection_);
             handlers = *sHandlers_.Lookup (signal);
@@ -70,36 +71,36 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 {
 }
 
-set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
+Set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
 {
-    set<SignalIDType>   result;
+    Set<SignalIDType>   result;
     {
         lock_guard<mutex> critSec (sCritSection_);
-        for (auto i = sHandlers_.begin (); i != sHandlers_.end (); ++i) {
-            result.insert (i->fKey);
+        for (auto i : sHandlers_) {
+            result.Add (i.fKey);
         }
     }
     return result;
 }
 
-set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
+Set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
 {
     lock_guard<mutex> critSec (sCritSection_);
-    Optional<set<SignalHandlerType>>    i   =   sHandlers_.Lookup (signal);
+    Optional<Set<SignalHandlerType>>    i   =   sHandlers_.Lookup (signal);
     return i.IsMissing () ? set<SignalHandlerType> () : *i;
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
 {
-    SetSignalHandlers (signal, set<SignalHandlerType> ());
+    SetSignalHandlers (signal, Set<SignalHandlerType> ());
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandlerType handler)
 {
-    SetSignalHandlers (signal, set<SignalHandlerType> (&handler, &handler + 1));
+    SetSignalHandlers (signal, Set<SignalHandlerType> (&handler, &handler + 1));
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers)
+void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const Set<SignalHandlerType>& handlers)
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
@@ -125,15 +126,15 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const set
 
 void    SignalHandlerRegistry::AddSignalHandler (SignalIDType signal, SignalHandlerType handler)
 {
-    set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
+    Set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
     s.insert (handler);
     SetSignalHandlers (signal, s);
 }
 
 void    SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler)
 {
-    set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
-    Require (s.find (handler) != s.end ());
+    Set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
+    Require (s.Contains (handler));
     s.erase (handler);
     SetSignalHandlers (signal, s);
 }
@@ -144,21 +145,21 @@ void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
     abort ();
 }
 
-void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const set<SignalIDType>& excludedSignals)
+void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const Set<SignalIDType>& excludedSignals)
 {
-    if (excludedSignals.find (SIGINT) == excludedSignals.end ())         {  SetSignalHandlers (SIGINT, handler);        }
-    if (excludedSignals.find (SIGILL) == excludedSignals.end ())         {  SetSignalHandlers (SIGILL, handler);        }
-    if (excludedSignals.find (SIGFPE) == excludedSignals.end ())         {  SetSignalHandlers (SIGFPE, handler);        }
-    if (excludedSignals.find (SIGSEGV) == excludedSignals.end ())        {  SetSignalHandlers (SIGSEGV, handler);       }
-    if (excludedSignals.find (SIGTERM) == excludedSignals.end ())        {  SetSignalHandlers (SIGTERM, handler);       }
+    if (excludedSignals.Contains (SIGINT))          {  SetSignalHandlers (SIGINT, handler);        }
+    if (excludedSignals.Contains (SIGILL))          {  SetSignalHandlers (SIGILL, handler);        }
+    if (excludedSignals.Contains (SIGFPE))          {  SetSignalHandlers (SIGFPE, handler);        }
+    if (excludedSignals.Contains (SIGSEGV))         {  SetSignalHandlers (SIGSEGV, handler);       }
+    if (excludedSignals.Contains (SIGTERM))         {  SetSignalHandlers (SIGTERM, handler);       }
 #if     qPlatform_POSIX
-    if (excludedSignals.find (SIGSYS) == excludedSignals.end ())         {  SetSignalHandlers (SIGSYS, handler);        }
-    if (excludedSignals.find (SIGBUS) == excludedSignals.end ())         {  SetSignalHandlers (SIGBUS, handler);        }
-    if (excludedSignals.find (SIGQUIT) == excludedSignals.end ())        {  SetSignalHandlers (SIGQUIT, handler);       }
-    if (excludedSignals.find (SIGPIPE) == excludedSignals.end ())        {  SetSignalHandlers (SIGPIPE, handler);       }
-    if (excludedSignals.find (SIGHUP) == excludedSignals.end ())         {  SetSignalHandlers (SIGHUP, handler);        }
-    if (excludedSignals.find (SIGXCPU) == excludedSignals.end ())        {  SetSignalHandlers (SIGXCPU, handler);       }
-    if (excludedSignals.find (SIGXFSZ) == excludedSignals.end ())        {  SetSignalHandlers (SIGXFSZ, handler);       }
+    if (excludedSignals.Contains (SIGSYS))          {  SetSignalHandlers (SIGSYS, handler);        }
+    if (excludedSignals.Contains (SIGBUS))          {  SetSignalHandlers (SIGBUS, handler);        }
+    if (excludedSignals.Contains (SIGQUIT))         {  SetSignalHandlers (SIGQUIT, handler);       }
+    if (excludedSignals.Contains (SIGPIPE))         {  SetSignalHandlers (SIGPIPE, handler);       }
+    if (excludedSignals.Contains (SIGHUP))          {  SetSignalHandlers (SIGHUP, handler);        }
+    if (excludedSignals.Contains (SIGXCPU))         {  SetSignalHandlers (SIGXCPU, handler);       }
+    if (excludedSignals.Contains (SIGXFSZ))         {  SetSignalHandlers (SIGXFSZ, handler);       }
 #endif
 }
 

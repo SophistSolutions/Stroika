@@ -7,9 +7,9 @@
 #include    "../StroikaPreComp.h"
 
 #include    <csignal>
-#include    <set>
 
 #include    "../Configuration/Common.h"
+#include    "../Containers/Set.h"
 #include    "Thread.h"
 
 
@@ -127,11 +127,11 @@ namespace   Stroika {
                 nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
 
             public:
-                /*
+                /**
                  * Returns the set of signals trapped by the SignalHandlerRegistry registry. Note - if not 'Installed ()' - these
                  * are tracked internally by Stroika but not actually installed in the OS.
                  */
-                nonvirtual  set<SignalIDType>   GetHandledSignals () const;
+                nonvirtual  Containers::Set<SignalIDType>   GetHandledSignals () const;
 
             public:
                 /*
@@ -142,7 +142,9 @@ namespace   Stroika {
                  * It is NOT an error to have a signal handler registered for a signal not in the set of GetHandledSignals () - or vice versa.
                  * Signals in the list of GetHandledSignals() with no handlers are effectively ignored.
                  */
-                nonvirtual  set<SignalHandlerType>  GetSignalHandlers (SignalIDType signal) const;
+                nonvirtual  Containers::Set<SignalHandlerType>  GetSignalHandlers (SignalIDType signal) const;
+
+            public:
                 /*
                  * See GetSignalHandlers().
                  *
@@ -156,11 +158,15 @@ namespace   Stroika {
                  */
                 nonvirtual  void                    SetSignalHandlers (SignalIDType signal);
                 nonvirtual  void                    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
-                nonvirtual  void                    SetSignalHandlers (SignalIDType signal, const set<SignalHandlerType>& handlers);
+                nonvirtual  void                    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
+
+            public:
                 /*
                  * See GetSignalHandlers()
                  */
                 nonvirtual  void                    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
+
+            public:
                 /*
                  * See GetSignalHandlers()
                  */
@@ -193,7 +199,7 @@ namespace   Stroika {
                  *      disable SIGABRT upon receipt of that signal (SIG_DFL) but that would be different than other signals handled, raise
                  *      re-entrancy issues etc. Didn't seem owrh while.
                  */
-                nonvirtual  void                    SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const set<SignalIDType>& excludedSignals = set<SignalIDType> ());
+                nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const Containers::Set<SignalIDType>& excludedSignals = Containers::Set<SignalIDType> ());
             };
 
 
