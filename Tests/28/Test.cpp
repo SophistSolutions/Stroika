@@ -31,6 +31,39 @@ namespace   {
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
+        Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
+        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+    }
+}
+
+
+namespace   {
+    void    Test2_Direct_ ()
+    {
+        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
+            ::raise (SIGINT);
+            VerifyTestResult (called);
+        }
+        SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
+    }
+}
+
+
+
+namespace   {
+    void    Test3_Safe_ ()
+    {
+        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        {
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
+            ::raise (SIGINT);
+            VerifyTestResult (called);
+        }
+        Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
         SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }
@@ -41,9 +74,12 @@ namespace   {
     void    DoRegressionTests_ ()
     {
         Test1_Basic_ ();
+        Test2_Direct_ ();
+        Test3_Safe_ ();
     }
 
 }
+
 
 
 int     main (int argc, const char* argv[])
