@@ -6,10 +6,13 @@
 
 #include    "../StroikaPreComp.h"
 
+#include    <mutex>
 #include    <csignal>
 
 #include    "../Configuration/Common.h"
+#include    "../Containers/Mapping.h"
 #include    "../Containers/Set.h"
+#include	"BlockingQueue.h"
 #include    "Thread.h"
 
 
@@ -118,6 +121,9 @@ namespace   Stroika {
                 SignalHandlerType (void (*signalHandler)(SignalIDType), Type type = Type::eDEFAULT);
                 SignalHandlerType (const function<void(SignalIDType)>& signalHandler, Type type = Type::eDEFAULT);
 
+			public:
+				nonvirtual	Type	GetType () const;
+
             public:
                 nonvirtual  void operator () (SignalIDType i) const;
 
@@ -168,6 +174,7 @@ namespace   Stroika {
 
             private:
                 SignalHandlerRegistry ();
+                ~SignalHandlerRegistry ();
                 SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
 
             public:
@@ -223,6 +230,13 @@ namespace   Stroika {
 
             public:
                 /**
+				**** REMOVES ALL HANDLERRS. CAN BE CALLED BEFORE existing main to assure threads shutdown first, but 
+				*	sbhoudktn be needed. Removes all handlers.
+                 */
+                nonvirtual	void    Shutdown ();
+
+            public:
+                /**
                  * This signal handler simply prints error to the trace log, and calls 'abort' - which on most operating systems will allow the
                  * debugger to examine the errant code.
                  */
@@ -253,11 +267,33 @@ namespace   Stroika {
 
 
             private:
+                nonvirtual  void    UpdateDirectSignalHandlers_ (SignalIDType forSignal);
+
+            private:
+                // Note - we use vector<> isntead of Stroika class to assure no memory allocation in iteration
+                static  mutex												sDirectSignalHandlers_CritSection_;
+                static  vector<pair<SignalIDType, SignalHandlerType>>		sDirectSignalHandlers_;
+
+            private:
+                static    void    FirstPassSignalHandler_ (SignalIDType signal);
+            private:
+                static    void    SecondPassDelegationSignalHandler_ (SignalIDType signal);
+
+            private:
+                Containers::Mapping<SignalIDType, Containers::Set<SignalHandlerType>>    fHandlers_;
+
+			private:
+				BlockingQueue<SignalIDType>	fIncomingSafeSignals_;
+				Thread	fBlockingQueuePusherThread_;
+//				Memory::Optional<Thread>	fBlockingQueuePusherThread_;	// cannot use Stroika thread cuz it uses this module for Abort/interuption????
+
+            private:
 #if     qPlatform_POSIX
                 static  SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_;
 #endif
 
 
+				static	SignalHandlerRegistry	sThe_;
             };
 
 
