@@ -143,6 +143,10 @@ namespace   Stroika {
              *  and then later UNINSTALLED (due to changes in GetHandledSignals) - this code resets the
              *  signal handler to SIG_DFL (not the previous value).
              *
+             *  @todo EXPLAIN ABOUT SignalHandlerType::Type::eSafe - and how they are run on separate
+             *  thread which means no deadlock, but also means SERIALIZED!!!! COULD have mutliple threads (config option?)
+             *
+             *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
              */
@@ -246,6 +250,14 @@ namespace   Stroika {
                  *      re-entrancy issues etc. Didn't seem owrh while.
                  */
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandlerType handler = DefaultCrashSignalHandler, const Containers::Set<SignalIDType>& excludedSignals = Containers::Set<SignalIDType> ());
+
+
+            private:
+#if     qPlatform_POSIX
+                static  SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_;
+#endif
+
+
             };
 
 
@@ -256,6 +268,8 @@ namespace   Stroika {
 
             /**
              * Send the given signal to a specific thread (within this process)
+             *
+             *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
              */
             void    SendSignal (Thread::NativeHandleType h, SignalIDType signal);
 

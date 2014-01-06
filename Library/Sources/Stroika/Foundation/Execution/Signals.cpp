@@ -22,6 +22,13 @@ using   Containers::Mapping;
 using   Containers::Set;
 
 
+// maybe useful while debugging signal code, but VERY unsafe
+// and could easily be the source of bugs/deadlocks!
+#ifndef qDoDbgTraceOnSignalHandlers_
+#define qDoDbgTraceOnSignalHandlers_    0
+#endif
+
+
 namespace   {
     mutex sCritSection_;
 
@@ -32,10 +39,12 @@ namespace   {
         return sigSet.size () == 1 and sigSet.Contains (SignalHandlerRegistry::kIGNORED);
     }
 
-    void    MyHandler_ (int signal)
+    void    MyDIRECTSignalHandler_ (int signal)
     {
-        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::MyHandler_"));
+#if  qDoDbgTraceOnSignalHandlers_
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::MyDIRECTSignalHandler_"));
         DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
+#endif
         Set<SignalHandlerType>  handlers;
         {
             lock_guard<mutex> critSec (sCritSection_);
@@ -58,6 +67,12 @@ namespace   {
  ******************** Execution::SignalHandlerRegistry **************************
  ********************************************************************************
  */
+
+#if     qPlatform_POSIX
+// Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
+// variable
+SignalHandlerType   SignalHandlerRegistry::kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
+#endif
 
 const   SignalHandlerType   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
@@ -120,7 +135,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const Set
         (void)::signal (signal, SIG_IGN);
     }
     else {
-        (void)::signal (signal, MyHandler_);
+        (void)::signal (signal, MyDIRECTSignalHandler_);
     }
 }
 
