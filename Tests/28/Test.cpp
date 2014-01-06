@@ -22,18 +22,12 @@ using   Containers::Set;
 
 
 namespace   {
-    static  bool    Test1_Basic_called_ =   false;
-    static  void    Test1_Basic_DoIt_ (SignalIDType signal)
-    {
-        Test1_Basic_called_ = true;
-    }
     void    Test1_Basic_ ()
     {
         Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
-            // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
             bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [&called] (SignalIDType signal) -> void {called = true;});
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
