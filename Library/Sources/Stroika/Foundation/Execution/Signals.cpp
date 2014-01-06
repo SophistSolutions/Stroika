@@ -42,8 +42,8 @@ namespace   {
             handlers = *sHandlers_.Lookup (signal);
         }
         for (auto i : handlers) {
-            if (i != SignalHandlerRegistry::kIGNORED) {
-                (i) (signal);
+            if (i != SignalHandlerRegistry::kIGNORED and i != nullptr) {
+                i (signal);
             }
         }
     }

@@ -32,8 +32,8 @@ namespace   {
         Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             // VS (and maybe gcc) don't support the converion of lambda to plain function pointers yet
-            static  bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [] (SignalIDType signal) -> void {called = true;});
+            bool    called  =   false;
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, [&called] (SignalIDType signal) -> void {called = true;});
             ::raise (SIGINT);
             VerifyTestResult (called);
         }

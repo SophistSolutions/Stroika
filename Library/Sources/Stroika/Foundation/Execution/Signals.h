@@ -95,19 +95,56 @@ namespace   Stroika {
 
             /**
             */
-            typedef void    (*SignalHandlerType) (SignalIDType);
+            class   SignalHandlerType {
+            public:
+                SignalHandlerType ()
+                    : fCall_ ()
+                {
+                }
+                SignalHandlerType (void (*signalHandler)(SignalIDType) )
+                    : fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
+                {
+                }
+                SignalHandlerType (const function<void(SignalIDType)>& signalHandler)
+                    : fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
+                {
+                }
+
+            public:
+                void operator () (SignalIDType i)
+                {
+                    Require (fCall_.get () != nullptr);
+                    (*fCall_) (i);
+                }
+                bool operator== (const SignalHandlerType& rhs) const
+                {
+                    return fCall_.get () == rhs.fCall_.get ();
+                }
+                bool operator!= (const SignalHandlerType& rhs) const
+                {
+                    return fCall_.get () != rhs.fCall_.get ();
+                }
+                bool operator< (const SignalHandlerType& rhs) const
+                {
+                    // technically not quite real... - compute address of ptr...
+                    return fCall_.get () < rhs.fCall_.get ();
+                }
+
+            private:
+                shared_ptr<function<void(SignalIDType)>>    fCall_;
+            };
 
 
             /**
-             *  Description:
-             *      SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers for each supported signal.
+             *  SignalHandlerRegistry is a singleton object. If used - it itself registers signal handlers
+             *  for each supported signal.
              *
-             *      The user can then add in their own 'handlers' for those signals, and they are ALL called - one after the other (TDB how threads
-             *      work with this).
+             *  The user can then add in their own 'handlers' for those signals, and they are ALL called -
+             *  one after the other (TDB how threads work with this).
              *
-             *      When an platform signal-handler is installed (via 'sigaction' for example) - and then later UNINSTALLED (due to
-             *      changes in GetHandledSignals) - this code resets the signal handler to SIG_DFL (not the previous value).
-             *
+             *  When an platform signal-handler is installed (via 'sigaction' for example) -
+             *  and then later UNINSTALLED (due to changes in GetHandledSignals) - this code resets the
+             *  signal handler to SIG_DFL (not the previous value).
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -115,9 +152,10 @@ namespace   Stroika {
             class   SignalHandlerRegistry {
             public:
                 /**
-                 * If this handler is set to the the ONLY handler for a given signal, then that signal handler is effectively ignored.
+                 *  If this handler is set to the the ONLY handler for a given signal, then that signal handler is
+                 *  effectively ignored.
                  *
-                 * To get the signal to be handled the DEFAULT way - remove all signal handlers.
+                 *  To get the signal to be handled the DEFAULT way - remove all signal handlers.
                  */
                 static  const   SignalHandlerType   kIGNORED;
 
@@ -165,6 +203,10 @@ namespace   Stroika {
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal);
+                nonvirtual  void    SetSignalHandlers (SignalIDType signal, function<void(SignalIDType)> handler)
+                {
+                    SetSignalHandlers (signal, SignalHandlerType (handler));
+                }
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
 
@@ -173,6 +215,10 @@ namespace   Stroika {
                  * @see GetSignalHandlers()
                  */
                 nonvirtual  void    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
+                nonvirtual  void    AddSignalHandler (SignalIDType signal, function<void(SignalIDType)> handler)
+                {
+                    AddSignalHandler (signal, SignalHandlerType (handler));
+                }
 
             public:
                 /**
