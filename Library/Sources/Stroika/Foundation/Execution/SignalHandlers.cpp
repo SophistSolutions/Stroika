@@ -40,6 +40,7 @@ namespace   {
 }
 
 
+#define qSupportSafeSignalHandlers  0
 
 
 
@@ -81,6 +82,7 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 void    SignalHandlerRegistry::Shutdown ()
 {
+#if     qSupportSafeSignalHandlers
     fBlockingQueuePusherThread_.Abort ();   // so stops processing while we remove stuff - not critical
     // important to vector through this code so we reset signal handlers to not point to stale pointers.
     for (SignalIDType si : GetHandledSignals ()) {
@@ -89,6 +91,7 @@ void    SignalHandlerRegistry::Shutdown ()
     Assert (fHandlers_.empty ());
     Assert (sDirectSignalHandlers_.empty ());
     fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+#endif
 }
 
 Set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
@@ -202,6 +205,9 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
         bool    anyDirect   =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eDirect;});
         bool    anyIndirect =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eSafe;});
 
+#if     !qSupportSafeSignalHandlers
+        anyDirect |= anyIndirect;
+#endif
         // @todo
         // OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
 
@@ -218,11 +224,12 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
         if (anyDirect) {
             // add them explicitly
             for (SignalHandlerType i : handlers) {
-                if (i.GetType () == SignalHandlerType::Type::eDirect) {
+                if (i.GetType () == SignalHandlerType::Type::eDirect or (qSupportSafeSignalHandlers)) {
                     sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, i));
                 }
             }
         }
+#if qSupportSafeSignalHandlers
         if (anyIndirect) {
             sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, SignalHandlerType (SecondPassDelegationSignalHandler_, SignalHandlerType::Type::eDirect)));
         }
@@ -249,6 +256,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
             watcherThread.Start ();
             fBlockingQueuePusherThread_ = std::move (watcherThread);
         }
+#endif
     }
 }
 
@@ -283,6 +291,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalIDType signal)
     sDirectSignalHandlers_CritSection_.unlock ();
 }
 
+#if     qSupportSafeSignalHandlers
 void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalIDType signal)
 {
     /*
@@ -294,6 +303,7 @@ void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalIDType 
 #endif
     Get ().fIncomingSafeSignals_.AddTail (signal);
 }
+#endif
 
 
 
