@@ -10,6 +10,7 @@
 #include    <thread>
 
 #include    "../Configuration/Common.h"
+#include    "../Characters/String.h"
 
 
 
@@ -39,7 +40,7 @@ namespace   Stroika {
 
             /**
              */
-            wstring SignalToName (SignalIDType signal);
+            Characters::String SignalToName (SignalIDType signal);
 
 
             /**

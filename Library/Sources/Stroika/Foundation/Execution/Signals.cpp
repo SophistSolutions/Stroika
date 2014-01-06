@@ -3,9 +3,6 @@
  */
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
-
-#include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
@@ -28,7 +25,7 @@ using   namespace   Stroika::Foundation::Memory;
  ************************** Execution::SignalToName *****************************
  ********************************************************************************
  */
-wstring Execution::SignalToName (SignalIDType signal)
+Characters::String Execution::SignalToName (SignalIDType signal)
 {
     switch (signal) {
         case    SIGINT:
@@ -79,7 +76,7 @@ wstring Execution::SignalToName (SignalIDType signal)
 #endif
 
         default:
-            return Characters::CString::Format (L"Signal# %d", signal);
+            return Characters::Format (L"Signal# %d", signal);
     }
 }
 
