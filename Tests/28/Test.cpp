@@ -6,7 +6,7 @@
 
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
-#include    "Stroika/Foundation/Execution/Signals.h"
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 
 

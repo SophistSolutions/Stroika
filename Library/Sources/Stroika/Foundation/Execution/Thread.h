@@ -15,6 +15,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Time/Realtime.h"
+#include	"Signals.h"
 
 #include    "IRunnable.h"
 
@@ -113,13 +114,6 @@
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
-
-
-#if     qPlatform_POSIX
-            // real definition in Signals.h - but redeclare here (could have separate file but not sure worth it) to avoid
-            // mutual references
-            typedef int     SignalIDType;
-#endif
 
 
             /**
