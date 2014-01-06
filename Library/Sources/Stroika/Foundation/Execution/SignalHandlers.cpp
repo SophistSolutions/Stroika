@@ -32,12 +32,16 @@ using   Containers::Set;
 
 
 
+
+
+
 namespace   {
     bool    IsSigIgnore_ (const Set<SignalHandlerType>& sigSet)
     {
         return sigSet.size () == 1 and sigSet.Contains (SignalHandlerRegistry::kIGNORED);
     }
 }
+
 
 
 #define qSupportSafeSignalHandlers  0

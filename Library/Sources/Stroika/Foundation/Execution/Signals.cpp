@@ -7,7 +7,6 @@
 
 #include    "../Characters/CString/Utilities.h"
 #include    "../Characters/Format.h"
-#include    "../Containers/Mapping.h"
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
 
@@ -18,9 +17,6 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Execution;
 using   namespace   Stroika::Foundation::Memory;
 
-using   Containers::Mapping;
-using   Containers::Queue;
-using   Containers::Set;
 
 
 

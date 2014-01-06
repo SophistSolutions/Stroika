@@ -6,13 +6,10 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
 #include    <csignal>
 #include    <thread>
 
 #include    "../Configuration/Common.h"
-#include    "../Containers/Mapping.h"
-#include    "../Containers/Set.h"
 
 
 
@@ -51,8 +48,6 @@ namespace   Stroika {
              *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
              */
             void    SendSignal (thread::native_handle_type h, SignalIDType signal);
-
-
 
 
         }

@@ -212,7 +212,6 @@ namespace   Stroika {
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal);
-                //nonvirtual  void    SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
 
@@ -221,7 +220,6 @@ namespace   Stroika {
                  * @see GetSignalHandlers()
                  */
                 nonvirtual  void    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
-                //nonvirtual  void    AddSignalHandler (SignalIDType signal, const function<void(SignalIDType)>& handler);
 
             public:
                 /**
@@ -285,25 +283,12 @@ namespace   Stroika {
 
             private:
                 BlockingQueue<SignalIDType> fIncomingSafeSignals_;
-                Thread  fBlockingQueuePusherThread_;
-//              Memory::Optional<Thread>    fBlockingQueuePusherThread_;    // cannot use Stroika thread cuz it uses this module for Abort/interuption????
+                Thread                      fBlockingQueuePusherThread_;
 
             private:
                 static  SignalHandlerRegistry   sThe_;
             };
 
-
-            /**
-             */
-            wstring SignalToName (SignalIDType signal);
-
-
-            /**
-             * Send the given signal to a specific thread (within this process)
-             *
-             *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
-             */
-            void    SendSignal (thread::native_handle_type h, SignalIDType signal);
 
 
 #if     qPlatform_POSIX
