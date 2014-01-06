@@ -1497,6 +1497,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.h">
       <Filter>Sources\Traversal</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.h">
+      <Filter>Sources\Containers\Concrete</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2252,6 +2255,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Containers\Concrete\Queue_Array.inl">
+      <Filter>Sources\Containers\Concrete</Filter>
     </None>
   </ItemGroup>
 </Project>

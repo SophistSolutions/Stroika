@@ -9,6 +9,7 @@
 #include    <sstream>
 
 #include    "Stroika/Foundation/Containers/Queue.h"
+#include    "Stroika/Foundation/Containers/Concrete/Queue_Array.h"
 #include    "Stroika/Foundation/Containers/Concrete/Queue_DoublyLinkedList.h"
 #include    "Stroika/Foundation/Debug/Assertions.h"
 #include    "Stroika/Foundation/Debug/Trace.h"
@@ -25,6 +26,7 @@ using   namespace   Stroika::Foundation;
 using   namespace   Stroika::Foundation::Containers;
 
 
+using   Concrete::Queue_Array;
 using   Concrete::Queue_DoublyLinkedList;
 
 
@@ -72,6 +74,11 @@ namespace   {
         SimpleQueueTest_All_For_Type<Queue<SimpleClass>, COMPARE_SimpleClass> ();
         SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
         SimpleQueueTest_All_For_Type<Queue<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+
+        SimpleQueueTest_All_For_Type<Queue_Array<size_t>, COMPARE_SIZET> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClass>, COMPARE_SimpleClass> ();
+        SimpleQueueTest_All_NotRequiringEquals_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators>, COMPARE_SimpleClassWithoutComparisonOperators> ();
+        SimpleQueueTest_All_For_Type<Queue_Array<SimpleClassWithoutComparisonOperators, Queue_SimpleClassWithoutComparisonOperators_Comparer_Traits>, COMPARE_SimpleClassWithoutComparisonOperators> ();
 
         SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<size_t>, COMPARE_SIZET> ();
         SimpleQueueTest_All_For_Type<Queue_DoublyLinkedList<SimpleClass>, COMPARE_SimpleClass> ();
