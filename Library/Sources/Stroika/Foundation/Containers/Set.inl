@@ -245,6 +245,16 @@ namespace   Stroika {
             {
                 RemoveAll ();
             }
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::insert (T item)
+            {
+                Add (a);
+            }
+            template    <typename T, typename TRAITS>
+            inline  void    Set<T, TRAITS>::erase (T item)
+            {
+                Remove (a);
+            }
 
 
             /*

@@ -266,6 +266,18 @@ namespace   Stroika {
                  */
                 nonvirtual  void    clear ();
 
+            public:
+                /**
+                 * \brief STL-ish alias for Add ().
+                 */
+                nonvirtual  void    insert (T item);
+
+            public:
+                /**
+                 * \brief STL-ish alias for Remove ().
+                 */
+                nonvirtual  void    erase (T item);
+
             protected:
                 nonvirtual  const _IRep&    _GetRep () const;
                 nonvirtual  _IRep&          _GetRep ();
