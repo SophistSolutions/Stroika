@@ -135,12 +135,10 @@ namespace   {
 #endif
 
 
-
-
 #if     qPlatform_POSIX
 // Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
 // variable
-SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_ = [] (SignalIDType) -> void {};
+SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 #endif
 
 
