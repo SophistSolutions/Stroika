@@ -2250,5 +2250,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Traversal\DelegatedIterator.inl">
       <Filter>Sources\Traversal</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl">
+      <Filter>Sources\Execution</Filter>
+    </None>
   </ItemGroup>
 </Project>

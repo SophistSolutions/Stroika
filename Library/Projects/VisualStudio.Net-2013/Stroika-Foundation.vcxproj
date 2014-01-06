@@ -1111,6 +1111,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Manager.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Resources\Name.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SharedStaticData.inl" />
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Signals.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Sleep.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\StringException.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Thread.inl" />

@@ -137,6 +137,15 @@ namespace   {
 
 
 
+#if     qPlatform_POSIX
+// Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
+// variable
+SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
+#endif
+
+
+
+
 
 /*
  ********************************************************************************
@@ -367,7 +376,7 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
             lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
             if (not sHandlerInstalled_)
             {
-                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
+                SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
                 sHandlerInstalled_ = true;
             }
         }
@@ -498,13 +507,13 @@ void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
 {
     lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
+        SignalHandlerRegistry::Get ().RemoveSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = false;
     }
     sSignalUsedForThreadAbort_ = signalNumber;
     // install new handler
     if (not sHandlerInstalled_) {
-        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), Rep_::CalledInRepThreadAbortProc_);
+        SignalHandlerRegistry::Get ().AddSignalHandler (GetSignalUsedForThreadAbort (), kCallInRepThreadAbortProcSignalHandler_);
         sHandlerInstalled_ = true;
     }
 }

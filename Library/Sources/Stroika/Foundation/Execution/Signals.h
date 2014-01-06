@@ -89,48 +89,45 @@ namespace   Stroika {
 
 
             /**
-            */
+             */
             typedef int     SignalIDType;
 
 
             /**
+             *  The key feature of SignalHandlerType versus function<void(SignalIDType)> is that you can compare them.
+             *  Note - todo so - you must save the original SignalHandlerType you create to later remove it by value.
             */
             class   SignalHandlerType {
             public:
-                SignalHandlerType ()
-                    : fCall_ ()
-                {
-                }
-                SignalHandlerType (void (*signalHandler)(SignalIDType) )
-                    : fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
-                {
-                }
-                SignalHandlerType (const function<void(SignalIDType)>& signalHandler)
-                    : fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
-                {
-                }
+
+                /**
+                 *  @todo EXPLAIN
+                  *     SAFE runs on separate thread
+                  * eDirect runs directly but greatly risks deadlocks!
+                 */
+                enum    class   Type {
+                    eDirect,
+                    eSafe,
+
+                    eDEFAULT = eSafe,
+
+                    Stroika_Define_Enum_Bounds (eDirect, eSafe)
+                };
 
             public:
-                void operator () (SignalIDType i)
-                {
-                    Require (fCall_.get () != nullptr);
-                    (*fCall_) (i);
-                }
-                bool operator== (const SignalHandlerType& rhs) const
-                {
-                    return fCall_.get () == rhs.fCall_.get ();
-                }
-                bool operator!= (const SignalHandlerType& rhs) const
-                {
-                    return fCall_.get () != rhs.fCall_.get ();
-                }
-                bool operator< (const SignalHandlerType& rhs) const
-                {
-                    // technically not quite real... - compute address of ptr...
-                    return fCall_.get () < rhs.fCall_.get ();
-                }
+                SignalHandlerType (void (*signalHandler)(SignalIDType), Type type = Type::eDEFAULT);
+                SignalHandlerType (const function<void(SignalIDType)>& signalHandler, Type type = Type::eDEFAULT);
+
+            public:
+                nonvirtual  void operator () (SignalIDType i) const;
+
+            public:
+                nonvirtual  bool operator== (const SignalHandlerType& rhs) const;
+                nonvirtual  bool operator!= (const SignalHandlerType& rhs) const;
+                nonvirtual  bool operator< (const SignalHandlerType& rhs) const;
 
             private:
+                Type                                        fType_;
                 shared_ptr<function<void(SignalIDType)>>    fCall_;
             };
 
@@ -203,10 +200,7 @@ namespace   Stroika {
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal);
-                nonvirtual  void    SetSignalHandlers (SignalIDType signal, function<void(SignalIDType)> handler)
-                {
-                    SetSignalHandlers (signal, SignalHandlerType (handler));
-                }
+                nonvirtual  void    SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
                 nonvirtual  void    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
 
@@ -215,10 +209,7 @@ namespace   Stroika {
                  * @see GetSignalHandlers()
                  */
                 nonvirtual  void    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
-                nonvirtual  void    AddSignalHandler (SignalIDType signal, function<void(SignalIDType)> handler)
-                {
-                    AddSignalHandler (signal, SignalHandlerType (handler));
-                }
+                nonvirtual  void    AddSignalHandler (SignalIDType signal, const function<void(SignalIDType)>& handler);
 
             public:
                 /**
@@ -295,5 +286,12 @@ namespace   Stroika {
 }
 
 
+
+/*
+ ********************************************************************************
+ ***************************** Implementation Details ***************************
+ ********************************************************************************
+ */
+#include    "Signals.inl"
 
 #endif  /*_Stroika_Foundation_Execution_Signals_h_*/

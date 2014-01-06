@@ -29,7 +29,7 @@ namespace   {
 
     bool    IsSigIgnore_ (const Set<SignalHandlerType>& sigSet)
     {
-        return sigSet.size () == 1 and * sigSet.begin () == SignalHandlerRegistry::kIGNORED;
+        return sigSet.size () == 1 and sigSet.Contains (SignalHandlerRegistry::kIGNORED);
     }
 
     void    MyHandler_ (int signal)
@@ -147,19 +147,19 @@ void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
 
 void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const Set<SignalIDType>& excludedSignals)
 {
-    if (excludedSignals.Contains (SIGINT))          {  SetSignalHandlers (SIGINT, handler);        }
-    if (excludedSignals.Contains (SIGILL))          {  SetSignalHandlers (SIGILL, handler);        }
-    if (excludedSignals.Contains (SIGFPE))          {  SetSignalHandlers (SIGFPE, handler);        }
-    if (excludedSignals.Contains (SIGSEGV))         {  SetSignalHandlers (SIGSEGV, handler);       }
-    if (excludedSignals.Contains (SIGTERM))         {  SetSignalHandlers (SIGTERM, handler);       }
+    if (not excludedSignals.Contains (SIGINT))      {  SetSignalHandlers (SIGINT, handler);        }
+    if (not excludedSignals.Contains (SIGILL))      {  SetSignalHandlers (SIGILL, handler);        }
+    if (not excludedSignals.Contains (SIGFPE))      {  SetSignalHandlers (SIGFPE, handler);        }
+    if (not excludedSignals.Contains (SIGSEGV))     {  SetSignalHandlers (SIGSEGV, handler);       }
+    if (not excludedSignals.Contains (SIGTERM))     {  SetSignalHandlers (SIGTERM, handler);       }
 #if     qPlatform_POSIX
-    if (excludedSignals.Contains (SIGSYS))          {  SetSignalHandlers (SIGSYS, handler);        }
-    if (excludedSignals.Contains (SIGBUS))          {  SetSignalHandlers (SIGBUS, handler);        }
-    if (excludedSignals.Contains (SIGQUIT))         {  SetSignalHandlers (SIGQUIT, handler);       }
-    if (excludedSignals.Contains (SIGPIPE))         {  SetSignalHandlers (SIGPIPE, handler);       }
-    if (excludedSignals.Contains (SIGHUP))          {  SetSignalHandlers (SIGHUP, handler);        }
-    if (excludedSignals.Contains (SIGXCPU))         {  SetSignalHandlers (SIGXCPU, handler);       }
-    if (excludedSignals.Contains (SIGXFSZ))         {  SetSignalHandlers (SIGXFSZ, handler);       }
+    if (not excludedSignals.Contains (SIGSYS))      {  SetSignalHandlers (SIGSYS, handler);        }
+    if (not excludedSignals.Contains (SIGBUS))      {  SetSignalHandlers (SIGBUS, handler);        }
+    if (not excludedSignals.Contains (SIGQUIT))     {  SetSignalHandlers (SIGQUIT, handler);       }
+    if (not excludedSignals.Contains (SIGPIPE))     {  SetSignalHandlers (SIGPIPE, handler);       }
+    if (not excludedSignals.Contains (SIGHUP))      {  SetSignalHandlers (SIGHUP, handler);        }
+    if (not excludedSignals.Contains (SIGXCPU))     {  SetSignalHandlers (SIGXCPU, handler);       }
+    if (not excludedSignals.Contains (SIGXFSZ))     {  SetSignalHandlers (SIGXFSZ, handler);       }
 #endif
 }
 
