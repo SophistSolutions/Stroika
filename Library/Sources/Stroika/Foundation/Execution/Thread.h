@@ -15,7 +15,7 @@
 
 #include    "../Configuration/Common.h"
 #include    "../Time/Realtime.h"
-#include	"Signals.h"
+#include    "Signals.h"
 
 #include    "IRunnable.h"
 
@@ -408,11 +408,6 @@ namespace   Stroika {
             private:
                 class   Rep_;
                 shared_ptr<Rep_> fRep_;
-
-#if     qPlatform_POSIX
-            private:
-                static  SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_;
-#endif
             };
 
 

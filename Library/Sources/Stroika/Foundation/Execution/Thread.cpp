@@ -140,7 +140,7 @@ namespace   {
 #if     qPlatform_POSIX
 // Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
 // variable
-SignalHandlerType   Thread::kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
+SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_;
 #endif
 
 
@@ -169,6 +169,13 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
 #endif
     , fThreadName_ ()
 {
+#if     qPlatform_POSIX
+    static  bool    sDidInit = false;
+    if (!sDidInit) {
+        sDidInit = true;
+        kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
+    }
+#endif
 }
 
 void    Thread::Rep_::DoCreate (shared_ptr<Rep_>* repSharedPtr)
