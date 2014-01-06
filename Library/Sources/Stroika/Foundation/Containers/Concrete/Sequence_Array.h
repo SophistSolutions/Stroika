@@ -63,9 +63,8 @@ namespace   Stroika {
                      */
                     nonvirtual  void    Compact ();
 
-
                 public:
-                    /*
+                    /**
                      * This optional API allows pre-reserving space as an optimizaiton.
                      */
                     nonvirtual  size_t  GetCapacity () const;
