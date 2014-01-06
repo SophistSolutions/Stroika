@@ -248,12 +248,12 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::insert (T item)
             {
-                Add (a);
+                Add (item);
             }
             template    <typename T, typename TRAITS>
             inline  void    Set<T, TRAITS>::erase (T item)
             {
-                Remove (a);
+                Remove (item);
             }
 
 
