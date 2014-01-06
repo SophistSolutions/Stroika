@@ -302,7 +302,7 @@ namespace   Stroika {
              *
              *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
              */
-            void    SendSignal (Thread::NativeHandleType h, SignalIDType signal);
+            void    SendSignal (thread::native_handle_type h, SignalIDType signal);
 
 
 #if     qPlatform_POSIX

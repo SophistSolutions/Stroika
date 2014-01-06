@@ -369,7 +369,7 @@ wstring Execution::SignalToName (SignalIDType signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-void    Execution::SendSignal (Thread::NativeHandleType h, SignalIDType signal)
+void    Execution::SendSignal (thread::native_handle_type h, SignalIDType signal)
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
 #if     qPlatform_POSIX
