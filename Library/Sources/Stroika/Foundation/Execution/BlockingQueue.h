@@ -87,7 +87,12 @@ namespace   Stroika {
             template    <typename T>
             class   BlockingQueue {
             public:
+                /*
+                 *  Note - you may want to pass in a specific queue object, to require use of a particular concrete implementation
+                 *  for the Queue (such as one that doesnt allocate memory).
+                 */
                 BlockingQueue ();
+                BlockingQueue (const Containers::Queue<T>& useQueue);
 
             public:
                 /**

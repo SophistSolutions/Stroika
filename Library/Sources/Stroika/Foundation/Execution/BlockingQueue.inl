@@ -28,6 +28,13 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+            BlockingQueue<T>::BlockingQueue (const Containers::Queue<T>& useQueue)
+                : fDataAvailable_ ()
+                , fQueue_ (useQueue)
+            {
+                Require (useQueue.empty ());
+            }
+            template    <typename T>
             void    BlockingQueue<T>::AddTail (T e, Time::DurationSecondsType timeout)
             {
                 fQueue_.AddTail (e);
