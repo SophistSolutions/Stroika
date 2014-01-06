@@ -360,6 +360,14 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \em EXPERIMENTAL API
+                 *
+                 *  Apply the function funciton to each element, and return true if it applies to any of them
+                 */
+                nonvirtual  bool    AnyWith (const std::function<bool(const T& item)>& doToElement) const;
+
+            public:
+                /**
                  *  As<CONTAINER_OF_T> () can be used to easily map an iterable to another container
                  *  (for exmaple STL container) which supports begin/end iterator constructor. This is
                  *  really just a shorthand for
