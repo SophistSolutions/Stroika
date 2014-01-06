@@ -17,8 +17,8 @@
 /**
  * Description:
  *
- *      This module defines support for POSIX (and std c++ defined) Signals (not to be confused with the 'Signals and slots'
- *  design pattern which is largely unrelated).
+ *      This module defines support for POSIX (and std c++ defined) Signals (not to be confused
+ *  with the 'Signals and slots' design pattern which is largely unrelated).
  *
  *
  * TODO:
@@ -27,7 +27,7 @@
  *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event
  *              object to cleanly shutodown and the other to HARD ABORT!
  *
- *              This API encourages that mistake. I changed the Servide code to use SetSignalHandler - but
+ *              This API encourages that mistake. I changed the Service code to use SetSignalHandler - but
  *              That has the default of being hard to debug/non-modular. Maybe have a "SetDefaultHanlder"
  *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
  *              handlers?
@@ -88,7 +88,13 @@ namespace   Stroika {
         namespace   Execution {
 
 
+            /**
+            */
             typedef int     SignalIDType;
+
+
+            /**
+            */
             typedef void    (*SignalHandlerType) (SignalIDType);
 
 
@@ -108,7 +114,7 @@ namespace   Stroika {
              */
             class   SignalHandlerRegistry {
             public:
-                /*
+                /**
                  * If this handler is set to the the ONLY handler for a given signal, then that signal handler is effectively ignored.
                  *
                  * To get the signal to be handled the DEFAULT way - remove all signal handlers.
@@ -116,7 +122,9 @@ namespace   Stroika {
                 static  const   SignalHandlerType   kIGNORED;
 
             public:
-                // Access singleton implementation. None exists until this is called.
+                /**
+                 * Access singleton implementation. None exists until this is called.
+                 */
                 static  SignalHandlerRegistry&  Get ();
 
             private:
@@ -134,7 +142,7 @@ namespace   Stroika {
                 nonvirtual  Containers::Set<SignalIDType>   GetHandledSignals () const;
 
             public:
-                /*
+                /**
                  * Returns the set of signals trapped by the SignalHandlerRegistry registry. This doesn't imply there is a handler.
                  * NB: A signal handler must be registered for a given signal number AND the signal number must be in GetHandledSignals () AND
                  * the SignalHandlerRegistry must be Installed () - to get the signal called.
@@ -145,8 +153,8 @@ namespace   Stroika {
                 nonvirtual  Containers::Set<SignalHandlerType>  GetSignalHandlers (SignalIDType signal) const;
 
             public:
-                /*
-                 * See GetSignalHandlers().
+                /**
+                 * @see GetSignalHandlers().
                  *
                  * SetSignalHandlers () with NO arguments uninstalls all Stroika signal handlers for this signal.
                  * SetSignalHandlers () with ONE argument makes Stroika take-over the signal handling - and sets the set of hanlders to be
@@ -156,30 +164,31 @@ namespace   Stroika {
                  * Note - if through ANY combination of set/add/remvoe - you have NO signal handler - this reverts to SIG_DFL, and if you have
                  * exactly ONE signal handler - and its kIGNORED- the signal will be ignored.
                  */
-                nonvirtual  void                    SetSignalHandlers (SignalIDType signal);
-                nonvirtual  void                    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
-                nonvirtual  void                    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
+                nonvirtual  void    SetSignalHandlers (SignalIDType signal);
+                nonvirtual  void    SetSignalHandlers (SignalIDType signal, SignalHandlerType handler);
+                nonvirtual  void    SetSignalHandlers (SignalIDType signal, const Containers::Set<SignalHandlerType>& handlers);
 
             public:
-                /*
-                 * See GetSignalHandlers()
+                /**
+                 * @see GetSignalHandlers()
                  */
-                nonvirtual  void                    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
+                nonvirtual  void    AddSignalHandler (SignalIDType signal, SignalHandlerType handler);
 
             public:
-                /*
-                 * See GetSignalHandlers()
+                /**
+                 * @see GetSignalHandlers()
                  */
-                nonvirtual  void                    RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler);
+                nonvirtual  void    RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler);
 
             public:
-                /*
+                /**
                  * This signal handler simply prints error to the trace log, and calls 'abort' - which on most operating systems will allow the
                  * debugger to examine the errant code.
                  */
                 static  void    DefaultCrashSignalHandler (SignalIDType signal);
 
-                /*
+            public:
+                /**
                  * Install the given signal handler for
                  *      o   SIGINT
                  *      o   SIGILL
@@ -203,17 +212,19 @@ namespace   Stroika {
             };
 
 
+            /**
+             */
             wstring SignalToName (SignalIDType signal);
 
 
-            /*
+            /**
              * Send the given signal to a specific thread (within this process)
              */
             void    SendSignal (Thread::NativeHandleType h, SignalIDType signal);
 
 
 #if     qPlatform_POSIX
-            /*
+            /**
              * For the lifetime of this object - save the initial signal block state for the given signal, and then block the given signal.
              */
             class   ScopedBlockCurrentThreadSignal {
