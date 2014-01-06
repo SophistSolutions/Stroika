@@ -21,7 +21,7 @@
 #include    "../Time/Realtime.h"
 
 #if     qPlatform_POSIX
-#include    "Signals.h"
+#include    "SignalHandlers.h"
 #endif
 #if     qPlatform_Windows
 #include    "Platform/Windows/WaitSupport.h"
