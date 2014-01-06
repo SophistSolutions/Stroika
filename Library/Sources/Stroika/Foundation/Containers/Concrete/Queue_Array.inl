@@ -62,6 +62,9 @@ namespace   Stroika {
                     typedef Private::IteratorImplHelper_<T, DataStructureImplType_>     IteratorRep_;
 
                 private:
+					//// UNCLEAR WHY THIS NEEDS TO BE PUBLIC - TODO - FIX!!!
+					/// @todo
+                public:
                     Private::ContainerRepLockDataSupport_       fLockSupport_;
                     DataStructureImplType_                      fData_;
                 };
@@ -69,7 +72,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ***************** Queue_Array<T, TRAITS>::Rep_ **********************
+                ************************* Queue_Array<T, TRAITS>::Rep_ *************************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
@@ -195,7 +198,7 @@ namespace   Stroika {
 
                 /*
                 ********************************************************************************
-                ************************ Queue_Array<T, TRAITS> *********************
+                ***************************** Queue_Array<T, TRAITS> ***************************
                 ********************************************************************************
                 */
                 template    <typename T, typename TRAITS>
