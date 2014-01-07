@@ -88,12 +88,14 @@ void    SignalHandlerRegistry::Shutdown ()
 {
 #if     qSupportSafeSignalHandlers
     fBlockingQueuePusherThread_.Abort ();   // so stops processing while we remove stuff - not critical
+#endif
     // important to vector through this code so we reset signal handlers to not point to stale pointers.
     for (SignalID si : GetHandledSignals ()) {
         SetSignalHandlers (si);
     }
     Assert (fHandlers_.empty ());
     Assert (sDirectSignalHandlers_.empty ());
+#if     qSupportSafeSignalHandlers
     fBlockingQueuePusherThread_.AbortAndWaitForDone ();
 #endif
 }
@@ -212,6 +214,8 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
 #if     !qSupportSafeSignalHandlers
         anyDirect |= anyIndirect;
 #endif
+        Assert (anyDirect or anyIndirect);
+
         // @todo
         // OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
 
@@ -228,16 +232,15 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         if (anyDirect) {
             // add them explicitly
             for (SignalHandler i : handlers) {
-                if (i.GetType () == SignalHandler::Type::eDirect or (qSupportSafeSignalHandlers)) {
+                if (i.GetType () == SignalHandler::Type::eDirect or (!qSupportSafeSignalHandlers)) {
                     sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
                 }
             }
         }
-#if qSupportSafeSignalHandlers
+#if     qSupportSafeSignalHandlers
         if (anyIndirect) {
             sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
         }
-        (void)::signal (forSignal, FirstPassSignalHandler_);
 
         // @todo REALLY NEED MUTEX TO MAKE THIS START SAFE!
         // BUT LOW PRIIORTY
@@ -261,6 +264,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
             fBlockingQueuePusherThread_ = std::move (watcherThread);
         }
 #endif
+        (void)::signal (forSignal, FirstPassSignalHandler_);
     }
 }
 
