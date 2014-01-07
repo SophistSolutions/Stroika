@@ -20,58 +20,41 @@ namespace   Stroika {
 
             /*
              ********************************************************************************
-             ******************************** SignalHandlerType *****************************
+             ******************************** SignalHandler *********************************
              ********************************************************************************
              */
-            inline  SignalHandlerType::SignalHandlerType (void (*signalHandler)(SignalIDType), Type type)
+            inline  SignalHandler::SignalHandler (void (*signalHandler)(SignalID), Type type)
                 : fType_ (type)
-                , fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
+                , fCall_ (shared_ptr<function<void(SignalID)>> (new function<void(SignalID)> (signalHandler)))
             {
             }
-            inline                SignalHandlerType::SignalHandlerType (const function<void(SignalIDType)>& signalHandler, Type type)
+            inline                SignalHandler::SignalHandler (const function<void(SignalID)>& signalHandler, Type type)
                 : fType_ (type)
-                , fCall_ (shared_ptr<function<void(SignalIDType)>> (new function<void(SignalIDType)> (signalHandler)))
+                , fCall_ (shared_ptr<function<void(SignalID)>> (new function<void(SignalID)> (signalHandler)))
             {
             }
-            inline  SignalHandlerType::Type SignalHandlerType::GetType () const
+            inline  SignalHandler::Type SignalHandler::GetType () const
             {
                 return fType_;
             }
-            inline  void SignalHandlerType::operator () (SignalIDType i) const
+            inline  void SignalHandler::operator () (SignalID i) const
             {
                 Require (fCall_.get () != nullptr);
                 (*fCall_) (i);
             }
-            inline  bool SignalHandlerType::operator== (const SignalHandlerType& rhs) const
+            inline  bool SignalHandler::operator== (const SignalHandler& rhs) const
             {
                 return fCall_.get () == rhs.fCall_.get ();
             }
-            inline  bool SignalHandlerType::operator!= (const SignalHandlerType& rhs) const
+            inline  bool SignalHandler::operator!= (const SignalHandler& rhs) const
             {
                 return fCall_.get () != rhs.fCall_.get ();
             }
-            inline  bool SignalHandlerType::operator< (const SignalHandlerType& rhs) const
+            inline  bool SignalHandler::operator< (const SignalHandler& rhs) const
             {
                 // technically not quite real... - compute address of ptr...
                 return fCall_.get () < rhs.fCall_.get ();
             }
-
-
-            /*
-             ********************************************************************************
-             ****************************** SignalHandlerRegistry ***************************
-             ********************************************************************************
-             */
-#if 0
-            inline  void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const function<void(SignalIDType)>& handler)
-            {
-                SetSignalHandlers (signal, SignalHandlerType (handler));
-            }
-            inline  void    SignalHandlerRegistry::AddSignalHandler (SignalIDType signal, const function<void(SignalIDType)>& handler)
-            {
-                AddSignalHandler (signal, SignalHandlerType (handler));
-            }
-#endif
 
 
         }

@@ -24,10 +24,10 @@ using   Containers::Set;
 namespace   {
     void    Test1_Basic_ ()
     {
-        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
@@ -40,10 +40,10 @@ namespace   {
 namespace   {
     void    Test2_Direct_ ()
     {
-        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
@@ -56,10 +56,10 @@ namespace   {
 namespace   {
     void    Test3_Safe_ ()
     {
-        Set<SignalHandlerType> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
+        Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandlerType ([&called] (SignalIDType signal) -> void {called = true;}));
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
             VerifyTestResult (called);
         }

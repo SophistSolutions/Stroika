@@ -34,13 +34,13 @@ namespace   Stroika {
 
             /**
              */
-            typedef int     SignalIDType;
+            typedef int     SignalID;
 
 
 
             /**
              */
-            Characters::String SignalToName (SignalIDType signal);
+            Characters::String SignalToName (SignalID signal);
 
 
             /**
@@ -48,7 +48,7 @@ namespace   Stroika {
              *
              *  @todo EXPLAIN HOW THIS INTERACTS WITH SignalHandledr::Tyep::eSafe!!!! - use thius with eDIRECT!
              */
-            void    SendSignal (thread::native_handle_type h, SignalIDType signal);
+            void    SendSignal (thread::native_handle_type h, SignalID signal);
 
 
         }

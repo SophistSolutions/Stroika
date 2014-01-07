@@ -138,7 +138,7 @@ namespace   {
 #if     qPlatform_POSIX
 // Important to use direct signal handler because we send the signal to a specific thread, and must set a thread local
 // variable
-SignalHandlerType   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
+SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 #endif
 
 
@@ -165,7 +165,7 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     static  bool    sDidInit = false;
     if (!sDidInit) {
         sDidInit = true;
-        kCallInRepThreadAbortProcSignalHandler_ =   SignalHandlerType (Rep_::CalledInRepThreadAbortProc_, SignalHandlerType::Type::eDirect);
+        kCallInRepThreadAbortProcSignalHandler_ =   SignalHandler (Rep_::CalledInRepThreadAbortProc_, SignalHandler::Type::eDirect);
     }
 #endif
 }
@@ -358,7 +358,7 @@ Thread::NativeHandleType    Thread::Rep_::GetNativeHandle ()
 }
 
 #if     qPlatform_POSIX
-void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalIDType signal)
+void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 {
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
     //Require (GetCurrentThreadID () == rep->GetID ()); must be true but we dont have the rep as argument
@@ -401,7 +401,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
  ********************************************************************************
  */
 #if     qPlatform_POSIX
-SignalIDType        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
+SignalID        Thread::sSignalUsedForThreadAbort_  =   SIGUSR2;
 #endif
 
 Thread::Thread ()
@@ -449,7 +449,7 @@ void    Thread::SetThreadPriority (Priority priority)
 }
 
 #if     qPlatform_POSIX
-void    Thread::SetSignalUsedForThreadAbort (SignalIDType signalNumber)
+void    Thread::SetSignalUsedForThreadAbort (SignalID signalNumber)
 {
     lock_guard<recursive_mutex> critSec (sHandlerInstalled_);
     if (sHandlerInstalled_) {

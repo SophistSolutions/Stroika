@@ -795,7 +795,7 @@ bool    Main::BasicUNIXServiceImpl::_IsServiceActuallyRunning ()
     return false;
 }
 
-void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalIDType signum)
+void    Main::BasicUNIXServiceImpl::SignalHandler_ (SignalID signum)
 {
     // @todo        TOTALLY BAD/BUGGY - CANNOT ALLOCATE MEMORY FROM INSIDE SIGNAL HANDLER - FIX!!!!
     //

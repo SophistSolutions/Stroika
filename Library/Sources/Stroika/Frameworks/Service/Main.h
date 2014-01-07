@@ -8,6 +8,7 @@
 
 #include    "../../Foundation/Characters/String.h"
 #include    "../../Foundation/Configuration/Common.h"
+#include    "../../Foundation/Containers/Sequence.h"
 #include    "../../Foundation/Containers/Set.h"
 #include    "../../Foundation/Execution/Logger.h"
 #include    "../../Foundation/Execution/Process.h"
@@ -102,7 +103,7 @@ namespace   Stroika {
 
 
 #if     qPlatform_POSIX
-            using   Execution::SignalIDType;
+            using   Execution::SignalID;
 #endif
 
 
@@ -752,12 +753,12 @@ namespace   Stroika {
                  */
             public:
 #if     !qCompilerAndStdLib_constexpr_Buggy
-                static  constexpr   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
+                static  constexpr   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
 #else
-                static  const   SignalIDType kSIG_ReReadConfiguration    =   SIGHUP;
+                static  const   SignalID kSIG_ReReadConfiguration    =   SIGHUP;
 #endif
             private:
-                static  void    SignalHandler_ (SignalIDType signum);
+                static  void    SignalHandler_ (SignalID signum);
 
                 // MUST REDO THIS STUFF WITH EVENTS - when we have POSIX complaint event support in Stroika Foundation
             protected:

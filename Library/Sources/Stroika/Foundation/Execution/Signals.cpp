@@ -26,7 +26,7 @@ using   Characters::Concrete::String_Constant;
  ************************** Execution::SignalToName *****************************
  ********************************************************************************
  */
-Characters::String Execution::SignalToName (SignalIDType signal)
+Characters::String Execution::SignalToName (SignalID signal)
 {
     switch (signal) {
         case    SIGINT:
@@ -91,7 +91,7 @@ Characters::String Execution::SignalToName (SignalIDType signal)
  **************************** Execution::SendSignal *****************************
  ********************************************************************************
  */
-void    Execution::SendSignal (thread::native_handle_type h, SignalIDType signal)
+void    Execution::SendSignal (thread::native_handle_type h, SignalID signal)
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::Execution::SendSignal"));
 #if     qPlatform_POSIX

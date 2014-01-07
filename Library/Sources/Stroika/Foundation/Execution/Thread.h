@@ -303,10 +303,10 @@ namespace   Stroika {
 
 #if     qPlatform_POSIX
             public:
-                static  SignalIDType        GetSignalUsedForThreadAbort ();
-                static  void                SetSignalUsedForThreadAbort (SignalIDType signalNumber);
+                static  SignalID        GetSignalUsedForThreadAbort ();
+                static  void            SetSignalUsedForThreadAbort (SignalID signalNumber);
             private:
-                static  SignalIDType    sSignalUsedForThreadAbort_;
+                static  SignalID        sSignalUsedForThreadAbort_;
 #endif
 
 

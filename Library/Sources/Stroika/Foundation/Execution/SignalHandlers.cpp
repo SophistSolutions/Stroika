@@ -36,7 +36,7 @@ using   Containers::Set;
 
 
 namespace   {
-    bool    IsSigIgnore_ (const Set<SignalHandlerType>& sigSet)
+    bool    IsSigIgnore_ (const Set<SignalHandler>& sigSet)
     {
         return sigSet.size () == 1 and sigSet.Contains (SignalHandlerRegistry::kIGNORED);
     }
@@ -53,10 +53,10 @@ namespace   {
  ******************** Execution::SignalHandlerRegistry **************************
  ********************************************************************************
  */
-const   SignalHandlerType   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
+const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
 mutex                                           SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
-vector<pair<SignalIDType, SignalHandlerType>>   SignalHandlerRegistry::sDirectSignalHandlers_;
+vector<pair<SignalID, SignalHandler>>   SignalHandlerRegistry::sDirectSignalHandlers_;
 SignalHandlerRegistry                           SignalHandlerRegistry::sThe_;
 
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
@@ -65,9 +65,9 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 }
 
 namespace {
-    Queue<SignalIDType> mkQ_ ()
+    Queue<SignalID> mkQ_ ()
     {
-        Containers::Concrete::Queue_Array<SignalIDType> signalQ;
+        Containers::Concrete::Queue_Array<SignalID> signalQ;
         signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
         return signalQ;
     }
@@ -89,7 +89,7 @@ void    SignalHandlerRegistry::Shutdown ()
 #if     qSupportSafeSignalHandlers
     fBlockingQueuePusherThread_.Abort ();   // so stops processing while we remove stuff - not critical
     // important to vector through this code so we reset signal handlers to not point to stale pointers.
-    for (SignalIDType si : GetHandledSignals ()) {
+    for (SignalID si : GetHandledSignals ()) {
         SetSignalHandlers (si);
     }
     Assert (fHandlers_.empty ());
@@ -98,32 +98,32 @@ void    SignalHandlerRegistry::Shutdown ()
 #endif
 }
 
-Set<SignalIDType>   SignalHandlerRegistry::GetHandledSignals () const
+Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
     // @todo redo using Mapping<>::Keys () when implemented...
-    Set<SignalIDType>   result;
+    Set<SignalID>   result;
     for (auto i : fHandlers_) {
         result.Add (i.fKey);
     }
     return result;
 }
 
-Set<SignalHandlerType>  SignalHandlerRegistry::GetSignalHandlers (SignalIDType signal) const
+Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
     return fHandlers_.LookupValue (signal);
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal)
+void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
 {
-    SetSignalHandlers (signal, Set<SignalHandlerType> ());
+    SetSignalHandlers (signal, Set<SignalHandler> ());
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, SignalHandlerType handler)
+void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler handler)
 {
-    SetSignalHandlers (signal, Set<SignalHandlerType> ({handler}));
+    SetSignalHandlers (signal, Set<SignalHandler> ({handler}));
 }
 
-void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const Set<SignalHandlerType>& handlers)
+void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
@@ -137,28 +137,28 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalIDType signal, const Set
     UpdateDirectSignalHandlers_ (signal);
 }
 
-void    SignalHandlerRegistry::AddSignalHandler (SignalIDType signal, SignalHandlerType handler)
+void    SignalHandlerRegistry::AddSignalHandler (SignalID signal, SignalHandler handler)
 {
-    Set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
+    Set<SignalHandler>  s   =   GetSignalHandlers (signal);
     s.Add (handler);
     SetSignalHandlers (signal, s);
 }
 
-void    SignalHandlerRegistry::RemoveSignalHandler (SignalIDType signal, SignalHandlerType handler)
+void    SignalHandlerRegistry::RemoveSignalHandler (SignalID signal, SignalHandler handler)
 {
-    Set<SignalHandlerType>  s   =   GetSignalHandlers (signal);
+    Set<SignalHandler>  s   =   GetSignalHandlers (signal);
     Require (s.Contains (handler));
     s.Remove (handler);
     SetSignalHandlers (signal, s);
 }
 
-void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalIDType signal)
+void    SignalHandlerRegistry::DefaultCrashSignalHandler (SignalID signal)
 {
     DbgTrace (L"Serious Signal Error trapped: %s ... Aborting", SignalToName (signal).c_str ());
     abort ();
 }
 
-void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType handler, const Set<SignalIDType>& excludedSignals)
+void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler handler, const Set<SignalID>& excludedSignals)
 {
     if (not excludedSignals.Contains (SIGINT))      {  SetSignalHandlers (SIGINT, handler);        }
     if (not excludedSignals.Contains (SIGILL))      {  SetSignalHandlers (SIGILL, handler);        }
@@ -177,9 +177,9 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandlerType
 }
 
 // So all signal() calls (setting up FirstPassSignalHandler_) - and setup its array of direct handlers
-void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSignal)
+void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
 {
-    Set<SignalHandlerType>  handlers    =   GetSignalHandlers (forSignal);
+    Set<SignalHandler>  handlers    =   GetSignalHandlers (forSignal);
     if (handlers.empty ()) {
         // nothing todo - empty list treated as not in sHandlers_ list
         lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
@@ -206,8 +206,8 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
         (void)::signal (forSignal, SIG_IGN);
     }
     else {
-        bool    anyDirect   =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eDirect;});
-        bool    anyIndirect =   handlers.AnyWith ([] (const SignalHandlerType & sh) -> bool { return sh.GetType () == SignalHandlerType::Type::eSafe;});
+        bool    anyDirect   =   handlers.AnyWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eDirect;});
+        bool    anyIndirect =   handlers.AnyWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eSafe;});
 
 #if     !qSupportSafeSignalHandlers
         anyDirect |= anyIndirect;
@@ -227,15 +227,15 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
         }
         if (anyDirect) {
             // add them explicitly
-            for (SignalHandlerType i : handlers) {
-                if (i.GetType () == SignalHandlerType::Type::eDirect or (qSupportSafeSignalHandlers)) {
-                    sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, i));
+            for (SignalHandler i : handlers) {
+                if (i.GetType () == SignalHandler::Type::eDirect or (qSupportSafeSignalHandlers)) {
+                    sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
                 }
             }
         }
 #if qSupportSafeSignalHandlers
         if (anyIndirect) {
-            sDirectSignalHandlers_.push_back (pair<SignalIDType, SignalHandlerType> (forSignal, SignalHandlerType (SecondPassDelegationSignalHandler_, SignalHandlerType::Type::eDirect)));
+            sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
         }
         (void)::signal (forSignal, FirstPassSignalHandler_);
 
@@ -247,10 +247,10 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
                 Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
                 while (true) {
                     Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
-                    SignalIDType    i   =   fIncomingSafeSignals_.RemoveHead ();
+                    SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
                     DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
-                    for (SignalHandlerType sh : GetSignalHandlers (i)) {
-                        if (sh.GetType () == SignalHandlerType::Type::eSafe) {
+                    for (SignalHandler sh : GetSignalHandlers (i)) {
+                        if (sh.GetType () == SignalHandler::Type::eSafe) {
                             IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                         }
                     }
@@ -264,7 +264,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalIDType forSign
     }
 }
 
-void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalIDType signal)
+void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
 #if     qDoDbgTraceOnSignalHandlers_
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::FirstPassSignalHandler_"));
@@ -276,13 +276,13 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalIDType signal)
      * would  be to copy the list first. However, that might involve memory allocations, which could itself cause deadlock.
      * Its unlikely this will be and issue, so just go with this simple strategy.
      *
-     *    Note - its OK to copy SignalHandlerType - even thoguh it contains a function() - which woudlnt be safe to copy - but
+     *    Note - its OK to copy SignalHandler - even thoguh it contains a function() - which woudlnt be safe to copy - but
      *    its wrapped in a shared_ptr<> (so the copy just ups reference count whcih dooesnt allocate memory).
      */
     sDirectSignalHandlers_CritSection_.lock ();
     try {
         for (size_t i = 0; i < sDirectSignalHandlers_.size (); ++i) {
-            pair<SignalIDType, SignalHandlerType>    si =    sDirectSignalHandlers_[i];
+            pair<SignalID, SignalHandler>    si =    sDirectSignalHandlers_[i];
             if (si.first == signal) {
                 sDirectSignalHandlers_CritSection_.unlock ();
                 si.second (signal);
@@ -296,7 +296,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalIDType signal)
 }
 
 #if     qSupportSafeSignalHandlers
-void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalIDType signal)
+void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID signal)
 {
     /*
      * This is still an unsafe context, so CAREFULLY push the signal onto the blocking queue!
@@ -318,7 +318,7 @@ void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalIDType 
  ************* Execution::ScopedBlockCurrentThreadSignal ************************
  ********************************************************************************
  */
-ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalIDType signal)
+ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
     : fSignal_ (signal)
     , fRestoreMask_ ()
 {

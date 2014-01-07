@@ -62,7 +62,7 @@ namespace   Stroika {
 
             private:
 #if         qPlatform_POSIX
-                static  void    CalledInRepThreadAbortProc_ (SignalIDType signal);
+                static  void    CalledInRepThreadAbortProc_ (SignalID signal);
 #elif       qPlatform_Windows
                 static  void    CALLBACK    CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
@@ -110,7 +110,7 @@ namespace   Stroika {
              ********************************************************************************
              */
 #if     qPlatform_POSIX
-            inline  SignalIDType        Thread::GetSignalUsedForThreadAbort ()
+            inline  SignalID        Thread::GetSignalUsedForThreadAbort ()
             {
                 return sSignalUsedForThreadAbort_;
             }
