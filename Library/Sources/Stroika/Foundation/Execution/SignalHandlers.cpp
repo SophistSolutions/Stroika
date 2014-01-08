@@ -226,6 +226,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
                     break;
             }
         });
+        Assert (directHandlers.size () + safeHandlers.size () == handlers.size ());
         fDirectHandlers_.Add (signal, directHandlers);
         if (not safeHandlers.empty ()) {
             // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
