@@ -208,8 +208,8 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         (void)::signal (forSignal, SIG_IGN);
     }
     else {
-        bool    anyDirect   =   handlers.AnyWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eDirect;});
-        bool    anyIndirect =   handlers.AnyWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eSafe;});
+        bool    anyDirect   =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eDirect;});
+        bool    anyIndirect =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eSafe;});
 
 #if     !qSupportSafeSignalHandlers
         anyDirect |= anyIndirect;

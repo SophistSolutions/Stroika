@@ -242,6 +242,19 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  \em EXPERIMENTAL API
+                 *
+                 *  Apply the function funciton to each element, and return true if it applies to any of them.
+                 *
+                 *  \em Design Note:
+                 *      Considered overloading this with Contains() - but decided against it since I feared
+                 *      potential confusion/conflicts (esp if we expand arg to ContainsWith() to be templated FUNCTOR instead
+                 *      of std::function<>).
+                 */
+                nonvirtual  bool    ContainsWith (const std::function<bool(const T& item)>& doToElement) const;
+
+            public:
+                /**
                  *  SetEquals () - very inefficiently - but with constant small memory overhead - returns true if
                  *  each element in the each iterable is contained in the other. They lengths CAN be differnt
                  *  and the two Iterables<> be SetEquals().
@@ -357,14 +370,6 @@ namespace   Stroika {
                  */
                 nonvirtual  Iterator<T>    ApplyUntilTrue (const std::function<bool(const T& item)>& doToElement) const;
                 nonvirtual  Iterator<T>    ApplyUntilTrueStatic (bool (*doToElement) (const T& item)) const;
-
-            public:
-                /**
-                 *  \em EXPERIMENTAL API
-                 *
-                 *  Apply the function funciton to each element, and return true if it applies to any of them
-                 */
-                nonvirtual  bool    AnyWith (const std::function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**

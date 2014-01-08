@@ -351,7 +351,7 @@ namespace   Stroika {
 #endif
             }
             template    <typename T>
-            bool    Iterable<T>::AnyWith (const std::function<bool(const T& item)>& doToElement) const
+            bool    Iterable<T>::ContainsWith (const std::function<bool(const T& item)>& doToElement) const
             {
                 for (T i : *this) {
                     if (doToElement (i)) {
