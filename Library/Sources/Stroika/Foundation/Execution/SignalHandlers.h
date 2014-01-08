@@ -131,6 +131,7 @@ namespace   Stroika {
             private:
                 SignalHandlerRegistry ();
                 SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
+                ~SignalHandlerRegistry ();
 
             public:
                 nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;

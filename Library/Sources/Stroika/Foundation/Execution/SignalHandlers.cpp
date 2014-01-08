@@ -5,8 +5,6 @@
 
 #include    <mutex>
 
-#include    "../Characters/CString/Utilities.h"
-#include    "../Characters/Format.h"
 #include    "../Containers/Mapping.h"
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
@@ -148,6 +146,11 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 {
 }
 
+SignalHandlerRegistry::~SignalHandlerRegistry ()
+{
+    Assert (SafeSignalsManager::sThe_ == nullptr);  // must be cleared first
+}
+
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
     // @todo redo using Mapping<>::Keys () when implemented...
@@ -210,18 +213,26 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     }
     else {
         Set<SignalHandler>  directHandlers;
-        handlers.Apply ([&directHandlers] (SignalHandler si) {
-            if (si.GetType () == SignalHandler::Type::eDirect) {
-                directHandlers.Add (si);
+        Set<SignalHandler>  safeHandlers;
+        handlers.Apply ([&directHandlers, &safeHandlers] (SignalHandler si) {
+            switch (si.GetType ()) {
+                case SignalHandler::Type::eDirect: {
+                        directHandlers.Add (si);
+                    }
+                    break;
+                case SignalHandler::Type::eSafe: {
+                        safeHandlers.Add (si);
+                    }
+                    break;
             }
         });
         fDirectHandlers_.Add (signal, directHandlers);
-        Set<SignalHandler>  safeHandlers;
-        handlers.Apply ([&safeHandlers] (SignalHandler si) {
-            if (si.GetType () == SignalHandler::Type::eSafe) {
-                safeHandlers.Add (si);
-            }
-        });
+        if (not safeHandlers.empty ()) {
+            // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
+            // defined first. It is recommended that you define an instance of
+            // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
+            Require (SafeSignalsManager::sThe_ != nullptr);
+        }
         if (tmp != nullptr) {
             tmp->fHandlers_.Add (signal, safeHandlers);
         }
@@ -267,79 +278,6 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
 #endif
 }
 
-#if 0
-// So all signal() calls (setting up FirstPassSignalHandler_) - and setup its array of direct handlers
-void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
-{
-    Set<SignalHandler>  handlers    =   GetSignalHandlers (forSignal);
-    if (handlers.empty ()) {
-        // nothing todo - empty list treated as not in sHandlers_ list
-        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
-        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
-            if (i->first == forSignal) {
-                i = fDirectSignalHandlers_.erase (i);
-            }
-            else {
-                i++;
-            }
-        }
-        (void)::signal (forSignal, SIG_DFL);
-    }
-    else if (IsSigIgnore_ (handlers)) {
-        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
-        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
-            if (i->first == forSignal) {
-                i = fDirectSignalHandlers_.erase (i);
-            }
-            else {
-                i++;
-            }
-        }
-        (void)::signal (forSignal, SIG_IGN);
-    }
-    else {
-        bool    anyDirect   =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eDirect;});
-        bool    anyIndirect =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eSafe;});
-
-        Assert (anyDirect or anyIndirect);
-
-        // @todo
-        // OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
-
-        // Directly copy in 'direct' signal handlers, and for indirect ones, list our indirect signal handler in the 'direct' list
-        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
-        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
-            if (i->first == forSignal) {
-                i = fDirectSignalHandlers_.erase (i);
-            }
-            else {
-                i++;
-            }
-        }
-        if (anyDirect) {
-            // add them explicitly
-            for (SignalHandler i : handlers) {
-                if (i.GetType () == SignalHandler::Type::eDirect) {
-                    fDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
-                }
-                else {
-                    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
-                    if (tmp != nullptr) {
-                        Set<SignalHandler>  s   =   GetSignalHandlers (forSignal);
-                        s.Add (i);
-                        tmp->fHandlers_.Add (forSignal, s);
-                    }
-                }
-            }
-        }
-        if (anyIndirect) {
-            fDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
-        }
-        (void)::signal (forSignal, FirstPassSignalHandler_);
-    }
-}
-#endif
-
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
 #if     qDoDbgTraceOnSignalHandlers_
@@ -348,7 +286,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 #endif
     SignalHandlerRegistry&  SHR =   Get ();
 
-#if 1
     for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
         sh (signal);
     }
@@ -356,31 +293,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     if (tmp != nullptr) {
         tmp->fIncomingSafeSignals_.AddTail (signal);
     }
-#else
-    /*
-     * sDirectSignalHandlers_ may contain multiple matching signal handlers. We want to avoid deadlocks, so dont keep locked while
-     * calling that handler, But the list could change out from under us. If that happens, we could mis some handlers. The alterantive
-     * would  be to copy the list first. However, that might involve memory allocations, which could itself cause deadlock.
-     * Its unlikely this will be and issue, so just go with this simple strategy.
-     *
-     *    Note - its OK to copy SignalHandler - even thoguh it contains a function() - which woudlnt be safe to copy - but
-     *    its wrapped in a shared_ptr<> (so the copy just ups reference count whcih dooesnt allocate memory).
-     */
-    SHR.fDirectSignalHandlers_CritSection_.lock ();
-    try {
-        for (size_t i = 0; i < SHR.fDirectSignalHandlers_.size (); ++i) {
-            pair<SignalID, SignalHandler>    si =    SHR.fDirectSignalHandlers_[i];
-            if (si.first == signal) {
-                SHR.fDirectSignalHandlers_CritSection_.unlock ();
-                si.second (signal);
-                SHR.fDirectSignalHandlers_CritSection_.lock ();
-            }
-        }
-    }
-    catch (...) {
-    }
-    SHR.fDirectSignalHandlers_CritSection_.unlock ();
-#endif
 }
 
 
