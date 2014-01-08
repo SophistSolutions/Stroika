@@ -237,6 +237,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
         if (tmp != nullptr) {
             tmp->fHandlers_.Add (signal, safeHandlers);
         }
+        (void)::signal (signal, FirstPassSignalHandler_);
     }
 }
 
