@@ -7,3 +7,6 @@ v2.0a13		New 'safe signals' mechanism. This is not widely used, but is used
 				Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
 			to main(int argc, const char* argv[])
 
+			Lose legacy nativive/pthread etc thread support (just C++-thread integration).
+
+			Use zlib 1.2.8
