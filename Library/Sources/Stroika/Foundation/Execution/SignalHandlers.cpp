@@ -47,14 +47,7 @@ namespace   {
 #define qSupportSafeSignalHandlers  0
 
 
-namespace {
-    Queue<SignalID> mkQ_ ()
-    {
-        Containers::Concrete::Queue_Array<SignalID> signalQ;
-        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
-        return signalQ;
-    }
-}
+
 
 
 
@@ -65,10 +58,36 @@ namespace {
  */
 SignalHandlerRegistry::SafeSignalsManager*  SignalHandlerRegistry::SafeSignalsManager::sThe =   nullptr;
 
+namespace {
+    Queue<SignalID> mkQ_ ()
+    {
+        Containers::Concrete::Queue_Array<SignalID> signalQ;
+        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
+        return signalQ;
+    }
+}
+
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
     : fIncomingSafeSignals_ (mkQ_ ())
     , fBlockingQueuePusherThread_ ()
 {
+    Thread watcherThread ([this] () {
+        // This is a safe context
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
+        while (true) {
+            Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
+            SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
+            DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
+            for (SignalHandler sh : SignalHandlerRegistry::Get ().GetSignalHandlers (i)) {
+                if (sh.GetType () == SignalHandler::Type::eSafe) {
+                    IgnoreExceptionsExceptThreadAbortForCall (sh (i));
+                }
+            }
+        }
+    });
+    watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
+    watcherThread.Start ();
+    fBlockingQueuePusherThread_ = std::move (watcherThread);
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
@@ -107,18 +126,12 @@ SignalHandlerRegistry::~SignalHandlerRegistry ()
 
 void    SignalHandlerRegistry::Shutdown ()
 {
-#if     qSupportSafeSignalHandlers
-    fBlockingQueuePusherThread_.Abort ();   // so stops processing while we remove stuff - not critical
-#endif
     // important to vector through this code so we reset signal handlers to not point to stale pointers.
     for (SignalID si : GetHandledSignals ()) {
         SetSignalHandlers (si);
     }
     Assert (fHandlers_.empty ());
     Assert (sDirectSignalHandlers_.empty ());
-#if     qSupportSafeSignalHandlers
-    fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-#endif
 }
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
