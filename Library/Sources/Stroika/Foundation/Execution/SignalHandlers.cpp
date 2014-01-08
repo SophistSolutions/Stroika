@@ -72,17 +72,19 @@ namespace {
 }
 
 SignalHandlerRegistry::SafeSignalsManager::Rep_::Rep_  ()
-    : fIncomingSafeSignals_ (mkQ_ ())
+    : fHandlers_ ()
+    , fIncomingSafeSignals_ (mkQ_ ())
     , fBlockingQueuePusherThread_ ()
 {
     Thread watcherThread ([this] () {
         // This is a safe context
         Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
         while (true) {
-            Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
+            Debug::TraceContextBumper trcCtx1 (SDKSTR ("waiting for next signal"));
             SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-            DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
-            for (SignalHandler sh : SignalHandlerRegistry::Get ().GetSignalHandlers (i)) {
+            Debug::TraceContextBumper trcCtx2 (SDKSTR ("Invoking SAFE signal handlers"));
+            DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
+            for (SignalHandler sh : fHandlers_.LookupValue (i)) {
                 if (sh.GetType () == SignalHandler::Type::eSafe) {
                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                 }
@@ -96,6 +98,7 @@ SignalHandlerRegistry::SafeSignalsManager::Rep_::Rep_  ()
 
 SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_ ()
 {
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"));
     fBlockingQueuePusherThread_.AbortAndWaitForDone ();
 }
 
@@ -112,12 +115,14 @@ shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegist
 
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"));
     Assert (sThe_ == nullptr);
     sThe_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
     Assert (sThe_ != nullptr);
     sThe_->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     sThe_.reset ();
@@ -144,10 +149,12 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 SignalHandlerRegistry::SignalHandlerRegistry ()
     : fDirectHandlers_ ()
 {
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"));
 }
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
     Assert (SafeSignalsManager::sThe_ == nullptr);  // must be cleared first
 }
 
@@ -189,7 +196,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, SignalHandler
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<SignalHandler>& handlers)
 {
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
 
     shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
@@ -283,7 +290,7 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
 #if     qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::FirstPassSignalHandler_"));
+    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::FirstPassSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
     SignalHandlerRegistry&  SHR =   Get ();
