@@ -71,6 +71,7 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
     : fIncomingSafeSignals_ (mkQ_ ())
     , fBlockingQueuePusherThread_ ()
 {
+    sThe = this;
     Thread watcherThread ([this] () {
         // This is a safe context
         Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
@@ -93,6 +94,7 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+    sThe = nullptr;
 }
 
 
@@ -106,9 +108,9 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
  */
 const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
-mutex                                           SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
+mutex                                   SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
 vector<pair<SignalID, SignalHandler>>   SignalHandlerRegistry::sDirectSignalHandlers_;
-SignalHandlerRegistry                           SignalHandlerRegistry::sThe_;
+SignalHandlerRegistry                   SignalHandlerRegistry::sThe_;
 
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 {
@@ -121,17 +123,6 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
-    Shutdown ();
-}
-
-void    SignalHandlerRegistry::Shutdown ()
-{
-    // important to vector through this code so we reset signal handlers to not point to stale pointers.
-    for (SignalID si : GetHandledSignals ()) {
-        SetSignalHandlers (si);
-    }
-    Assert (fHandlers_.empty ());
-    Assert (sDirectSignalHandlers_.empty ());
 }
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
@@ -245,9 +236,6 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         bool    anyDirect   =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eDirect;});
         bool    anyIndirect =   handlers.ContainsWith ([] (const SignalHandler & sh) -> bool { return sh.GetType () == SignalHandler::Type::eSafe;});
 
-#if     !qSupportSafeSignalHandlers
-        anyDirect |= anyIndirect;
-#endif
         Assert (anyDirect or anyIndirect);
 
         // @todo
@@ -266,38 +254,20 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         if (anyDirect) {
             // add them explicitly
             for (SignalHandler i : handlers) {
-                if (i.GetType () == SignalHandler::Type::eDirect or (!qSupportSafeSignalHandlers)) {
+                if (i.GetType () == SignalHandler::Type::eDirect) {
                     sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
+                }
+                else {
+                    AssertNotNull (SafeSignalsManager::sThe);/////smart/weakptr
+                    Set<SignalHandler>  s   =   GetSignalHandlers (forSignal);
+                    s.Add (i);
+                    SafeSignalsManager::sThe->fHandlers_.Add (forSignal, s);
                 }
             }
         }
-#if     qSupportSafeSignalHandlers
         if (anyIndirect) {
             sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
         }
-
-        // @todo REALLY NEED MUTEX TO MAKE THIS START SAFE!
-        // BUT LOW PRIIORTY
-        if (anyIndirect and fBlockingQueuePusherThread_.GetStatus () == Thread::Status::eNull) {
-            Thread watcherThread ([this] () {
-                // This is a safe context
-                Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
-                while (true) {
-                    Debug::TraceContextBumper trcCtx (SDKSTR ("waiting for next signal"));
-                    SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-                    DbgTrace (L"got signal: %s; ... delegating to safe handlers...", SignalToName (i).c_str ());
-                    for (SignalHandler sh : GetSignalHandlers (i)) {
-                        if (sh.GetType () == SignalHandler::Type::eSafe) {
-                            IgnoreExceptionsExceptThreadAbortForCall (sh (i));
-                        }
-                    }
-                }
-            });
-            watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
-            watcherThread.Start ();
-            fBlockingQueuePusherThread_ = std::move (watcherThread);
-        }
-#endif
         (void)::signal (forSignal, FirstPassSignalHandler_);
     }
 }
@@ -333,7 +303,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     sDirectSignalHandlers_CritSection_.unlock ();
 }
 
-#if     qSupportSafeSignalHandlers
 void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID signal)
 {
     /*
@@ -343,9 +312,10 @@ void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID sign
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SecondPassDelegationSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-    Get ().fIncomingSafeSignals_.AddTail (signal);
+    AssertNotNull (SafeSignalsManager::sThe);/////smart/weakptr
+    SafeSignalsManager::sThe->fIncomingSafeSignals_.AddTail (signal);
 }
-#endif
+
 
 
 

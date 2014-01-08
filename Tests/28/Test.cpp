@@ -29,9 +29,9 @@ namespace   {
             bool    called  =   false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
+            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
             VerifyTestResult (called);
         }
-        Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
         SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }
@@ -43,7 +43,7 @@ namespace   {
         Set<SignalHandler> saved    =   SignalHandlerRegistry::Get ().GetSignalHandlers (SIGINT);
         {
             bool    called  =   false;
-            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
+            SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}, SignalHandler::Type::eDirect));
             ::raise (SIGINT);
             VerifyTestResult (called);
         }
@@ -61,9 +61,9 @@ namespace   {
             bool    called  =   false;
             SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, SignalHandler ([&called] (SignalID signal) -> void {called = true;}));
             ::raise (SIGINT);
+            Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
             VerifyTestResult (called);
         }
-        Execution::Sleep (0.5); // delivery could be delayed because signal is pushed to another thread
         SignalHandlerRegistry::Get ().SetSignalHandlers (SIGINT, saved);
     }
 }

@@ -70,7 +70,8 @@ void    TestHarness::Setup ()
     Stroika::Foundation::Debug::SetAssertionHandler (_ASSERT_HANDLER_);
 #endif
     Debug::RegisterDefaultFatalErrorHandlers (_FatalErrorHandler_);
-    Execution::SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (_FatalSignalHandler_);
+    using   namespace   Execution;
+    SignalHandlerRegistry::Get ().SetStandardCrashHandlerSignals (SignalHandler (_FatalSignalHandler_, SignalHandler::Type::eDirect));
 }
 
 

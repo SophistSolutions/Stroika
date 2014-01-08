@@ -195,8 +195,9 @@ namespace   Stroika {
                     static  SafeSignalsManager* sThe;
 
                 private:
-                    BlockingQueue<SignalID>     fIncomingSafeSignals_;
-                    Thread                      fBlockingQueuePusherThread_;
+                    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
+                    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
+                    Thread                                                          fBlockingQueuePusherThread_;
 
                 private:
                     friend  class   SignalHandlerRegistry;
@@ -247,13 +248,6 @@ namespace   Stroika {
                  * @see GetSignalHandlers()
                  */
                 nonvirtual  void    RemoveSignalHandler (SignalID signal, SignalHandler handler);
-
-            public:
-                /**
-                **** REMOVES ALL HANDLERRS. CAN BE CALLED BEFORE existing main to assure threads shutdown first, but
-                *   sbhoudktn be needed. Removes all handlers.
-                 */
-                nonvirtual  void    Shutdown ();
 
             public:
                 /**
