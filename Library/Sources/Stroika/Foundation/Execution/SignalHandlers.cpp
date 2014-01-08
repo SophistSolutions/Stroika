@@ -33,6 +33,15 @@ using   Containers::Set;
 
 
 
+struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+    Rep_ ();
+    ~Rep_ ();
+    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
+    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
+    Thread                                                          fBlockingQueuePusherThread_;
+};
+
+
 
 
 namespace   {
@@ -47,15 +56,11 @@ namespace   {
 
 
 
-
-
 /*
  ********************************************************************************
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-SignalHandlerRegistry::SafeSignalsManager*  SignalHandlerRegistry::SafeSignalsManager::sThe =   nullptr;
-
 namespace {
     Queue<SignalID> mkQ_ ()
     {
@@ -65,11 +70,10 @@ namespace {
     }
 }
 
-SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
+SignalHandlerRegistry::SafeSignalsManager::Rep_::Rep_  ()
     : fIncomingSafeSignals_ (mkQ_ ())
     , fBlockingQueuePusherThread_ ()
 {
-    sThe = this;
     Thread watcherThread ([this] () {
         // This is a safe context
         Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
@@ -89,11 +93,35 @@ SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
     fBlockingQueuePusherThread_ = std::move (watcherThread);
 }
 
-SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
+SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_ ()
 {
     fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-    sThe = nullptr;
 }
+
+
+
+
+
+/*
+ ********************************************************************************
+ *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
+ ********************************************************************************
+ */
+shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegistry::SafeSignalsManager::sThe_;
+
+SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
+{
+    Assert (sThe_ == nullptr);
+    sThe_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
+}
+
+SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
+{
+    Assert (sThe_ != nullptr);
+    sThe_->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+    sThe_.reset ();
+}
+
 
 
 
@@ -104,7 +132,7 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
  ******************** Execution::SignalHandlerRegistry **************************
  ********************************************************************************
  */
-const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
+const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SignalHandler (SIG_IGN, SignalHandler::Type::eDirect);
 
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 {
@@ -113,8 +141,7 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 }
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
-    : fDirectSignalHandlers_CritSection_ ()
-    , fDirectSignalHandlers_ ()
+    : fDirectHandlers_ ()
 {
 }
 
@@ -122,15 +149,26 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 {
     // @todo redo using Mapping<>::Keys () when implemented...
     Set<SignalID>   result;
-    for (auto i : fHandlers_) {
+    for (auto i : fDirectHandlers_) {
         result.Add (i.fKey);
+    }
+    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sThe_;
+    if (tmp != nullptr) {
+        for (auto i : tmp->fHandlers_) {
+            result.Add (i.fKey);
+        }
     }
     return result;
 }
 
 Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
-    return fHandlers_.LookupValue (signal);
+    Set<SignalHandler>  result  =   fDirectHandlers_.LookupValue (signal);
+    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sThe_;
+    if (tmp != nullptr) {
+        result += tmp->fHandlers_.LookupValue (signal);
+    }
+    return result;
 }
 
 void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal)
@@ -147,14 +185,44 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
+
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
     if (handlers.empty ()) {
-        // save memory and remove empty items from list
-        fHandlers_.Remove (signal);
+        /*
+         *  No handlers means use default.
+         */
+        fDirectHandlers_.Remove (signal);
+        if (tmp != nullptr) {
+            tmp->fHandlers_.Remove (signal);
+        }
+        (void)::signal (signal, SIG_DFL);
+    }
+    else if (IsSigIgnore_ (handlers)) {
+        Assert (handlers.size () == 1);
+        fDirectHandlers_.Add (signal, handlers);
+        if (tmp != nullptr) {
+            tmp->fHandlers_.Remove (signal);
+        }
+        (void)::signal (signal, SIG_IGN);
     }
     else {
-        fHandlers_.Add (signal, handlers);
+        Set<SignalHandler>  directHandlers;
+        handlers.Apply ([&directHandlers] (SignalHandler si) {
+            if (si.GetType () == SignalHandler::Type::eDirect) {
+                directHandlers.Add (si);
+            }
+        });
+        fDirectHandlers_.Add (signal, directHandlers);
+        Set<SignalHandler>  safeHandlers;
+        handlers.Apply ([&safeHandlers] (SignalHandler si) {
+            if (si.GetType () == SignalHandler::Type::eSafe) {
+                safeHandlers.Add (si);
+            }
+        });
+        if (tmp != nullptr) {
+            tmp->fHandlers_.Add (signal, safeHandlers);
+        }
     }
-    UpdateDirectSignalHandlers_ (signal);
 }
 
 void    SignalHandlerRegistry::AddSignalHandler (SignalID signal, SignalHandler handler)
@@ -196,6 +264,7 @@ void    SignalHandlerRegistry::SetStandardCrashHandlerSignals (SignalHandler han
 #endif
 }
 
+#if 0
 // So all signal() calls (setting up FirstPassSignalHandler_) - and setup its array of direct handlers
 void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
 {
@@ -251,10 +320,12 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
                     fDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
                 }
                 else {
-                    AssertNotNull (SafeSignalsManager::sThe);/////smart/weakptr
-                    Set<SignalHandler>  s   =   GetSignalHandlers (forSignal);
-                    s.Add (i);
-                    SafeSignalsManager::sThe->fHandlers_.Add (forSignal, s);
+                    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
+                    if (tmp != nullptr) {
+                        Set<SignalHandler>  s   =   GetSignalHandlers (forSignal);
+                        s.Add (i);
+                        tmp->fHandlers_.Add (forSignal, s);
+                    }
                 }
             }
         }
@@ -264,6 +335,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         (void)::signal (forSignal, FirstPassSignalHandler_);
     }
 }
+#endif
 
 void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 {
@@ -271,9 +343,17 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::FirstPassSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-
     SignalHandlerRegistry&  SHR =   Get ();
 
+#if 1
+    for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
+        sh (signal);
+    }
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
+    if (tmp != nullptr) {
+        tmp->fIncomingSafeSignals_.AddTail (signal);
+    }
+#else
     /*
      * sDirectSignalHandlers_ may contain multiple matching signal handlers. We want to avoid deadlocks, so dont keep locked while
      * calling that handler, But the list could change out from under us. If that happens, we could mis some handlers. The alterantive
@@ -297,6 +377,7 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     catch (...) {
     }
     SHR.fDirectSignalHandlers_CritSection_.unlock ();
+#endif
 }
 
 void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID signal)
@@ -308,8 +389,10 @@ void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID sign
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SecondPassDelegationSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
-    AssertNotNull (SafeSignalsManager::sThe);/////smart/weakptr
-    SafeSignalsManager::sThe->fIncomingSafeSignals_.AddTail (signal);
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
+    if (tmp != nullptr) {
+        tmp->fIncomingSafeSignals_.AddTail (signal);
+    }
 }
 
 

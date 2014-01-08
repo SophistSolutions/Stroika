@@ -252,6 +252,7 @@ namespace   Stroika {
                  */
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& excludedSignals = Containers::Set<SignalID> ());
 
+#if 0
             private:
                 nonvirtual  void    UpdateDirectSignalHandlers_ (SignalID forSignal);
 
@@ -259,7 +260,9 @@ namespace   Stroika {
                 // Note - we use vector<> isntead of Stroika class to assure no memory allocation in iteration
                 mutex                                                           fDirectSignalHandlers_CritSection_;
                 vector<pair<SignalID, SignalHandler>>                           fDirectSignalHandlers_;
-                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
+#endif
+            private:
+                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;
 
             private:
                 static      void    FirstPassSignalHandler_ (SignalID signal);
@@ -284,13 +287,8 @@ namespace   Stroika {
                 nonvirtual  const SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
 
             private:
-                //tmphack
-                static  SafeSignalsManager* sThe;
-
-            private:
-                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
-                BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
-                Thread                                                          fBlockingQueuePusherThread_;
+                struct Rep_;
+                static  shared_ptr<Rep_>    sThe_;
 
             private:
                 friend  class   SignalHandlerRegistry;
