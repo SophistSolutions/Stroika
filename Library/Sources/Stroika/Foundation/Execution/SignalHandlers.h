@@ -55,14 +55,19 @@ namespace   Stroika {
 
             /**
              *  The key feature of SignalHandler versus function<void(SignalID)> is that you can compare them.
-             *  Note - todo so - you must save the original SignalHandler you create to later remove it by value.
+             *
+             *  Note that to do so, you must save the original SignalHandler you create to later remove it by value:
+             *  creating another SignalHandler (even with the same arguments) may not compare as equal.
              */
             class   SignalHandler {
             public:
                 /**
-                 *  @todo EXPLAIN
-                 *     SAFE runs on separate thread
-                 * eDirect runs directly but greatly risks deadlocks!
+                 *  A direct (eDirect) signal handler is invoked in the stack context in which the
+                 *  signal is delivered.
+                 *
+                 *  A 'safe' (eSafe) signal handler is run in a separate thread context.
+                 *
+                 *  @see SignalHandlerRegistry::SafeSignalsManager.
                  */
                 enum    class   Type {
                     eDirect,
@@ -81,6 +86,9 @@ namespace   Stroika {
                 nonvirtual  Type    GetType () const;
 
             public:
+                /*
+                 *  Invoke the actual signal handler.
+                 */
                 nonvirtual  void operator () (SignalID i) const;
 
             public:
@@ -105,9 +113,8 @@ namespace   Stroika {
              *  and then later UNINSTALLED (due to changes in GetHandledSignals) - this code resets the
              *  signal handler to SIG_DFL (not the previous value).
              *
-             *  @todo EXPLAIN ABOUT SignalHandler::Type::eSafe - and how they are run on separate
-             *  thread which means no deadlock, but also means SERIALIZED!!!! COULD have mutliple threads (config option?)
-             *
+             *  To use 'safe' signal handlers, be sure to read about and use
+             *      @see SignalHandlerRegistry::SafeSignalsManager
              *
              *  \note   \em Thread-Safety   <a href="thread_safety.html#Automatically-Synchronized-Thread-Safety">Automatically-Synchronized-Thread-Safety</a>
              *
@@ -224,12 +231,27 @@ namespace   Stroika {
 
 
             /**
-             *  Needs lots of docs
+             *  A direct (eDirect) signal handler is invoked in the stack context in which the
+             *  signal is delivered.
              *
-             *      @todo   DOCUMENT that its UNSAFE to call malloc during signal handlers.
+             *  A 'safe' (eSafe) signal handler is run in a separate thread context.
+             *
+             *  Direct is more performant, has lower latency. However, since many signals are
+             *  delivered on an arbitrary thread, this can easily lead to deadlocks!
              *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
              *
-             *              ((yes - BUT see above note about SAFE/LOW-LATENCY))
+             *  'safe' signal handlers avoid this by automatically moving the signal delivery to a specaial
+             *  thread that handles the signals one at a time, and careful to avoid any memory allocation
+             *  in the direct signal handling thread.
+             *
+             *  To use this feature, you must construct a SignalHandlerRegistry::SafeSignalsManager. This
+             *  must be constructed BEFORE adding any safe signal handler, and must be destroyed before
+             *  exiting main (so it can shutdown its own threads).
+             *
+             *  The easiest (and recommened) way to do this is to add the line:
+             *      SignalHandlerRegistry::SafeSignalsManager   safeSignalsMgr;
+             *  to the beginning of main (int argc, const char* argv[])...
+             *
              */
             class   SignalHandlerRegistry::SafeSignalsManager {
             public:
