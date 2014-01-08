@@ -10,3 +10,5 @@ v2.0a13		New 'safe signals' mechanism. This is not widely used, but is used
 			Lose legacy nativive/pthread etc thread support (just C++-thread integration).
 
 			Use zlib 1.2.8
+
+			Experimental new ContainsWith() and EachWith()
