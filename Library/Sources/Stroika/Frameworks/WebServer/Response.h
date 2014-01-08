@@ -98,7 +98,7 @@ namespace   Stroika {
                 enum class State : uint8_t {
                     eInProgress,                // A newly constructed Response starts out InProgress
                     eInProgressHeaderSentState, // It then transitions to 'header sent' state
-                    eCompleted                  // and finally to Completed
+                    eCompleted,                 // and finally to Completed
 
                     Stroika_Define_Enum_Bounds(eInProgress, eCompleted)
                 };
@@ -108,7 +108,7 @@ namespace   Stroika {
                 enum class ContentSizePolicy : uint8_t {
                     eAutoCompute,
                     eExact,
-                    eNone
+                    eNone,
 
                     Stroika_Define_Enum_Bounds(eAutoCompute, eNone)
                 };
