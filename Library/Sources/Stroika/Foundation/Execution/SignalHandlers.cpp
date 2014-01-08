@@ -44,8 +44,6 @@ namespace   {
 
 
 
-#define qSupportSafeSignalHandlers  0
-
 
 
 
@@ -108,20 +106,15 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
  */
 const   SignalHandler   SignalHandlerRegistry::kIGNORED =   SIG_IGN;
 
-mutex                                   SignalHandlerRegistry::sDirectSignalHandlers_CritSection_;
-vector<pair<SignalID, SignalHandler>>   SignalHandlerRegistry::sDirectSignalHandlers_;
-SignalHandlerRegistry                   SignalHandlerRegistry::sThe_;
-
 SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
 {
+    static  SignalHandlerRegistry   sThe_;
     return sThe_;
 }
 
 SignalHandlerRegistry::SignalHandlerRegistry ()
-{
-}
-
-SignalHandlerRegistry::~SignalHandlerRegistry ()
+    : fDirectSignalHandlers_CritSection_ ()
+    , fDirectSignalHandlers_ ()
 {
 }
 
@@ -209,10 +202,10 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
     Set<SignalHandler>  handlers    =   GetSignalHandlers (forSignal);
     if (handlers.empty ()) {
         // nothing todo - empty list treated as not in sHandlers_ list
-        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
+        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
             if (i->first == forSignal) {
-                i = sDirectSignalHandlers_.erase (i);
+                i = fDirectSignalHandlers_.erase (i);
             }
             else {
                 i++;
@@ -221,10 +214,10 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         (void)::signal (forSignal, SIG_DFL);
     }
     else if (IsSigIgnore_ (handlers)) {
-        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
+        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
             if (i->first == forSignal) {
-                i = sDirectSignalHandlers_.erase (i);
+                i = fDirectSignalHandlers_.erase (i);
             }
             else {
                 i++;
@@ -242,10 +235,10 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
         // OPTIMIZE this code - so if anyDirect == false, and anyIndirect unchanged, we can avoid any upadates to the list
 
         // Directly copy in 'direct' signal handlers, and for indirect ones, list our indirect signal handler in the 'direct' list
-        lock_guard<mutex> critSec (sDirectSignalHandlers_CritSection_);
-        for (auto i = sDirectSignalHandlers_.begin (); i != sDirectSignalHandlers_.end (); ) {
+        lock_guard<mutex> critSec (fDirectSignalHandlers_CritSection_);
+        for (auto i = fDirectSignalHandlers_.begin (); i != fDirectSignalHandlers_.end (); ) {
             if (i->first == forSignal) {
-                i = sDirectSignalHandlers_.erase (i);
+                i = fDirectSignalHandlers_.erase (i);
             }
             else {
                 i++;
@@ -255,7 +248,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
             // add them explicitly
             for (SignalHandler i : handlers) {
                 if (i.GetType () == SignalHandler::Type::eDirect) {
-                    sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
+                    fDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, i));
                 }
                 else {
                     AssertNotNull (SafeSignalsManager::sThe);/////smart/weakptr
@@ -266,7 +259,7 @@ void    SignalHandlerRegistry::UpdateDirectSignalHandlers_ (SignalID forSignal)
             }
         }
         if (anyIndirect) {
-            sDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
+            fDirectSignalHandlers_.push_back (pair<SignalID, SignalHandler> (forSignal, SignalHandler (SecondPassDelegationSignalHandler_, SignalHandler::Type::eDirect)));
         }
         (void)::signal (forSignal, FirstPassSignalHandler_);
     }
@@ -278,6 +271,9 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::FirstPassSignalHandler_"));
     DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
 #endif
+
+    SignalHandlerRegistry&  SHR =   Get ();
+
     /*
      * sDirectSignalHandlers_ may contain multiple matching signal handlers. We want to avoid deadlocks, so dont keep locked while
      * calling that handler, But the list could change out from under us. If that happens, we could mis some handlers. The alterantive
@@ -287,20 +283,20 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
      *    Note - its OK to copy SignalHandler - even thoguh it contains a function() - which woudlnt be safe to copy - but
      *    its wrapped in a shared_ptr<> (so the copy just ups reference count whcih dooesnt allocate memory).
      */
-    sDirectSignalHandlers_CritSection_.lock ();
+    SHR.fDirectSignalHandlers_CritSection_.lock ();
     try {
-        for (size_t i = 0; i < sDirectSignalHandlers_.size (); ++i) {
-            pair<SignalID, SignalHandler>    si =    sDirectSignalHandlers_[i];
+        for (size_t i = 0; i < SHR.fDirectSignalHandlers_.size (); ++i) {
+            pair<SignalID, SignalHandler>    si =    SHR.fDirectSignalHandlers_[i];
             if (si.first == signal) {
-                sDirectSignalHandlers_CritSection_.unlock ();
+                SHR.fDirectSignalHandlers_CritSection_.unlock ();
                 si.second (signal);
-                sDirectSignalHandlers_CritSection_.lock ();
+                SHR.fDirectSignalHandlers_CritSection_.lock ();
             }
         }
     }
     catch (...) {
     }
-    sDirectSignalHandlers_CritSection_.unlock ();
+    SHR.fDirectSignalHandlers_CritSection_.unlock ();
 }
 
 void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID signal)

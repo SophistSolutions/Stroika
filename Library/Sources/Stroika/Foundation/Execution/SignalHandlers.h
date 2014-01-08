@@ -92,21 +92,15 @@ namespace   Stroika {
 
 
             /**
-             */
-            typedef int     SignalID;
-
-
-            /**
              *  The key feature of SignalHandler versus function<void(SignalID)> is that you can compare them.
              *  Note - todo so - you must save the original SignalHandler you create to later remove it by value.
-            */
+             */
             class   SignalHandler {
             public:
-
                 /**
                  *  @todo EXPLAIN
-                  *     SAFE runs on separate thread
-                  * eDirect runs directly but greatly risks deadlocks!
+                 *     SAFE runs on separate thread
+                 * eDirect runs directly but greatly risks deadlocks!
                  */
                 enum    class   Type {
                     eDirect,
@@ -174,34 +168,13 @@ namespace   Stroika {
 
             private:
                 SignalHandlerRegistry ();
-                ~SignalHandlerRegistry ();
                 SignalHandlerRegistry (const SignalHandlerRegistry&) = delete;
 
             public:
                 nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
 
-
             public:
-                /*
-                 *  Needs lots of docs
-                 */
-                class   SafeSignalsManager {
-                public:
-                    SafeSignalsManager ();
-                    ~SafeSignalsManager ();
-
-                private:
-                    //tmphack
-                    static  SafeSignalsManager* sThe;
-
-                private:
-                    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
-                    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
-                    Thread                                                          fBlockingQueuePusherThread_;
-
-                private:
-                    friend  class   SignalHandlerRegistry;
-                };
+                class   SafeSignalsManager;
 
             public:
                 /**
@@ -279,27 +252,49 @@ namespace   Stroika {
                  */
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& excludedSignals = Containers::Set<SignalID> ());
 
-
             private:
                 nonvirtual  void    UpdateDirectSignalHandlers_ (SignalID forSignal);
 
             private:
                 // Note - we use vector<> isntead of Stroika class to assure no memory allocation in iteration
-                static  mutex                                       sDirectSignalHandlers_CritSection_;
-                static  vector<pair<SignalID, SignalHandler>>       sDirectSignalHandlers_;
+                mutex                                                           fDirectSignalHandlers_CritSection_;
+                vector<pair<SignalID, SignalHandler>>                           fDirectSignalHandlers_;
+                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
 
             private:
-                static    void    FirstPassSignalHandler_ (SignalID signal);
-            private:
-                static    void    SecondPassDelegationSignalHandler_ (SignalID signal);
+                static      void    FirstPassSignalHandler_ (SignalID signal);
 
             private:
-                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>    fHandlers_;
-
-            private:
-                static  SignalHandlerRegistry   sThe_;
+                static      void    SecondPassDelegationSignalHandler_ (SignalID signal);
             };
 
+
+            /**
+             *  Needs lots of docs
+             */
+            class   SignalHandlerRegistry::SafeSignalsManager {
+            public:
+                SafeSignalsManager ();
+                SafeSignalsManager (const SafeSignalsManager&) = delete;
+
+            public:
+                ~SafeSignalsManager ();
+
+            public:
+                nonvirtual  const SafeSignalsManager& operator= (const SafeSignalsManager&) = delete;
+
+            private:
+                //tmphack
+                static  SafeSignalsManager* sThe;
+
+            private:
+                Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
+                BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
+                Thread                                                          fBlockingQueuePusherThread_;
+
+            private:
+                friend  class   SignalHandlerRegistry;
+            };
 
 
 #if     qPlatform_POSIX
