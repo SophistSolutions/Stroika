@@ -11,6 +11,9 @@
 #include    "../Debug/Trace.h"
 #include    "../Containers/Concrete/Queue_Array.h"
 
+#include    "BlockingQueue.h"
+#include    "Thread.h"
+
 #include    "SignalHandlers.h"
 
 
@@ -380,20 +383,6 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
 #endif
 }
 
-void    SignalHandlerRegistry::SecondPassDelegationSignalHandler_ (SignalID signal)
-{
-    /*
-     * This is still an unsafe context, so CAREFULLY push the signal onto the blocking queue!
-     */
-#if     qDoDbgTraceOnSignalHandlers_
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::SecondPassDelegationSignalHandler_"));
-    DbgTrace (L"(signal = %s)", SignalToName (signal).c_str ());
-#endif
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
-    if (tmp != nullptr) {
-        tmp->fIncomingSafeSignals_.AddTail (signal);
-    }
-}
 
 
 

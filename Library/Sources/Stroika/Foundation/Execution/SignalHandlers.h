@@ -6,15 +6,13 @@
 
 #include    "../StroikaPreComp.h"
 
-#include    <mutex>
 #include    <csignal>
+#include    <mutex>
 
 #include    "../Configuration/Common.h"
 #include    "../Containers/Mapping.h"
 #include    "../Containers/Set.h"
-#include    "BlockingQueue.h"
 #include    "Signals.h"
-#include    "Thread.h"
 
 
 
@@ -36,52 +34,16 @@
  *              or "SetFallbackHandler" - and that is invoked ONLY if no others? Or maybe a property of all
  *              handlers?
  *
- *      @todo   ADD SAFE SIGNAL HANDLER (DEADLOCK FREE) SUPPORT
+ *      @todo   Consider use of threadpool for SafeSignalsManager.
  *
- *              Much signal handling - like in Frameworks::Service::Main - unsafe anyhow cuz of malloc in signal handler)
+ *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow
+ *              these to be (more or less) interchangable with regular SignalHandler.
  *
- *              Must provide SOME way to safely delegate the signal call
- *              to another handler - perhaps by having a queue (with all ram preallocated), and a special handler thread
- *              and some configuraiton mechanism so signals get sent to the hander via the extra level of indirection.
- *
- *              <<<< HAVE ANSWER>>>>
- *              I THINK
- *
- *              Create thread to RUN signal handlers on. Then put my ACUTUAL signal handlers registered to do nothing but
- *              event::Signal() - and have the thread that runs signal hanlders wait on that notification. OR - use
- *              BLOCKING QUUE (probably better). MEans only one signal handler runs at a time (probably OK - could extned
- *              with threadpool). But key is that actual signal handlers only on safe mode -  and do no memory allocaiton or
- *              risk blocking. Must do in a way that others can do what they want - but make super easiy for (slightly lower
- *              perofrmance hihgher latency approach) to work SAFELY.
- *
- *              Maybe when registering signalhandler have enum {SAFE, or LOW-LATENCY}
- *
- *      @todo   Becaues Stroika Mapping class is so safe, I may not need the critical section
- *              protecting sHandlers_ any longer.
- *
- *      @todo   THINK OUT AND DESCRIBE IN DETAIL HOW WE HANDLE THREADS
- *              (review / test above plan about using signal hanlder sep  thread and blocking queue - maybe good anser)
- *
- *      @todo   Do overload (or some such) for (sa_sigaction)(int, siginfo_t *, void *); Allow these to be (more or less) interchangable with
- *              regular SignalHandler.
- *
- *      @todo   Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers that ONLY apply when the signal
- *              is sent to the given (argument with register) thread. If we do this - we will want to write cooperating code with the thread start/end
+ *      @todo   Consider adding "ThreadSignalHandler" faciltiy - where we register a set of handlers
+ *              that ONLY apply when the signal is sent to the given (argument with register) thread.
+ *              If we do this - we will want to write cooperating code with the thread start/end
  *              stuff so these get cleared out appropriately.
  *              Consider how this might be useful for stuff like SIGPIPE handling?
- *
- *      @todo   DOCUMENT that its UNSAFE to call malloc during signal handlers.
- *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
- *
- *              ((yes - BUT see above note about SAFE/LOW-LATENCY))
- *
- *      @todo   Consider adding some automatic mechansim in signal handler callback (wrappers) - to WRAP cals to malloc/operator new,
- *              to assert out (just int eh context of a sginal handler - just to aid in debugging this issue)
- *
- *              ((yes - BUT see above note about SAFE/LOW-LATENCY))
- *
- *              >   CERTAINLY make sure none of our sginal handler stuff violates that principle.
- *
  */
 
 
@@ -252,28 +214,21 @@ namespace   Stroika {
                  */
                 nonvirtual  void    SetStandardCrashHandlerSignals (SignalHandler handler = DefaultCrashSignalHandler, const Containers::Set<SignalID>& excludedSignals = Containers::Set<SignalID> ());
 
-#if 0
-            private:
-                nonvirtual  void    UpdateDirectSignalHandlers_ (SignalID forSignal);
-
-            private:
-                // Note - we use vector<> isntead of Stroika class to assure no memory allocation in iteration
-                mutex                                                           fDirectSignalHandlers_CritSection_;
-                vector<pair<SignalID, SignalHandler>>                           fDirectSignalHandlers_;
-#endif
             private:
                 Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fDirectHandlers_;
 
             private:
                 static      void    FirstPassSignalHandler_ (SignalID signal);
-
-            private:
-                static      void    SecondPassDelegationSignalHandler_ (SignalID signal);
             };
 
 
             /**
              *  Needs lots of docs
+             *
+             *      @todo   DOCUMENT that its UNSAFE to call malloc during signal handlers.
+             *              See http://stackoverflow.com/questions/3366307/why-is-malloc-not-async-signal-safe
+             *
+             *              ((yes - BUT see above note about SAFE/LOW-LATENCY))
              */
             class   SignalHandlerRegistry::SafeSignalsManager {
             public:
