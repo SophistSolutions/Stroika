@@ -180,6 +180,28 @@ namespace   Stroika {
             public:
                 nonvirtual  const SignalHandlerRegistry& operator= (const SignalHandlerRegistry&) = delete;
 
+
+            public:
+                /*
+                 *  Needs lots of docs
+                 */
+                class   SafeSignalsManager {
+                public:
+                    SafeSignalsManager ();
+                    ~SafeSignalsManager ();
+
+                private:
+                    //tmphack
+                    static  SafeSignalsManager* sThe;
+
+                private:
+                    BlockingQueue<SignalID>     fIncomingSafeSignals_;
+                    Thread                      fBlockingQueuePusherThread_;
+
+                private:
+                    friend  class   SignalHandlerRegistry;
+                };
+
             public:
                 /**
                  * Returns the set of signals trapped by the SignalHandlerRegistry registry. Note - if not 'Installed ()' - these
@@ -279,10 +301,6 @@ namespace   Stroika {
 
             private:
                 Containers::Mapping<SignalID, Containers::Set<SignalHandler>>    fHandlers_;
-
-            private:
-                BlockingQueue<SignalID>     fIncomingSafeSignals_;
-                Thread                      fBlockingQueuePusherThread_;
 
             private:
                 static  SignalHandlerRegistry   sThe_;

@@ -8,6 +8,7 @@
 
 #include    "Stroika/Foundation/Execution/CommandLine.h"
 #include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Memory/Optional.h"
 #include    "Stroika/Foundation/IO/Network/HTTP/Headers.h"
 #include    "Stroika/Foundation/IO/Network/NetworkInterfaces.h"
@@ -29,6 +30,7 @@ using   Memory::Optional;
 
 int main (int argc, const char* argv[])
 {
+    Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     try {
         ConnectionManager   cm; // use??? @todo??
 

@@ -9,6 +9,7 @@
 #include    "Stroika/Foundation/Execution/Event.h"
 #include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
+#include    "Stroika/Foundation/Execution/SignalHandlers.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
 #include    "Stroika/Frameworks/Service/Main.h"
 
@@ -218,6 +219,7 @@ namespace {
 
 int main (int argc, const char* argv[])
 {
+    Execution::SignalHandlerRegistry::SafeSignalsManager    safeSignals;
     /*
      *  Setup basic (optional) error handling.
      */

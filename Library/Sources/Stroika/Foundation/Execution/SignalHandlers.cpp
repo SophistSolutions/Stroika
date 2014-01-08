@@ -47,6 +47,38 @@ namespace   {
 #define qSupportSafeSignalHandlers  0
 
 
+namespace {
+    Queue<SignalID> mkQ_ ()
+    {
+        Containers::Concrete::Queue_Array<SignalID> signalQ;
+        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
+        return signalQ;
+    }
+}
+
+
+
+/*
+ ********************************************************************************
+ *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
+ ********************************************************************************
+ */
+SignalHandlerRegistry::SafeSignalsManager*  SignalHandlerRegistry::SafeSignalsManager::sThe =   nullptr;
+
+SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
+    : fIncomingSafeSignals_ (mkQ_ ())
+    , fBlockingQueuePusherThread_ ()
+{
+}
+
+SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
+{
+    fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+}
+
+
+
+
 
 /*
  ********************************************************************************
@@ -64,18 +96,7 @@ SignalHandlerRegistry&  SignalHandlerRegistry::Get ()
     return sThe_;
 }
 
-namespace {
-    Queue<SignalID> mkQ_ ()
-    {
-        Containers::Concrete::Queue_Array<SignalID> signalQ;
-        signalQ.SetCapacity (100);  // quite arbitrary - @todo make configurable somehow...
-        return signalQ;
-    }
-}
-
 SignalHandlerRegistry::SignalHandlerRegistry ()
-    : fHandlers_ ()
-    , fIncomingSafeSignals_ (mkQ_ ())
 {
 }
 
