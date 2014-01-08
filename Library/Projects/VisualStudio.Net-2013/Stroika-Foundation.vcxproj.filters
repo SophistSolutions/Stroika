@@ -654,6 +654,9 @@
     <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.cpp">
       <Filter>Sources\Execution</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.cpp">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Debug\Assertions.h">
@@ -1506,6 +1509,9 @@
     <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.h">
       <Filter>Sources\Execution</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.h">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Sources\Stroika\Foundation\Memory\SmallStackBuffer.inl">
@@ -2267,6 +2273,9 @@
     </None>
     <None Include="..\..\Sources\Stroika\Foundation\Execution\SignalHandlers.inl">
       <Filter>Sources\Execution</Filter>
+    </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
+      <Filter>Sources\Execution\Platform\POSIX</Filter>
     </None>
   </ItemGroup>
 </Project>

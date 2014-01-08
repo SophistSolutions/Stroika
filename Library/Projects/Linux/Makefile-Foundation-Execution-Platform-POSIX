@@ -9,6 +9,7 @@ vpath %cpp $(SrcDir)
 
 Objs	=	\
 	$(ObjDir)Users.o\
+	$(ObjDir)SignalBlock.o\
 
 all:	$(Objs)
 

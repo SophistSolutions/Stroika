@@ -24,6 +24,10 @@
  *
  *
  * TODO:
+ *      @todo   SignalHandlerRegistry::FirstPassSignalHandler_ is NOT signal safe. Its close (esp given
+ *              the block allocation). But its not safe. SO MUST FIX!!! But can be done without
+ *              changing API (just store vector of actual direct handlers).
+ *
  *      @todo   Small issue - AddSignalHandler versus SetSignalHandler (). This can be confusing. I had a bug
  *              which was we setup DEFAULT signal handlers, and then in the BasicUNIX Serviced code - did
  *              AddSignalHandler (SIGINT). Issue is that we process BOTH hanlders - one to set an event
@@ -271,27 +275,6 @@ namespace   Stroika {
             private:
                 friend  class   SignalHandlerRegistry;
             };
-
-
-#if     qPlatform_POSIX
-            /**
-             * For the lifetime of this object - save the initial signal block state for the given signal, and then block the given signal.
-             */
-            class   ScopedBlockCurrentThreadSignal {
-            public:
-                ScopedBlockCurrentThreadSignal (SignalID signal);
-                ScopedBlockCurrentThreadSignal () = delete;
-                ScopedBlockCurrentThreadSignal (const ScopedBlockCurrentThreadSignal&) = delete;
-                ~ScopedBlockCurrentThreadSignal ();
-
-            public:
-                nonvirtual  const ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
-
-            private:
-                SignalID    fSignal_;
-                sigset_t    fRestoreMask_;
-            };
-#endif
 
 
         }
