@@ -20,7 +20,9 @@ namespace   Stroika {
                 enum class AngleFormat : uint8_t {
                     eRadians,
                     eDegrees,
-                    eGradians
+                    eGradians,
+
+                    Stroika_Define_Enum_Bounds(eRadians, eGradians)
                 };
                 Angle ();
                 Angle (double angle, AngleFormat angleFormat = AngleFormat::eRadians);

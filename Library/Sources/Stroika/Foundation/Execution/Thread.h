@@ -293,6 +293,8 @@ namespace   Stroika {
                     eNormal,
                     eAboveNormal,
                     eHighest,
+
+                    Stroika_Define_Enum_Bounds(eLowest, eHighest)
                 };
                 /**
                  *  This is a portable wrapper on setting thread priorities. It has fewer knobs than direct or low level
@@ -317,6 +319,8 @@ namespace   Stroika {
                     eRunning,           // in the context of the 'Run' method
                     eAborting,          // Abort () called, but the thread still hasn't yet unwound
                     eCompleted,         // run has terminated (possibly by exception, possibly normally, possibly because of Abort call)
+
+                    Stroika_Define_Enum_Bounds(eNull, eCompleted)
                 };
                 /**
                  *  Each Thread object has an associated state. Since this can be accessed from one thread while things

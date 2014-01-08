@@ -127,6 +127,8 @@ namespace   Stroika {
                             eCertExpired,
                             eHostnameMismatch,
                             eSSLFailure         // generic - typically bad CERT - or bad trust
+
+                            Stroika_Define_Enum_Bounds(eNoSSL, eSSLFailure)
                         };
                         ValidationStatus    fValidationStatus;
                     };

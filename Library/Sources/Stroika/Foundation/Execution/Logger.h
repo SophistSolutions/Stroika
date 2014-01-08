@@ -115,6 +115,8 @@ namespace   Stroika {
                     eCriticalError      =   2,              // SYSLOG name LOG_CRIT     -   The message states a critical condition
                     eAlertError         =   1,              // SYSLOG name LOG_ALERT    -   Action on the message must be taken immediately
                     eEmergency          =   0,              // SYSLOG name LOG_EMERG    -   The message says the system is unusable
+
+                    Stroika_Define_Enum_Bounds(eEmergency, eInfo)
                 };
             public:
                 // EITHER RENAME AND DO ORDER DIFRNELY OR DONT TIE NNUMBERS TO SYSLOG NUMBERS

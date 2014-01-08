@@ -21,6 +21,8 @@ namespace   Stroika {
             enum class  UserNameFormat : uint8_t {
                 ePrettyName,
                 eDEFAULT = ePrettyName,
+
+                Stroika_Define_Enum_Bounds(ePrettyName, ePrettyName)
             };
             Characters::String  GetCurrentUserName (UserNameFormat format = UserNameFormat::eDEFAULT);
 

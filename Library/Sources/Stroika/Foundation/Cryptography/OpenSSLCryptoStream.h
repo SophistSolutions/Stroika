@@ -67,7 +67,7 @@ namespace   Stroika {
                 /**
                  *      @see http://linux.die.net/man/3/evp_cipher_ctx_init
                  */
-                enum class Algorithm {
+                enum    class   Algorithm {
                     eAES_128_CBC,
                     eAES_128_ECB,
                     eAES_128_OFB,
@@ -99,6 +99,7 @@ namespace   Stroika {
 
                     eRC4,
 
+                    Stroika_Define_Enum_Bounds(eAES_128_CBC, eRC4)
                 };
                 // allowed Algorith's for this CTOR include eAES_*, eBlowfish_*, eRC2'
                 OpenSSLCryptoParams (Algorithm alg, Memory::BLOB key, Direction direction, Memory::BLOB initialIV = Memory::BLOB ());
