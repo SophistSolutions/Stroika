@@ -21,6 +21,8 @@
  *
  *
  *  TODO:
+ *      @todo   Support EachWith?
+ *
  *      @todo   Add Equals(), Contains, Remove(T) methods (we have the virtuals in rep already)
  *
  *      @todo   Fixup constructors (templated by value and iterator ctors)

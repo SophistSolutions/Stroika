@@ -19,6 +19,9 @@
  *  \version    <a href="code_status.html#Alpha-Late">Alpha-Early</a>
  *
  * TODO:
+ *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
+ *              returns something of same underlying data structure  type.
+ *
  *      @todo   Do CTOR () that takes ITERATOR<T> - but not til after next release....
  *
  *      @todo   Have Difference/Union/Interesection??? methods/?? Do research....
@@ -173,6 +176,14 @@ namespace   Stroika {
                 nonvirtual  void    RemoveAll (COPY_FROM_ITERATOR_OF_T start, COPY_FROM_ITERATOR_OF_T end);
                 template    <typename CONTAINER_OF_T, typename EQUALS_COMPARER = Common::ComparerWithEquals<T>>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& c);
+
+            public:
+                /**
+                 *  \em EXPERIMENTAL API (2014-01-08)
+                 *
+                 *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 */
+                nonvirtual  Collection<T>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**

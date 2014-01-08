@@ -25,6 +25,9 @@
  *
  *  TODO:
  *
+ *      @todo   EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
+ *              returns something of same underlying data structure  type.
+ *
  *      @todo   Implement more backends
  *              >   Set_BitString
  *              >   Set_Array
@@ -181,6 +184,14 @@ namespace   Stroika {
                 template    <typename CONTAINER_OF_T>
                 nonvirtual  void    RemoveAll (const CONTAINER_OF_T& s);
                 nonvirtual  void    RemoveAll ();
+
+            public:
+                /**
+                 *  \em EXPERIMENTAL API (2014-01-08)
+                 *
+                 *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 */
+                nonvirtual  Set<T, TRAITS>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**

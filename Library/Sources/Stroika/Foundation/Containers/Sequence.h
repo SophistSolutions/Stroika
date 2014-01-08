@@ -26,8 +26,11 @@
  *
  *  TODO:
  *
+ *      @todo       EachWith() and probably other things should use new EmptyClone() strategy - so cheaper and
+ *                  returns something of same underlying data structure  type.
  *
- *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
+ *      @todo       Probably GET RID of TRAITS for Sequence<> - and instead - have COMPARE functor
+ *                  arg to things that need it (like Equals, Contians, etc)
  *
  *      @todo       Review with Sterl the choice (and better document) - that Sequence<> can be used on type T
  *                  without operator==, but when you got to call Contains/IndexOf/Equals() you get a compile
@@ -35,6 +38,8 @@
  *
  *                  Key is that these functions all implemented NON-VIRTUALLY (otherwise they would need
  *                  to be compiled to fill in vtable).
+ *
+ *      @todo       Add insert(Iterator<T>,T) overload (so works with Mapping<..>::As<...> ()
  *
  *      @todo       Must support Iterator<T>::operator-(Itertoar<T>) or some-such so that SequenceIterator must work with qsort().
  *                  In otehrwords, must act as random-access iterator so it can be used in algorithjms that use STL
@@ -247,6 +252,14 @@ namespace   Stroika {
                  * \req RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, typename EqualsCompareFunctionType);
                  */
                 nonvirtual  bool Contains (T item) const;
+
+            public:
+                /**
+                 *  \em EXPERIMENTAL API (2014-01-08)
+                 *
+                 *  Apply the function funciton to each element, and return all the ones for which it was true.
+                 */
+                nonvirtual  Sequence<T, TRAITS>    EachWith (const std::function<bool(const T& item)>& doToElement) const;
 
             public:
                 /**

@@ -166,6 +166,17 @@ namespace   Stroika {
                 RemoveAll ();
             }
             template    <typename T>
+            Collection<T>    Collection<T>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            {
+                Collection<T>   result;
+                for (T i : *this) {
+                    if (doToElement (i)) {
+                        result.Add (i);
+                    }
+                }
+                return result;
+            }
+            template    <typename T>
             inline  Collection<T>& Collection<T>::operator+= (T item)
             {
                 Add (item);

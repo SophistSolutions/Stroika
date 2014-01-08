@@ -93,6 +93,17 @@ namespace   Stroika {
                 return Private::Compare_<T, ELEMENT_COMPARER> (*this, rhs);
             }
             template    <typename T, typename TRAITS>
+            Sequence<T, TRAITS>    Sequence<T, TRAITS>::EachWith (const std::function<bool(const T& item)>& doToElement) const
+            {
+                Sequence<T, TRAITS>  result;
+                for (T i : *this) {
+                    if (doToElement (i)) {
+                        result.Append (i);
+                    }
+                }
+                return result;
+            }
+            template    <typename T, typename TRAITS>
             inline  bool    Sequence<T, TRAITS>::Equals (const Sequence<T, TRAITS>& rhs) const
             {
                 RequireConceptAppliesToTypeInFunction(Concept_EqualsCompareFunctionType, EqualsCompareFunctionType);

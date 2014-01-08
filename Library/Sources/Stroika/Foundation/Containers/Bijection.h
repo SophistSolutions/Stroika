@@ -22,6 +22,9 @@
  *  \version    <a href="code_status.html#Alpha-Early">Alpha-Early</a>
  *
  *  TODO:
+ *
+ *      @todo   Support EachWith?
+ *
  *      @todo   Bijection_InjectivityViolationPolicy not respected.
  *
  *      @todo   Preimage() and Image () NTI
