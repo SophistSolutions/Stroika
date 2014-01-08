@@ -495,7 +495,13 @@ void    Thread::SetThreadName (const wstring& threadName)
         }
 #elif   qPlatform_POSIX
         // could have called prctl(PR_SET_NAME,"<null> terminated string",0,0,0) - but seems less portable
-        pthread_setname_np (fRep_->GetNativeHandle (), String (threadName).AsUTF8 ().c_str ());
+        //
+        // according to http://man7.org/linux/man-pages/man3/pthread_setname_np.3.html - the length max is 15 characters
+        string tnUTF8 = String (threadName).AsUTF8 ();
+        if (tnUTF8.length () > 15) {
+            tnUTF8.erase (15);
+        }
+        pthread_setname_np (fRep_->GetNativeHandle (), tnUTF8.c_str ());
 #endif
 #endif
     }
