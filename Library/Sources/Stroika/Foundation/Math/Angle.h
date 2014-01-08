@@ -7,6 +7,7 @@
 #include    "../StroikaPreComp.h"
 
 #include    "../Configuration/Common.h"
+#include    "../Configuration/Enumeration.h"
 
 namespace   Stroika {
     namespace   Foundation {
