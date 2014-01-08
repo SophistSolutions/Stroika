@@ -90,7 +90,7 @@ namespace   Stroika {
                 nonvirtual  Type    GetType () const;
 
             public:
-                /*
+                /**
                  *  Invoke the actual signal handler.
                  */
                 nonvirtual  void operator () (SignalID i) const;
