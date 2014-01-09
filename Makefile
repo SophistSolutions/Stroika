@@ -23,8 +23,11 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 
 
 check:
-	@make --directory ThirdPartyLibs check
-	./checkall.pl
+	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= check
+	@(cd Library && perl checkall.pl)
+	@(cd Tools && perl checkall.pl)
+	@(cd Samples && perl checkall.pl)
+	@(cd Tests && perl checkall.pl)
 
 clean:
 	./buildall.pl clean

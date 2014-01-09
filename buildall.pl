@@ -115,7 +115,7 @@ if ($buildDocs) {
 
 system ("sh -c 'date'");
 if ($isBuildingMode) {
-	system ("perl checkall.pl");
+	system ("make check");
 }
 if ($runRegressionTests) {
 	system ("cd Tests; perl Run.pl");

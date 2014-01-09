@@ -21,6 +21,7 @@ clean:
 	@make --directory zlib --no-print-directory clean
 
 check:
+	@echo Checking ThirdPartyLibs...
 	@(cd doxygen; perl checkall.pl)
 	@make --directory openssl --no-print-directory check
 	@make --directory Xerces --no-print-directory check
