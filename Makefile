@@ -51,7 +51,7 @@ run-tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 # but dont check if already checked
 IntermediateFiles/TOOLS_CHECKED:
 	@$(MAKE) check-tools --no-print-directory
-	-@mkdir IntermediateFiles > /dev/null
+	@mkdir -p IntermediateFiles
 	@touch IntermediateFiles/TOOLS_CHECKED
 
 # Force TOOLS_CHECKED test
