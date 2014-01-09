@@ -23,6 +23,7 @@ all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 
 
 check:
+	@make --directory ThirdPartyLibs check
 	./checkall.pl
 
 clean:

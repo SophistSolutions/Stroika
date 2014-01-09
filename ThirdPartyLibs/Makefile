@@ -16,15 +16,18 @@ endif
 
 clean:
 	@(cd doxygen; perl buildall.pl clean)
-	make --directory openssl --no-print-directory clean
+	@make --directory openssl --no-print-directory clean
 	@make --directory Xerces --no-print-directory clean
 	@make --directory zlib --no-print-directory clean
 
 check:
-	@./checkall.pl
+	@(cd doxygen; perl checkall.pl)
+	@make --directory openssl --no-print-directory check
+	@make --directory Xerces --no-print-directory check
+	@make --directory zlib $(MAKEFLAGS) --no-print-directory check
 
 clobber:
 	@(cd doxygen; perl buildall.pl clobber)
-	make --directory openssl --no-print-directory clobber
+	@make --directory openssl --no-print-directory clobber
 	@make --directory Xerces --no-print-directory clobber
 	@make --directory zlib --no-print-directory clobber
