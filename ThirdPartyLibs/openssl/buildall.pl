@@ -15,7 +15,7 @@ require ("../../ScriptsLib/StringUtils.pl");
 #both seem to work (2013-04-06) - but test with old for regressions first cuz new build
 # process -- LGP 2013-04-06 (part of stroika instead of RFLLib)
 #my $BASENAME	=	"openssl-1.0.0";
-my $BASENAME	=	"openssl-1.0.1e";
+my $BASENAME	=	"openssl-1.0.1f";
 
 my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
