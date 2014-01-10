@@ -18,6 +18,18 @@ History
 
 
 <tr>
+<td>v2.0a17<br/>2014-01-10</td>
+<td>
+<ul>
+<li>Fixed bug with Thread::SuppressAbortInContext</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+<tr>
 <td>v2.0a16<br/>2014-01-10</td>
 <td>
 <ul>

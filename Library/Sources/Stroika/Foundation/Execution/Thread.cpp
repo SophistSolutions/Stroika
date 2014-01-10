@@ -154,6 +154,7 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 Thread::SuppressAbortInContext::SuppressAbortInContext ()
     : fPrev_ (s_Aborting_)
 {
+    s_Aborting_ = false;
     if (fPrev_) {
         DbgTrace (L"Suppressing thread abort in this context");
     }
