@@ -40,7 +40,7 @@ $(ZIPEDFILE):
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
 
 $(TRGDIR):	$(ZIPEDFILE)
-	@echo Exract $(ZIPEDFILE) to $(TRGDIR)...
+	@echo Extract $(ZIPEDFILE) to $(TRGDIR)...
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
