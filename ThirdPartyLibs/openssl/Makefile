@@ -34,7 +34,7 @@ check:
 	@./checkall_.pl
 
 clobber:
-	@rm -rf $(TRGDIR)
+	@rm -rf $(TRGDIR) ORIG
 
 $(ZIPEDFILE):
 	wget --quiet --tries=10 --no-check-certificate -O $(ZIPEDFILE) $(FETCHURL) || (rm -f $(ZIPEDFILE) && false)
@@ -60,6 +60,6 @@ ifeq (1,$(STRIP_ANNOYING_MESSAGES))
 endif
 endif
 
-ORIGS:	$(ZIPEDFILE)
+ORIG:	$(ZIPEDFILE)
 	@tar xf $(ZIPEDFILE) --no-same-owner
 	@mv $(EXTRACTED_DIRNAME) ORIGS
