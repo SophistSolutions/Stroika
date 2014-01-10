@@ -1,13 +1,13 @@
-﻿About
+﻿<style type='text/css'>
+	table tr td {width: 1in;  vertical-align: top; }
+	table tr td td {width: auto;  }
+</style>
+
+About
 =====
 These release notes are incomplete. They are merely a summary of
 major user (developer)-impactful changes - especially those they need 
 to be aware of when upgrading.
-
-<style type='text/css'>
-	table tr td {width: 1in;  vertical-align: top; }
-	table tr td td {width: auto;  }
-</style>
 
 History
 =======
@@ -19,13 +19,12 @@ History
 
 
 <tr>
-<td>v2.0a15x<br/>2014-???</td>
+<td>v2.0a15<br/>2014-01-10</td>
 <td>
 <ul>
 <li>Progress on makefile re-vamping</li>	
 <li>OpenSSL 1.0.1f</li>
 <li>Important new Thread::SuppressAbortInContext - feature to avoid a class of thread cleanup bugs</li>
-
 </ul>
 </td>
 </tr>
