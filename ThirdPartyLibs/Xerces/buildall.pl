@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+#### NOTE - DONT CALL DIRECTLY - LEGACY CODE FROM OLD MAKE PROCESS TO BE MERGED
+#### INTO MAKEFILE
 
 my $BLD_TRG = $ARGV[0];
 if ($BLD_TRG eq '') {
