@@ -23,9 +23,15 @@ clean:
 check:
 	@echo Checking ThirdPartyLibs...
 	@(cd doxygen; perl checkall.pl)
+ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
 	@make --directory openssl --no-print-directory check
+endif
+ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
 	@make --directory Xerces --no-print-directory check
+endif
+ifeq ($(qBuildThirdPartyProducts_zlib), 1)
 	@make --directory zlib $(MAKEFLAGS) --no-print-directory check
+endif
 
 clobber:
 	@(cd doxygen; perl buildall.pl clobber)

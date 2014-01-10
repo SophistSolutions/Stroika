@@ -17,6 +17,18 @@ History
 
 
 
+<tr>
+<td>v2.0a16<br/>2014-01-10</td>
+<td>
+<ul>
+<li>Minor</li>
+</ul>
+</td>
+</tr>
+
+
+
+
 
 <tr>
 <td>v2.0a15<br/>2014-01-10</td>
@@ -36,7 +48,11 @@ History
 
 <tr>
 <td>v2.0a14<br/>2014-01-08</td>
-<td></td>
+<td>
+<ul>
+<li>Minor</li>
+</ul>
+</td>
 </tr>
 
 
