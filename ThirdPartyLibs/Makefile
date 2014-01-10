@@ -5,13 +5,13 @@
 all:
 	@(cd doxygen; perl buildall.pl Build)
 ifeq ($(qBuildThirdPartyProducts_OpenSSL), 1)
-	@make --directory openssl --no-print-directory all
+	@make --directory openssl all
 endif
 ifeq ($(qBuildThirdPartyProducts_Xerces), 1)
-	@make --directory Xerces --no-print-directory all
+	@make --directory Xerces all
 endif
 ifeq ($(qBuildThirdPartyProducts_zlib), 1)
-	@make --directory zlib --no-print-directory all
+	@make --directory zlib all
 endif
 
 clean:

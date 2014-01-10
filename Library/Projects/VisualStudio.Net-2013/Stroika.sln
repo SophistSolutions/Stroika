@@ -29,47 +29,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebServe
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Projects-Linux", "Projects-Linux", "{BDB956CB-14E0-4DE1-A36E-C852F928E761}"
-	ProjectSection(SolutionItems) = preProject
-		..\Linux\checkall.pl = ..\Linux\checkall.pl
-		..\Linux\Makefile-Foundation = ..\Linux\Makefile-Foundation
-		..\Linux\Makefile-Foundation-Cache = ..\Linux\Makefile-Foundation-Cache
-		..\Linux\Makefile-Foundation-Characters = ..\Linux\Makefile-Foundation-Characters
-		..\Linux\Makefile-Foundation-Characters-Concrete = ..\Linux\Makefile-Foundation-Characters-Concrete
-		..\Linux\Makefile-Foundation-Characters-CString = ..\Linux\Makefile-Foundation-Characters-CString
-		..\Linux\Makefile-Foundation-Common = ..\Linux\Makefile-Foundation-Common
-		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration
-		..\Linux\Makefile-Foundation-Containers = ..\Linux\Makefile-Foundation-Containers
-		..\Linux\Makefile-Foundation-Cryptography = ..\Linux\Makefile-Foundation-Cryptography
-		..\Linux\Makefile-Foundation-Cryptography-SSL = ..\Linux\Makefile-Foundation-Cryptography-SSL
-		..\Linux\Makefile-Foundation-Database = ..\Linux\Makefile-Foundation-Database
-		..\Linux\Makefile-Foundation-DataExchange = ..\Linux\Makefile-Foundation-DataExchange
-		..\Linux\Makefile-Foundation-DataExchange-JSON = ..\Linux\Makefile-Foundation-DataExchange-JSON
-		..\Linux\Makefile-Foundation-DataExchange-XML = ..\Linux\Makefile-Foundation-DataExchange-XML
-		..\Linux\Makefile-Foundation-Debug = ..\Linux\Makefile-Foundation-Debug
-		..\Linux\Makefile-Foundation-Execution = ..\Linux\Makefile-Foundation-Execution
-		..\Linux\Makefile-Foundation-Execution-Platform-POSIX = ..\Linux\Makefile-Foundation-Execution-Platform-POSIX
-		..\Linux\Makefile-Foundation-IO = ..\Linux\Makefile-Foundation-IO
-		..\Linux\Makefile-Foundation-IO-FileSystem = ..\Linux\Makefile-Foundation-IO-FileSystem
-		..\Linux\Makefile-Foundation-IO-Network = ..\Linux\Makefile-Foundation-IO-Network
-		..\Linux\Makefile-Foundation-IO-Network-HTTP = ..\Linux\Makefile-Foundation-IO-Network-HTTP
-		..\Linux\Makefile-Foundation-IO-Network-Transfer = ..\Linux\Makefile-Foundation-IO-Network-Transfer
-		..\Linux\Makefile-Foundation-Linguistics = ..\Linux\Makefile-Foundation-Linguistics
-		..\Linux\Makefile-Foundation-Math = ..\Linux\Makefile-Foundation-Math
-		..\Linux\Makefile-Foundation-Memory = ..\Linux\Makefile-Foundation-Memory
-		..\Linux\Makefile-Foundation-Streams = ..\Linux\Makefile-Foundation-Streams
-		..\Linux\Makefile-Foundation-Streams-iostream = ..\Linux\Makefile-Foundation-Streams-iostream
-		..\Linux\Makefile-Foundation-Time = ..\Linux\Makefile-Foundation-Time
-		..\Linux\Makefile-Foundation-Traversal = ..\Linux\Makefile-Foundation-Traversal
-		..\Linux\Makefile-Frameworks = ..\Linux\Makefile-Frameworks
-		..\Linux\Makefile-Frameworks-Service = ..\Linux\Makefile-Frameworks-Service
-		..\Linux\Makefile-Frameworks-UPnP = ..\Linux\Makefile-Frameworks-UPnP
-		..\Linux\Makefile-Frameworks-UPnP-SSDP = ..\Linux\Makefile-Frameworks-UPnP-SSDP
-		..\Linux\Makefile-Frameworks-UPnP-SSDP-Client = ..\Linux\Makefile-Frameworks-UPnP-SSDP-Client
-		..\Linux\Makefile-Frameworks-UPnP-SSDP-Server = ..\Linux\Makefile-Frameworks-UPnP-SSDP-Server
-		..\Linux\Makefile-Frameworks-WebServer = ..\Linux\Makefile-Frameworks-WebServer
-		..\Linux\SharedBuildRules-Default.mk = ..\Linux\SharedBuildRules-Default.mk
-		..\Linux\SharedMakeVariables-Default.mk = ..\Linux\SharedMakeVariables-Default.mk
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Stroika-Frameworks-WebService", "Stroika-Frameworks-WebService.vcxproj", "{9454F6D7-68B9-4C91-92D1-99958EC9EA42}"
 EndProject
@@ -113,6 +72,73 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\..\..\README.md = ..\..\..\README.md
 		..\..\..\Release-Notes.md = ..\..\..\Release-Notes.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{312AE444-7947-4826-8B1C-19691D0568CD}"
+	ProjectSection(SolutionItems) = preProject
+		..\Linux\checkall.pl = ..\Linux\checkall.pl
+		..\Linux\Makefile-Foundation = ..\Linux\Makefile-Foundation
+		..\Linux\Makefile-Foundation-Cache = ..\Linux\Makefile-Foundation-Cache
+		..\Linux\Makefile-Foundation-Characters = ..\Linux\Makefile-Foundation-Characters
+		..\Linux\Makefile-Foundation-Characters-Concrete = ..\Linux\Makefile-Foundation-Characters-Concrete
+		..\Linux\Makefile-Foundation-Characters-CString = ..\Linux\Makefile-Foundation-Characters-CString
+		..\Linux\Makefile-Foundation-Common = ..\Linux\Makefile-Foundation-Common
+		..\Linux\Makefile-Foundation-Configuration = ..\Linux\Makefile-Foundation-Configuration
+		..\Linux\Makefile-Foundation-Containers = ..\Linux\Makefile-Foundation-Containers
+		..\Linux\Makefile-Foundation-Cryptography = ..\Linux\Makefile-Foundation-Cryptography
+		..\Linux\Makefile-Foundation-Cryptography-SSL = ..\Linux\Makefile-Foundation-Cryptography-SSL
+		..\Linux\Makefile-Foundation-Database = ..\Linux\Makefile-Foundation-Database
+		..\Linux\Makefile-Foundation-DataExchange = ..\Linux\Makefile-Foundation-DataExchange
+		..\Linux\Makefile-Foundation-DataExchange-JSON = ..\Linux\Makefile-Foundation-DataExchange-JSON
+		..\Linux\Makefile-Foundation-DataExchange-XML = ..\Linux\Makefile-Foundation-DataExchange-XML
+		..\Linux\Makefile-Foundation-Debug = ..\Linux\Makefile-Foundation-Debug
+		..\Linux\Makefile-Foundation-Execution = ..\Linux\Makefile-Foundation-Execution
+		..\Linux\Makefile-Foundation-Execution-Platform-POSIX = ..\Linux\Makefile-Foundation-Execution-Platform-POSIX
+		..\Linux\Makefile-Foundation-IO = ..\Linux\Makefile-Foundation-IO
+		..\Linux\Makefile-Foundation-IO-FileSystem = ..\Linux\Makefile-Foundation-IO-FileSystem
+		..\Linux\Makefile-Foundation-IO-Network = ..\Linux\Makefile-Foundation-IO-Network
+		..\Linux\Makefile-Foundation-IO-Network-HTTP = ..\Linux\Makefile-Foundation-IO-Network-HTTP
+		..\Linux\Makefile-Foundation-IO-Network-Transfer = ..\Linux\Makefile-Foundation-IO-Network-Transfer
+		..\Linux\Makefile-Foundation-Linguistics = ..\Linux\Makefile-Foundation-Linguistics
+		..\Linux\Makefile-Foundation-Math = ..\Linux\Makefile-Foundation-Math
+		..\Linux\Makefile-Foundation-Memory = ..\Linux\Makefile-Foundation-Memory
+		..\Linux\Makefile-Foundation-Streams = ..\Linux\Makefile-Foundation-Streams
+		..\Linux\Makefile-Foundation-Streams-iostream = ..\Linux\Makefile-Foundation-Streams-iostream
+		..\Linux\Makefile-Foundation-Time = ..\Linux\Makefile-Foundation-Time
+		..\Linux\Makefile-Foundation-Traversal = ..\Linux\Makefile-Foundation-Traversal
+		..\Linux\Makefile-Frameworks = ..\Linux\Makefile-Frameworks
+		..\Linux\Makefile-Frameworks-Service = ..\Linux\Makefile-Frameworks-Service
+		..\Linux\Makefile-Frameworks-UPnP = ..\Linux\Makefile-Frameworks-UPnP
+		..\Linux\Makefile-Frameworks-UPnP-SSDP = ..\Linux\Makefile-Frameworks-UPnP-SSDP
+		..\Linux\Makefile-Frameworks-UPnP-SSDP-Client = ..\Linux\Makefile-Frameworks-UPnP-SSDP-Client
+		..\Linux\Makefile-Frameworks-UPnP-SSDP-Server = ..\Linux\Makefile-Frameworks-UPnP-SSDP-Server
+		..\Linux\Makefile-Frameworks-WebServer = ..\Linux\Makefile-Frameworks-WebServer
+		..\Linux\SharedBuildRules-Default.mk = ..\Linux\SharedBuildRules-Default.mk
+		..\Linux\SharedMakeVariables-Default.mk = ..\Linux\SharedMakeVariables-Default.mk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdPartyLibs", "ThirdPartyLibs", "{3636D094-1CF9-41A9-A469-746D5B9B2E82}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\Makefile = ..\..\..\ThirdPartyLibs\Makefile
+		..\..\..\ThirdPartyLibs\TODO.md = ..\..\..\ThirdPartyLibs\TODO.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenSSL", "OpenSSL", "{0AB3C96C-D218-4BE1-99E9-96B9290537AE}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\openssl\Makefile = ..\..\..\ThirdPartyLibs\openssl\Makefile
+		..\..\..\ThirdPartyLibs\openssl\ReadMe.txt = ..\..\..\ThirdPartyLibs\openssl\ReadMe.txt
+		..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt = ..\..\..\ThirdPartyLibs\openssl\REFERENCE_OUTPUT.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zlib", "zlib", "{76839A1E-6D62-4C7F-9477-C38D6BE9FE14}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\zlib\Makefile = ..\..\..\ThirdPartyLibs\zlib\Makefile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xerces", "Xerces", "{8857755D-8E18-476D-BEB5-5C3B5ED79FB2}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\ThirdPartyLibs\Xerces\Makefile = ..\..\..\ThirdPartyLibs\Xerces\Makefile
+		..\..\..\ThirdPartyLibs\Xerces\ReadMe.txt = ..\..\..\ThirdPartyLibs\Xerces\ReadMe.txt
 	EndProjectSection
 EndProject
 Global
@@ -383,5 +409,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{312AE444-7947-4826-8B1C-19691D0568CD} = {BDB956CB-14E0-4DE1-A36E-C852F928E761}
+		{3636D094-1CF9-41A9-A469-746D5B9B2E82} = {BDB956CB-14E0-4DE1-A36E-C852F928E761}
+		{0AB3C96C-D218-4BE1-99E9-96B9290537AE} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
+		{76839A1E-6D62-4C7F-9477-C38D6BE9FE14} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
+		{8857755D-8E18-476D-BEB5-5C3B5ED79FB2} = {3636D094-1CF9-41A9-A469-746D5B9B2E82}
 	EndGlobalSection
 EndGlobal
