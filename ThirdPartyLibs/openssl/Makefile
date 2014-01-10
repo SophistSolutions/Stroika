@@ -6,13 +6,13 @@ TARGET_FOLDER=openssl-$(TARGET_VERSION)
 ##VERY ROUGH DRAFT - STARTING TO MOVE AWAY FROM OLD PERL STUFF
 
 all:
-	@./buildall.pl build
+	@./buildall_.pl $(TARGET_VERSION) build
 
 clean:
 	@rm -rf $(TARGET_FOLDER) CURRENT
 
 check:
-	@./checkall.pl
+	@./checkall_.pl
 
 clobber:
 	@rm -rf $(TARGET_FOLDER) CURRENT
