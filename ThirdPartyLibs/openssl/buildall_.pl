@@ -13,41 +13,7 @@ my $EXTRACTED_DIRNAME	=	$BASENAME;
 my $trgDirName	=			$BASENAME;
 my $SLINKDIRNAME	=		$BASENAME;
 
-# DoCreateSymLink - this isn't currently used, and doesn't work well with windows (sets sys file attribute which casues
-# DOS delete file issues) - and slink doesnt really work except in cygwin tools
-my $DoCreateSymLink = 0;
-
-if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
-	$DoCreateSymLink = 1;
-}
-
 $ENV{'MAKEFLAGS'}='';
-
-
-if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
-	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz || (rm -f ../Origs-Cache/$BASENAME.tar.gz && false)");
-}
-
-if (-e "CURRENT/e_os.h") {
-	print ("Skipping extract $BASENAME since present\n");
-}
-else {
-	print ("Extracting $BASENAME...\n");
-	system ("rm -rf $trgDirName CURRENT");
-	system ("tar xf ../Origs-Cache/$BASENAME.tar.gz 2> /dev/null");
-	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	system ("mv $EXTRACTED_DIRNAME CURRENT");
-	sleep(1);  # hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
-	if ($DoCreateSymLink) {
-		system ("ln -s CURRENT $SLINKDIRNAME");
-	}
-	
-	print ("Patching openssl...\n");
-	system ("patch -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH");
-	#system ("patch -t CURRENT/e_os.h Patches/e_os.h.patch");
-	sleep (1);
-}
-
 
 
 sub	CopyBuilds2Out
@@ -60,9 +26,6 @@ sub	CopyBuilds2Out
 	system ("cp CURRENT/$bldOutDir/ssleay32.* CURRENT/Builds/$trgDir/");
 	system ("cp CURRENT/$bldOutDir/openssl.* CURRENT/Builds/$trgDir/");
 }
-
-
-#system ("rm -rf CURRENT/Builds");
 
 
 #REM - only reconfigure if we just did the extract
