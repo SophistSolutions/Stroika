@@ -2,10 +2,6 @@
 
 
 my $BASENAME	=	"openssl-$ARGV[0]";
-my $BLD_TRG 	= 	$ARGV[1];
-if ($BLD_TRG eq '') {
-	$BLD_TRG = 'Build';
-}
 
 require ("../../ScriptsLib/BuildUtils.pl");
 require ("../../ScriptsLib/StringUtils.pl");
@@ -32,16 +28,6 @@ if (("$^O" eq "linux") or ("$^O" eq "darwin")) {
 
 $ENV{'MAKEFLAGS'}='';
 
-
-print (">>>>>>>>******************** STARTING ThirdPartyLibs/openssl ******************\n");
-
-if ((lc ("$BLD_TRG") eq "clean") || (lc ("$BLD_TRG") eq "clobber")) {
-	system ("rm -rf $trgDirName CURRENT");
-	exit (0);
-}
-if (lc ("$BLD_TRG") eq "rebuild") {
-	system ("rm -rf $trgDirName CURRENT");
-}
 
 if (not -e "../Origs-Cache/$BASENAME.tar.gz") {
 	RunAndStopOnFailure ("wget --quiet --tries=10 --no-check-certificate --output-document=../Origs-Cache/$BASENAME.tar.gz http://www.openssl.org/source/$BASENAME.tar.gz || (rm -f ../Origs-Cache/$BASENAME.tar.gz && false)");
@@ -163,9 +149,3 @@ else {if ("$^O" eq "cygwin") {
 		CopyBuilds2Out ("Debug64", "out32.dbg");
 	}
 }}
-
-
-
-system ("perl checkall_.pl");
-
-print (">>>>>>>>******************** ENDING ThirdPartyLibs/openssl ******************\n");
