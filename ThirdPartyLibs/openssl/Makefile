@@ -11,6 +11,8 @@ ZIPEDFILE=../Origs-Cache/$(BASENAME).tar.gz
 
 FETCHURL=http://www.openssl.org/source/$(BASENAME).tar.gz
 
+UNAME := $(shell uname)
+
 
 
 all:	$(TRGDIR)
@@ -35,10 +37,17 @@ $(TRGDIR):	$(ZIPEDFILE)
 	@sleep 1;	# hack cuz sometimes it appears command not fully done writing - and we get sporadic failures on next stop on win7
 	@mv $(EXTRACTED_DIRNAME) $(TRGDIR)
 ifneq (,$(findstring CYGWIN,$(UNAME)))
-	@dos2unix Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 	@echo "Patching openssl..."
+endif
+ifneq (,$(findstring CYGWIN,$(UNAME)))
+	@dos2unix -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
 	@patch -p0 CURRENT/util/pl/VC-32.pl < Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
-	@unix2dos Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
+	@unix2dos -q Patches/VC-32.pl-Z7InsteadOfZIDebugSys.PATCH
+endif
+ifneq (,$(findstring CYGWIN,$(UNAME)))
+	@dos2unix -q Patches/LosePRINTOfCopyingInUtils.PATCH
+	@patch -p0 CURRENT/util/copy.pl < Patches/LosePRINTOfCopyingInUtils.PATCH
+	@unix2dos -q Patches/LosePRINTOfCopyingInUtils.PATCH
 endif
 
 ORIGS:	$(ZIPEDFILE)
