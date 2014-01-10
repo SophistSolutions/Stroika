@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+#### NOTE - DONT CALL DIRECTLY - LEGACY CODE FROM OLD MAKE PROCESS TO BE MERGED
+#### INTO MAKEFILE
+
 require "../../ScriptsLib/StringUtils.pl";
 require "../../ScriptsLib/ConfigurationReader.pl";
 

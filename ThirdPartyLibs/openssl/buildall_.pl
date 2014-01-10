@@ -1,17 +1,13 @@
 #!/usr/bin/perl 
 
-
-my $BASENAME	=	"openssl-$ARGV[0]";
+#### NOTE - DONT CALL DIRECTLY - LEGACY CODE FROM OLD MAKE PROCESS TO BE MERGED
+#### INTO MAKEFILE
 
 require ("../../ScriptsLib/BuildUtils.pl");
 require ("../../ScriptsLib/StringUtils.pl");
 
 #print "PATH=";
 #print (" $ENV{'PATH'};");
-
-my $EXTRACTED_DIRNAME	=	$BASENAME;
-my $trgDirName	=			$BASENAME;
-my $SLINKDIRNAME	=		$BASENAME;
 
 $ENV{'MAKEFLAGS'}='';
 
