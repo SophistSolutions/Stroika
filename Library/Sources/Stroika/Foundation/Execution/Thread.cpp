@@ -148,6 +148,30 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
 
 /*
  ********************************************************************************
+ ******************* Thread::SuppressAbortInContext *****************************
+ ********************************************************************************
+ */
+Thread::SuppressAbortInContext::SuppressAbortInContext ()
+    : fPrev_ (s_Aborting_)
+{
+    if (fPrev_) {
+        DbgTrace (L"Suppressing thread abort in this context");
+    }
+}
+
+Thread::SuppressAbortInContext::~SuppressAbortInContext ()
+{
+    if (fPrev_) {
+        DbgTrace (L"Restoring suppressed thread abort in this context");
+    }
+    s_Aborting_ = fPrev_;
+}
+
+
+
+
+/*
+ ********************************************************************************
  ************************************* Thread::Rep_ *****************************
  ********************************************************************************
  */

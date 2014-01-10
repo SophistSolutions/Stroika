@@ -24,6 +24,7 @@ History
 <ul>
 <li>Progress on makefile re-vamping</li>	
 <li>OpenSSL 1.0.1f</li>
+<li>Important new Thread::SuppressAbortInContext - feature to avoid a class of thread cleanup bugs</li>
 
 </ul>
 </td>

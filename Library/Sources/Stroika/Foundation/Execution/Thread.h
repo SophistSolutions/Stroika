@@ -24,6 +24,10 @@
  *
  *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
+ *      @todo   Thread::SuppressAbortInContext - review/ and PROBABLY add support to suppress
+ *              future aborts (like sigblock). Maybe even rename to AbortBlock? Maybe thats
+ *              a CLUE - and avoid future ones by having this aggregate a SIGBLLCOK object (works posix only?).
+ *
  *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
  *
  *      @todo   Windows thread interuption with CRITICALSECTION/lock_gaurd<>
@@ -253,6 +257,9 @@ namespace   Stroika {
                 nonvirtual  void    Abort_Forced_Unsafe (); // like Abort () - but less safe, and more forceful
 
             public:
+                class   SuppressAbortInContext;
+
+            public:
                 /**
                  *  Wait until thread is done (use Abort to request termination) - throws if timeout
                  *  Note that its legal to call WaitForDone on a thread in any state - including nullptr.
@@ -369,6 +376,28 @@ namespace   Stroika {
             private:
                 class   Rep_;
                 shared_ptr<Rep_> fRep_;
+            };
+
+
+            /**
+             *  @todo DOC MORE
+             *  Fix for subtle bug where one thread owns another and the first is aborted (but needs to
+             *  cleanly cleanup the second).
+             *
+             *  NOTE - this INTENTIONALLY does NOT prevent FUTURE aborts - it just eliminates current pending ones.
+             *  @todo RETHINK - is that the right thing?
+             *      > pro - we still may need to abort a thread if it doesnt give up the ghost?
+             *      > con - could lead to subtle (timing) bugs?
+             *      PROBABLY I have this wrong - but this is simpler for now...
+             */
+            class   Thread::SuppressAbortInContext {
+            public:
+                SuppressAbortInContext ();
+                SuppressAbortInContext (const SuppressAbortInContext&) = delete;
+                const SuppressAbortInContext& operator= (const SuppressAbortInContext&) = delete;
+                ~SuppressAbortInContext ();
+            private:
+                bool    fPrev_;
             };
 
 
