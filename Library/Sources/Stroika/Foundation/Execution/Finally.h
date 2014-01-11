@@ -43,7 +43,7 @@ namespace   Stroika {
              */
             class   Finally {
             public:
-                explicit Finally (const function<void()>& cleanupCodeBlock);
+                Finally (const function<void()>& cleanupCodeBlock);
                 Finally () = delete;
                 Finally (const Finally&) = delete;
 
