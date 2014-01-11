@@ -211,6 +211,11 @@ namespace   Stroika {
                 Thread (const std::function<void()>& fun2CallOnce);
                 Thread (const IRunnablePtr& runnable);
 
+				// @todO use sfinae TO	PREVENT THIS fom being used if f not is_function
+				template <typename FUNCTION>
+				Thread (FUNCTION f, typename is_function<FUNCTION>::type* = nullptr) :
+					Thread (std::function<void()>(f)) {}
+
 
             public:
                 /**

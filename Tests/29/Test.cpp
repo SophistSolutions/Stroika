@@ -542,7 +542,7 @@ namespace {
             };
             testThread.SetThreadName (L"testThread");
             testThread.Start ();
-            Sleep (1);  // wait til both threads running and blocked in sleeps
+            Execution::Sleep (1);  // wait til both threads running and blocked in sleeps
             testThread.AbortAndWaitForDone ();
             // This is the BUG Thread::SuppressAbortInContext was meant to solve!
             VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);

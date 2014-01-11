@@ -44,6 +44,11 @@ namespace   Stroika {
             class   Finally {
             public:
                 Finally (const function<void()>& cleanupCodeBlock);
+				// @todO use sfinae TO	PREVENT THIS fom being used if f not is_function
+				template <typename FUNCTION>
+				Finally (FUNCTION f, typename is_function<FUNCTION>::type* = nullptr) :
+					Finally (std::function<void()>(f)) {}
+
                 Finally () = delete;
                 Finally (const Finally&) = delete;
 
