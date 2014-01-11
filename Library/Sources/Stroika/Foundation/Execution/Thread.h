@@ -208,8 +208,8 @@ namespace   Stroika {
                  *  fun2CallOnce is called precisely once by this thread CTOR, but called in
                  *  another thread with the arg 'arg'.
                  */
-                explicit Thread (const std::function<void()>& fun2CallOnce);
-                explicit Thread (const IRunnablePtr& runnable);
+                Thread (const std::function<void()>& fun2CallOnce);
+                Thread (const IRunnablePtr& runnable);
 
 
             public:
