@@ -10,6 +10,7 @@
 
 #include    "Stroika/Foundation/Execution/BlockingQueue.h"
 #include    "Stroika/Foundation/Execution/Event.h"
+#include    "Stroika/Foundation/Execution/Finally.h"
 #include    "Stroika/Foundation/Execution/Lockable.h"
 #include    "Stroika/Foundation/Execution/Sleep.h"
 #include    "Stroika/Foundation/Execution/Thread.h"
@@ -25,6 +26,7 @@ using   namespace   Stroika::Foundation;
 using   Execution::BlockingQueue;
 using   Execution::Lockable;
 using   Execution::Thread;
+using   Execution::Finally;
 using   Execution::ThreadPool;
 
 
@@ -525,6 +527,53 @@ namespace {
 
 
 
+namespace {
+    void    RegressionTest11_AbortSubAbort_ ()
+    {
+        auto    testFailToProperlyAbort = [] () {
+            Thread  innerThread = [] () {
+                Execution::Sleep (1000);
+            };
+            innerThread.SetThreadName (L"innerThread");
+            Thread  testThread  =   [&innerThread] () {
+                innerThread.Start ();
+                Execution::Sleep (1000);
+                innerThread.AbortAndWaitForDone ();
+            };
+            testThread.SetThreadName (L"testThread");
+            testThread.Start ();
+            Sleep (1);  // wait til both threads running and blocked in sleeps
+            testThread.AbortAndWaitForDone ();
+            // This is the BUG Thread::SuppressAbortInContext was meant to solve!
+            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eRunning);
+            innerThread.AbortAndWaitForDone ();
+        };
+        auto    testInnerThreadProperlyShutDownByOuterThread = [] () {
+            Thread  innerThread = [] () {
+                Execution::Sleep (1000);
+            };
+            innerThread.SetThreadName (L"innerThread");
+            Thread  testThread = [&innerThread] () {
+                innerThread.Start ();
+                Finally cleanup = [&innerThread] () {
+                    Thread::SuppressAbortInContext  suppressAborts;
+                    innerThread.AbortAndWaitForDone ();
+                };
+                Execution::Sleep (1000);
+            };
+            testThread.SetThreadName (L"testThread");
+            testThread.Start ();
+            Execution::Sleep (1);   // wait til both threads running and blocked in sleeps
+            // This is the BUG Thread::SuppressAbortInContext was meant to solve!
+            testThread.AbortAndWaitForDone ();
+            VerifyTestResult (innerThread.GetStatus () == Thread::Status::eCompleted);
+        };
+        testFailToProperlyAbort ();
+        testInnerThreadProperlyShutDownByOuterThread ();
+    }
+}
+
+
 
 namespace   {
     void    DoRegressionTests_ ()
@@ -539,6 +588,7 @@ namespace   {
         RegressionTest8_ThreadPool_ ();
         RegressionTest9_ThreadsAbortingEarly_ ();
         RegressionTest10_BlockingQueue_ ();
+        RegressionTest11_AbortSubAbort_ ();
     }
 }
 
