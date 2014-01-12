@@ -555,7 +555,7 @@ namespace {
             innerThread.SetThreadName (L"innerThread");
             Thread  testThread = [&innerThread] () {
                 innerThread.Start ();
-                Finally cleanup = ([&innerThread] () {
+                Finally cleanup ([&innerThread] () {
                     Thread::SuppressAbortInContext  suppressAborts;
                     innerThread.AbortAndWaitForDone ();
                 });
