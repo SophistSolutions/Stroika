@@ -1,4 +1,4 @@
-.PHONY:	tests
+.PHONY:	tests documentation all check clobber libraries
 .FORCE:	check-tools
 .FORCE:	apply-configurations
 
@@ -13,13 +13,16 @@ help:
 	@echo "    libraries:              -	builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
 	@echo "    project-files:          -	builds project files for things like visual studio.net etc (NYI)"
 	@echo "    tests:"
+	@echo "    samples:"
+	@echo "    documentation:"
+	@echo "    third-party-libs:"
 	@echo "    run-tests:"
 	@echo "    apply-configurations:   -    create implied files / links for any configurations in the Configuratoons folder (forces a rebuild of configs)"
 	@echo "    default-configuration:  -    creates the default configuration in Configurations folder (target takes DEFAULT_CONFIGURATION_ARGS)"
 	@echo "    check-tools:            -    check the tools needed to build stroika are installed."
 
-all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@./buildall.pl build
+
+all:		IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed libraries tools tests samples documentation check
 
 
 check:
@@ -29,25 +32,49 @@ check:
 	@(cd Samples && perl checkall.pl)
 	@(cd Tests && perl checkall.pl)
 
+
 clean:
-	./buildall.pl clean
+	@make --directory ThirdPartyLibs --no-print-directory clean
+	@(cd Library; perl buildall.pl clean)
+	@(cd Tools; perl buildall.pl clean)
+	@(cd Samples; perl buildall.pl clean)
+	@(cd Tests; perl buildall.pl clean)
+
 
 clobber:
-	./buildall.pl clobber
-	rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
+	@make --directory ThirdPartyLibs --no-print-directory clobber
+	@rm -f IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
 
-libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	#NYI correctly - this also builds tests/demos etc
-	@./buildall.pl build
+
+documentation:
+	@cd Documentation; cd Doxygen; perl ./RunDoxygen.pl
+
+
+libraries:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed third-party-libs
+	@cd Library; perl buildall.pl build
+
+
+third-party-libs:
+	@make --directory ThirdPartyLibs --no-print-directory MAKEFLAGS= all
+
 
 project-files:
-	@echo NYI
+	echo NYI
 
-tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@./buildall.pl build
 
-run-tests:	IntermediateFiles/TOOLS_CHECKED apply-configurations-if-needed
-	@./buildall.pl build+
+tools:	libraries
+	@cd Tools; perl buildall.pl build
+
+
+tests:	tools libraries
+	@cd Tests; perl buildall.pl build
+
+
+samples:	tools libraries
+	@cd Samples; perl buildall.pl build
+
+run-tests:	tests
+	@cd Tests; perl Run.pl
 
 
 # useful internal check to make sure users dont run/build while missing key components that will
