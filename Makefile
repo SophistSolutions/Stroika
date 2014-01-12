@@ -13,6 +13,7 @@ help:
 	@echo "    libraries:              -	builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
 	@echo "    project-files:          -	builds project files for things like visual studio.net etc (NYI)"
 	@echo "    tests:"
+	@echo "    run-astyle:"
 	@echo "    samples:"
 	@echo "    documentation:"
 	@echo "    third-party-libs:"
@@ -77,6 +78,9 @@ samples:	tools libraries
 run-tests:	tests
 	@cd Tests; perl Run.pl
 
+run-astyle:
+	perl ScriptsLib/RunAstyle.pl
+
 
 # useful internal check to make sure users dont run/build while missing key components that will
 # just fail later
@@ -111,8 +115,8 @@ apply-configurations:
 	@#todo - must enahnce to support multiple configs
 	@# must check here/fail if zero configs and direct user to call make default-configuration
 	@#@perl ApplyConfiguration.pl --only-if-unconfigured
-	@perl ApplyConfiguration.pl
+	@perl ScriptsLib/ApplyConfiguration.pl
 	@touch IntermediateFiles/APPLIED_CONFIGURATIONS
 
 default-configuration:
-	@perl GenerateConfiguration.pl --default-for-platform $(DEFAULT_CONFIGURATION_ARGS)
+	@perl ScriptsLib/GenerateConfiguration.pl --default-for-platform $(DEFAULT_CONFIGURATION_ARGS)
