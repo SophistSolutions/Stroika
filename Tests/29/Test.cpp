@@ -555,10 +555,10 @@ namespace {
             innerThread.SetThreadName (L"innerThread");
             Thread  testThread = [&innerThread] () {
                 innerThread.Start ();
-                Finally cleanup = [&innerThread] () {
+                Finally cleanup = ([&innerThread] () {
                     Thread::SuppressAbortInContext  suppressAborts;
                     innerThread.AbortAndWaitForDone ();
-                };
+                });
                 Execution::Sleep (1000);
             };
             testThread.SetThreadName (L"testThread");
