@@ -43,19 +43,19 @@ namespace   {
             x = max (*x, 1);
             VerifyTestResult (x == 3);
         }
-		auto testOptionalOfThingNotCopyable = [] () {
-			struct NotCopyable {
-				NotCopyable () {}
-				NotCopyable (const NotCopyable&&) {}	// but is moveable!
-				NotCopyable (const NotCopyable&) = delete;
-				const NotCopyable& operator= (const NotCopyable&) = delete;
-			};
-			Optional<NotCopyable>	n1;
-			VerifyTestResult (n1.IsMissing ());
-			Optional<NotCopyable>	n2 (std::move (NotCopyable ()));	// use r-value reference to move
-			VerifyTestResult (n2.IsPresent ());
-		};
-		testOptionalOfThingNotCopyable ();
+        auto testOptionalOfThingNotCopyable = [] () {
+            struct NotCopyable {
+                NotCopyable () {}
+                NotCopyable (const NotCopyable&&) {}    // but is moveable!
+                NotCopyable (const NotCopyable&) = delete;
+                const NotCopyable& operator= (const NotCopyable&) = delete;
+            };
+            Optional<NotCopyable>   n1;
+            VerifyTestResult (n1.IsMissing ());
+            Optional<NotCopyable>   n2 (std::move (NotCopyable ()));    // use r-value reference to move
+            VerifyTestResult (n2.IsPresent ());
+        };
+        testOptionalOfThingNotCopyable ();
     }
     void    Test2_SharedByValue ()
     {
