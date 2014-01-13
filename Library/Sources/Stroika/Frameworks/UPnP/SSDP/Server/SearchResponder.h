@@ -8,6 +8,7 @@
 
 #include    "../../../../Foundation/Characters/String.h"
 #include    "../../../../Foundation/Configuration/Common.h"
+#include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/Traversal/Iterable.h"
 
 #include    "../../Device.h"
@@ -37,10 +38,13 @@ namespace   Stroika {
                      */
                     class   SearchResponder {
                     public:
-
                         SearchResponder ();
+                        SearchResponder (const SearchResponder&) = delete;
+                        const SearchResponder operator= (const SearchResponder&) = delete;
+                        ~SearchResponder ();
 
-                        void    Run (const Iterable<Advertisement>& advertisements);
+                    public:
+                        nonvirtual  void    Run (const Iterable<Advertisement>& advertisements);
 
 
 
@@ -53,6 +57,8 @@ namespace   Stroika {
                         // smart ptr to one of these - caller keeps it around, it runs in its own
                         // thread as needed, does responses etc.
 #endif
+                    private:
+                        Execution::Thread   fListenThread_;
                     };
 
 

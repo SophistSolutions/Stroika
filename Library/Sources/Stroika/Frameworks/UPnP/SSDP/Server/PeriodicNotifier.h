@@ -8,6 +8,7 @@
 
 #include    "../../../../Foundation/Characters/String.h"
 #include    "../../../../Foundation/Configuration/Common.h"
+#include    "../../../../Foundation/Execution/Thread.h"
 #include    "../../../../Foundation/Traversal/Iterable.h"
 
 #include    "../Advertisement.h"
@@ -43,13 +44,16 @@ namespace   Stroika {
                      */
                     class   PeriodicNotifier {
                     public:
-
                         PeriodicNotifier ();
+                        PeriodicNotifier (const PeriodicNotifier&) = delete;
+                        const PeriodicNotifier operator= (const PeriodicNotifier&) = delete;
+                        ~PeriodicNotifier ();
 
+                    public:
                         struct FrequencyInfo {
 
                         };
-                        void    Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
+                        nonvirtual  void    Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi);
 
 
 
@@ -62,6 +66,8 @@ namespace   Stroika {
                         // smart ptr to one of these - caller keeps it around, it runs in its own
                         // thread as needed, does responses etc.
 #endif
+                    private:
+                        Execution::Thread   fListenThread_;
                     };
 
 

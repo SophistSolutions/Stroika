@@ -34,12 +34,21 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 PeriodicNotifier::PeriodicNotifier ()
+    : fListenThread_ ()
 {
+}
+
+PeriodicNotifier::~PeriodicNotifier ()
+{
+    // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
+    // after main exists...
+    Execution::Thread::SuppressAbortInContext  suppressAbort;
+    fListenThread_.AbortAndWaitForDone ();
 }
 
 void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, const FrequencyInfo& fi)
 {
-    Execution::Thread t ([advertisements, fi]() {
+    fListenThread_ = Execution::Thread ([advertisements, fi]() {
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
@@ -53,6 +62,7 @@ void    PeriodicNotifier::Run (const Iterable<Advertisement>& advertisements, co
             Execution::Sleep (30.0);
         }
     });
-    t.Start ();
-    t.WaitForDone ();
+    fListenThread_.SetThreadName (L"SSDP Periodic Notifier thread");
+    fListenThread_.Start ();
+    fListenThread_.WaitForDone ();
 }

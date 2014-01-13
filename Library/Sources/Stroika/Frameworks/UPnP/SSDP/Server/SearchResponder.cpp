@@ -38,7 +38,16 @@ using   namespace   Stroika::Frameworks::UPnP::SSDP::Server;
 ********************************************************************************
 */
 SearchResponder::SearchResponder ()
+    : fListenThread_ ()
 {
+}
+
+SearchResponder::~SearchResponder ()
+{
+    // Even though no this pointer captured, we must shutdown any running threads before this object terminated else it would run
+    // after main exists...
+    Execution::Thread::SuppressAbortInContext  suppressAbort;
+    fListenThread_.AbortAndWaitForDone ();
 }
 
 namespace {
@@ -110,7 +119,7 @@ namespace {
 
 void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
 {
-    Execution::Thread t ([this, advertisements]() {
+    fListenThread_ = Execution::Thread ([advertisements]() {
         Socket s (Socket::SocketKind::DGRAM);
         Socket::BindFlags   bindFlags = Socket::BindFlags ();
         bindFlags.fReUseAddr = true;
@@ -137,6 +146,7 @@ void    SearchResponder::Run (const Iterable<Advertisement>& advertisements)
             }
         }
     });
-    t.Start ();
-    t.WaitForDone ();
+    fListenThread_.SetThreadName (L"SSDP Search Responder thread");
+    fListenThread_.Start ();
+    fListenThread_.WaitForDone ();
 }
