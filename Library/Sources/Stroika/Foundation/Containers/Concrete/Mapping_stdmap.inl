@@ -82,7 +82,8 @@ namespace   Stroika {
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
 #endif
-                    //template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
+                    // @TODO - DEBUG WHY THIS NEEDED - and cannot use Private::IteratorImplHelper_
+
                     class  IteratorRep_ : public Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep {
                     private:
                         typedef typename    Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep   inherited;
@@ -109,6 +110,12 @@ namespace   Stroika {
                                 return typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*this));
                             }
                             CONTAINER_LOCK_HELPER_END ();
+                        }
+                        virtual const void* GetOwner () const override
+                        {
+                            //tmphack but adequate
+                            // should NOT require locking is readonly immutable value provided at construction
+                            return nullptr;
                         }
                         virtual void                                More (Memory::Optional<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* result, bool advance) override
                         {

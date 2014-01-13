@@ -28,7 +28,7 @@ namespace   Stroika {
         namespace   Traversal {
 
 
-#if qDebug
+#if     qDebug
             namespace  Private_ {
                 template    <typename T>
                 struct  IteratorTracker {

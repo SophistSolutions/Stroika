@@ -306,11 +306,31 @@ namespace   Stroika {
 
             public:
                 /**
+                 *  Iterators iterate over something (if not in reality, at least conceptually). This ID is
+                 *  used for an iterator to report what its owner is (instance not class), if any.
+                 *  Any iterator may report nullptr, meaning that it has no logical owner.
+                 *
+                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced - just compared.
+                 *
+                 *  Once an iterator is created, its owner can never change. Mulitple iterators can share the same owner.
+                 *  When an iterator is copied, the copy has the same owner as the source the iterator was copied from.
+                 *
+                 *  Iterator owners must not be destroyed before the iterators iterating over them
+                 *  (this would be a user bug, one which will often be detected by DEBUG stroika builds, but perhaps not,
+                 *  and may generate grave disorder in non-DEBUG builds).
+                 *
+                 *  Iterator owners have no semantics - other than the above, and requirements on @see Equals();
+                 *
+                 */
+                nonvirtual  const void* GetOwner () const;
+
+            public:
+                /**
                  *  \brief Equals () checks if two iterators are equal to one another (point to the same position in the sequence).
                  *
                  *  \em NB: Equals () is the same notion of equality as used by STL iterators.
                  *
-                 *  \em NB: It is \req required that the two iterators being compared must come from the same source.
+                 *  \em NB: It is \req required that the two iterators being compared must come from the same source, or from the special source nullptr.
                  *
                  *  Very roughly, the idea is that to be 'equal' - two iterators must be iterating over the same source,
                  *  and be up to the same position. The slight exception to this is that any two iterators that are Done()
@@ -492,6 +512,10 @@ namespace   Stroika {
                  * and/or More() to get values and move forward through the iteration.
                  */
                 virtual SharedIRepPtr   Clone () const                      = 0;
+                /**
+                 *  @see Iterator<T>::GetOwner
+                 */
+                virtual const void* GetOwner () const                       = 0;
                 /**
                  *  More () takes two required arguments - one an optional result, and the other a flag about whether or
                  *  not to advance.

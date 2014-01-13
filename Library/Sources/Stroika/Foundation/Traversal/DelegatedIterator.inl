@@ -30,6 +30,11 @@ namespace   Stroika {
                 return SharedIRepPtr (new Rep (*this));
             }
             template    <typename T, typename EXTRA_DATA>
+            const void* DelegatedIterator<T, EXTRA_DATA>::Rep::GetOwner () const
+            {
+                return fDelegateTo.GetOwner ();
+            }
+            template    <typename T, typename EXTRA_DATA>
             void    DelegatedIterator<T, EXTRA_DATA>::Rep::More (Memory::Optional<T>* result, bool advance)
             {
                 fDelegateTo.GetRep ().More (result, advance);

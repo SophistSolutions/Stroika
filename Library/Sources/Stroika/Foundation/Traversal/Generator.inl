@@ -62,6 +62,12 @@ namespace   Stroika {
                     {
                         return shared_ptr<typename Iterator<T>::IRep> (new GenItWrapper_ (*this));
                     }
+                    const void* GetOwner () const
+                    {
+                        //tmphack but adequate
+                        // should NOT require locking is readonly immutable value provided at construction
+                        return nullptr;
+                    }
                 };
 
             }

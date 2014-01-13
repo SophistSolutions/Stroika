@@ -17,6 +17,8 @@
  *  \file
  *
  *  TODO:
+ *          @todo   Review definition of DelegatedIterator<>::Rep::GetOwner(). Not sure we've selected the
+ *                  the best definition.
  *
  */
 
@@ -40,6 +42,7 @@ namespace   Stroika {
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
                     virtual SharedIRepPtr   Clone () const override;
+                    virtual const void* GetOwner () const override;
                     virtual void    More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool    Equals (const IRep* rhs) const override;
                 };
@@ -54,6 +57,7 @@ namespace   Stroika {
                     Iterator<T> fDelegateTo;
                     Rep (const Iterator<T>& delegateTo);
                     virtual SharedIRepPtr   Clone () const override;
+                    virtual const void* GetOwner () const override;
                     virtual void    More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool    Equals (const IRep* rhs) const override;
                 };

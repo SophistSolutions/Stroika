@@ -88,6 +88,12 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
+                    virtual const void* GetOwner () const override
+                    {
+                        //tmphack but adequate
+                        // should NOT require locking is readonly immutable value provided at construction
+                        return nullptr;
+                    }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
                         AssertNotImplemented ();
@@ -189,6 +195,12 @@ namespace   Stroika {
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
+                    }
+                    virtual const void* GetOwner () const override
+                    {
+                        //tmphack but adequate
+                        // should NOT require locking is readonly immutable value provided at construction
+                        return nullptr;
                     }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {

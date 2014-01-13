@@ -102,6 +102,13 @@ namespace   Stroika {
                 return fCurrent_.IsMissing ();
             }
             template    <typename T>
+            inline const void*    Iterator<T>::GetOwner () const
+            {
+                // We could cache this value, but its only used breaking references and in assertions, so its
+                // not clearly worth while
+                return fIterator_ == nullptr ? nullptr : fIterator_->GetOwner ();
+            }
+            template    <typename T>
             inline    T   Iterator<T>::operator* () const
             {
                 Require (not Done ());
@@ -139,6 +146,7 @@ namespace   Stroika {
             template    <typename T>
             inline  bool    Iterator<T>::Equals (const Iterator& rhs) const
             {
+                Require (GetOwner () == rhs.GetOwner () or GetOwner () == nullptr or rhs.GetOwner () == nullptr);
                 /*
                  *  Equals is checked by first checking handling the case of special 'done' iterators. If two
                  *  iterators differ on Done () - they cannot be equal. And if they are both done (this is special -

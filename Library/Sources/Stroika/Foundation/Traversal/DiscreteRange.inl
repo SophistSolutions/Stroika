@@ -54,6 +54,12 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
+                const void* GetOwner () const
+                {
+                    //tmphack but adequate
+                    // should NOT require locking is readonly immutable value provided at construction
+                    return nullptr;
+                }
                 virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                 {
                     RequireNotNull (rhs);

@@ -36,6 +36,13 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
+                const void* IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::GetOwner () const
+                {
+                    //tmphack but adequate
+                    // should NOT require locking is readonly immutable value provided at construction
+                    return nullptr;
+                }
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
                 void    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::More (Memory::Optional<T>* result, bool advance)
                 {
                     RequireNotNull (result);

@@ -17,6 +17,20 @@ History
 
 
 
+
+<tr>
+<td>v2.0a18x<br/>2014-???</td>
+<td>
+<ul>
+<li>Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
+</ul>
+</td>
+</tr>
+
+
+
+
+
 <tr>
 <td>v2.0a17<br/>2014-01-10</td>
 <td>
