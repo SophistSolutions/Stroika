@@ -42,6 +42,12 @@ public:
         , fThread_ ()
     {
     }
+    ~Rep_ ()
+    {
+        // critical we wait for finish of thread cuz it has bare 'this' pointer captured
+        Execution::Thread::SuppressAbortInContext  suppressAbort;
+        IgnoreExceptionsForCall (fThread_.AbortAndWaitForDone ());
+    }
     void    AddOnFoundCallback (const std::function<void (const SSDP::Advertisement& d)>& callOnFinds)
     {
         lock_guard<recursive_mutex> critSection (fCritSection_);
@@ -59,7 +65,6 @@ public:
     }
     void    DoRun_ (const String& serviceType)
     {
-
         fSocket_.SetMulticastLoopMode (true);       // probably should make this configurable
 
         /// MUST REDO TO SEND OUT MULTIPLE SENDS (a second or two apart)

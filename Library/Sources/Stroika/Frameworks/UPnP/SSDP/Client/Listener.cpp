@@ -53,6 +53,12 @@ public:
         fSocket_.Bind (SocketAddress (Network::V4::kAddrAny, UPnP::SSDP::V4::kSocketAddress.GetPort ()), bindFlags);
         fSocket_.JoinMulticastGroup (UPnP::SSDP::V4::kSocketAddress.GetInternetAddress ());
     }
+    ~Rep_ ()
+    {
+        // critical we wait for finish of thread cuz it has bare 'this' pointer captured
+        Execution::Thread::SuppressAbortInContext  suppressAbort;
+        fThread_.AbortAndWaitForDone ();
+    }
     void    AddOnFoundCallback (const std::function<void(const SSDP::Advertisement& d)>& callOnFinds)
     {
         lock_guard<recursive_mutex> critSection (fCritSection_);

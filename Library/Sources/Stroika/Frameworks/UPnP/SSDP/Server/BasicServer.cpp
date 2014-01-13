@@ -74,6 +74,7 @@ public:
     }
     ~Rep_ ()
     {
+        Thread::SuppressAbortInContext  suppressAbort;  // critical to wait til done cuz captures this
         fNotifierThread_.AbortAndWaitForDone ();
         fSearchResponderThread_.AbortAndWaitForDone ();
     }

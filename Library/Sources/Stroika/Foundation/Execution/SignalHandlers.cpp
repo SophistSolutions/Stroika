@@ -124,6 +124,8 @@ SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
     Assert (sThe_ != nullptr);
+    // critical we wait for finish of thread cuz it has bare 'this' pointer captured
+    Execution::Thread::SuppressAbortInContext  suppressAbort;
     sThe_->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
     sThe_.reset ();
 }
