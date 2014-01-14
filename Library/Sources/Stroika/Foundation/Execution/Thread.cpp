@@ -567,7 +567,7 @@ void    Thread::Abort ()
         return;
     }
     // not status not protected by critsection, but SB OK for this
-    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_);
+    DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_.load ());
 
     // first try to send abort exception, and then - if force - get serious!
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
