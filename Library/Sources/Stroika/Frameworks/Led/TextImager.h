@@ -436,7 +436,7 @@ namespace   Stroika {
                 class   GoalColumnRecomputerControlContext;
                 nonvirtual  void        RecomputeSelectionGoalColumn ();
             private:
-                bool    fSupressGoalColumnRecompute;
+                bool    fSuppressGoalColumnRecompute;
 
             public:
                 nonvirtual  Led_TWIPS   GetSelectionGoalColumn () const;
@@ -982,12 +982,12 @@ namespace   Stroika {
             */
             class   TextImager::GoalColumnRecomputerControlContext {
             public:
-                GoalColumnRecomputerControlContext (TextImager& imager, bool supressRecompute);
+                GoalColumnRecomputerControlContext (TextImager& imager, bool suppressRecompute);
                 ~GoalColumnRecomputerControlContext ();
 
             private:
                 TextImager& fTextImager;
-                bool        fSavedSupressRecompute;
+                bool        fSavedSuppressRecompute;
             };
 
 
@@ -1079,15 +1079,15 @@ namespace   Stroika {
 
 
 //  class   TextImager::GoalColumnRecomputerControlContext
-            inline  TextImager::GoalColumnRecomputerControlContext::GoalColumnRecomputerControlContext (TextImager& imager, bool supressRecompute):
+            inline  TextImager::GoalColumnRecomputerControlContext::GoalColumnRecomputerControlContext (TextImager& imager, bool suppressRecompute):
                 fTextImager (imager),
-                fSavedSupressRecompute (imager.fSupressGoalColumnRecompute)
+                fSavedSuppressRecompute (imager.fSuppressGoalColumnRecompute)
             {
-                imager.fSupressGoalColumnRecompute = supressRecompute;
+                imager.fSuppressGoalColumnRecompute = suppressRecompute;
             }
             inline  TextImager::GoalColumnRecomputerControlContext::~GoalColumnRecomputerControlContext ()
             {
-                fTextImager.fSupressGoalColumnRecompute = fSavedSupressRecompute;
+                fTextImager.fSuppressGoalColumnRecompute = fSavedSuppressRecompute;
             }
 
 

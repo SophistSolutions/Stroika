@@ -39,16 +39,16 @@ void    WordWrappedTextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bo
          *  Map 'shiftPressed' + NL to a soft-line break, but shutoff controlchar checking since that would
          *  generate an exception for this character (SPR#1080).
          */
-        bool    savedSupressFlag    =   GetSupressTypedControlCharacters ();
-        SetSupressTypedControlCharacters (false);
+        bool    savedSuppressFlag    =   GetSuppressTypedControlCharacters ();
+        SetSuppressTypedControlCharacters (false);
         try {
             inherited::OnTypedNormalCharacter (WordWrappedTextImager::kSoftLineBreakChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);
         }
         catch (...) {
-            SetSupressTypedControlCharacters (savedSupressFlag);
+            SetSuppressTypedControlCharacters (savedSuppressFlag);
             throw;
         }
-        SetSupressTypedControlCharacters (savedSupressFlag);
+        SetSuppressTypedControlCharacters (savedSuppressFlag);
     }
     else {
         inherited::OnTypedNormalCharacter (theChar, optionPressed, shiftPressed, commandPressed, controlPressed, altKeyPressed);

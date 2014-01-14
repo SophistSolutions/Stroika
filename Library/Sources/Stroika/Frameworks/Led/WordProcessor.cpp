@@ -6347,7 +6347,7 @@ bool    Table::OnPerformCommand_ApplyToEachSelectedCell (TextInteractor::Command
         for (size_t ci = colSelStart; ci < thisRowEnd; ++ci) {
             TemporarilyAllocateCellWithTablet   wp (*this, ri, ci, captureChangesForUndo);
             wp->SetSelection (0, wp->GetEnd (), TextInteractor::eNoUpdate);
-            TextInteractor::SupressCommandBreaksContext SCBC (*wp);
+            TextInteractor::SuppressCommandBreaksContext SCBC (*wp);
             wp->OnPerformCommand (commandNumber);
             result = true;
         }
@@ -7809,7 +7809,7 @@ WordProcessor::Table::EmbeddedTableWordProcessor::EmbeddedTableWordProcessor (Wo
     fDesiredHeight (0),
     fDesiredHeightValid (false),
     fActiveEditCell (activeEditCell),
-    fSupressRefreshCalls (false)
+    fSuppressRefreshCalls (false)
 {
     SetImageUsingOffscreenBitmaps (false);
 }
@@ -7917,9 +7917,9 @@ void    WordProcessor::Table::EmbeddedTableWordProcessor::ReleaseTablet (Led_Tab
 void    WordProcessor::Table::EmbeddedTableWordProcessor::RefreshWindowRect_ (const Led_Rect& windowRectArea, UpdateMode updateMode) const
 {
 #if     0
-    DbgTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (supressRefreshCalls = %d, updadeMode=%d)\n", fSupressRefreshCalls, updateMode);
+    DbgTrace ("EmbeddedTableWordProcessor::RefreshWindowRect_ (suppressRefreshCalls = %d, updadeMode=%d)\n", fSuppressRefreshCalls, updateMode);
 #endif
-    if (not fSupressRefreshCalls) {
+    if (not fSuppressRefreshCalls) {
         // See SPR#1455- really never a need to do IMMEDIATE update and for these embedded WP's can get into a
         // deadly embrace. This may not be the BEST solution to that deadly embrace, but it appears to be a
         // safe and adequate one... LGP 2003-05-01

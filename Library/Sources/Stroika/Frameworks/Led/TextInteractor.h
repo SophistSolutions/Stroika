@@ -110,9 +110,9 @@ namespace   Stroika {
                 nonvirtual  void    BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName);
 
             public:
-                class   SupressCommandBreaksContext;
+                class   SuppressCommandBreaksContext;
             private:
-                bool    fSupressCommandBreaksContext;
+                bool    fSuppressCommandBreaksContext;
 
             public:
                 struct  CommandNames;
@@ -430,10 +430,10 @@ namespace   Stroika {
 
 
             public:
-                nonvirtual  bool    GetSupressTypedControlCharacters () const;
-                nonvirtual  void    SetSupressTypedControlCharacters (bool supressTypedControlCharacters);
+                nonvirtual  bool    GetSuppressTypedControlCharacters () const;
+                nonvirtual  void    SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters);
             private:
-                bool    fSupressTypedControlCharacters;
+                bool    fSuppressTypedControlCharacters;
 
 
             public:
@@ -743,7 +743,7 @@ namespace   Stroika {
 #endif
 
             private:
-                friend  class   SupressCommandBreaksContext;
+                friend  class   SuppressCommandBreaksContext;
             };
 
 
@@ -753,16 +753,16 @@ namespace   Stroika {
 
 
             /*
-            @CLASS:         TextInteractor::SupressCommandBreaksContext
+            @CLASS:         TextInteractor::SuppressCommandBreaksContext
             @ACCESS:        public
             @DESCRIPTION:   <p>When one of these is created on the stack for the @'TextInteractor' ti, then
                         commands on that TextInteractor to @'TextInteractor::BreakInGroupedCommands ()' are
                         ignored.</p>
             */
-            class   TextInteractor::SupressCommandBreaksContext {
+            class   TextInteractor::SuppressCommandBreaksContext {
             public:
-                SupressCommandBreaksContext (TextInteractor& ti);
-                ~SupressCommandBreaksContext ();
+                SuppressCommandBreaksContext (TextInteractor& ti);
+                ~SuppressCommandBreaksContext ();
 
             private:
                 TextInteractor& fTextInteractor;
@@ -1179,16 +1179,16 @@ namespace   Stroika {
              ********************************************************************************
              */
 
-//  class   TextInteractor::SupressCommandBreaksContext
-            inline  TextInteractor::SupressCommandBreaksContext::SupressCommandBreaksContext (TextInteractor& ti):
+//  class   TextInteractor::SuppressCommandBreaksContext
+            inline  TextInteractor::SuppressCommandBreaksContext::SuppressCommandBreaksContext (TextInteractor& ti):
                 fTextInteractor (ti),
-                fOldVal (ti.fSupressCommandBreaksContext)
+                fOldVal (ti.fSuppressCommandBreaksContext)
             {
-                ti.fSupressCommandBreaksContext = true;
+                ti.fSuppressCommandBreaksContext = true;
             }
-            inline  TextInteractor::SupressCommandBreaksContext::~SupressCommandBreaksContext ()
+            inline  TextInteractor::SuppressCommandBreaksContext::~SuppressCommandBreaksContext ()
             {
-                fTextInteractor.fSupressCommandBreaksContext = fOldVal;
+                fTextInteractor.fSuppressCommandBreaksContext = fOldVal;
             }
 
 
@@ -1384,11 +1384,11 @@ namespace   Stroika {
             @METHOD:        TextInteractor::BreakInGroupedCommands
             @DESCRIPTION:   <p>Trivial helper - delegates to @'CommandHandler::BreakInGroupedCommands' if
                         @'TextInteractor::GetCommandHandler' returns non-nullptr.
-                        See also @'TextInteractor::SupressCommandBreaksContext'</p>
+                        See also @'TextInteractor::SuppressCommandBreaksContext'</p>
             */
             inline  void    TextInteractor::BreakInGroupedCommands ()
             {
-                if (fCommandHandler != nullptr and not fSupressCommandBreaksContext) {
+                if (fCommandHandler != nullptr and not fSuppressCommandBreaksContext) {
                     fCommandHandler->BreakInGroupedCommands ();
                 }
             }
@@ -1396,11 +1396,11 @@ namespace   Stroika {
             @METHOD:        TextInteractor::BreakInGroupedCommandsIfDifferentCommand
             @DESCRIPTION:   <p>Trivial helper - delegates to @'CommandHandler::BreakInGroupedCommandsIfDifferentCommand' if
                         @'TextInteractor::GetCommandHandler' returns non-nullptr.
-                        See also @'TextInteractor::SupressCommandBreaksContext'</p>
+                        See also @'TextInteractor::SuppressCommandBreaksContext'</p>
             */
             inline  void    TextInteractor::BreakInGroupedCommandsIfDifferentCommand (const Led_SDK_String& cmdName)
             {
-                if (fCommandHandler != nullptr and not fSupressCommandBreaksContext) {
+                if (fCommandHandler != nullptr and not fSuppressCommandBreaksContext) {
                     fCommandHandler->BreakInGroupedCommandsIfDifferentCommand (cmdName);
                 }
             }
@@ -1701,13 +1701,13 @@ namespace   Stroika {
             {
                 fUseBitmapScrollingOptimization = useBitmapScrollingOptimization;
             }
-            inline  bool    TextInteractor::GetSupressTypedControlCharacters () const
+            inline  bool    TextInteractor::GetSuppressTypedControlCharacters () const
             {
-                return fSupressTypedControlCharacters;
+                return fSuppressTypedControlCharacters;
             }
-            inline  void    TextInteractor::SetSupressTypedControlCharacters (bool supressTypedControlCharacters)
+            inline  void    TextInteractor::SetSuppressTypedControlCharacters (bool suppressTypedControlCharacters)
             {
-                fSupressTypedControlCharacters = supressTypedControlCharacters;
+                fSuppressTypedControlCharacters = suppressTypedControlCharacters;
             }
             /*
             @METHOD:        TextInteractor::GetInteractiveUpdateMode

@@ -238,7 +238,7 @@ TextImager::TextImager ():
     fForceAllRowsShowing (true),
     fImageUsingOffscreenBitmaps (qUseOffscreenBitmapsToReduceFlicker),
     fHScrollPos (0),
-    fSupressGoalColumnRecompute (false),
+    fSuppressGoalColumnRecompute (false),
     fSelectionGoalColumn (Led_TWIPS (0)),
     fUseEOLBOLRowHilightStyle (true),
     fSelectionShown (false),
@@ -830,7 +830,7 @@ void    TextImager::SetHilightMarker (HilightMarker* newHilightMarker)
 */
 void    TextImager::RecomputeSelectionGoalColumn ()
 {
-    if (not fSupressGoalColumnRecompute) {
+    if (not fSuppressGoalColumnRecompute) {
         // We now maintain a goal-column-target using pixel offsets within the row, rather than
         // character offsets, cuz thats what LEC/Alan Pollack prefers, and I think most
         // Texteditors seem todo likewise - LedSPR#0315

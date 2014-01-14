@@ -1759,7 +1759,7 @@ namespace   Stroika {
                 class   DisableRefreshContext;
 
             private:
-                bool    fSupressRefreshCalls;
+                bool    fSuppressRefreshCalls;
 
             private:
 #if     qAccessChecksSometimesBreakForNestedClasses
@@ -3097,15 +3097,15 @@ namespace   Stroika {
 //class WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext
             inline  WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext::DisableRefreshContext (WordProcessor::Table::EmbeddedTableWordProcessor& wp):
                 fWP (wp),
-                fOldVal (wp.fSupressRefreshCalls)
+                fOldVal (wp.fSuppressRefreshCalls)
             {
-                wp.fSupressRefreshCalls = true;
+                wp.fSuppressRefreshCalls = true;
             }
             inline  WordProcessor::Table::EmbeddedTableWordProcessor::DisableRefreshContext::~DisableRefreshContext ()
             {
-                if (fWP.fSupressRefreshCalls != fOldVal) {
-                    fWP.fSupressRefreshCalls = fOldVal;
-                    if (not fWP.fSupressRefreshCalls) {
+                if (fWP.fSuppressRefreshCalls != fOldVal) {
+                    fWP.fSuppressRefreshCalls = fOldVal;
+                    if (not fWP.fSuppressRefreshCalls) {
                         fWP.NoteWindowPartiallyUpdated ();
                     }
                 }

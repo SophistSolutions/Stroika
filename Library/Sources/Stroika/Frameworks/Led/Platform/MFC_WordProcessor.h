@@ -264,7 +264,7 @@ namespace   Stroika {
                 private:
                     COleDocument*   fOldDoc;
                 public:
-                    static  set<HWND>   sWindowsWhichHadDisplaySupressed;
+                    static  set<HWND>   sWindowsWhichHadDisplaySuppressed;
                 };
 #endif
 
@@ -292,9 +292,9 @@ namespace   Stroika {
                 void    WordProcessorCommonCommandHelper_MFC<BASECLASS>::OnPaint ()
                 {
                     if (Led_MFC_ControlItem::DocContextDefiner::GetDoc () != NULL) {
-                        // supress display but create CPaintDC object to eat update event (and accumulate window to re-inval just below)
+                        // suppress display but create CPaintDC object to eat update event (and accumulate window to re-inval just below)
                         CPaintDC    dc (this);
-                        Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.insert (GetHWND ());
+                        Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.insert (GetHWND ());
                         return;
                     }
                     inherited::OnPaint ();

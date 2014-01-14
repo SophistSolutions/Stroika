@@ -498,7 +498,7 @@ TextInteractor::TextInteractor ():
     TextImager (),
     fCommandHandler (nullptr),
     fSpellCheckEngine (nullptr),
-    fSupressCommandBreaksContext (false),
+    fSuppressCommandBreaksContext (false),
     fDefaultUpdateMode (eDelayedUpdate),
     fSmartCutAndPasteMode (true),
     fClickCount (0),
@@ -511,7 +511,7 @@ TextInteractor::TextInteractor ():
 #else
     fUseBitmapScrollingOptimization (true),
 #endif
-    fSupressTypedControlCharacters (true),
+    fSuppressTypedControlCharacters (true),
     fInteractiveUpdadeMode (eIndeterminateInteractiveUpdateMode),
     fTmpPreReplaceInfo (),
     fDoingUpdateModeReplaceOn (nullptr),
@@ -3281,7 +3281,7 @@ void    TextInteractor::OnTypedNormalCharacter (Led_tChar theChar, bool /*option
 
     Assert (GetSelectionEnd () <= GetLength () + 1);
 
-    if (GetSupressTypedControlCharacters ()) {
+    if (GetSuppressTypedControlCharacters ()) {
         bool    controlChar =   Character (theChar).IsControl ();
         if (controlChar &&
                 (theChar == '\r' || theChar == '\n' || theChar == ' ' || theChar == '\t' || theChar == '\b')

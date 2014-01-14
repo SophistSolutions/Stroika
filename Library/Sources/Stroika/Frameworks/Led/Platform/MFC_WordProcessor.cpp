@@ -182,7 +182,7 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
         // Docs don't seem to say passing NULL for DVTARGETDEVICE, but - seems to work - and I don't know which one to use?
         builtItem->CheckGeneral (::OleConvertOLESTREAMToIStorage (&myStream, builtItem->m_lpStorage, NULL));
 
-        Assert (Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.empty ()); // if someplace ELSE is adding these windows,
+        Assert (Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.empty ()); // if someplace ELSE is adding these windows,
         // we must be careful - else could be using bogus windows!
         /*
          *  See COleClientItem::ReadFlat code - next query OleXXX interface, and assign that to some
@@ -202,12 +202,12 @@ SimpleEmbeddedObjectStyleMarker*    Led_MFC_ControlItem::mkLed_MFC_ControlItemSt
              *  and see that we are not creating OLE objects, and if we are, then skip the paint event and save the window
              *  so we can RE-INVALIDATE it (here).
              */
-            for (auto i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.begin ();
-                    i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.end ();
+            for (auto i = Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.begin ();
+                    i != Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.end ();
                     ++i) {
                 Verify (::InvalidateRect (*i, NULL, true) != 0);
             }
-            Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed.clear ();
+            Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed.clear ();
         }
 
         if (pUnk->QueryInterface (IID_IOleObject, (LPVOID*)&builtItem->m_lpObject) != S_OK) {
@@ -618,6 +618,6 @@ Led_MFC&    Led_MFC_ControlItem::GetActiveView () const
  ********************************************************************************
  */
 
-set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySupressed;
+set<HWND>   Led_MFC_ControlItem::DocContextDefiner::sWindowsWhichHadDisplaySuppressed;
 
 #endif

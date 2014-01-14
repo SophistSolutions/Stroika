@@ -67,7 +67,7 @@ using   namespace   Execution;
 
 namespace {
     thread_local bool           s_Aborting_  =   false;
-    thread_local unsigned int   s_AbortSupressDepth_ = 0;               // doesnt need to be std::atomic because only updated from one thread
+    thread_local unsigned int   s_AbortSuppressDepth_ = 0;               // doesnt need to be std::atomic because only updated from one thread
 }
 
 
@@ -154,12 +154,12 @@ SignalHandler   kCallInRepThreadAbortProcSignalHandler_ = SIG_IGN;
  */
 Thread::SuppressAbortInContext::SuppressAbortInContext ()
 {
-    s_AbortSupressDepth_++;
+    s_AbortSuppressDepth_++;
 }
 
 Thread::SuppressAbortInContext::~SuppressAbortInContext ()
 {
-    s_AbortSupressDepth_--;
+    s_AbortSuppressDepth_--;
 }
 
 
@@ -249,7 +249,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 
 #if     qCompilerAndStdLib_thread_local_initializers_Buggy
         s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
-        s_AbortSupressDepth_ = 0;
+        s_AbortSuppressDepth_ = 0;
 #endif
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
 
@@ -745,7 +745,7 @@ wstring Execution::FormatThreadID (Thread::IDType threadID)
  */
 void    Execution::CheckForThreadAborting ()
 {
-    if (s_Aborting_ and s_AbortSupressDepth_ == 0) {
+    if (s_Aborting_ and s_AbortSuppressDepth_ == 0) {
         Execution::DoThrow (ThreadAbortException ());
     }
 //      http://bugzilla/show_bug.cgi?id=646
