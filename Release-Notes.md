@@ -22,7 +22,8 @@ History
 <td>v2.0a18x<br/>2014-???</td>
 <td>
 <ul>
-<li>Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
+<li>Started adding ...Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
+<li>Lots of cleanups of threads and signal handling code. Needs more mileage/testing before ready for wider use/release</li>
 </ul>
 </td>
 </tr>

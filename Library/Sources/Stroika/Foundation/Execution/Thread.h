@@ -24,11 +24,10 @@
  *
  *      PROGRESS NOTES GETTING THREAD INTERUPTION VIA SIGNALS WORKING ON POSIX
  *
- *      @todo   Thread::SuppressAbortInContext - review/ and PROBABLY add support to suppress
- *              future aborts (like sigblock). Maybe even rename to AbortBlock? Maybe thats
- *              a CLUE - and avoid future ones by having this aggregate a SIGBLLCOK object (works posix only?).
+ *      @todo   SuppressAbortInContext DTOR should CheckFor...Abort...
  *
  *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
+ *              DID - 2014-01-14 - with idefs.
  *
  *      @todo   Windows thread interuption with CRITICALSECTION/lock_gaurd<>
  *              Currently we use EnterCriticalSeciton alot, But thats not 'alertable' -
@@ -49,6 +48,8 @@
  *              one to ADOPT an existing thread because then we couldnt hook the run-proc,
  *              which is needed for our exception stuff - I think.
  *
+ *              (mostly did this - but keep todo around to update docs)
+ *
  *      @todo   must define C++ static signal handler
  *
  *      @todo   must install handler when about to call Abort() - no need -
@@ -58,6 +59,7 @@
  *              right thread id) - set sAborted.
  *
  *      @todo   use pthread_kill (use native_handle() from threadobj) - to send the signal.
+ *              (REVIEW - but I think this is bascailly done - and obsoelte - LGP 2014-01-14)
  *
  *      @todo   MAJOR REWRITE OF THREAD DOCUMENTAITON ON INTERUPTION:
  *              >>  I THINK these are all - both posix and windows - really cooperative.
@@ -379,15 +381,8 @@ namespace   Stroika {
 
 
             /**
-             *  @todo DOC MORE
-             *  Fix for subtle bug where one thread owns another and the first is aborted (but needs to
-             *  cleanly cleanup the second).
-             *
-             *  NOTE - this INTENTIONALLY does NOT prevent FUTURE aborts - it just eliminates current pending ones.
-             *  @todo RETHINK - is that the right thing?
-             *      > pro - we still may need to abort a thread if it doesnt give up the ghost?
-             *      > con - could lead to subtle (timing) bugs?
-             *      PROBABLY I have this wrong - but this is simpler for now...
+             *  This object - while in existance, blocks delivery of all abort signals (for this thread in which its instantiated).
+             *  These objects nest.
              */
             class   Thread::SuppressAbortInContext {
             public:
