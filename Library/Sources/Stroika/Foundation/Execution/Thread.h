@@ -26,6 +26,20 @@
  *
  *      @todo   SuppressAbortInContext DTOR should CheckFor...Abort...
  *
+ *      @todo   DOCUMENT:
+ *              With POSIX, interuption is COMPLETELY co-operative. But with windows - we can throw from inside a handful of specail
+ *              'alertable' apis. One of these - is SleepEx.
+ *
+ *              Turning this flag on (by default on for windoze) - means that we throw if user code calls a windows alertable API
+ *              in ADDITION to the usual 'co-operative' abort situations.
+ *
+ *              See also maybe
+ *              http://bugzilla/show_bug.cgi?id=646
+ *
+ *              Note we have a regtest for this case in RegressionTest5_Aborting_()
+ *
+ *          -- LGP 2014-01-14
+ *
  *      @todo   Lose fStatusCriticalSection_ - and instead use atomics - I THINK!!! At least evalute
  *              DID - 2014-01-14 - with idefs.
  *

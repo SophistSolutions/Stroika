@@ -333,28 +333,53 @@ namespace   {
     void    RegressionTest5_Aborting_ ()
     {
         Debug::TraceContextBumper traceCtx (SDKSTR ("RegressionTest5_Aborting_"));
-        struct  FRED {
-            static  void    DoIt ()
-            {
-                while (true) {
-                    Execution::CheckForThreadAborting ();
+        {
+            struct  FRED {
+                static  void    DoIt ()
+                {
+                    while (true) {
+                        Execution::CheckForThreadAborting ();
+                    }
                 }
+            };
+            Thread  thread (&FRED::DoIt);
+            thread.Start ();
+            try {
+                thread.WaitForDone (0.3);   // should timeout
+                VerifyTestResult (false);
             }
-        };
-        Thread  thread (&FRED::DoIt);
-        thread.Start ();
-        try {
-            thread.WaitForDone (0.3);   // should timeout
-            VerifyTestResult (false);
+            catch (const Execution::WaitTimedOutException&) {
+                // GOOD
+            }
+            catch (...) {
+                VerifyTestResult (false);
+            }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
         }
-        catch (const Execution::WaitTimedOutException&) {
-            // GOOD
+#if     qPlatform_Windows
+        {
+            Thread  thread ([] () {
+                while (true) {
+                    // test alertable 'throw'
+                    ::SleepEx (0, true);
+                }
+            });
+            thread.Start ();
+            try {
+                thread.WaitForDone (0.3);   // should timeout
+                VerifyTestResult (false);
+            }
+            catch (const Execution::WaitTimedOutException&) {
+                // GOOD
+            }
+            catch (...) {
+                VerifyTestResult (false);
+            }
+            // Now - abort it, and wait
+            thread.AbortAndWaitForDone ();
         }
-        catch (...) {
-            VerifyTestResult (false);
-        }
-        // Now - abort it, and wait
-        thread.AbortAndWaitForDone ();
+#endif
     }
 }
 

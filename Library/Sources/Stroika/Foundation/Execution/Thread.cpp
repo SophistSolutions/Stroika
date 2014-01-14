@@ -66,9 +66,32 @@ using   namespace   Execution;
 
 
 namespace {
-    thread_local bool           s_Aborting_  =   false;
-    thread_local unsigned int   s_AbortSuppressDepth_ = 0;               // doesnt need to be std::atomic because only updated from one thread
+#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+    typedef volatile bool AbortFlagType_;
+#else
+    typedef atomic<bool> AbortFlagType_;
+#endif
 }
+
+
+namespace {
+#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+    typedef volatile unsigned int AbortSuppressCountType_;
+#else
+    typedef atomic<unsigned int> AbortSuppressCountType_;
+#endif
+}
+
+
+
+namespace {
+    thread_local AbortFlagType_             s_Aborting_             =   false;
+    thread_local AbortSuppressCountType_    s_AbortSuppressDepth_   =   0;               // doesnt need to be std::atomic because only updated from one thread
+}
+
+
+
+
 
 
 
@@ -251,6 +274,10 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
         s_Aborting_ = false;             // reset in case thread re-allocated - TLS may not be properly reinitialized (didn't appear to be on GCC/Linux)
         s_AbortSuppressDepth_ = 0;
 #endif
+        /*
+         *  Subtle, and not super clearly documented, but this is taking the address of a thread-local variable, and storing it in a non-thread-local
+         *  instance, and hoping all that works correctly (that the memory access all work correctly).
+         */
         incRefCnt->fTLSAbortFlag_ = &s_Aborting_;
 
         try {
@@ -369,7 +396,13 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
     *fTLSAbortFlag_ = true;
 
     if (GetCurrentThreadID () == GetID ()) {
-        ThrowAbortIfNeededFromRepThread_ ();
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
+        lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+#endif
+        Assert (s_Aborting_);
+        if (fStatus_ == Status::eAborting and s_AbortSuppressDepth_ == 0) {
+            Execution::DoThrow (ThreadAbortException ());
+        }
     }
 
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
@@ -418,7 +451,12 @@ void    Thread::Rep_::CalledInRepThreadAbortProc_ (SignalID signal)
 void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter)
 {
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
+
+#if 0
+    // already set via another mechanism (taking the address) - if that works - we dont need this - testing...
+    //-- LGP 2014-01-14
     s_Aborting_ = true;
+#endif
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
     Require (rep->fStatus_ == Status::eAborting or rep->fStatus_ == Status::eCompleted);
     /*
@@ -426,7 +464,20 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
      *  so its safe to throw there.
      */
     Require (GetCurrentThreadID () == rep->GetID ());
-    rep->ThrowAbortIfNeededFromRepThread_ ();
+    Assert (s_Aborting_);
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
+    lock_guard<recursive_mutex> enterCritcalSection (rep->fStatusCriticalSection_);
+#endif
+    // this isn't the race it might look like because this can only be called when the target (rep) thread is in an alertable state, meaning
+    // inside a call to SleepEx, etc... so not updating variables
+    if (rep->fStatus_ == Status::eAborting) {
+        if (s_AbortSuppressDepth_ == 0) {
+            Execution::DoThrow (ThreadAbortException ());
+        }
+        else {
+            return; // dont assert out at the end
+        }
+    }
     // normally we don't reach this - but we could if we've already been marked completed somehow
     // before the abortProc got called/finsihed...
     Require (rep->fStatus_ == Status::eCompleted);
@@ -748,27 +799,5 @@ void    Execution::CheckForThreadAborting ()
     if (s_Aborting_ and s_AbortSuppressDepth_ == 0) {
         Execution::DoThrow (ThreadAbortException ());
     }
-//      http://bugzilla/show_bug.cgi?id=646
-//      I THINK this is obsolete.... throw should  be fine
-
-// RE-ENABLE for windows - qUseSleepExForSAbortingFlag - this is BAD, NOT GOOD.
-// MUST get this working again...
-//  -- LGP 2013-03-26
-
-
-//#define qUseSleepExForSAbortingFlag 0
-#ifndef qUseSleepExForSAbortingFlag
-#define qUseSleepExForSAbortingFlag qPlatform_Windows
-#endif
-#if     qUseSleepExForSAbortingFlag
-    /*
-        * I think we could use SleepEx() or WaitForMultipleObjectsEx(), but SleepEx(0,true) may cause a thread to give up
-        * the CPU (ask itself to be rescheduled). WaitForMultipleObjectsEx - from the docs - doesn't appear to do this.
-        * I think its a lower-cost way to check for a thread being aborted...
-        *           -- LGP 2010-10-26
-        */
-//      (void)::WaitForMultipleObjectsEx (0, nullptr, false, 0, true);
-    ::SleepEx (0, true);
-#endif
 }
 

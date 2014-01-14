@@ -49,15 +49,9 @@ namespace   Stroika {
 
             private:
                 // Called - typically from ANOTHER thread (but could  be this thread). By default this does nothing,
-                // and is just called by Thread::Abort (). It CAN be hooked by subclassses to do soemthing to
-                // force a quicker abort.
-                //
-                // BUT BEWARE WHEN OVERRIDING - WORKS ON ANOTHER THREAD!!!!
+                // and is just called by Thread::Abort (). It sets (indirectly) the thread-local-storage aborted
+                // flag for the target thread. And if called from an aborting thread, it may throw
                 nonvirtual  void    NotifyOfAbortFromAnyThread_ ();
-
-            private:
-                // Called from WITHIN this thread (asserts thats true), and does throw of ThreadAbortException if in eAborting state
-                nonvirtual  void    ThrowAbortIfNeededFromRepThread_ () const;
 
             private:
                 static  void    ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept;
@@ -69,11 +63,19 @@ namespace   Stroika {
                 static  void    CALLBACK    CalledInRepThreadAbortProc_ (ULONG_PTR lpParameter);
 #endif
 
+
+            private:
+#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+                typedef volatile bool AbortFlagType_;
+#else
+                typedef atomic<bool> AbortFlagType_;
+#endif
+
             private:
                 shared_ptr<IRunnable>   fRunnable_;
                 // We use a global variable (thread local) to store the abort flag. But we must access it from ANOTHER thread typically - using
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
-                bool*                   fTLSAbortFlag_;
+                AbortFlagType_*         fTLSAbortFlag_;
                 std::thread             fThread_;
 #if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 mutable recursive_mutex fStatusCriticalSection_;
@@ -97,16 +99,6 @@ namespace   Stroika {
             inline  void    Thread::Rep_::Start ()
             {
                 fOK2StartEvent_.Set ();
-            }
-            inline  void    Thread::Rep_::ThrowAbortIfNeededFromRepThread_ () const
-            {
-                Require (GetCurrentThreadID () == GetID ());
-#if     qUSE_MUTEX_FOR_STATUS_FIELD_
-                lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
-#endif
-                if (fStatus_ == Status::eAborting) {
-                    DoThrow (ThreadAbortException ());
-                }
             }
 
 
