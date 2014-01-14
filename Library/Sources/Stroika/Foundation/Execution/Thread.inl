@@ -10,14 +10,16 @@
  ***************************** Implementation Details ***************************
  ********************************************************************************
  */
+#include    <atomic>
 #include    <list>
 #include    "Lockable.h"
 #include    "ThreadAbortException.h"
 
-
 namespace   Stroika {
     namespace   Foundation {
         namespace   Execution {
+// experiment with this -- LGP 2014-01-14
+#define qUSE_MUTEX_FOR_STATUS_FIELD_    0
 
 
             /*
@@ -73,8 +75,10 @@ namespace   Stroika {
                 // a pointer. This is that pointer - so another thread can terminate/abort this thread.
                 bool*                   fTLSAbortFlag_;
                 std::thread             fThread_;
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 mutable recursive_mutex fStatusCriticalSection_;
-                Status                  fStatus_;
+#endif
+                std::atomic<Status>     fStatus_;
                 Event                   fRefCountBumpedEvent_;
                 Event                   fOK2StartEvent_;
                 Event                   fThreadDone_;
@@ -97,7 +101,9 @@ namespace   Stroika {
             inline  void    Thread::Rep_::ThrowAbortIfNeededFromRepThread_ () const
             {
                 Require (GetCurrentThreadID () == GetID ());
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+#endif
                 if (fStatus_ == Status::eAborting) {
                     DoThrow (ThreadAbortException ());
                 }

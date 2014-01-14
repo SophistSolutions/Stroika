@@ -180,7 +180,9 @@ Thread::Rep_::Rep_ (const IRunnablePtr& runnable)
     : fRunnable_ (runnable)
     , fTLSAbortFlag_ (nullptr)           // Can only be set properly within the MAINPROC of the thread
     , fThread_ ()
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
     , fStatusCriticalSection_ ()
+#endif
     , fStatus_ (Status::eNotYetRunning)
     , fRefCountBumpedEvent_ ()
     , fOK2StartEvent_ ()
@@ -280,7 +282,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             DbgTrace (L"In Thread::Rep_::ThreadMain_ - setting state to RUNNING for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             bool    doRun   =   false;
             {
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+#endif
                 if (incRefCnt->fStatus_ == Status::eNotYetRunning)
                 {
                     incRefCnt->fStatus_ = Status::eRunning;
@@ -293,13 +297,28 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
             }
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED for thread= %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+#endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
             incRefCnt->fThreadDone_.Set ();
         }
         catch (const ThreadAbortException&)
         {
+            /// vaguely #if     qUSE_MUTEX_FOR_STATUS_FIELD related - but not quite.... - not just...
+            /// --LGP 2014-01-14 change...
+#if 1
+            DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (ThreadAbortException) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
+            {
+                lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+                incRefCnt->fStatus_ = Status::eCompleted;
+            }
+#else
+            incRefCnt->fStatus_ = Status::eCompleted;
+#endif
+#else
 #if     qPlatform_POSIX
             Platform::POSIX::ScopedBlockCurrentThreadSignal  blockThreadAbortSignal (GetSignalUsedForThreadAbort ());
             s_Aborting_ = false;     //  else .Set() below will THROW EXCPETION and not set done flag!
@@ -309,6 +328,7 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
+#endif
             incRefCnt->fThreadDone_.Set ();
         }
         catch (...)
@@ -319,7 +339,9 @@ void    Thread::Rep_::ThreadMain_ (shared_ptr<Rep_>* thisThreadRep) noexcept {
 #endif
             DbgTrace (L"In Thread::Rep_::ThreadProc_ - setting state to COMPLETED (EXCEPT) for thread = %s", FormatThreadID (incRefCnt->GetID ()).c_str ());
             {
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
                 lock_guard<recursive_mutex> enterCritcalSection (incRefCnt->fStatusCriticalSection_);
+#endif
                 incRefCnt->fStatus_ = Status::eCompleted;
             }
             incRefCnt->fThreadDone_.Set ();
@@ -355,7 +377,9 @@ void    Thread::Rep_::NotifyOfAbortFromAnyThread_ ()
         ThrowAbortIfNeededFromRepThread_ ();
     }
 
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
     lock_guard<recursive_mutex> enterCritcalSection (fStatusCriticalSection_);
+#endif
     if (fStatus_ == Status::eAborting) {
 #if     qPlatform_POSIX
         {
@@ -401,7 +425,7 @@ void    CALLBACK    Thread::Rep_::CalledInRepThreadAbortProc_ (ULONG_PTR lpParam
     TraceContextBumper ctx (SDKSTR ("Thread::Rep_::CalledInRepThreadAbortProc_"));
     s_Aborting_ = true;
     Thread::Rep_*   rep =   reinterpret_cast<Thread::Rep_*> (lpParameter);
-    Require (rep->fStatus_ == Status::eAborting || rep->fStatus_ == Status::eCompleted);
+    Require (rep->fStatus_ == Status::eAborting or rep->fStatus_ == Status::eCompleted);
     /*
      *  Note - this only gets called by special thread-proces marked as alertable (like sleepex or waitfor...event,
      *  so its safe to throw there.
@@ -551,10 +575,17 @@ void    Thread::Abort ()
     DbgTrace (L"(thread = %s, name='%s', status=%d)", FormatThreadID (GetID ()).c_str (), fRep_->fThreadName_.c_str (), fRep_->fStatus_);
 
     // first try to send abort exception, and then - if force - get serious!
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
     lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
     if (fRep_->fStatus_ != Status::eCompleted) {
         fRep_->fStatus_ = Status::eAborting;
     }
+#else
+    // goto aborting, unless the previous value was completed, and then leave it completed.
+    if (fRep_->fStatus_.exchange (Status::eAborting) == Status::eCompleted) {
+        fRep_->fStatus_ = Status::eCompleted;
+    }
+#endif
     if (fRep_->fStatus_ == Status::eAborting) {
         // by default - tries to trigger a throw-abort-excption in the right thread using UNIX signals or QueueUserAPC ()
         fRep_->NotifyOfAbortFromAnyThread_ ();
@@ -572,7 +603,6 @@ void    Thread::Abort_Forced_Unsafe ()
 
     // Wait some reasonable amount of time for the thread to abort
     IgnoreExceptionsForCall (WaitForDone (5.0f));
-    lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
     AssertNotImplemented ();
 }
 
@@ -666,7 +696,9 @@ Thread::Status  Thread::GetStatus_ () const noexcept
     if (fRep_.get () == nullptr) {
         return Status::eNull;
     }
+#if     qUSE_MUTEX_FOR_STATUS_FIELD_
     lock_guard<recursive_mutex> enterCritcalSection (fRep_->fStatusCriticalSection_);
+#endif
     return fRep_->fStatus_;
 }
 
