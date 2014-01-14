@@ -34,13 +34,6 @@ using   Containers::Set;
 
 
 
-struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
-    Rep_ ();
-    ~Rep_ ();
-    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
-    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
-    Thread                                                          fBlockingQueuePusherThread_;
-};
 
 
 
@@ -71,36 +64,48 @@ namespace {
     }
 }
 
-SignalHandlerRegistry::SafeSignalsManager::Rep_::Rep_  ()
-    : fHandlers_ ()
-    , fIncomingSafeSignals_ (mkQ_ ())
-    , fBlockingQueuePusherThread_ ()
-{
-    Thread watcherThread ([this] () {
-        // This is a safe context
-        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
-        while (true) {
-            Debug::TraceContextBumper trcCtx1 (SDKSTR ("waiting for next signal"));
-            SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
-            Debug::TraceContextBumper trcCtx2 (SDKSTR ("Invoking SAFE signal handlers"));
-            DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
-            for (SignalHandler sh : fHandlers_.LookupValue (i)) {
-                if (sh.GetType () == SignalHandler::Type::eSafe) {
+struct SignalHandlerRegistry::SafeSignalsManager::Rep_ {
+    Rep_ ()
+        : fHandlers_ ()
+        , fIncomingSafeSignals_ (mkQ_ ())
+        , fBlockingQueuePusherThread_ ()
+    {
+        Thread watcherThread ([this] () {
+            // This is a safe context
+            Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::Signals::{}::fBlockingQueueDelegatorThread_"));
+            while (true) {
+                Debug::TraceContextBumper trcCtx1 (SDKSTR ("waiting for next signal"));
+                SignalID    i   =   fIncomingSafeSignals_.RemoveHead ();
+                Debug::TraceContextBumper trcCtx2 (SDKSTR ("Invoking SAFE signal handlers"));
+                DbgTrace (L"(signal: %s)", SignalToName (i).c_str ());
+                for (SignalHandler sh : fHandlers_.LookupValue (i)) {
+                    Assert (sh.GetType () == SignalHandler::Type::eSafe);
                     IgnoreExceptionsExceptThreadAbortForCall (sh (i));
                 }
             }
-        }
-    });
-    watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
-    watcherThread.Start ();
-    fBlockingQueuePusherThread_ = std::move (watcherThread);
-}
+        });
+        watcherThread.SetThreadName (L"Signal Handler Safe Execution Thread");
+        watcherThread.Start ();
+        fBlockingQueuePusherThread_ = std::move (watcherThread);
+    }
+    ~Rep_ ()
+    {
+        Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"));
+        fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+    }
+    Containers::Mapping<SignalID, Containers::Set<SignalHandler>>   fHandlers_;
+    BlockingQueue<SignalID>                                         fIncomingSafeSignals_;
+    Thread                                                          fBlockingQueuePusherThread_;
 
-SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_ ()
-{
-    Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_"));
-    fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-}
+    void    NotifyOfArrivalOfPossiblySafeSignal (SignalID signal)
+    {
+        // harmless - but pointless - to add signals that will be ignored
+        if (fHandlers_.Lookup (signal).IsPresent ()) {
+            fIncomingSafeSignals_.AddTail (signal);
+        }
+    }
+};
+
 
 
 
@@ -111,23 +116,26 @@ SignalHandlerRegistry::SafeSignalsManager::Rep_::~Rep_ ()
  *********** Execution::SignalHandlerRegistry::SafeSignalsManager ***************
  ********************************************************************************
  */
-shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegistry::SafeSignalsManager::sThe_;
+shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_>  SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
 
 SignalHandlerRegistry::SafeSignalsManager::SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::CTOR"));
-    Assert (sThe_ == nullptr);
-    sThe_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
+    Assert (sTheRep_ == nullptr);
+    sTheRep_ = shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> (new Rep_ ());
 }
 
 SignalHandlerRegistry::SafeSignalsManager::~SafeSignalsManager ()
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
-    Assert (sThe_ != nullptr);
-    // critical we wait for finish of thread cuz it has bare 'this' pointer captured
-    Execution::Thread::SuppressAbortInContext  suppressAbort;
-    sThe_->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
-    sThe_.reset ();
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
+    sTheRep_.reset ();
+    // avoid slight race - after reset above - could still be processing a signal (holding refcount above zero).
+    // this check and abort/wait guaratess at least no more thread running (though other stuff - like signal handling - could
+    // still be running)
+    if (tmp != nullptr) {
+        tmp->fBlockingQueuePusherThread_.AbortAndWaitForDone ();
+    }
 }
 
 
@@ -157,7 +165,7 @@ SignalHandlerRegistry::SignalHandlerRegistry ()
 SignalHandlerRegistry::~SignalHandlerRegistry ()
 {
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::DTOR"));
-    Assert (SafeSignalsManager::sThe_ == nullptr);  // must be cleared first
+    Assert (SafeSignalsManager::sTheRep_ == nullptr);  // must be cleared first
 }
 
 Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
@@ -167,7 +175,7 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
     for (auto i : fDirectHandlers_) {
         result.Add (i.fKey);
     }
-    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sThe_;
+    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
         for (auto i : tmp->fHandlers_) {
             result.Add (i.fKey);
@@ -179,7 +187,7 @@ Set<SignalID>   SignalHandlerRegistry::GetHandledSignals () const
 Set<SignalHandler>  SignalHandlerRegistry::GetSignalHandlers (SignalID signal) const
 {
     Set<SignalHandler>  result  =   fDirectHandlers_.LookupValue (signal);
-    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sThe_;
+    shared_ptr<SafeSignalsManager::Rep_> tmp = SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
         result += tmp->fHandlers_.LookupValue (signal);
     }
@@ -201,7 +209,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
     Debug::TraceContextBumper trcCtx (SDKSTR ("Stroika::Foundation::Execution::SignalHandlerRegistry::{}::SetSignalHandlers"));
     DbgTrace (L"(signal = %s, handlers.size () = %d, ....)", SignalToName (signal).c_str (), handlers.size ());
 
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (handlers.empty ()) {
         /*
          *  No handlers means use default.
@@ -241,7 +249,7 @@ void    SignalHandlerRegistry::SetSignalHandlers (SignalID signal, const Set<Sig
             // To use safe signal handlers, you must have a SignalHandlerRegistry::SafeSignalsManager
             // defined first. It is recommended that you define an instance of
             // SignalHandlerRegistry::SafeSignalsManager handler; should be defined in main ()
-            Require (SafeSignalsManager::sThe_ != nullptr);
+            Require (SafeSignalsManager::sTheRep_ != nullptr);
         }
         if (tmp != nullptr) {
             tmp->fHandlers_.Add (signal, safeHandlers);
@@ -300,8 +308,8 @@ void    SignalHandlerRegistry::FirstPassSignalHandler_ (SignalID signal)
     for (SignalHandler sh : SHR.fDirectHandlers_.LookupValue (signal)) {
         sh (signal);
     }
-    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sThe_;
+    shared_ptr<SignalHandlerRegistry::SafeSignalsManager::Rep_> tmp = SignalHandlerRegistry::SafeSignalsManager::sTheRep_;
     if (tmp != nullptr) {
-        tmp->fIncomingSafeSignals_.AddTail (signal);
+        tmp->NotifyOfArrivalOfPossiblySafeSignal (signal);
     }
 }

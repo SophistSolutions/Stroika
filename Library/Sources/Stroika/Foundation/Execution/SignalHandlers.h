@@ -270,7 +270,7 @@ namespace   Stroika {
 
             private:
                 struct Rep_;
-                static  shared_ptr<Rep_>    sThe_;
+                static  shared_ptr<Rep_>    sTheRep_;
 
             private:
                 friend  class   SignalHandlerRegistry;
