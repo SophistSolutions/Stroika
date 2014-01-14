@@ -395,8 +395,6 @@ namespace   Stroika {
                 SuppressAbortInContext (const SuppressAbortInContext&) = delete;
                 const SuppressAbortInContext& operator= (const SuppressAbortInContext&) = delete;
                 ~SuppressAbortInContext ();
-            private:
-                bool    fPrev_;
             };
 
 
