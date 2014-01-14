@@ -67,26 +67,26 @@ using   namespace   Execution;
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_keyword_Buggy
-    typedef volatile bool AbortFlagType_;
+    typedef volatile bool   AbortFlagType_;
 #else
-    typedef atomic<bool> AbortFlagType_;
+    typedef atomic<bool>    AbortFlagType_;
 #endif
 }
 
 
 namespace {
 #if     qCompilerAndStdLib_thread_local_keyword_Buggy
-    typedef volatile unsigned int AbortSuppressCountType_;
+    typedef volatile unsigned int   AbortSuppressCountType_;
 #else
-    typedef atomic<unsigned int> AbortSuppressCountType_;
+    typedef atomic<unsigned int>    AbortSuppressCountType_;
 #endif
 }
 
 
 
 namespace {
-    thread_local AbortFlagType_             s_Aborting_             =   false;
-    thread_local AbortSuppressCountType_    s_AbortSuppressDepth_   =   0;               // doesnt need to be std::atomic because only updated from one thread
+    thread_local AbortFlagType_             s_Aborting_ (false);
+    thread_local AbortSuppressCountType_    s_AbortSuppressDepth_ (0);      // atomic because updated from one thread but peeked at from another
 }
 
 
