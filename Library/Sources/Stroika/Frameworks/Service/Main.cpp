@@ -597,8 +597,16 @@ Main::BasicUNIXServiceImpl::BasicUNIXServiceImpl ()
 {
 }
 
+Main::BasicUNIXServiceImpl::~BasicUNIXServiceImpl ()
+{
+    // SHOULD CLEAN THIS CODE UP SO YOU COULD DESTROY AND RECREATE - PROBABLY SHOULD LOSE sCurrApp_
+    Require (fAppRep_.get () == nullptr);
+    Require (sCurrApp_.get () == nullptr);
+}
+
 void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
 {
+    Execution::Thread::SuppressAbortInContext  suppressAbort;       // this must run to completion - it only blocks waiting for subsidiary thread to finish
     Require ((appRep == nullptr and fAppRep_ != nullptr) or
              (fAppRep_ == nullptr and fAppRep_ != appRep)
             );
@@ -610,7 +618,7 @@ void    Main::BasicUNIXServiceImpl::_Attach (shared_ptr<IApplicationRep> appRep)
     if (appRep != nullptr) {
         SetupSignalHanlders_ ();
     }
-    fRunThread_.Abort ();
+    fRunThread_.AbortAndWaitForDone ();
     fRunThread_ = Execution::Thread ();
 }
 
@@ -657,8 +665,8 @@ void    Main::BasicUNIXServiceImpl::_RunAsAsService ()
         appRep->MainLoop ([] () {});
     });
     fRunThread_.SetThreadName (L"Service 'Run' thread");
-    fRunThread_.Start ();
     sigHandlerThread2Abort_ = fRunThread_;
+    fRunThread_.Start ();
     Execution::Finally cleanup ([this] () {
         ::unlink (_GetPIDFileName ().AsSDKString ().c_str ());
     });

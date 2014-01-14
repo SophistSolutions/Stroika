@@ -701,6 +701,7 @@ namespace   Stroika {
             class   Main::BasicUNIXServiceImpl : public Main::IServiceIntegrationRep {
             public:
                 BasicUNIXServiceImpl ();
+                ~BasicUNIXServiceImpl ();
             protected:
                 virtual void                                        _Attach (shared_ptr<IApplicationRep> appRep) override;
                 virtual shared_ptr<IApplicationRep>                 _GetAttachedAppRep () const override;
