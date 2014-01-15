@@ -78,6 +78,8 @@ namespace   Stroika {
             class   IterableFromIterator : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+                public:
+                    using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
                 protected:
                     DATA_BLOB   _fDataBlob;
 #if     qDebug
@@ -98,6 +100,8 @@ namespace   Stroika {
             class   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+                public:
+                    using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
 #if     qDebug
                 private:
                     mutable Private_::IteratorTracker<T>    fIteratorTracker_;
