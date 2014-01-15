@@ -65,7 +65,7 @@ namespace   Stroika {
 
 
             private:
-#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
                 typedef volatile bool AbortFlagType_;
 #else
                 typedef atomic<bool> AbortFlagType_;

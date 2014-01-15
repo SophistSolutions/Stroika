@@ -456,6 +456,19 @@
 
 
 
+#ifndef qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
+
+#if     defined (__clang__)
+#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   (__clang_major__ == 3 && (__clang_minor__ < 5))
+#else
+#define qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy   qCompilerAndStdLib_thread_local_keyword_Buggy
+#endif
+
+#endif
+
+
+
+
 // @todo - investigate this better
 #ifndef qTemplateAccessCheckConfusionProtectedNeststingBug
 

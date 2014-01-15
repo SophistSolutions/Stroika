@@ -66,7 +66,7 @@ using   namespace   Execution;
 
 
 namespace {
-#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
     typedef volatile bool   AbortFlagType_;
 #else
     typedef atomic<bool>    AbortFlagType_;
@@ -75,7 +75,7 @@ namespace {
 
 
 namespace {
-#if     qCompilerAndStdLib_thread_local_keyword_Buggy
+#if     qCompilerAndStdLib_thread_local_with_atomic_keyword_Buggy
     typedef volatile unsigned int   AbortSuppressCountType_;
 #else
     typedef atomic<unsigned int>    AbortSuppressCountType_;
