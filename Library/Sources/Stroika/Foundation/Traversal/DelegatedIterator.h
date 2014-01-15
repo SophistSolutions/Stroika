@@ -38,11 +38,12 @@ namespace   Stroika {
                 struct   Rep : Iterator<T>::IRep {
                     using SharedIRepPtr = typename Iterator<T>::SharedIRepPtr;  // needed for gcc and clang++, but I'm not sure SB needed? -- LGP 2014-01-01
                     using IRep = typename Iterator<T>::IRep;  // needed for gcc and clang++, but I'm not sure SB needed? -- LGP 2014-01-01
+                    using OwnerID = typename IRep::OwnerID;
                     Iterator<T> fDelegateTo;
                     EXTRA_DATA  fExtraData;
                     Rep (const Iterator<T>& delegateTo, const EXTRA_DATA& extraData = EXTRA_DATA ());
                     virtual SharedIRepPtr   Clone () const override;
-                    virtual typename IRep::OwnerID  GetOwner () const override;
+                    virtual OwnerID  GetOwner () const override;
                     virtual void    More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool    Equals (const IRep* rhs) const override;
                 };

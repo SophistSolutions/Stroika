@@ -42,6 +42,7 @@ namespace   Stroika {
             struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     typedef typename    Iterator<T>::IRep   inherited;
+                    using OwnerID = typename Iterator<T>::IRep::OwnerID;
                     ElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const ElementsIteratorHelperContext_& context)
@@ -88,7 +89,7 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
-                    virtual typename IRep::OwnerID GetOwner () const override
+                    virtual OwnerID GetOwner () const override
                     {
                         //tmphack but adequate
                         // should NOT require locking is readonly immutable value provided at construction
@@ -170,6 +171,7 @@ namespace   Stroika {
             struct  Tally<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
                     typedef typename    Iterator<T>::IRep   inherited;
+                    using OwnerID = typename Iterator<T>::IRep::OwnerID;
                     UniqueElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const UniqueElementsIteratorHelperContext_& context)
@@ -196,7 +198,7 @@ namespace   Stroika {
                     {
                         return typename Iterator<T>::SharedIRepPtr (new Rep (*this));
                     }
-                    virtual typename IRep::OwnerID GetOwner () const override
+                    virtual OwnerID GetOwner () const override
                     {
                         //tmphack but adequate
                         // should NOT require locking is readonly immutable value provided at construction
