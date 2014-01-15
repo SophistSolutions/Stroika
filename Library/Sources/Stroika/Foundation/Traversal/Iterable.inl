@@ -39,7 +39,7 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 RequireNotNull (doToElement.second);
 #endif
-                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
+                for (Iterator<T> i = MakeIterator (this); i != Iterable<T>::end (); ++i) {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     (doToElement) (*i);
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
@@ -57,7 +57,7 @@ namespace   Stroika {
 #elif   qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_COOKIE
                 RequireNotNull (doToElement.second);
 #endif
-                for (Iterator<T> i = MakeIterator (); i != Iterable<T>::end (); ++i) {
+                for (Iterator<T> i = MakeIterator (this); i != Iterable<T>::end (); ++i) {
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                     if ((doToElement) (*i)) {
                         return i;
@@ -137,7 +137,7 @@ namespace   Stroika {
             template    <typename T>
             inline  Iterator<T>     Iterable<T>::MakeIterator () const
             {
-                return _GetRep ().MakeIterator ();
+                return _GetRep ().MakeIterator (this);
             }
             template    <typename T>
             inline  size_t  Iterable<T>::GetLength () const

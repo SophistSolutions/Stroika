@@ -107,7 +107,7 @@ namespace   Stroika {
                         return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (fStart, fEnd));
                     }
                 }
-                virtual Iterator<T>         MakeIterator () const
+                virtual Iterator<T>         MakeIterator (_IteratorOwnerID owner) const
                 {
                     if (fForcedEnd) {
                         return Iterator<T> (typename Iterator<T>::SharedIRepPtr (new DiscreteRange<T, TRAITS>::MyIteratorRep_ ()));

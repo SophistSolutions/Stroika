@@ -130,7 +130,7 @@ namespace   Stroika {
                     virtual size_t  GetLength () const override
                     {
                         size_t  n = 0;
-                        for (Iterator<TallyEntry<T>> i = this->_fDataBlob.fTally->MakeIterator (); not i.Done (); ++i) {
+                        for (Iterator<TallyEntry<T>> i = this->_fDataBlob.fTally->MakeIterator (this); not i.Done (); ++i) {
                             n += i->fCount;
                         }
                         return n;
@@ -149,7 +149,7 @@ namespace   Stroika {
                     }
                 };
                 _ElementsIterableHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& iterateOverTally)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator ()))))
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (ElementsIteratorHelperContext_ (iterateOverTally, iterateOverTally->MakeIterator (iterateOverTally.get ())))))
                 {
                 }
             };
@@ -211,7 +211,7 @@ namespace   Stroika {
                     }
                 };
                 UniqueElementsIteratorHelper_ (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)
-                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator ()))))
+                    : Iterator<T> (typename Iterator<T>::SharedIRepPtr (new Rep (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
                 {
                 }
             };
@@ -253,7 +253,7 @@ namespace   Stroika {
                     }
                 };
                 _UniqueElementsHelper (const typename Iterable<TallyEntry<T>>::_SharedPtrIRep& tally)
-                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator ()))))
+                    : Iterable<T> (typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (UniqueElementsIteratorHelperContext_ (tally, tally->MakeIterator (tally.get ())))))
                 {
                 }
             };
@@ -306,7 +306,7 @@ namespace   Stroika {
                 if (this->GetLength () != rhs.GetLength ()) {
                     return false;
                 }
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     if (i->fCount != rhs.TallyOf (i->fItem)) {
                         return false;
                     }

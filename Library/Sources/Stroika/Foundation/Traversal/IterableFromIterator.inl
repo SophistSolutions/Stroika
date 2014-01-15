@@ -43,7 +43,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator () const
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator (_IteratorOwnerID owner) const
             {
 #if     qDebug
                 return fIteratorTracker_.MakeDelegatedIterator (Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob))));
@@ -55,7 +55,7 @@ namespace   Stroika {
             size_t     IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::GetLength () const
             {
                 size_t  n = 0;
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     n++;
                 }
                 return n;
@@ -63,7 +63,7 @@ namespace   Stroika {
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
             bool  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::IsEmpty () const
             {
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     return false;
                 }
                 return true;
@@ -84,7 +84,7 @@ namespace   Stroika {
             size_t     IterableFromIterator<T, void, void>::_Rep::GetLength () const
             {
                 size_t  n = 0;
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     n++;
                 }
                 return n;
@@ -92,7 +92,7 @@ namespace   Stroika {
             template    <typename T>
             bool  IterableFromIterator<T, void, void>::_Rep::IsEmpty () const
             {
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     return false;
                 }
                 return true;
@@ -132,7 +132,7 @@ namespace   Stroika {
 #endif
                         {
                         }
-                        virtual Iterator<T>     MakeIterator () const override
+                        virtual Iterator<T>     MakeIterator (_IteratorOwnerID owner) const override
                         {
 #if     qDebug
                             return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);

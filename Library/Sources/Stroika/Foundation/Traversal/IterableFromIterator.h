@@ -87,7 +87,7 @@ namespace   Stroika {
                 protected:
                     _Rep (const DATA_BLOB& dataBLOB);
                 public:
-                    virtual Iterator<T>     MakeIterator () const override;
+                    virtual Iterator<T>     MakeIterator (_IteratorOwnerID owner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
@@ -103,7 +103,7 @@ namespace   Stroika {
                     mutable Private_::IteratorTracker<T>    fIteratorTracker_;
 #endif
                 public:
-                    virtual Iterator<T>     MakeIterator () const override;
+                    virtual Iterator<T>     MakeIterator (_IteratorOwnerID owner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
                     virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;

@@ -302,7 +302,7 @@ namespace   Stroika {
                 }
                 // Since both sides are the same size, we can iterate over one, and make sure the key/values in the first
                 // are present, and with the same mapping in the second.
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     Memory::Optional<ValueType>   tmp;
                     if (not rhs.Lookup (i->fKey, &tmp) or not ValueEqualsCompareFunctionType::Equals (*tmp, i->fValue)) {
                         return false;

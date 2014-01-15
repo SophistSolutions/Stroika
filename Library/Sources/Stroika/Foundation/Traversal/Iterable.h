@@ -449,6 +449,9 @@ namespace   Stroika {
             protected:
                 typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
 
+            protected:
+                using   _IteratorOwnerID    =   typename Iterator<T>::OwnerID;
+
             public:
 #if     qAPPLY_IMPL_STRATEGY==qAPPLY_IMPL_STRATEGY_STDFUNCTION
                 typedef const std::function<void(const T& item)>&   _APPLY_ARGTYPE;
@@ -460,7 +463,7 @@ namespace   Stroika {
 
             public:
                 virtual _SharedPtrIRep      Clone () const                                              =   0;
-                virtual Iterator<T>         MakeIterator () const                                       =   0;
+                virtual Iterator<T>         MakeIterator (_IteratorOwnerID owner) const                 =   0;
                 virtual size_t              GetLength () const                                          =   0;
                 virtual bool                IsEmpty () const                                            =   0;
                 virtual void                Apply (_APPLY_ARGTYPE doToElement) const                    =   0;

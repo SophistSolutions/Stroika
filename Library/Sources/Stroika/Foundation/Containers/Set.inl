@@ -291,7 +291,7 @@ namespace   Stroika {
                     return false;
                 }
                 // Note - no need to iterate over rhs because we checked sizes the same
-                for (auto i = this->MakeIterator (); not i.Done (); ++i) {
+                for (auto i = this->MakeIterator (this); not i.Done (); ++i) {
                     if (not rhs.Contains (*i)) {
                         return false;
                     }

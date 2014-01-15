@@ -48,7 +48,7 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
                     virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
-                    virtual Iterator<T>                             MakeIterator () const override;
+                    virtual Iterator<T>                             MakeIterator (_IteratorOwnerID owner) const override;
                     virtual size_t                                  GetLength () const override;
                     virtual bool                                    IsEmpty () const override;
                     virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
@@ -108,7 +108,7 @@ namespace   Stroika {
                     return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>  SortedSet_stdset<T, TRAITS>::Rep_::MakeIterator () const
+                Iterator<T>  SortedSet_stdset<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID owner) const
                 {
                     typename Iterator<T>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
