@@ -305,6 +305,14 @@ namespace   Stroika {
                 }
 
             public:
+                /*
+                 *  An OwnerID may be any pointer value, or nullptr, meaning that it has no logical owner.
+                 *
+                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced - just compared.
+                 */
+                typedef const void* OwnerID;
+
+            public:
                 /**
                  *  Iterators iterate over something (if not in reality, at least conceptually). This ID is
                  *  used for an iterator to report what its owner is (instance not class), if any.
@@ -322,7 +330,7 @@ namespace   Stroika {
                  *  Iterator owners have no semantics - other than the above, and requirements on @see Equals();
                  *
                  */
-                nonvirtual  const void* GetOwner () const;
+                nonvirtual  OwnerID GetOwner () const;
 
             public:
                 /**
@@ -504,7 +512,10 @@ namespace   Stroika {
                 virtual ~IRep ();
 
             public:
-                typedef typename Iterator<T>::SharedIRepPtr SharedIRepPtr;
+                using  SharedIRepPtr    =   typename Iterator<T>::SharedIRepPtr;
+
+            public:
+                using  OwnerID  =   typename Iterator<T>::OwnerID;
 
             public:
                 /**
@@ -515,7 +526,7 @@ namespace   Stroika {
                 /**
                  *  @see Iterator<T>::GetOwner
                  */
-                virtual const void* GetOwner () const                       = 0;
+                virtual OwnerID         GetOwner () const                   = 0;
                 /**
                  *  More () takes two required arguments - one an optional result, and the other a flag about whether or
                  *  not to advance.

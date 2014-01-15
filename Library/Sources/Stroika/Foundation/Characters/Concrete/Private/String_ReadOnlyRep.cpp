@@ -38,7 +38,7 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator () const
         {
             return SharedIRepPtr (new MyIterRep_ (fStr, fCurIdx));
         }
-        virtual const void* GetOwner () const override
+        virtual OwnerID GetOwner () const override
         {
             //tmphack but adequate
             // should NOT require locking is readonly immutable value provided at construction

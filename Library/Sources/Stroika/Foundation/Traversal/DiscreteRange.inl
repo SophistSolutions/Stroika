@@ -54,7 +54,7 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
-                const void* GetOwner () const
+                typename    Iterator<T>::OwnerID GetOwner () const
                 {
                     //tmphack but adequate
                     // should NOT require locking is readonly immutable value provided at construction

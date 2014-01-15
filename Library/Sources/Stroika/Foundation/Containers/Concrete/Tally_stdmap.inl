@@ -138,7 +138,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    const void* GetOwner () const
+                    typename IRep::OwnerID GetOwner () const
                     {
                         //tmphack but adequate
                         // should NOT require locking is readonly immutable value provided at construction

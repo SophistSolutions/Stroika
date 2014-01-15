@@ -135,6 +135,9 @@ namespace   Stroika {
                     typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
 
                 public:
+                    using  OwnerID  =   typename Iterator<TallyEntry<T>>::OwnerID;
+
+                public:
                     IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                         : inherited ()
                         , fLockSupport_ (*sharedLock)
@@ -169,7 +172,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    const void* GetOwner () const
+                    OwnerID GetOwner () const
                     {
                         //tmphack but adequate
                         // should NOT require locking is readonly immutable value provided at construction

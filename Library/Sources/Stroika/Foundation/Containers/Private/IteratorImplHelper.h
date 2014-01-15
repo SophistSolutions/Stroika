@@ -57,7 +57,7 @@ namespace   Stroika {
                     // Iterator<T>::IRep
                 public:
                     virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                    virtual const void*                         GetOwner () const override;
+                    virtual typename Iterator<T>::OwnerID       GetOwner () const override;
                     virtual void                                More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override;
 

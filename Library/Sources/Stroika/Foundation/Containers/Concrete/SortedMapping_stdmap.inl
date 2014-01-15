@@ -112,7 +112,7 @@ namespace   Stroika {
                             }
                             CONTAINER_LOCK_HELPER_END ();
                         }
-                        virtual const void* GetOwner () const override
+                        virtual typename IRep::OwnerID GetOwner () const override
                         {
                             //tmphack but adequate
                             // should NOT require locking is readonly immutable value provided at construction
