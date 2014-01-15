@@ -90,6 +90,9 @@ namespace   Stroika {
                         typedef typename    Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep   inherited;
 
                     public:
+                        using   OwnerID = typename inherited::OwnerID;
+
+                    public:
                         explicit IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                             : inherited ()
                             , fLockSupport (*sharedLock)
@@ -112,7 +115,7 @@ namespace   Stroika {
                             }
                             CONTAINER_LOCK_HELPER_END ();
                         }
-                        virtual typename IRep::OwnerID GetOwner () const override
+                        virtual OwnerID GetOwner () const override
                         {
                             //tmphack but adequate
                             // should NOT require locking is readonly immutable value provided at construction
