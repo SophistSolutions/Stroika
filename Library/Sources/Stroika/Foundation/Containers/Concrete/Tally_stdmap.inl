@@ -102,6 +102,8 @@ namespace   Stroika {
                 class  Tally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:
                     typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
+                public:
+                    using   OwnerID =   typename inherited::OwnerID;
 
                 public:
                     IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
@@ -138,7 +140,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    typename IRep::OwnerID GetOwner () const
+                    OwnerID GetOwner () const
                     {
                         //tmphack but adequate
                         // should NOT require locking is readonly immutable value provided at construction
