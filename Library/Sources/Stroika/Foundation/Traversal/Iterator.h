@@ -308,7 +308,8 @@ namespace   Stroika {
                 /*
                  *  An OwnerID may be any pointer value, or nullptr, meaning that it has no logical owner.
                  *
-                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced - just compared.
+                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced -
+                 *  just compared (usually for equality, but also < maybe used for things like tree structure).
                  */
                 typedef const void* OwnerID;
 
@@ -318,7 +319,7 @@ namespace   Stroika {
                  *  used for an iterator to report what its owner is (instance not class), if any.
                  *  Any iterator may report nullptr, meaning that it has no logical owner.
                  *
-                 *  Though the return type is a pointer, its not mean to ever be cast or dereferenced - just compared.
+                 *  @see OwnerID
                  *
                  *  Once an iterator is created, its owner can never change. Mulitple iterators can share the same owner.
                  *  When an iterator is copied, the copy has the same owner as the source the iterator was copied from.
@@ -328,7 +329,8 @@ namespace   Stroika {
                  *  and may generate grave disorder in non-DEBUG builds).
                  *
                  *  Iterator owners have no semantics - other than the above, and requirements on @see Equals();
-                 *
+                 *  However, some classes (like Bag<T>, Sequence<T>, Collection<T> etc) may layer on additional
+                 *  semantics for these Iterator owners.
                  */
                 nonvirtual  OwnerID GetOwner () const;
 

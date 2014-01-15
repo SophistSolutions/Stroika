@@ -40,9 +40,8 @@ Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (_IteratorOwnerI
         }
         virtual OwnerID GetOwner () const override
         {
-            //tmphack but adequate
-            // should NOT require locking is readonly immutable value provided at construction
-            return nullptr;
+            // Simple to enforce Iterator<> compare semantics, but nothing else needed
+            return fStr.get ();
         }
         virtual void    More (Memory::Optional<Character>* result, bool advance) override
         {
