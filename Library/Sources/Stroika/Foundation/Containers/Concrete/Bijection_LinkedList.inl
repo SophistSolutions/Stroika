@@ -52,7 +52,7 @@ namespace   Stroika {
 #else
                     virtual typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep    Clone () const override;
 #endif
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             MakeIterator (_IteratorOwnerID owner) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                                              GetLength () const override;
                     virtual bool                                                                IsEmpty () const override;
                     virtual void                                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
@@ -117,7 +117,7 @@ namespace   Stroika {
                 }
 #endif
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID owner) const
+                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

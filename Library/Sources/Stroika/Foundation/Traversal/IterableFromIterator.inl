@@ -43,7 +43,7 @@ namespace   Stroika {
             {
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator (_IteratorOwnerID owner) const
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::MakeIterator (_IteratorOwnerID suggestedOwner) const
             {
 #if     qDebug
                 return fIteratorTracker_.MakeDelegatedIterator (Iterator<T> (typename Iterator<T>::SharedIRepPtr (new NEW_ITERATOR_REP_TYPE (_fDataBlob))));
@@ -133,7 +133,7 @@ namespace   Stroika {
 #endif
                         {
                         }
-                        virtual Iterator<T>     MakeIterator (_IteratorOwnerID owner) const override
+                        virtual Iterator<T>     MakeIterator (_IteratorOwnerID suggestedOwner) const override
                         {
 #if     qDebug
                             return fIteratorTracker_.MakeDelegatedIterator (fOriginalIterator);

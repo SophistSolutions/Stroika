@@ -61,7 +61,7 @@ namespace   Stroika {
 
                             // Overrides for Iterable<Character>
                         public:
-                            virtual Traversal::Iterator<Character>              MakeIterator (_IteratorOwnerID owner) const override;
+                            virtual Traversal::Iterator<Character>              MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                             virtual size_t                                      GetLength () const override;
                             virtual bool                                        IsEmpty () const override;
                             virtual void                                        Apply (_APPLY_ARGTYPE doToElement) const override;

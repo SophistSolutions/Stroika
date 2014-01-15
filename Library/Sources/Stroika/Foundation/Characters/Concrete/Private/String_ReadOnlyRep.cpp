@@ -23,7 +23,7 @@ using   Traversal::Iterator;
  **************************** ReadOnlyRep::_Rep *********************************
  ********************************************************************************
  */
-Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (_IteratorOwnerID owner) const
+Traversal::Iterator<Character>  ReadOnlyRep::_Rep::MakeIterator (_IteratorOwnerID suggestedOwner) const
 {
     struct MyIterRep_ : Iterator<Character>::IRep {
         _SharedPtrIRep  fStr;           // effectively RO, since if anyone modifies, our copy will remain unchanged

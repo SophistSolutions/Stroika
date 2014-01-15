@@ -55,7 +55,7 @@ namespace   Stroika {
 #else
                     virtual typename Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::_SharedPtrIRep     Clone () const override;
 #endif
-                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (_IteratorOwnerID owner) const override;
+                    virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
@@ -199,7 +199,7 @@ namespace   Stroika {
                 }
 #endif
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
-                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID owner) const
+                Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

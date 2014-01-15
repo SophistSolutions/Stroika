@@ -59,7 +59,7 @@ namespace   Stroika {
 
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID owner) const override;
+                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
@@ -232,7 +232,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<TallyEntry<T>> SortedTally_stdmap<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID owner) const
+                Iterator<TallyEntry<T>> SortedTally_stdmap<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {

@@ -55,7 +55,7 @@ namespace   Stroika {
 
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID owner) const override;
+                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual void                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
                     virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
 
@@ -134,7 +134,7 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<TallyEntry<T>> Tally_Array<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID owner) const
+                Iterator<TallyEntry<T>> Tally_Array<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {
                     // const cast cuz this mutator won't really be used to change anything - except stuff like
                     // link list of owned iterators
