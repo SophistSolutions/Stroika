@@ -213,7 +213,7 @@ namespace   Stroika {
                 /*
                  *  Mostly internal type to select a constructor for the special END iterator.
                  */
-                enum    ConstructionFlagForceAtEnd {
+                enum    ConstructionFlagForceAtEnd_ {
                     ForceAtEnd
                 };
 
@@ -232,7 +232,7 @@ namespace   Stroika {
                 Iterator () = delete;
 
             private:
-                Iterator (ConstructionFlagForceAtEnd);
+                Iterator (ConstructionFlagForceAtEnd_);
 
             public:
                 /**
