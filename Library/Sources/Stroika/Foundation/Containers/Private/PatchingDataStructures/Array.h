@@ -51,7 +51,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS = DataStructures::Array_DefaultTraits<T>>
                     class   Array_Patch : public DataStructures::Array<T, TRAITS> {
                     private:
-                        typedef typename DataStructures::Array<T, TRAITS> inherited;
+                        using   inherited   =   typename DataStructures::Array<T, TRAITS>;
 
                     public:
                         Array_Patch ();
@@ -123,7 +123,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   Array_Patch<T, TRAITS>::_ArrayIteratorBase : public DataStructures::Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase    inherited;
+                        using   inherited   =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         _ArrayIteratorBase (const Array_Patch<T, TRAITS>* data);
@@ -168,7 +168,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   Array_Patch<T, TRAITS>::ForwardIterator : public Array_Patch<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array_Patch<T, TRAITS>::_ArrayIteratorBase    inherited;
+                        using   inherited   =   typename Array_Patch<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         ForwardIterator (const Array_Patch<T, TRAITS>* data);
@@ -196,7 +196,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class  Array_Patch<T, TRAITS>::BackwardIterator : public Array_Patch<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array_Patch<T, TRAITS>::_ArrayIteratorBase    inherited;
+                        using   inherited   =   typename Array_Patch<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         BackwardIterator (const Array_Patch<T, TRAITS>& data);

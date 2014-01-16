@@ -106,7 +106,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   Mapping : public Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>> {
             private:
-                typedef Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  inherited;
+                using   inherited   =   Iterable<KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
             protected:
                 class   _IRep;

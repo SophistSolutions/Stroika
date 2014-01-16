@@ -73,7 +73,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Deque_DefaultTraits<T>>
             class   Deque : public Queue<T, TRAITS> {
             private:
-                typedef Queue<T, TRAITS>    inherited;
+                using   inherited   =   Queue<T, TRAITS>;
 
             public:
                 /**

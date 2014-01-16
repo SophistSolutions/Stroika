@@ -60,7 +60,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
             class   SortedSet : public Set<T, typename TRAITS::SetTraitsType> {
             private:
-                typedef     Set<T, typename TRAITS::SetTraitsType> inherited;
+                using   inherited   =   Set<T, typename TRAITS::SetTraitsType>;
 
             public:
                 /**

@@ -34,7 +34,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   SortedTally_stdmap<T, TRAITS>::Rep_ : public SortedTally<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedTally<T, TRAITS>::_IRep inherited;
+                    using   inherited   =   typename    SortedTally<T, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
@@ -107,7 +107,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>    {
                 private:
-                    typedef Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_> inherited;
+                    using   inherited   =   Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
 
                 public:
                     IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
@@ -137,7 +137,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class  SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
                 private:
-                    typedef     typename Iterator<TallyEntry<T>>::IRep  inherited;
+                    using   inherited   =   typename Iterator<TallyEntry<T>>::IRep;
 
                 public:
                     using  OwnerID  =   typename Iterator<TallyEntry<T>>::OwnerID;

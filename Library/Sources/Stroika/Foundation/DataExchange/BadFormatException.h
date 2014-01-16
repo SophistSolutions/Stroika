@@ -21,7 +21,7 @@ namespace   Stroika {
              */
             class   BadFormatException : public Execution::StringException {
             private:
-                typedef Execution::StringException  inherited;
+                using   inherited   =   Execution::StringException;
 
             public:
                 BadFormatException ();

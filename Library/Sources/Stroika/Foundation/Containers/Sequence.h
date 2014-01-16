@@ -196,7 +196,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
             class   Sequence : public Iterable<T> {
             private:
-                typedef Iterable<T> inherited;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;

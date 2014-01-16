@@ -39,7 +39,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
                 class   SortedTally_stdmap : public SortedTally<T, TRAITS> {
                 private:
-                    typedef SortedTally<T, TRAITS>    inherited;
+                    using   inherited   =   SortedTally<T, TRAITS>;
 
                 public:
                     /**

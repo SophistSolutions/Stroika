@@ -108,7 +108,7 @@ namespace   Stroika {
             template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS = Bijection_DefaultTraits<DOMAIN_TYPE, RANGE_TYPE>>
             class   Bijection : public Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>> {
             private:
-                typedef Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>  inherited;
+                using   inherited   =   Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>;
 
             protected:
                 class   _IRep;

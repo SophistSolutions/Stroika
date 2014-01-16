@@ -38,7 +38,7 @@ using   namespace   Stroika::Foundation::Characters::Concrete;
 namespace   {
     class   String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
     private:
-        typedef Concrete::Private::BufferedStringRep::_Rep  inherited;
+        using   inherited   =   Concrete::Private::BufferedStringRep::_Rep;
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
             : inherited (start, end)
@@ -63,7 +63,7 @@ namespace   {
 
 class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly::MyRep_ : public Concrete::Private::ReadOnlyRep::_Rep {
 private:
-    typedef Concrete::Private::ReadOnlyRep::_Rep    inherited;
+    using   inherited   =   Concrete::Private::ReadOnlyRep::_Rep;
 public:
     MyRep_ (const wchar_t* start, const wchar_t* end)
         : inherited (start, end)

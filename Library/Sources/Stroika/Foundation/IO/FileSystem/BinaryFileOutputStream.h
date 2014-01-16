@@ -47,7 +47,7 @@ namespace   Stroika {
                  */
                 class BinaryFileOutputStream : public Streams::BinaryOutputStream {
                 private:
-                    typedef BinaryOutputStream  inherited;
+                    using   inherited   =   BinaryOutputStream;
                 private:
                     class   Rep_;
                 public:

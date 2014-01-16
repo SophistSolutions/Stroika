@@ -41,8 +41,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::ElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
-                    typedef typename    Iterator<T>::IRep   inherited;
-                    using OwnerID = typename Iterator<T>::IRep::OwnerID;
+                    using   inherited   =   typename    Iterator<T>::IRep;
+                    using   OwnerID     =   typename Iterator<T>::IRep::OwnerID;
                     ElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const ElementsIteratorHelperContext_& context)
@@ -170,8 +170,8 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             struct  Tally<T, TRAITS>::_IRep::UniqueElementsIteratorHelper_ : public Iterator<T> {
                 struct  Rep : public Iterator<T>::IRep {
-                    typedef typename    Iterator<T>::IRep   inherited;
-                    using OwnerID = typename Iterator<T>::IRep::OwnerID;
+                    using   inherited   =   typename    Iterator<T>::IRep;
+                    using   OwnerID     =   typename Iterator<T>::IRep::OwnerID;
                     UniqueElementsIteratorHelperContext_      fContext;
                     DECLARE_USE_BLOCK_ALLOCATION(Rep);
                     Rep (const UniqueElementsIteratorHelperContext_& context)

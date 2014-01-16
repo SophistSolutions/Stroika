@@ -306,7 +306,7 @@ namespace   Stroika {
              */
             class   String : public Traversal::Iterable<Character> {
             private:
-                typedef Iterable<Character> inherited;
+                using	inherited	=	Iterable<Character>;
 
             public:
 #if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy

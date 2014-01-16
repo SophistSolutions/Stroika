@@ -98,7 +98,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
             class   Tally : public Iterable<TallyEntry<T>> {
             private:
-                typedef Iterable<TallyEntry<T>> inherited;
+                using   inherited   =   Iterable<TallyEntry<T>>;
 
             public:
                 /**
@@ -274,7 +274,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS>
             class   Tally<T, TRAITS>::_IRep : public Iterable<TallyEntry<T>>::_IRep, public enable_shared_from_this<typename Tally<T, TRAITS>::_IRep> {
             private:
-                typedef typename Iterable<TallyEntry<T>>::_IRep  inherited;
+                using   inherited   =   typename Iterable<TallyEntry<T>>::_IRep;
 
             protected:
                 typedef shared_ptr<_IRep>   _SharedPtrIRep;

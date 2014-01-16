@@ -40,7 +40,7 @@ namespace   Stroika {
                 template    <typename T>
                 class  Collection_stdforward_list : public Collection<T> {
                 private:
-                    typedef     Collection<T>  inherited;
+                    using   inherited   =       Collection<T>;
 
                 public:
                     Collection_stdforward_list ();

@@ -42,7 +42,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS = DataStructures::LinkedList_DefaultTraits<T>>
                     class   LinkedList : public DataStructures::LinkedList<T, TRAITS> {
                     private:
-                        typedef typename DataStructures::LinkedList<T, TRAITS>  inherited;
+                        using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>;
 
                     public:
                         LinkedList ();
@@ -117,7 +117,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   LinkedList<T, TRAITS>::ForwardIterator : public DataStructures::LinkedList<T, TRAITS>::ForwardIterator {
                     private:
-                        typedef typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator   inherited;
+                        using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
 
                     public:
                         ForwardIterator (const LinkedList<T, TRAITS>* data);

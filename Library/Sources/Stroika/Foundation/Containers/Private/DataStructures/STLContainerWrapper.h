@@ -56,7 +56,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper : public STL_CONTAINER_OF_T {
                     private:
-                        typedef STL_CONTAINER_OF_T  inherited;
+                        using   inherited   =   STL_CONTAINER_OF_T;
 
                     public:
                         typedef typename STL_CONTAINER_OF_T::value_type value_type;

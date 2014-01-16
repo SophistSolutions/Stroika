@@ -46,7 +46,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Tally_stdmap_DefaultTraits<T>>
                 class  Tally_stdmap : public Tally<T, TRAITS> {
                 private:
-                    typedef Tally<T, TRAITS> inherited;
+                    using   inherited   =   Tally<T, TRAITS>;
 
                 public:
                     /**

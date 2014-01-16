@@ -55,7 +55,7 @@ namespace   Stroika {
                  */
                 class   String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly : public String {
                 private:
-                    typedef String  inherited;
+                    using   inherited   =   String;
 
                 public:
                     explicit String_ExternalMemoryOwnership_ApplicationLifetime_ReadOnly (const wchar_t* cString);

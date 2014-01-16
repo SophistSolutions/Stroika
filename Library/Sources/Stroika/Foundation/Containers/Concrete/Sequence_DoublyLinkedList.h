@@ -39,7 +39,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Sequence_DefaultTraits<T>>
                 class   Sequence_DoublyLinkedList : public Sequence<T, TRAITS> {
                 private:
-                    typedef     Sequence<T, TRAITS>  inherited;
+                    using   inherited   =   Sequence<T, TRAITS>;
 
                 public:
                     Sequence_DoublyLinkedList ();

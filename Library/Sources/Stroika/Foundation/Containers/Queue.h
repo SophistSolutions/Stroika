@@ -116,7 +116,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
             class   Queue : public Iterable<T> {
             private:
-                typedef Iterable<T> inherited;
+                using   inherited   =   Iterable<T>;
 
             public:
                 /**

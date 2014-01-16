@@ -439,7 +439,7 @@ namespace   Stroika {
              *  Most abstract Containers in Stroika subclass of Iterable<T>.
              */
             template    <typename T>
-            class  Iterable<T>::_IRep {
+            class   Iterable<T>::_IRep {
             protected:
                 _IRep ();
 

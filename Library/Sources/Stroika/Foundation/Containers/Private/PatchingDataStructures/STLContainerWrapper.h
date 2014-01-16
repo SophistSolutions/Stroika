@@ -46,7 +46,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T> {
                     private:
-                        typedef Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>  inherited;
+                        using   inherited   =   Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>;
 
                     public:
                         typedef typename inherited::value_type value_type;
@@ -113,7 +113,7 @@ namespace   Stroika {
                     template    <typename STL_CONTAINER_OF_T>
                     class   STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator : public Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator {
                     private:
-                        typedef typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator   inherited;
+                        using   inherited   =   typename Foundation::Containers::Private::DataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator;
 
                     public:
                         typedef typename inherited::value_type value_type;

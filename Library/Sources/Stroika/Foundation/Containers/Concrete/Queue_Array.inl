@@ -27,7 +27,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Queue_Array<T, TRAITS>::Rep_ : public Queue<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Queue<T, TRAITS>::_IRep  inherited;
+                    using   inherited   =   typename    Queue<T, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;

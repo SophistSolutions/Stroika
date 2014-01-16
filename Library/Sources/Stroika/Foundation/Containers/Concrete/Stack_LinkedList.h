@@ -40,7 +40,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Stack_DefaultTraits<T>>
                 class   Stack_LinkedList : public Stack<T, TRAITS> {
                 private:
-                    typedef     Stack<T, TRAITS>  inherited;
+                    using   inherited   =     Stack<T, TRAITS>;
 
                 public:
                     Stack_LinkedList ();

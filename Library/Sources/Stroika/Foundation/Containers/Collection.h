@@ -85,7 +85,7 @@ namespace   Stroika {
             template    <typename T>
             class   Collection : public Iterable<T> {
             private:
-                typedef Iterable<T> inherited;
+                using   inherited   =   Iterable<T>;
 
             public:
                 /**

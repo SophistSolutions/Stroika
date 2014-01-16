@@ -87,7 +87,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Stack_DefaultTraits<T>>
             class   Stack : public Iterable<T> {
             private:
-                typedef Iterable<T> inherited;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;

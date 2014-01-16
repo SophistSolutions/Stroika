@@ -30,7 +30,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Tally_LinkedList<T, TRAITS>::Rep_ : public Tally<T, TRAITS>::_IRep {
                 private:
-                    typedef typename Tally<T, TRAITS>::_IRep   inherited;
+                    using   inherited   =   typename Tally<T, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;

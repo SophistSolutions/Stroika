@@ -46,7 +46,7 @@ namespace   Stroika {
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
                 class  IteratorImplHelper_ : public Iterator<T>::IRep {
                 private:
-                    typedef typename    Iterator<T>::IRep   inherited;
+                    using   inherited   =   typename    Iterator<T>::IRep;
 
                 public:
                     explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);

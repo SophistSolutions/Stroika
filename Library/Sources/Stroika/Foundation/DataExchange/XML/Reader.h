@@ -44,7 +44,7 @@ namespace   Stroika {
                  */
                 class Reader : public DataExchange::Reader {
                 private:
-                    typedef DataExchange::Reader  inherited;
+                    using   inherited   =   DataExchange::Reader;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

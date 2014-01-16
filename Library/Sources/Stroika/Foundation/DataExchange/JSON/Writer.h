@@ -60,7 +60,7 @@ namespace   Stroika {
                  */
                 class Writer : public DataExchange::Writer {
                 private:
-                    typedef DataExchange::Writer  inherited;
+                    using   inherited   =   DataExchange::Writer;
 
                 private:
                     class   Rep_;

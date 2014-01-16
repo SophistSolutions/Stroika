@@ -248,7 +248,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   Array<T, TRAITS>::ForwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename Array<T, TRAITS>::_ArrayIteratorBase    inherited;
+                        using   inherited   =   typename Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         ForwardIterator (const Array<T, TRAITS>* data);
@@ -271,7 +271,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     class   Array<T, TRAITS>::BackwardIterator : public Array<T, TRAITS>::_ArrayIteratorBase {
                     private:
-                        typedef typename    Array<T, TRAITS>::_ArrayIteratorBase    inherited;
+                        using   inherited   =   typename    Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
                         BackwardIterator (const Array<T, TRAITS>* data);

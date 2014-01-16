@@ -93,7 +93,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = SortedCollection_DefaultTraits<T>>
             class   SortedCollection : public Collection<T> {
             private:
-                typedef Collection<T>  inherited;
+                using   inherited   =   Collection<T>;
 
             protected:
                 class   _IRep;

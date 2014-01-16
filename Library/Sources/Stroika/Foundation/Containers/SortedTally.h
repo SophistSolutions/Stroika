@@ -58,7 +58,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = SortedTally_DefaultTraits<T>>
             class   SortedTally : public Tally<T, TRAITS> {
             private:
-                typedef     Tally<T, TRAITS> inherited;
+                using   inherited   =   Tally<T, TRAITS>;
 
             public:
                 /**

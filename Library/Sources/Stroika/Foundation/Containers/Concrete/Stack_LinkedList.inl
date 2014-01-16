@@ -30,7 +30,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Stack_LinkedList<T, TRAITS>::Rep_ : public Stack<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Stack<T, TRAITS>::_IRep  inherited;
+                    using   inherited   =   typename    Stack<T, TRAITS>::_IRep;
 
                 public:
                     using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;

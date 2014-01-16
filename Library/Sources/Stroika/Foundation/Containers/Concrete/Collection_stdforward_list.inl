@@ -32,7 +32,7 @@ namespace   Stroika {
                 template    <typename T>
                 class   Collection_stdforward_list<T>::Rep_ : public Collection<T>::_IRep {
                 private:
-                    typedef typename    Collection<T>::_IRep   inherited;
+                    using   inherited   =   typename    Collection<T>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;

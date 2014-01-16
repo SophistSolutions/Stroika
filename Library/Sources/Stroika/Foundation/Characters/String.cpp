@@ -43,7 +43,7 @@ using   namespace   Stroika::Foundation::Characters;
 namespace   {
     class   String_BufferedArray_Rep_ : public Concrete::Private::BufferedStringRep::_Rep {
     private:
-        typedef Concrete::Private::BufferedStringRep::_Rep  inherited;
+        using   inherited   =   Concrete::Private::BufferedStringRep::_Rep;
     public:
         String_BufferedArray_Rep_ (const wchar_t* start, const wchar_t* end)
             : inherited (start, end)

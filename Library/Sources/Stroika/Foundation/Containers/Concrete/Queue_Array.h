@@ -45,7 +45,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Queue_DefaultTraits<T>>
                 class   Queue_Array : public Queue<T, TRAITS> {
                 private:
-                    typedef     Queue<T, TRAITS>  inherited;
+                    using   inherited   =   Queue<T, TRAITS>;
 
                 public:
                     Queue_Array ();

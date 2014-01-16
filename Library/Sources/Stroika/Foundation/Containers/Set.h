@@ -102,7 +102,7 @@ namespace   Stroika {
             template    <typename T, typename TRAITS = Set_DefaultTraits<T>>
             class   Set : public Iterable<T> {
             private:
-                typedef Iterable<T> inherited;
+                using   inherited   =   Iterable<T>;
 
             protected:
                 class   _IRep;

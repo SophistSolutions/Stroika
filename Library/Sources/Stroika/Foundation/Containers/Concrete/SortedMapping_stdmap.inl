@@ -33,7 +33,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep  inherited;
+                    using   inherited   =   typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
@@ -92,7 +92,7 @@ namespace   Stroika {
 
                     class  IteratorRep_ : public Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep {
                     private:
-                        typedef typename    Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep   inherited;
+                        using   inherited   =   typename    Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep;
 
                     public:
                         using   OwnerID = typename inherited::OwnerID;

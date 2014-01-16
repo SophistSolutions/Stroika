@@ -52,7 +52,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Set_stdset_DefaultTraits<T>>
                 class   Set_stdset : public Set<T, typename TRAITS::SetTraitsType> {
                 private:
-                    typedef     Set<T, typename TRAITS::SetTraitsType>  inherited;
+                    using   inherited   =     Set<T, typename TRAITS::SetTraitsType>;
 
                 public:
                     /**

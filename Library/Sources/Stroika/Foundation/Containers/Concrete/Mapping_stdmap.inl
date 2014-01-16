@@ -33,7 +33,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 class   Mapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_ : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep {
                 private:
-                    typedef typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep  inherited;
+                    using   inherited   =   typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
@@ -91,8 +91,8 @@ namespace   Stroika {
 
                     class  IteratorRep_ : public Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep {
                     private:
-                        typedef typename    Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep   inherited;
-                        using OwnerID = typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep::OwnerID;
+                        using   inherited   =   typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep;
+                        using   OwnerID     =   typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep::OwnerID;
 
                     public:
                         explicit IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)

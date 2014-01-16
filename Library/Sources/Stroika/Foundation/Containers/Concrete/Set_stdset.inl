@@ -33,7 +33,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Set_stdset<T, TRAITS>::Rep_ : public Set<T, typename TRAITS::SetTraitsType>::_IRep {
                 private:
-                    typedef typename    Set<T, typename TRAITS::SetTraitsType>::_IRep  inherited;
+                    using   inherited   =   typename    Set<T, typename TRAITS::SetTraitsType>::_IRep;
 
                 public:
                     using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;

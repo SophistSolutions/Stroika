@@ -184,7 +184,7 @@ namespace   Stroika {
             template    <typename T>
             class   Iterator : public std::iterator<input_iterator_tag, T> {
             private:
-                typedef typename    std::iterator<input_iterator_tag, T>    inherited;
+                using   inherited   =   typename    std::iterator<input_iterator_tag, T>;
 
             public:
                 /**

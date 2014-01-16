@@ -40,7 +40,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Tally_DefaultTraits<T>>
                 class   Tally_Array : public Tally<T, TRAITS> {
                 private:
-                    typedef Tally<T, TRAITS>    inherited;
+                    using   inherited   =   Tally<T, TRAITS>;
 
                 public:
                     Tally_Array ();

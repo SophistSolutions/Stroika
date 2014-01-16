@@ -39,7 +39,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = SortedSet_DefaultTraits<T>>
                 class   SortedSet_stdset : public SortedSet<T, TRAITS> {
                 private:
-                    typedef     SortedSet<T, TRAITS>  inherited;
+                    using   inherited   =   SortedSet<T, TRAITS>;
 
                 public:
                     SortedSet_stdset ();

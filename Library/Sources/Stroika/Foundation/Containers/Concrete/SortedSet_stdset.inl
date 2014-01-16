@@ -33,7 +33,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   SortedSet_stdset<T, TRAITS>::Rep_ : public SortedSet<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    SortedSet<T, TRAITS>::_IRep  inherited;
+                    using   inherited   =   typename    SortedSet<T, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;

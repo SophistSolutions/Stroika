@@ -38,7 +38,7 @@ namespace   Stroika {
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = Mapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
                 class   Mapping_LinkedList : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
                 private:
-                    typedef     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>  inherited;
+                    using   inherited   =     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
                 public:
                     Mapping_LinkedList ();

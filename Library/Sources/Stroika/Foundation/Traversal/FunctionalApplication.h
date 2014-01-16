@@ -204,8 +204,10 @@ namespace   Stroika {
              */
             template    <typename T, typename MAPPER_ENGINE = DirectPushMapEngine>
             class  FunctionalApplicationContext : public Iterable<T> {
-                typedef Iterable<T> inherited;
+            private:
+                using   inherited   =   Iterable<T>;
 
+            private:
                 MAPPER_ENGINE      fMappingEngine_;
 
             public:

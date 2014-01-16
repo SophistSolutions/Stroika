@@ -64,7 +64,7 @@ namespace   Stroika {
             template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS = SortedMapping_DefaultTraits<KEY_TYPE, VALUE_TYPE>>
             class   SortedMapping : public Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> {
             private:
-                typedef     Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType> inherited;
+                using   inherited   =   Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>;
 
             protected:
                 class   _IRep;

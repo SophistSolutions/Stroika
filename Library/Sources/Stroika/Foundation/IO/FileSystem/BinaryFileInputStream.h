@@ -48,7 +48,7 @@ namespace   Stroika {
                  */
                 class BinaryFileInputStream : public Streams::BinaryInputStream {
                 private:
-                    typedef BinaryInputStream   inherited;
+                    using   inherited   =   BinaryInputStream;
                 private:
                     class   Rep_;
                 public:

@@ -43,7 +43,7 @@ namespace   Stroika {
                 template    <typename   T>
                 class   Sequence_SparseSortedMapping : public Sequence<T> {
                 private:
-                    typedef     Sequence<T>  inherited;
+                    using   inherited   =     Sequence<T>;
 
                 public:
                     /**
