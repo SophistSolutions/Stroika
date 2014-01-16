@@ -98,10 +98,10 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  Stack_LinkedList<T, TRAITS>::Rep_::Clone () const
+                typename Stack_LinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  Stack_LinkedList<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T, typename TRAITS>
                 Iterator<T>  Stack_LinkedList<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const

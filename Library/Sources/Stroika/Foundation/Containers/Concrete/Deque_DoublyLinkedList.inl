@@ -30,6 +30,7 @@ namespace   Stroika {
                     using   inherited   =   typename    Deque<T, TRAITS>::_IRep;
 
                 public:
+                    using   _SharedPtrIRep  =   typename Iterable<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
@@ -46,12 +47,12 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
-                    virtual Iterator<T>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t                                  GetLength () const override;
-                    virtual bool                                    IsEmpty () const override;
-                    virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual _SharedPtrIRep    Clone () const override;
+                    virtual Iterator<T>       MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t            GetLength () const override;
+                    virtual bool              IsEmpty () const override;
+                    virtual void              Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>       ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Queue<T, TRAITS>::_IRep overrides
                 public:
@@ -102,10 +103,10 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                typename Iterable<T>::_SharedPtrIRep  Deque_DoublyLinkedList<T, TRAITS>::Rep_::Clone () const
+                typename Deque_DoublyLinkedList<T, TRAITS>::Rep_::_SharedPtrIRep  Deque_DoublyLinkedList<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<T>::_SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));
                 }
                 template    <typename T, typename TRAITS>
                 Iterator<T>  Deque_DoublyLinkedList<T, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const

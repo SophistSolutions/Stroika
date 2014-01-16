@@ -33,6 +33,7 @@ namespace   Stroika {
                     using   inherited   =   typename    Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep;
 
                 public:
+                    using   _SharedPtrIRep = typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
@@ -50,12 +51,12 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep  Clone () const override
+                    virtual _SharedPtrIRep  Clone () const override
                     {
-                        return Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
+                        return _SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep    Clone () const override;
+                    virtual _SharedPtrIRep    Clone () const override;
 #endif
                     virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                                              GetLength () const override;
@@ -115,10 +116,10 @@ namespace   Stroika {
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Clone () const
+                typename Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<pair<DOMAIN_TYPE, RANGE_TYPE>>::_SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));
                 }
 #endif
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
@@ -136,7 +137,7 @@ namespace   Stroika {
                 size_t  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::GetLength () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return (fData_.GetLength ());
+                        return fData_.GetLength ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
@@ -144,7 +145,7 @@ namespace   Stroika {
                 bool  Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::IsEmpty () const
                 {
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        return (fData_.IsEmpty ());
+                        return fData_.IsEmpty ();
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }

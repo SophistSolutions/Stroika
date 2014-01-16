@@ -120,7 +120,8 @@ namespace   Stroika {
             {
                 struct   MyIterable_ : public Iterable<T> {
                     struct   Rep : public IterableFromIterator<T>::_Rep {
-                        using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
+                        using   _SharedPtrIRep      = typename Iterable<T>::_SharedPtrIRep;
+                        using   _IteratorOwnerID    = typename Iterable<T>::_IRep::_IteratorOwnerID;
                         DECLARE_USE_BLOCK_ALLOCATION(Rep);
                         Iterator<T>   fOriginalIterator;
 #if     qDebug
@@ -141,9 +142,9 @@ namespace   Stroika {
                             return fOriginalIterator;
 #endif
                         }
-                        virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                        virtual _SharedPtrIRep Clone () const override
                         {
-                            return typename Iterable<T>::_SharedPtrIRep (new Rep (*this));
+                            return _SharedPtrIRep (new Rep (*this));
                         }
                     };
                     MyIterable_ (const Iterator<T>& originalIterator)

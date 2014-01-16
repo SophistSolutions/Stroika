@@ -91,15 +91,16 @@ namespace   Stroika {
                     typedef function<Memory::Optional<T>()>         MyContextData_;
                     typedef typename Private_::GenItWrapper_<T>     MyIteratorRep_;
                     struct MyIterableRep_ : Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep {
-                        using   inherited = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
+                        using   inherited       = typename Traversal::IterableFromIterator<T, MyIteratorRep_, MyContextData_>::_Rep;
+                        using   _SharedPtrIRep  = typename Iterable<T>::_SharedPtrIRep;
                         DECLARE_USE_BLOCK_ALLOCATION(MyIterableRep_);
                         MyIterableRep_ (const MyContextData_& context)
                             : inherited (context)
                         {
                         }
-                        virtual typename Iterable<T>::_SharedPtrIRep Clone () const override
+                        virtual _SharedPtrIRep Clone () const override
                         {
-                            return typename Iterable<T>::_SharedPtrIRep (new MyIterableRep_ (*this));
+                            return _SharedPtrIRep (new MyIterableRep_ (*this));
                         }
                     };
                     MyIterable_ (const function<Memory::Optional<T>()>& getNext)

@@ -306,7 +306,7 @@ namespace   Stroika {
              */
             class   String : public Traversal::Iterable<Character> {
             private:
-                using	inherited	=	Iterable<Character>;
+                using   inherited   =   Iterable<Character>;
 
             public:
 #if     !qCompilerAndStdLib_constexpr_StaticDataMember_Buggy
@@ -898,10 +898,10 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             protected:
-                typedef     String::_IterableSharedPtrIRep  _IterableSharedPtrIRep;
+                using   _IterableSharedPtrIRep  =   String::_IterableSharedPtrIRep;
 
             protected:
-                typedef     String::_SharedPtrIRep  _SharedPtrIRep;
+                using   _SharedPtrIRep      =   String::_SharedPtrIRep;
 
             public:
                 /*
