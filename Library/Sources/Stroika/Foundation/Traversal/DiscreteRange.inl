@@ -82,7 +82,10 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
+                using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
                 using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
+                using _APPLY_ARGTYPE = Iterable<T>::_IRep::_APPLY_ARGTYPE;
+                using _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
                 DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
                 T       fStart;
                 T       fEnd;
@@ -99,14 +102,9 @@ namespace   Stroika {
                     , fForcedEnd (false)
                 {
                 }
-                virtual typename Iterable<T>::_SharedPtrIRep      Clone () const
+                virtual _SharedPtrIRep      Clone () const
                 {
-                    if (fForcedEnd) {
-                        return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ ());
-                    }
-                    else {
-                        return typename Iterable<T>::_SharedPtrIRep (new MyIteratableRep_ (fStart, fEnd));
-                    }
+                    return _SharedPtrIRep (new MyIteratableRep_ (*this));
                 }
                 virtual Iterator<T>         MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {
@@ -137,11 +135,11 @@ namespace   Stroika {
                         //return fStart == fEnd;
                     }
                 }
-                virtual void                Apply (typename Iterable<T>::_IRep::_APPLY_ARGTYPE doToElement) const
+                virtual void                Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
-                virtual Iterator<T>         ApplyUntilTrue (typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE doToElement) const
+                virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }
