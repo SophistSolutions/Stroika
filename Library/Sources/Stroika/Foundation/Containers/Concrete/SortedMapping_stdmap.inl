@@ -53,14 +53,7 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual _SharedPtrIRep  Clone () const override
-                    {
-                        return _SharedPtrIRep (new Rep_ (*this));
-                    }
-#else
-                    virtual _SharedPtrIRep     Clone () const override;
-#endif
+                    virtual _SharedPtrIRep                                      Clone () const override;
                     virtual Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>        MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                              GetLength () const override;
                     virtual bool                                                IsEmpty () const override;
@@ -115,14 +108,11 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 typename SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::_SharedPtrIRep  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::Clone () const
                 {
-                    // no lock needed cuz src locked in Rep_ CTOR
-                    return _SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
                 }
-#endif
                 template    <typename KEY_TYPE, typename VALUE_TYPE, typename TRAITS>
                 Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>  SortedMapping_stdmap<KEY_TYPE, VALUE_TYPE, TRAITS>::Rep_::MakeIterator (_IteratorOwnerID suggestedOwner) const
                 {

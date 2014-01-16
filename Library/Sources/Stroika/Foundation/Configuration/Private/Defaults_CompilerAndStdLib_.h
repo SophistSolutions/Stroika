@@ -730,22 +730,6 @@
 
 
 /*
-@CONFIGVAR:     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-@DESCRIPTION:   <p></p>
-*/
-#ifndef qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-
-#if     defined (_MSC_VER)
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy       (_MSC_VER == _MS_VS_2k13_VER_)
-#else
-#define qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy       0
-#endif
-
-#endif
-
-
-
-/*
 @CONFIGVAR:     qCompilerAndStdLib_deprecatedFeatureMissing
 @DESCRIPTION:
 */

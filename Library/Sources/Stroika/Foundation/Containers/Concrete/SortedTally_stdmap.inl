@@ -54,38 +54,28 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual _SharedPtrIRep    Clone () const override
-                    {
-                        return _SharedPtrIRep (new Rep_ (*this));
-                    }
-#else
-                    virtual _SharedPtrIRep    Clone () const override;
-#endif
-
-                    virtual size_t                                              GetLength () const override;
-                    virtual bool                                                IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
-                    virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual _SharedPtrIRep              Clone () const override;
+                    virtual size_t                      GetLength () const override;
+                    virtual bool                        IsEmpty () const override;
+                    virtual Iterator<TallyEntry<T>>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<TallyEntry<T>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Tally<T, TRAITS>::_IRep overrides
                 public:
-                    virtual bool                                    Equals (const typename Tally<T, TRAITS>::_IRep& rhs) const override;
-                    virtual bool                                    Contains (T item) const override;
-                    virtual void                                    RemoveAll () override;
-                    virtual void                                    Add (T item, size_t count) override;
-                    virtual void                                    Remove (T item, size_t count) override;
-                    virtual void                                    Remove (const Iterator<TallyEntry<T>>& i) override;
-                    virtual void                                    UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
-                    virtual size_t                                  TallyOf (T item) const override;
-                    virtual Iterable<T>                             Elements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
-                    virtual Iterable<T>                             UniqueElements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
+                    virtual bool                        Equals (const typename Tally<T, TRAITS>::_IRep& rhs) const override;
+                    virtual bool                        Contains (T item) const override;
+                    virtual void                        RemoveAll () override;
+                    virtual void                        Add (T item, size_t count) override;
+                    virtual void                        Remove (T item, size_t count) override;
+                    virtual void                        Remove (const Iterator<TallyEntry<T>>& i) override;
+                    virtual void                        UpdateCount (const Iterator<TallyEntry<T>>& i, size_t newCount) override;
+                    virtual size_t                      TallyOf (T item) const override;
+                    virtual Iterable<T>                 Elements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
+                    virtual Iterable<T>                 UniqueElements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>
-                            >        DataStructureImplType_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
@@ -272,14 +262,11 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename T, typename TRAITS>
                 typename SortedTally_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone () const
                 {
-                    // no lock needed cuz src locked in Rep_ CTOR
-                    return _SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));       // no lock needed cuz src locked in Rep_ CTOR
                 }
-#endif
                 template    <typename T, typename TRAITS>
                 void    SortedTally_stdmap<T, TRAITS>::Rep_::Add (T item, size_t count)
                 {

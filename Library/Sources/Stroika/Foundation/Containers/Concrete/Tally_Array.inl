@@ -33,7 +33,6 @@ namespace   Stroika {
                     using   inherited   =   typename Tally<T, TRAITS>::_IRep;
                 public:
                     using   _SharedPtrIRep = typename Iterable<TallyEntry<T>>::_SharedPtrIRep;
-                public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
@@ -50,20 +49,12 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-#if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual _SharedPtrIRep    Clone () const override
-                    {
-                        return typename _SharedPtrIRep (new Rep_ (*this));
-                    }
-#else
-                    virtual _SharedPtrIRep    Clone () const override;
-#endif
-
-                    virtual size_t                                              GetLength () const override;
-                    virtual bool                                                IsEmpty () const override;
-                    virtual Iterator<TallyEntry<T>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
-                    virtual void                                                Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<TallyEntry<T>>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual _SharedPtrIRep              Clone () const override;
+                    virtual size_t                      GetLength () const override;
+                    virtual bool                        IsEmpty () const override;
+                    virtual Iterator<TallyEntry<T>>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual void                        Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<TallyEntry<T>>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Tally<T, TRAITS>::_IRep overrides
                 public:
@@ -184,14 +175,11 @@ namespace   Stroika {
                     }
                     CONTAINER_LOCK_HELPER_END ();
                 }
-#if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename T, typename TRAITS>
-                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Tally_Array<T, TRAITS>::Rep_::Clone () const
+                typename Tally_Array<T, TRAITS>::Rep_::_SharedPtrIRep    Tally_Array<T, TRAITS>::Rep_::Clone () const
                 {
-                    // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));        // no lock needed cuz src locked in Rep_ CTOR
                 }
-#endif
                 template    <typename T, typename TRAITS>
                 void    Tally_Array<T, TRAITS>::Rep_::Add (T item, size_t count)
                 {
