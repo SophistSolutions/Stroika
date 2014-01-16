@@ -31,6 +31,9 @@ namespace   Stroika {
                     typedef typename    Sequence<T, TRAITS>::_IRep  inherited;
 
                 public:
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+
+                public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
 

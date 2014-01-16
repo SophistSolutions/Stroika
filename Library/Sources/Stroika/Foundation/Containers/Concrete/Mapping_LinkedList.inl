@@ -33,6 +33,9 @@ namespace   Stroika {
                     typedef typename    Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::_IRep  inherited;
 
                 public:
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+
+                public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
 

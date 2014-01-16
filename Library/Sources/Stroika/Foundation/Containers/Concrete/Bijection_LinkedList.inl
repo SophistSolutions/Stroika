@@ -31,6 +31,7 @@ namespace   Stroika {
                 class   Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_ : public Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep {
                 private:
                     typedef typename    Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep  inherited;
+
                 public:
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 

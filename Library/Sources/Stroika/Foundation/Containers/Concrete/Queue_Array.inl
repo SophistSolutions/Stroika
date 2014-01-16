@@ -30,6 +30,9 @@ namespace   Stroika {
                     typedef typename    Queue<T, TRAITS>::_IRep  inherited;
 
                 public:
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+
+                public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
 

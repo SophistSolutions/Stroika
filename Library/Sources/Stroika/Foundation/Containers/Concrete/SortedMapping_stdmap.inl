@@ -36,6 +36,9 @@ namespace   Stroika {
                     typedef typename    SortedMapping<KEY_TYPE, VALUE_TYPE, TRAITS>::_IRep  inherited;
 
                 public:
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+
+                public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
 
