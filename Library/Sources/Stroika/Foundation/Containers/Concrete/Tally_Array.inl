@@ -30,7 +30,11 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Tally_Array<T, TRAITS>::Rep_ : public Tally<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Tally<T, TRAITS>::_IRep inherited;
+                    using   inherited   =   typename Tally<T, TRAITS>::_IRep;
+                public:
+                    using   _SharedPtrIRep = typename Iterable<TallyEntry<T>>::_SharedPtrIRep;
+                public:
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -45,12 +49,12 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override
+                    virtual _SharedPtrIRep    Clone () const override
                     {
-                        return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
+                        return typename _SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override;
+                    virtual _SharedPtrIRep    Clone () const override;
 #endif
 
                     virtual size_t                                              GetLength () const override;
