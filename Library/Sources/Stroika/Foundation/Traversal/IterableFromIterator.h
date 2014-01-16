@@ -79,7 +79,7 @@ namespace   Stroika {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
                 private:
-                    using   inherited = Iterable<T>::_IRep;
+                    using   inherited = typename Iterable<T>::_IRep;
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;

@@ -27,7 +27,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 class   Deque_DoublyLinkedList<T, TRAITS>::Rep_ : public Deque<T, TRAITS>::_IRep {
                 private:
-                    typedef typename    Deque<T, TRAITS>::_IRep  inherited;
+                    using   inherited   =   typename    Deque<T, TRAITS>::_IRep;
 
                 public:
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;

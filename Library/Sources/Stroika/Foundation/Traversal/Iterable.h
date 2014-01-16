@@ -447,7 +447,7 @@ namespace   Stroika {
                 virtual ~_IRep ();
 
             protected:
-                typedef typename Iterable<T>::_SharedPtrIRep    _SharedPtrIRep;
+                using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
 
             protected:
                 using   _IteratorOwnerID    =   typename Iterator<T>::OwnerID;

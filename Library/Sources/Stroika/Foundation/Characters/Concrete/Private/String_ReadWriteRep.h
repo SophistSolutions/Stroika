@@ -41,7 +41,7 @@ namespace   Stroika {
                     struct  ReadWriteRep : String {
                         struct  _Rep : ReadOnlyRep::_Rep {
                         private:
-                            typedef ReadOnlyRep::_Rep   inherited;
+                            using   inherited   =   ReadOnlyRep::_Rep;
 
                         protected:
                             _Rep () = delete;

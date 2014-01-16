@@ -39,7 +39,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS = Deque_DefaultTraits<T>>
                 class   Deque_DoublyLinkedList : public Deque<T, TRAITS> {
                 private:
-                    typedef     Deque<T, TRAITS>  inherited;
+                    using   inherited   =     Deque<T, TRAITS>;
 
                 public:
                     Deque_DoublyLinkedList ();

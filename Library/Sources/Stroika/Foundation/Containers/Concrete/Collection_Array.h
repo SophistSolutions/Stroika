@@ -36,7 +36,7 @@ namespace   Stroika {
                 template    <typename T>
                 class   Collection_Array : public Collection<T> {
                 private:
-                    typedef     Collection<T>  inherited;
+                    using   inherited   =     Collection<T>;
 
                 public:
                     Collection_Array ();

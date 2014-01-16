@@ -35,7 +35,7 @@ namespace   Stroika {
                  */
                 class   String_BufferedArray  : public String {
                 private:
-                    typedef String  inherited;
+                    using   inherited   =   String;
 
                 public:
                     /*

@@ -38,7 +38,7 @@ namespace   Stroika {
                     struct  BufferedStringRep : String {
                         struct  _Rep : public ReadWriteRep::_Rep {
                         private:
-                            typedef ReadWriteRep::_Rep  inherited;
+                            using   inherited   =   ReadWriteRep::_Rep;
 
                         protected:
                             _Rep () = delete;
