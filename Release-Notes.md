@@ -1,9 +1,4 @@
-﻿<style type='text/css'>
-	table tr td {width: 1in;  vertical-align: top; }
-	table tr td td {width: auto;  }
-</style>
-
-About
+﻿About
 =====
 These release notes are incomplete. They are merely a summary of
 major user (developer)-impactful changes - especially those they need 
@@ -14,12 +9,15 @@ History
 
 <table>
 
-
+  <thead>
+    <th style='width:1in; vertical-align: top'>Version<br/>Release Date</th>
+    <th style='vertical-align: top'>Changes</th>
+  </thead>
 
 
 
 <tr>
-<td>v2.0a18x<br/>2014-???</td>
+<td><a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a18">v2.0a18x</a><br/>2014-???</td>
 <td>
 <ul>
 <li>Started adding ...Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
@@ -35,7 +33,8 @@ Improved supression of abort. Improved impl and docs on 'alertable' stuff for Wi
 
 
 <tr>
-<td>v2.0a17<br/>2014-01-10</td>
+<td>
+  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a17">v2.0a17</a><br/>2014-01-10</td>
 <td>
 <ul>
 <li>Fixed bug with Thread::SuppressAbortInContext</li>
@@ -47,7 +46,8 @@ Improved supression of abort. Improved impl and docs on 'alertable' stuff for Wi
 
 
 <tr>
-<td>v2.0a16<br/>2014-01-10</td>
+<td>
+<a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a16">v2.0a16</a><br/>2014-01-10</td>
 <td>
 <ul>
 <li>Minor</li>
@@ -60,7 +60,8 @@ Improved supression of abort. Improved impl and docs on 'alertable' stuff for Wi
 
 
 <tr>
-<td>v2.0a15<br/>2014-01-10</td>
+<td>
+  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a15">v2.0a15</a><br/>2014-01-10</td>
 <td>
 <ul>
 <li>Progress on makefile re-vamping</li>	
@@ -76,7 +77,8 @@ Improved supression of abort. Improved impl and docs on 'alertable' stuff for Wi
 
 
 <tr>
-<td>v2.0a14<br/>2014-01-08</td>
+<td>
+  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a14">v2.0a14</a><br/>2014-01-08</td>
 <td>
 <ul>
 <li>Minor</li>
@@ -88,7 +90,8 @@ Improved supression of abort. Improved impl and docs on 'alertable' stuff for Wi
 
 
 <tr>
-<td>v2.0a13<br/>2014-01-08</td>
+<td>
+  <a href="https://github.com/SophistSolutions/Stroika/commits/v2.0a13">v2.0a13</a><br/>2014-01-08</td>
 <td>
 <ul>
 <li>	
