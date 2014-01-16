@@ -84,7 +84,7 @@ namespace   Stroika {
             struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
                 using _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
                 using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
-                using _APPLY_ARGTYPE = Iterable<T>::_IRep::_APPLY_ARGTYPE;
+                using _APPLY_ARGTYPE = typename Iterable<T>::_IRep::_APPLY_ARGTYPE;
                 using _APPLYUNTIL_ARGTYPE = typename Iterable<T>::_IRep::_APPLYUNTIL_ARGTYPE;
                 DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
                 T       fStart;
