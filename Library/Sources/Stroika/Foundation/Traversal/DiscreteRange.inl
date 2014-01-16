@@ -82,6 +82,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct   DiscreteRange<T, TRAITS>::MyIteratableRep_ : Iterable<T>::_IRep {
+                using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
                 DECLARE_USE_BLOCK_ALLOCATION (MyIteratableRep_);
                 T       fStart;
                 T       fEnd;

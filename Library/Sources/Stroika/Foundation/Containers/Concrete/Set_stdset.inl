@@ -36,6 +36,9 @@ namespace   Stroika {
                     typedef typename    Set<T, typename TRAITS::SetTraitsType>::_IRep  inherited;
 
                 public:
+                    using _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+
+                public:
                     Rep_ ();
                     Rep_ (const Rep_& from);
 
