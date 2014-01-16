@@ -33,6 +33,8 @@ namespace   Stroika {
                     typedef typename    Collection<T>::_IRep   inherited;
 
                 public:
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
@@ -51,8 +53,8 @@ namespace   Stroika {
                     virtual Iterator<T>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                  GetLength () const override;
                     virtual bool                                    IsEmpty () const override;
-                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Collection<T>::_IRep overrides
                 public:
@@ -133,12 +135,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T>
-                void      Collection_Array<T>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                void      Collection_Array<T>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
                 template    <typename T>
-                Iterator<T>     Collection_Array<T>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Collection_Array<T>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }

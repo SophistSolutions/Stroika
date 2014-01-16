@@ -78,8 +78,12 @@ namespace   Stroika {
             class   IterableFromIterator : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+                private:
+                    using   inherited = Iterable<T>::_IRep;
                 public:
-                    using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
                 protected:
                     DATA_BLOB   _fDataBlob;
 #if     qDebug
@@ -92,8 +96,8 @@ namespace   Stroika {
                     virtual Iterator<T>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
-                    virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
                 };
             };
             template    <typename T, typename NEW_ITERATOR_REP_TYPE>
@@ -110,8 +114,8 @@ namespace   Stroika {
                     virtual Iterator<T>     MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
-                    virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
                 };
             };
             template    <typename T>
@@ -121,8 +125,8 @@ namespace   Stroika {
                 public:
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
-                    virtual void            Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>     ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void            Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>     ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
                 };
             };
 

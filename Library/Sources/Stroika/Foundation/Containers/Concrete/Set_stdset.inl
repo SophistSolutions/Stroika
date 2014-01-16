@@ -36,7 +36,9 @@ namespace   Stroika {
                     typedef typename    Set<T, typename TRAITS::SetTraitsType>::_IRep  inherited;
 
                 public:
-                    using _IteratorOwnerID = typename inherited::_IteratorOwnerID;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
                     Rep_ ();
@@ -54,8 +56,8 @@ namespace   Stroika {
                     virtual Iterator<T>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                  GetLength () const override;
                     virtual bool                                    IsEmpty () const override;
-                    virtual void                                    Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Set<T, TRAITS>::_IRep overrides
                 public:
@@ -140,12 +142,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename T, typename TRAITS>
-                void      Set_stdset<T, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                void      Set_stdset<T, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
                 template    <typename T, typename TRAITS>
-                Iterator<T>     Set_stdset<T, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<T>     Set_stdset<T, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }

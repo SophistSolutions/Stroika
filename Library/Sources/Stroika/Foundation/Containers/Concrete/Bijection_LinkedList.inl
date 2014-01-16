@@ -33,6 +33,8 @@ namespace   Stroika {
                     typedef typename    Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep  inherited;
 
                 public:
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
 
                 public:
@@ -58,8 +60,8 @@ namespace   Stroika {
                     virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
                     virtual size_t                                                              GetLength () const override;
                     virtual bool                                                                IsEmpty () const override;
-                    virtual void                                                                Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual void                                                                Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Bijection<DOMAIN_TYPE, RANGE_TYPE, typename TRAITS::BijectionTraitsType>::_IRep overrides
                 public:
@@ -147,12 +149,12 @@ namespace   Stroika {
                     CONTAINER_LOCK_HELPER_END ();
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                void      Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Apply (typename Rep_::_APPLY_ARGTYPE doToElement) const
+                void      Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Apply (_APPLY_ARGTYPE doToElement) const
                 {
                     this->_Apply (doToElement);
                 }
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
-                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (typename Rep_::_APPLYUNTIL_ARGTYPE doToElement) const
+                Iterator<pair<DOMAIN_TYPE, RANGE_TYPE>>     Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
                 {
                     return this->_ApplyUntilTrue (doToElement);
                 }

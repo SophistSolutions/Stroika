@@ -69,12 +69,12 @@ namespace   Stroika {
                 return true;
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            void  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const
+            void  IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
             {
                 this->_Apply (doToElement);
             }
             template    <typename T, typename NEW_ITERATOR_REP_TYPE, typename DATA_BLOB>
-            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const
+            Iterator<T>   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, DATA_BLOB>::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
             {
                 return this->_ApplyUntilTrue (doToElement);
             }
@@ -98,12 +98,12 @@ namespace   Stroika {
                 return true;
             }
             template    <typename T>
-            void  IterableFromIterator<T, void, void>::_Rep::Apply (typename _Rep::_APPLY_ARGTYPE doToElement) const
+            void  IterableFromIterator<T, void, void>::_Rep::Apply (_APPLY_ARGTYPE doToElement) const
             {
                 this->_Apply (doToElement);
             }
             template    <typename T>
-            Iterator<T>   IterableFromIterator<T, void, void>::_Rep::ApplyUntilTrue (typename _Rep::_APPLYUNTIL_ARGTYPE doToElement) const
+            Iterator<T>   IterableFromIterator<T, void, void>::_Rep::ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const
             {
                 return this->_ApplyUntilTrue (doToElement);
             }
