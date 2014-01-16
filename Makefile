@@ -13,7 +13,7 @@ help:
 	@echo "    libraries:              -	builds Stroika foundation & frameworks, and any things it depends on (like thirdpartyproducts)"
 	@echo "    project-files:          -	builds project files for things like visual studio.net etc (NYI)"
 	@echo "    tests:"
-	@echo "    run-astyle:"
+	@echo "    format-code:			-	run astyle on source code, and update it to conform to Stroika code formatting standards"
 	@echo "    samples:"
 	@echo "    documentation:"
 	@echo "    third-party-libs:"
@@ -78,8 +78,9 @@ samples:	tools libraries
 run-tests:	tests
 	@cd Tests; perl Run.pl
 
-run-astyle:
-	perl ScriptsLib/RunAstyle.pl
+format-code:
+	@echo Running Astyle...
+	@perl ScriptsLib/RunAstyle.pl
 
 
 # useful internal check to make sure users dont run/build while missing key components that will

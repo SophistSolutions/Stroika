@@ -55,25 +55,25 @@ if ($runFile == "") {
 	
 	$aStyleArgs = "$aStyleArgs --formatted ";
 	
-	print ("Library...\n");
+	print ("  Library...\n");
 	system ("$findEXE Library -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Library -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Library -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
-	print ("Samples...\n");
+	print ("  Samples...\n");
 	system ("$findEXE Samples -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Samples -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Samples -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
-	print ("Tests...\n");
+	print ("  Tests...\n");
 	system ("$findEXE Tests -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Tests -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Tests -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
 	print ("           ...done\n");
 
-	print ("Tools...\n");
+	print ("  Tools...\n");
 	system ("$findEXE Tools -name \\*.cpp -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Tools -name \\*.h -exec $astyleEXE $aStyleArgs {} \\;");
 	system ("$findEXE Tools -name \\*.inl -exec $astyleEXE $aStyleArgs {} \\;");
