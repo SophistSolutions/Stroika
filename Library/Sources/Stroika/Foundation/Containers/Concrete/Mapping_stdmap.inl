@@ -77,86 +77,8 @@ namespace   Stroika {
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map <KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>
-                            >
-                            DataStructureImplType_;
-
-#if 0
-                private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
-                    // @TODO - DEBUG WHY THIS NEEDED - and cannot use Private::IteratorImplHelper_
-
-                    class  IteratorRep_ : public Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep {
-                    private:
-                        using   inherited   =   typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep;
-                        using   OwnerID     =   typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep::OwnerID;
-
-                    public:
-                        explicit IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
-                            : inherited ()
-                            , fLockSupport (*sharedLock)
-                            , fIterator (data)
-                        {
-                            RequireNotNull (sharedLock);
-                            RequireNotNull (data);
-                            fIterator.More (static_cast<pair<KEY_TYPE, VALUE_TYPE>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
-                        }
-
-                    public:
-                        DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                        // Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep
-                    public:
-                        virtual typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr Clone () const override
-                        {
-                            CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                                return typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::SharedIRepPtr (new IteratorRep_ (*this));
-                            }
-                            CONTAINER_LOCK_HELPER_END ();
-                        }
-                        virtual OwnerID GetOwner () const override
-                        {
-                            //tmphack but adequate
-                            // should NOT require locking is readonly immutable value provided at construction
-                            return nullptr;
-                        }
-                        virtual void                                More (Memory::Optional<KeyValuePair<KEY_TYPE, VALUE_TYPE>>* result, bool advance) override
-                        {
-                            RequireNotNull (result);
-                            CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                                if (result == nullptr) {
-                                    fIterator.More (static_cast<pair<KEY_TYPE, VALUE_TYPE>*> (nullptr), advance);
-                                }
-                                else {
-                                    Memory::Optional<pair<KEY_TYPE, VALUE_TYPE>>    tmp;
-                                    fIterator.More (&tmp, advance);
-                                    if (tmp.IsPresent ()) {
-                                        *result = KeyValuePair<KEY_TYPE, VALUE_TYPE> (tmp->first, tmp->second);
-                                    }
-                                    else {
-                                        result->clear ();
-                                    }
-                                }
-                            }
-                            CONTAINER_LOCK_HELPER_END ();
-                        }
-                        virtual bool                                Equals (const typename Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>>::IRep* rhs) const override
-                        {
-                            AssertNotImplemented ();
-                            return false;
-                        }
-
-                    public:
-                        Private::ContainerRepLockDataSupport_&           fLockSupport;
-                        mutable typename DataStructureImplType_::ForwardIterator    fIterator;
-                    };
-#else
-                private:
-                    using   IteratorRep_    =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
-#endif
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map <KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
