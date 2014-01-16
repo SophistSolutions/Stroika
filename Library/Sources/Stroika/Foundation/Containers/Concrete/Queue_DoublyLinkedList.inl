@@ -30,6 +30,7 @@ namespace   Stroika {
                     using   inherited   =   typename    Queue<T, TRAITS>::_IRep;
 
                 public:
+                    using   _SharedPtrIRep = typename Iterable<T>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
@@ -46,12 +47,12 @@ namespace   Stroika {
 
                     // Iterable<T>::_IRep overrides
                 public:
-                    virtual typename Iterable<T>::_SharedPtrIRep    Clone () const override;
-                    virtual Iterator<T>                             MakeIterator (_IteratorOwnerID suggestedOwner) const override;
-                    virtual size_t                                  GetLength () const override;
-                    virtual bool                                    IsEmpty () const override;
-                    virtual void                                    Apply (_APPLY_ARGTYPE doToElement) const override;
-                    virtual Iterator<T>                             ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
+                    virtual _SharedPtrIRep      Clone () const override;
+                    virtual Iterator<T>         MakeIterator (_IteratorOwnerID suggestedOwner) const override;
+                    virtual size_t              GetLength () const override;
+                    virtual bool                IsEmpty () const override;
+                    virtual void                Apply (_APPLY_ARGTYPE doToElement) const override;
+                    virtual Iterator<T>         ApplyUntilTrue (_APPLYUNTIL_ARGTYPE doToElement) const override;
 
                     // Queue<T, TRAITS>::_IRep overrides
                 public:
