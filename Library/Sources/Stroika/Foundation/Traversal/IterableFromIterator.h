@@ -104,8 +104,12 @@ namespace   Stroika {
             class   IterableFromIterator<T, NEW_ITERATOR_REP_TYPE, void> : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+                private:
+                    using   inherited = typename Iterable<T>::_IRep;
                 public:
-                    using _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
+                    using   _IteratorOwnerID = typename Iterable<T>::_IRep::_IteratorOwnerID;
 #if     qDebug
                 private:
                     mutable Private_::IteratorTracker<T>    fIteratorTracker_;
@@ -122,6 +126,11 @@ namespace   Stroika {
             class   IterableFromIterator<T, void, void> : public Iterable<T> {
             public:
                 class   _Rep : public Iterable<T>::_IRep {
+                private:
+                    using   inherited = typename Iterable<T>::_IRep;
+                public:
+                    using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
+                    using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                 public:
                     virtual size_t          GetLength () const override;
                     virtual bool            IsEmpty () const override;
