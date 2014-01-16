@@ -20,8 +20,7 @@ using   namespace   Stroika::Foundation::Execution::Platform::POSIX;
  ********************************************************************************
  */
 ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
-    : fSignal_ (signal)
-    , fRestoreMask_ ()
+    : fRestoreMask_ ()
 {
     //DbgTrace (L"ScopedBlockCurrentThreadSignal blocking signals for %s", SignalToName (signal).c_str ());
     sigset_t    mySet;
@@ -33,6 +32,6 @@ ScopedBlockCurrentThreadSignal::ScopedBlockCurrentThreadSignal (SignalID signal)
 
 ScopedBlockCurrentThreadSignal::~ScopedBlockCurrentThreadSignal ()
 {
-    //DbgTrace (L"ScopedBlockCurrentThreadSignal restoriing signals for %s", SignalToName (fSignal_).c_str ());
+    //DbgTrace (L"ScopedBlockCurrentThreadSignal restoring signals");
     Verify (pthread_sigmask (SIG_SETMASK,  &fRestoreMask_, nullptr) == 0);
 }

@@ -45,7 +45,6 @@ namespace   Stroika {
                         nonvirtual  const ScopedBlockCurrentThreadSignal& operator= (const ScopedBlockCurrentThreadSignal&) = delete;
 
                     private:
-                        SignalID    fSignal_;
                         sigset_t    fRestoreMask_;
                     };
 
