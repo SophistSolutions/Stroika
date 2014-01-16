@@ -2277,5 +2277,8 @@
     <None Include="..\..\Sources\Stroika\Foundation\Execution\Platform\POSIX\SignalBlock.inl">
       <Filter>Sources\Execution\Platform\POSIX</Filter>
     </None>
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md">
+      <Filter>Sources\Debug</Filter>
+    </None>
   </ItemGroup>
 </Project>

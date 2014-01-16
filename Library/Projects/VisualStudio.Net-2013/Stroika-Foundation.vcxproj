@@ -1125,6 +1125,7 @@
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\Writer.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\DataExchange\XML\WriterUtils.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\ReadMe.md" />
+    <None Include="..\..\Sources\Stroika\Foundation\Debug\TODO.md" />
     <None Include="..\..\Sources\Stroika\Foundation\Debug\Trace.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\BlockingQueue.inl" />
     <None Include="..\..\Sources\Stroika\Foundation\Execution\CommandLine.inl" />
