@@ -83,9 +83,7 @@ namespace   Stroika {
                     virtual Iterable<T>                             UniqueElements (const typename Tally<T, TRAITS>::_SharedPtrIRep& rep) const override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>
-                            >        DataStructureImplType_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
 
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy

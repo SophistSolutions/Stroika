@@ -49,6 +49,10 @@ namespace   Stroika {
                     using   inherited   =   typename    Iterator<T>::IRep;
 
                 public:
+                    using   SharedIRepPtr   =   typename Iterator<T>::SharedIRepPtr;
+                    using   OwnerID         =   typename Iterator<T>::OwnerID;
+
+                public:
                     explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
 
                 public:
@@ -56,10 +60,10 @@ namespace   Stroika {
 
                     // Iterator<T>::IRep
                 public:
-                    virtual typename Iterator<T>::SharedIRepPtr Clone () const override;
-                    virtual typename Iterator<T>::OwnerID       GetOwner () const override;
-                    virtual void                                More (Memory::Optional<T>* result, bool advance) override;
-                    virtual bool                                Equals (const typename Iterator<T>::IRep* rhs) const override;
+                    virtual SharedIRepPtr Clone () const override;
+                    virtual OwnerID       GetOwner () const override;
+                    virtual void          More (Memory::Optional<T>* result, bool advance) override;
+                    virtual bool          Equals (const typename Iterator<T>::IRep* rhs) const override;
 
                 public:
                     ContainerRepLockDataSupport_&           fLockSupport;

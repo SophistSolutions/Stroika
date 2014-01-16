@@ -21,6 +21,7 @@ namespace   Stroika {
              */
             template    <typename T, typename TRAITS>
             struct   DiscreteRange<T, TRAITS>::MyIteratorRep_ : Iterator<T>::IRep  {
+                using   OwnerID =   typename    Iterator<T>::OwnerID;
                 DECLARE_USE_BLOCK_ALLOCATION(MyIteratorRep_);
                 T fCur;
                 T fEnd;
@@ -54,7 +55,7 @@ namespace   Stroika {
                         *result = fCur;
                     }
                 }
-                typename    Iterator<T>::OwnerID GetOwner () const
+                virtual OwnerID GetOwner () const override
                 {
                     //tmphack but adequate
                     // should NOT require locking is readonly immutable value provided at construction

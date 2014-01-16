@@ -25,6 +25,7 @@ History
 <li>Started adding ...Iterators have a new owner (aka iterable/container) property and refined Equals() semantics</li>
 <li>Lots of cleanups of threads and signal handling code. Needs more mileage/testing before ready for wider use/release. 
 Improved supression of abort. Improved impl and docs on 'alertable' stuff for WinDoze. thread_local with std::atomic/volatile (testing).</li>
+  <li>Significant cleanup of templates/containers - using 'using =' etc</li>
 </ul>
 </td>
 </tr>

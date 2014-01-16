@@ -78,12 +78,9 @@ namespace   Stroika {
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper <
-                    map <KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>
-                            >
-                            DataStructureImplType_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map <KEY_TYPE, VALUE_TYPE, STL::less<KEY_TYPE, typename TRAITS::KeyWellOrderCompareFunctionType>>>;
 
-#if 1
+#if 0
                 private:
 #if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
                 public:
@@ -159,7 +156,7 @@ namespace   Stroika {
                     };
 #else
                 private:
-                    typedef typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>    IteratorRep_;
+                    using   IteratorRep_    =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
 #endif
 
                 private:

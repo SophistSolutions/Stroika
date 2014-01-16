@@ -66,8 +66,8 @@ namespace   Stroika {
                     virtual void    Remove (size_t from, size_t to) override;
 
                 private:
-                    typedef Private::PatchingDataStructures::STLContainerWrapper<vector<T>>     DataStructureImplType_;
-                    typedef typename Private::IteratorImplHelper_<T, DataStructureImplType_>    IteratorRep_;
+                    using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper<vector<T>>;
+                    using   IteratorRep_            =   typename Private::IteratorImplHelper_<T, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
