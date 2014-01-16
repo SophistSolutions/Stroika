@@ -73,20 +73,14 @@ namespace   Stroika {
                     virtual void                Remove (Iterator<KeyValuePair<KEY_TYPE, VALUE_TYPE>> i) override;
 
                 public:
-                    typedef typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType    KeyEqualsCompareFunctionType;
+                    using   KeyEqualsCompareFunctionType        =   typename Mapping<KEY_TYPE, VALUE_TYPE, typename TRAITS::MappingTraitsType>::KeyEqualsCompareFunctionType;
 
                 private:
-                    typedef Private::DataStructures::Array <
-                    KeyValuePair<KEY_TYPE, VALUE_TYPE>
-                    >
-                    NonPatchingDataStructureImplType_;
-                    typedef Private::PatchingDataStructures::Array_Patch <
-                    KeyValuePair<KEY_TYPE, VALUE_TYPE>
-                    >
-                    DataStructureImplType_;
+                    using   NonPatchingDataStructureImplType_   =   Private::DataStructures::Array <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
+                    using   DataStructureImplType_              =   Private::PatchingDataStructures::Array_Patch <KeyValuePair<KEY_TYPE, VALUE_TYPE>>;
 
                 private:
-                    typedef typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>   IteratorRep_;
+                    using   IteratorRep_                        =   typename Private::IteratorImplHelper_<KeyValuePair<KEY_TYPE, VALUE_TYPE>, DataStructureImplType_>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;

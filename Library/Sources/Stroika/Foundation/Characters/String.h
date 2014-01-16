@@ -335,10 +335,10 @@ namespace   Stroika {
                 class   _IRep;
 
             protected:
-                typedef Iterable<Character>::_SharedPtrIRep _IterableSharedPtrIRep;
+                using   _IterableSharedPtrIRep  =   Iterable<Character>::_SharedPtrIRep;
 
             protected:
-                typedef shared_ptr<_IRep>   _SharedPtrIRep;
+                using   _SharedPtrIRep          =   shared_ptr<_IRep>;
 
             protected:
                 /**

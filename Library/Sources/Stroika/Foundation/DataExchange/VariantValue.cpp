@@ -17,7 +17,7 @@ using   namespace   Stroika::Foundation::DataExchange;
 
 
 namespace {
-    // Mimic private class values - but cannot reference directly cuz private and this isnt part of class
+    // Mimic private class values - but cannot reference directly cuz private and this isn't part of the class
     typedef long long int           IntegerType_;
     typedef unsigned long long int  UnsignedIntegerType_;
     typedef long double             FloatType_;
