@@ -37,6 +37,7 @@ namespace   Stroika {
                     using   inherited   =   typename    SortedTally<T, TRAITS>::_IRep;
 
                 public:
+                    using   _SharedPtrIRep = typename Iterable<TallyEntry<T>>::_SharedPtrIRep;
                     using   _APPLY_ARGTYPE = typename inherited::_APPLY_ARGTYPE;
                     using   _APPLYUNTIL_ARGTYPE = typename inherited::_APPLYUNTIL_ARGTYPE;
                     using   _IteratorOwnerID = typename inherited::_IteratorOwnerID;
@@ -54,12 +55,12 @@ namespace   Stroika {
                     // Iterable<T>::_IRep overrides
                 public:
 #if     qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
-                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override
+                    virtual _SharedPtrIRep    Clone () const override
                     {
-                        return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
+                        return _SharedPtrIRep (new Rep_ (*this));
                     }
 #else
-                    virtual typename Iterable<TallyEntry<T>>::_SharedPtrIRep    Clone () const override;
+                    virtual _SharedPtrIRep    Clone () const override;
 #endif
 
                     virtual size_t                                              GetLength () const override;
@@ -273,10 +274,10 @@ namespace   Stroika {
                 }
 #if     !qCompilerAndStdLib_IllUnderstoodTemplateConfusionOverT_Buggy
                 template    <typename T, typename TRAITS>
-                typename Iterable<TallyEntry<T>>::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone () const
+                typename SortedTally_stdmap<T, TRAITS>::Rep_::_SharedPtrIRep    SortedTally_stdmap<T, TRAITS>::Rep_::Clone () const
                 {
                     // no lock needed cuz src locked in Rep_ CTOR
-                    return typename Iterable<TallyEntry<T>>::_SharedPtrIRep (new Rep_ (*this));
+                    return _SharedPtrIRep (new Rep_ (*this));
                 }
 #endif
                 template    <typename T, typename TRAITS>

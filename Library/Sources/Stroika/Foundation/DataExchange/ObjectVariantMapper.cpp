@@ -58,7 +58,7 @@ ObjectVariantMapper::TypeMappingDetails::TypeMappingDetails (const type_index& f
             t.Add (i.fOffset);
         }
         for (auto i : t) {
-            Require (i.fCount == 1);
+            Require (i.fCount == 1);        //  not necessarily something we want to prohibit?
         }
     }
 #if 0
