@@ -26,7 +26,7 @@ namespace   Stroika {
                 {
                     RequireNotNull (sharedLock);
                     RequireNotNull (data);
-                    using   DataStructureImplValueType_ =   typename PATCHABLE_CONTAINER::value_type;
+                    using   DataStructureImplValueType_ =   T;
                     fIterator.More (static_cast<DataStructureImplValueType_*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
                 }
                 template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR>
