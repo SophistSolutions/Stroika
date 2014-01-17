@@ -61,6 +61,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS = DoublyLinkedList_DefaultTraits<T>>
                     class   DoublyLinkedList {
                     public:
+                        using   value_type  =   T;
+
+                    public:
                         DoublyLinkedList ();
                         DoublyLinkedList (const DoublyLinkedList<T, TRAITS>& from);
                         ~DoublyLinkedList ();

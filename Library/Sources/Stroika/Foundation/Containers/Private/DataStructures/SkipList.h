@@ -51,6 +51,9 @@ namespace   Stroika {
                         typedef typename TRAITS::KeyValue    KeyValue;
 
                     public:
+                        using   value_type  =   pair<KEY, VALUE>;       /// gonna have to work on this to get working...
+
+                    public:
                         SkipList ();
                         SkipList (const SkipList& s);
                         ~SkipList ();

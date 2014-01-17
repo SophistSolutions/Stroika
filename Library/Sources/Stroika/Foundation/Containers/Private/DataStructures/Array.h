@@ -125,6 +125,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS = Array_DefaultTraits<T>>
                     class   Array {
                     public:
+                        using   value_type  =   T;
+
+                    public:
                         Array ();
                         Array (const Array<T, TRAITS>& from);
                         ~Array ();

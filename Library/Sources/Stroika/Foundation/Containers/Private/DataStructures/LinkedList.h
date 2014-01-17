@@ -66,6 +66,9 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS = LinkedList_DefaultTraits<T>>
                     class   LinkedList {
                     public:
+                        using   value_type  =   T;
+
+                    public:
                         LinkedList ();
                         LinkedList (const LinkedList<T, TRAITS>& from);
                         ~LinkedList ();
