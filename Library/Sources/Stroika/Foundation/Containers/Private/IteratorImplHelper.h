@@ -53,7 +53,7 @@ namespace   Stroika {
                     using   OwnerID         =   typename Iterator<T>::OwnerID;
 
                 public:
-                    explicit IteratorImplHelper_ (ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
+                    explicit IteratorImplHelper_ (OwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
 
                 public:
                     DECLARE_USE_BLOCK_ALLOCATION (IteratorImplHelper_);
@@ -67,6 +67,7 @@ namespace   Stroika {
 
                 public:
                     ContainerRepLockDataSupport_&           fLockSupport;
+                    OwnerID                                 fOwner_;
                     mutable PATCHABLE_CONTAINER_ITERATOR    fIterator;
                 };
 

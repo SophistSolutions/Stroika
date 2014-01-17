@@ -102,8 +102,9 @@ namespace   Stroika {
                     using   OwnerID =   typename inherited::OwnerID;
 
                 public:
-                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
+                    IteratorRep_ (OwnerID owner, Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
                         : inherited ()
+                        , fOwner_ (owner)
                         , fLockSupport_ (*sharedLock)
                         , fIterator (data)
                     {
@@ -138,9 +139,7 @@ namespace   Stroika {
                     }
                     OwnerID GetOwner () const
                     {
-                        //tmphack but adequate
-                        // should NOT require locking is readonly immutable value provided at construction
-                        return nullptr;
+                        return fOwner_;
                     }
                     virtual bool    Equals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override
                     {
@@ -150,6 +149,7 @@ namespace   Stroika {
 
                 private:
                     Private::ContainerRepLockDataSupport_&                          fLockSupport_;
+                    OwnerID                                                         fOwner_;
                 public:
                     mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator;
                 };
@@ -200,7 +200,7 @@ namespace   Stroika {
                     typename Iterator<TallyEntry<T>>::SharedIRepPtr tmpRep;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         Rep_*   NON_CONST_THIS = const_cast<Rep_*> (this);       // logically const, but non-const cast cuz re-using iterator API
-                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (&NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
+                        tmpRep = typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (suggestedOwner, &NON_CONST_THIS->fLockSupport_, &NON_CONST_THIS->fData_));
                     }
                     CONTAINER_LOCK_HELPER_END ();
                     return Iterator<TallyEntry<T>> (tmpRep);
