@@ -76,116 +76,12 @@ namespace   Stroika {
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
-
-                private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
-                    class   IteratorRep_;
+                    using   IteratorRep_            =   Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, size_t>>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
                 };
-
-
-                /*
-                 ********************************************************************************
-                 ************** SortedTally_stdmap<T, TRAITS>::IteratorRep_ *********************
-                 ********************************************************************************
-                 */
-#if 0
-                template    <typename T, typename TRAITS>
-                class   SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>    {
-                private:
-                    using   inherited   =   Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_>;
-
-                public:
-                    IteratorRep_ (Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
-                        : inherited (sharedLock, data)
-                    {
-                    }
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                public:
-                    virtual Memory::Optional<TallyEntry<T>>    More (bool advance) override
-                    {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport) {
-                            pair<T, size_t> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
-                            if (fIterator.More (&tmp, advance)) {
-                                return TallyEntry<T> (tmp.first, tmp.second);
-                            }
-                            else {
-                                return Memory::Optional<TallyEntry<T>> ();
-                            }
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                };
-#else
-                template    <typename T, typename TRAITS>
-                class  SortedTally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
-                private:
-                    using   inherited   =   typename Iterator<TallyEntry<T>>::IRep;
-
-                public:
-                    using  OwnerID  =   typename Iterator<TallyEntry<T>>::OwnerID;
-
-                public:
-                    IteratorRep_ (OwnerID owner, Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
-                        : inherited ()
-                        , fLockSupport_ (*sharedLock)
-                        , fOwner_ (owner)
-                        , fIterator (data)
-                    {
-                        fIterator.More (static_cast<pair<T, size_t>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
-                    }
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                public:
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override
-                    {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*this));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override
-                    {
-                        RequireNotNull (result);
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            Memory::Optional<pair<T, size_t>> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
-                            fIterator.More (&tmp, advance);
-                            if (tmp.IsPresent ()) {
-                                *result = TallyEntry<T> (tmp->first, tmp->second);
-                            }
-                            else {
-                                result->clear ();
-                            }
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual OwnerID GetOwner () const override
-                    {
-                        return fOwner_;
-                    }
-                    virtual bool    Equals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override
-                    {
-                        AssertNotImplemented ();
-                        return false;
-                    }
-
-                private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    OwnerID                                                         fOwner_;
-                public:
-                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator;
-                };
-#endif
 
 
                 /*

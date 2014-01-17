@@ -72,6 +72,7 @@ namespace   Stroika {
             public:
                 TallyEntry (T item);
                 TallyEntry (T item, size_t count);
+                TallyEntry (pair<T, size_t> item);
 
                 nonvirtual  bool    operator== (const TallyEntry<T>& rhs) const;
                 nonvirtual  bool    operator!= (const TallyEntry<T>& rhs) const;

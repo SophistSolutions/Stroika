@@ -277,6 +277,12 @@ namespace   Stroika {
             {
             }
             template    <typename T>
+            inline  TallyEntry<T>::TallyEntry (pair<T, size_t> item)
+                : fItem (item.first)
+                , fCount (item.second)
+            {
+            }
+            template    <typename T>
             inline bool   TallyEntry<T>::operator== (const TallyEntry<T>& rhs)  const
             {
                 return (fCount == rhs.fCount and fItem == rhs.fItem);

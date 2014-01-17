@@ -76,82 +76,11 @@ namespace   Stroika {
 
                 private:
                     using   DataStructureImplType_  =   Private::PatchingDataStructures::STLContainerWrapper <map<T, size_t, STL::less<T, typename TRAITS::WellOrderCompareFunctionType>>>;
-
-                private:
-#if     qCompilerAndStdLib_SharedPtrOfPrivateTypes_Buggy
-                public:
-#endif
-                    class   IteratorRep_;
+                    using   IteratorRep_            =   Private::IteratorImplHelper_<TallyEntry<T>, DataStructureImplType_, typename DataStructureImplType_::ForwardIterator, pair<T, size_t>>;
 
                 private:
                     Private::ContainerRepLockDataSupport_   fLockSupport_;
                     DataStructureImplType_                  fData_;
-                };
-
-
-                /*
-                ********************************************************************************
-                ******************** Tally_stdmap<T, TRAITS>::IteratorRep_ *********************
-                ********************************************************************************
-                */
-                template    <typename T, typename TRAITS>
-                class  Tally_stdmap<T, TRAITS>::Rep_::IteratorRep_ : public Iterator<TallyEntry<T>>::IRep {
-                private:
-                    using   inherited   =   typename Iterator<TallyEntry<T>>::IRep;
-                public:
-                    using   OwnerID =   typename inherited::OwnerID;
-
-                public:
-                    IteratorRep_ (OwnerID owner, Private::ContainerRepLockDataSupport_* sharedLock, DataStructureImplType_* data)
-                        : inherited ()
-                        , fOwner_ (owner)
-                        , fLockSupport_ (*sharedLock)
-                        , fIterator (data)
-                    {
-                        fIterator.More (static_cast<pair<T, size_t>*> (nullptr), true);   //tmphack cuz current backend iterators require a first more() - fix that!
-                    }
-
-                public:
-                    DECLARE_USE_BLOCK_ALLOCATION (IteratorRep_);
-
-                public:
-                    virtual shared_ptr<typename Iterator<TallyEntry<T>>::IRep> Clone () const override
-                    {
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            return typename Iterator<TallyEntry<T>>::SharedIRepPtr (new IteratorRep_ (*this));
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual void    More (Memory::Optional<TallyEntry<T>>* result, bool advance) override
-                    {
-                        RequireNotNull (result);
-                        CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            Memory::Optional<pair<T, size_t>> tmp;    /// FIX TO NOT REQUIRE NO DEFAULT CTOR
-                            fIterator.More (&tmp, advance);
-                            if (tmp.IsPresent ()) {
-                                *result = TallyEntry<T> (tmp->first, tmp->second);
-                            }
-                            else {
-                                result->clear ();
-                            }
-                        }
-                        CONTAINER_LOCK_HELPER_END ();
-                    }
-                    virtual     OwnerID     GetOwner () const override
-                    {
-                        return fOwner_;
-                    }
-                    virtual bool    Equals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override
-                    {
-                        AssertNotImplemented ();
-                        return false;
-                    }
-
-                private:
-                    Private::ContainerRepLockDataSupport_&                          fLockSupport_;
-                    OwnerID                                                         fOwner_;
-                public:
-                    mutable typename Rep_::DataStructureImplType_::ForwardIterator  fIterator;
                 };
 
 
