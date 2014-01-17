@@ -169,11 +169,9 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    OwnerID GetOwner () const
+                    virtual OwnerID GetOwner () const override
                     {
-                        //tmphack but adequate
-                        // should NOT require locking is readonly immutable value provided at construction
-                        return nullptr;
+                        return fOwner_;
                     }
                     virtual bool    Equals (const typename Iterator<TallyEntry<T>>::IRep* rhs) const override
                     {

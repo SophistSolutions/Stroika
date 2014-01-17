@@ -137,7 +137,7 @@ namespace   Stroika {
                         }
                         CONTAINER_LOCK_HELPER_END ();
                     }
-                    OwnerID GetOwner () const
+                    virtual     OwnerID     GetOwner () const override
                     {
                         return fOwner_;
                     }
