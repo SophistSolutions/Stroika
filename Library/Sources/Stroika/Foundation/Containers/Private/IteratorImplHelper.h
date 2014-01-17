@@ -49,8 +49,10 @@ namespace   Stroika {
                     using   inherited   =   typename    Iterator<T>::IRep;
 
                 public:
-                    using   SharedIRepPtr   =   typename Iterator<T>::SharedIRepPtr;
-                    using   OwnerID         =   typename Iterator<T>::OwnerID;
+                    using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
+                    using   OwnerID                     =   typename Iterator<T>::OwnerID;
+                    //using   DataStructureImplValueType_ =   typename PATCHABLE_CONTAINER::value_type;
+                    using   DataStructureImplValueType_ =   T;
 
                 public:
                     explicit IteratorImplHelper_ (OwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
@@ -64,6 +66,16 @@ namespace   Stroika {
                     virtual OwnerID       GetOwner () const override;
                     virtual void          More (Memory::Optional<T>* result, bool advance) override;
                     virtual bool          Equals (const typename Iterator<T>::IRep* rhs) const override;
+
+                private:
+                    /*
+                     *  More_SFINAE_ () trick is cuz if types are the same, we can just pass pointer, but if they differ, we need
+                     *  a temporary, and to copy.
+                     */
+                    template    <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if<is_same<T, CHECK_KEY>::value>::type* = 0);
+                    template    <typename CHECK_KEY = typename PATCHABLE_CONTAINER::value_type>
+                    nonvirtual  void    More_SFINAE_ (Memory::Optional<T>* result, bool advance, typename std::enable_if < !is_same<T, CHECK_KEY>::value >::type* = 0);
 
                 public:
                     ContainerRepLockDataSupport_&           fLockSupport;
