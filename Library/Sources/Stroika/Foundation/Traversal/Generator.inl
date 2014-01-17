@@ -65,9 +65,10 @@ namespace   Stroika {
                     }
                     virtual OwnerID GetOwner () const override
                     {
-                        //tmphack but adequate
-                        // should NOT require locking is readonly immutable value provided at construction
-                        return nullptr;
+                        /*
+                         *  This return value allows any two DiscreteRange iterators (of the same type) to be compared.
+                         */
+                        return typeid (*this).name ();
                     }
                 };
 
