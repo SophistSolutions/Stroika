@@ -78,7 +78,7 @@ namespace   Stroika {
                 bool    IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>::Equals (const typename Iterator<T>::IRep* rhs) const
                 {
                     RequireNotNull (rhs);
-                    typedef IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>   ActualIterImplType_;
+                    using   ActualIterImplType_ =   IteratorImplHelper_<T, PATCHABLE_CONTAINER, PATCHABLE_CONTAINER_ITERATOR>;
                     RequireMember (rhs, ActualIterImplType_);
                     const ActualIterImplType_* rrhs =   dynamic_cast<const ActualIterImplType_*> (rhs);
                     AssertNotNull (rrhs);
