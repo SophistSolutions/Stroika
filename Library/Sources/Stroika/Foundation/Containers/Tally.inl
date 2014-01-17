@@ -91,9 +91,7 @@ namespace   Stroika {
                     }
                     virtual OwnerID GetOwner () const override
                     {
-                        //tmphack but adequate
-                        // should NOT require locking is readonly immutable value provided at construction
-                        return nullptr;
+                        return fContext.fTallyIterator.GetOwner ();
                     }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
@@ -200,9 +198,7 @@ namespace   Stroika {
                     }
                     virtual OwnerID GetOwner () const override
                     {
-                        //tmphack but adequate
-                        // should NOT require locking is readonly immutable value provided at construction
-                        return nullptr;
+                        return fContext.fTallyIterator.GetOwner ();
                     }
                     virtual bool    Equals (const typename Iterator<T>::IRep* rhs) const override
                     {
