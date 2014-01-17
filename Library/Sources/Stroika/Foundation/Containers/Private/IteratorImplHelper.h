@@ -43,7 +43,7 @@ namespace   Stroika {
                  *  There is no requirement that Stroika contcrete containers use this class. However, it
                  *  so far has appeared a handy code sharing utility.
                  */
-                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator>
+                template    <typename T, typename PATCHABLE_CONTAINER, typename PATCHABLE_CONTAINER_ITERATOR = typename PATCHABLE_CONTAINER::ForwardIterator, typename PATCHABLE_CONTAINER_VALUE = T>
                 class  IteratorImplHelper_ : public Iterator<T>::IRep {
                 private:
                     using   inherited   =   typename    Iterator<T>::IRep;
@@ -51,8 +51,7 @@ namespace   Stroika {
                 public:
                     using   SharedIRepPtr               =   typename Iterator<T>::SharedIRepPtr;
                     using   OwnerID                     =   typename Iterator<T>::OwnerID;
-                    //using   DataStructureImplValueType_ =   typename PATCHABLE_CONTAINER::value_type;
-                    using   DataStructureImplValueType_ =   T;
+                    using   DataStructureImplValueType_ =   PATCHABLE_CONTAINER_VALUE;
 
                 public:
                     explicit IteratorImplHelper_ (OwnerID owner, ContainerRepLockDataSupport_* sharedLock, PATCHABLE_CONTAINER* data);
