@@ -11,36 +11,11 @@ TODO (Foundation::Containers)
 
 			Implement with SFINAE
 
+	(o)		Add a 'pure debugging' feature (so only in debug builds). For each container (envelope),
+			track them in the associated REPS (as a linked list). THEN - when we destroy a container,
+			Assert that the 'owner' for each iterator - no longer references that container!
+
 	(o)		Consider moving the LOCKING code into the Patching classes? Maybe using TRAITS???
-
-	(o)		Use type traits stuff like this ... to capture better defaults for factories and concrete types -
-			so for things that have < we can use < to amke better default mappings, etc.
-			
-			Example code from sterl:
-
-				The following would let you have your cake and eat it too. Needed to steal the very useful 
-				if_c trick from Boost. Ideally the traits test would be is_trivially_copyable but that doesn't
-				seem to be in the gcc type_traits header.
-
-				// lifted from Boost
-				template<bool C, typename T1, typename T2>
-				struct if_c	{
-					typedef T1 type;
-				};
-
-				template<typename T1, typename T2>
-				struct if_c<false,T1,T2>	{
-					typedef T2 type;
-				};
-
-				template <typename T>
-				struct  Test {
-					typedef typename if_c<(sizeof (T) <= sizeof (size_t) && is_trivial<T>::value), T, const T&>::type  PassInArgType;
-
-					Test (PassInArgType t)
-					{
-					}
-				};
 
 	(o)		Reconsider the question of operator overloading for operator==, operator!=, operator+, operator-,
 			and perhaps others.
