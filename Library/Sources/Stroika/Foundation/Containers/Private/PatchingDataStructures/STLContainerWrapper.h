@@ -127,7 +127,7 @@ namespace   Stroika {
                         typedef Foundation::Containers::Private::PatchingDataStructures::STLContainerWrapper<STL_CONTAINER_OF_T>   CONTAINER_TYPE;
 
                     public:
-                        ForwardIterator (CONTAINER_TYPE* data);
+                        ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data);
                         ForwardIterator (const ForwardIterator& from);
 
                     public:
@@ -154,8 +154,9 @@ namespace   Stroika {
                         nonvirtual  void    TwoPhaseIteratorPatcherPass1 (typename STL_CONTAINER_OF_T::iterator oldI, Memory::SmallStackBuffer<ForwardIterator*>* items2Patch);
                         nonvirtual  void    TwoPhaseIteratorPatcherPass2 (typename STL_CONTAINER_OF_T::iterator newI);
 
-                    public:
+                    private:
                         IteratorOwnerID fOwnerID;
+                    public:
                         IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:

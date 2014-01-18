@@ -129,7 +129,7 @@ namespace   Stroika {
                         using   inherited   =   typename DataStructures::Array<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
-                        _ArrayIteratorBase (const Array_Patch<T, TRAITS>* data);
+                        _ArrayIteratorBase (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data);
                         _ArrayIteratorBase (const _ArrayIteratorBase& from);
                         ~_ArrayIteratorBase ();
 
@@ -141,8 +141,9 @@ namespace   Stroika {
 
                         nonvirtual  void    Invariant () const;     // shadow to avoid scope ambiguity
 
-                    public:
+                    private:
                         IteratorOwnerID fOwnerID;
+                    public:
                         IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:
@@ -178,7 +179,7 @@ namespace   Stroika {
                         using   inherited   =   typename Array_Patch<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
-                        ForwardIterator (const Array_Patch<T, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);
@@ -206,7 +207,7 @@ namespace   Stroika {
                         using   inherited   =   typename Array_Patch<T, TRAITS>::_ArrayIteratorBase;
 
                     public:
-                        BackwardIterator (const Array_Patch<T, TRAITS>& data);
+                        BackwardIterator (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data);
 
                     public:
                         nonvirtual  bool    More (T* current, bool advance);

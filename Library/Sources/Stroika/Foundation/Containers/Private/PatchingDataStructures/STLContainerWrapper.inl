@@ -137,9 +137,9 @@ namespace   Stroika {
                      ********************************************************************************
                      */
                     template    <typename STL_CONTAINER_OF_T>
-                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (CONTAINER_TYPE* data)
+                    STLContainerWrapper<STL_CONTAINER_OF_T>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, CONTAINER_TYPE* data)
                         : inherited (data)
-                        , fOwnerID ()       // init NYI
+                        , fOwnerID (ownerID)
                         , fData (data)
                         , fNextActiveIterator (data->fActiveIteratorsListHead_)
                         , fSuppressMore (true)

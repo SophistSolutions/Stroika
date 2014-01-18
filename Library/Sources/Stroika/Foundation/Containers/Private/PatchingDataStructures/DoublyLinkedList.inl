@@ -246,9 +246,9 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const DoublyLinkedList<T, TRAITS>* data)
+                    inline  DoublyLinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const DoublyLinkedList<T, TRAITS>* data)
                         : inherited (data)
-                        , fOwnerID ()       // to be initialized?
+                        , fOwnerID (ownerID)
                         , fNextActiveIterator_ (data->fActiveIteratorsListHead_)
                     {
                         RequireNotNull (data);

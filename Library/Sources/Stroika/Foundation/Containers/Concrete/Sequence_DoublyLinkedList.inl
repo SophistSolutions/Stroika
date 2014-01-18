@@ -197,6 +197,7 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Sequence_DoublyLinkedList<T, TRAITS>::Rep_::Insert (size_t at, const T* from, const T* to)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     Require (at == kBadSequenceIndex or at <= GetLength ());
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
                         if (at == kBadSequenceIndex) {
@@ -217,7 +218,7 @@ namespace   Stroika {
                         }
                         else {
                             size_t index = at;
-                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
                                 if (--index == 0) {
                                     for (const T* p = from; p != to; ++p) {
                                         fData_.AddBefore (it, *p);
@@ -234,12 +235,13 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Sequence_DoublyLinkedList<T, TRAITS>::Rep_::Remove (size_t from, size_t to)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     // quickie poor impl
                     // See Stroika v1 - much better - handling cases of remove near start or end of linked list
                     size_t index = from;
                     size_t amountToRemove = (to - from);
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true); ) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true); ) {
                             if (index-- == 0) {
                                 while (amountToRemove-- != 0) {
                                     fData_.RemoveAt (it);

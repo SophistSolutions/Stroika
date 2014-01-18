@@ -129,7 +129,7 @@ namespace   Stroika {
                         using   inherited   =   typename DataStructures::LinkedList<T, TRAITS>::ForwardIterator;
 
                     public:
-                        ForwardIterator (const LinkedList<T, TRAITS>* data);
+                        ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data);
                         ForwardIterator (const ForwardIterator& from);
                         ~ForwardIterator ();
 
@@ -139,8 +139,9 @@ namespace   Stroika {
                         typedef typename DataStructures::LinkedList<T, TRAITS>::Link    Link;
                         typedef PatchingDataStructures::LinkedList<T, TRAITS>           ContainerType;
 
-                    public:
+                    private:
                         IteratorOwnerID fOwnerID;
+                    public:
                         IteratorOwnerID GetOwner () const { return fOwnerID; }
 
                     public:

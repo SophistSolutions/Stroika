@@ -221,7 +221,8 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    SortedCollection_LinkedList<T, TRAITS>::Rep_::AddWithoutLocks_ (T item)
                 {
-                    typename Rep_::DataStructureImplType_::ForwardIterator it (&fData_);
+                    using   Traversal::kUnknownIteratorOwnerID;
+                    typename Rep_::DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_);
                     // skip the smaller items
                     while (it.More (nullptr, true) and TRAITS::WellOrderCompareFunctionType::Compare (it.Current (), item) < 0) {
                     }

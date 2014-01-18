@@ -146,6 +146,7 @@ namespace   Stroika {
                     template      <typename  T, typename TRAITS>
                     void    LinkedList<T, TRAITS>::Remove (T item)
                     {
+                        using   Traversal::kUnknownIteratorOwnerID;
                         /*
                          *  Base class impl is fine, but doesn't do patching, and doesn't
                          *  provide the hooks so I can do the patching from here.
@@ -155,7 +156,7 @@ namespace   Stroika {
                          */
                         Invariant ();
                         Memory::Optional<T> current;
-                        for (ForwardIterator it (this); it.More (&current, true), current.IsPresent (); ) {
+                        for (ForwardIterator it (kUnknownIteratorOwnerID, this); it.More (&current, true), current.IsPresent (); ) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (*current, item)) {
                                 this->RemoveAt (it);
                                 break;
@@ -259,9 +260,9 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (const LinkedList<T, TRAITS>* data)
+                    inline  LinkedList<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const LinkedList<T, TRAITS>* data)
                         : inherited (data)
-                        , fOwnerID ()   // for now uninit, but soon init
+                        , fOwnerID (ownerID)
                         , _fNextActiveIterator (data->fActiveIteratorsListHead_)
                         //, fPrev (nullptr)         // means invalid or fData->_fHead == _fCurrent ...
                     {

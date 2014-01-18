@@ -21,9 +21,9 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (const Array_Patch<T, TRAITS>* data)
+                    inline  Array_Patch<T, TRAITS>::_ArrayIteratorBase::_ArrayIteratorBase (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data)
                         : inherited (data)
-                        , fOwnerID ()
+                        , fOwnerID (ownerID)
                         , fData (data)
                         , fNext (data->fIterators_)
                     {
@@ -472,8 +472,8 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array_Patch<T, TRAITS>::ForwardIterator::ForwardIterator (const Array_Patch<T, TRAITS>* data) :
-                        inherited (data)
+                    inline  Array_Patch<T, TRAITS>::ForwardIterator::ForwardIterator (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data)
+                        : inherited (ownerID, data)
                     {
                         RequireNotNull (data);
                         this->_fCurrent = this->_fStart;
@@ -531,10 +531,10 @@ namespace   Stroika {
                     ********************************************************************************
                     */
                     template      <typename  T, typename TRAITS>
-                    inline  Array_Patch<T, TRAITS>::BackwardIterator::BackwardIterator (const Array_Patch<T, TRAITS>& data)
-                        : inherited (data)
+                    inline  Array_Patch<T, TRAITS>::BackwardIterator::BackwardIterator (IteratorOwnerID ownerID, const Array_Patch<T, TRAITS>* data)
+                        : inherited (ownerID, data)
                     {
-                        if (data.GetLength () == 0) {
+                        if (data->GetLength () == 0) {
                             this->_fCurrent = this->_fEnd;    // magic to indicate done
                         }
                         else {

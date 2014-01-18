@@ -217,8 +217,9 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::Add (DOMAIN_TYPE key, RANGE_TYPE newElt)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, key)) {
                                 fData_.SetAt (it, pair<DOMAIN_TYPE, RANGE_TYPE> (key, newElt));
                                 return;
@@ -231,8 +232,9 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveDomainElement (DOMAIN_TYPE d)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (DomainEqualsCompareFunctionType::Equals (it.Current ().first, d)) {
                                 fData_.RemoveAt (it);
                                 return;
@@ -244,8 +246,9 @@ namespace   Stroika {
                 template    <typename DOMAIN_TYPE, typename RANGE_TYPE, typename TRAITS>
                 void    Bijection_LinkedList<DOMAIN_TYPE, RANGE_TYPE, TRAITS>::Rep_::RemoveRangeElement (RANGE_TYPE r)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (RangeEqualsCompareFunctionType::Equals (it.Current ().second, r)) {
                                 fData_.RemoveAt (it);
                                 return;

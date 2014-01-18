@@ -168,10 +168,11 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void   Tally_LinkedList<T, TRAITS>::Rep_::Add (T item, size_t count)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&current, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     current.fCount += count;
                                     fData_.SetAt (it, current);
@@ -186,10 +187,11 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void   Tally_LinkedList<T, TRAITS>::Rep_::Remove (T item, size_t count)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     if (count != 0) {
                         TallyEntry<T>   current (item);
                         CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                            for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (&current, true); ) {
+                            for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (&current, true); ) {
                                 if (TRAITS::EqualsCompareFunctionType::Equals (current.fItem, item)) {
                                     if (current.fCount > count) {
                                         current.fCount -= count;

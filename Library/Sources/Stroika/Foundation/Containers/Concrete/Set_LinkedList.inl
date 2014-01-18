@@ -183,8 +183,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Set_LinkedList<T, TRAITS>::Rep_::Add (T item)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 return;
                             }
@@ -196,8 +197,9 @@ namespace   Stroika {
                 template    <typename T, typename TRAITS>
                 void    Set_LinkedList<T, TRAITS>::Rep_::Remove (T item)
                 {
+                    using   Traversal::kUnknownIteratorOwnerID;
                     CONTAINER_LOCK_HELPER_START (fLockSupport_) {
-                        for (typename DataStructureImplType_::ForwardIterator it (&fData_); it.More (nullptr, true);) {
+                        for (typename DataStructureImplType_::ForwardIterator it (kUnknownIteratorOwnerID, &fData_); it.More (nullptr, true);) {
                             if (TRAITS::EqualsCompareFunctionType::Equals (it.Current (), item)) {
                                 fData_.RemoveAt (it);
                                 return;
